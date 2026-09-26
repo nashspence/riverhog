@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a> / <a href="i-22ebf65415d1e82255f700e0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_provenance.IncrementalJournalEntry</h1>
 <p class="context">Portable Riverhog v1 per-file provenance journals and validation. Declared public imports and their selected exact structural contracts.</p>
@@ -61,7 +52,7 @@
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,114 +63,84 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>frame</code>
-</td>
-<td>
-<code>&#x27;JournalFrame&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>frame</code></td>
+<td data-label="Type">
+<code>&#x27;JournalFrame&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>journal_id</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>primary_lineage_id</code>
-</td>
-<td>
-<code>&#x27;str | None&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>primary_lineage_id</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>agents</code>
-</td>
-<td>
-<code>&#x27;tuple[str, ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>agents</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[str, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>events</code>
-</td>
-<td>
-<code>&#x27;tuple[str, ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>events</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[str, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>states</code>
-</td>
-<td>
-<code>&#x27;tuple[tuple[str, str], ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>states</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[tuple[str, str], ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>entities</code>
-</td>
-<td>
-<code>&#x27;tuple[tuple[str, str, str], ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>entities</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[tuple[str, str, str], ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>entity_counts</code>
-</td>
-<td>
-<code>&#x27;tuple[tuple[str, int], ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>entity_counts</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[tuple[str, int], ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>bindings</code>
-</td>
-<td>
-<code>&#x27;tuple[tuple[str, str, str], ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>bindings</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[tuple[str, str, str], ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>external_states</code>
-</td>
-<td>
-<code>&#x27;tuple[ExternalStateReference, ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>external_states</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[ExternalStateReference, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 </tbody>
 </table>
@@ -222,8 +183,7 @@
 <span id="v-49a5876a323a7b3ffa95ad89">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/0/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -233,8 +193,7 @@
 <span id="v-dc37d58fa6ee08b94abd19e8">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/0/name">frame</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -244,12 +203,10 @@
 <span id="v-cfd88ebe8d9d8da67f800dbe">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/0/type">&#x27;JournalFrame&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -266,8 +223,7 @@
 <span id="v-3c626524c3c55093ac77453f">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/1/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -277,8 +233,7 @@
 <span id="v-9b092d4b646376b0c3c1539d">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/1/name">journal_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,12 +243,10 @@
 <span id="v-f408b1a57047f71855024abb">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/1/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,8 +263,7 @@
 <span id="v-dac1816016d118142b09267b">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/2/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -321,8 +273,7 @@
 <span id="v-19772bec5ba6da94de30908e">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/2/name">primary_lineage_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,12 +283,10 @@
 <span id="v-a1094dbcafe778ef20814c71">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/2/type">&#x27;str | None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -354,8 +303,7 @@
 <span id="v-d204d67659023e19de196450">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/3/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -365,8 +313,7 @@
 <span id="v-c90a4487284509f8ab5b400e">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/3/name">agents</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -376,12 +323,10 @@
 <span id="v-de3dace5c722ce87fd3c37e4">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/3/type">&#x27;tuple[str, ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -398,8 +343,7 @@
 <span id="v-2a6b59f22296d67660579874">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/4/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -409,8 +353,7 @@
 <span id="v-9f6dc8447a09bcdd34cc88e5">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/4/name">events</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,12 +363,10 @@
 <span id="v-db7f012b34b2db733f2c6869">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/4/type">&#x27;tuple[str, ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -442,8 +383,7 @@
 <span id="v-53e243ab5d874cae37f13a1e">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/5/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -453,8 +393,7 @@
 <span id="v-b97ec8f443f3e0786dafe9bf">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/5/name">states</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -464,12 +403,10 @@
 <span id="v-31116b059b462fca565ce73e">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/5/type">&#x27;tuple[tuple[str, str], ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -486,8 +423,7 @@
 <span id="v-a0af0a9d5e193d30652ecfef">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/6/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -497,8 +433,7 @@
 <span id="v-135eb6cf758cf2669b2b78c5">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/6/name">entities</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -508,12 +443,10 @@
 <span id="v-64d8d46d216462a13a5aa4ac">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/6/type">&#x27;tuple[tuple[str, str, str], ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -530,8 +463,7 @@
 <span id="v-37c07a0d9cdb3f88782e1692">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/7/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -541,8 +473,7 @@
 <span id="v-28c261d8e3cac59bd51eb175">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/7/name">entity_counts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -552,12 +483,10 @@
 <span id="v-2ff7986291c04ebc8b367cc1">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/7/type">&#x27;tuple[tuple[str, int], ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -574,8 +503,7 @@
 <span id="v-bacd831400f89213c214f1f3">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/8/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -585,8 +513,7 @@
 <span id="v-edbc2dc7085ccb98375b1760">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/8/name">bindings</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -596,12 +523,10 @@
 <span id="v-e49484a4c49a4d8741afe08b">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/8/type">&#x27;tuple[tuple[str, str, str], ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -618,8 +543,7 @@
 <span id="v-7a54cafd491b4264d10e09be">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/9/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,8 +553,7 @@
 <span id="v-b21e9b8f2233164b3f5e5f59">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/9/name">external_states</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -640,16 +563,13 @@
 <span id="v-0bf2e7293034a0859dbd8bad">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/fields/9/type">&#x27;tuple[ExternalStateReference, ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -659,8 +579,7 @@
 <span id="v-7886b61dc19875f0bb9272e3">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -670,12 +589,10 @@
 <span id="v-0f2a441906c0272dc537a948">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/contract/signature">&quot;(frame: &#x27;JournalFrame&#x27;, journal_id: &#x27;str&#x27;, primary_lineage_id: &#x27;str | None&#x27;, agents: &#x27;tuple[str, ...]&#x27;, events: &#x27;tuple[str, ...]&#x27;, states: &#x27;tuple[tuple[str, str], ...]&#x27;, entities: &#x27;tuple[tuple[str, str, str], ...]&#x27;, entity_counts: &#x27;tuple[tuple[str, int], ...]&#x27;, bindings: &#x27;tuple[tuple[str, str, str], ...]&#x27;, external_states: &#x27;tuple[ExternalStateReference, ...]&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -685,8 +602,7 @@
 <span id="v-23cd7fdc5bc61d1f47fa2e46">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/distribution">riverhog-provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -696,8 +612,7 @@
 <span id="v-e6ce3e095ebaa91e66c812a6">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/module">riverhog_provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -707,8 +622,7 @@
 <span id="v-5dae5de5c85a810f0fcbfc0a">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/name">IncrementalJournalEntry</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -718,8 +632,7 @@
 <span id="v-713e1bf334b59973d5a58118">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.IncrementalJournalEntry/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -731,7 +644,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -743,7 +656,7 @@
 <a href="source-authorities.html#source-38ef3a6054bee6ff009d696c">python:riverhog-provenance:riverhog_provenance</a> — <code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/__init__.py">packages/riverhog-provenance/src/riverhog_provenance/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -754,9 +667,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

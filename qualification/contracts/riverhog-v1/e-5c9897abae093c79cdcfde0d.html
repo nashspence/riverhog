@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: InputDispositionDeclaration</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,28 +59,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>input_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>input_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>status</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -112,8 +97,7 @@
 <span id="v-d53b2388ec9966ed87a2d49b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -137,8 +121,7 @@
 <span id="v-ad601fb2e95baaf13e54cd78">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/input_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -148,8 +131,7 @@
 <span id="v-5c25af5faee36a34724e118f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/input_id/title">Input Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -159,12 +141,10 @@
 <span id="v-afd7155c52d028105f06513b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/input_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -188,8 +168,7 @@
 <span id="v-1e9afcc8af9dbabdc8748be3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/0">transformed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -199,8 +178,7 @@
 <span id="v-cef7b10d5da002418c39116b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/1">preserved</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -210,8 +188,7 @@
 <span id="v-4a0466fccb09c2939dd6cb65">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/2">omitted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -221,12 +198,10 @@
 <span id="v-b78746f895de0d0118ca2055">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/3">rejected</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -236,8 +211,7 @@
 <span id="v-40be9bd9c3fcd2493a39b4ee">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/title">Status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -247,16 +221,13 @@
 <span id="v-1ce760e9ace0adad64615f07">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -273,8 +244,7 @@
 <span id="v-868cdf6c80830a74c654f891">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/required/0">input_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -284,12 +254,10 @@
 <span id="v-cbf10ab393ae4baf9147e3da">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/required/1">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,8 +267,7 @@
 <span id="v-d5ad6d5824096c530ec87067">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/title">InputDispositionDeclaration</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,8 +277,7 @@
 <span id="v-3adace929ea9f17d7c57aa4a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -323,7 +289,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -335,7 +301,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -346,9 +312,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

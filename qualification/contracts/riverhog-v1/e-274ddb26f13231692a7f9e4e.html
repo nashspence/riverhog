@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: SchedulerRun</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,49 +59,37 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-42061fffc2664af6e4fc7432">admission</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-31802031f92b911e20152407.html#v-95b5f12fb073bfa43b8062c5">#/components/schemas/AdmissionRun</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-42061fffc2664af6e4fc7432">admission</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-31802031f92b911e20152407.html#v-95b5f12fb073bfa43b8062c5">#/components/schemas/AdmissionRun</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1d6ecd55835c5c7e0c4cb59b">departure</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-0682269637b65e243d928285.html#v-77ac8683ed50921e0811b436">#/components/schemas/DepartureRun</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1d6ecd55835c5c7e0c4cb59b">departure</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-0682269637b65e243d928285.html#v-77ac8683ed50921e0811b436">#/components/schemas/DepartureRun</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e949e7bfc61a17daa4ce1d3f">pruning</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-9d2c5e4e74f2fb040ce49f92.html#v-f4823c702960794261067108">#/components/schemas/SchedulerPruning</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e949e7bfc61a17daa4ce1d3f">pruning</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-9d2c5e4e74f2fb040ce49f92.html#v-f4823c702960794261067108">#/components/schemas/SchedulerPruning</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>work</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-ccb3d3aab4f503440810ad5f.html#v-91b2b76dcb782a5afe908ec4">#/components/schemas/SchedulerWorkBatch</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>work</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-ccb3d3aab4f503440810ad5f.html#v-91b2b76dcb782a5afe908ec4">#/components/schemas/SchedulerWorkBatch</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -121,7 +100,7 @@
 <p class="shape">any of: <a href="e-31802031f92b911e20152407.html#v-95b5f12fb073bfa43b8062c5">#/components/schemas/AdmissionRun</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -131,16 +110,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-31802031f92b911e20152407.html#v-95b5f12fb073bfa43b8062c5">#/components/schemas/AdmissionRun</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-31802031f92b911e20152407.html#v-95b5f12fb073bfa43b8062c5">#/components/schemas/AdmissionRun</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -151,7 +128,7 @@
 <p class="shape">any of: <a href="e-0682269637b65e243d928285.html#v-77ac8683ed50921e0811b436">#/components/schemas/DepartureRun</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -161,16 +138,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-0682269637b65e243d928285.html#v-77ac8683ed50921e0811b436">#/components/schemas/DepartureRun</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-0682269637b65e243d928285.html#v-77ac8683ed50921e0811b436">#/components/schemas/DepartureRun</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -181,7 +156,7 @@
 <p class="shape">any of: <a href="e-9d2c5e4e74f2fb040ce49f92.html#v-f4823c702960794261067108">#/components/schemas/SchedulerPruning</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -191,16 +166,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-9d2c5e4e74f2fb040ce49f92.html#v-f4823c702960794261067108">#/components/schemas/SchedulerPruning</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-9d2c5e4e74f2fb040ce49f92.html#v-f4823c702960794261067108">#/components/schemas/SchedulerPruning</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -223,8 +196,7 @@
 <span id="v-9a2d1bc1d377d77440d1053a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -262,12 +234,10 @@
 <span id="v-5124045094a3417da2c2cead">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/admission/anyOf/0/$ref">#/components/schemas/AdmissionRun</code>
 <span class="kind">string</span> <a href="e-31802031f92b911e20152407.html#v-95b5f12fb073bfa43b8062c5">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -284,20 +254,16 @@
 <span id="v-72d930573866605626e0fc79">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/admission/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -328,12 +294,10 @@
 <span id="v-81bf5eed0dab0993999595bf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/departure/anyOf/0/$ref">#/components/schemas/DepartureRun</code>
 <span class="kind">string</span> <a href="e-0682269637b65e243d928285.html#v-77ac8683ed50921e0811b436">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -350,20 +314,16 @@
 <span id="v-64138d69081f27a1f059ef74">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/departure/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -394,12 +354,10 @@
 <span id="v-bffba5778784613afa43736f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/pruning/anyOf/0/$ref">#/components/schemas/SchedulerPruning</code>
 <span class="kind">string</span> <a href="e-9d2c5e4e74f2fb040ce49f92.html#v-f4823c702960794261067108">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -416,20 +374,16 @@
 <span id="v-8b4358f51b02f92d4b7e4d45">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/pruning/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -446,16 +400,13 @@
 <span id="v-ce50554ceff483503543b05f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/properties/work/$ref">#/components/schemas/SchedulerWorkBatch</code>
 <span class="kind">string</span> <a href="e-ccb3d3aab4f503440810ad5f.html#v-91b2b76dcb782a5afe908ec4">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +423,7 @@
 <span id="v-58134b4004d307a782803403">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/required/0">pruning</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,12 +433,10 @@
 <span id="v-b4b3ee97f239c84c891ab441">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/required/1">work</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -498,8 +446,7 @@
 <span id="v-7b437e479dc4a193bb9a47bf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/title">SchedulerRun</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -509,8 +456,7 @@
 <span id="v-76621ef99a4eded8dde9aa4b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerRun/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -522,7 +468,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -534,7 +480,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -545,9 +491,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

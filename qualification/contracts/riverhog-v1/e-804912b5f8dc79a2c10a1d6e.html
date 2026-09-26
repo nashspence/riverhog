@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-4cb6451250139576fc538025.html">Process Protocol Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>generated:riverhog-storage-adapter: ObjectReadReceipt</h1>
 <p class="context">HTTP binding and conformance support for Riverhog storage adapters. Structured values exchanged by a process protocol.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,52 +63,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>object</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-804912b5f8dc79a2c10a1d6e.html#v-43c741ab8f7b5505b18ed11a">#/$defs/ObjectLocator</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>object</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-804912b5f8dc79a2c10a1d6e.html#v-43c741ab8f7b5505b18ed11a">#/$defs/ObjectLocator</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>offset</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>offset</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>read_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>read_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>total_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>total_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -172,7 +151,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -185,29 +164,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>object_path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>object_path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d0c342614f30d4d35f43d16c">revision</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>2000</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d0c342614f30d4d35f43d16c">revision</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>2000</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -224,7 +196,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -234,16 +206,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>2000</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2000</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -280,8 +250,7 @@
 <span id="v-057b6a6cd36f060dacf7a227">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -291,12 +260,10 @@
 <span id="v-a4f2ac2bc45b9662d9aff24c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -313,8 +280,7 @@
 <span id="v-52736fa855d835fec91fd702">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,8 +304,7 @@
 <span id="v-6ec13791b1e89cb0830ba479">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/object_path/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,8 +314,7 @@
 <span id="v-e7d2571cb18c1c8af22e8137">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/object_path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,8 +324,7 @@
 <span id="v-cf15c9b1bfa112b550c7159a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/object_path/title">Object Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -371,12 +334,10 @@
 <span id="v-b6dd97d9806923a2885539b1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/object_path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -407,8 +368,7 @@
 <span id="v-f7ed4bcd281d897dde4159de">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/revision/anyOf/0/maxLength">2000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -418,8 +378,7 @@
 <span id="v-1fdd89cc6aaae22e833c9710">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/revision/anyOf/0/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -429,12 +388,10 @@
 <span id="v-fb43f3cd471292ce9570e4fd">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/revision/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -451,16 +408,13 @@
 <span id="v-a5b63fd8a11a77ddc07d41ea">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/revision/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -470,8 +424,7 @@
 <span id="v-49c9aa7f840adbb75e43f1e6">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/revision/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -481,16 +434,13 @@
 <span id="v-20fee3584e7a2dc23c019c27">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/properties/revision/title">Revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -507,12 +457,10 @@
 <span id="v-ba8b4d5df60ae5537596b31a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/required/0">object_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -522,8 +470,7 @@
 <span id="v-460c43e49750666d3972d7f9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/title">ObjectLocator</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -533,16 +480,13 @@
 <span id="v-4242a7a1606c227dbbc4652a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/$defs/ObjectLocator/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -552,8 +496,7 @@
 <span id="v-149f776e4471dcc043ec5fd8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -563,8 +506,7 @@
 <span id="v-0eb9c3d724793e70484e96a9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/description">Adapter-observed identity and range for one single-pass read.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -588,12 +530,10 @@
 <span id="v-a4102aafc38637ad5965a284">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/properties/object/$ref">#/$defs/ObjectLocator</code>
 <span class="kind">string</span> <a href="e-804912b5f8dc79a2c10a1d6e.html#v-43c741ab8f7b5505b18ed11a">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -610,12 +550,10 @@
 <span id="v-79a9d6ea4a779cb4c3d4c949">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/properties/offset/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -632,12 +570,10 @@
 <span id="v-270dbd688e8d804591b9e38b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/properties/read_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -654,16 +590,13 @@
 <span id="v-b53c27391e0840297eed5253">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/properties/total_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-804912b5f8dc79a2c10a1d6e.html#v-04ccbcd3c8c85108e201037b">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -680,8 +613,7 @@
 <span id="v-6e4fe28a7a6621a07aae6035">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/required/0">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -691,8 +623,7 @@
 <span id="v-4d40cc35700293c2aec2cf2b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/required/1">total_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -702,8 +633,7 @@
 <span id="v-15fa506c376862d68cbac20a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/required/2">offset</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -713,12 +643,10 @@
 <span id="v-de55674f42c4eb32f816d0d0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/required/3">read_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -728,8 +656,7 @@
 <span id="v-e97b07454c76ebe1d766a49a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/title">ObjectReadReceipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -739,8 +666,7 @@
 <span id="v-fd118908e70ca5d20b4501f3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadReceipt/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -760,7 +686,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -772,7 +698,7 @@
 <a href="source-authorities.html#source-ef281f2471a91ed8e39ea04c">protocol:generated:riverhog-storage-adapter</a> — <code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -783,9 +709,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

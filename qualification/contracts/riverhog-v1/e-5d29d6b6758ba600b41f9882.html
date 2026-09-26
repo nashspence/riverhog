@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: SchedulerFailure</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,38 +59,29 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>error</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>error</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-4d3a6ac85527ce383d70e160">event_id</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-4d3a6ac85527ce383d70e160">event_id</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-6d2bcc8b250f76e20726d08f">work_id</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-6d2bcc8b250f76e20726d08f">work_id</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -116,7 +98,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -126,16 +108,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -152,7 +132,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -162,16 +142,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -194,8 +172,7 @@
 <span id="v-720455cfed1d30936416fe8b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -219,8 +196,7 @@
 <span id="v-fce7f5997af167fd3c7cb207">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/error/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -230,8 +206,7 @@
 <span id="v-e3c471e9a52b12c40d9b3f14">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/error/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -241,8 +216,7 @@
 <span id="v-f66add2b1bc483891e8cdb1b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/error/title">Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -252,12 +226,10 @@
 <span id="v-bd022612bda8b29b7390ad80">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/error/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,12 +260,10 @@
 <span id="v-4b82d6d260b6af66ee031c99">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/event_id/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,16 +280,13 @@
 <span id="v-882e399b343e94cb856b37e7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/event_id/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,12 +296,10 @@
 <span id="v-9fd30d709a59dc9b48a2f62b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/event_id/title">Event Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -365,8 +330,7 @@
 <span id="v-3994ae6f0ea3da9e98670dc7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/work_id/anyOf/0/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -376,12 +340,10 @@
 <span id="v-35ca5578c1bb0fe43749f160">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/work_id/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -398,16 +360,13 @@
 <span id="v-ffafc21d8ea73947901aa59c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/work_id/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -417,16 +376,13 @@
 <span id="v-ce9e3c6ab83b0499b9fd04d5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/work_id/title">Work Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -443,12 +399,10 @@
 <span id="v-244ed1fa0a8defc67f66e2a7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/required/0">error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -458,8 +412,7 @@
 <span id="v-04be4a51f2da9fb7a4e4b905">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/title">SchedulerFailure</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,8 +422,7 @@
 <span id="v-6e8c04af5b7f400881dfa8a8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -482,7 +434,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -494,7 +446,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -504,8 +456,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -517,37 +468,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/error</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/error</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/work_id/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure/properties/work_id/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

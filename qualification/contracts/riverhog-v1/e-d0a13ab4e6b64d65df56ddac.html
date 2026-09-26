@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CollectionUploadWorkBatchDocument</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,63 +63,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>committed_payload_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>committed_payload_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>complete</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>complete</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>planning_complete</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>planning_complete</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-4617d6f48d3e3edb32266eb2">work</a>
-</td>
-<td>yes</td>
-<td>
+<td data-label="Field">
+<a href="#s-4617d6f48d3e3edb32266eb2">work</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-ab787d0e59338f8a0b4e8da3.html#v-2964a953735960d2e43a3b69">#/components/schemas/CollectionUploadUnitAssignmentDocument</a>; maxItems: <code>64</code>; x-riverhog-extent: structured schema</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -174,8 +151,7 @@
 <span id="v-a6cde8a9e37bf86112cd175c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -185,8 +161,7 @@
 <span id="v-e3b8f0d45d042b8add9e696f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/description">A bounded acquisition step over currently actionable upload units.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -210,12 +185,10 @@
 <span id="v-6ef04cf4b218eeb561dbd1ab">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/collection_id/$ref">#/components/schemas/CollectionId</code>
 <span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -232,12 +205,10 @@
 <span id="v-3a1a5dd8b70e5b1dca872669">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/committed_payload_bytes/$ref">#/components/schemas/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -254,8 +225,7 @@
 <span id="v-b4362ed15e3c872622bd316d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/complete/title">Complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -265,12 +235,10 @@
 <span id="v-7ee2fb71305b33095b3053f4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/complete/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -287,8 +255,7 @@
 <span id="v-ff45e77102ff2d2b7012dd8e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/planning_complete/title">Planning Complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -298,12 +265,10 @@
 <span id="v-bdca5c9239ef0c02bd59d51d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/planning_complete/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,12 +292,10 @@
 <span id="v-e9a8bdba7fa7408573e727a0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/items/$ref">#/components/schemas/CollectionUploadUnitAssignmentDocument</code>
 <span class="kind">string</span> <a href="e-ab787d0e59338f8a0b4e8da3.html#v-2964a953735960d2e43a3b69">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -342,8 +305,7 @@
 <span id="v-a5137be522d2eae6c7ba3d40">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/maxItems">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -353,8 +315,7 @@
 <span id="v-d9c49e9e80634f6ea3c6cf1b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/title">Work</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,8 +325,7 @@
 <span id="v-903f1636bfa0675c449fffc8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -382,8 +342,7 @@
 <span id="v-792de9e2466a236bddf40a8f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/x-riverhog-extent/policy">segmented_no_total_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -393,8 +352,7 @@
 <span id="v-bbce4245810c7d37f2c0733a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/x-riverhog-extent/progression">repeated-acquisition-until-complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -404,20 +362,16 @@
 <span id="v-a13df8e2f53d4230838a9fb2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work/x-riverhog-extent/reason">bounded-actionable-work-acquisition</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -434,8 +388,7 @@
 <span id="v-41a2531181d8a83f602195ae">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -445,8 +398,7 @@
 <span id="v-3c37911a65fe1c0c87808863">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/required/1">planning_complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -456,8 +408,7 @@
 <span id="v-ec09834c4703bed04c09dcdb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/required/2">complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,8 +418,7 @@
 <span id="v-1fa17a3a5b7676794b94d6eb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/required/3">committed_payload_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -478,12 +428,10 @@
 <span id="v-ef6f5e40244160f896410d54">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/required/4">work</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -493,8 +441,7 @@
 <span id="v-846950f272d7b84125eb14fa">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/title">CollectionUploadWorkBatchDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -504,8 +451,7 @@
 <span id="v-cd8632738e2d45b8b0e16078">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -515,7 +461,6 @@
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-b068c34cbba4b1b480b3039c.html">riverhog-upload-work-progression/v1</a>
@@ -524,7 +469,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -536,7 +481,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -546,8 +491,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -559,25 +503,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work</code>
-</td>
-<td>
-<a href="policies.html#definition-cc8243a831931f483953f0ab">extent-rule/bounded-segment/v1</a>
-</td>
-<td>cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:null,&quot;progression&quot;:{&quot;progression&quot;:&quot;repeated-acquisition-until-complete&quot;},&quot;reason&quot;:&quot;bounded-actionable-work-acquisition&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument/properties/work</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-cc8243a831931f483953f0ab.html">extent-rule/bounded-segment/v1</a></td>
+<td data-label="Decision">cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:null,&quot;progression&quot;:{&quot;progression&quot;:&quot;repeated-acquisition-until-complete&quot;},&quot;reason&quot;:&quot;bounded-actionable-work-acquisition&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

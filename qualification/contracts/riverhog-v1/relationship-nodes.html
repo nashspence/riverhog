@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<html lang="en" data-audit="on" data-docs="off" data-audit-default="on" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,22 +14,12 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="relationships.html">Audit references</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>Relationship nodes</h1>
 <aside class="audit">
-<p>Exact component, image, extension, protocol, and installation nodes derived from the declared boundary and release records.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -42,1113 +32,916 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code id="node-882ba0b60edb763c5934b913">component:a-gogurt-linux-listener</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-38e452bb65db28d70901030e.html">a-gogurt-linux-listener</a>
-</td>
-<td>component</td>
-<td>Linux systemd user listener for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-6669aa00a890e25e75532033">component:a-gogurt-linux-volume</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-ee04d983dd6330ca738bff3e.html">a-gogurt-linux-volume</a>
-</td>
-<td>component</td>
-<td>Linux mounted-volume provider for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-935d3d4b6c71ff9482cde77d">component:a-gogurt-macos-listener</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-db62650cb52cffcd307303a6.html">a-gogurt-macos-listener</a>
-</td>
-<td>component</td>
-<td>macOS launchd listener for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-8d835e7788633c58f8a642cb">component:a-gogurt-macos-volume</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-1e64f4c86d491d261ee60d15.html">a-gogurt-macos-volume</a>
-</td>
-<td>component</td>
-<td>macOS mounted-volume provider for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-a80bf131fca6772f2bb0d93d">component:a-gogurt-path-volume-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-00e1c89a946459ddae7145df.html">a-gogurt-path-volume-lib</a>
-</td>
-<td>reusable_library</td>
-<td>Path-mounted volume library for Gogurt providers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-c28b071ce2b347fac6b10328">component:a-gogurt-windows-listener</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-793e1d74725fdb763b34f7b1.html">a-gogurt-windows-listener</a>
-</td>
-<td>component</td>
-<td>Windows Task Scheduler listener for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-3d2f712dcfc2461f659890ab">component:a-gogurt-windows-volume</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-427413e780718d3f49f4965a.html">a-gogurt-windows-volume</a>
-</td>
-<td>component</td>
-<td>Windows mounted-volume provider for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-df33691267af0a59a3dce414">component:a-review0-materializer</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-515aafaf4215b2b35c4a7f47.html">a-review0-materializer</a>
-</td>
-<td>component</td>
-<td>Review0 materialization target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-8138f74fd5200cedaad65b52">component:a-review0-nvenc-av1-opus-sampler</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-62bc4c07fbc3946b0281b885.html">a-review0-nvenc-av1-opus-sampler</a>
-</td>
-<td>component</td>
-<td>NVENC AV1 and Opus sampler for Review0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-0d138eb0037a4a4d466d8abb">component:a-review0-opus-sampler</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-2927dc06cfac55396516e49e.html">a-review0-opus-sampler</a>
-</td>
-<td>component</td>
-<td>Opus sampler for Review0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-b5b7de6707c37160afd729ab">component:a-review0-rclone-target</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a>
-</td>
-<td>component</td>
-<td>Review0 rclone delivery target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-b19c22f180d89c06c30bbb43">component:a-riverhog-aws-store</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-58baadba7585d7c671b342be.html">a-riverhog-aws-store</a>
-</td>
-<td>component</td>
-<td>AWS-backed Riverhog archive and retrieval store.</td>
-</tr>
-<tr>
-<td>
-<code id="node-6727835d852624dce26af1b1">component:a-riverhog-b2-store</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a>
-</td>
-<td>component</td>
-<td>Backblaze B2-backed Riverhog archive and retrieval store.</td>
-</tr>
-<tr>
-<td>
-<code id="node-96e1191c9231fac745f8e5d2">component:a-riverhog-cli</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-fd9a0838e23de4aa43bbeede.html">a-riverhog-cli</a>
-</td>
-<td>application</td>
-<td>Command-line client for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-ad16b219fd3b44264036ff0b">component:a-riverhog-event-relay</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a>
-</td>
-<td>application</td>
-<td>Native lifecycle-event to CloudEvents webhook relay.</td>
-</tr>
-<tr>
-<td>
-<code id="node-b69efa5ec4ab87c9d5003738">component:a-riverhog-filesystem-store</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a>
-</td>
-<td>component</td>
-<td>Filesystem-backed Riverhog archive and retrieval store.</td>
-</tr>
-<tr>
-<td>
-<code id="node-507e6fb957d1ef8a5a2f7d9f">component:a-riverhog-ftp-spool</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a>
-</td>
-<td>component</td>
-<td>FTP upload spool and ingestion adapter for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-b9a37d9110efe44f5a2b4b84">component:a-riverhog-ftp-spool-client</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-26f9a24cc37e6719930cfee3.html">a-riverhog-ftp-spool-client</a>
-</td>
-<td>component</td>
-<td>Client for the Riverhog FTP upload spool.</td>
-</tr>
-<tr>
-<td>
-<code id="node-803b482d12add80987baecb8">component:a-riverhog-linux-provenance-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-ff8afa89a33b95fa541f982a.html">a-riverhog-linux-provenance-contract-lib</a>
-</td>
-<td>component</td>
-<td>Linux filesystem observation contracts for Riverhog provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-84baf121e99e4abc241ff3ac">component:a-riverhog-linux-provenance-observer</code>
-</td>
-<td>component</td>
-<td>
-<code>a-riverhog-linux-provenance-observer</code>
-</td>
-<td>component</td>
-<td>Linux filesystem observer for Riverhog provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-42f1a175c2c616ffef32b248">component:a-riverhog-macos-provenance-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-fb2358ad47710133b38954e0.html">a-riverhog-macos-provenance-contract-lib</a>
-</td>
-<td>component</td>
-<td>macOS filesystem observation contracts for Riverhog provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-eef8dc0e2887ec52933caccc">component:a-riverhog-macos-provenance-observer</code>
-</td>
-<td>component</td>
-<td>
-<code>a-riverhog-macos-provenance-observer</code>
-</td>
-<td>component</td>
-<td>macOS filesystem observer for Riverhog provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-169780f44a2750e36ba096e7">component:a-riverhog-minisign-witness</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a>
-</td>
-<td>application</td>
-<td>Independent Minisign collection witness for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-44dc2bd3f28eb6232ec4ab10">component:a-riverhog-opentimestamps-witness</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-997ef9766dc94538af6ca12f.html">a-riverhog-opentimestamps-witness</a>
-</td>
-<td>application</td>
-<td>Independent OpenTimestamps collection witness for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-418e26fcedfe5a9eafa5bd73">component:a-riverhog-recovery-tool</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-f9814067f49c0bdafec5c1c4.html">a-riverhog-recovery-tool</a>
-</td>
-<td>application</td>
-<td>Independent recovery tool for Riverhog archives.</td>
-</tr>
-<tr>
-<td>
-<code id="node-312432d46999104477e1af29">component:a-riverhog-s3-store-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-94ec07ecbceb1ca1884643a5.html">a-riverhog-s3-store-lib</a>
-</td>
-<td>reusable_library</td>
-<td>S3 store library for Riverhog storage adapters.</td>
-</tr>
-<tr>
-<td>
-<code id="node-19250524addd6194ff9f6c6f">component:a-riverhog-windows-provenance-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-8470c96ee489cd4f8b565936.html">a-riverhog-windows-provenance-contract-lib</a>
-</td>
-<td>component</td>
-<td>Windows filesystem observation contracts for Riverhog provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-a6eefbe109173b964bf96db9">component:a-riverhog-windows-provenance-observer</code>
-</td>
-<td>component</td>
-<td>
-<code>a-riverhog-windows-provenance-observer</code>
-</td>
-<td>component</td>
-<td>Windows filesystem observer for Riverhog provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-2af264f778feec44ce6ba3fd">component:a-riverhog-witness-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-09875dbcfdb5084fab41aaef.html">a-riverhog-witness-contract-lib</a>
-</td>
-<td>reusable_library</td>
-<td>Shared collection witness statement for supplied Riverhog witness applications.</td>
-</tr>
-<tr>
-<td>
-<code id="node-acec7cb547f645a7b79ba4b4">component:a-stove0-cli</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-c76f297b8c160db67d9e3171.html">a-stove0-cli</a>
-</td>
-<td>application</td>
-<td>Command-line client for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-5dd092712cc9d0c0a4c1767f">component:a-stove0-exiftool-observer</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-811ba54f7ca39e3a4bd07193.html">a-stove0-exiftool-observer</a>
-</td>
-<td>component</td>
-<td>ExifTool media metadata observer for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-cacf6cd019f6d0ff731349c4">component:a-stove0-ffprobe-sampling-observer</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-a2ad4baffe19842efe11464f.html">a-stove0-ffprobe-sampling-observer</a>
-</td>
-<td>component</td>
-<td>FFprobe media sampling observer for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-d67a828eabc8bdea10a4cabc">component:a-stove0-media-archive-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-b02b401b34110aaf9c72e138.html">a-stove0-media-archive-contract-lib</a>
-</td>
-<td>reusable_library</td>
-<td>Media archive target contracts for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-1ff54362d85d9abb389e58eb">component:a-stove0-media-archive-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-ff0e298f4e542280e02e651e.html">a-stove0-media-archive-lib</a>
-</td>
-<td>component</td>
-<td>Media archive projection library for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-aac630ef4d55df07c32ba638">component:a-stove0-media-metadata-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-702ca9e84f677c2a85b03c36.html">a-stove0-media-metadata-contract-lib</a>
-</td>
-<td>component</td>
-<td>Media metadata observation contracts for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-3262abd36ffae7222c1e40f4">component:a-stove0-media-sampling-contract-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-5d5464f56bd953da5880c190.html">a-stove0-media-sampling-contract-lib</a>
-</td>
-<td>component</td>
-<td>Media sampling contracts for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-7fd150cf2195d5d5006c800b">component:a-stove0-nvenc-av1-opus-target</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a>
-</td>
-<td>component</td>
-<td>NVENC AV1 and Opus transformation target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-9ac2ba7d1642618c6d9a73a9">component:a-stove0-opus-target</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-89f2883f4196013d63e617b2.html">a-stove0-opus-target</a>
-</td>
-<td>component</td>
-<td>Opus transformation target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-b37402f43fd23882e4361e61">component:config-validation</code>
-</td>
-<td>component</td>
-<td>
-<code>config-validation</code>
-</td>
-<td>internal_build_unit</td>
-<td>Strict YAML and JSON Schema configuration validation.</td>
-</tr>
-<tr>
-<td>
-<code id="node-eeb2be4a71281c844b0269eb">component:gogurt</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-7d1604db9f02e3c3241e15c1.html">gogurt</a>
-</td>
-<td>application</td>
-<td>Mounted-volume ingestion application for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-e1d2ac7df3e38ab07d092af2">component:gogurt-core</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-25e914e2b06c839829d4b5c9.html">gogurt-core</a>
-</td>
-<td>reusable_library</td>
-<td>Portable Gogurt marker, routing, action, and watch semantics.</td>
-</tr>
-<tr>
-<td>
-<code id="node-df1cdfd17cbc5fecb9c1d89d">component:gogurt-listener-runtime</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-e65035070761b00c61d94426.html">gogurt-listener-runtime</a>
-</td>
-<td>reusable_library</td>
-<td>Portable durable listener runtime and native-platform port for Gogurt.</td>
-</tr>
-<tr>
-<td>
-<code id="node-f59c7f41027a2e9b85d7b42a">component:http-api-contracts</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-75ef6a5312f729d5f00dd1e3.html">http-api-contracts</a>
-</td>
-<td>reusable_library</td>
-<td>Public typed HTTP error, health, client, and operation contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-30af2d15930547fc5a1c18af">component:lifecycle-events</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-df5e76723e9407b9c14259de.html">lifecycle-events</a>
-</td>
-<td>reusable_library</td>
-<td>Durable native lifecycle-event log and client primitives.</td>
-</tr>
-<tr>
-<td>
-<code id="node-5324da9af226ff5e24cbbfcd">component:review0-planner</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-f3e5ed0bad8dff78fdb42d2f.html">review0-planner</a>
-</td>
-<td>component</td>
-<td>Review0 plan construction for Stove0 workflows.</td>
-</tr>
-<tr>
-<td>
-<code id="node-1082eec67235a2d4885d5076">component:review0-sampler-client</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-46c3d1e0f244e69f1ac6b9ad.html">review0-sampler-client</a>
-</td>
-<td>reusable_library</td>
-<td>HTTP client for Review0 samplers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-1f471835617598d1859d781c">component:review0-sampler-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a>
-</td>
-<td>reusable_library</td>
-<td>Runtime and conformance support for Review0 samplers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-e32e317bb5ca413df214aa40">component:review0-sampler-protocol</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-107a12dbaa357067178e1f78.html">review0-sampler-protocol</a>
-</td>
-<td>reusable_library</td>
-<td>Protocol contracts for Review0 samplers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-73dc17d10cbcb710d9df10db">component:review0-target-contracts</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-9bec37329ab1cbbfd4a42b90.html">review0-target-contracts</a>
-</td>
-<td>reusable_library</td>
-<td>Review0 target execution and artifact contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-88583fbcf20e3e935d7ed675">component:review0-target-lib</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-9283e186006ef9d1d4697f0b.html">review0-target-lib</a>
-</td>
-<td>reusable_library</td>
-<td>Shared runtime support for Review0 targets.</td>
-</tr>
-<tr>
-<td>
-<code id="node-24025966b4809328a3a681b5">component:riverhog-age</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-93f473c5765d8814df08e4f9.html">riverhog-age</a>
-</td>
-<td>reusable_library</td>
-<td>Resumable age encryption used by the Riverhog protocol.</td>
-</tr>
-<tr>
-<td>
-<code id="node-06ef7f89cab183707360e93b">component:riverhog-application-access</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-1cd02f33d0f0e67400963067.html">riverhog-application-access</a>
-</td>
-<td>reusable_library</td>
-<td>Public Riverhog application-access contracts and canonical grant grammar.</td>
-</tr>
-<tr>
-<td>
-<code id="node-3f00f69253750a6501580cc8">component:riverhog-archive-contracts</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-4efc13a0fac247c0be41c895.html">riverhog-archive-contracts</a>
-</td>
-<td>reusable_library</td>
-<td>Dependency-light immutable Riverhog archive recovery contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-f55ab6c77b17931b8e350da2">component:riverhog-canonical-json</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-b58c15f39fb0ccd647ab1741.html">riverhog-canonical-json</a>
-</td>
-<td>reusable_library</td>
-<td>Shared RFC 8785 JSON value and exact-scalar contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-8e5274344f37f28f8f2b0d27">component:riverhog-client</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-813668008c58c34f22497fe7.html">riverhog-client</a>
-</td>
-<td>reusable_library</td>
-<td>Typed generic Riverhog client and capability-scoped collection-processing runtime.</td>
-</tr>
-<tr>
-<td>
-<code id="node-20dbb0d5c0f27b7378ce95f0">component:riverhog-protocol</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a>
-</td>
-<td>reusable_library</td>
-<td>Canonical Riverhog wire and identity contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-728e08e7c45497ec44502f69">component:riverhog-provenance</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a>
-</td>
-<td>reusable_library</td>
-<td>Portable Riverhog v1 per-file provenance journals and validation.</td>
-</tr>
-<tr>
-<td>
-<code id="node-606682003821b0b42b46530f">component:riverhog-provenance-contracts</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-bc20dd7716669253f524a47d.html">riverhog-provenance-contracts</a>
-</td>
-<td>reusable_library</td>
-<td>Canonical Riverhog provenance identity and reference contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-807c63322e0517e5f3b37612">component:riverhog-server</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-6efea6f4cbc204fa714f57f2.html">riverhog-server</a>
-</td>
-<td>deployed_implementation</td>
-<td>Encrypted archive management, catalog, and retrieval.</td>
-</tr>
-<tr>
-<td>
-<code id="node-922b8ba508f907371b84bdad">component:riverhog-storage-adapter-asgi-support</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-6c9c248e52be4234a4941ea6.html">riverhog-storage-adapter-asgi-support</a>
-</td>
-<td>reusable_library</td>
-<td>Authenticated ASGI shell for independently scoped Riverhog storage adapters.</td>
-</tr>
-<tr>
-<td>
-<code id="node-e65e47e3320aac9e5dd7a98e">component:riverhog-storage-adapter-protocol</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-f4c498cb15427cce58c8b8cd.html">riverhog-storage-adapter-protocol</a>
-</td>
-<td>reusable_library</td>
-<td>Provider-neutral opaque-object capability contracts for Riverhog storage adapters.</td>
-</tr>
-<tr>
-<td>
-<code id="node-f0c3b34058c52252904bf087">component:riverhog-storage-adapter-support</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a>
-</td>
-<td>reusable_library</td>
-<td>HTTP binding and conformance support for Riverhog storage adapters.</td>
-</tr>
-<tr>
-<td>
-<code id="node-b37a103e5fc08f77afe12f12">component:state-schema</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-dc7e110390277417d04a795d.html">state-schema</a>
-</td>
-<td>internal_build_unit</td>
-<td>Forward-only relational state schema and migration contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-0b595a9ebcbafe373840b0d3">component:stove0-api-client</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-d81d0dac73e8a21e3eac2e2b.html">stove0-api-client</a>
-</td>
-<td>reusable_library</td>
-<td>Python client for the Stove0 v1 workflow API.</td>
-</tr>
-<tr>
-<td>
-<code id="node-21b6164c9f86931e3c3b8420">component:stove0-observer-client</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-904415b677f6949d7d978fe0.html">stove0-observer-client</a>
-</td>
-<td>reusable_library</td>
-<td>Narrow HTTP client for Stove0 content observers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-bac58a079cc2e50ee9524294">component:stove0-observer-protocol</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-4896799d0d02b62aed32603a.html">stove0-observer-protocol</a>
-</td>
-<td>reusable_library</td>
-<td>Dependency-light public contracts for external Stove0 content observers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-50ccd8c774618fbe6e2f2e2c">component:stove0-observer-support</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a>
-</td>
-<td>reusable_library</td>
-<td>External-author protocol, runtime, and conformance support for Stove0 content observers.</td>
-</tr>
-<tr>
-<td>
-<code id="node-7c400ebb8398ebdb98debec9">component:stove0-operator-contracts</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a>
-</td>
-<td>reusable_library</td>
-<td>Canonical public state contracts for the Stove0 v1 operator surface.</td>
-</tr>
-<tr>
-<td>
-<code id="node-72232b7fcefa4d133fb9bdcd">component:stove0-protocol</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-b7097e292dfa22136f062c0e.html">stove0-protocol</a>
-</td>
-<td>reusable_library</td>
-<td>Canonical content-opaque collection orchestration contracts for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-1f5664e176e6d54e15a23e02">component:stove0-recipe-config</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-47b7ff64677e81fa8cd81205.html">stove0-recipe-config</a>
-</td>
-<td>reusable_library</td>
-<td>Portable deployment-owned Stove0 recipe catalog contracts and validation.</td>
-</tr>
-<tr>
-<td>
-<code id="node-3540de4d4a6103a4518d97a7">component:stove0-server</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a>
-</td>
-<td>application</td>
-<td>Content-opaque transformation application for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-2c02e8800488c16ad75fcee1">component:stove0-target-client</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-c4df57cb2aae082005a35482.html">stove0-target-client</a>
-</td>
-<td>reusable_library</td>
-<td>Narrow HTTP client for Stove0 transform targets.</td>
-</tr>
-<tr>
-<td>
-<code id="node-2bfbd86b0036104ec731f701">component:stove0-target-protocol</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a>
-</td>
-<td>reusable_library</td>
-<td>Dependency-light public contracts for external Stove0 targets.</td>
-</tr>
-<tr>
-<td>
-<code id="node-f8df68acc88c5cfa47c8854c">component:stove0-target-support</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-a23132e8892754e98db86957.html">stove0-target-support</a>
-</td>
-<td>reusable_library</td>
-<td>Hardware-neutral target protocol, runtime, and conformance support for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-71d11531981da77ac82e143e">component:time-formats</code>
-</td>
-<td>component</td>
-<td>
-<a href="a-26dd4906606046dac0aa0fac.html">time-formats</a>
-</td>
-<td>reusable_library</td>
-<td>UTC timestamp and operator duration formats.</td>
-</tr>
-<tr>
-<td>
-<code id="node-bbe759bbb1a0036d4bf04bec">extension-point:gogurt.listener-host-providers</code>
-</td>
-<td>extension point</td>
-<td>
-<a href="extension-bbe759bbb1a0036d4bf04bec.html">gogurt.listener-host-providers</a>
-</td>
-<td>gogurt-listener-runtime</td>
-<td>Entry point owned by gogurt-listener-runtime.</td>
-</tr>
-<tr>
-<td>
-<code id="node-6f779eb64ba6342834181439">extension-point:gogurt.mounted-volume-providers</code>
-</td>
-<td>extension point</td>
-<td>
-<a href="extension-6f779eb64ba6342834181439.html">gogurt.mounted-volume-providers</a>
-</td>
-<td>gogurt-core</td>
-<td>Entry point owned by gogurt-core.</td>
-</tr>
-<tr>
-<td>
-<code id="node-08557331674e7779682169fd">extension-point:riverhog.provenance-contracts</code>
-</td>
-<td>extension point</td>
-<td>
-<a href="extension-08557331674e7779682169fd.html">riverhog.provenance-contracts</a>
-</td>
-<td>riverhog-provenance-contracts</td>
-<td>Entry point owned by riverhog-provenance-contracts.</td>
-</tr>
-<tr>
-<td>
-<code id="node-ed2bbc0e316bd07fa11ed4f9">extension-point:riverhog.provenance-observers</code>
-</td>
-<td>extension point</td>
-<td>
-<a href="extension-ed2bbc0e316bd07fa11ed4f9.html">riverhog.provenance-observers</a>
-</td>
-<td>riverhog-provenance</td>
-<td>Entry point owned by riverhog-provenance.</td>
-</tr>
-<tr>
-<td>
-<code id="node-dab30e400e9ff2b22a1d7f7a">extension-point:stove0.observer-semantic-validators</code>
-</td>
-<td>extension point</td>
-<td>
-<a href="extension-dab30e400e9ff2b22a1d7f7a.html">stove0.observer-semantic-validators</a>
-</td>
-<td>stove0-observer-client</td>
-<td>Entry point owned by stove0-observer-client.</td>
-</tr>
-<tr>
-<td>
-<code id="node-e744036079c4d869374ea97f">image:runtime:a-review0-materializer</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-515aafaf4215b2b35c4a7f47.html">a-review0-materializer</a>
-</td>
-<td>component</td>
-<td>Review0 materialization target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-e59ce62406f100be39a18196">image:runtime:a-review0-rclone-target</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a>
-</td>
-<td>component</td>
-<td>Review0 rclone delivery target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-7821f7d5f24f68781d8a3f81">image:runtime:a-riverhog-aws-store</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-58baadba7585d7c671b342be.html">a-riverhog-aws-store</a>
-</td>
-<td>component</td>
-<td>AWS-backed Riverhog archive and retrieval store.</td>
-</tr>
-<tr>
-<td>
-<code id="node-24711370d4113fb7e0e82e20">image:runtime:a-riverhog-b2-store</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a>
-</td>
-<td>component</td>
-<td>Backblaze B2-backed Riverhog archive and retrieval store.</td>
-</tr>
-<tr>
-<td>
-<code id="node-adb24cb0ad687cb4d56f6083">image:runtime:a-riverhog-event-relay</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a>
-</td>
-<td>application</td>
-<td>Native lifecycle-event to CloudEvents webhook relay.</td>
-</tr>
-<tr>
-<td>
-<code id="node-4e5b4fa34fad2cddbd0b7235">image:runtime:a-riverhog-filesystem-store</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a>
-</td>
-<td>component</td>
-<td>Filesystem-backed Riverhog archive and retrieval store.</td>
-</tr>
-<tr>
-<td>
-<code id="node-03825e31a248b61ffcadef9b">image:runtime:a-riverhog-ftp-spool</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a>
-</td>
-<td>component</td>
-<td>FTP upload spool and ingestion adapter for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-ac14e99c5c23a863bc07c825">image:runtime:a-riverhog-minisign-witness</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a>
-</td>
-<td>application</td>
-<td>Independent Minisign collection witness for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-5dd375824e56088a86b1a9ec">image:runtime:a-riverhog-opentimestamps-witness</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-997ef9766dc94538af6ca12f.html">a-riverhog-opentimestamps-witness</a>
-</td>
-<td>application</td>
-<td>Independent OpenTimestamps collection witness for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-bb144191bef3a95ec7e41997">image:runtime:a-stove0-exiftool-observer</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-811ba54f7ca39e3a4bd07193.html">a-stove0-exiftool-observer</a>
-</td>
-<td>component</td>
-<td>ExifTool media metadata observer for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-a1ebbf28d8497662b8ee4bd0">image:runtime:a-stove0-ffprobe-sampling-observer</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-a2ad4baffe19842efe11464f.html">a-stove0-ffprobe-sampling-observer</a>
-</td>
-<td>component</td>
-<td>FFprobe media sampling observer for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-80f718744428cb18c77a0b87">image:runtime:a-stove0-nvenc-av1-opus-target</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a>
-</td>
-<td>component</td>
-<td>NVENC AV1 and Opus transformation target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-ad763529676b48441139bd38">image:runtime:a-stove0-opus-target</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-89f2883f4196013d63e617b2.html">a-stove0-opus-target</a>
-</td>
-<td>component</td>
-<td>Opus transformation target for Stove0.</td>
-</tr>
-<tr>
-<td>
-<code id="node-566e3c6fe0f673fe2141089a">image:runtime:riverhog</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a>
-</td>
-<td>product</td>
-<td>Riverhog archive service.</td>
-</tr>
-<tr>
-<td>
-<code id="node-c1dbb5bdf8b15eead6a4db2f">image:runtime:stove0</code>
-</td>
-<td>runtime image</td>
-<td>
-<a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a>
-</td>
-<td>application</td>
-<td>Content-opaque transformation application for Riverhog.</td>
-</tr>
-<tr>
-<td>
-<code id="node-672a39762bbb02f638518ed1">installation:uv-tool</code>
-</td>
-<td>installation</td>
-<td>
-<code>uv-tool</code>
-</td>
-<td>release</td>
-<td>Coordinated end-user installation method.</td>
-</tr>
-<tr>
-<td>
-<code id="node-cebbbf6832cd2dc9081a3be4">process-protocol:review0-sampler</code>
-</td>
-<td>process protocol</td>
-<td>
-<a href="extension-cebbbf6832cd2dc9081a3be4.html">review0-sampler</a>
-</td>
-<td>review0-sampler-protocol</td>
-<td>Independently deployed protocol owned by review0-sampler-protocol.</td>
-</tr>
-<tr>
-<td>
-<code id="node-994e13bf1e4011e984fcfd67">process-protocol:riverhog-storage-adapter</code>
-</td>
-<td>process protocol</td>
-<td>
-<a href="extension-994e13bf1e4011e984fcfd67.html">riverhog-storage-adapter</a>
-</td>
-<td>riverhog-storage-adapter-protocol</td>
-<td>Independently deployed protocol owned by riverhog-storage-adapter-protocol.</td>
-</tr>
-<tr>
-<td>
-<code id="node-2eb3b800f870ee6a3d5670c3">process-protocol:stove0-observer</code>
-</td>
-<td>process protocol</td>
-<td>
-<a href="extension-2eb3b800f870ee6a3d5670c3.html">stove0-observer</a>
-</td>
-<td>stove0-observer-protocol</td>
-<td>Independently deployed protocol owned by stove0-observer-protocol.</td>
-</tr>
-<tr>
-<td>
-<code id="node-9d6e708ff324fb11314c7299">process-protocol:stove0-target</code>
-</td>
-<td>process protocol</td>
-<td>
-<a href="extension-9d6e708ff324fb11314c7299.html">stove0-target</a>
-</td>
-<td>stove0-target-protocol</td>
-<td>Independently deployed protocol owned by stove0-target-protocol.</td>
+<td data-label="Identity">
+<code id="node-882ba0b60edb763c5934b913">component:a-gogurt-linux-listener</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-38e452bb65db28d70901030e.html">a-gogurt-linux-listener</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Linux systemd user listener for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-6669aa00a890e25e75532033">component:a-gogurt-linux-volume</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-ee04d983dd6330ca738bff3e.html">a-gogurt-linux-volume</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Linux mounted-volume provider for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-935d3d4b6c71ff9482cde77d">component:a-gogurt-macos-listener</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-db62650cb52cffcd307303a6.html">a-gogurt-macos-listener</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">macOS launchd listener for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-8d835e7788633c58f8a642cb">component:a-gogurt-macos-volume</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-1e64f4c86d491d261ee60d15.html">a-gogurt-macos-volume</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">macOS mounted-volume provider for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-a80bf131fca6772f2bb0d93d">component:a-gogurt-path-volume-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-00e1c89a946459ddae7145df.html">a-gogurt-path-volume-lib</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Path-mounted volume library for Gogurt providers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-c28b071ce2b347fac6b10328">component:a-gogurt-windows-listener</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-793e1d74725fdb763b34f7b1.html">a-gogurt-windows-listener</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Windows Task Scheduler listener for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-3d2f712dcfc2461f659890ab">component:a-gogurt-windows-volume</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-427413e780718d3f49f4965a.html">a-gogurt-windows-volume</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Windows mounted-volume provider for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-df33691267af0a59a3dce414">component:a-review0-materializer</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-515aafaf4215b2b35c4a7f47.html">a-review0-materializer</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Review0 materialization target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-8138f74fd5200cedaad65b52">component:a-review0-nvenc-av1-opus-sampler</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-62bc4c07fbc3946b0281b885.html">a-review0-nvenc-av1-opus-sampler</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">NVENC AV1 and Opus sampler for Review0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-0d138eb0037a4a4d466d8abb">component:a-review0-opus-sampler</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-2927dc06cfac55396516e49e.html">a-review0-opus-sampler</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Opus sampler for Review0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-b5b7de6707c37160afd729ab">component:a-review0-rclone-target</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Review0 rclone delivery target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-b19c22f180d89c06c30bbb43">component:a-riverhog-aws-store</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-58baadba7585d7c671b342be.html">a-riverhog-aws-store</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">AWS-backed Riverhog archive and retrieval store.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-6727835d852624dce26af1b1">component:a-riverhog-b2-store</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Backblaze B2-backed Riverhog archive and retrieval store.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-96e1191c9231fac745f8e5d2">component:a-riverhog-cli</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-fd9a0838e23de4aa43bbeede.html">a-riverhog-cli</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Command-line client for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-ad16b219fd3b44264036ff0b">component:a-riverhog-event-relay</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Native lifecycle-event to CloudEvents webhook relay.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-b69efa5ec4ab87c9d5003738">component:a-riverhog-filesystem-store</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Filesystem-backed Riverhog archive and retrieval store.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-507e6fb957d1ef8a5a2f7d9f">component:a-riverhog-ftp-spool</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">FTP upload spool and ingestion adapter for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-b9a37d9110efe44f5a2b4b84">component:a-riverhog-ftp-spool-client</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-26f9a24cc37e6719930cfee3.html">a-riverhog-ftp-spool-client</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Client for the Riverhog FTP upload spool.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-803b482d12add80987baecb8">component:a-riverhog-linux-provenance-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-ff8afa89a33b95fa541f982a.html">a-riverhog-linux-provenance-contract-lib</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Linux filesystem observation contracts for Riverhog provenance.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-84baf121e99e4abc241ff3ac">component:a-riverhog-linux-provenance-observer</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<code>a-riverhog-linux-provenance-observer</code></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Linux filesystem observer for Riverhog provenance.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-42f1a175c2c616ffef32b248">component:a-riverhog-macos-provenance-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-fb2358ad47710133b38954e0.html">a-riverhog-macos-provenance-contract-lib</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">macOS filesystem observation contracts for Riverhog provenance.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-eef8dc0e2887ec52933caccc">component:a-riverhog-macos-provenance-observer</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<code>a-riverhog-macos-provenance-observer</code></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">macOS filesystem observer for Riverhog provenance.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-169780f44a2750e36ba096e7">component:a-riverhog-minisign-witness</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Independent Minisign collection witness for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-44dc2bd3f28eb6232ec4ab10">component:a-riverhog-opentimestamps-witness</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-997ef9766dc94538af6ca12f.html">a-riverhog-opentimestamps-witness</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Independent OpenTimestamps collection witness for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-418e26fcedfe5a9eafa5bd73">component:a-riverhog-recovery-tool</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-f9814067f49c0bdafec5c1c4.html">a-riverhog-recovery-tool</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Independent recovery tool for Riverhog archives.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-312432d46999104477e1af29">component:a-riverhog-s3-store-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-94ec07ecbceb1ca1884643a5.html">a-riverhog-s3-store-lib</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">S3 store library for Riverhog storage adapters.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-19250524addd6194ff9f6c6f">component:a-riverhog-windows-provenance-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-8470c96ee489cd4f8b565936.html">a-riverhog-windows-provenance-contract-lib</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Windows filesystem observation contracts for Riverhog provenance.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-a6eefbe109173b964bf96db9">component:a-riverhog-windows-provenance-observer</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<code>a-riverhog-windows-provenance-observer</code></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Windows filesystem observer for Riverhog provenance.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-2af264f778feec44ce6ba3fd">component:a-riverhog-witness-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-09875dbcfdb5084fab41aaef.html">a-riverhog-witness-contract-lib</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Shared collection witness statement for supplied Riverhog witness applications.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-acec7cb547f645a7b79ba4b4">component:a-stove0-cli</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-c76f297b8c160db67d9e3171.html">a-stove0-cli</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Command-line client for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-5dd092712cc9d0c0a4c1767f">component:a-stove0-exiftool-observer</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-811ba54f7ca39e3a4bd07193.html">a-stove0-exiftool-observer</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">ExifTool media metadata observer for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-cacf6cd019f6d0ff731349c4">component:a-stove0-ffprobe-sampling-observer</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-a2ad4baffe19842efe11464f.html">a-stove0-ffprobe-sampling-observer</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">FFprobe media sampling observer for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-d67a828eabc8bdea10a4cabc">component:a-stove0-media-archive-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-b02b401b34110aaf9c72e138.html">a-stove0-media-archive-contract-lib</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Media archive target contracts for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-1ff54362d85d9abb389e58eb">component:a-stove0-media-archive-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-ff0e298f4e542280e02e651e.html">a-stove0-media-archive-lib</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Media archive projection library for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-aac630ef4d55df07c32ba638">component:a-stove0-media-metadata-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-702ca9e84f677c2a85b03c36.html">a-stove0-media-metadata-contract-lib</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Media metadata observation contracts for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-3262abd36ffae7222c1e40f4">component:a-stove0-media-sampling-contract-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-5d5464f56bd953da5880c190.html">a-stove0-media-sampling-contract-lib</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Media sampling contracts for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-7fd150cf2195d5d5006c800b">component:a-stove0-nvenc-av1-opus-target</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">NVENC AV1 and Opus transformation target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-9ac2ba7d1642618c6d9a73a9">component:a-stove0-opus-target</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-89f2883f4196013d63e617b2.html">a-stove0-opus-target</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Opus transformation target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-b37402f43fd23882e4361e61">component:config-validation</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<code>config-validation</code></td>
+<td data-label="Role or owner">internal_build_unit</td>
+<td data-label="Maintained purpose">Strict YAML and JSON Schema configuration validation.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-eeb2be4a71281c844b0269eb">component:gogurt</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-7d1604db9f02e3c3241e15c1.html">gogurt</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Mounted-volume ingestion application for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-e1d2ac7df3e38ab07d092af2">component:gogurt-core</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-25e914e2b06c839829d4b5c9.html">gogurt-core</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Portable Gogurt marker, routing, action, and watch semantics.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-df1cdfd17cbc5fecb9c1d89d">component:gogurt-listener-runtime</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-e65035070761b00c61d94426.html">gogurt-listener-runtime</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Portable durable listener runtime and native-platform port for Gogurt.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-f59c7f41027a2e9b85d7b42a">component:http-api-contracts</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-75ef6a5312f729d5f00dd1e3.html">http-api-contracts</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Public typed HTTP error, health, client, and operation contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-30af2d15930547fc5a1c18af">component:lifecycle-events</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-df5e76723e9407b9c14259de.html">lifecycle-events</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Durable native lifecycle-event log and client primitives.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-5324da9af226ff5e24cbbfcd">component:review0-planner</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-f3e5ed0bad8dff78fdb42d2f.html">review0-planner</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Review0 plan construction for Stove0 workflows.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-1082eec67235a2d4885d5076">component:review0-sampler-client</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-46c3d1e0f244e69f1ac6b9ad.html">review0-sampler-client</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">HTTP client for Review0 samplers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-1f471835617598d1859d781c">component:review0-sampler-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Runtime and conformance support for Review0 samplers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-e32e317bb5ca413df214aa40">component:review0-sampler-protocol</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-107a12dbaa357067178e1f78.html">review0-sampler-protocol</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Protocol contracts for Review0 samplers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-73dc17d10cbcb710d9df10db">component:review0-target-contracts</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-9bec37329ab1cbbfd4a42b90.html">review0-target-contracts</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Review0 target execution and artifact contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-88583fbcf20e3e935d7ed675">component:review0-target-lib</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-9283e186006ef9d1d4697f0b.html">review0-target-lib</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Shared runtime support for Review0 targets.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-24025966b4809328a3a681b5">component:riverhog-age</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-93f473c5765d8814df08e4f9.html">riverhog-age</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Resumable age encryption used by the Riverhog protocol.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-06ef7f89cab183707360e93b">component:riverhog-application-access</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-1cd02f33d0f0e67400963067.html">riverhog-application-access</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Public Riverhog application-access contracts and canonical grant grammar.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-3f00f69253750a6501580cc8">component:riverhog-archive-contracts</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-4efc13a0fac247c0be41c895.html">riverhog-archive-contracts</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Dependency-light immutable Riverhog archive recovery contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-f55ab6c77b17931b8e350da2">component:riverhog-canonical-json</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-b58c15f39fb0ccd647ab1741.html">riverhog-canonical-json</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Shared RFC 8785 JSON value and exact-scalar contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-8e5274344f37f28f8f2b0d27">component:riverhog-client</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-813668008c58c34f22497fe7.html">riverhog-client</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Typed generic Riverhog client and capability-scoped collection-processing runtime.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-20dbb0d5c0f27b7378ce95f0">component:riverhog-protocol</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Canonical Riverhog wire and identity contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-728e08e7c45497ec44502f69">component:riverhog-provenance</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Portable Riverhog v1 per-file provenance journals and validation.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-606682003821b0b42b46530f">component:riverhog-provenance-contracts</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-bc20dd7716669253f524a47d.html">riverhog-provenance-contracts</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Canonical Riverhog provenance identity and reference contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-807c63322e0517e5f3b37612">component:riverhog-server</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-6efea6f4cbc204fa714f57f2.html">riverhog-server</a></td>
+<td data-label="Role or owner">deployed_implementation</td>
+<td data-label="Maintained purpose">Encrypted archive management, catalog, and retrieval.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-922b8ba508f907371b84bdad">component:riverhog-storage-adapter-asgi-support</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-6c9c248e52be4234a4941ea6.html">riverhog-storage-adapter-asgi-support</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Authenticated ASGI shell for independently scoped Riverhog storage adapters.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-e65e47e3320aac9e5dd7a98e">component:riverhog-storage-adapter-protocol</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-f4c498cb15427cce58c8b8cd.html">riverhog-storage-adapter-protocol</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Provider-neutral opaque-object capability contracts for Riverhog storage adapters.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-f0c3b34058c52252904bf087">component:riverhog-storage-adapter-support</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">HTTP binding and conformance support for Riverhog storage adapters.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-b37a103e5fc08f77afe12f12">component:state-schema</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-dc7e110390277417d04a795d.html">state-schema</a></td>
+<td data-label="Role or owner">internal_build_unit</td>
+<td data-label="Maintained purpose">Forward-only relational state schema and migration contracts.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-0b595a9ebcbafe373840b0d3">component:stove0-api-client</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-d81d0dac73e8a21e3eac2e2b.html">stove0-api-client</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Python client for the Stove0 v1 workflow API.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-21b6164c9f86931e3c3b8420">component:stove0-observer-client</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-904415b677f6949d7d978fe0.html">stove0-observer-client</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Narrow HTTP client for Stove0 content observers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-bac58a079cc2e50ee9524294">component:stove0-observer-protocol</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-4896799d0d02b62aed32603a.html">stove0-observer-protocol</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Dependency-light public contracts for external Stove0 content observers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-50ccd8c774618fbe6e2f2e2c">component:stove0-observer-support</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">External-author protocol, runtime, and conformance support for Stove0 content observers.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-7c400ebb8398ebdb98debec9">component:stove0-operator-contracts</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Canonical public state contracts for the Stove0 v1 operator surface.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-72232b7fcefa4d133fb9bdcd">component:stove0-protocol</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-b7097e292dfa22136f062c0e.html">stove0-protocol</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Canonical content-opaque collection orchestration contracts for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-1f5664e176e6d54e15a23e02">component:stove0-recipe-config</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-47b7ff64677e81fa8cd81205.html">stove0-recipe-config</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Portable deployment-owned Stove0 recipe catalog contracts and validation.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-3540de4d4a6103a4518d97a7">component:stove0-server</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Content-opaque transformation application for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-2c02e8800488c16ad75fcee1">component:stove0-target-client</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-c4df57cb2aae082005a35482.html">stove0-target-client</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Narrow HTTP client for Stove0 transform targets.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-2bfbd86b0036104ec731f701">component:stove0-target-protocol</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Dependency-light public contracts for external Stove0 targets.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-f8df68acc88c5cfa47c8854c">component:stove0-target-support</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-a23132e8892754e98db86957.html">stove0-target-support</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">Hardware-neutral target protocol, runtime, and conformance support for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-71d11531981da77ac82e143e">component:time-formats</code></td>
+<td data-label="Kind">component</td>
+<td data-label="Name">
+<a href="a-26dd4906606046dac0aa0fac.html">time-formats</a></td>
+<td data-label="Role or owner">reusable_library</td>
+<td data-label="Maintained purpose">UTC timestamp and operator duration formats.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-bbe759bbb1a0036d4bf04bec">extension-point:gogurt.listener-host-providers</code></td>
+<td data-label="Kind">extension point</td>
+<td data-label="Name">
+<a href="extension-bbe759bbb1a0036d4bf04bec.html">gogurt.listener-host-providers</a></td>
+<td data-label="Role or owner">gogurt-listener-runtime</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-6f779eb64ba6342834181439">extension-point:gogurt.mounted-volume-providers</code></td>
+<td data-label="Kind">extension point</td>
+<td data-label="Name">
+<a href="extension-6f779eb64ba6342834181439.html">gogurt.mounted-volume-providers</a></td>
+<td data-label="Role or owner">gogurt-core</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-08557331674e7779682169fd">extension-point:riverhog.provenance-contracts</code></td>
+<td data-label="Kind">extension point</td>
+<td data-label="Name">
+<a href="extension-08557331674e7779682169fd.html">riverhog.provenance-contracts</a></td>
+<td data-label="Role or owner">riverhog-provenance-contracts</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-ed2bbc0e316bd07fa11ed4f9">extension-point:riverhog.provenance-observers</code></td>
+<td data-label="Kind">extension point</td>
+<td data-label="Name">
+<a href="extension-ed2bbc0e316bd07fa11ed4f9.html">riverhog.provenance-observers</a></td>
+<td data-label="Role or owner">riverhog-provenance</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-dab30e400e9ff2b22a1d7f7a">extension-point:stove0.observer-semantic-validators</code></td>
+<td data-label="Kind">extension point</td>
+<td data-label="Name">
+<a href="extension-dab30e400e9ff2b22a1d7f7a.html">stove0.observer-semantic-validators</a></td>
+<td data-label="Role or owner">stove0-observer-client</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-e744036079c4d869374ea97f">image:runtime:a-review0-materializer</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-515aafaf4215b2b35c4a7f47.html">a-review0-materializer</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Review0 materialization target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-e59ce62406f100be39a18196">image:runtime:a-review0-rclone-target</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Review0 rclone delivery target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-7821f7d5f24f68781d8a3f81">image:runtime:a-riverhog-aws-store</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-58baadba7585d7c671b342be.html">a-riverhog-aws-store</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">AWS-backed Riverhog archive and retrieval store.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-24711370d4113fb7e0e82e20">image:runtime:a-riverhog-b2-store</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Backblaze B2-backed Riverhog archive and retrieval store.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-adb24cb0ad687cb4d56f6083">image:runtime:a-riverhog-event-relay</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Native lifecycle-event to CloudEvents webhook relay.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-4e5b4fa34fad2cddbd0b7235">image:runtime:a-riverhog-filesystem-store</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Filesystem-backed Riverhog archive and retrieval store.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-03825e31a248b61ffcadef9b">image:runtime:a-riverhog-ftp-spool</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">FTP upload spool and ingestion adapter for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-ac14e99c5c23a863bc07c825">image:runtime:a-riverhog-minisign-witness</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Independent Minisign collection witness for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-5dd375824e56088a86b1a9ec">image:runtime:a-riverhog-opentimestamps-witness</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-997ef9766dc94538af6ca12f.html">a-riverhog-opentimestamps-witness</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Independent OpenTimestamps collection witness for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-bb144191bef3a95ec7e41997">image:runtime:a-stove0-exiftool-observer</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-811ba54f7ca39e3a4bd07193.html">a-stove0-exiftool-observer</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">ExifTool media metadata observer for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-a1ebbf28d8497662b8ee4bd0">image:runtime:a-stove0-ffprobe-sampling-observer</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-a2ad4baffe19842efe11464f.html">a-stove0-ffprobe-sampling-observer</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">FFprobe media sampling observer for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-80f718744428cb18c77a0b87">image:runtime:a-stove0-nvenc-av1-opus-target</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">NVENC AV1 and Opus transformation target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-ad763529676b48441139bd38">image:runtime:a-stove0-opus-target</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-89f2883f4196013d63e617b2.html">a-stove0-opus-target</a></td>
+<td data-label="Role or owner">component</td>
+<td data-label="Maintained purpose">Opus transformation target for Stove0.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-566e3c6fe0f673fe2141089a">image:runtime:riverhog</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a></td>
+<td data-label="Role or owner">product</td>
+<td data-label="Maintained purpose">Riverhog archive service.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-c1dbb5bdf8b15eead6a4db2f">image:runtime:stove0</code></td>
+<td data-label="Kind">runtime image</td>
+<td data-label="Name">
+<a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a></td>
+<td data-label="Role or owner">application</td>
+<td data-label="Maintained purpose">Content-opaque transformation application for Riverhog.</td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-672a39762bbb02f638518ed1">installation:uv-tool</code></td>
+<td data-label="Kind">installation</td>
+<td data-label="Name">
+<code>uv-tool</code></td>
+<td data-label="Role or owner">release</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-cebbbf6832cd2dc9081a3be4">process-protocol:review0-sampler</code></td>
+<td data-label="Kind">process protocol</td>
+<td data-label="Name">
+<a href="extension-cebbbf6832cd2dc9081a3be4.html">review0-sampler</a></td>
+<td data-label="Role or owner">review0-sampler-protocol</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-994e13bf1e4011e984fcfd67">process-protocol:riverhog-storage-adapter</code></td>
+<td data-label="Kind">process protocol</td>
+<td data-label="Name">
+<a href="extension-994e13bf1e4011e984fcfd67.html">riverhog-storage-adapter</a></td>
+<td data-label="Role or owner">riverhog-storage-adapter-protocol</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-2eb3b800f870ee6a3d5670c3">process-protocol:stove0-observer</code></td>
+<td data-label="Kind">process protocol</td>
+<td data-label="Name">
+<a href="extension-2eb3b800f870ee6a3d5670c3.html">stove0-observer</a></td>
+<td data-label="Role or owner">stove0-observer-protocol</td>
+<td data-label="Maintained purpose"></td>
+</tr>
+<tr>
+<td data-label="Identity">
+<code id="node-9d6e708ff324fb11314c7299">process-protocol:stove0-target</code></td>
+<td data-label="Kind">process protocol</td>
+<td data-label="Name">
+<a href="extension-9d6e708ff324fb11314c7299.html">stove0-target</a></td>
+<td data-label="Role or owner">stove0-target-protocol</td>
+<td data-label="Maintained purpose"></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

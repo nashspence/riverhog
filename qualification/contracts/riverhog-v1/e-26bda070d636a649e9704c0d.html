@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: EvaluationBinding</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,52 +63,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>evaluation_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>evaluation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>matrix_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>matrix_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-610a9c9368dda1a2603b3914">parameters</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-610a9c9368dda1a2603b3914">parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>variant_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>variant_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -160,8 +139,7 @@
 <span id="v-16a889eaf6584aa4e618654f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -171,8 +149,7 @@
 <span id="v-2ac46e2bde34b29b4bda701a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/description">Immutable membership of one work item in a trial/evaluation matrix.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -196,8 +173,7 @@
 <span id="v-4eb24385360fabe3019c35c2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/evaluation_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -207,8 +183,7 @@
 <span id="v-c36edb5bac0d8aaf42c3aa7c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/evaluation_id/title">Evaluation Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -218,12 +193,10 @@
 <span id="v-46d3cd60f4c616f0a8f2c615">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/evaluation_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -240,8 +213,7 @@
 <span id="v-58233236ddc4dd0e3e7d74a1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/matrix_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -251,8 +223,7 @@
 <span id="v-d3d3261b86b98f885d4f69e4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/matrix_sha256/title">Matrix Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -262,12 +233,10 @@
 <span id="v-c02022e18f0f6be719bab028">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/matrix_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -291,12 +260,10 @@
 <span id="v-38bcf96b2f343eeb04557ecb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/parameters/additionalProperties/$ref">#/components/schemas/JsonValue</code>
 <span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -306,8 +273,7 @@
 <span id="v-c761971a01b76b303cf7a56a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/parameters/title">Parameters</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,12 +283,10 @@
 <span id="v-194a7e6a887dd779059b6c71">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/parameters/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -339,8 +303,7 @@
 <span id="v-e8e3cc91f4d8685d0da72294">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/variant_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -350,8 +313,7 @@
 <span id="v-f9f3ab8017eef0c94e797311">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/variant_id/title">Variant Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -361,16 +323,13 @@
 <span id="v-607d1a54b3e4f90819f90704">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/variant_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -387,8 +346,7 @@
 <span id="v-1743bbe83578651a49156f79">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/required/0">evaluation_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -398,8 +356,7 @@
 <span id="v-96b0f8ef17d720451d43051d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/required/1">matrix_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -409,12 +366,10 @@
 <span id="v-041dc732637927acc5cc8560">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/required/2">variant_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -424,8 +379,7 @@
 <span id="v-be4827d5044c61f743694a46">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/title">EvaluationBinding</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -435,8 +389,7 @@
 <span id="v-e432e8d08100943e6b2cd977">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -448,7 +401,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -460,7 +413,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -470,8 +423,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -483,49 +435,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/evaluation_id</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/evaluation_id</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/matrix_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/matrix_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/parameters</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding/properties/parameters</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

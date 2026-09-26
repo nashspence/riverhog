@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-ff8afa89a33b95fa541f982a.html">a-riverhog-linux-provenance-contract-lib</a> / <a href="i-14fed9d3129b23e19476ca3d.html">Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json</h1>
 <p class="context">Linux filesystem observation contracts for Riverhog provenance. Standalone structured-value contracts; these do not define an interaction.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,124 +63,94 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>device</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>device</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>filesystem_type</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>filesystem_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>mount_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>mount_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-5505318b9a0734e4db3b14d2">mount_options</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-5505318b9a0734e4db3b14d2">mount_options</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>mount_point</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>mount_point</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-9608e7167410c1a163910fc2">optional_fields</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-9608e7167410c1a163910fc2">optional_fields</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>parent_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>parent_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>root</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>root</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-8301711ff55c2599f1dec17a">super_options</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-8301711ff55c2599f1dec17a">super_options</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -248,8 +209,7 @@
 <span id="v-c27f03c136171de1d2cf3e19">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/$id">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -259,8 +219,7 @@
 <span id="v-398b9a9735c451fbb94f5088">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -270,8 +229,7 @@
 <span id="v-2549788df5288e9e92e66d91">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -295,12 +253,10 @@
 <span id="v-7a69607600b764e091a1c5ca">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/device/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,8 +273,7 @@
 <span id="v-1a6b21fef9c029dd567ad417">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/filesystem_type/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -328,12 +283,10 @@
 <span id="v-166f8406c50e2b30068ad7de">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/filesystem_type/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -350,8 +303,7 @@
 <span id="v-e794f5da5785ab668a2ef4ca">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_id/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -361,12 +313,10 @@
 <span id="v-d2270a4dd402072bcc49ad44">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_id/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,12 +340,10 @@
 <span id="v-267f8192a2aceab2a8b75dd9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_options/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -405,12 +353,10 @@
 <span id="v-27bd81816b168e642eb6d21a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_options/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -427,12 +373,10 @@
 <span id="v-920e06c2e251b101b32b4b53">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_point/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -456,12 +400,10 @@
 <span id="v-7624560713fbe8b060b4e1ee">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/optional_fields/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -471,12 +413,10 @@
 <span id="v-d3ad7ee0a512e79757f8bbfc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/optional_fields/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -493,8 +433,7 @@
 <span id="v-a7ae866eb6f62902208a0003">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/parent_id/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -504,12 +443,10 @@
 <span id="v-3aa64f5934432e53ff4477eb">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/parent_id/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -526,12 +463,10 @@
 <span id="v-c2272f90673ad351628225bb">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/root/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -548,12 +483,10 @@
 <span id="v-f148b3f6944b17498d84d602">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/source/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -577,12 +510,10 @@
 <span id="v-b978ea9a39390448d3c02ad2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/super_options/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -592,16 +523,13 @@
 <span id="v-6ebcae164a98fe3926fcc85a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/super_options/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -618,8 +546,7 @@
 <span id="v-ab60e3728ae4f7ff1726fac3">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/0">mount_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,8 +556,7 @@
 <span id="v-d2f068e2de93265d38181144">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/1">parent_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -640,8 +566,7 @@
 <span id="v-2c29680b51a969c295dfdbd7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/2">device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -651,8 +576,7 @@
 <span id="v-f5a5b3f6425856e9dc579ab5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/3">root</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -662,8 +586,7 @@
 <span id="v-54d6f7d8c56e90601327cc51">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/4">mount_point</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -673,8 +596,7 @@
 <span id="v-5544742373c85233bffd581f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/5">mount_options</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -684,8 +606,7 @@
 <span id="v-d6e435141e5a4fbfc22c9094">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/6">optional_fields</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -695,8 +616,7 @@
 <span id="v-f65b36d596e8baf3e4d4d946">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/7">filesystem_type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -706,8 +626,7 @@
 <span id="v-1e7db149f7be879823d9b68a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/8">source</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,12 +636,10 @@
 <span id="v-873d0850b45716d3b300b5d5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/required/9">super_options</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -732,8 +649,7 @@
 <span id="v-f419b07e1dcda4802e0614a0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -745,7 +661,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -757,7 +673,7 @@
 <a href="source-authorities.html#source-e3afb2680c06f2f6bc04c1a4">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json</a> — <code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-mount-context.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-mount-context.schema.json</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -767,8 +683,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -780,49 +695,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_options</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>cardinality · items · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/mount_options</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/optional_fields</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>cardinality · items · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/optional_fields</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/super_options</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>cardinality · items · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json/properties/super_options</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

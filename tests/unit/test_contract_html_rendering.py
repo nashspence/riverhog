@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -17,6 +18,7 @@ from contract_atlas.html_rendering import (  # noqa: E402
     _element_file,
     _hash,
     _inventory_file,
+    _policy_definition_file,
     contract_body,
     render_contract,
     validate_render,
@@ -97,7 +99,9 @@ def test_authority_map_and_known_human_interface_families(
     root = files["riverhog-v1/index.html"].decode()
     authorities = {str(element["authority"]) for element in elements}
     interfaces = {(str(element["authority"]), str(element["interface"])) for element in elements}
-    assert '<ul class="authorities">' in root
+    assert '<div class="authority-cards">' in root
+    assert root.count('<article class="authority-card">') == len(authorities)
+    assert "Generated v1 candidate; no freeze or qualification" not in root
     assert "Is this exactly the external contract" not in root
     for authority in authorities:
         assert root.count(f'href="{_authority_file(authority)}"') == 1
@@ -192,6 +196,93 @@ def test_broad_policy_applications_retain_element_and_authority_routes(
     assert f'href="{_element_file(str(chosen["id"]))}"' in files["riverhog-v1/" + child].decode()
 
 
+def test_policy_selection_leads_to_family_then_exact_definition(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, _audit, files = rendered_candidate
+    root = files["riverhog-v1/index.html"].decode()
+    policy_root = files["riverhog-v1/policies.html"].decode()
+    pointer = "/external_contract/release/compatibility/cli"
+    family = "policy-family-" + _hash("/external_contract/release/compatibility") + ".html"
+    definition = _policy_definition_file(pointer)
+    promise = cast(dict[str, Any], closure["external_contract"])["release"]["compatibility"]["cli"]
+    assert root.index("Contract references") < root.index("Authorities and interfaces")
+    assert "Audit key and 📦 meaning" not in root
+    assert f'href="{family}"' in policy_root
+    for family_name in ("Compatibility", "Publication", "Extent principles", "Extent rules"):
+        assert f">{family_name}</a>" in policy_root
+    assert promise not in policy_root
+    assert f'href="{definition}"' in files["riverhog-v1/" + family].decode()
+    assert promise in files["riverhog-v1/" + definition].decode()
+
+
+def test_selection_inventories_use_local_names_and_skip_empty_shape_filler(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    _closure, audit, files = rendered_candidate
+    python_page = files[
+        "riverhog-v1/" + _inventory_file("riverhog-application-access", "python")
+    ].decode()
+    schema_page = files["riverhog-v1/" + _inventory_file("riverhog", "http-schemas")].decode()
+    durable_page = files[
+        "riverhog-v1/" + _inventory_file("a-riverhog-cli-local", "durable-state")
+    ].decode()
+    cli_page = files["riverhog-v1/" + _inventory_file("a-riverhog-cli", "cli")].decode()
+    environment_page = files[
+        "riverhog-v1/" + _inventory_file("a-gogurt-linux-listener", "configuration-environment")
+    ].decode()
+    assert ">ApplicationAccess</a>" in python_page
+    assert ">as_access</a>" in python_page
+    assert ">AppListOut</a>" in schema_page
+    assert ">desired_collections</a>" in durable_page
+    assert ">0 fields<" not in schema_page
+    assert ">1 fields<" not in schema_page
+    assert ">0 constraints<" not in durable_page
+    assert " parameters</span>" not in cli_page
+    assert "environment-string" not in environment_page
+    assert (
+        audit["presentation"]["extent_marker"]["meaning"]
+        in files["riverhog-v1/audit-key.html"].decode()
+    )
+
+
+def test_root_audit_and_documentation_references_coexist_without_empty_chrome(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, audit, files = rendered_candidate
+    root = files["riverhog-v1/index.html"].decode()
+    assert "Audit references" in root
+    assert "Documentation references" not in root
+    assert 'id="docs-mode"' not in root
+    assert "<noscript>" in root
+
+    selected = cast(list[dict[str, object]], closure["elements"])[0]
+    documentation = {
+        "format": "riverhog-contract-documentation-record/v1",
+        "closure_sha256": canonical_sha256(closure),
+        "release_scope": "unit fixture",
+        "build_scope": "unit fixture",
+        "source_revision": "unit fixture",
+        "explanations": [],
+        "guides": [
+            {
+                "id": "one-guide",
+                "title": "One guide",
+                "text": "Fixture guidance.",
+                "subjects": [selected["id"]],
+            }
+        ],
+    }
+    combined = render_contract(closure, audit, documentation)
+    validate_render(combined)
+    combined_root = combined["riverhog-v1/index.html"].decode()
+    assert "Audit references" in combined_root
+    assert "Documentation references" in combined_root
+    assert 'id="audit-mode"' in combined_root
+    assert 'id="docs-mode"' in combined_root
+    assert "Fixture guidance." not in combined_root
+
+
 def test_process_protocol_context_routes_to_its_existing_semantic_interfaces(
     rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
 ) -> None:
@@ -212,7 +303,7 @@ def test_process_protocol_context_routes_to_its_existing_semantic_interfaces(
     assert f'href="{path}"' in files["riverhog-v1/relationships.html"].decode()
 
 
-def test_every_declared_leaf_value_is_visible_without_omission_or_mutation(
+def test_every_declared_leaf_value_uses_jcs_without_omission_or_mutation(
     rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
 ) -> None:
     closure, _audit, files = rendered_candidate
@@ -376,9 +467,9 @@ def test_documentation_examples_bind_exact_subjects_without_changing_contract_bo
     files = render_contract(selected, documentation=documentation)
     validate_render(files)
     page = files["riverhog-v1/" + _element_file(str(chosen["id"]))].decode()
-    assert contract_body(selected, chosen).replace("><", ">\n<") in page
+    assert re.sub(r">\s+<", "><", contract_body(selected, chosen)) in re.sub(r">\s+<", "><", page)
     assert explanation in page
-    assert 'id="audit-mode" type="checkbox" disabled' in page
+    assert 'id="audit-mode"' not in page
     assert 'id="docs-mode" type="checkbox"' in page
     guide_page = next(
         payload.decode()

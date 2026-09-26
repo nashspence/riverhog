@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a> / <a href="i-a53827545e92a82d2084a1a5.html">Configuration Environment</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</h1>
 <p class="context">NVENC AV1 and Opus transformation target for Stove0. Configuration Environment contract owned by a-stove0-nvenc-av1-opus-target.</p>
@@ -82,12 +73,10 @@
 <span id="v-b6624e123356827afad3e048">
 <code data-value-pointer="/external_contract/configuration_environment/86/consumers/0">a-stove0-nvenc-av1-opus-target</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -104,12 +93,10 @@
 <span id="v-8baf893dc2b6c9b33d9c0015">
 <code data-value-pointer="/external_contract/configuration_environment/86/default_expressions/0">&#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -119,8 +106,7 @@
 <span id="v-f91da4b941c2d2c8a4843d2c">
 <code data-value-pointer="/external_contract/configuration_environment/86/id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -130,8 +116,7 @@
 <span id="v-f863ec09476956a4d450eaad">
 <code data-value-pointer="/external_contract/configuration_environment/86/input_shape">environment-string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -141,8 +126,7 @@
 <span id="v-9f2399bb48a9f17cf8003059">
 <code data-value-pointer="/external_contract/configuration_environment/86/name">A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -152,8 +136,7 @@
 <span id="v-1932bf0a08b6d2d2dc11244d">
 <code data-value-pointer="/external_contract/configuration_environment/86/owner">a-stove0-nvenc-av1-opus-target</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -165,7 +148,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+<a href="policy-definition-43f1f247d96b7b042a98a919.html">compatibility/configuration/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -177,7 +160,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
@@ -187,8 +170,7 @@
 </li>
 </ul>
 <h3>Configuration authority and bindings</h3>
-<p>These are discovered declaration and consumer facts, not observed effective configuration.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -200,25 +182,25 @@
 </thead>
 <tbody>
 <tr>
-<td>consumer</td>
-<td>
-<code>a-stove0-nvenc-av1-opus-target</code>
-</td>
-<td>
-<code data-source-path="some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py">some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py</code>
-</td>
-<td>
-<code>os.getenv(f&#x27;{prefix}_WORKSPACE&#x27;, &#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;)</code>
-</td>
+<td data-label="Kind">consumer</td>
+<td data-label="Consumer">
+<code>a-stove0-nvenc-av1-opus-target</code></td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py">some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py</code></td>
+<td data-label="Authority or expression">
+<code>os.getenv(f&#x27;{prefix}_WORKSPACE&#x27;, &#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;)</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

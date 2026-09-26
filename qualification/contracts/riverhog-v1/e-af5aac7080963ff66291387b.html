@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>GET /v1/download-quotas</h1>
 <p class="context">Riverhog archive service. Callable HTTP operations.</p>
@@ -56,7 +47,7 @@
 </dd>
 </dl>
 <h3>Parameters</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -70,117 +61,86 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>page_size</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>
-<code>25</code>
-</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>25</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>page_size</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">
+<code>25</code></td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>25</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>page_token</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>page_token</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sort</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>
-<code>app</code>
-</td>
-<td>
-<a href="e-8d68cf8c216727522de6caac.html#v-581931c55e9d0a074b946b07">#/components/schemas/DownloadQuotaSort</a>; default: <code>app</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>sort</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">
+<code>app</code></td>
+<td data-label="Schema">
+<a href="e-8d68cf8c216727522de6caac.html#v-581931c55e9d0a074b946b07">#/components/schemas/DownloadQuotaSort</a>; default: <code>app</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>order</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>
-<code>asc</code>
-</td>
-<td>
-<a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">#/components/schemas/SortOrder</a>; default: <code>asc</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>order</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">
+<code>asc</code></td>
+<td data-label="Schema">
+<a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">#/components/schemas/SortOrder</a>; default: <code>asc</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>q</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>any of: <a href="e-6391cb1d47b02ba00ac1e9ff.html#v-5e7782ca793bbd847f147b8d">#/components/schemas/BrowseQuery</a>; <code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>q</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">any of: <a href="e-6391cb1d47b02ba00ac1e9ff.html#v-5e7782ca793bbd847f147b8d">#/components/schemas/BrowseQuery</a>; <code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>app</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>any of: <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>; <code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>app</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">any of: <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>; <code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>active</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>any of: <code>boolean</code>; <code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>active</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Responses</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -193,77 +153,58 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>200</code>
-</td>
-<td>Successful Response</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-08fe9b402fb2eff09661a2ac.html#v-dd95c26113fb5ef2a3db789f">#/components/schemas/KeyDownloadQuotaListOut</a>
-</td>
-<td>not declared</td>
+<td data-label="Status">
+<code>200</code></td>
+<td data-label="Description">Successful Response</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-08fe9b402fb2eff09661a2ac.html#v-dd95c26113fb5ef2a3db789f">#/components/schemas/KeyDownloadQuotaListOut</a></td>
+<td data-label="Error codes">not declared</td>
 </tr>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>Bad Request</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Description">Bad Request</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>Unauthorized</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Description">Unauthorized</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>403</code>
-</td>
-<td>Forbidden</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>forbidden</code>
-</td>
+<td data-label="Status">
+<code>403</code></td>
+<td data-label="Description">Forbidden</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>forbidden</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>Internal Server Error</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>internal_error</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Description">Internal Server Error</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>internal_error</code></td>
 </tr>
 </tbody>
 </table>
@@ -285,8 +226,7 @@
 <span id="v-db2b3b65b9ae4f8ebbb010d9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/operationId">list_download_quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,8 +250,7 @@
 <span id="v-717692df0ddb0c0a16d584b5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -321,8 +260,7 @@
 <span id="v-fff9013e4856d6b65fde85cf">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/name">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,8 +270,7 @@
 <span id="v-b118e1b10e2440ff8db8025d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -350,8 +287,7 @@
 <span id="v-b1a6d71df978b623c0aeea5a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema/default">25</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -361,8 +297,7 @@
 <span id="v-baa785254bd39fbb9ec141d4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -372,8 +307,7 @@
 <span id="v-50207b98295389a91d5a4112">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -383,8 +317,7 @@
 <span id="v-3aafe07f4c62f946ed862a5d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema/title">Page Size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -394,16 +327,13 @@
 <span id="v-583523bf4037fc5901003e5c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,8 +350,7 @@
 <span id="v-6d65340994452c35a1490f1f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/1/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -431,8 +360,7 @@
 <span id="v-539206c9a8445d58e2fc8254">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/1/name">page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -442,8 +370,7 @@
 <span id="v-9c06eec9d5900f460d02f1dc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/1/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -474,12 +401,10 @@
 <span id="v-912d3e96af3e9c021da744a0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/1/schema/anyOf/0/$ref">#/components/schemas/BrowsePageToken</code>
 <span class="kind">string</span> <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -496,16 +421,13 @@
 <span id="v-ac2ea35756478dd0da390b26">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/1/schema/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -515,16 +437,13 @@
 <span id="v-62f26fb0fc7f7a1563e2f675">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/1/schema/title">Page Token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -541,8 +460,7 @@
 <span id="v-5ba0375a164b310929869d06">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/2/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -552,8 +470,7 @@
 <span id="v-156d9fe1daef90fa9bd16a8c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/2/name">sort</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -563,8 +480,7 @@
 <span id="v-4c8f56a0c9c6b780416806e3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/2/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -581,8 +497,7 @@
 <span id="v-a52b14817ab5009cafdb763e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/2/schema/$ref">#/components/schemas/DownloadQuotaSort</code>
 <span class="kind">string</span> <a href="e-8d68cf8c216727522de6caac.html#v-581931c55e9d0a074b946b07">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -592,16 +507,13 @@
 <span id="v-f141052e06f090cd9774f060">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/2/schema/default">app</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -618,8 +530,7 @@
 <span id="v-16aa957d809e39cb77f08e90">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/3/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,8 +540,7 @@
 <span id="v-697be9d4cc0ca456fa41b3c1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/3/name">order</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -640,8 +550,7 @@
 <span id="v-c165f8c34fdbf425920d9046">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/3/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -658,8 +567,7 @@
 <span id="v-4c9a3342bf3c00b34d8abb20">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/3/schema/$ref">#/components/schemas/SortOrder</code>
 <span class="kind">string</span> <a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -669,16 +577,13 @@
 <span id="v-52f10982e204fa08a1c0a11a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/3/schema/default">asc</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -695,8 +600,7 @@
 <span id="v-47d2d99ccf9a983d5f5d9f52">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/4/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -706,8 +610,7 @@
 <span id="v-fcdd0e0acf42d701593c9f83">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/4/name">q</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,8 +620,7 @@
 <span id="v-8c4bb96fe590e23524f92914">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/4/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -749,12 +651,10 @@
 <span id="v-9cd3dfe18517468a1ce123de">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/4/schema/anyOf/0/$ref">#/components/schemas/BrowseQuery</code>
 <span class="kind">string</span> <a href="e-6391cb1d47b02ba00ac1e9ff.html#v-5e7782ca793bbd847f147b8d">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -771,16 +671,13 @@
 <span id="v-e0b34442234e932d906fe6e7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/4/schema/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -790,16 +687,13 @@
 <span id="v-dae573261d4d845fe0e50dfc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/4/schema/title">Q</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -816,8 +710,7 @@
 <span id="v-8c11399b2dbb85f9234b38f3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/5/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -827,8 +720,7 @@
 <span id="v-a352cfcd2acd09352fa318f1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/5/name">app</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -838,8 +730,7 @@
 <span id="v-3e2eac5d7abb821bb66677a6">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/5/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -870,12 +761,10 @@
 <span id="v-ba97dd22bec9f9a36af6f184">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/5/schema/anyOf/0/$ref">#/components/schemas/ApplicationName</code>
 <span class="kind">string</span> <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -892,16 +781,13 @@
 <span id="v-a424064aa7043f613dde960d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/5/schema/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -911,16 +797,13 @@
 <span id="v-b804e2a56286651cfcf91977">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/5/schema/title">App</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -937,8 +820,7 @@
 <span id="v-e6338cc9cb0d9e3ffca5cfdb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/6/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -948,8 +830,7 @@
 <span id="v-28ba5817a2021bb5bcc7888f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/6/name">active</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -959,8 +840,7 @@
 <span id="v-80f434891dc7cf0e2cc97d9e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/6/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -991,12 +871,10 @@
 <span id="v-ce3419204c9801bd5ab3fd29">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/6/schema/anyOf/0/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1013,16 +891,13 @@
 <span id="v-552e6047f5566ee4fc52fbbc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/6/schema/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1032,20 +907,16 @@
 <span id="v-17435a5c8d9ed4e56619b7e4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/6/schema/title">Active</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1090,20 +961,16 @@
 <span id="v-7dc1b92449c21b41a0919248">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/200/content/application~1json/schema/$ref">#/components/schemas/KeyDownloadQuotaListOut</code>
 <span class="kind">string</span> <a href="e-08fe9b402fb2eff09661a2ac.html#v-dd95c26113fb5ef2a3db789f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1113,12 +980,10 @@
 <span id="v-0e8bc0c39b87c0a0d0673e0e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/200/description">Successful Response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1156,20 +1021,16 @@
 <span id="v-c8df5ea964f7cc53d43be4a8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1179,8 +1040,7 @@
 <span id="v-f11d16539e27f9365ef0cee1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/400/description">Bad Request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1197,16 +1057,13 @@
 <span id="v-b2d689724db96e4ad50d0a07">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/400/x-riverhog-error-codes/0">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1244,20 +1101,16 @@
 <span id="v-66bbbda0196625454e3ce958">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1267,8 +1120,7 @@
 <span id="v-f4045ceb85ddab91fbb6f85c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/401/description">Unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1285,16 +1137,13 @@
 <span id="v-2949d539f004c56dcf796a5a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/401/x-riverhog-error-codes/0">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1332,20 +1181,16 @@
 <span id="v-319b0ac2ff1b1fb1049b5b98">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1355,8 +1200,7 @@
 <span id="v-b97848b7e0ad52fbd84e5c54">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/403/description">Forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1373,16 +1217,13 @@
 <span id="v-1b0054b8b166b1d76fee8a52">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/403/x-riverhog-error-codes/0">forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1420,20 +1261,16 @@
 <span id="v-9c1d3357e96fb652ce3cdcd8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1443,8 +1280,7 @@
 <span id="v-49cc3a1e2debb8f088b86ce6">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/500/description">Internal Server Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1461,20 +1297,16 @@
 <span id="v-c9ef459b281d85d76fa049a1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/responses/500/x-riverhog-error-codes/0">internal_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1498,16 +1330,13 @@
 <span id="v-72060423fd3ae9eda5c71a84">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/security/0/HTTPBearer">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1517,8 +1346,7 @@
 <span id="v-887bd4832def8e4467d0fdad">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/summary">List Download Quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1535,12 +1363,10 @@
 <span id="v-ef301330c2eaf396c09653cb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/tags/0">download quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1571,20 +1397,16 @@
 <span id="v-faf39f7b07b18d25c4185de3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-permission-requirements/0/any_of/0">quotas:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1601,8 +1423,7 @@
 <span id="v-466b91250ca885da85118d36">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-read-collection/default_page_size">25</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1612,8 +1433,7 @@
 <span id="v-cb40d68d73b4cb82f48b7eb6">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-read-collection/kind">mutable-browse</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1623,8 +1443,7 @@
 <span id="v-f801a1c29914aba31183942a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-read-collection/maximum_page_size">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1634,8 +1453,7 @@
 <span id="v-d3bc05cf83a775b4f6b8bfa7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-read-collection/next_page_token_field">next_page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1645,8 +1463,7 @@
 <span id="v-10a966b6f970d5ba716247ff">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-read-collection/page_size_parameter">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1656,12 +1473,10 @@
 <span id="v-290e218a52a7e952c69d8560">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/x-riverhog-read-collection/page_token_parameter">page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1682,7 +1497,6 @@
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
@@ -1691,7 +1505,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1706,7 +1520,7 @@
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1716,8 +1530,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1729,35 +1542,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get</code>
-</td>
-<td>
-<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
-</td>
-<td>logical-result-cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;},&quot;reason&quot;:&quot;bounded-route-progression&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-c35859ad2c6c8a34ef05c100.html">extent-rule/route-progression/v1</a></td>
+<td data-label="Decision">logical-result-cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;},&quot;reason&quot;:&quot;bounded-route-progression&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get/parameters/0/schema</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <details>
 <summary>Structural operation bindings</summary>
-<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
 <table id="v-df7b672b879f221a3a489fc7">
 <tbody>
 <tr>
@@ -1768,8 +1574,7 @@
 <span id="v-b9f612a833c4e4bfcba7dfa7">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/application">riverhog</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1779,8 +1584,7 @@
 <span id="v-db2fc59ce6bf60e2863bbc89">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/classification">human-cli+json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1804,8 +1608,7 @@
 <span id="v-166a7b0b527bb4d766ad0429">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/command">app key quota list</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1815,8 +1618,7 @@
 <span id="v-4dba38f7ae2391e207dfa883">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/executable">a-riverhog-cli</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1826,8 +1628,7 @@
 <span id="v-8b65d838e3e6cf7422071259">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/result_identity">a-riverhog-cli-result/app/key/quota/list/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1844,8 +1645,7 @@
 <span id="v-9a57a408983ed7f799b39f94">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/source/line">1387</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1855,8 +1655,7 @@
 <span id="v-9c8023ee339c4a4a1b42dd3c">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/source/module">a_riverhog_cli.main</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1866,8 +1665,7 @@
 <span id="v-e02bf6ff8436bbda734c0578">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1877,20 +1675,16 @@
 <span id="v-f94f4ed862b9963415190c5a">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_bindings/0/source/symbol">app_key_quota_list_cmd</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1907,12 +1701,10 @@
 <span id="v-a481bfb12236d02e9f983bcb">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/cli_commands/0">app key quota list</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1922,8 +1714,7 @@
 <span id="v-61d752117da5403805847843">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/client">ApiClient</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1947,8 +1738,7 @@
 <span id="v-195f704967db4ef1995f5f79">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/client_bindings/0/public_identity">riverhog_client.ApiClient.list_download_quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1965,8 +1755,7 @@
 <span id="v-6880785a52256afc08c23918">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/client_bindings/0/source/line">2409</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1976,8 +1765,7 @@
 <span id="v-374cd4c3bda133c2c15a88cf">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/client_bindings/0/source/module">riverhog_client.client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1987,8 +1775,7 @@
 <span id="v-4f6257517cca27a0bbde485f">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1998,20 +1785,16 @@
 <span id="v-510fcfaf3de6f4e54e375392">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/client_bindings/0/source/symbol">ApiClient.list_download_quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2021,8 +1804,7 @@
 <span id="v-23ec65521ed4e501655433c5">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2032,8 +1814,7 @@
 <span id="v-97e82e8a30e8a496846bd34c">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/operation_id">list_download_quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2043,8 +1824,7 @@
 <span id="v-d10b9806c4cd37adae2f3d7c">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/path">/v1/download-quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2054,8 +1834,7 @@
 <span id="v-72d58c2fb2390efd26e66fc4">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/provider_evidence">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2072,8 +1851,7 @@
 <span id="v-6177076519c3a6cba85f6d5a">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/read_collection/default_page_size">25</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2083,8 +1861,7 @@
 <span id="v-b18cea3e54b6e50f4b695159">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/read_collection/kind">mutable-browse</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2094,8 +1871,7 @@
 <span id="v-d02a4ac6aa901fa7b41943c9">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/read_collection/maximum_page_size">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2105,8 +1881,7 @@
 <span id="v-a266aa87b5dbde71fdca6712">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/read_collection/next_page_token_field">next_page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2116,8 +1891,7 @@
 <span id="v-8e135411b86a4e1ddea483b6">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/read_collection/page_size_parameter">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2127,12 +1901,10 @@
 <span id="v-b6be88a32609adc589fc32a2">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/read_collection/page_token_parameter">page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2142,17 +1914,19 @@
 <span id="v-d3469692c87a7171bab1c867">
 <code data-value-pointer="/audit/operation-qualification/list_download_quotas/response_authority">http-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
 </details>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

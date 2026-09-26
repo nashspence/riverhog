@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CollectionUploadTagsOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,40 +59,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>added</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>added</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>tag_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>tag_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -124,8 +106,7 @@
 <span id="v-ff94553d2db52004b98e6853">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -149,8 +130,7 @@
 <span id="v-7aa9b4622790e95e75a85b19">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/added/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -160,8 +140,7 @@
 <span id="v-cdbaca436d951599884fadbd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/added/title">Added</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -171,12 +150,10 @@
 <span id="v-b6cfef26887a10c99b6f37ba">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/added/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -193,12 +170,10 @@
 <span id="v-ca5cc81c9bbf5797a90a52ca">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/collection_id/$ref">#/components/schemas/CollectionId</code>
 <span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -215,8 +190,7 @@
 <span id="v-0424ef9742ef25a432ad86fa">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/tag_count/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -226,8 +200,7 @@
 <span id="v-f8170618acb28fa49182de57">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/tag_count/title">Tag Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -237,16 +210,13 @@
 <span id="v-aa060622fb40883a8fa11357">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/properties/tag_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -263,8 +233,7 @@
 <span id="v-488db3c274a508c0e97508ff">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -274,8 +243,7 @@
 <span id="v-325c4325d8fc239084e090c0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/required/1">added</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -285,12 +253,10 @@
 <span id="v-a4697a18d9b753ec564c8e6d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/required/2">tag_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -300,8 +266,7 @@
 <span id="v-fc41810c248e3e6c774c3818">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/title">CollectionUploadTagsOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -311,8 +276,7 @@
 <span id="v-6eeee3c107fc5dbd39d0387b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -324,7 +288,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -336,7 +300,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -347,9 +311,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

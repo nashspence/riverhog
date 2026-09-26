@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">HTTP Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>GET /health/live</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Callable HTTP operations.</p>
@@ -44,7 +35,7 @@
 </dd>
 </dl>
 <h3>Responses</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -57,32 +48,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>200</code>
-</td>
-<td>Successful Response</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-afd7233873917556cfc26f06.html#v-929dc6c5a5e7a89f5923466a">#/components/schemas/HealthOut</a>
-</td>
-<td>not declared</td>
+<td data-label="Status">
+<code>200</code></td>
+<td data-label="Description">Successful Response</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-afd7233873917556cfc26f06.html#v-929dc6c5a5e7a89f5923466a">#/components/schemas/HealthOut</a></td>
+<td data-label="Error codes">not declared</td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>Internal Server Error</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>internal_error</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Description">Internal Server Error</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>internal_error</code></td>
 </tr>
 </tbody>
 </table>
@@ -104,8 +88,7 @@
 <span id="v-b9f96c021d4b189098c49cbd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/operationId">health_live</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -150,20 +133,16 @@
 <span id="v-1b39a434299ca3ed0a032f2e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/responses/200/content/application~1json/schema/$ref">#/components/schemas/HealthOut</code>
 <span class="kind">string</span> <a href="e-afd7233873917556cfc26f06.html#v-929dc6c5a5e7a89f5923466a">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -173,12 +152,10 @@
 <span id="v-20ada6754a08ad40b60120a2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/responses/200/description">Successful Response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -216,20 +193,16 @@
 <span id="v-c53a147834c7ce6c6e6f3d76">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -239,8 +212,7 @@
 <span id="v-eb754ca596e6b720e10e254d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/responses/500/description">Internal Server Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -257,20 +229,16 @@
 <span id="v-cee97afc60313bf3a96ffcdc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/responses/500/x-riverhog-error-codes/0">internal_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -280,8 +248,7 @@
 <span id="v-56efa9f79cef5357b50826fa">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/summary">Health Live</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -298,12 +265,10 @@
 <span id="v-56501eaba3f355543071aa74">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1health~1live/get/tags/0">health</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -326,7 +291,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -341,7 +306,7 @@
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -352,7 +317,6 @@
 </ul>
 <details>
 <summary>Structural operation bindings</summary>
-<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
 <table id="v-b66f29705433bc00a8d90b7e">
 <tbody>
 <tr>
@@ -363,8 +327,7 @@
 <span id="v-1255f95571bd54fa3294eeb0">
 <code data-value-pointer="/audit/operation-qualification/health_live/application">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -374,8 +337,7 @@
 <span id="v-aa161bb33476c2107873076e">
 <code data-value-pointer="/audit/operation-qualification/health_live/classification">standard-tool/protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,8 +361,7 @@
 <span id="v-d247fb65e420ca922becb9bd">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/command">health</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,8 +371,7 @@
 <span id="v-e529ca050c7eaba9792d73a3">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/executable">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,8 +381,7 @@
 <span id="v-7e54d608267aa9e0fc3a79f1">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/result_identity">stove0-cli-result/health/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -439,8 +398,7 @@
 <span id="v-3a7731eda40717d5a2c3813d">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/source/line">167</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -450,8 +408,7 @@
 <span id="v-1b53b47a363b5d629e8b686c">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/source/module">a_stove0_cli.main</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -461,8 +418,7 @@
 <span id="v-a40aba04149d4def54ca2c86">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/source/path">some-implementations/stove0/application/client/src/a_stove0_cli/main.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,20 +428,16 @@
 <span id="v-fe5863672574bf36ea2a5840">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_bindings/0/source/symbol">health</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -502,12 +454,10 @@
 <span id="v-8811d45422892edad60f7e40">
 <code data-value-pointer="/audit/operation-qualification/health_live/cli_commands/0">health</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,8 +467,7 @@
 <span id="v-30e6ddea171d48e7605da3f4">
 <code data-value-pointer="/audit/operation-qualification/health_live/client">Stove0ApiClient</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -542,8 +491,7 @@
 <span id="v-0b688a93462affb2e330c953">
 <code data-value-pointer="/audit/operation-qualification/health_live/client_bindings/0/public_identity">stove0_api_client.Stove0ApiClient.health_live</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,8 +508,7 @@
 <span id="v-0353e419dbdc7d2b025cf98c">
 <code data-value-pointer="/audit/operation-qualification/health_live/client_bindings/0/source/line">135</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -571,8 +518,7 @@
 <span id="v-a74e4316716470b89e5d9138">
 <code data-value-pointer="/audit/operation-qualification/health_live/client_bindings/0/source/module">stove0_api_client.client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -582,8 +528,7 @@
 <span id="v-8e1ce8849213d4963dab9135">
 <code data-value-pointer="/audit/operation-qualification/health_live/client_bindings/0/source/path">some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -593,20 +538,16 @@
 <span id="v-5b7be4a6bfc89cc6a113d41c">
 <code data-value-pointer="/audit/operation-qualification/health_live/client_bindings/0/source/symbol">Stove0ApiClient.health_live</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -616,8 +557,7 @@
 <span id="v-ca98738ba1723ca3ae83a942">
 <code data-value-pointer="/audit/operation-qualification/health_live/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -627,8 +567,7 @@
 <span id="v-599d48d31c92fbcd0823f4d2">
 <code data-value-pointer="/audit/operation-qualification/health_live/operation_id">health_live</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -638,8 +577,7 @@
 <span id="v-ccdb00a556944b0a25565e77">
 <code data-value-pointer="/audit/operation-qualification/health_live/path">/health/live</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -649,8 +587,7 @@
 <span id="v-415a7dbe3bf6bb0e95947ffb">
 <code data-value-pointer="/audit/operation-qualification/health_live/provider_evidence">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -660,8 +597,7 @@
 <span id="v-e29f522bc5d7e38a0466e38a">
 <code data-value-pointer="/audit/operation-qualification/health_live/read_collection">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -671,17 +607,19 @@
 <span id="v-56d1dca64c41b4d03246f2ae">
 <code data-value-pointer="/audit/operation-qualification/health_live/response_authority">http-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
 </details>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

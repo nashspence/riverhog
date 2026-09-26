@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a> / <a href="i-492ccb6e7c74420d22dbb0ec.html">Process Protocol Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>generated:review0-sampler: ErrorOut</h1>
 <p class="context">Runtime and conformance support for Review0 samplers. Structured values exchanged by a process protocol.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,16 +59,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>error</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1f8bed98d4bcfde0510ced86.html#v-3b23122d2d998dfe72703b5f">#/$defs/ErrorBody</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>error</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1f8bed98d4bcfde0510ced86.html#v-3b23122d2d998dfe72703b5f">#/$defs/ErrorBody</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -113,7 +101,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -126,41 +114,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-eb6f8e4af28e7209174e7e7d">details</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-eb6f8e4af28e7209174e7e7d">details</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -177,7 +155,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -187,18 +165,15 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-5e76da9657a21be3a9cd9322">1</a>
-</td>
-<td>
-<code>object</code>; additionalProperties: <code>true</code>
-</td>
+<td data-label="Alternative">
+<a href="#s-5e76da9657a21be3a9cd9322">1</a></td>
+<td data-label="Schema">
+<code>object</code>; additionalProperties: <code>true</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -251,8 +226,7 @@
 <span id="v-5adfac8b4be44f633eb9745b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -276,8 +250,7 @@
 <span id="v-13a93eb7452792d6482de020">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/code/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -287,8 +260,7 @@
 <span id="v-4902869e41bb7208fb8c6698">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/code/title">Code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -298,12 +270,10 @@
 <span id="v-7f645819b53530d0b9ca873b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -334,8 +304,7 @@
 <span id="v-9e1eeef7e9765a366a435db9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/anyOf/0/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -345,12 +314,10 @@
 <span id="v-7bae654083e6708ff95b6d57">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -367,16 +334,13 @@
 <span id="v-0e78e765ffcda0fa0d4732a6">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -386,8 +350,7 @@
 <span id="v-f59d19216c0096dab3be8789">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -397,12 +360,10 @@
 <span id="v-ad15d98719c98dfdd317fd11">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/title">Details</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,8 +380,7 @@
 <span id="v-22930c17be06d2fceca60a27">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -430,8 +390,7 @@
 <span id="v-89bfa9ba4e80977e27e856f0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/message/title">Message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -441,16 +400,13 @@
 <span id="v-f46993e707172badff15c748">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,8 +423,7 @@
 <span id="v-07dfd9a6b7fc0d7f673e0735">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -478,12 +433,10 @@
 <span id="v-0a8a1b1a30def05d7056eb82">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -493,8 +446,7 @@
 <span id="v-d0733ecc1006244506c44769">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/title">ErrorBody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -504,16 +456,13 @@
 <span id="v-aae69fcb074d72bc032a2176">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -523,8 +472,7 @@
 <span id="v-04f32d7715e73c7ba272080e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -548,16 +496,13 @@
 <span id="v-2e93805d9d53bdfc3358014f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/properties/error/$ref">#/$defs/ErrorBody</code>
 <span class="kind">string</span> <a href="e-1f8bed98d4bcfde0510ced86.html#v-3b23122d2d998dfe72703b5f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -574,12 +519,10 @@
 <span id="v-1c833259ca731a9d33b8307b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/required/0">error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,8 +532,7 @@
 <span id="v-a0aa46bbd15552d0b8c0d398">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/title">ErrorOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -600,8 +542,7 @@
 <span id="v-e5069af2b77bd0cee08755ed">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -621,7 +562,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -633,7 +574,7 @@
 <a href="source-authorities.html#source-8a54180841caa5af2642707d">protocol:generated:review0-sampler</a> — <code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py::sampler_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -643,8 +584,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -656,25 +596,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/anyOf/0</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/ErrorOut/$defs/ErrorBody/properties/details/anyOf/0</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

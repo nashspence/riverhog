@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: ArchiveCopyOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -46,7 +37,7 @@
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -56,22 +47,19 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-8c8ca4ac70f0d62b796074c9.html#v-f610daf7ae1311041a406cd6">#/components/schemas/IncompleteArchiveCopyOut</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-8c8ca4ac70f0d62b796074c9.html#v-f610daf7ae1311041a406cd6">#/components/schemas/IncompleteArchiveCopyOut</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<a href="e-2383b81b78e902c849fe7c40.html#v-1ee1a5065635f40906aebbe0">#/components/schemas/UploadedArchiveCopyOut</a>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<a href="e-2383b81b78e902c849fe7c40.html#v-1ee1a5065635f40906aebbe0">#/components/schemas/UploadedArchiveCopyOut</a></td>
 </tr>
 <tr>
-<td>3</td>
-<td>
-<a href="e-a29ec3ebfa057894d8b3f41b.html#v-a43ee22d2ffcb16dfb227977">#/components/schemas/FailedArchiveCopyOut</a>
-</td>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">
+<a href="e-a29ec3ebfa057894d8b3f41b.html#v-a43ee22d2ffcb16dfb227977">#/components/schemas/FailedArchiveCopyOut</a></td>
 </tr>
 </tbody>
 </table>
@@ -108,8 +96,7 @@
 <span id="v-c435c4b741645bf6a60866bc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/failed">#/components/schemas/FailedArchiveCopyOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -119,8 +106,7 @@
 <span id="v-9348a952f3259097e4d3adcd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/pending">#/components/schemas/IncompleteArchiveCopyOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -130,8 +116,7 @@
 <span id="v-d512e2dbdad89a9d42a06886">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/retrying">#/components/schemas/IncompleteArchiveCopyOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -141,8 +126,7 @@
 <span id="v-1cc65ac7634c4c952175e4aa">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/uploaded">#/components/schemas/UploadedArchiveCopyOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -152,12 +136,10 @@
 <span id="v-b23406376569a0f6eadd7f4a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/uploading">#/components/schemas/IncompleteArchiveCopyOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -167,12 +149,10 @@
 <span id="v-fa8f55386b06389deef2145f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/propertyName">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -196,12 +176,10 @@
 <span id="v-e9366516186144126c453f9f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/oneOf/0/$ref">#/components/schemas/IncompleteArchiveCopyOut</code>
 <span class="kind">string</span> <a href="e-8c8ca4ac70f0d62b796074c9.html#v-f610daf7ae1311041a406cd6">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -218,12 +196,10 @@
 <span id="v-3c148bfa68ca44b81336894f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/oneOf/1/$ref">#/components/schemas/UploadedArchiveCopyOut</code>
 <span class="kind">string</span> <a href="e-2383b81b78e902c849fe7c40.html#v-1ee1a5065635f40906aebbe0">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -240,16 +216,13 @@
 <span id="v-f763c2a24660d13c34b79776">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/oneOf/2/$ref">#/components/schemas/FailedArchiveCopyOut</code>
 <span class="kind">string</span> <a href="e-a29ec3ebfa057894d8b3f41b.html#v-a43ee22d2ffcb16dfb227977">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -259,8 +232,7 @@
 <span id="v-ef910131ef2d60a5c8e048d5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/title">ArchiveCopyOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -272,7 +244,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -284,7 +256,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -295,9 +267,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

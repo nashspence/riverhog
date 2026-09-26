@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-0a9044947708e1ffff5630f5.html">stove0-target-jobs</a> / <a href="i-5e9715dcff7c7358610ec44a.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0-target-jobs durable-state identity</h1>
 <p class="context">Hardware-neutral target protocol, runtime, and conformance support for Stove0. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -32,7 +23,7 @@
 <h2>Contract</h2>
 <div class="human-contract">
 <h3>Durable identity and transition</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -42,52 +33,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>distribution</code>
-</td>
-<td>
-<code>stove0-target-support</code>
-</td>
+<td data-label="Authority fact">
+<code>distribution</code></td>
+<td data-label="Value">
+<code>stove0-target-support</code></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>
-<code>stove0-target-job-state/v1</code>
-</td>
+<td data-label="Authority fact">
+<code>format</code></td>
+<td data-label="Value">
+<code>stove0-target-job-state/v1</code></td>
 </tr>
 <tr>
-<td>
-<code>head</code>
-</td>
-<td>
-<code>v1</code>
-</td>
+<td data-label="Authority fact">
+<code>head</code></td>
+<td data-label="Value">
+<code>v1</code></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>
-<code>stove0-target-jobs</code>
-</td>
+<td data-label="Authority fact">
+<code>id</code></td>
+<td data-label="Value">
+<code>stove0-target-jobs</code></td>
 </tr>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>
-<code>json-documents</code>
-</td>
+<td data-label="Authority fact">
+<code>kind</code></td>
+<td data-label="Value">
+<code>json-documents</code></td>
 </tr>
 <tr>
-<td>
-<code>transition</code>
-</td>
-<td>
-<code>backward-readable-documents</code>
-</td>
+<td data-label="Authority fact">
+<code>transition</code></td>
+<td data-label="Value">
+<code>backward-readable-documents</code></td>
 </tr>
 </tbody>
 </table>
@@ -167,7 +146,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -189,7 +168,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/stove0-target/effect.status.json">tests/fixtures/state/v1_0001/stove0-target/effect.status.json</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -200,9 +179,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<html lang="en" data-audit="on" data-docs="off" data-audit-default="on" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,22 +14,12 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="configuration.html">Audit references</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>Configuration document comparison</h1>
 <aside class="audit">
-<p>Declared document owners, consumers, and parser sources.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -42,134 +32,115 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="e-2b9b5badb77b756ad90dc66f.html">a-review0-rclone-target:configuration:rclone-target-config</a>
-</td>
-<td>a-review0-rclone-target</td>
-<td>a-review0-rclone-target</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py">some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py::RcloneTargetConfig</code>
-</td>
+<td data-label="Document">
+<a href="e-2b9b5badb77b756ad90dc66f.html">a-review0-rclone-target:configuration:rclone-target-config</a></td>
+<td data-label="Owner">a-review0-rclone-target</td>
+<td data-label="Consumers">a-review0-rclone-target</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py">some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py::RcloneTargetConfig</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-4ea35f369f0d19e707560804.html">a-riverhog-aws-store:configuration:aws-store-document</a>
-</td>
-<td>a-riverhog-aws-store</td>
-<td>a-riverhog-aws-store</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/app.py">some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/app.py::AwsStoreDocument</code>
-</td>
+<td data-label="Document">
+<a href="e-4ea35f369f0d19e707560804.html">a-riverhog-aws-store:configuration:aws-store-document</a></td>
+<td data-label="Owner">a-riverhog-aws-store</td>
+<td data-label="Consumers">a-riverhog-aws-store</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/app.py">some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/app.py::AwsStoreDocument</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-ee650175d62a5c88576db2e7.html">a-riverhog-b2-store:configuration:b2-store-document</a>
-</td>
-<td>a-riverhog-b2-store</td>
-<td>a-riverhog-b2-store</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py">some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py::B2StoreDocument</code>
-</td>
+<td data-label="Document">
+<a href="e-ee650175d62a5c88576db2e7.html">a-riverhog-b2-store:configuration:b2-store-document</a></td>
+<td data-label="Owner">a-riverhog-b2-store</td>
+<td data-label="Consumers">a-riverhog-b2-store</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py">some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py::B2StoreDocument</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-796f157ba963429d629b9314.html">a-riverhog-event-relay:configuration:event-relay-config</a>
-</td>
-<td>a-riverhog-event-relay</td>
-<td>a-riverhog-event-relay</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py">some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py::EventRelayConfig</code>
-</td>
+<td data-label="Document">
+<a href="e-796f157ba963429d629b9314.html">a-riverhog-event-relay:configuration:event-relay-config</a></td>
+<td data-label="Owner">a-riverhog-event-relay</td>
+<td data-label="Consumers">a-riverhog-event-relay</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py">some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py::EventRelayConfig</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-d2ab1cd374a3a343c6fba071.html">a-riverhog-ftp-spool:configuration:ftp-spool-document</a>
-</td>
-<td>a-riverhog-ftp-spool</td>
-<td>a-riverhog-ftp-spool</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py::FtpSpoolDocument</code>
-</td>
+<td data-label="Document">
+<a href="e-d2ab1cd374a3a343c6fba071.html">a-riverhog-ftp-spool:configuration:ftp-spool-document</a></td>
+<td data-label="Owner">a-riverhog-ftp-spool</td>
+<td data-label="Consumers">a-riverhog-ftp-spool</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py::FtpSpoolDocument</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-a3d5ba769d14bf8e38bd2c80.html">a-riverhog-ftp-spool:configuration:source-config</a>
-</td>
-<td>a-riverhog-ftp-spool</td>
-<td>a-riverhog-ftp-spool</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py::SourceConfig</code>
-</td>
+<td data-label="Document">
+<a href="e-a3d5ba769d14bf8e38bd2c80.html">a-riverhog-ftp-spool:configuration:source-config</a></td>
+<td data-label="Owner">a-riverhog-ftp-spool</td>
+<td data-label="Consumers">a-riverhog-ftp-spool</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/config.py::SourceConfig</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-5ca0d3d3a68e137e24401209.html">gogurt-core:configuration:gogurt-routes-schema</a>
-</td>
-<td>gogurt-core</td>
-<td>gogurt-core</td>
-<td>json-schema</td>
-<td>
-<code data-source-path="some-implementations/gogurt/packages/core/src/gogurt_core/core.py">some-implementations/gogurt/packages/core/src/gogurt_core/core.py::GOGURT_ROUTES_SCHEMA</code>
-</td>
+<td data-label="Document">
+<a href="e-5ca0d3d3a68e137e24401209.html">gogurt-core:configuration:gogurt-routes-schema</a></td>
+<td data-label="Owner">gogurt-core</td>
+<td data-label="Consumers">gogurt-core</td>
+<td data-label="Input shape">json-schema</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/gogurt/packages/core/src/gogurt_core/core.py">some-implementations/gogurt/packages/core/src/gogurt_core/core.py::GOGURT_ROUTES_SCHEMA</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-a6e0cbdcf26b71a1234b864c.html">review0-target-lib:configuration:review-target-config</a>
-</td>
-<td>review0-target-lib</td>
-<td>a-review0-materializer</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/stove0/review0/support/src/review0_target_lib/app.py">some-implementations/stove0/review0/support/src/review0_target_lib/app.py::ReviewTargetConfig</code>
-</td>
+<td data-label="Document">
+<a href="e-a6e0cbdcf26b71a1234b864c.html">review0-target-lib:configuration:review-target-config</a></td>
+<td data-label="Owner">review0-target-lib</td>
+<td data-label="Consumers">a-review0-materializer</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/review0/support/src/review0_target_lib/app.py">some-implementations/stove0/review0/support/src/review0_target_lib/app.py::ReviewTargetConfig</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-4d53cad53caec6ec3ea1e17c.html">riverhog-server:configuration:riverhog-document</a>
-</td>
-<td>riverhog-server</td>
-<td>riverhog-server</td>
-<td>model</td>
-<td>
-<code data-source-path="riverhog/src/riverhog_core/runtime_document.py">riverhog/src/riverhog_core/runtime_document.py::RiverhogDocument</code>
-</td>
+<td data-label="Document">
+<a href="e-4d53cad53caec6ec3ea1e17c.html">riverhog-server:configuration:riverhog-document</a></td>
+<td data-label="Owner">riverhog-server</td>
+<td data-label="Consumers">riverhog-server</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="riverhog/src/riverhog_core/runtime_document.py">riverhog/src/riverhog_core/runtime_document.py::RiverhogDocument</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-c6356ae7bb51ec3962d4f5e0.html">stove0-recipe-config:configuration:recipe-catalog</a>
-</td>
-<td>stove0-recipe-config</td>
-<td>stove0-recipe-config</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/models.py">some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog</code>
-</td>
+<td data-label="Document">
+<a href="e-c6356ae7bb51ec3962d4f5e0.html">stove0-recipe-config:configuration:recipe-catalog</a></td>
+<td data-label="Owner">stove0-recipe-config</td>
+<td data-label="Consumers">stove0-recipe-config</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/models.py">some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog</code></td>
 </tr>
 <tr>
-<td>
-<a href="e-77627199af34832183c008ea.html">stove0-server:configuration:stove0-document</a>
-</td>
-<td>stove0-server</td>
-<td>stove0-server</td>
-<td>model</td>
-<td>
-<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/runtime_config.py">some-implementations/stove0/application/server/src/stove0_core/runtime_config.py::Stove0Document</code>
-</td>
+<td data-label="Document">
+<a href="e-77627199af34832183c008ea.html">stove0-server:configuration:stove0-document</a></td>
+<td data-label="Owner">stove0-server</td>
+<td data-label="Consumers">stove0-server</td>
+<td data-label="Input shape">model</td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/runtime_config.py">some-implementations/stove0/application/server/src/stove0_core/runtime_config.py::Stove0Document</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

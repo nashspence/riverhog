@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7097e292dfa22136f062c0e.html">stove0-protocol</a> / <a href="i-78e637d51ea8a0647a012267.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_protocol.CoordinationCollectionResult</h1>
 <p class="context">Canonical content-opaque collection orchestration contracts for Stove0. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,64 +84,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>derivation_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>derivation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>join_settlement_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>join_settlement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>output_collection</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-17d499827ed12db016618877.html#v-fb0871d52bebc7c6965fff57">#/$defs/CollectionRootIdentityRef</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>output_collection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-17d499827ed12db016618877.html#v-fb0871d52bebc7c6965fff57">#/$defs/CollectionRootIdentityRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>output_selection</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-17d499827ed12db016618877.html#v-1a5436700c444bc1d2e02489">#/$defs/ArtifactSelectionRef</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>output_selection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-17d499827ed12db016618877.html#v-1a5436700c444bc1d2e02489">#/$defs/ArtifactSelectionRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>producer_work_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>producer_work_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -191,7 +167,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -204,40 +180,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>selection_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>selection_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>total_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-17d499827ed12db016618877.html#v-866b5b0fb0a9d08a2d2df3c8">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>total_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-17d499827ed12db016618877.html#v-866b5b0fb0a9d08a2d2df3c8">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -247,7 +214,7 @@
 <h3>Definition: CollectionId</h3>
 <p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -257,14 +224,13 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>structured schema</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -290,7 +256,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -303,40 +269,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_root_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_root_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-17d499827ed12db016618877.html#v-1343125861e14c6bef2ca0f5">#/$defs/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-17d499827ed12db016618877.html#v-1343125861e14c6bef2ca0f5">#/$defs/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>content_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>content_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -382,8 +339,7 @@
 <span id="v-f118c7617e5df650870846d2">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -414,8 +370,7 @@
 <span id="v-cd573bef5a68567942d6b69b">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -439,8 +394,7 @@
 <span id="v-6cbea90c44411fd9eefc4b10">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/properties/artifact_count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -450,12 +404,10 @@
 <span id="v-8889c7d86d85a2f1012f4969">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/properties/artifact_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +424,7 @@
 <span id="v-5ac06470d09c046199d08782">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/properties/selection_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,12 +434,10 @@
 <span id="v-d580e5e6746eeb6dd3159b92">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/properties/selection_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -505,8 +454,7 @@
 <span id="v-dbbe86214673240958c586ff">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/properties/total_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-17d499827ed12db016618877.html#v-866b5b0fb0a9d08a2d2df3c8">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -516,16 +464,13 @@
 <span id="v-a84b510b49199a4d6dc59e07">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/properties/total_bytes/ge">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -542,8 +487,7 @@
 <span id="v-f18f91a616ce086d8c649636">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/required/0">selection_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -553,8 +497,7 @@
 <span id="v-0ab6de10dca0abd69f9f888e">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/required/1">artifact_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -564,12 +507,10 @@
 <span id="v-2bf1e34b5897a0b990388055">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/required/2">total_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -579,12 +520,10 @@
 <span id="v-b76bdc63842eb3cabfc8051b">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/ArtifactSelectionRef/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -615,8 +554,7 @@
 <span id="v-7cbf514c286cc7d146cf8877">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -626,12 +564,10 @@
 <span id="v-539c63e152165972f974d55f">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -655,24 +591,19 @@
 <span id="v-0d9dd82d35a6c5d00ff22654">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,8 +620,7 @@
 <span id="v-f2eff3087ec7308251aba5d6">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -714,8 +644,7 @@
 <span id="v-7f58294eed14d3c9a850851e">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -725,12 +654,10 @@
 <span id="v-070e4dac40c2733cdd585593">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/properties/archive_root_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -747,12 +674,10 @@
 <span id="v-897788e0cec9c22d2fc4c9df">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-17d499827ed12db016618877.html#v-1343125861e14c6bef2ca0f5">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -769,8 +694,7 @@
 <span id="v-1442548b74e8b7476e6f1582">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -780,16 +704,13 @@
 <span id="v-6ec597c6148836008eff86cc">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -806,8 +727,7 @@
 <span id="v-3aa5c4521d30fa0f2920d4d9">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -817,8 +737,7 @@
 <span id="v-d5b93aa9247c9af8f7461af2">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/required/1">archive_root_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -828,12 +747,10 @@
 <span id="v-805f6d267876b27266ce22d9">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/required/2">content_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -843,12 +760,10 @@
 <span id="v-9c655614c0e1adf77382820f">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/CollectionRootIdentityRef/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -865,8 +780,7 @@
 <span id="v-ecc361aac9111e83f5c3dd30">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -876,16 +790,13 @@
 <span id="v-ede592f8f0c070192c95be9a">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -895,8 +806,7 @@
 <span id="v-dc436479a8286a8bd2b7649f">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -920,8 +830,7 @@
 <span id="v-953f73bb0eeffe6ce2437170">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/derivation_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -931,12 +840,10 @@
 <span id="v-76a4f3021fd0ea0e9f896502">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/derivation_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -953,8 +860,7 @@
 <span id="v-22ae96130ce2934de5e9fe1c">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/join_settlement_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -964,12 +870,10 @@
 <span id="v-26697af740adda4e0ba3a31d">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/join_settlement_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -986,12 +890,10 @@
 <span id="v-d9ef45fe95082f641f6547eb">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/output_collection/$ref">#/$defs/CollectionRootIdentityRef</code>
 <span class="kind">string</span> <a href="e-17d499827ed12db016618877.html#v-fb0871d52bebc7c6965fff57">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1008,12 +910,10 @@
 <span id="v-7d531472b4a140bd9c171ad5">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/output_selection/$ref">#/$defs/ArtifactSelectionRef</code>
 <span class="kind">string</span> <a href="e-17d499827ed12db016618877.html#v-1a5436700c444bc1d2e02489">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1030,8 +930,7 @@
 <span id="v-97fdb276787311078b71bef4">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/producer_work_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1041,16 +940,13 @@
 <span id="v-791c9ae1633f3e50ffad0e18">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/properties/producer_work_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1067,8 +963,7 @@
 <span id="v-283b15dbb418205c58421a70">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/required/0">producer_work_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1078,8 +973,7 @@
 <span id="v-87d40c073b4908694a2fbe3f">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/required/1">join_settlement_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1089,8 +983,7 @@
 <span id="v-9e7892b7fc3a10909db7a34e">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/required/2">derivation_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,8 +993,7 @@
 <span id="v-a336a10f17ad021e69bc9949">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/required/3">output_collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1111,12 +1003,10 @@
 <span id="v-1450b4823158b393a22ce762">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/required/4">output_selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1126,12 +1016,10 @@
 <span id="v-11c104ce9939289a1dbd9fd7">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1141,12 +1029,10 @@
 <span id="v-167d14ca6b48218042019ca1">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/contract/signature">&quot;(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootIdentityRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1156,8 +1042,7 @@
 <span id="v-ed71943913cc3a72383d9f5a">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/distribution">stove0-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1167,8 +1052,7 @@
 <span id="v-98d8031b1cbbdd2d0fd01ee0">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/module">stove0_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1178,8 +1062,7 @@
 <span id="v-bfc2a73cdcadf31d38f89410">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/name">CoordinationCollectionResult</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1189,8 +1072,7 @@
 <span id="v-9465c59ef723de98c8f5dce6">
 <code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationCollectionResult/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1202,7 +1084,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1214,7 +1096,7 @@
 <a href="source-authorities.html#source-084138045e133c1e06d16ebc">python:stove0-protocol:stove0_protocol</a> — <code data-source-path="some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py">some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1225,9 +1107,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

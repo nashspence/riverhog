@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_protocol.RetrievalFileReferenceDocument</h1>
 <p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,28 +84,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1c6e42c57fc2404c47674378.html#v-66b4e9bd4e637aafa433bb6c">#/$defs/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1c6e42c57fc2404c47674378.html#v-66b4e9bd4e637aafa433bb6c">#/$defs/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1c6e42c57fc2404c47674378.html#v-63a8c2807fb50fc00c6f2bc7">#/$defs/CanonicalRelPath</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1c6e42c57fc2404c47674378.html#v-63a8c2807fb50fc00c6f2bc7">#/$defs/CanonicalRelPath</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -160,7 +145,7 @@
 </dd>
 </dl>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -170,20 +155,20 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>structured schema</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 <tr>
-<td>2</td>
-<td>structured schema</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 <tr>
-<td>3</td>
-<td>structured schema</td>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 <tr>
-<td>4</td>
-<td>structured schema</td>
+<td data-label="Alternative">4</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -193,7 +178,7 @@
 <h3>Definition: CollectionId</h3>
 <p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -203,14 +188,13 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>structured schema</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -240,8 +224,7 @@
 <span id="v-80f3fc63c226402d5e65f252">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -293,16 +276,13 @@
 <span id="v-e7db51fc1d00d80130b808dc">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/allOf/0/not/pattern">(?:^|/)\.{1,2}(?:/|$)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,16 +306,13 @@
 <span id="v-30737fe14d958f2bfcc517c3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/allOf/1/not/pattern">^\s|\s$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -359,16 +336,13 @@
 <span id="v-b8864edf59d4ff3840e9cde0">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/allOf/2/not/pattern">\u0000</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,20 +366,16 @@
 <span id="v-0e05a1301faeb86397972e0c">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/allOf/3/not/pattern">[\ud800-\udfff]</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -415,8 +385,7 @@
 <span id="v-1f955ea12d3f03e9ce5aebbe">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/format">riverhog-canonical-relpath-v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -426,8 +395,7 @@
 <span id="v-4caa214984c807a34e947acc">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -437,8 +405,7 @@
 <span id="v-4841c3f7b83c6be7758dd8c4">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -448,8 +415,7 @@
 <span id="v-ef29d2abedddbea6b2f6dc98">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/pattern">^[^/\\]+(?:/[^/\\]+)*$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -459,8 +425,7 @@
 <span id="v-6cf8697779ba1bb527e2fbc7">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -470,12 +435,10 @@
 <span id="v-b415c93e916da152a4a468e8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CanonicalRelPath/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -506,8 +469,7 @@
 <span id="v-244398e4a5d275f50c941b99">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,12 +479,10 @@
 <span id="v-a4bd521e9add6cfe03165af8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -546,28 +506,22 @@
 <span id="v-e26b39c6300671d7a38bf0a1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -577,8 +531,7 @@
 <span id="v-6b289f9429120f090d2b0376">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -602,12 +555,10 @@
 <span id="v-e5fd919c0988e65c729d96ef">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-1c6e42c57fc2404c47674378.html#v-66b4e9bd4e637aafa433bb6c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -624,16 +575,13 @@
 <span id="v-2bde6d859404b476d72fd8c3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/properties/path/$ref">#/$defs/CanonicalRelPath</code>
 <span class="kind">string</span> <a href="e-1c6e42c57fc2404c47674378.html#v-63a8c2807fb50fc00c6f2bc7">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -650,8 +598,7 @@
 <span id="v-10afabcfde92972392f160c6">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -661,12 +608,10 @@
 <span id="v-3feb15edbbc21c45ed077b00">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/required/1">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -676,12 +621,10 @@
 <span id="v-b897be87c88e82085a79f573">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -691,12 +634,10 @@
 <span id="v-e148c307bf6aacba67d6cbe4">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/contract/signature">&#x27;(*, collection_id: CollectionId, path: CanonicalRelPath) -&gt; None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -706,8 +647,7 @@
 <span id="v-444f550f0aa922b845e33b72">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/distribution">riverhog-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,8 +657,7 @@
 <span id="v-2f3c197753cf4a1e5ee87f55">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/module">riverhog_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -728,8 +667,7 @@
 <span id="v-612384c04408eed39928a5f3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/name">RetrievalFileReferenceDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -739,8 +677,7 @@
 <span id="v-415503c74c0fba62cd9ea3e5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalFileReferenceDocument/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -752,7 +689,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -764,7 +701,7 @@
 <a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -775,9 +712,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

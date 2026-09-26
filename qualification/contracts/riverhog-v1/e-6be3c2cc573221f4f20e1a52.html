@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-26f9a24cc37e6719930cfee3.html">a-riverhog-ftp-spool-client</a> / <a href="i-143b5a66a4c26fead10d8de7.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a_riverhog_ftp_spool_client.FtpSpoolStatus</h1>
 <p class="context">Client for the Riverhog FTP upload spool. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,74 +84,56 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>a-riverhog-ftp-spool-status/v1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>a-riverhog-ftp-spool-status/v1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-f9ee9b6fa4f0bc5052425b81">next_page_token</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-f9ee9b6fa4f0bc5052425b81">next_page_token</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>page_size</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>page_size</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-89f4c323ca819d413b3ef546">provenance_observer</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-89f4c323ca819d413b3ef546">provenance_observer</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>snapshot</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>; const: <code>false</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>snapshot</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; const: <code>false</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-55c27486c0bd0660994e20b5">sources</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-6be3c2cc573221f4f20e1a52.html#v-965f6ea821d1dcf29ac0f209">#/$defs/SourceStatus</a>; maxItems: <code>100</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-55c27486c0bd0660994e20b5">sources</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-6be3c2cc573221f4f20e1a52.html#v-965f6ea821d1dcf29ac0f209">#/$defs/SourceStatus</a>; maxItems: <code>100</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -183,7 +156,7 @@
 <p class="shape">any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -193,16 +166,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -213,7 +184,7 @@
 <p class="shape">any of: <code>string</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -223,16 +194,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -294,7 +263,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -307,40 +276,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>attempts</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>attempts</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>reason</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>reason</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retryable</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retryable</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -366,7 +326,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -379,147 +339,111 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>claim_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>claim_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>claims</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>claims</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>close_mode</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;stable&quot;,&quot;explicit-flush&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>close_mode</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;stable&quot;,&quot;explicit-flush&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>completion_failure_capacity</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>completion_failure_capacity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>completion_failures</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>completion_failures</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>ingest_source</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>ingest_source</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>max_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>max_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>max_files</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>max_files</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-a820a10074660b8b7d38d64a">oldest_completion_failure</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-a820a10074660b8b7d38d64a">oldest_completion_failure</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>pending_claim_capacity</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pending_claim_capacity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>provenance</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>provenance</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -530,7 +454,7 @@
 <p class="shape">any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -540,16 +464,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -579,8 +501,7 @@
 <span id="v-cd19d74836e3e11d7de88fbf">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -611,8 +532,7 @@
 <span id="v-8b19384dc286321cb20ba4c6">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/BrowsePageToken/maxLength">8192</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -622,8 +542,7 @@
 <span id="v-9e87dc501a1cae4da341941c">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/BrowsePageToken/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -633,12 +552,10 @@
 <span id="v-bf74bda1ed0488650f6a8cb0">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/BrowsePageToken/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -655,8 +572,7 @@
 <span id="v-1f42f803892c424b77d9fe6b">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -680,8 +596,7 @@
 <span id="v-a1339f8b5c64a84a7eb1f018">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/properties/attempts/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -691,12 +606,10 @@
 <span id="v-23727133cd37eec01e96e71c">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/properties/attempts/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -713,12 +626,10 @@
 <span id="v-20e390d46816c4cb31558bd9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/properties/reason/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -735,16 +646,13 @@
 <span id="v-e50c1dc04da16a1f7bd3ac6b">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/properties/retryable/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -761,8 +669,7 @@
 <span id="v-760c727d0bb7f4fee1d0e764">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/required/0">reason</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -772,8 +679,7 @@
 <span id="v-420be087643ed93d57ba8f3e">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/required/1">retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -783,12 +689,10 @@
 <span id="v-0ab941f80d54f74daba6bede">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/required/2">attempts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -798,12 +702,10 @@
 <span id="v-70e49e3469c56a53bb0a0e17">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/CompletionFailureStatus/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -820,8 +722,7 @@
 <span id="v-ce45d8adb1610752b141ab27">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -845,8 +746,7 @@
 <span id="v-1edbff9c412c15cdeaa23da9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/claim_bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -856,12 +756,10 @@
 <span id="v-c6a311ff0f22e330f168421f">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/claim_bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -878,8 +776,7 @@
 <span id="v-6b0aa17ba5c6964412c16beb">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/claims/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -889,12 +786,10 @@
 <span id="v-0dabd5a5ad7f8ee9d56e2f2f">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/claims/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -918,8 +813,7 @@
 <span id="v-e2da0edee06809bfd66eed1c">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/close_mode/enum/0">stable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -929,12 +823,10 @@
 <span id="v-fc62cc78977cf886ffeebb1a">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/close_mode/enum/1">explicit-flush</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -944,12 +836,10 @@
 <span id="v-8c6c76ff93db6ef74f6733a8">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/close_mode/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -966,8 +856,7 @@
 <span id="v-fed2f9bb25e4f57c55100455">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/completion_failure_capacity/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -977,12 +866,10 @@
 <span id="v-affbc6bc7fe4177ec8820af9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/completion_failure_capacity/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -999,8 +886,7 @@
 <span id="v-32870a358838b7bd0e0c2104">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/completion_failures/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1010,12 +896,10 @@
 <span id="v-702ae2bec184f43fce60bcb6">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/completion_failures/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1032,8 +916,7 @@
 <span id="v-154bf4f07a5615e035abf242">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1043,12 +926,10 @@
 <span id="v-adf0db3be95b9f213629d88d">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1065,12 +946,10 @@
 <span id="v-59dfb12a2af9c0797e1124d6">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/ingest_source/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1087,8 +966,7 @@
 <span id="v-df8de395e5a8dd35799e5a6e">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/max_bytes/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1098,12 +976,10 @@
 <span id="v-233c7c8b186b3be4ea715e7f">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/max_bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1120,8 +996,7 @@
 <span id="v-73460ad6d26d93d824fc58e1">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/max_files/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1131,12 +1006,10 @@
 <span id="v-e18897b8fcfe84c18568f27c">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/max_files/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1167,12 +1040,10 @@
 <span id="v-bc1a1304aab53323ff7986f4">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/oldest_completion_failure/anyOf/0/$ref">#/$defs/CompletionFailureStatus</code>
 <span class="kind">string</span> <a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1189,20 +1060,16 @@
 <span id="v-137703c1e1fd7c92ee258bb6">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/oldest_completion_failure/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1219,8 +1086,7 @@
 <span id="v-4f11e3d5af0f66658d94bab9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/pending_claim_capacity/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1230,12 +1096,10 @@
 <span id="v-5512cf7f804a5d7fe4780760">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/pending_claim_capacity/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1259,8 +1123,7 @@
 <span id="v-c7d86a35874f37e89535d951">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/provenance/enum/0">capture</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1270,12 +1133,10 @@
 <span id="v-35c050d843149f4b4c4926e2">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/provenance/enum/1">omit</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1285,16 +1146,13 @@
 <span id="v-b2e60507b60e0ed307624913">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/provenance/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1311,8 +1169,7 @@
 <span id="v-f3497fd3b8b82543b72f0c94">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1322,8 +1179,7 @@
 <span id="v-19564aedd8ff480c3c871339">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/1">ingest_source</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1333,8 +1189,7 @@
 <span id="v-f16a0091cd5c5a40f0e42224">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/2">claims</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1344,8 +1199,7 @@
 <span id="v-c74875d234ef21733e3e883c">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/3">claim_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1355,8 +1209,7 @@
 <span id="v-22b95b3fcbeffb1327990a7c">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/4">close_mode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1366,8 +1219,7 @@
 <span id="v-fd1b03cec3b8322e034c949a">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/5">max_files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1377,8 +1229,7 @@
 <span id="v-8471dccf5b8865840d5fd0fb">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/6">max_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1388,8 +1239,7 @@
 <span id="v-19f9472f452ca06b85233c76">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/7">provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1399,8 +1249,7 @@
 <span id="v-b930b73395db96cffc6bf8ad">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/8">pending_claim_capacity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1410,8 +1259,7 @@
 <span id="v-7b74702c762dd13218d2147f">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/9">completion_failures</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1421,8 +1269,7 @@
 <span id="v-65db69a7dd8f96ed6a6a6235">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/10">completion_failure_capacity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1432,12 +1279,10 @@
 <span id="v-54e0463e490e694964f6b69f">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/11">oldest_completion_failure</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1447,16 +1292,13 @@
 <span id="v-2c0cd385b287d299e767bd46">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1466,8 +1308,7 @@
 <span id="v-40c19173b46f504301d22ac5">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1491,8 +1332,7 @@
 <span id="v-bddc8d9d354c959e6000d950">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/format/const">a-riverhog-ftp-spool-status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1502,12 +1342,10 @@
 <span id="v-66e894378392e6e339ca6dd9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1538,12 +1376,10 @@
 <span id="v-d2e193fea04f69a27d2f2be6">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/next_page_token/anyOf/0/$ref">#/$defs/BrowsePageToken</code>
 <span class="kind">string</span> <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1560,20 +1396,16 @@
 <span id="v-bd5b5d14f7b1a34ebd5690f3">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/next_page_token/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1590,8 +1422,7 @@
 <span id="v-23e7564030ebd2eb4035dd8d">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/page_size/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1601,8 +1432,7 @@
 <span id="v-30d499aee8cde02375d8f1af">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/page_size/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1612,12 +1442,10 @@
 <span id="v-6d83d8a112e0b89b78166b52">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/page_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1648,12 +1476,10 @@
 <span id="v-47284e621539e9a4e69f82f9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/provenance_observer/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1670,20 +1496,16 @@
 <span id="v-fcdc17f94348bd7b94a37dec">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/provenance_observer/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1700,8 +1522,7 @@
 <span id="v-d1314a9337f16f0170a1f402">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/snapshot/const">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1711,12 +1532,10 @@
 <span id="v-7a822c48114503841ca2fac9">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/snapshot/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1740,12 +1559,10 @@
 <span id="v-0cb6810e2d45f7437d92947e">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/sources/items/$ref">#/$defs/SourceStatus</code>
 <span class="kind">string</span> <a href="e-6be3c2cc573221f4f20e1a52.html#v-965f6ea821d1dcf29ac0f209">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1755,8 +1572,7 @@
 <span id="v-593111a4e6ed9e31b1dee2e6">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/sources/maxItems">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1766,16 +1582,13 @@
 <span id="v-157a75c738b2855181df721a">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/sources/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1792,8 +1605,7 @@
 <span id="v-5ea0c8c943a992bc24141cbb">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1803,8 +1615,7 @@
 <span id="v-f6a61d87b2cb087257764719">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/required/1">provenance_observer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1814,8 +1625,7 @@
 <span id="v-075c137366728673d1b4e092">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/required/2">sources</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1825,8 +1635,7 @@
 <span id="v-360224532d2f9df8ef8f2598">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/required/3">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1836,8 +1645,7 @@
 <span id="v-d9be9a93ce03472507b93e19">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/required/4">next_page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1847,12 +1655,10 @@
 <span id="v-efccfc3e5a15736e7e15b39d">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/required/5">snapshot</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1862,12 +1668,10 @@
 <span id="v-28cb51309f4375f932f7d47f">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1877,12 +1681,10 @@
 <span id="v-9609522fbfdb91509e0178d3">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/signature">&quot;(*, format: Literal[&#x27;a-riverhog-ftp-spool-status/v1&#x27;], provenance_observer: str | None, sources: Annotated[list[a_riverhog_ftp_spool_client.status.SourceStatus], MaxLen(max_length=100)], page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, snapshot: Literal[False]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1892,8 +1694,7 @@
 <span id="v-62c244763a7bb9060587fe95">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/distribution">a-riverhog-ftp-spool-client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1903,8 +1704,7 @@
 <span id="v-97d64c5a7d4c9329ced5db75">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/module">a_riverhog_ftp_spool_client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1914,8 +1714,7 @@
 <span id="v-f984045c02ab73e975dfb367">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/name">FtpSpoolStatus</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1925,8 +1724,7 @@
 <span id="v-b919f340993fffa6165648d3">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1938,7 +1736,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1950,7 +1748,7 @@
 <a href="source-authorities.html#source-3caa0330b63cf01f6b887a9b">python:a-riverhog-ftp-spool-client:a_riverhog_ftp_spool_client</a> — <code data-source-path="some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py">some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1961,9 +1759,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>PUT /v1/apps/{app}/keys/{key_id}/access</h1>
 <p class="context">Riverhog archive service. Callable HTTP operations.</p>
@@ -52,7 +43,7 @@
 </dd>
 </dl>
 <h3>Parameters</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -66,34 +57,26 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>app</code>
-</td>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>app</code></td>
+<td data-label="In">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>key_id</code>
-</td>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{16}$</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>key_id</code></td>
+<td data-label="In">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{16}$</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -105,7 +88,7 @@
 <code>true</code>
 </dd>
 </dl>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -115,18 +98,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-8cf7c521f9fe780dac1470e9.html#v-380c3f60fdffdf887ec43454">#/components/schemas/ReplaceAppAccessRequest</a>
-</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-8cf7c521f9fe780dac1470e9.html#v-380c3f60fdffdf887ec43454">#/components/schemas/ReplaceAppAccessRequest</a></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Responses</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -139,92 +120,69 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>200</code>
-</td>
-<td>Successful Response</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-66964c6979036a3ce354b09f.html#v-cc50975939f11bfb08c58813">#/components/schemas/AppAccessSetOut</a>
-</td>
-<td>not declared</td>
+<td data-label="Status">
+<code>200</code></td>
+<td data-label="Description">Successful Response</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-66964c6979036a3ce354b09f.html#v-cc50975939f11bfb08c58813">#/components/schemas/AppAccessSetOut</a></td>
+<td data-label="Error codes">not declared</td>
 </tr>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>Bad Request</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Description">Bad Request</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>Unauthorized</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Description">Unauthorized</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>403</code>
-</td>
-<td>Forbidden</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>forbidden</code>
-</td>
+<td data-label="Status">
+<code>403</code></td>
+<td data-label="Description">Forbidden</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>forbidden</code></td>
 </tr>
 <tr>
-<td>
-<code>404</code>
-</td>
-<td>Not Found</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>not_found</code>
-</td>
+<td data-label="Status">
+<code>404</code></td>
+<td data-label="Description">Not Found</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>not_found</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>Internal Server Error</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>internal_error</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Description">Internal Server Error</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>internal_error</code></td>
 </tr>
 </tbody>
 </table>
@@ -246,8 +204,7 @@
 <span id="v-26371cc086187eaac674e85a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/operationId">replace_app_key_access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -271,8 +228,7 @@
 <span id="v-f2ce0f2f6c0a78c249838165">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/0/in">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -282,8 +238,7 @@
 <span id="v-b87a17aca6aa95ae270b5742">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/0/name">app</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -293,8 +248,7 @@
 <span id="v-16e633ae5fb0bcd85b3a86b5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/0/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -311,8 +265,7 @@
 <span id="v-5e1983cf26c36fd9cf39bc5c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/0/schema/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -322,8 +275,7 @@
 <span id="v-b29d847d94ba430ca672788a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/0/schema/title">App</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -333,16 +285,13 @@
 <span id="v-fb73c047c447d1ad614fa111">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/0/schema/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -359,8 +308,7 @@
 <span id="v-13392f9b638f599399993ae5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/in">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,8 +318,7 @@
 <span id="v-0497ce2fcc46dbfb828084a4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/name">key_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -381,8 +328,7 @@
 <span id="v-6584b2e47852e4b6dac2581c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,8 +345,7 @@
 <span id="v-5d874b1395c5ae1c6772c2eb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/schema/pattern">^[0-9a-f]{16}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,8 +355,7 @@
 <span id="v-d468b568aa3399d8620587c2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/schema/title">Key Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,20 +365,16 @@
 <span id="v-25316ebdcd1a8c5b837c83eb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/schema/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,20 +412,16 @@
 <span id="v-508b1922498307c7ce7fb961">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/requestBody/content/application~1json/schema/$ref">#/components/schemas/ReplaceAppAccessRequest</code>
 <span class="kind">string</span> <a href="e-8cf7c521f9fe780dac1470e9.html#v-380c3f60fdffdf887ec43454">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -495,12 +431,10 @@
 <span id="v-5ea8ae7f1a3a3864974b3c6b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/requestBody/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -545,20 +479,16 @@
 <span id="v-c3c9d7ba88994cac1b1862ce">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/200/content/application~1json/schema/$ref">#/components/schemas/AppAccessSetOut</code>
 <span class="kind">string</span> <a href="e-66964c6979036a3ce354b09f.html#v-cc50975939f11bfb08c58813">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -568,12 +498,10 @@
 <span id="v-2e5e858c2a67b973b1d7f39c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/200/description">Successful Response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -611,20 +539,16 @@
 <span id="v-7d02bcfb790a930872f62c7d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -634,8 +558,7 @@
 <span id="v-29e55e9a4726229dfaa7584a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/400/description">Bad Request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -652,16 +575,13 @@
 <span id="v-dcdb700cc9350afe38ab207e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/400/x-riverhog-error-codes/0">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -699,20 +619,16 @@
 <span id="v-c87953f6797be482dfc6b635">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -722,8 +638,7 @@
 <span id="v-9cc3b7b6fe0334d4f8b00e67">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/401/description">Unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -740,16 +655,13 @@
 <span id="v-9fdc53301dce816c5f97743e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/401/x-riverhog-error-codes/0">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -787,20 +699,16 @@
 <span id="v-3d74546516b3c86728525079">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -810,8 +718,7 @@
 <span id="v-4afd3cdf7995cd2be9cd16ce">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/403/description">Forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -828,16 +735,13 @@
 <span id="v-e1420fb7f88f17d08bf79cf2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/403/x-riverhog-error-codes/0">forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -875,20 +779,16 @@
 <span id="v-f3bb4fe78ce6d6f21c8724ca">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/404/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -898,8 +798,7 @@
 <span id="v-8ac8427c7ca0cdc83859bf93">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/404/description">Not Found</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -916,16 +815,13 @@
 <span id="v-d94f83170c7f41a4e2c61d52">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/404/x-riverhog-error-codes/0">not_found</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -963,20 +859,16 @@
 <span id="v-984bc9eb7dea872430f71c50">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -986,8 +878,7 @@
 <span id="v-7ec217d984905ca97e4c3890">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/500/description">Internal Server Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1004,20 +895,16 @@
 <span id="v-deb8469e2e8591791154df1b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/responses/500/x-riverhog-error-codes/0">internal_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1041,16 +928,13 @@
 <span id="v-313d44dcae911e9294e578c1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/security/0/HTTPBearer">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1060,8 +944,7 @@
 <span id="v-c63a708517bdac8cecd8d6d9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/summary">Replace App Key Access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1078,12 +961,10 @@
 <span id="v-a9e1071d18608c441ab06bf1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/tags/0">apps</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1114,20 +995,16 @@
 <span id="v-bb9ddedc4aa8316b08417ae5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/x-riverhog-permission-requirements/0/any_of/0">keys:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1150,7 +1027,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1165,7 +1042,7 @@
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1175,8 +1052,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1188,23 +1064,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/schema</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:16,&quot;minimum&quot;:16,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{16}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put/parameters/1/schema</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:16,&quot;minimum&quot;:16,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{16}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <details>
 <summary>Structural operation bindings</summary>
-<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
 <table id="v-85b6690263c7db728f57ebdb">
 <tbody>
 <tr>
@@ -1215,8 +1087,7 @@
 <span id="v-579b2a1e82c61ffb5a2b4090">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/application">riverhog</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1226,8 +1097,7 @@
 <span id="v-1722597bbc53eb89f53996eb">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/classification">human-cli+json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1251,8 +1121,7 @@
 <span id="v-cb75f58f6dfc6aada52091c8">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/command">app key access set</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1262,8 +1131,7 @@
 <span id="v-e1d45e9620abf8172ce2e54e">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/executable">a-riverhog-cli</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1273,8 +1141,7 @@
 <span id="v-19700dbde3974b8b33afee35">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/result_identity">a-riverhog-cli-result/app/key/access/set/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1291,8 +1158,7 @@
 <span id="v-a270e5f6737e08eae71e9e58">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/source/line">1295</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1302,8 +1168,7 @@
 <span id="v-52ff8d83fbf6e4d16b4a322f">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/source/module">a_riverhog_cli.main</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1313,8 +1178,7 @@
 <span id="v-d0421a64b590c0ec7331f1a8">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1324,20 +1188,16 @@
 <span id="v-8ab115d2da93b08f83cd7cbf">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_bindings/0/source/symbol">app_key_access_set_cmd</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1354,12 +1214,10 @@
 <span id="v-d1c4a6a86b2f7dd9be8b2329">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/cli_commands/0">app key access set</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1369,8 +1227,7 @@
 <span id="v-897227ecf7e1f52e337b0c8f">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/client">ApiClient</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1394,8 +1251,7 @@
 <span id="v-1d6d8b343a015c7d8c29e314">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/client_bindings/0/public_identity">riverhog_client.ApiClient.replace_app_key_access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1412,8 +1268,7 @@
 <span id="v-303e809884a00947cdb6e79f">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/client_bindings/0/source/line">2217</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1423,8 +1278,7 @@
 <span id="v-c3a60795af48ea4e0f49be1e">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/client_bindings/0/source/module">riverhog_client.client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1434,8 +1288,7 @@
 <span id="v-a99001c7ec01e34002006513">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1445,20 +1298,16 @@
 <span id="v-4da4dd103d443742dc2f0cd7">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/client_bindings/0/source/symbol">ApiClient.replace_app_key_access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1468,8 +1317,7 @@
 <span id="v-0ed04a66ec0cfedc530011db">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/method">PUT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1479,8 +1327,7 @@
 <span id="v-d858634eff674aa09c4b16ec">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/operation_id">replace_app_key_access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1490,8 +1337,7 @@
 <span id="v-be9c98d61abfdf1b4ec81636">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/path">/v1/apps/{app}/keys/{key_id}/access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1501,8 +1347,7 @@
 <span id="v-20d5f8b27b765ae9189133a5">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/provider_evidence">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1512,8 +1357,7 @@
 <span id="v-18fd509868f2cda0631bb3c7">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/read_collection">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1523,17 +1367,19 @@
 <span id="v-01f7f436adcbd6730bd60b5d">
 <code data-value-pointer="/audit/operation-qualification/replace_app_key_access/response_authority">http-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
 </details>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

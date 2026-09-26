@@ -27,7 +27,10 @@ class SegmentedExtentWitness:
     source_pointers: tuple[str, ...]
     test_node_ids: tuple[str, ...]
     gates: tuple[str, ...]
-    audit_scope: str = "Exact declared subjects; candidate test association only."
+    audit_scope: str = (
+        "Completion across the declared bounded segments has no recorded execution result. "
+        "The listed checks are candidates with their recorded scopes."
+    )
     test_scopes: tuple[str, ...] = ()
 
 
@@ -188,7 +191,9 @@ WITNESSES = (
         rule_id="route-progression/v1",
         source_pointers=(),
         audit_scope=(
-            "All current riverhog route-progression declarations; no traversal result implied."
+            "End-to-end traversal across the current riverhog route-progression declarations "
+            "has no recorded execution result. The listed checks are candidates with their "
+            "recorded scopes."
         ),
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
@@ -236,7 +241,9 @@ WITNESSES = (
         rule_id="route-progression/v1",
         source_pointers=(),
         audit_scope=(
-            "All current stove0 route-progression declarations; no traversal result implied."
+            "End-to-end traversal across the current stove0 route-progression declarations "
+            "has no recorded execution result. The listed checks are candidates with their "
+            "recorded scopes."
         ),
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
@@ -254,8 +261,9 @@ WITNESSES = (
         rule_id="route-progression/v1",
         source_pointers=(),
         audit_scope=(
-            "All current a-riverhog-ftp-spool route-progression declarations; "
-            "no traversal result implied."
+            "End-to-end traversal across the current a-riverhog-ftp-spool "
+            "route-progression declarations has no recorded execution result. "
+            "The listed checks are candidates with their recorded scopes."
         ),
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"

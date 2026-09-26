@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-7d1604db9f02e3c3241e15c1.html">gogurt</a> / <a href="i-037a889b696b1e286bd220b1.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>gogurt listener install</h1>
 <p class="context">Mounted-volume ingestion application for Riverhog. CLI contract owned by gogurt.</p>
@@ -52,7 +43,7 @@
 </dl>
 <p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
 <h3>Arguments and options</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -64,96 +55,77 @@
 </thead>
 <tbody>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>config</code>
 <br>
-<code>--config</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>path</code>; exists: <code>false</code>; file okay: <code>true</code>; dir okay: <code>true</code>
-</td>
-<td>not recorded</td>
+<code>--config</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>path</code>; exists: <code>false</code>; file okay: <code>true</code>; dir okay: <code>true</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>actions_dir</code>
 <br>
-<code>--actions-dir</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>path</code>; exists: <code>false</code>; file okay: <code>true</code>; dir okay: <code>true</code>
-</td>
-<td>not recorded</td>
+<code>--actions-dir</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>path</code>; exists: <code>false</code>; file okay: <code>true</code>; dir okay: <code>true</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>interval_seconds</code>
 <br>
-<code>--interval</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>float range</code>; minimum: <code>0.1</code>; maximum: <code>3600</code>; clamp: <code>false</code>
-</td>
-<td>
-<code>2</code>
-</td>
+<code>--interval</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>float range</code>; minimum: <code>0.1</code>; maximum: <code>3600</code>; clamp: <code>false</code></td>
+<td data-label="Default and environment">
+<code>2</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>autorun</code>
 <br>
-<code>--autorun</code>
-</td>
-<td>optional; option; 1 value(s) per use; flag</td>
-<td>
-<code>boolean</code>
-</td>
-<td>
-<code>false</code>
-</td>
+<code>--autorun</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use; flag</td>
+<td data-label="Type and constraints">
+<code>boolean</code></td>
+<td data-label="Default and environment">
+<code>false</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>mounted_volume_provider</code>
 <br>
-<code>--mounted-volume-provider</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>not recorded<br>Environment: <code>GOGURT_MOUNTED_VOLUME_PROVIDER</code>
-</td>
+<code>--mounted-volume-provider</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">not recorded<br>Environment: <code>GOGURT_MOUNTED_VOLUME_PROVIDER</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>listener_host_provider</code>
 <br>
-<code>--listener-host-provider</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>not recorded<br>Environment: <code>GOGURT_LISTENER_HOST_PROVIDER</code>
-</td>
+<code>--listener-host-provider</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">not recorded<br>Environment: <code>GOGURT_LISTENER_HOST_PROVIDER</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>json_mode</code>
 <br>
-<code>--json</code>
-</td>
-<td>optional; option; 1 value(s) per use; flag</td>
-<td>
-<code>boolean</code>
-</td>
-<td>
-<code>false</code>
-</td>
+<code>--json</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use; flag</td>
+<td data-label="Type and constraints">
+<code>boolean</code></td>
+<td data-label="Default and environment">
+<code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -178,7 +150,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -191,24 +163,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>command-completed</code>
-</td>
-<td>human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>gogurt-listener-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;config_file&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;diagnostic&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;dispatches&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;enabled&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;executable&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;format&quot;:{&quot;const&quot;:&quot;gogurt-listener-status/v1&quot;},&quot;health&quot;:{&quot;enum&quot;:[&quot;absent&quot;,&quot;stopped&quot;,&quot;failed&quot;,&quot;starting&quot;,&quot;healthy&quot;,&quot;stale&quot;]},&quot;heartbeat&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;]},&quot;heartbeat_age_seconds&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:[&quot;number&quot;,&quot;null&quot;]},&quot;installed&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;listener_host_provider&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;kind&quot;:{&quot;enum&quot;:[&quot;mounted-volume&quot;,&quot;listener-host&quot;]},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;provider_id&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;kind&quot;,&quot;name&quot;,&quot;provider_id&quot;],&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;manager_version&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;mount_attention&quot;:{&quot;type&quot;:&quot;array&quot;},&quot;mounted_volume_provider&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;kind&quot;:{&quot;enum&quot;:[&quot;mounted-volume&quot;,&quot;listener-host&quot;]},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;provider_id&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;kind&quot;,&quot;name&quot;,&quot;provider_id&quot;],&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;platform&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;running&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;state_dir&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;format&quot;,&quot;manager_version&quot;,&quot;platform&quot;,&quot;installed&quot;,&quot;enabled&quot;,&quot;running&quot;,&quot;health&quot;,&quot;config_file&quot;,&quot;state_dir&quot;,&quot;executable&quot;,&quot;mounted_volume_provider&quot;,&quot;listener_host_provider&quot;,&quot;heartbeat_age_seconds&quot;,&quot;heartbeat&quot;,&quot;dispatches&quot;,&quot;mount_attention&quot;,&quot;diagnostic&quot;],&quot;type&quot;:&quot;object&quot;}</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>completed</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>command-completed</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>gogurt-listener-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;config_file&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;diagnostic&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;dispatches&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;enabled&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;executable&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;format&quot;:{&quot;const&quot;:&quot;gogurt-listener-status/v1&quot;},&quot;health&quot;:{&quot;enum&quot;:[&quot;absent&quot;,&quot;stopped&quot;,&quot;failed&quot;,&quot;starting&quot;,&quot;healthy&quot;,&quot;stale&quot;]},&quot;heartbeat&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;]},&quot;heartbeat_age_seconds&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:[&quot;number&quot;,&quot;null&quot;]},&quot;installed&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;listener_host_provider&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;kind&quot;:{&quot;enum&quot;:[&quot;mounted-volume&quot;,&quot;listener-host&quot;]},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;provider_id&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;kind&quot;,&quot;name&quot;,&quot;provider_id&quot;],&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;manager_version&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;mount_attention&quot;:{&quot;type&quot;:&quot;array&quot;},&quot;mounted_volume_provider&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;kind&quot;:{&quot;enum&quot;:[&quot;mounted-volume&quot;,&quot;listener-host&quot;]},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;provider_id&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;kind&quot;,&quot;name&quot;,&quot;provider_id&quot;],&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;platform&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;running&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;state_dir&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;format&quot;,&quot;manager_version&quot;,&quot;platform&quot;,&quot;installed&quot;,&quot;enabled&quot;,&quot;running&quot;,&quot;health&quot;,&quot;config_file&quot;,&quot;state_dir&quot;,&quot;executable&quot;,&quot;mounted_volume_provider&quot;,&quot;listener_host_provider&quot;,&quot;heartbeat_age_seconds&quot;,&quot;heartbeat&quot;,&quot;dispatches&quot;,&quot;mount_attention&quot;,&quot;diagnostic&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -221,38 +188,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 <tr>
-<td>
-<code>operational</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>kind: <code>application-error</code>
-</td>
-<td>human: <code>empty</code>; json: identity: <code>gogurt-cli-error/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;error&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;code&quot;:{&quot;enum&quot;:[&quot;config_error&quot;,&quot;listener_error&quot;]},&quot;message&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;code&quot;,&quot;message&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;error&quot;],&quot;type&quot;:&quot;object&quot;}</code>
-</td>
-<td>human: <code>noncontractual-diagnostic</code>; json: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>operational</code></td>
+<td data-label="Exit">
+<code>1</code></td>
+<td data-label="Selection">kind: <code>application-error</code></td>
+<td data-label="stdout">human: <code>empty</code>; json: identity: <code>gogurt-cli-error/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;error&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;code&quot;:{&quot;enum&quot;:[&quot;config_error&quot;,&quot;listener_error&quot;]},&quot;message&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;code&quot;,&quot;message&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;error&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stderr">human: <code>noncontractual-diagnostic</code>; json: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -265,21 +222,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -344,8 +296,7 @@
 <span id="v-5915f25fe60c7676db03707a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -355,8 +306,7 @@
 <span id="v-9ba79b91c4606de0d2492fb9">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -366,8 +316,7 @@
 <span id="v-91d3dcae2ace2a36dbb461f4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,8 +326,7 @@
 <span id="v-0a198609d304814768963084">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -388,8 +336,7 @@
 <span id="v-7cbc1ba3e00360928fb4ff2b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,8 +346,7 @@
 <span id="v-f60ab1665f6012047dfdc26c">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/name">config</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,8 +356,7 @@
 <span id="v-df47325ee3589e4fe8b9ca59">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -428,12 +373,10 @@
 <span id="v-3f8afa4cc3f6a6acf67270dd">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/options/0">--config</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -443,8 +386,7 @@
 <span id="v-19a610722232d50e3359e596">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -454,8 +396,7 @@
 <span id="v-61a334d4b32694a2ac898cae">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +413,7 @@
 <span id="v-0c93a5b2728c32d54eb3371b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/allow_dash">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,8 +423,7 @@
 <span id="v-cddb052ddc5e4df517b41085">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/class">typer.models.TyperPath</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -494,8 +433,7 @@
 <span id="v-3d84e9ea648262eaa78c53e7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/dir_okay">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -505,8 +443,7 @@
 <span id="v-66f2725208d980eb4a6979bf">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/exists">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -516,8 +453,7 @@
 <span id="v-c6de25f3870ea5fb83b293e5">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/file_okay">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -527,8 +463,7 @@
 <span id="v-e544d08e870fcc510b205a45">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/name">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -538,8 +473,7 @@
 <span id="v-b716217c9437a3a51fc7a07d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/readable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -549,8 +483,7 @@
 <span id="v-a38e2aac34095a0a5f29a933">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/resolve_path">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,16 +493,13 @@
 <span id="v-ebbbe4fbb1e7b233594e37eb">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0/type/writable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -586,8 +516,7 @@
 <span id="v-18377d5d8b79bc8004daac26">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -597,8 +526,7 @@
 <span id="v-78d63b0afb96cc60e7a42914">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -608,8 +536,7 @@
 <span id="v-67c30e77c4e618dd683c5d51">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -619,8 +546,7 @@
 <span id="v-99cbcccc7983da868a9c78d4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -630,8 +556,7 @@
 <span id="v-8fdd5cb82190b37ae1bc7be4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -641,8 +566,7 @@
 <span id="v-257ce6363c13c6edf00ce4a8">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/name">actions_dir</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -652,8 +576,7 @@
 <span id="v-9ea4341b85c710d781b26d66">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -670,12 +593,10 @@
 <span id="v-04da04ee290efb52eef764c0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/options/0">--actions-dir</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -685,8 +606,7 @@
 <span id="v-173aa4827fa02021e1b2dffd">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -696,8 +616,7 @@
 <span id="v-ca5cb7f32e7f16684dcb30a6">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -714,8 +633,7 @@
 <span id="v-d05cc90b5c534c73c4c287d9">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/allow_dash">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -725,8 +643,7 @@
 <span id="v-87ab85ef75de06a524a05f6f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/class">typer.models.TyperPath</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -736,8 +653,7 @@
 <span id="v-20c0b1448cfa6e0c227d9859">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/dir_okay">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -747,8 +663,7 @@
 <span id="v-a63c6c3ca021da1af4dd06e4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/exists">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -758,8 +673,7 @@
 <span id="v-c12565449bce50d3e6b27a4e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/file_okay">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -769,8 +683,7 @@
 <span id="v-afe284ca484d462479a83e43">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/name">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -780,8 +693,7 @@
 <span id="v-4b3fe6ec7e241b5700033486">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/readable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -791,8 +703,7 @@
 <span id="v-1374d40ae71ed5eab16549d4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/resolve_path">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -802,16 +713,13 @@
 <span id="v-68828d529fd0f326075e8f86">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1/type/writable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -828,8 +736,7 @@
 <span id="v-4d18121841dc749cc9a9cc18">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -839,8 +746,7 @@
 <span id="v-90fe92183d8af4c82ac6b4f8">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/default">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -850,8 +756,7 @@
 <span id="v-3a5c11dfb13079f8585630ab">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -861,8 +766,7 @@
 <span id="v-002f612d9a55c46be79785f2">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -872,8 +776,7 @@
 <span id="v-c6a75d45b26e62efed9006a6">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -883,8 +786,7 @@
 <span id="v-170299b824c510ebec986b3e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -894,8 +796,7 @@
 <span id="v-ad7a9e28b665f6fe8a01ecf8">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/name">interval_seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -905,8 +806,7 @@
 <span id="v-2abef0d49dda9a1abc3eaf78">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -923,12 +823,10 @@
 <span id="v-b031407aeec186275969bd59">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/options/0">--interval</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -938,8 +836,7 @@
 <span id="v-c246c01ef6acd66381370407">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -949,8 +846,7 @@
 <span id="v-62234dabcc7df94775cd3f8a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -967,8 +863,7 @@
 <span id="v-67106501cd707dcb1887c7f0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/clamp">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -978,8 +873,7 @@
 <span id="v-fbd4fc7114335a0a7ae33be7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/class">typer._click.types.FloatRange</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -989,8 +883,7 @@
 <span id="v-8b0c02530c32c103134f0aca">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/max_open">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1000,8 +893,7 @@
 <span id="v-2567b9b19fe69419df0e1cf3">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/maximum">3600</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1011,8 +903,7 @@
 <span id="v-221c4bb53e08a572cc862a55">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/min_open">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1022,8 +913,7 @@
 <span id="v-a445d670e206d183608d5989">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/minimum">0.1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1033,16 +923,13 @@
 <span id="v-53caf7c964a8fce456a18798">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2/type/name">float range</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1059,8 +946,7 @@
 <span id="v-539c7f769393e8a576aec6ef">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1070,8 +956,7 @@
 <span id="v-7759c42a3aee8e735002671b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1081,8 +966,7 @@
 <span id="v-b9395c5e569a163bdf9064a8">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1092,8 +976,7 @@
 <span id="v-c252539beb0cea775fddd67f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/is_flag">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1103,8 +986,7 @@
 <span id="v-50e01f636f9a9491f1061895">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1114,8 +996,7 @@
 <span id="v-a88a63d64f09864563cb55e0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1125,8 +1006,7 @@
 <span id="v-a88bf96b90d75a18167b2f01">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/name">autorun</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1136,8 +1016,7 @@
 <span id="v-84af7099ffa8547f182e9a39">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1154,12 +1033,10 @@
 <span id="v-328556a3d0017bdc8945038b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/options/0">--autorun</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1169,8 +1046,7 @@
 <span id="v-b8bd6eff96e923428230ca9e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1180,8 +1056,7 @@
 <span id="v-83ff8da5bdcad55229a418f2">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1198,8 +1073,7 @@
 <span id="v-ede5854b754663fa13f7c92d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/type/class">typer._click.types.BoolParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1209,16 +1083,13 @@
 <span id="v-2f9983821625664e51c018a4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3/type/name">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1235,8 +1106,7 @@
 <span id="v-4e76907ff99d748180132d17">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1246,8 +1116,7 @@
 <span id="v-657341660612c037a7d1e61b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/envvar">GOGURT_MOUNTED_VOLUME_PROVIDER</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1257,8 +1126,7 @@
 <span id="v-d2c0696841022a8f753143cc">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1268,8 +1136,7 @@
 <span id="v-43a30c8d07c4c8c7d85c2a77">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1279,8 +1146,7 @@
 <span id="v-a33cdb3eaab0567da35ba7e0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1290,8 +1156,7 @@
 <span id="v-df58026f1954fad5aaffbd9c">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/name">mounted_volume_provider</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1301,8 +1166,7 @@
 <span id="v-014ff6ef09dbbadd8e3690ae">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1319,12 +1183,10 @@
 <span id="v-13ed63e473c0016df7271eaa">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/options/0">--mounted-volume-provider</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1334,8 +1196,7 @@
 <span id="v-3baea42c6bc35d03ec81e65a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1345,8 +1206,7 @@
 <span id="v-994cbbef4ca0206415f77ef1">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1363,8 +1223,7 @@
 <span id="v-7455fa682d2a90a8cc787d7a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1374,16 +1233,13 @@
 <span id="v-cc32df278a051e7469992f17">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1400,8 +1256,7 @@
 <span id="v-883b5617062619288f021200">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1411,8 +1266,7 @@
 <span id="v-e3597fcfc8ad0ed2e56ba35c">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/envvar">GOGURT_LISTENER_HOST_PROVIDER</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1422,8 +1276,7 @@
 <span id="v-aa1119381e4e5c7ee096eb7a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1433,8 +1286,7 @@
 <span id="v-658f8d6cf4e974a3323b6b7a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1444,8 +1296,7 @@
 <span id="v-e6fac2d9c901d96f807bbb9a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1455,8 +1306,7 @@
 <span id="v-85512c5fbac5b1be05552f32">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/name">listener_host_provider</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1466,8 +1316,7 @@
 <span id="v-1d14870d3ffda071357b82cf">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1484,12 +1333,10 @@
 <span id="v-05f2332759a0c6d804c66ab7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/options/0">--listener-host-provider</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1499,8 +1346,7 @@
 <span id="v-2e4852786709886a35e1aa49">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1510,8 +1356,7 @@
 <span id="v-4c132f3b03e18849feb82346">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1528,8 +1373,7 @@
 <span id="v-5a11b2a154bd6fef89e0c254">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1539,16 +1383,13 @@
 <span id="v-f8dd00ee781dbdf1af8684d2">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1565,8 +1406,7 @@
 <span id="v-270c8084fc166234486943a3">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1576,8 +1416,7 @@
 <span id="v-bc9d1652eb8cb61e674b26d2">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1587,8 +1426,7 @@
 <span id="v-4673cc2cfebb2ebee0cd6517">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1598,8 +1436,7 @@
 <span id="v-b49720509eb72f69a69acf1b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/is_flag">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1609,8 +1446,7 @@
 <span id="v-df263088aa35ec582ef27711">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1620,8 +1456,7 @@
 <span id="v-994669e74775e64431d91211">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1631,8 +1466,7 @@
 <span id="v-7084b0aaa68ff3aa1060f637">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/name">json_mode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1642,8 +1476,7 @@
 <span id="v-4bb11d9b5b53bf5e7c2f5506">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1660,12 +1493,10 @@
 <span id="v-024b41da97f1855f6cda8835">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/options/0">--json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1675,8 +1506,7 @@
 <span id="v-882c2b18f375c8fb19d0bf73">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1686,8 +1516,7 @@
 <span id="v-15c87aa73e66aa5353a36af0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1704,8 +1533,7 @@
 <span id="v-cc44a7181bac9528fda83f1b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/type/class">typer._click.types.BoolParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1715,16 +1543,13 @@
 <span id="v-e8a9a127af59352cb6c1b5f2">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6/type/name">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1757,8 +1582,7 @@
 <span id="v-da5397f7232da837f0ee0b0e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1768,8 +1592,7 @@
 <span id="v-7b2d01af136f4552751ad4f0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1786,12 +1609,10 @@
 <span id="v-29814ad888142ee766d33e54">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1808,12 +1629,10 @@
 <span id="v-574df8188c500f73a9a1dd62">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1830,16 +1649,13 @@
 <span id="v-bf6a76c45f54b7330483e1d6">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1856,8 +1672,7 @@
 <span id="v-b32ce984f1d18aa80c468b77">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/exit_status">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1867,8 +1682,7 @@
 <span id="v-7c484ca96ccd6113675cbadf">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/id">operational</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1885,12 +1699,10 @@
 <span id="v-ba098cc5fa6f9d90da08f623">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/selected_by/kind">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1907,8 +1719,7 @@
 <span id="v-755420cdbbffb6fe1ff2924b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stderr/human">noncontractual-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1918,12 +1729,10 @@
 <span id="v-e5c383bf64e28b784d537435">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stderr/json">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1940,8 +1749,7 @@
 <span id="v-48f1e016fd33961f8ebf9222">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/human">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1958,8 +1766,7 @@
 <span id="v-a207daf1484362ff96282aba">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/identity">gogurt-cli-error/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1969,8 +1776,7 @@
 <span id="v-5c0edcc35f73a1a8531d5b1f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/kind">cli-local-json-schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1987,8 +1793,7 @@
 <span id="v-9ccd841e1f060a5c954e9834">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2012,8 +1817,7 @@
 <span id="v-5641e618c4715a1d255fd450">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2044,8 +1848,7 @@
 <span id="v-a37b0f107db4b6d6f7eebdef">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/properties/code/enum/0">config_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2055,16 +1858,13 @@
 <span id="v-a239df2424a1c12d508f2871">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/properties/code/enum/1">listener_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2081,16 +1881,13 @@
 <span id="v-42c4e35401f360368ae3fc40">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2107,8 +1904,7 @@
 <span id="v-c8bb04c37e659411944df569">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2118,12 +1914,10 @@
 <span id="v-e8a4ad1baee49760c72e9b69">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2133,16 +1927,13 @@
 <span id="v-79e5381f8323b71b27f42856">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/properties/error/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2159,12 +1950,10 @@
 <span id="v-2a4ca0150e4d762d4d44e21b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/required/0">error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2174,28 +1963,22 @@
 <span id="v-da4d2546bd9be8032824831b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/failures/1/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2205,8 +1988,7 @@
 <span id="v-d2f5dcad071ea9a5a16ed66b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/human_json_relationship">same-semantic-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2216,8 +1998,7 @@
 <span id="v-5dc6f486d4a8b0725886484c">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/identity">gogurt-cli-result/listener/install/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2227,8 +2008,7 @@
 <span id="v-7b2614c5be137ff9d7bf575b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/profile_id">gogurt-cli-human-json/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2238,8 +2018,7 @@
 <span id="v-e2d4d5e3ba07ef77390172d7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/structured_output">optional-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2263,8 +2042,7 @@
 <span id="v-b78a89ef1d2f8b4aee79334f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2274,8 +2052,7 @@
 <span id="v-766debc0c67b97eed7559f4d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/id">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2292,12 +2069,10 @@
 <span id="v-c5f0da0540c8aa0660698aad">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/selected_by/kind">command-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2314,12 +2089,10 @@
 <span id="v-3fc6d21070aec0c5a3880ed4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2336,8 +2109,7 @@
 <span id="v-e99a9732c7fc35cee88e1abe">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/human">noncontractual-presentation-of-command-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2354,8 +2126,7 @@
 <span id="v-b8560c97c2cc4f8cb124717a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/identity">gogurt-listener-status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2365,8 +2136,7 @@
 <span id="v-e8fc7ea2d98d165c49a4ee8c">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/kind">cli-local-json-schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2383,8 +2153,7 @@
 <span id="v-186f931ba11a232698d8b58d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2408,12 +2177,10 @@
 <span id="v-ee4599db47c6fee6fc8aa892">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/config_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2437,8 +2204,7 @@
 <span id="v-880624045d98e6d9c43afb82">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/diagnostic/type/0">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2448,16 +2214,13 @@
 <span id="v-5d1c4b6766fefc989f58786d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/diagnostic/type/1">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2474,12 +2237,10 @@
 <span id="v-7c9d083004bdc0a5614f0574">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/dispatches/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2496,12 +2257,10 @@
 <span id="v-4bc30b9a18e872335e3e178e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/enabled/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2525,8 +2284,7 @@
 <span id="v-b6ec183c709f39f5a50cc44d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/executable/type/0">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2536,16 +2294,13 @@
 <span id="v-f8f81d0517c5740e9ad3ca02">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/executable/type/1">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2562,12 +2317,10 @@
 <span id="v-094687d769015b048d1f9042">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/format/const">gogurt-listener-status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2591,8 +2344,7 @@
 <span id="v-2e9a59098265f2e66ae81cc1">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/health/enum/0">absent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2602,8 +2354,7 @@
 <span id="v-ae5bc957ab47dd8b33868162">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/health/enum/1">stopped</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2613,8 +2364,7 @@
 <span id="v-7b2b561786463065029641ef">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/health/enum/2">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2624,8 +2374,7 @@
 <span id="v-2a87984d2bd7f29bdc0f6af1">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/health/enum/3">starting</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2635,8 +2384,7 @@
 <span id="v-bb4297dad66f3979ce5b871b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/health/enum/4">healthy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2646,16 +2394,13 @@
 <span id="v-aa0bce0bdea9d4d7607b90f5">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/health/enum/5">stale</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2679,8 +2424,7 @@
 <span id="v-c85e8f367e85c1c0fff8e5ca">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/heartbeat/type/0">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2690,16 +2434,13 @@
 <span id="v-4e51821825e39deecf9efc7b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/heartbeat/type/1">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2716,8 +2457,7 @@
 <span id="v-8db7958e5fab2c404d478fa8">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/heartbeat_age_seconds/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2734,8 +2474,7 @@
 <span id="v-4cf2e299c5e75a985d9d08e0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/heartbeat_age_seconds/type/0">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2745,16 +2484,13 @@
 <span id="v-6c911423acf5c44cadac66c3">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/heartbeat_age_seconds/type/1">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2771,12 +2507,10 @@
 <span id="v-1bd53a8b02d74f29fc79a557">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/installed/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2807,8 +2541,7 @@
 <span id="v-7e8d667a5bb891111a475fd4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2839,8 +2572,7 @@
 <span id="v-836dbc1edd55e192b792a900">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/properties/kind/enum/0">mounted-volume</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2850,16 +2582,13 @@
 <span id="v-36e1242ad46c9c5d4862f15f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/properties/kind/enum/1">listener-host</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2876,12 +2605,10 @@
 <span id="v-c3d49f48233cb3e7f8fc0cd7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/properties/name/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2898,16 +2625,13 @@
 <span id="v-79be850241fe5d68ea4fa97f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/properties/provider_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2924,8 +2648,7 @@
 <span id="v-0656f6e06abdca4a1f441cbe">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/required/0">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2935,8 +2658,7 @@
 <span id="v-d9730a9c2022d2f48f93841e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/required/1">name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2946,12 +2668,10 @@
 <span id="v-a35e1e4596300618dc801e5d">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/required/2">provider_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2961,12 +2681,10 @@
 <span id="v-f653416312d9734507a8aabd">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2983,20 +2701,16 @@
 <span id="v-8d3c88210e8859a481738237">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/listener_host_provider/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3013,12 +2727,10 @@
 <span id="v-6e4f8cf38030ca6452b55ed4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/manager_version/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3035,12 +2747,10 @@
 <span id="v-9ca1ddce4be418a069cce7eb">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mount_attention/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3071,8 +2781,7 @@
 <span id="v-112604246d1d076fbff61d1e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3103,8 +2812,7 @@
 <span id="v-2af8f9520500e6429a0c36e1">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/properties/kind/enum/0">mounted-volume</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3114,16 +2822,13 @@
 <span id="v-da04673077d31f9eb2e8daed">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/properties/kind/enum/1">listener-host</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3140,12 +2845,10 @@
 <span id="v-a9f398810d38d3214fb5c13a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/properties/name/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3162,16 +2865,13 @@
 <span id="v-5f245e62c75bbb9c9f299c39">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/properties/provider_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3188,8 +2888,7 @@
 <span id="v-c8babee0c82c116c67924e8b">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/required/0">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3199,8 +2898,7 @@
 <span id="v-522eb1295ffefd37f0c9a2c7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/required/1">name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3210,12 +2908,10 @@
 <span id="v-f544147cba426a73db95c679">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/required/2">provider_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3225,12 +2921,10 @@
 <span id="v-65959554180e2c776553bc06">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3247,20 +2941,16 @@
 <span id="v-77ea3b57eb32100057475742">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/mounted_volume_provider/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3277,12 +2967,10 @@
 <span id="v-0a2c091d03f0a27275532ff0">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/platform/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3299,12 +2987,10 @@
 <span id="v-1dae2bf434a8f46259e4a44f">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/running/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3321,16 +3007,13 @@
 <span id="v-278c466a97b9734cb30a55e6">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/properties/state_dir/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3347,8 +3030,7 @@
 <span id="v-ac654fd640d86d5a550d6caf">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3358,8 +3040,7 @@
 <span id="v-b42d9756a3a962455d84ed69">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/1">manager_version</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3369,8 +3050,7 @@
 <span id="v-0d9068a846e406972652085a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/2">platform</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3380,8 +3060,7 @@
 <span id="v-58069a39d165b6bda9c9ad70">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/3">installed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3391,8 +3070,7 @@
 <span id="v-dfac0273c3a2a6883059f64a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/4">enabled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3402,8 +3080,7 @@
 <span id="v-baab8abb8e328c6d2245bc87">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/5">running</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3413,8 +3090,7 @@
 <span id="v-9821fefe91e12f9f1c86df50">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/6">health</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3424,8 +3100,7 @@
 <span id="v-9619084c2312b1fb9a8e318e">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/7">config_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3435,8 +3110,7 @@
 <span id="v-80a319f6b76b01478042beb9">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/8">state_dir</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3446,8 +3120,7 @@
 <span id="v-2f1362aedde6683d69ea40aa">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/9">executable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3457,8 +3130,7 @@
 <span id="v-f0586e17bdc67965ad384af1">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/10">mounted_volume_provider</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3468,8 +3140,7 @@
 <span id="v-734a54c2cc120c7adaab1c7a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/11">listener_host_provider</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3479,8 +3150,7 @@
 <span id="v-8f45b879aed9a3aca8fc64a7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/12">heartbeat_age_seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3490,8 +3160,7 @@
 <span id="v-ce465f6126de2df9227592ff">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/13">heartbeat</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3501,8 +3170,7 @@
 <span id="v-0e732bf818f39770e5c7ac7c">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/14">dispatches</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3512,8 +3180,7 @@
 <span id="v-d7b4c8c96471b8031d912fb4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/15">mount_attention</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3523,12 +3190,10 @@
 <span id="v-1c2565ebb2e87627431974b7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/required/16">diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3538,28 +3203,22 @@
 <span id="v-7c4d5a45e055d04589330d45">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/result_contract/success/0/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -3585,8 +3244,7 @@
 <span id="v-04a5125b5384f04431666304">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3596,8 +3254,7 @@
 <span id="v-3af508d89b21b549b7c1f8cb">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3607,8 +3264,7 @@
 <span id="v-8c6d37bc187abec0b23ea9b8">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3618,8 +3274,7 @@
 <span id="v-ba3be3e1c50f78279cd5c36a">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3636,8 +3291,7 @@
 <span id="v-2b2de14e154fccee696859e7">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3654,20 +3308,16 @@
 <span id="v-8cc37f87df5041e32ce18b41">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls/0/trigger/options/0">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -3679,7 +3329,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -3691,7 +3341,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -3701,8 +3351,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -3714,109 +3363,88 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · cli-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:3600,&quot;minimum&quot;:0.1,&quot;reason&quot;:&quot;schema-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;type.maximum&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · cli-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:3600,&quot;minimum&quot;:0.1,&quot;reason&quot;:&quot;schema-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;type.maximum&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

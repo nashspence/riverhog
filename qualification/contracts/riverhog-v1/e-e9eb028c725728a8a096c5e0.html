@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: FactPredicate</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,79 +59,59 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-faaa06076fd3e54000cd7228">artifact_facts</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-b20ec7105cc064b916416073.html#v-ceab5b82fbcd6295871d6c3d">#/components/schemas/ArtifactFactBinding</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-faaa06076fd3e54000cd7228">artifact_facts</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-b20ec7105cc064b916416073.html#v-ceab5b82fbcd6295871d6c3d">#/components/schemas/ArtifactFactBinding</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-31625c701a6bf4775cb7e445">artifact_roles</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-31625c701a6bf4775cb7e445">artifact_roles</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>observation_contract_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>observation_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operator</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;]</code>; default: <code>equals</code>
-</td>
-<td>
-<code>equals</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operator</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;]</code>; default: <code>equals</code></td>
+<td data-label="Default">
+<code>equals</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>pointer</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>value</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>value</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -151,7 +122,7 @@
 <p class="shape">any of: <a href="e-b20ec7105cc064b916416073.html#v-ceab5b82fbcd6295871d6c3d">#/components/schemas/ArtifactFactBinding</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -161,16 +132,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-b20ec7105cc064b916416073.html#v-ceab5b82fbcd6295871d6c3d">#/components/schemas/ArtifactFactBinding</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-b20ec7105cc064b916416073.html#v-ceab5b82fbcd6295871d6c3d">#/components/schemas/ArtifactFactBinding</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -209,8 +178,7 @@
 <span id="v-bdf011cc1b4867aba1fc74b8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -248,12 +216,10 @@
 <span id="v-0e062911e8752fbdea83af8d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_facts/anyOf/0/$ref">#/components/schemas/ArtifactFactBinding</code>
 <span class="kind">string</span> <a href="e-b20ec7105cc064b916416073.html#v-ceab5b82fbcd6295871d6c3d">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -270,20 +236,16 @@
 <span id="v-57af0c34999ba34f12f87585">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_facts/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -300,8 +262,7 @@
 <span id="v-832066c61eb48213ae4dcda5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -318,8 +279,7 @@
 <span id="v-2148f94547a47c6b69aff9eb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,12 +289,10 @@
 <span id="v-9220396b17390f7f35022950">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -344,8 +302,7 @@
 <span id="v-09cbd5710a16a5d0fa52807b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles/title">Artifact Roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -355,12 +312,10 @@
 <span id="v-3cd29eb885ef7aa33e5bb59b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,8 +332,7 @@
 <span id="v-58fae846892870be442ef01d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/observation_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -388,8 +342,7 @@
 <span id="v-42cc5fe0b1131920e08bf9ee">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/observation_contract_id/title">Observation Contract Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,12 +352,10 @@
 <span id="v-2bec935685e11028064ae7b8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/observation_contract_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,8 +372,7 @@
 <span id="v-0c8f3b8b51cddb936695c8de">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/default">equals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -439,8 +389,7 @@
 <span id="v-e52b5d54ff8a5cd28634df0f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/enum/0">equals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -450,8 +399,7 @@
 <span id="v-109069c245c427036cff7207">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/enum/1">not-equals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -461,8 +409,7 @@
 <span id="v-b1a9b80c5de770d446b4e268">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/enum/2">contains</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,12 +419,10 @@
 <span id="v-d6cd73070f01f4ae8dd93c09">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/enum/3">exists</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -487,8 +432,7 @@
 <span id="v-8acd925316208bcec88e6d19">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/title">Operator</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -498,12 +442,10 @@
 <span id="v-5fe20a4a4363d69c28405ca5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/operator/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -520,8 +462,7 @@
 <span id="v-5ef2fe9ffc231cfb0d5fc0fd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,8 +472,7 @@
 <span id="v-1f450aa095669e251b9f0d84">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/pointer/title">Pointer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -542,12 +482,10 @@
 <span id="v-d49fcca5680f42276a8c804d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/pointer/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -564,16 +502,13 @@
 <span id="v-886c763bcc6f260871ede22a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/value/$ref">#/components/schemas/JsonValue</code>
 <span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -590,8 +525,7 @@
 <span id="v-f4bdc03660047ce005216be3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/required/0">observation_contract_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -601,12 +535,10 @@
 <span id="v-42f9ba2e5f7a15ef2dceb089">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/required/1">pointer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -616,8 +548,7 @@
 <span id="v-be3396ece7c54b545a873807">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/title">FactPredicate</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -627,8 +558,7 @@
 <span id="v-76c251dc878538037b411a3d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/FactPredicate/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -640,7 +570,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -652,7 +582,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -662,8 +592,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -675,25 +604,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/FactPredicate/properties/artifact_roles</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

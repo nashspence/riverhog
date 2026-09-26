@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a> / <a href="i-9f6785dfbc677f0f451484fd.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: AttemptFailedEvent</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,64 +59,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>occurred_at</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>occurred_at</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>payload</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f6827553129514659a371ed6.html#v-b9659c19ce9af575f9c63fdf">#/components/schemas/AttemptFailedPayload</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>payload</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f6827553129514659a371ed6.html#v-b9659c19ce9af575f9c63fdf">#/components/schemas/AttemptFailedPayload</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>subject</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>subject</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>type</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>io.riverhog.ftp_spool.claim.attempt_failed</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>io.riverhog.ftp_spool.claim.attempt_failed</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -148,8 +124,7 @@
 <span id="v-03d350168851963c45a16cf3">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -173,8 +148,7 @@
 <span id="v-8e287aa3263a686784b461a9">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -184,8 +158,7 @@
 <span id="v-bc7b2186e5f7c30aac2f59e6">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/id/title">Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -195,12 +168,10 @@
 <span id="v-63f9288b6e7f37c9c6151e2d">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -217,8 +188,7 @@
 <span id="v-c6887e82d2be9a5a9db096c6">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -228,8 +198,7 @@
 <span id="v-332d2d3f43667aa294dc5b5c">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -239,8 +208,7 @@
 <span id="v-2faed8259c9dda7eb0b5ce5e">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -250,8 +218,7 @@
 <span id="v-f5a7a25ca525d762b26feac0">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at/title">Occurred At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,12 +228,10 @@
 <span id="v-9788d665adc0c57a36618cfa">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,12 +248,10 @@
 <span id="v-f8b9fb35d6469dc1b144a8ce">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/payload/$ref">#/components/schemas/AttemptFailedPayload</code>
 <span class="kind">string</span> <a href="e-f6827553129514659a371ed6.html#v-b9659c19ce9af575f9c63fdf">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -305,8 +268,7 @@
 <span id="v-0f8df60d5209d333d5c65cda">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/subject/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -316,8 +278,7 @@
 <span id="v-69a5ddf6f66772c7a1215176">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/subject/title">Subject</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,12 +288,10 @@
 <span id="v-ede5bc01ddab3b7dc9652dab">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/subject/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,8 +308,7 @@
 <span id="v-7b02797852f04567184ef63e">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/type/const">io.riverhog.ftp_spool.claim.attempt_failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,8 +318,7 @@
 <span id="v-dc3667272744cf1e3d1acbd2">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/type/title">Type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -371,16 +328,13 @@
 <span id="v-8ac40523b2e0ac166ac5667d">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/type/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -397,8 +351,7 @@
 <span id="v-19e5475920f06f60069ff991">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -408,8 +361,7 @@
 <span id="v-a6fe2a9641f326d9fbe2f155">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/required/1">type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,8 +371,7 @@
 <span id="v-a726822cbf904574c710d3c3">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/required/2">subject</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -430,8 +381,7 @@
 <span id="v-29cf3580c9f30d911640acb4">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/required/3">occurred_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -441,12 +391,10 @@
 <span id="v-ba6fc7ba20a687688c671cd4">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/required/4">payload</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -456,8 +404,7 @@
 <span id="v-9f0ea24610aaa7093ec83e8d">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/title">AttemptFailedEvent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,8 +414,7 @@
 <span id="v-90393fea015220083ae1ed79">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -480,7 +426,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -492,7 +438,7 @@
 <a href="source-authorities.html#source-fdb5f95db76e4741f768b51b">openapi:a-riverhog-ftp-spool</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -502,8 +448,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -515,37 +460,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/occurred_at</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/subject</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/AttemptFailedEvent/properties/subject</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

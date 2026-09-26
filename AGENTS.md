@@ -34,11 +34,6 @@ Exact behavior belongs in code and tests. Current API shape comes from the runni
 application's OpenAPI document, command syntax comes from `--help`, and configuration
 shape comes from real parsers and checked executable examples. Do not add hand-maintained
 inventories of those surfaces to `main`; release reference is generated from a tag.
-Nonbinding design guidance lives in `guidance/heuristics.toml`; its generated view and related
-test references do not establish, interpret, or change an external contract.
-Noncontractual performance accounting lives in `scripts/performance_objectives.py`; its
-generated view records objectives, observations, and independent bounds without creating a
-release gate or external commitment.
 
 GitHub issue bodies own durable scope, decisions, and issue-local acceptance. Use native
 sub-issues for decomposition, dependencies for hard prerequisites, and milestones for release
@@ -62,7 +57,8 @@ documentation work.
 
 ## Work
 
-- Read the relevant implementation, tests, and executable contracts before editing.
+- Read the relevant implementation, scoped policy tests, and executable contracts before
+  editing. Enforceable repository policy belongs in clearly named tests.
 - Use canonical current names without aliases or compatibility shims unless a verified
   supported dependency requires one. Before v1, revise the baseline rather than preserving
   retired schema.

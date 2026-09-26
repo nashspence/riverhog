@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a> / <a href="i-5c5fbaec38dbfcb96276df03.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_target_protocol.DepartureEffectReceiptPayload</h1>
 <p class="context">Dependency-light public contracts for external Stove0 targets. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,54 +84,41 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>departure_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>departure_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-departure-effect-receipt/v1</code>; default: <code>stove0-departure-effect-receipt/v1</code>
-</td>
-<td>
-<code>stove0-departure-effect-receipt/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-departure-effect-receipt/v1</code>; default: <code>stove0-departure-effect-receipt/v1</code></td>
+<td data-label="Default">
+<code>stove0-departure-effect-receipt/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-85035dcdb3eab5884023a2a9">result</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-e9da01ec304516c808d4432f.html#v-204bba7a666ff4e4c5cf4c02">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-85035dcdb3eab5884023a2a9">result</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-e9da01ec304516c808d4432f.html#v-204bba7a666ff4e4c5cf4c02">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -204,8 +182,7 @@
 <span id="v-9debc0f2153def286869068e">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -229,12 +206,10 @@
 <span id="v-204bba7a666ff4e4c5cf4c02">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -244,8 +219,7 @@
 <span id="v-e83adf87e87c7b841fa22a14">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -269,8 +243,7 @@
 <span id="v-9ab84cfdacb1a25992f11b3b">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/departure_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -280,12 +253,10 @@
 <span id="v-91cd81fa0446b422df6c70be">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/departure_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -302,8 +273,7 @@
 <span id="v-66c1cb0b64856273300d7b48">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/format/const">stove0-departure-effect-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -313,8 +283,7 @@
 <span id="v-e4c672606262f4cb8079a644">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/format/default">stove0-departure-effect-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -324,12 +293,10 @@
 <span id="v-5cbad2a247eb2a8f665d7458">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -353,12 +320,10 @@
 <span id="v-0025ce5382f20afd82cf182f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/result/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-e9da01ec304516c808d4432f.html#v-204bba7a666ff4e4c5cf4c02">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -368,8 +333,7 @@
 <span id="v-2d3ec7c8a43f580d2e6ac2fb">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/result/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -379,8 +343,7 @@
 <span id="v-dc60c2584b4e832bb76625b5">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/result/x-riverhog-encoded-bytes-max">65536</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -397,8 +360,7 @@
 <span id="v-502d39041774aa656dcc03ce">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/result/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -408,16 +370,13 @@
 <span id="v-99ba2edf3ccaa14f71d531e6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/result/x-riverhog-extent/reason">bounded-departure-effect-receipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -434,8 +393,7 @@
 <span id="v-6e9fa33e68ac757abbf36ef1">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/target_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -445,16 +403,13 @@
 <span id="v-7d1c2c583142d8b70879fa8a">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/properties/target_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -471,8 +426,7 @@
 <span id="v-0abdd801f1cf51f9d0314380">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/required/0">departure_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -482,8 +436,7 @@
 <span id="v-764a3be6ddc3230bf6715a46">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/required/1">target_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -493,12 +446,10 @@
 <span id="v-2d531819062be5c0457b56fb">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/required/2">result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -508,12 +459,10 @@
 <span id="v-2a5d0de5a5c8b472c76e892d">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -523,12 +472,10 @@
 <span id="v-d9e663c07ea2eab4166a12fc">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/contract/signature">&quot;(*, format: Literal[&#x27;stove0-departure-effect-receipt/v1&#x27;] = &#x27;stove0-departure-effect-receipt/v1&#x27;, departure_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], target_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], result: dict[str, JsonValue]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -538,8 +485,7 @@
 <span id="v-8d170da269b7d92ddb106c58">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/distribution">stove0-target-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -549,8 +495,7 @@
 <span id="v-fd196bc50511a0eb14096488">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/module">stove0_target_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,8 +505,7 @@
 <span id="v-e54449dbf4d986695bf00dc2">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/name">DepartureEffectReceiptPayload</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -571,8 +515,7 @@
 <span id="v-307a6fa6a86db434e9d91f53">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectReceiptPayload/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -592,7 +535,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -604,7 +547,7 @@
 <a href="source-authorities.html#source-f4f0b2202672f85e3d080ca7">python:stove0-target-protocol:stove0_target_protocol</a> — <code data-source-path="some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py">some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -615,9 +558,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

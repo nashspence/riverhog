@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-4cb6451250139576fc538025.html">Process Protocol Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>generated:riverhog-storage-adapter: WriteStartRequest</h1>
 <p class="context">HTTP binding and conformance support for Riverhog storage adapters. Structured values exchanged by a process protocol.</p>
@@ -63,7 +54,7 @@ credentials used to realize that session remain adapter-private.</code>
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -76,62 +67,49 @@ credentials used to realize that session remain adapter-private.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>content_type</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>content_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>expected_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-67a4605098ba1582e6347432.html#v-d52ec9da98561d0b61666ccc">#/$defs/PositiveDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>expected_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-67a4605098ba1582e6347432.html#v-d52ec9da98561d0b61666ccc">#/$defs/PositiveDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>object_path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>object_path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>placement_policy</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;archive_default&quot;,&quot;immediate_default&quot;]</code>
-</td>
-<td>not declared</td>
-<td>Select an adapter-configured placement default. This does not establish archive membership or read readiness.</td>
+<td data-label="Field">
+<code>placement_policy</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;archive_default&quot;,&quot;immediate_default&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description">Select an adapter-configured placement default. This does not establish archive membership or read readiness.</td>
 </tr>
 <tr>
-<td>
-<a href="#s-3f20a9ba4dfbe244e55d3eaf">required_identity_assertions</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; x-riverhog-encoded-bytes-max: <code>16384</code>; x-riverhog-extent: structured schema; additionalProperties: <code>string</code>
-</td>
-<td>not declared</td>
-<td>Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.</td>
+<td data-label="Field">
+<a href="#s-3f20a9ba4dfbe244e55d3eaf">required_identity_assertions</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>16384</code>; x-riverhog-extent: structured schema; additionalProperties: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description">Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.</td>
 </tr>
 </tbody>
 </table>
@@ -222,8 +200,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-93e7de28e0f16354b96eb11f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/$defs/PositiveDecimal/pattern">^[1-9][0-9]*(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -233,16 +210,13 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-21a5b0cd8cdf770a6346228b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/$defs/PositiveDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -252,8 +226,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-0ed83f3a4f2f85efae7cc9ac">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -263,8 +236,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-5b9e227aa3573cd08ca249ef">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/description">&quot;Exact authority for one idempotently established nonterminal write.\n\nRepeating the same canonical request against the same configured adapter while the\nwrite remains nonterminal returns the same continuation session. Operational\ncredentials used to realize that session remain adapter-private.&quot;</code>
 <span class="kind">string (JSON spelling for control characters)</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,8 +260,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-8b548614bb439437b4fcc0ae">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/content_type/maxLength">255</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,8 +270,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-76493eb048693fd1bef8e8c7">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/content_type/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,8 +280,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-59b6713a3ca8014903c60419">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/content_type/title">Content Type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -321,12 +290,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-da888e8c5b70818f0a68a1b8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/content_type/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,12 +310,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-e6372b7ed0043219e3b798d9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/expected_bytes/$ref">#/$defs/PositiveDecimal</code>
 <span class="kind">string</span> <a href="e-67a4605098ba1582e6347432.html#v-d52ec9da98561d0b61666ccc">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -365,8 +330,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-a96ca83444da2d6b67f5c711">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/object_path/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -376,8 +340,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-82e0e494069060310916a6a2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/object_path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -387,8 +350,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-5d416fc42bc8749d4d1cad03">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/object_path/title">Object Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -398,12 +360,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-06db95eb8ebf3482143961f0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/object_path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,8 +380,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-ba3f56c417cf936f0169feab">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/placement_policy/description">Select an adapter-configured placement default. This does not establish archive membership or read readiness.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -438,8 +397,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-3230c6eae982b4a78b88f316">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/placement_policy/enum/0">archive_default</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -449,12 +407,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-74955831c6fe182fa937d61e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/placement_policy/enum/1">immediate_default</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -464,8 +420,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-5b16e360b4cb71990d070bde">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/placement_policy/title">Placement Policy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -475,12 +430,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-3fb09e94d4f7341206960738">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/placement_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -504,12 +457,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-c121c10d465e2d205ac90f28">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/additionalProperties/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -519,8 +470,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-403e64e3f0fe4c9d609635c0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/description">Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -530,8 +480,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-a5d56f6272f46ce1632945ac">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/maxProperties">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -541,8 +490,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-6049c628e6bce8feee626d45">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/title">Required Identity Assertions</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -552,8 +500,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-f1333d38224083d92d2d5661">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -563,8 +510,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-6ab4a061e2ab467fbe17ddf7">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/x-riverhog-encoded-bytes-max">16384</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -581,8 +527,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-54d57cf5d9bd57f61fd6a62e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -592,20 +537,16 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-635ee0e9f3ed91edf360ad72">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions/x-riverhog-extent/reason">bounded-object-identity-assertion-envelope</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -622,8 +563,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-d4f8f5adec574a890f41e969">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/required/0">object_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -633,8 +573,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-9b1661a81228b4c3b017bf3a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/required/1">expected_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -644,8 +583,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-98a57cd804238a543625af85">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/required/2">content_type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -655,8 +593,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-d32fc65b562be4d321c12cfd">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/required/3">required_identity_assertions</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -666,12 +603,10 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-1f113dd2ed0200f992e6c8b5">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/required/4">placement_policy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -681,8 +616,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-2e642e279f9a688202fa38dc">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/title">WriteStartRequest</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -692,8 +626,7 @@ credentials used to realize that session remain adapter-private.</code>
 <span id="v-5de2718e1e6f7acce5085f5d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -713,7 +646,7 @@ credentials used to realize that session remain adapter-private.</code>
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -725,7 +658,7 @@ credentials used to realize that session remain adapter-private.</code>
 <a href="source-authorities.html#source-ef281f2471a91ed8e39ea04c">protocol:generated:riverhog-storage-adapter</a> — <code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -735,8 +668,7 @@ credentials used to realize that session remain adapter-private.</code>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -748,61 +680,52 @@ credentials used to realize that session remain adapter-private.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/content_type</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:255,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/content_type</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:255,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/object_path</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/object_path</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>encoded-size · bytes · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:16384,&quot;reason&quot;:&quot;bounded-object-identity-assertion-envelope&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;x-riverhog-encoded-bytes-max&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">encoded-size · bytes · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:16384,&quot;reason&quot;:&quot;bounded-object-identity-assertion-envelope&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;x-riverhog-encoded-bytes-max&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · entries · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;reason&quot;:&quot;bounded-object-identity-assertion-envelope&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteStartRequest/properties/required_identity_assertions</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · entries · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;reason&quot;:&quot;bounded-object-identity-assertion-envelope&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-024fff8142a09f90496a66cc.html">a-riverhog-ftp-spool-custody</a> / <a href="i-f4dcdded6e56ade4804ac42b.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-ftp-spool-custody: receipt</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -66,7 +57,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -79,88 +70,67 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_root_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_root_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>claim_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>claim_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-52aca880ef4bf8effecd33db.html#v-5d80024177ddc3d6d8601968">#/$defs/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-52aca880ef4bf8effecd33db.html#v-5d80024177ddc3d6d8601968">#/$defs/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>content_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>content_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>a-riverhog-ftp-spool-receipt/v1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>a-riverhog-ftp-spool-receipt/v1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-b5e201d141f59bf5f3961bbd">riverhog_receipt</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; additionalProperties: <code>true</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-b5e201d141f59bf5f3961bbd">riverhog_receipt</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>true</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_event_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_event_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -196,7 +166,7 @@
 <h3>Definition: CollectionId</h3>
 <p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -206,14 +176,13 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>structured schema</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -236,8 +205,7 @@
 <span id="v-25d2f5eeac4adc9d1c8fdb57">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/id">receipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -247,8 +215,7 @@
 <span id="v-21c0101d3298bd7088f2f8f5">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/kind">json-document</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -293,8 +260,7 @@
 <span id="v-3d45268c3435864d7b587a8d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -304,12 +270,10 @@
 <span id="v-067d783e295c3da955a7c063">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/$defs/CollectionId/allOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -333,28 +297,22 @@
 <span id="v-74af0c5eafbb602277c003b0">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/$defs/CollectionId/allOf/1/not/const">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,8 +322,7 @@
 <span id="v-60899f10c0b1dad7f1e91449">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -389,8 +346,7 @@
 <span id="v-0a138d447ba3e3c8e3289a98">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -400,8 +356,7 @@
 <span id="v-397a92349964944798c0c34c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/archive_root_sha256/title">Archive Root Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -411,12 +366,10 @@
 <span id="v-85c8def05360d016ef9ea063">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/archive_root_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -433,8 +386,7 @@
 <span id="v-6e961ae7fa11c56a7e32b931">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/claim_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -444,8 +396,7 @@
 <span id="v-fe54a75c5844f13c787e1931">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/claim_id/title">Claim Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -455,12 +406,10 @@
 <span id="v-bd980ef3d57c4de6b23f4cc7">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/claim_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -477,12 +426,10 @@
 <span id="v-1b492c27baa5b72515eb22a3">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-52aca880ef4bf8effecd33db.html#v-5d80024177ddc3d6d8601968">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -499,8 +446,7 @@
 <span id="v-dd1f1a17be6c4fd4e99fa324">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,8 +456,7 @@
 <span id="v-08a01c6b116ffd59d75feb13">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/content_identity/title">Content Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -521,12 +466,10 @@
 <span id="v-e4f4a4bae6877d51779b77df">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/content_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -543,8 +486,7 @@
 <span id="v-3b0e40944c3e2c591726025f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/format/const">a-riverhog-ftp-spool-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -554,8 +496,7 @@
 <span id="v-200be05088c77a6097ebe2fe">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -565,12 +506,10 @@
 <span id="v-87f595b8bff4933ddde8c93a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -587,8 +526,7 @@
 <span id="v-4146735cb9cf189c0c26e15b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/riverhog_receipt/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -598,8 +536,7 @@
 <span id="v-8d912715f141319e4408fc3d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/riverhog_receipt/title">Riverhog Receipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -609,12 +546,10 @@
 <span id="v-3578d38d3f49db99d30b31ac">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/riverhog_receipt/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -631,8 +566,7 @@
 <span id="v-bb4ee706c815619b34e194ca">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/source_event_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -642,8 +576,7 @@
 <span id="v-82c93181a0a1355b298361b8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/source_event_id/title">Source Event Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -653,16 +586,13 @@
 <span id="v-93313602ca0d6d4a7dbd5d48">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/source_event_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +609,7 @@
 <span id="v-9b54fe2df3bcc0d024038061">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -690,8 +619,7 @@
 <span id="v-123332f7e175e18d80d1c6b8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/1">claim_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -701,8 +629,7 @@
 <span id="v-eba91eb289584eaf7b3ab7f3">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/2">source_event_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -712,8 +639,7 @@
 <span id="v-04515f44078a8187d74cd184">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/3">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,8 +649,7 @@
 <span id="v-2bd84ba8b3939a70846bbc27">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/4">archive_root_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -734,8 +659,7 @@
 <span id="v-22c284b797194bb9456814fc">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/5">content_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -745,12 +669,10 @@
 <span id="v-0c27b1404e71d494bae63432">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/6">riverhog_receipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -760,8 +682,7 @@
 <span id="v-7017a0d9c4e1ccc24a71ffe0">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/title">FtpReceiptState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -771,12 +692,10 @@
 <span id="v-3acc71663e8da5b6ac4755c9">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -796,7 +715,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -812,7 +731,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin">tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -823,9 +742,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_operator_contracts.SchedulerRunRequest</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
@@ -76,7 +67,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -89,32 +80,24 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>role</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code>; default: <code>combined</code>
-</td>
-<td>
-<code>combined</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>role</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code>; default: <code>combined</code></td>
+<td data-label="Default">
+<code>combined</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>work_limit</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>25</code>
-</td>
-<td>
-<code>25</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>work_limit</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>25</code></td>
+<td data-label="Default">
+<code>25</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -144,8 +127,7 @@
 <span id="v-e933dba8d52d586bf4c94420">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -162,8 +144,7 @@
 <span id="v-f5b17d387a112ab506a9d6c6">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -187,8 +168,7 @@
 <span id="v-1b6ab53a77b3163b99d1988a">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/role/default">combined</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -205,8 +185,7 @@
 <span id="v-9d3ca9444e3cc01e32682c55">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/role/enum/0">controller</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -216,8 +195,7 @@
 <span id="v-13888020a90abcbd283b6959">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/role/enum/1">worker</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -227,12 +205,10 @@
 <span id="v-76fcafc9bdd2a2b3b0e111c3">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/role/enum/2">combined</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -242,12 +218,10 @@
 <span id="v-c871df51c536dee76d4083ed">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -264,8 +238,7 @@
 <span id="v-272c0a817334568f84e7ef05">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/work_limit/default">25</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -275,8 +248,7 @@
 <span id="v-f598b706831de6fad1ba56d8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/work_limit/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -286,8 +258,7 @@
 <span id="v-514907c7e75b5282126a8a25">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/work_limit/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -297,16 +268,13 @@
 <span id="v-5307574013dd6e1d36442f9f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/properties/work_limit/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -316,12 +284,10 @@
 <span id="v-7cbdab53a77802797d74c2df">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -331,12 +297,10 @@
 <span id="v-ff7bca25651bdaa8204aa4be">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/contract/signature">&quot;(*, role: Literal[&#x27;controller&#x27;, &#x27;worker&#x27;, &#x27;combined&#x27;] = &#x27;combined&#x27;, work_limit: Annotated[int, Ge(ge=1), Le(le=100)] = 25) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -346,8 +310,7 @@
 <span id="v-2cde27058ce33f12b180bdd0">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -357,8 +320,7 @@
 <span id="v-9de2d51403e6b8891d63c129">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -368,8 +330,7 @@
 <span id="v-ad02fd17eae5541bbd69e771">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/name">SchedulerRunRequest</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -379,8 +340,7 @@
 <span id="v-8768c4360e441d44a5a7f1cb">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRunRequest/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -392,7 +352,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -404,7 +364,7 @@
 <a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -415,9 +375,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

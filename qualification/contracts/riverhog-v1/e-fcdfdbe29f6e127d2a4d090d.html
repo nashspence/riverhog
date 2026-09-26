@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>POST /v1/archive/copies/retirement-plan</h1>
 <p class="context">Riverhog archive service. Callable HTTP operations.</p>
@@ -58,7 +49,7 @@
 <code>true</code>
 </dd>
 </dl>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,18 +59,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-e865b6f731a0366c2c8ca073.html#v-f63a176ec0d757c055242f3f">#/components/schemas/ArchiveCopyRetirementRequest</a>
-</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-e865b6f731a0366c2c8ca073.html#v-f63a176ec0d757c055242f3f">#/components/schemas/ArchiveCopyRetirementRequest</a></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Responses</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -92,107 +81,80 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>200</code>
-</td>
-<td>Successful Response</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-d58bdbbe800d3623a50e0c05.html#v-05bde79c4b16449dfbc9a330">#/components/schemas/ArchiveCopyRetirementPlanOut</a>
-</td>
-<td>not declared</td>
+<td data-label="Status">
+<code>200</code></td>
+<td data-label="Description">Successful Response</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-d58bdbbe800d3623a50e0c05.html#v-05bde79c4b16449dfbc9a330">#/components/schemas/ArchiveCopyRetirementPlanOut</a></td>
+<td data-label="Error codes">not declared</td>
 </tr>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>Bad Request</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Description">Bad Request</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>Unauthorized</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Description">Unauthorized</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>403</code>
-</td>
-<td>Forbidden</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>forbidden</code>
-</td>
+<td data-label="Status">
+<code>403</code></td>
+<td data-label="Description">Forbidden</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>forbidden</code></td>
 </tr>
 <tr>
-<td>
-<code>404</code>
-</td>
-<td>Not Found</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>not_found</code>
-</td>
+<td data-label="Status">
+<code>404</code></td>
+<td data-label="Description">Not Found</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>not_found</code></td>
 </tr>
 <tr>
-<td>
-<code>409</code>
-</td>
-<td>Conflict</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>invalid_state</code>
-</td>
+<td data-label="Status">
+<code>409</code></td>
+<td data-label="Description">Conflict</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>invalid_state</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>Internal Server Error</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>internal_error</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Description">Internal Server Error</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>internal_error</code></td>
 </tr>
 </tbody>
 </table>
@@ -214,8 +176,7 @@
 <span id="v-3bfd8f184cd8e6937f74ff31">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/operationId">plan_archive_copy_retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -253,20 +214,16 @@
 <span id="v-2a45f3965e19688ef47031f3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/requestBody/content/application~1json/schema/$ref">#/components/schemas/ArchiveCopyRetirementRequest</code>
 <span class="kind">string</span> <a href="e-e865b6f731a0366c2c8ca073.html#v-f63a176ec0d757c055242f3f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -276,12 +233,10 @@
 <span id="v-598ae75ea7e40cda470d1a4b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/requestBody/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,20 +281,16 @@
 <span id="v-db4f30f027198bc157c8d6be">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/200/content/application~1json/schema/$ref">#/components/schemas/ArchiveCopyRetirementPlanOut</code>
 <span class="kind">string</span> <a href="e-d58bdbbe800d3623a50e0c05.html#v-05bde79c4b16449dfbc9a330">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,12 +300,10 @@
 <span id="v-0798a4e41a2af74fa7d8e07e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/200/description">Successful Response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,20 +341,16 @@
 <span id="v-e79637b9f8bb72edcb822812">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -415,8 +360,7 @@
 <span id="v-45e9e4fa07559e28ba5be341">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/400/description">Bad Request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -433,16 +377,13 @@
 <span id="v-8f268f8226b5af39502f21de">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/400/x-riverhog-error-codes/0">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -480,20 +421,16 @@
 <span id="v-86dd99046f2dc847f41ed70d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -503,8 +440,7 @@
 <span id="v-78d948401398cd05ea1dbd0b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/401/description">Unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -521,16 +457,13 @@
 <span id="v-dcf040f2b5f961558bb65e8e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/401/x-riverhog-error-codes/0">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -568,20 +501,16 @@
 <span id="v-9bc51bb34bf2f12607db9e99">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -591,8 +520,7 @@
 <span id="v-f673750bee7d209410f34e60">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/403/description">Forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -609,16 +537,13 @@
 <span id="v-78387a91f52aa5c45c915d76">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/403/x-riverhog-error-codes/0">forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,20 +581,16 @@
 <span id="v-6aade5f1d5e01997dbbfbbe4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/404/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +600,7 @@
 <span id="v-815ce06dd6fb10afefab4e49">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/404/description">Not Found</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -697,16 +617,13 @@
 <span id="v-82a77cf4ae0d91f134fc8def">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/404/x-riverhog-error-codes/0">not_found</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -744,20 +661,16 @@
 <span id="v-4c24b7b3d62e1757d2025597">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/409/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -767,8 +680,7 @@
 <span id="v-40b6b40ae610c96146429ae5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/409/description">Conflict</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -785,16 +697,13 @@
 <span id="v-c2737cbc2da7fb396012e871">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/409/x-riverhog-error-codes/0">invalid_state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -832,20 +741,16 @@
 <span id="v-9ac3bed9cb07d045006c1d61">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -855,8 +760,7 @@
 <span id="v-89b6fdbaf07fc47391934067">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/500/description">Internal Server Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -873,20 +777,16 @@
 <span id="v-c62494142b2039547b7e6ab3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/responses/500/x-riverhog-error-codes/0">internal_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -910,16 +810,13 @@
 <span id="v-5b88bf8fd1397c95b0b09357">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/security/0/HTTPBearer">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -929,8 +826,7 @@
 <span id="v-50499b084e3afe12780d800e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/summary">Plan Archive Copy Retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -947,12 +843,10 @@
 <span id="v-1890d00f430e3656f05011c5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/tags/0">archive</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -983,20 +877,16 @@
 <span id="v-756ff5686a66d9c69b848216">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post/x-riverhog-permission-requirements/0/any_of/0">archives:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1019,7 +909,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1034,7 +924,7 @@
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1045,7 +935,6 @@
 </ul>
 <details>
 <summary>Structural operation bindings</summary>
-<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
 <table id="v-b14421e52629f453232c4424">
 <tbody>
 <tr>
@@ -1056,8 +945,7 @@
 <span id="v-f5512e9d8c6fc65ca6084412">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/application">riverhog</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1067,8 +955,7 @@
 <span id="v-ffa2eb165f1658643506b59f">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/classification">human-cli+json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1092,8 +979,7 @@
 <span id="v-fe0ae9340f1073c375e59455">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/command">archive retire</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1103,8 +989,7 @@
 <span id="v-343f65b3254a384c15271232">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/executable">a-riverhog-cli</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1114,8 +999,7 @@
 <span id="v-5f383ca621d1fdbca143b5cd">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/result_identity">a-riverhog-cli-result/archive/retire/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1132,8 +1016,7 @@
 <span id="v-50ff9c0a9c73ab2076a451ab">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/source/line">3180</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1143,8 +1026,7 @@
 <span id="v-0e1a4bbafb6ae261aca23e4f">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/source/module">a_riverhog_cli.main</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1154,8 +1036,7 @@
 <span id="v-c20d28bcb9caeca9022cf74f">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1165,20 +1046,16 @@
 <span id="v-1a9fa067f8ba314fcc5e37e6">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_bindings/0/source/symbol">archive_retire_cmd</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1195,12 +1072,10 @@
 <span id="v-7d07260072b9464487bfcd83">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/cli_commands/0">archive retire</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1210,8 +1085,7 @@
 <span id="v-9230599ef619c64a75f103ec">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/client">ApiClient</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1235,8 +1109,7 @@
 <span id="v-8291cb6dd4be8cf575ce8f99">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/client_bindings/0/public_identity">riverhog_client.ApiClient.plan_archive_copy_retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1253,8 +1126,7 @@
 <span id="v-18b454b29f5d407eb9220a3f">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/client_bindings/0/source/line">2532</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1264,8 +1136,7 @@
 <span id="v-fce42ebead32f1bc3864f8af">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/client_bindings/0/source/module">riverhog_client.client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1275,8 +1146,7 @@
 <span id="v-5b18e8a4a0783b84aa63276a">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1286,20 +1156,16 @@
 <span id="v-ee67282b2e4b88532dc4bc34">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/client_bindings/0/source/symbol">ApiClient.plan_archive_copy_retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1309,8 +1175,7 @@
 <span id="v-2e47c5559659a9c98d40cad2">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/method">POST</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1320,8 +1185,7 @@
 <span id="v-b93f8f52db1fe713a52b8e95">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/operation_id">plan_archive_copy_retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1331,8 +1195,7 @@
 <span id="v-a19e41ffbb0663324781c117">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/path">/v1/archive/copies/retirement-plan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1342,8 +1205,7 @@
 <span id="v-4f6b35c667cb8933bbdd61aa">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/provider_evidence">provider-qualification:#442</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1353,8 +1215,7 @@
 <span id="v-29c37993e3197be83334ab0c">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/read_collection">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1364,17 +1225,19 @@
 <span id="v-b52e3f67efba363f6d2eea2b">
 <code data-value-pointer="/audit/operation-qualification/plan_archive_copy_retirement/response_authority">http-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
 </details>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

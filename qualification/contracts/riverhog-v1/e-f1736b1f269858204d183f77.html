@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-4cb6451250139576fc538025.html">Process Protocol Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>generated:riverhog-storage-adapter: WriteSegmentPage</h1>
 <p class="context">HTTP binding and conformance support for Riverhog storage adapters. Structured values exchanged by a process protocol.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,68 +63,50 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-05723f37a4da76b2ad3af4f5">completion</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-f1736b1f269858204d183f77.html#v-1d26d60d9ce2ec70e5fe1e2f">#/$defs/WriteCompletionPrecondition</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-05723f37a4da76b2ad3af4f5">completion</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-f1736b1f269858204d183f77.html#v-1d26d60d9ce2ec70e5fe1e2f">#/$defs/WriteCompletionPrecondition</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-2130080be08937a350ae5a97">next_after_number</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-2130080be08937a350ae5a97">next_after_number</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-33643dd5a1ccd8379deeabb1">segments</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-f1736b1f269858204d183f77.html#v-49182d9498054e13bb850deb">#/$defs/WriteSegmentReceipt</a>; maxItems: <code>128</code>; x-riverhog-extent: structured schema; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-33643dd5a1ccd8379deeabb1">segments</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-f1736b1f269858204d183f77.html#v-49182d9498054e13bb850deb">#/$defs/WriteSegmentReceipt</a>; maxItems: <code>128</code>; x-riverhog-extent: structured schema; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>session</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-182505f3d5fcc8d7be1a2e5e">#/$defs/WriteSession</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>session</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f1736b1f269858204d183f77.html#v-182505f3d5fcc8d7be1a2e5e">#/$defs/WriteSession</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>traversal_token</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>traversal_token</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -162,7 +135,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-f1736b1f269858204d183f77.html#v-1d26d60d9ce2ec70e5fe1e2f">#/$defs/WriteCompletionPrecondition</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -172,16 +145,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-1d26d60d9ce2ec70e5fe1e2f">#/$defs/WriteCompletionPrecondition</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-f1736b1f269858204d183f77.html#v-1d26d60d9ce2ec70e5fe1e2f">#/$defs/WriteCompletionPrecondition</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -192,7 +163,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -202,16 +173,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -306,7 +275,7 @@ active-write precondition for terminal reconciliation.</code>
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -319,39 +288,31 @@ active-write precondition for terminal reconciliation.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>segment_count</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-66040b9130540972cd658c89">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>segment_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f1736b1f269858204d183f77.html#v-66040b9130540972cd658c89">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state_token</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code>
-</td>
-<td>not declared</td>
-<td>Bounded opaque adapter-issued state token for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.</td>
+<td data-label="Field">
+<code>state_token</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description">Bounded opaque adapter-issued state token for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.</td>
 </tr>
 <tr>
-<td>
-<code>stored_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-66040b9130540972cd658c89">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>stored_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f1736b1f269858204d183f77.html#v-66040b9130540972cd658c89">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -381,7 +342,7 @@ active-write precondition for terminal reconciliation.</code>
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -394,53 +355,40 @@ active-write precondition for terminal reconciliation.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>number</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>number</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>segment_token</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>segment_token</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>stored_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>stored_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-bf436c18acd710b0af693aa9">stored_sha256</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-bf436c18acd710b0af693aa9">stored_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -470,7 +418,7 @@ active-write precondition for terminal reconciliation.</code>
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -483,38 +431,31 @@ active-write precondition for terminal reconciliation.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>expected_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a>
-</td>
-<td>not declared</td>
-<td>Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.</td>
+<td data-label="Field">
+<code>expected_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">#/$defs/PositiveDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description">Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.</td>
 </tr>
 <tr>
-<td>
-<code>object_path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>object_path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>write_token</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code>
-</td>
-<td>not declared</td>
-<td>Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.</td>
+<td data-label="Field">
+<code>write_token</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description">Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.</td>
 </tr>
 </tbody>
 </table>
@@ -531,7 +472,7 @@ active-write precondition for terminal reconciliation.</code>
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -541,16 +482,14 @@ active-write precondition for terminal reconciliation.</code>
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -587,8 +526,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-553097a3185f84b0055dcc69">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -598,12 +536,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-bbb19ac4811e97b16592949a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -620,8 +556,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-268380c69d9e4baed78ab24e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/PositiveDecimal/pattern">^[1-9][0-9]*(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -631,12 +566,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-63efb9fa906dc1b5d52de3e9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/PositiveDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -653,8 +586,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-8cfe3332ba1900055877b54f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -664,8 +596,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-42ea5d7c4e9cd945e31b4e1e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/description">&quot;Adapter-issued precondition for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\nactive-write precondition for terminal reconciliation.&quot;</code>
 <span class="kind">string (JSON spelling for control characters)</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,12 +620,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-bbf2cd5ea5cc1a31cb4aff53">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/segment_count/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-66040b9130540972cd658c89">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -711,8 +640,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-12f7df86f6cdc1f5851aefff">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/state_token/description">Bounded opaque adapter-issued state token for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -722,8 +650,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-b86cbd8cc6593f4d60de24ab">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/state_token/maxLength">4000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -733,8 +660,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-e842e8f749c9adeeb9d10cac">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/state_token/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -744,8 +670,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-3f4b31d9e60c655106b32162">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/state_token/title">State Token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -755,12 +680,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-6e4355cbe8cfdddc9148bc51">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/state_token/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -777,16 +700,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-079a2339b5441fdc8d723185">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/properties/stored_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-66040b9130540972cd658c89">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -803,8 +723,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-5b610f9cad97706813da2471">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/required/0">segment_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -814,8 +733,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-5283bff11835967b19a6cd3f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/required/1">stored_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -825,12 +743,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-dbd5b426361e36e86a66abc2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/required/2">state_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -840,8 +756,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-2781a0638896bbf70f97ef0b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/title">WriteCompletionPrecondition</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -851,12 +766,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-0c3a5213991275f1fb7b5b03">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteCompletionPrecondition/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -873,8 +786,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-650eab54e1fd56f8c29396df">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -898,12 +810,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-53459130b725b0b129b37666">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/number/$ref">#/$defs/PositiveDecimal</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -920,8 +830,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-ef005afff0530d6a09fc601c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token/maxLength">4000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -931,8 +840,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-db1b683d8389c9a4e79776df">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -942,8 +850,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-6cbb584c94200c53ea115af4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token/title">Segment Token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -953,12 +860,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-ced3d86ffbbf54fd409b3363">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -975,12 +880,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-43445fc923d4528cb65d0503">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_bytes/$ref">#/$defs/PositiveDecimal</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1011,8 +914,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-70e97968ecdff638f3b7cb1f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1022,12 +924,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-3e41d5b20c5bbecbe06d1b9b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1044,16 +944,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-c5f592415808ba0460c49731">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1063,8 +960,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-25461d71f043853b259fa898">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1074,16 +970,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-79e8da4fe2c40975325a8d75">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/title">Stored Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,8 +993,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-7ba7101c5024878f5c184a38">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/required/0">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1111,8 +1003,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-571c4c4ec6bc75ae7e2f5bbf">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/required/1">segment_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1122,12 +1013,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-514075b12cc17e0322490134">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/required/2">stored_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1137,8 +1026,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-2e21b73a54c39d8f2ec8b5b8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/title">WriteSegmentReceipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1148,12 +1036,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-10f4eeb6f9d149e2d095b747">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1170,8 +1056,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-c16ac49bbdc0c7ec39ce1ede">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1195,8 +1080,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-c1c3895c76e9a22e76b2b5a8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/expected_bytes/$ref">#/$defs/PositiveDecimal</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1206,12 +1090,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-81e664073571e713b74d221e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/expected_bytes/description">Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1228,8 +1110,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-07fe3cf19a378da1273e2890">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/object_path/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1239,8 +1120,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-73e7cd5cb2eb438651510c36">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/object_path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1250,8 +1130,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-1bd931f8dbfdfa854fc98be5">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/object_path/title">Object Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1261,12 +1140,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-1e145f39226191c75aa5ee11">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/object_path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1283,8 +1160,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-f66b4aa001e997c5110754d8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/write_token/description">Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1294,8 +1170,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-8241580ea63d1e6474b8b58f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/write_token/maxLength">4000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1305,8 +1180,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-1afb1a334a6bd730200f4845">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/write_token/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1316,8 +1190,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-258e7daf416ea8d3d2a3a0a4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/write_token/title">Write Token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1327,16 +1200,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-deef79f7364f8c4f562a214e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/properties/write_token/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1353,8 +1223,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-b89b15d9f5283f893f25e0d8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/required/0">object_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1364,8 +1233,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-ae89a8f8bda1882e342fdd48">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/required/1">expected_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1375,12 +1243,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-81a2aad00217ebe3204007d7">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/required/2">write_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1390,8 +1256,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-e091763de4546a3c937fe9c0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/title">WriteSession</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1401,16 +1266,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-c5f3b5c39f8d4a7622485e16">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSession/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1420,8 +1282,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-5a0fc5c6e4f5d7af95134f59">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1431,8 +1292,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-bccfafd22d64cec9d7ce4652">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/description">One bounded page under an adapter-owned immutable traversal view.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1470,12 +1330,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-30e2d5c61161ffcc2631cdd6">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/completion/anyOf/0/$ref">#/$defs/WriteCompletionPrecondition</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-1d26d60d9ce2ec70e5fe1e2f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1492,16 +1350,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-f1782897b0c862ef47d5d045">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/completion/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1511,12 +1366,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-14170df6a287ef21fa59e660">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/completion/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1547,12 +1400,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-f33b4d6224dc5b92986171fb">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/next_after_number/anyOf/0/$ref">#/$defs/PositiveDecimal</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-7c29ea30ee62c0db66a3e42e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1569,16 +1420,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-6009fb66270ea91e4c147b93">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/next_after_number/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1588,12 +1436,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-81771a97a40a4c1fe7d67da0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/next_after_number/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1610,8 +1456,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-a829d157c4840074714bc121">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1628,12 +1473,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-2ba5e7a3a8033e2d3693091b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/items/$ref">#/$defs/WriteSegmentReceipt</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-49182d9498054e13bb850deb">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1643,8 +1486,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-a0bac11ab68cf178c9ab8d5e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/maxItems">128</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1654,8 +1496,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-cacb3468278c708162412ded">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/title">Segments</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1665,8 +1506,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-2cbeb991e36e2df710c8b467">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1683,8 +1523,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-ca76876035297074192ee4b4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/x-riverhog-extent/policy">segmented_no_total_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1694,8 +1533,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-54246bc8477056841a322b2b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/x-riverhog-extent/progression">exact-adapter-write-traversal</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1705,16 +1543,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-fd200dfcc14f311348343b10">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments/x-riverhog-extent/reason">bounded-storage-write-segment-page</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1731,12 +1566,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-0db676efd2408907280396a3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/session/$ref">#/$defs/WriteSession</code>
 <span class="kind">string</span> <a href="e-f1736b1f269858204d183f77.html#v-182505f3d5fcc8d7be1a2e5e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1753,8 +1586,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-d94455cab26f4e681e3c29de">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token/maxLength">4000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1764,8 +1596,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-029cb6a25462c2c6f908f54b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1775,8 +1606,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-f2a946c25b30254ec7604709">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token/title">Traversal Token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1786,16 +1616,13 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-346bde45918e8a1ccda9a329">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1812,8 +1639,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-5d6c10d31a6d2b8571f3d40f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/required/0">session</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1823,12 +1649,10 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-f94e23ed20077ced21918c93">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/required/1">traversal_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1838,8 +1662,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-3251df53fd410bd3664b0727">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/title">WriteSegmentPage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1849,8 +1672,7 @@ active-write precondition for terminal reconciliation.</code>
 <span id="v-eebb216bdf7e32ea5bc9fc41">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1868,7 +1690,6 @@ active-write precondition for terminal reconciliation.</code>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-26637e3f384a16604975e902.html">riverhog-storage-write-segment-progression/v1</a>
@@ -1877,7 +1698,7 @@ active-write precondition for terminal reconciliation.</code>
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1889,7 +1710,7 @@ active-write precondition for terminal reconciliation.</code>
 <a href="source-authorities.html#source-ef281f2471a91ed8e39ea04c">protocol:generated:riverhog-storage-adapter</a> — <code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1899,8 +1720,7 @@ active-write precondition for terminal reconciliation.</code>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1912,61 +1732,52 @@ active-write precondition for terminal reconciliation.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments</code>
-</td>
-<td>
-<a href="policies.html#definition-cc8243a831931f483953f0ab">extent-rule/bounded-segment/v1</a>
-</td>
-<td>cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;maximum&quot;:128,&quot;minimum&quot;:null,&quot;progression&quot;:{&quot;progression&quot;:&quot;exact-adapter-write-traversal&quot;},&quot;reason&quot;:&quot;bounded-storage-write-segment-page&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-cc8243a831931f483953f0ab.html">extent-rule/bounded-segment/v1</a></td>
+<td data-label="Decision">cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:128,&quot;minimum&quot;:null,&quot;progression&quot;:{&quot;progression&quot;:&quot;exact-adapter-write-traversal&quot;},&quot;reason&quot;:&quot;bounded-storage-write-segment-page&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:4000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:4000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

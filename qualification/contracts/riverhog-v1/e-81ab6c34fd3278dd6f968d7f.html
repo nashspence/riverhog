@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a> / <a href="i-5c5fbaec38dbfcb96276df03.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_target_protocol.ExternalEffectReceipt</h1>
 <p class="context">Dependency-light public contracts for external Stove0 targets. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,114 +84,86 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>execution_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>execution_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-external-effect-receipt/v1</code>; default: <code>stove0-external-effect-receipt/v1</code>
-</td>
-<td>
-<code>stove0-external-effect-receipt/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-external-effect-receipt/v1</code>; default: <code>stove0-external-effect-receipt/v1</code></td>
+<td data-label="Default">
+<code>stove0-external-effect-receipt/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>job_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>job_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation_contract_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation_contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>receipt_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>receipt_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>request_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>request_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-df05ab711b0576dd26dfdc9a">result</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-81ab6c34fd3278dd6f968d7f.html#v-ae18fcb5e90fe689e1e3e4a5">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-df05ab711b0576dd26dfdc9a">result</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-81ab6c34fd3278dd6f968d7f.html#v-ae18fcb5e90fe689e1e3e4a5">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -264,8 +227,7 @@
 <span id="v-ffe77a89b7988e00f70a4bb1">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -289,12 +251,10 @@
 <span id="v-ae18fcb5e90fe689e1e3e4a5">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -304,8 +264,7 @@
 <span id="v-31602a85dc199d8c9b20fd64">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,8 +288,7 @@
 <span id="v-4122fbfa68377ab996762ef4">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/execution_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -340,12 +298,10 @@
 <span id="v-8155f6a244a2e474a3ec8534">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/execution_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -362,8 +318,7 @@
 <span id="v-843de5158c4f084e9789f8ae">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/format/const">stove0-external-effect-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -373,8 +328,7 @@
 <span id="v-6607cf359bf58fed552de96c">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/format/default">stove0-external-effect-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -384,12 +338,10 @@
 <span id="v-01fed113d71a5f9138130470">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -406,8 +358,7 @@
 <span id="v-b1361c4da2afc78c01d4ef4e">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/job_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -417,12 +368,10 @@
 <span id="v-490187cf1e3c6af3ead283d9">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/job_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -439,8 +388,7 @@
 <span id="v-c0a30519b844f02fe9bcc214">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/operation_contract_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -450,12 +398,10 @@
 <span id="v-cc76c245a785e0ed70e66609">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/operation_contract_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +418,7 @@
 <span id="v-461bdd0415e716ee262a9e49">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,12 +428,10 @@
 <span id="v-5b74e695f64ea7819efcfa28">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -505,8 +448,7 @@
 <span id="v-bbcfc50920a47cbd07c25bd8">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/receipt_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -516,12 +458,10 @@
 <span id="v-fa4a056d5088dec48f4c7a98">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/receipt_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -538,8 +478,7 @@
 <span id="v-67dd5530882dc66dc4ae890f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/request_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -549,12 +488,10 @@
 <span id="v-c8fba25d4e4142c732c8c188">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/request_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -578,12 +515,10 @@
 <span id="v-50df8b1f3abad9d21c444f33">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/result/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-81ab6c34fd3278dd6f968d7f.html#v-ae18fcb5e90fe689e1e3e4a5">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -593,8 +528,7 @@
 <span id="v-18af664d80066aae1e5c9128">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/result/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -604,8 +538,7 @@
 <span id="v-575c5ae4638ba14ceeb06ed7">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/result/x-riverhog-encoded-bytes-max">65536</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -622,8 +555,7 @@
 <span id="v-e27e9e78789955a72a30d18d">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/result/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -633,16 +565,13 @@
 <span id="v-a759e8fb02e9b8c6b34fbbfa">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/result/x-riverhog-extent/reason">bounded-external-effect-receipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -659,8 +588,7 @@
 <span id="v-8084e6785bfc2fe5e5c87eee">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/target_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -670,16 +598,13 @@
 <span id="v-6274c4795ed959a8b16f8ba6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/properties/target_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -696,8 +621,7 @@
 <span id="v-8eefbddafc3248be7473d17f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/0">job_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -707,8 +631,7 @@
 <span id="v-c2b7393e86ffaeb920d4ba86">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/1">request_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -718,8 +641,7 @@
 <span id="v-02a15d9462f96f25485afc04">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/2">target_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -729,8 +651,7 @@
 <span id="v-62bae170b80a0a87c473d3fe">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/3">operation_contract_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -740,8 +661,7 @@
 <span id="v-c0b92972eaf617c24019987f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/4">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -751,8 +671,7 @@
 <span id="v-e87a83c35fbe873debf4768a">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/5">execution_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -762,8 +681,7 @@
 <span id="v-6743b978497d01c6f529cca0">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/6">result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -773,12 +691,10 @@
 <span id="v-adff17ed630aeac0e3db7a1c">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/required/7">receipt_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -788,12 +704,10 @@
 <span id="v-2ca5c903b068308b3665daaa">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -803,12 +717,10 @@
 <span id="v-7ec41a603bb793a03cfdcb25">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/contract/signature">&quot;(*, format: Literal[&#x27;stove0-external-effect-receipt/v1&#x27;] = &#x27;stove0-external-effect-receipt/v1&#x27;, job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], result: dict[str, JsonValue], receipt_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -818,8 +730,7 @@
 <span id="v-7ce41f0852d7a06a92791359">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/distribution">stove0-target-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -829,8 +740,7 @@
 <span id="v-c4d321767c052f0cf27d89d6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/module">stove0_target_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -840,8 +750,7 @@
 <span id="v-d750367944d7bfa472fcfef1">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/name">ExternalEffectReceipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -851,8 +760,7 @@
 <span id="v-8b4f84bbd0f6887d101d3cf4">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.ExternalEffectReceipt/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -878,7 +786,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -890,7 +798,7 @@
 <a href="source-authorities.html#source-f4f0b2202672f85e3d080ca7">python:stove0-target-protocol:stove0_target_protocol</a> — <code data-source-path="some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py">some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -901,9 +809,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

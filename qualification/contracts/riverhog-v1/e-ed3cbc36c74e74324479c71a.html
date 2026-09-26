@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-919a34a8115bd878cd846124.html">riverhog-catalog</a> / <a href="i-5548924e3ea02159ee650edb.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog-catalog: collection_deletions</h1>
 <p class="context">Encrypted archive management, catalog, and retrieval. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -33,7 +24,7 @@
 <div class="human-contract">
 <h3>Table: <code>collection_deletions</code>
 </h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -46,62 +37,50 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>
-<code>BIGSERIAL</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>collection_id BIGSERIAL NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>collection_id</code></td>
+<td data-label="Type">
+<code>BIGSERIAL</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>collection_id BIGSERIAL NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>challenge</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>challenge VARCHAR NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>challenge</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>challenge VARCHAR NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>plan_json</code>
-</td>
-<td>
-<code>TEXT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>plan_json TEXT NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>plan_json</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>plan_json TEXT NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>started_at</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>started_at VARCHAR NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>started_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>started_at VARCHAR NOT NULL</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Table constraints</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -112,15 +91,12 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>primary-key</code>
-</td>
-<td>
-<code></code>
-</td>
-<td>
-<code>PRIMARY KEY (collection_id)</code>
-</td>
+<td data-label="Kind">
+<code>primary-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>PRIMARY KEY (collection_id)</code></td>
 </tr>
 </tbody>
 </table>
@@ -156,8 +132,7 @@
 <span id="v-f1b31596d11147e0397a70c7">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/0/definition">collection_id BIGSERIAL NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -167,8 +142,7 @@
 <span id="v-e1df2ece5fe6369280d434fa">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/0/name">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -178,8 +152,7 @@
 <span id="v-e85f99e41339aa210a812f96">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/0/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -189,12 +162,10 @@
 <span id="v-e7cbf14fefc83c26d8e46b4f">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/0/type">BIGSERIAL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -211,8 +182,7 @@
 <span id="v-5b8653a74b50dbc251ef01be">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/1/definition">challenge VARCHAR NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -222,8 +192,7 @@
 <span id="v-876be7698978d64151c1bddd">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/1/name">challenge</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -233,8 +202,7 @@
 <span id="v-a090b12afc8bf6dbf45e74cc">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/1/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -244,12 +212,10 @@
 <span id="v-61fbac5a10ad6f86fa691c56">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/1/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -266,8 +232,7 @@
 <span id="v-0d24110fa2fce1b259383b9f">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/2/definition">plan_json TEXT NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -277,8 +242,7 @@
 <span id="v-6b5122120160cb7ad492047f">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/2/name">plan_json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,8 +252,7 @@
 <span id="v-a8bb3579fafd00b45caaadbc">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/2/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,12 +262,10 @@
 <span id="v-c3ab5b4d9b92968352846544">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/2/type">TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -321,8 +282,7 @@
 <span id="v-96043bb1ac2b9d180d49b1c6">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/3/definition">started_at VARCHAR NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,8 +292,7 @@
 <span id="v-2dbd789d80093c82780d1bac">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/3/name">started_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,8 +302,7 @@
 <span id="v-1e37aed26cfa92da1f9024f2">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/3/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -354,16 +312,13 @@
 <span id="v-048ece29795710a7d73d8860">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/columns/3/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -394,12 +349,10 @@
 <span id="v-b3002e06dfde6b8a8ec46ceb">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/constraints/0/columns/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -409,8 +362,7 @@
 <span id="v-1486472b9f21ce0ba469d65f">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/constraints/0/definition">PRIMARY KEY (collection_id)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,16 +372,13 @@
 <span id="v-45d0574e0f9ec40b4ce3ae68">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/constraints/0/kind">primary-key</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -439,8 +388,7 @@
 <span id="v-f8d98e4e75c8d5d95708242e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/5/name">collection_deletions</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -460,7 +408,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -474,7 +422,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/riverhog.postgresql.sql">tests/fixtures/state/v1_0001/riverhog.postgresql.sql</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -485,9 +433,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

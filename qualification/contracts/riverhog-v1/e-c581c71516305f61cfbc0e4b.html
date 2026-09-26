@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: RetrievalExpiredData</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,97 +59,73 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>actor</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">#/components/schemas/RiverhogActor</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>actor</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">#/components/schemas/RiverhogActor</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-f05d979290a710398db9da41">collection_created_at</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-f05d979290a710398db9da41">collection_created_at</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-96ce8c50d77f0fb718e0b0c4">collection_id</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-96ce8c50d77f0fb718e0b0c4">collection_id</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-8293ea4fc429d96a91636651">collection_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-8293ea4fc429d96a91636651">collection_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-9f47ac3a10973b0928502631">context</a>
-</td>
-<td>no</td>
-<td>any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4096</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-9f47ac3a10973b0928502631">context</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4096</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>initiator</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">#/components/schemas/RiverhogActor</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>initiator</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">#/components/schemas/RiverhogActor</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>300</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>300</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>expired</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>expired</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -175,7 +142,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -185,16 +152,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -205,7 +170,7 @@
 <p class="shape">any of: <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -215,16 +180,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -261,7 +224,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -271,18 +234,15 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-cbf4ce90a373a39e90bc7c38">1</a>
-</td>
-<td>
-<code>object</code>; x-riverhog-encoded-bytes-max: <code>4096</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
-</td>
+<td data-label="Alternative">
+<a href="#s-cbf4ce90a373a39e90bc7c38">1</a></td>
+<td data-label="Schema">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4096</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -329,8 +289,7 @@
 <span id="v-97fd781ed5180a0941030bcb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -354,12 +313,10 @@
 <span id="v-be2c6ea60e495374ad644a24">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/actor/$ref">#/components/schemas/RiverhogActor</code>
 <span class="kind">string</span> <a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,8 +347,7 @@
 <span id="v-67f014549d3c7008a1b775fd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/0/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -401,8 +357,7 @@
 <span id="v-7f2aa581b13c64f76b4260b5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/0/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,8 +367,7 @@
 <span id="v-b8a292ad85d541bf65d17fed">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/0/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -423,12 +377,10 @@
 <span id="v-4fe9bb18df2cf356a1c051b2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -445,16 +397,13 @@
 <span id="v-80f2f338b55dc1cf8f174dcc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -464,12 +413,10 @@
 <span id="v-fcbc40b289c8a8ef4038b9c5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/title">Collection Created At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -500,12 +447,10 @@
 <span id="v-12f25b2a274862ae4ee2c67a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_id/anyOf/0/$ref">#/components/schemas/CollectionId</code>
 <span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -522,20 +467,16 @@
 <span id="v-c8eefc791203ff4234896fe9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_id/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -559,12 +500,10 @@
 <span id="v-c896c015e86afbecd761c4dc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_ids/items/$ref">#/components/schemas/CollectionId</code>
 <span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -574,8 +513,7 @@
 <span id="v-7d56a4a21cbf0e86c1282438">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_ids/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -585,8 +523,7 @@
 <span id="v-0871698ce3a4922c9d9d7ad0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_ids/title">Collection Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -596,12 +533,10 @@
 <span id="v-031d97d548d7aa8c4c2adcb8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -632,8 +567,7 @@
 <span id="v-6ba9c4fc3c483fff91daadc6">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -643,8 +577,7 @@
 <span id="v-5400897d8a3d8d3ed30bda09">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -654,8 +587,7 @@
 <span id="v-28dbb65deeed92b319a08022">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0/x-riverhog-encoded-bytes-max">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -672,8 +604,7 @@
 <span id="v-5ae4d9ac33ff15c2044eda91">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -683,16 +614,13 @@
 <span id="v-d42a09222bba852390702bf5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0/x-riverhog-extent/reason">bounded-lifecycle-event-context</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -709,16 +637,13 @@
 <span id="v-860e4150512cc9215dd6d4f0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -728,12 +653,10 @@
 <span id="v-3227b520a26664b6c0ae0b09">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/title">Context</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -750,12 +673,10 @@
 <span id="v-7a640a00815bab26bb5d7e32">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/initiator/$ref">#/components/schemas/RiverhogActor</code>
 <span class="kind">string</span> <a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -772,8 +693,7 @@
 <span id="v-ee908a370d3b165e20e8df6e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/retrieval_id/maxLength">300</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -783,8 +703,7 @@
 <span id="v-29457d98e59c5b8bd926fe4a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/retrieval_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -794,8 +713,7 @@
 <span id="v-9c014aa3efdd93ec8a933fb5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/retrieval_id/title">Retrieval Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -805,12 +723,10 @@
 <span id="v-db7e4c197f8be618bd430e4c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/retrieval_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -827,8 +743,7 @@
 <span id="v-7533c6d95d68c4559ad0c2b8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/state/const">expired</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -838,8 +753,7 @@
 <span id="v-337dc28c930184024e2c4bc3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/state/title">State</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -849,16 +763,13 @@
 <span id="v-01cef54797221c34ea9867c3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/state/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -875,8 +786,7 @@
 <span id="v-4e6aa7763622815b89de91d9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/required/0">actor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -886,8 +796,7 @@
 <span id="v-1e34083feba93b6f477d2769">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/required/1">initiator</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -897,8 +806,7 @@
 <span id="v-455e1c04d7a0923c51210728">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/required/2">retrieval_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -908,8 +816,7 @@
 <span id="v-63cce23eb6bbe9cb1921a2c4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/required/3">collection_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -919,12 +826,10 @@
 <span id="v-4fcc1dee3585207e95d2c7b9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/required/4">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -934,8 +839,7 @@
 <span id="v-bc8955f71d7f5af083bf3e9d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/title">RetrievalExpiredData</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -945,8 +849,7 @@
 <span id="v-3a775b41e775483bd426b1b9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -958,7 +861,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -970,7 +873,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -980,8 +883,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -993,73 +895,61 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_created_at/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/collection_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>encoded-size · bytes · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:4096,&quot;reason&quot;:&quot;bounded-lifecycle-event-context&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;x-riverhog-encoded-bytes-max&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">encoded-size · bytes · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4096,&quot;reason&quot;:&quot;bounded-lifecycle-event-context&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;x-riverhog-encoded-bytes-max&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/context/anyOf/0</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/retrieval_id</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:300,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData/properties/retrieval_id</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:300,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CollectionUploadFileOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,62 +59,47 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-57decd2dfa59f208ecd37a6d">custody_receipt</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-8467a2f8e93cc330037d2b57.html#v-de01edc6c7f6e7855733bca6">#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-57decd2dfa59f208ecd37a6d">custody_receipt</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-8467a2f8e93cc330037d2b57.html#v-de01edc6c7f6e7855733bca6">#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1850f2772fb942042fb15ef1.html#v-e74ba753c4bad49032cde9b3">#/components/schemas/CanonicalRelPath</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1850f2772fb942042fb15ef1.html#v-e74ba753c4bad49032cde9b3">#/components/schemas/CanonicalRelPath</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-954031ac1414d15125912f59">provenance</a>
-</td>
-<td>no</td>
-<td>any of: <a href="#s-711b1c7d0ea6d8af468221d0">exactly one of 2 alternatives</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-954031ac1414d15125912f59">provenance</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="#s-711b1c7d0ea6d8af468221d0">exactly one of 2 alternatives</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -134,7 +110,7 @@
 <p class="shape">any of: <a href="e-8467a2f8e93cc330037d2b57.html#v-de01edc6c7f6e7855733bca6">#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -144,16 +120,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-8467a2f8e93cc330037d2b57.html#v-de01edc6c7f6e7855733bca6">#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-8467a2f8e93cc330037d2b57.html#v-de01edc6c7f6e7855733bca6">#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -170,7 +144,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -180,17 +154,14 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-711b1c7d0ea6d8af468221d0">1</a>
-</td>
-<td>exactly one of: <a href="e-149d5bf9f164c701daa0c75e.html#v-e192eeba1762ee06cb6e14e5">#/components/schemas/CapturedFileProvenanceBinding</a>; <a href="e-736f20fa2d818a713b2c885d.html#v-552d497babc9c55f3d4cf4ed">#/components/schemas/OmittedFileProvenanceBinding</a>
-</td>
+<td data-label="Alternative">
+<a href="#s-711b1c7d0ea6d8af468221d0">1</a></td>
+<td data-label="Schema">exactly one of: <a href="e-149d5bf9f164c701daa0c75e.html#v-e192eeba1762ee06cb6e14e5">#/components/schemas/CapturedFileProvenanceBinding</a>; <a href="e-736f20fa2d818a713b2c885d.html#v-552d497babc9c55f3d4cf4ed">#/components/schemas/OmittedFileProvenanceBinding</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -207,7 +178,7 @@
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -217,16 +188,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-149d5bf9f164c701daa0c75e.html#v-e192eeba1762ee06cb6e14e5">#/components/schemas/CapturedFileProvenanceBinding</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-149d5bf9f164c701daa0c75e.html#v-e192eeba1762ee06cb6e14e5">#/components/schemas/CapturedFileProvenanceBinding</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<a href="e-736f20fa2d818a713b2c885d.html#v-552d497babc9c55f3d4cf4ed">#/components/schemas/OmittedFileProvenanceBinding</a>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<a href="e-736f20fa2d818a713b2c885d.html#v-552d497babc9c55f3d4cf4ed">#/components/schemas/OmittedFileProvenanceBinding</a></td>
 </tr>
 </tbody>
 </table>
@@ -249,8 +218,7 @@
 <span id="v-7a625e070b2fb77f3dd3a272">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -274,12 +242,10 @@
 <span id="v-4a4d0f5375629ec33a1c8d60">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/bytes/$ref">#/components/schemas/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,12 +276,10 @@
 <span id="v-c483fe2fd3fed7b812a16b93">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/custody_receipt/anyOf/0/$ref">#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</code>
 <span class="kind">string</span> <a href="e-8467a2f8e93cc330037d2b57.html#v-de01edc6c7f6e7855733bca6">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,20 +296,16 @@
 <span id="v-102d60ebf81468442d804dd7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/custody_receipt/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -362,12 +322,10 @@
 <span id="v-9102172c54fddd03c575e247">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/path/$ref">#/components/schemas/CanonicalRelPath</code>
 <span class="kind">string</span> <a href="e-1850f2772fb942042fb15ef1.html#v-e74ba753c4bad49032cde9b3">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,8 +370,7 @@
 <span id="v-286d0982ceab74ec0596400c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/anyOf/0/discriminator/mapping/captured">#/components/schemas/CapturedFileProvenanceBinding</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -423,12 +380,10 @@
 <span id="v-5bd2f4e7a7150e1fb3f23a52">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/anyOf/0/discriminator/mapping/omitted">#/components/schemas/OmittedFileProvenanceBinding</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -438,12 +393,10 @@
 <span id="v-4f01065307af2b5b04d5568e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/anyOf/0/discriminator/propertyName">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,12 +420,10 @@
 <span id="v-79c1e6b7cd1a3e7f7b2c9624">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/anyOf/0/oneOf/0/$ref">#/components/schemas/CapturedFileProvenanceBinding</code>
 <span class="kind">string</span> <a href="e-149d5bf9f164c701daa0c75e.html#v-e192eeba1762ee06cb6e14e5">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -489,20 +440,16 @@
 <span id="v-b9f91c7e1930ab3c38267a54">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/anyOf/0/oneOf/1/$ref">#/components/schemas/OmittedFileProvenanceBinding</code>
 <span class="kind">string</span> <a href="e-736f20fa2d818a713b2c885d.html#v-552d497babc9c55f3d4cf4ed">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -519,16 +466,13 @@
 <span id="v-50e334c71926de4f831fbe6f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -538,12 +482,10 @@
 <span id="v-4a3f683b94232228fa7a1fca">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/provenance/title">Provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,8 +502,7 @@
 <span id="v-67f12340f646362af6ad977d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -571,8 +512,7 @@
 <span id="v-c94d155ea54a50c4b9503812">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -582,16 +522,13 @@
 <span id="v-9096a719b3fedfad024bfd6b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -608,8 +545,7 @@
 <span id="v-6c551fdd6b5f1c88e535b534">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/required/0">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -619,8 +555,7 @@
 <span id="v-fa1fde9df4ee161b6c3c1291">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/required/1">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -630,12 +565,10 @@
 <span id="v-0426d57d6bf5645c70d5ef3d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/required/2">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -645,8 +578,7 @@
 <span id="v-d38617d68c55ab27c526c7b0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/title">CollectionUploadFileOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,8 +588,7 @@
 <span id="v-ef2c474e9d76e92f55c265d2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -669,7 +600,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -681,7 +612,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -691,8 +622,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -704,25 +634,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut/properties/sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

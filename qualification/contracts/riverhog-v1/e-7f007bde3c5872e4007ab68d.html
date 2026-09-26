@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_operator_contracts.SchedulerStatus</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,40 +84,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>interval_seconds</code>
-</td>
-<td>yes</td>
-<td>
-<code>number</code>; exclusiveMinimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>interval_seconds</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>number</code>; exclusiveMinimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-c938f628bc9914b7728c085e">roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-c938f628bc9914b7728c085e">roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>running</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>running</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -168,8 +150,7 @@
 <span id="v-c563c0d6d5f78f2906c32c8e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -186,8 +167,7 @@
 <span id="v-1a39f5db3409037cb58329c1">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -211,8 +191,7 @@
 <span id="v-1bcd4c93f9a03143432e3cb0">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/interval_seconds/exclusiveMinimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -222,12 +201,10 @@
 <span id="v-338ecc452646cc3fbf0320ce">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/interval_seconds/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -258,8 +235,7 @@
 <span id="v-e03f57d5f3d5fe97b1af5b0c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/roles/items/enum/0">controller</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -269,8 +245,7 @@
 <span id="v-260af31c894d35d110e03187">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/roles/items/enum/1">worker</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -280,12 +255,10 @@
 <span id="v-198cfd833c807f43900ecd80">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/roles/items/enum/2">combined</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -295,12 +268,10 @@
 <span id="v-21b346fe7febeb4decfdbec8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,12 +281,10 @@
 <span id="v-b5a446d1f0073325e8877775">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,16 +301,13 @@
 <span id="v-4590769e42f186905cd48921">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/properties/running/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -358,8 +324,7 @@
 <span id="v-81d263cc7e0a91b2b271d466">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/required/0">running</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -369,8 +334,7 @@
 <span id="v-da568747e4591728a217656c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/required/1">interval_seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -380,12 +344,10 @@
 <span id="v-17a3c0cdf6d849cd3800dd50">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/required/2">roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -395,12 +357,10 @@
 <span id="v-0684c550483008af268ad23f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,12 +370,10 @@
 <span id="v-1f5029262b9ded0c780770c2">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/contract/signature">&quot;(*, running: bool, interval_seconds: Annotated[float, Gt(gt=0)], roles: tuple[typing.Literal[&#x27;controller&#x27;, &#x27;worker&#x27;, &#x27;combined&#x27;], ...]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -425,8 +383,7 @@
 <span id="v-744391c4fddb96525e1fcebc">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -436,8 +393,7 @@
 <span id="v-ab919852d7a8b7537bbccd98">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -447,8 +403,7 @@
 <span id="v-da05acebf9025a4b53ab9a11">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/name">SchedulerStatus</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -458,8 +413,7 @@
 <span id="v-506bb2f405b63ee87ba51a6d">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerStatus/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -471,7 +425,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -483,7 +437,7 @@
 <a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -494,9 +448,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

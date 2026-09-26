@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: EvaluationReviewRequest</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -50,7 +41,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -63,32 +54,26 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-1d61a5839674ccd1b99aab1e">note</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; pattern: <code>^\S(?:[\s\S]*\S)?$</code>; minLength: <code>1</code>; maxLength: <code>4000</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1d61a5839674ccd1b99aab1e">note</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^\S(?:[\s\S]*\S)?$</code>; minLength: <code>1</code>; maxLength: <code>4000</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-861148bbb127d17eb7526d5a">rating</a>
-</td>
-<td>no</td>
-<td>any of: <code>integer</code>; minimum: <code>1</code>; maximum: <code>5</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-861148bbb127d17eb7526d5a">rating</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>integer</code>; minimum: <code>1</code>; maximum: <code>5</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -98,16 +83,14 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-984bc4ba601908bf9713f1e4">1</a>
-</td>
-<td>1 fields</td>
+<td data-label="Alternative">
+<a href="#s-984bc4ba601908bf9713f1e4">1</a></td>
+<td data-label="Schema">1 fields</td>
 </tr>
 <tr>
-<td>
-<a href="#s-e20819a9c85c6393a45089e7">2</a>
-</td>
-<td>1 fields</td>
+<td data-label="Alternative">
+<a href="#s-e20819a9c85c6393a45089e7">2</a></td>
+<td data-label="Schema">1 fields</td>
 </tr>
 </tbody>
 </table>
@@ -124,7 +107,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -134,16 +117,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^\S(?:[\s\S]*\S)?$</code>; minLength: <code>1</code>; maxLength: <code>4000</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^\S(?:[\s\S]*\S)?$</code>; minLength: <code>1</code>; maxLength: <code>4000</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -160,7 +141,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -170,16 +151,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>5</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>5</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -195,7 +174,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -208,16 +187,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>rating</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>rating</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -233,7 +209,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -246,16 +222,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>note</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>note</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -278,8 +251,7 @@
 <span id="v-e1dbd70928d9d0f8d5b12b8e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,16 +289,13 @@
 <span id="v-7d72940691377fe02bfa81e7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/anyOf/0/properties/rating/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,16 +312,13 @@
 <span id="v-60bcb957f47933f48b739f41">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/anyOf/0/required/0">rating</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -383,16 +349,13 @@
 <span id="v-206ac7d43d041a52df555e09">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/anyOf/1/properties/note/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -409,20 +372,16 @@
 <span id="v-eae453052aeacd18858228af">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/anyOf/1/required/0">note</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -460,8 +419,7 @@
 <span id="v-2ceb8ab921aa508ec81bc048">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/0/maxLength">4000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -471,8 +429,7 @@
 <span id="v-427714aa48258e09fa6cb964">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/0/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -482,8 +439,7 @@
 <span id="v-773b65086ccbf22e8c71388f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/0/pattern">^\S(?:[\s\S]*\S)?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -493,12 +449,10 @@
 <span id="v-c4d9d1509c9e47a71ed58076">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -515,16 +469,13 @@
 <span id="v-69e97b232f6d722053466ec6">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -534,12 +485,10 @@
 <span id="v-d7dfd2141494c5901c1b77f9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/title">Note</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -570,8 +519,7 @@
 <span id="v-62489966703467cad3ad90a0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/anyOf/0/maximum">5</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -581,8 +529,7 @@
 <span id="v-9c7c69b2d2bb814e8605c477">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/anyOf/0/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -592,12 +539,10 @@
 <span id="v-b734d2ac309c0eb26fb08de1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/anyOf/0/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -614,16 +559,13 @@
 <span id="v-71e7f52875612a6eaf462199">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -633,16 +575,13 @@
 <span id="v-a5d4297d4d458f8bad7aa6d1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/title">Rating</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -652,8 +591,7 @@
 <span id="v-7fd067215956a2b0630d1baa">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/title">EvaluationReviewRequest</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -663,8 +601,7 @@
 <span id="v-8201af224f16c8f645f03e25">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -676,7 +613,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -688,7 +625,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -698,8 +635,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -711,37 +647,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:4000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/note/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:5,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest/properties/rating/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:5,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

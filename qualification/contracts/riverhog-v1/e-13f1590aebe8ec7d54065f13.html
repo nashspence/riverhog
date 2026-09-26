@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-024fff8142a09f90496a66cc.html">a-riverhog-ftp-spool-custody</a> / <a href="i-f4dcdded6e56ade4804ac42b.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-ftp-spool-custody: completion-log</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -70,7 +61,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -83,100 +74,76 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>custody</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>custody</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>device</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>device</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>event_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>event_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>riverhog-ftp-completion-record/v1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-ftp-completion-record/v1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>inode</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>inode</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -199,8 +166,7 @@
 <span id="v-0e624e796cea12ddeda4526d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/header">riverhog-ftp-completion-log/v1 &lt;canonical-uuid&gt;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -210,8 +176,7 @@
 <span id="v-007d90bfd3cdf176b137c8c8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/id">completion-log</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -221,8 +186,7 @@
 <span id="v-12f14f89f30a4f04e4d97a9d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/kind">append-only-json-sequence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -239,8 +203,7 @@
 <span id="v-5faef76ab4738dd305990721">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -264,8 +227,7 @@
 <span id="v-54ca0d2c744ce86643c1a1eb">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -275,8 +237,7 @@
 <span id="v-29f1e951d5ad8aeae15c74f3">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/bytes/title">Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -286,12 +247,10 @@
 <span id="v-5c811f35f61c5dab6ff5b7c2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -308,8 +267,7 @@
 <span id="v-81a2e8ad848cc2f6b0a8f061">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/custody/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -319,8 +277,7 @@
 <span id="v-78f894971485fac401cc3a2f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/custody/title">Custody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -330,12 +287,10 @@
 <span id="v-b2bd533be4807702c10f5a79">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/custody/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -352,8 +307,7 @@
 <span id="v-0c4f47cf2323e0d122f18c3f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/device/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -363,8 +317,7 @@
 <span id="v-460f86990ff17c9fde7c8b58">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/device/title">Device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -374,12 +327,10 @@
 <span id="v-aa20bc991b53d4aca87a9003">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/device/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -396,8 +347,7 @@
 <span id="v-d594020a97aa5bf84bb5ae12">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/event_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -407,8 +357,7 @@
 <span id="v-7f7db1f962e71318ce054437">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/event_id/title">Event Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -418,12 +367,10 @@
 <span id="v-f6315016af4a297da21b5795">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/event_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -440,8 +387,7 @@
 <span id="v-b7c5844ab3bcb80a4c94e709">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/format/const">riverhog-ftp-completion-record/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -451,8 +397,7 @@
 <span id="v-b7f4239364dc7829a77f7be1">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -462,12 +407,10 @@
 <span id="v-b9b126c49a97137b9635e16e">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -484,8 +427,7 @@
 <span id="v-37f1217e1c3da2dcf682bd1b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/inode/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -495,8 +437,7 @@
 <span id="v-f95e95a96a40a7568638bc82">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/inode/title">Inode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -506,12 +447,10 @@
 <span id="v-39415fc5d6a30fa8203c112a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/inode/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -528,8 +467,7 @@
 <span id="v-061a68fe8443bbb256a9ac54">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -539,8 +477,7 @@
 <span id="v-7a1697cda916c188613f725b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/path/title">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -550,12 +487,10 @@
 <span id="v-e093db606f07336fe21f1157">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -572,8 +507,7 @@
 <span id="v-878c7abf217d6c30d644cd87">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/source_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -583,8 +517,7 @@
 <span id="v-f6aa6866fa37fd0c65b62385">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/source_id/title">Source Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -594,16 +527,13 @@
 <span id="v-1df8a6a1a22af611e512d4e7">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/properties/source_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -620,8 +550,7 @@
 <span id="v-def0d9d0955d41ab31534be8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -631,8 +560,7 @@
 <span id="v-67dd0144fbd5703f5f5533ae">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/1">event_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -642,8 +570,7 @@
 <span id="v-b0d1c546e3a99b276b715a03">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/2">source_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -653,8 +580,7 @@
 <span id="v-504f8792032eee382c03134c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/3">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -664,8 +590,7 @@
 <span id="v-d448bec0667b4dc873a6ee30">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/4">custody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -675,8 +600,7 @@
 <span id="v-a5bf75cc1c058aa67f123c4d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/5">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -686,8 +610,7 @@
 <span id="v-ca2e8de7530da5f0b3aac64b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/6">device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -697,12 +620,10 @@
 <span id="v-b66df8a84514021ec792eb56">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/required/7">inode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -712,8 +633,7 @@
 <span id="v-628cfa226277dc24f560fd1d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/title">CompletionRecordState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,12 +643,10 @@
 <span id="v-7711a4e7a69b9bd8c0cca025">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/1/record_schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -748,7 +666,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -764,7 +682,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin">tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -775,9 +693,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

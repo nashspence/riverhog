@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: TaggedAdmissionSelector</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,29 +59,23 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>tags</code>; default: <code>tags</code>
-</td>
-<td>
-<code>tags</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>tags</code>; default: <code>tags</code></td>
+<td data-label="Default">
+<code>tags</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-78019ec85d15679286c3bd94">required</a>
-</td>
-<td>yes</td>
-<td>
+<td data-label="Field">
+<a href="#s-78019ec85d15679286c3bd94">required</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-564ac960ac5577ff8fb1555a.html#v-cb959d5e83e79aa3155464c0">#/components/schemas/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -140,8 +125,7 @@
 <span id="v-4fcdb6b735d25d11dd65323a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -165,8 +149,7 @@
 <span id="v-300a4390c0931ebab0c6011d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/kind/const">tags</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -176,8 +159,7 @@
 <span id="v-caab157d760fa2f206f90d45">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/kind/default">tags</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -187,8 +169,7 @@
 <span id="v-6aec233f518e77e8ad8fdcec">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/kind/title">Kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -198,12 +179,10 @@
 <span id="v-69371e9090ec1ebd22d915ec">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -227,12 +206,10 @@
 <span id="v-7d3c458a469c0f59b47044e5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/items/$ref">#/components/schemas/CollectionTag</code>
 <span class="kind">string</span> <a href="e-564ac960ac5577ff8fb1555a.html#v-cb959d5e83e79aa3155464c0">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -242,8 +219,7 @@
 <span id="v-3b9a91b81087ec9daada04e2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/maxItems">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -253,8 +229,7 @@
 <span id="v-1b8498c6cc703b947b5ccd14">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -264,8 +239,7 @@
 <span id="v-09ca75d4bc7b1dbe00a0cc4e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/title">Required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -275,8 +249,7 @@
 <span id="v-d95d39f35374778e7c351222">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -293,8 +266,7 @@
 <span id="v-ef46842bef73a684c1a70426">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -304,20 +276,16 @@
 <span id="v-e943023751a304d871fd2af4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -334,12 +302,10 @@
 <span id="v-93eaa20da523f21f627498f3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/required/0">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,8 +315,7 @@
 <span id="v-b5aabec3be6bc042ac27bc0c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/title">TaggedAdmissionSelector</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,8 +325,7 @@
 <span id="v-2858b1815103edda9a53b662">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -373,7 +337,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -385,7 +349,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -395,8 +359,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -408,25 +371,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · items · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;bounded-exact-classification-admission-predicate&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector/properties/required</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · items · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;bounded-exact-classification-admission-predicate&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

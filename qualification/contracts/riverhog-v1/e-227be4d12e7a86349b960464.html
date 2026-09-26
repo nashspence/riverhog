@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-a23132e8892754e98db86957.html">stove0-target-support</a> / <a href="i-1d055379ac0c86b137cd0691.html">Process Protocol Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>PUT /v1/jobs/{job_id}</h1>
 <p class="context">Hardware-neutral target protocol, runtime, and conformance support for Stove0. Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.</p>
@@ -47,7 +38,7 @@
 </dd>
 </dl>
 <h4>Path parameters</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -58,13 +49,11 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>job_id</code>
-</td>
-<td>
-<code></code>
-</td>
-<td>no</td>
+<td data-label="Name">
+<code>job_id</code></td>
+<td data-label="Type">
+<code></code></td>
+<td data-label="Required">no</td>
 </tr>
 </tbody>
 </table>
@@ -100,7 +89,7 @@
 </dd>
 </dl>
 <h4>Errors</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -110,84 +99,64 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>
-<code>invalid_target_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Code">
+<code>invalid_target_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Code">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>413</code>
-</td>
-<td>
-<code>request_too_large</code>
-</td>
+<td data-label="Status">
+<code>413</code></td>
+<td data-label="Code">
+<code>request_too_large</code></td>
 </tr>
 <tr>
-<td>
-<code>409</code>
-</td>
-<td>
-<code>job_identity_mismatch</code>
-</td>
+<td data-label="Status">
+<code>409</code></td>
+<td data-label="Code">
+<code>job_identity_mismatch</code></td>
 </tr>
 <tr>
-<td>
-<code>409</code>
-</td>
-<td>
-<code>target_descriptor_mismatch</code>
-</td>
+<td data-label="Status">
+<code>409</code></td>
+<td data-label="Code">
+<code>target_descriptor_mismatch</code></td>
 </tr>
 <tr>
-<td>
-<code>409</code>
-</td>
-<td>
-<code>operation_contract_mismatch</code>
-</td>
+<td data-label="Status">
+<code>409</code></td>
+<td data-label="Code">
+<code>operation_contract_mismatch</code></td>
 </tr>
 <tr>
-<td>
-<code>409</code>
-</td>
-<td>
-<code>job_request_mismatch</code>
-</td>
+<td data-label="Status">
+<code>409</code></td>
+<td data-label="Code">
+<code>job_request_mismatch</code></td>
 </tr>
 <tr>
-<td>
-<code>409</code>
-</td>
-<td>
-<code>target_runtime_mismatch</code>
-</td>
+<td data-label="Status">
+<code>409</code></td>
+<td data-label="Code">
+<code>target_runtime_mismatch</code></td>
 </tr>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>
-<code>unsupported_operation</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Code">
+<code>unsupported_operation</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>
-<code>target_failed</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Code">
+<code>target_failed</code></td>
 </tr>
 </tbody>
 </table>
@@ -209,8 +178,7 @@
 <span id="v-ae4a1c5ca2008e1899afdcb9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/error_schema">ErrorOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -234,8 +202,7 @@
 <span id="v-7d0272c8f1dcb0d078c9d90d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/0/code">invalid_target_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -245,12 +212,10 @@
 <span id="v-a623e97cf637344201773a50">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/0/status">400</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -267,8 +232,7 @@
 <span id="v-d5f97b9ae9223252aab3d7df">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/1/code">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -278,12 +242,10 @@
 <span id="v-457fbf96cc0e6fd0fdf5b512">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/1/status">401</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -300,8 +262,7 @@
 <span id="v-33f50ab4cd34b8ff101bf0b3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/2/code">request_too_large</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -311,12 +272,10 @@
 <span id="v-66e6bd71c883152c5a27a197">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/2/status">413</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -333,8 +292,7 @@
 <span id="v-2b95117765239bf84bd6600b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/3/code">job_identity_mismatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -344,12 +302,10 @@
 <span id="v-2b17b22e5ecbca4486632136">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/3/status">409</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -366,8 +322,7 @@
 <span id="v-f0b08d373c2623fda9054f78">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/4/code">target_descriptor_mismatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,12 +332,10 @@
 <span id="v-4665d194ae231fb16908f485">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/4/status">409</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,8 +352,7 @@
 <span id="v-337e76d8234251a5e6ea9f5f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/5/code">operation_contract_mismatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,12 +362,10 @@
 <span id="v-a913b3cd823dedd6e9593e37">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/5/status">409</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -432,8 +382,7 @@
 <span id="v-be0aab39be8bf4dc9d14ae9c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/6/code">job_request_mismatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -443,12 +392,10 @@
 <span id="v-13fd78850f1c40d584dae2d9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/6/status">409</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -465,8 +412,7 @@
 <span id="v-e3fa3f6d6f854efede9ce0d2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/7/code">target_runtime_mismatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -476,12 +422,10 @@
 <span id="v-33d567391e629637d5ae0d1b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/7/status">409</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -498,8 +442,7 @@
 <span id="v-d3bb8a316741f7616d91b945">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/8/code">unsupported_operation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -509,12 +452,10 @@
 <span id="v-dba011b70325281d6ed277bc">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/8/status">400</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,8 +472,7 @@
 <span id="v-8684d4daedf0c109612dd476">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/9/code">target_failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -542,16 +482,13 @@
 <span id="v-95b4e0b7241a293aaf4c811f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/errors/9/status">500</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -561,8 +498,7 @@
 <span id="v-10df3c4a05482e43583fc6a7">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/method">PUT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -572,8 +508,7 @@
 <span id="v-81cff57a99711e63c8dc6d85">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/path">/v1/jobs/{job_id}</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -597,8 +532,7 @@
 <span id="v-96278a0a179b3fdac05570f9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/path_parameters/0/name">job_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -615,8 +549,7 @@
 <span id="v-15d19a87d6502bb7f0debcce">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/path_parameters/0/schema/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -626,20 +559,16 @@
 <span id="v-e46cde567428a9a2ca01b93e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/path_parameters/0/schema/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,8 +585,7 @@
 <span id="v-148ca916d48225936b4c4f6c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/request/kind">json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -667,12 +595,10 @@
 <span id="v-a8f822a3e0f94e408fb0af19">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/request/schema">TargetJobRequest</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,8 +615,7 @@
 <span id="v-110e36d1bf0f493464369932">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/response/headers">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -700,8 +625,7 @@
 <span id="v-56b38726b84989ab20dd02eb">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/response/kind">json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -711,8 +635,7 @@
 <span id="v-2a812b513ce8e9e2b1c4a3b8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/response/schema">TargetJobStatus</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -729,16 +652,13 @@
 <span id="v-efef352c4e61bccb838f5756">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/2/response/statuses/0">200</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -758,7 +678,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -770,7 +690,7 @@
 <a href="source-authorities.html#source-2c42f9d39a0b77778f43b720">protocol:generated:stove0-target</a> — <code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/schemas.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -781,9 +701,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

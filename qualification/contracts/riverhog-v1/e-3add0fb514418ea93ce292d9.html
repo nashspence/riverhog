@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a> / <a href="i-22ebf65415d1e82255f700e0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_provenance.ProvenanceTerminalDocument</h1>
 <p class="context">Portable Riverhog v1 per-file provenance journals and validation. Declared public imports and their selected exact structural contracts.</p>
@@ -61,7 +52,7 @@
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,59 +63,44 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_generation</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>archive_generation</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>archive_tree_sha256</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>archive_tree_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>sequence</code>
-</td>
-<td>
-<code>&#x27;int&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>
-<code>&quot;Literal[&#x27;terminal&#x27;]&quot;</code>
-</td>
-<td>
-<code>&#x27;terminal&#x27;</code>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Type">
+<code>&quot;Literal[&#x27;terminal&#x27;]&quot;</code></td>
+<td data-label="Default">
+<code>&#x27;terminal&#x27;</code></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>&#x27;riverhog-provenance-terminal/v1&#x27;</code>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>&#x27;riverhog-provenance-terminal/v1&#x27;</code></td>
 </tr>
 </tbody>
 </table>
@@ -167,8 +143,7 @@
 <span id="v-ac87a2ece6fa96f74f03f947">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/0/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -178,8 +153,7 @@
 <span id="v-bcef0c25e1b18767a6ba0d4f">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/0/name">archive_generation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -189,12 +163,10 @@
 <span id="v-652068427651249d437a3758">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/0/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -211,8 +183,7 @@
 <span id="v-3d485445b0dacfd6f16a3c94">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/1/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -222,8 +193,7 @@
 <span id="v-1606c1be13e16935c677f357">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/1/name">archive_tree_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -233,12 +203,10 @@
 <span id="v-be1396376567375f9bb3afd5">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/1/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -255,8 +223,7 @@
 <span id="v-fefb0250592e919867c4ae8b">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/2/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -266,8 +233,7 @@
 <span id="v-64d4f08381485b43d8dc836b">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/2/name">sequence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -277,12 +243,10 @@
 <span id="v-29050f97d8c18966cd48a1ca">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/2/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,8 +263,7 @@
 <span id="v-07bc8b59c1d35b43715eb8aa">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/3/default">&#x27;terminal&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,8 +273,7 @@
 <span id="v-158fd9b077560acd824b34a8">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/3/name">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -321,12 +283,10 @@
 <span id="v-fc67591b46bb68890760fbc0">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/3/type">&quot;Literal[&#x27;terminal&#x27;]&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,8 +303,7 @@
 <span id="v-8648f8d0d19963c3c5eee750">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/4/default">&#x27;riverhog-provenance-terminal/v1&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -354,8 +313,7 @@
 <span id="v-7260b5f5a44d6f4e575c1893">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/4/name">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -365,16 +323,13 @@
 <span id="v-1c8f9df4c8982e7ea2120ce6">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/fields/4/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -384,8 +339,7 @@
 <span id="v-4f020bbea7547f30a71d99ba">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -395,12 +349,10 @@
 <span id="v-8925fc373bce0eda5cdf9d9c">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/contract/signature">&#x27;(archive_generation: \&#x27;str\&#x27;, archive_tree_sha256: \&#x27;str\&#x27;, sequence: \&#x27;int\&#x27;, kind: &quot;Literal[\&#x27;terminal\&#x27;]&quot; = \&#x27;terminal\&#x27;, format: \&#x27;str\&#x27; = \&#x27;riverhog-provenance-terminal/v1\&#x27;) -&gt; None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,8 +362,7 @@
 <span id="v-f3f44e097f57bec8ac125633">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/distribution">riverhog-provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,8 +372,7 @@
 <span id="v-595fd20e74ba97add32831cf">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/module">riverhog_provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -432,8 +382,7 @@
 <span id="v-cff6f669844791b622b9a4b5">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/name">ProvenanceTerminalDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -443,8 +392,7 @@
 <span id="v-60867fea066bd9ba2cd22094">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.ProvenanceTerminalDocument/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -473,7 +421,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -485,7 +433,7 @@
 <a href="source-authorities.html#source-38ef3a6054bee6ff009d696c">python:riverhog-provenance:riverhog_provenance</a> — <code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/__init__.py">packages/riverhog-provenance/src/riverhog_provenance/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -496,9 +444,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

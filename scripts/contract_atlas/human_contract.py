@@ -55,10 +55,17 @@ def _table(headers: Sequence[str], rows: Sequence[Sequence[str]], *, css: str = 
     if not rows:
         return ""
     heading = "".join(f'<th scope="col">{_esc(item)}</th>' for item in headers)
-    body = "".join("<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows)
+    body = "".join(
+        "<tr>"
+        + "".join(
+            f'<td data-label="{_esc(headers[index])}">{cell}</td>' for index, cell in enumerate(row)
+        )
+        + "</tr>"
+        for row in rows
+    )
     class_name = f' class="{_esc(css)}"' if css else ""
     return (
-        f'<div class="table-scroll"><table{class_name}><thead><tr>{heading}</tr>'
+        f'<div class="record-collection"><table{class_name}><thead><tr>{heading}</tr>'
         f"</thead><tbody>{body}</tbody></table></div>"
     )
 
@@ -918,40 +925,34 @@ def inventory_fact(interface: str, value: object, pointer: str) -> str:
         contract = cast(Mapping[str, object], value.get("contract", {}))
         return _code(contract.get("kind", ""))
     if interface == "cli":
-        return f"{len(cast(Sequence[object], value.get('parameters', ())))} parameters"
+        return ""
     if interface == "http-operations":
-        statuses = value.get("responses", {})
-        status_text = (
-            ", ".join(str(item) for item in statuses) if isinstance(statuses, Mapping) else ""
-        )
-        summary = str(value.get("summary", ""))
-        return _esc(summary) + (" · responses " + _esc(status_text) if status_text else "")
+        summary = value.get("summary")
+        return _esc(summary) if isinstance(summary, str) else ""
     if interface in {"schema", "http-schemas", "process-protocol-schemas", "configuration"}:
         properties = value.get("properties", {})
         field_count = len(properties) if isinstance(properties, Mapping) else 0
-        return _esc(value.get("type", "structured")) + f" · {field_count} fields"
+        if field_count:
+            return f"{field_count} {'field' if field_count == 1 else 'fields'}"
+        for composition in ("oneOf", "anyOf", "allOf"):
+            variants = value.get(composition)
+            if isinstance(variants, list) and variants:
+                return f"{len(variants)} alternatives"
+        return ""
     if interface == "durable-state":
         if "columns" in value:
             columns = len(cast(Sequence[object], value["columns"]))
             constraints = len(cast(Sequence[object], value.get("constraints", ())))
-            return f"{columns} columns · {constraints} constraints"
-        return _esc(value.get("kind", value.get("format", "durable state")))
+            return f"{columns} columns" + (f" · {constraints} constraints" if constraints else "")
+        return ""
     if interface == "configuration-environment":
         defaults = cast(Sequence[object], value.get("default_expressions", ()))
-        return _esc(value.get("input_shape", "")) + (
-            " · default " + ", ".join(_code(item) for item in defaults) if defaults else ""
-        )
+        return "default " + ", ".join(_code(item) for item in defaults) if defaults else ""
     if interface == "process-protocol-operations":
         response = value.get("response", {})
         statuses = response.get("statuses", ()) if isinstance(response, Mapping) else ()
-        return (
-            _esc(value.get("method", ""))
-            + " "
-            + _esc(value.get("path", ""))
-            + " · response "
-            + _code(statuses)
-        )
+        return "response " + _code(statuses) if statuses else ""
     for key in ("description", "coordinate", "repository", "role", "name", "title", "format"):
         if isinstance(value.get(key), str):
             return _esc(value[key])
-    return _esc(_parts(pointer)[-1])
+    return ""

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_protocol.ProcessingClaimCreateDocument</h1>
 <p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,68 +84,51 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>lease_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>30</code>; maximum: <code>86400</code>; default: <code>1800</code>
-</td>
-<td>
-<code>1800</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>lease_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>30</code>; maximum: <code>86400</code>; default: <code>1800</code></td>
+<td data-label="Default">
+<code>1800</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>purpose</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>; default: <code>collection-work/v1</code>
-</td>
-<td>
-<code>collection-work/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>purpose</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>; default: <code>collection-work/v1</code></td>
+<td data-label="Default">
+<code>collection-work/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-7279ed4f9761582b1035a42d">work_document</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-7279ed4f9761582b1035a42d">work_document</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>work_document_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>work_document_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>work_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>work_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -208,8 +182,7 @@
 <span id="v-8f5ac273b05dbc017e976966">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -226,8 +199,7 @@
 <span id="v-24777272ac6d446aaf662764">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -251,8 +223,7 @@
 <span id="v-860b0a9da615ef59f361f2b8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/lease_seconds/default">1800</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -262,8 +233,7 @@
 <span id="v-52902b40b44b874428a64587">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/lease_seconds/maximum">86400</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -273,8 +243,7 @@
 <span id="v-5035a3c6d108ff739dca7472">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/lease_seconds/minimum">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -284,12 +253,10 @@
 <span id="v-1d463898fd06b5ae41533180">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/lease_seconds/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -306,8 +273,7 @@
 <span id="v-ab90729cce5ef877adcf2f45">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/purpose/default">collection-work/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,8 +283,7 @@
 <span id="v-cce661f82489eb67241ed86d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/purpose/maxLength">160</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -328,8 +293,7 @@
 <span id="v-73e3f9f2e46fea9a400385c1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/purpose/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -339,12 +303,10 @@
 <span id="v-917977522d7099c07c0b7b97">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/purpose/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -361,8 +323,7 @@
 <span id="v-97259fea14cb0b57116ffe92">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -372,8 +333,7 @@
 <span id="v-36be7d613292fdaeb4899fbb">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -383,8 +343,7 @@
 <span id="v-941b2de1ad3a77a1aa1c945b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document/x-riverhog-encoded-bytes-max">4194304</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -401,8 +360,7 @@
 <span id="v-39cf292e9600c62f840e9b02">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,16 +370,13 @@
 <span id="v-242873393483fa3212a80c86">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document/x-riverhog-extent/reason">bounded-work-document-envelope</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -438,8 +393,7 @@
 <span id="v-eccfdfd1b6d216451bf9a50e">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -449,12 +403,10 @@
 <span id="v-36f954c15fe668d097237ac5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_document_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -471,8 +423,7 @@
 <span id="v-42d799be95376fd714dc4df5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -482,16 +433,13 @@
 <span id="v-df7ed663fbc4b9d26b38ca21">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/properties/work_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -508,8 +456,7 @@
 <span id="v-972502fcb8d7a257a989e22d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/required/0">work_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -519,8 +466,7 @@
 <span id="v-75663ae3f7e6558ae2a11360">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/required/1">work_document</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -530,12 +476,10 @@
 <span id="v-ef927bf2cbdbb4f64ef99e0d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/required/2">work_document_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -545,12 +489,10 @@
 <span id="v-85e8f017f0bca5f7f340baf5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,12 +502,10 @@
 <span id="v-af47c58e99b776d106950416">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/contract/signature">&quot;(*, work_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)] = &#x27;collection-work/v1&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -575,8 +515,7 @@
 <span id="v-27797de284031cfe4a10e4da">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/distribution">riverhog-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -586,8 +525,7 @@
 <span id="v-e511f932c5ba5f7c28e57e65">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/module">riverhog_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -597,8 +535,7 @@
 <span id="v-0d5d113d4f098f3b78782d8d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/name">ProcessingClaimCreateDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -608,8 +545,7 @@
 <span id="v-317a90dfc4c579a249c85e32">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -635,7 +571,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -647,7 +583,7 @@
 <a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -658,9 +594,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: BranchSetEvaluation</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,217 +63,163 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>branch_set_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>branch_set_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>branch_set_succeeded</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>branch_set_succeeded</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-28bd0e47e6fdcd585c3d88f9">canceled_branch_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-28bd0e47e6fdcd585c3d88f9">canceled_branch_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>coordination_complete_for_retirement</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>coordination_complete_for_retirement</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-f616c02dd4c092143c60886b">coordination_settlement</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-f616c02dd4c092143c60886b">coordination_settlement</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-7a8d5bbcfea6da6659bde155">failed_branch_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-7a8d5bbcfea6da6659bde155">failed_branch_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-5784e98faa2c3641989cab40">inapplicable_branch_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-5784e98faa2c3641989cab40">inapplicable_branch_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-5e39f032913b018895efd50b">interrupted_branch_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-5e39f032913b018895efd50b">interrupted_branch_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>join_ready</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>join_ready</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-451ecf2f608e49851abd8641">join_settlement</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-451ecf2f608e49851abd8641">join_settlement</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>join_state</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;not-declared&quot;,&quot;waiting&quot;,&quot;ready&quot;,&quot;succeeded&quot;,&quot;failed&quot;,&quot;inapplicable&quot;,&quot;interrupted&quot;,&quot;canceled&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>join_state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;not-declared&quot;,&quot;waiting&quot;,&quot;ready&quot;,&quot;succeeded&quot;,&quot;failed&quot;,&quot;inapplicable&quot;,&quot;interrupted&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-580c35fecd21b4d387beb30f">resolved_join_plan</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-580c35fecd21b4d387beb30f">resolved_join_plan</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_requested</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_requested</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-532021a47d874bb4ef1f0c9f">succeeded_branches</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-091167f7febc9680d47fc978.html#v-408a56022c8d33cad48d3148">#/components/schemas/BranchSettlement</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-532021a47d874bb4ef1f0c9f">succeeded_branches</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-091167f7febc9680d47fc978.html#v-408a56022c8d33cad48d3148">#/components/schemas/BranchSettlement</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-454b7a1beedbb7c26aecfdae">succeeded_coordinations</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-454b7a1beedbb7c26aecfdae">succeeded_coordinations</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e849acf14624c27aa83e44f5">succeeded_effects</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-5db6c1033cd2b89302610980.html#v-8c1e5f0939632a7ed9ab5569">#/components/schemas/BranchEffectSettlement</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e849acf14624c27aa83e44f5">succeeded_effects</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-5db6c1033cd2b89302610980.html#v-8c1e5f0939632a7ed9ab5569">#/components/schemas/BranchEffectSettlement</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-4cf1935a3b85b609506476b8">unsettled_branch_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-4cf1935a3b85b609506476b8">unsettled_branch_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-c9d8f273f54748836c360092">unsettled_work_ids</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-c9d8f273f54748836c360092">unsettled_work_ids</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -309,7 +246,7 @@
 <p class="shape">any of: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -319,16 +256,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -387,7 +322,7 @@
 <p class="shape">any of: <a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -397,16 +332,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -417,7 +350,7 @@
 <p class="shape">any of: <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -427,16 +360,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -539,8 +470,7 @@
 <span id="v-ab9d9c50b95951e9ffea0b39">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -550,8 +480,7 @@
 <span id="v-8108b9338260541ce60d3c0e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/description">Entirely derived view over a plan and ordinary child/join results.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -575,8 +504,7 @@
 <span id="v-bfd53c6b79be15dc4e92708b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -586,8 +514,7 @@
 <span id="v-14f54dbd72454fecca8c0d7f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256/title">Branch Set Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -597,12 +524,10 @@
 <span id="v-ec1a8b59a05aa3428092a68b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -619,8 +544,7 @@
 <span id="v-9288b51e91147cb6bd7be281">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_succeeded/title">Branch Set Succeeded</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -630,12 +554,10 @@
 <span id="v-4b0283fa9a85cd61d1078e5b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_succeeded/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -659,8 +581,7 @@
 <span id="v-9883f5f9e91ca77ba634d80d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -670,12 +591,10 @@
 <span id="v-69154f3b2051c420f32e83ab">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -685,8 +604,7 @@
 <span id="v-3897bff56c3b3e9868fed5c7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids/title">Canceled Branch Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -696,12 +614,10 @@
 <span id="v-739913e9aa573af1e03a29c3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -718,8 +634,7 @@
 <span id="v-0ce02ca8f28e74ee65ef6b69">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/coordination_complete_for_retirement/title">Coordination Complete For Retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -729,12 +644,10 @@
 <span id="v-cb9aad374b72c548772994eb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/coordination_complete_for_retirement/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -765,12 +678,10 @@
 <span id="v-4469516601d3c0427712fc89">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/coordination_settlement/anyOf/0/$ref">#/components/schemas/CoordinationSettlement</code>
 <span class="kind">string</span> <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -787,20 +698,16 @@
 <span id="v-bdbb68ba6b071acafe80b1ac">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/coordination_settlement/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -824,8 +731,7 @@
 <span id="v-ce428ccae7a682d5415c4594">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -835,12 +741,10 @@
 <span id="v-489026aeebbef018642065bb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -850,8 +754,7 @@
 <span id="v-e463f386ec811846f7fb1929">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids/title">Failed Branch Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -861,12 +764,10 @@
 <span id="v-56d3b2d227fdf73db3881535">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -890,8 +791,7 @@
 <span id="v-24b8d1c6ac4bb1e7d59af6f1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -901,12 +801,10 @@
 <span id="v-b6e5c05ecf3373d80fbac258">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -916,8 +814,7 @@
 <span id="v-1321566c6597a8dcdaf4d42b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids/title">Inapplicable Branch Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -927,12 +824,10 @@
 <span id="v-cc4ed074cbfc3b875b7dd1e8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -956,8 +851,7 @@
 <span id="v-9544e16d8ac509a2182f2a3d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -967,12 +861,10 @@
 <span id="v-3fa56bee7384ec31281c4e62">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -982,8 +874,7 @@
 <span id="v-bcaf7ca5d0b14b572c201520">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids/title">Interrupted Branch Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -993,12 +884,10 @@
 <span id="v-57836c93950d12c9e956aee8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1015,8 +904,7 @@
 <span id="v-bf06a697d60847e4c73218a2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_ready/title">Join Ready</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1026,12 +914,10 @@
 <span id="v-69de22358e3e1467a2b734d8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_ready/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1062,12 +948,10 @@
 <span id="v-20ce07ab4d698cc30cc7c014">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_settlement/anyOf/0/$ref">#/components/schemas/JoinSettlement</code>
 <span class="kind">string</span> <a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1084,20 +968,16 @@
 <span id="v-8c4c13b1ae37a257aaa517ff">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_settlement/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1121,8 +1001,7 @@
 <span id="v-4e81152601d73268677cc916">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/0">not-declared</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1132,8 +1011,7 @@
 <span id="v-a2ed20e847646d8fdf9b0eb0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/1">waiting</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1143,8 +1021,7 @@
 <span id="v-4d496eb72ce3d32f6e83b199">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/2">ready</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1154,8 +1031,7 @@
 <span id="v-f3e4fbcfe24439db20dd6688">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/3">succeeded</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1165,8 +1041,7 @@
 <span id="v-ae203da31edbf2231ce0a6fa">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/4">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1176,8 +1051,7 @@
 <span id="v-aa88966dc2963f732ac2f3ea">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/5">inapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1187,8 +1061,7 @@
 <span id="v-63cc6cfe1cadee1b424e3bef">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/6">interrupted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1198,12 +1071,10 @@
 <span id="v-84ef14e5b478b0e3e17b2387">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/enum/7">canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1213,8 +1084,7 @@
 <span id="v-1bc641d287e8b2d1720b0592">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/title">Join State</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1224,12 +1094,10 @@
 <span id="v-6dc3aa2f1331f05b20fe1b1d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/join_state/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1260,12 +1128,10 @@
 <span id="v-a5c87b06d793b1bc659abb3d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/resolved_join_plan/anyOf/0/$ref">#/components/schemas/JoinPlan</code>
 <span class="kind">string</span> <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1282,20 +1148,16 @@
 <span id="v-370c2dde95004694b9502b7a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/resolved_join_plan/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1312,8 +1174,7 @@
 <span id="v-844b93f4a236414a19c75f91">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/source_collection_retirement_requested/title">Source Collection Retirement Requested</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1323,12 +1184,10 @@
 <span id="v-ba693cc781a39ed30004a2bf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/source_collection_retirement_requested/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1352,12 +1211,10 @@
 <span id="v-e5aaad9a762615da4ddefd5b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches/items/$ref">#/components/schemas/BranchSettlement</code>
 <span class="kind">string</span> <a href="e-091167f7febc9680d47fc978.html#v-408a56022c8d33cad48d3148">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1367,8 +1224,7 @@
 <span id="v-41011373630af7a3b929f9c4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches/title">Succeeded Branches</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1378,12 +1234,10 @@
 <span id="v-45db6e15f49805271cbb954c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1407,12 +1261,10 @@
 <span id="v-f0c0b7d8b11dca35358da978">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations/items/$ref">#/components/schemas/CoordinationSettlement</code>
 <span class="kind">string</span> <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1422,8 +1274,7 @@
 <span id="v-5ccb6ccbf2af4603b5e472d8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations/title">Succeeded Coordinations</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1433,12 +1284,10 @@
 <span id="v-82ed829154582dd6518d6d33">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1462,12 +1311,10 @@
 <span id="v-9fd6d06714c4d22cf68a392a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects/items/$ref">#/components/schemas/BranchEffectSettlement</code>
 <span class="kind">string</span> <a href="e-5db6c1033cd2b89302610980.html#v-8c1e5f0939632a7ed9ab5569">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1477,8 +1324,7 @@
 <span id="v-168300b065099f3a680774d0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects/title">Succeeded Effects</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1488,12 +1334,10 @@
 <span id="v-e064ca6ac9b6c9517ba99362">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1517,8 +1361,7 @@
 <span id="v-6e28117ceac656bb3c07dd24">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1528,12 +1371,10 @@
 <span id="v-bad1597025e2b01336633641">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1543,8 +1384,7 @@
 <span id="v-5a95f1b9e28730f34482b744">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids/title">Unsettled Branch Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1554,12 +1394,10 @@
 <span id="v-93d371d1b4e68583072d6870">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1583,8 +1421,7 @@
 <span id="v-1ddc4fbf1f6fa4bfb211a076">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1594,12 +1431,10 @@
 <span id="v-6e91c3a0df4ed5ef79b226d2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1609,8 +1444,7 @@
 <span id="v-93325144f48e1f9ff5fb448b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/title">Unsettled Work Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1620,16 +1454,13 @@
 <span id="v-3c732d96fa70ac8748b12e02">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1646,8 +1477,7 @@
 <span id="v-4e7810d8e4dca11401ae8a80">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/0">branch_set_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1657,8 +1487,7 @@
 <span id="v-c251c615a283fdd8666c8fff">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/1">succeeded_branches</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1668,8 +1497,7 @@
 <span id="v-7c12b5da8f1292ba9f95f9bf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/2">succeeded_effects</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1679,8 +1507,7 @@
 <span id="v-4702f8808e32f10813307594">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/3">succeeded_coordinations</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1690,8 +1517,7 @@
 <span id="v-8f42f2434bdfb56f68f5782b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/4">unsettled_branch_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1701,8 +1527,7 @@
 <span id="v-88a0443cf4e1d185bcbf7d75">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/5">failed_branch_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1712,8 +1537,7 @@
 <span id="v-06d322be842f77fab84c459c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/6">inapplicable_branch_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1723,8 +1547,7 @@
 <span id="v-850454af37322a84af61158a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/7">interrupted_branch_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1734,8 +1557,7 @@
 <span id="v-e5ec41f74d6eb9cbfbed3168">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/8">canceled_branch_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1745,8 +1567,7 @@
 <span id="v-8c32521991239d06b04413fd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/9">join_ready</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1756,8 +1577,7 @@
 <span id="v-fe4df9acf06d3d2f4052849b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/10">resolved_join_plan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1767,8 +1587,7 @@
 <span id="v-df6607606201971083549384">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/11">join_state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1778,8 +1597,7 @@
 <span id="v-2d3b44bab8a51f471c8d14e0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/12">join_settlement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1789,8 +1607,7 @@
 <span id="v-96bc9f666dc43d2079e608dd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/13">unsettled_work_ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1800,8 +1617,7 @@
 <span id="v-c01a813a0e1d9d78715b83e0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/14">branch_set_succeeded</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1811,8 +1627,7 @@
 <span id="v-6c13bf3414ce808ea01cb241">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/15">coordination_settlement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1822,8 +1637,7 @@
 <span id="v-6909cb99046c976b631ddb52">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/16">source_collection_retirement_requested</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1833,12 +1647,10 @@
 <span id="v-1bfa37d13308712f64454e7f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/required/17">coordination_complete_for_retirement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1848,8 +1660,7 @@
 <span id="v-759586f9473fb940cea570cc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/title">BranchSetEvaluation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1859,8 +1670,7 @@
 <span id="v-b749aa723f55a13b60b8575f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1872,7 +1682,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1884,7 +1694,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1894,8 +1704,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1907,145 +1716,115 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

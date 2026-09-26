@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-4896799d0d02b62aed32603a.html">stove0-observer-protocol</a> / <a href="i-917ae1665c5ec214e9311103.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_observer_protocol.ObserverRuntimeAuthority</h1>
 <p class="context">Dependency-light public contracts for external Stove0 content observers. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,68 +84,51 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>allow_insecure_http</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>false</code>
-</td>
-<td>
-<code>false</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>allow_insecure_http</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>capability_token</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>capability_token</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>declared_workspace_protection</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-775998f144822f5f86228c7e.html#v-6e28aa2f414c40b67d7bb1ce">#/$defs/DeclaredWorkspaceProtection</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>declared_workspace_protection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-775998f144822f5f86228c7e.html#v-6e28aa2f414c40b67d7bb1ce">#/$defs/DeclaredWorkspaceProtection</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>riverhog_base_url</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>riverhog_base_url</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>transport</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>riverhog-capability/v1</code>; default: <code>riverhog-capability/v1</code>
-</td>
-<td>
-<code>riverhog-capability/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>transport</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-capability/v1</code>; default: <code>riverhog-capability/v1</code></td>
+<td data-label="Default">
+<code>riverhog-capability/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -206,8 +180,7 @@
 <span id="v-4b7cae60059a2380a97c4e55">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -245,8 +218,7 @@
 <span id="v-edaccd9e397801d03eb3851b">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/$defs/DeclaredWorkspaceProtection/enum/0">encrypted-at-rest</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -256,12 +228,10 @@
 <span id="v-6a03f7745f0c61a39fc5442f">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/$defs/DeclaredWorkspaceProtection/enum/1">memory-backed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -271,16 +241,13 @@
 <span id="v-569e8a8497e689685bf31a6f">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/$defs/DeclaredWorkspaceProtection/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -290,8 +257,7 @@
 <span id="v-c02fd19ae5640a929565e267">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -315,8 +281,7 @@
 <span id="v-c611feff51a64d23f3779c96">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/allow_insecure_http/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,12 +291,10 @@
 <span id="v-bdb0ff60a775444b0bb4cc32">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/allow_insecure_http/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -348,8 +311,7 @@
 <span id="v-0029711190bc48b1e8fdb389">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/capability_token/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -359,8 +321,7 @@
 <span id="v-5d48b47cd276ab999577b0a2">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/capability_token/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,12 +331,10 @@
 <span id="v-41b3ab7565951bb80bf9254d">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/capability_token/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,12 +351,10 @@
 <span id="v-8223d400047ee47b521c1814">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/declared_workspace_protection/$ref">#/$defs/DeclaredWorkspaceProtection</code>
 <span class="kind">string</span> <a href="e-775998f144822f5f86228c7e.html#v-6e28aa2f414c40b67d7bb1ce">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -414,8 +371,7 @@
 <span id="v-4d5d15fcc01a9a02dfe2bca2">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/riverhog_base_url/maxLength">2048</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -425,8 +381,7 @@
 <span id="v-91c188af38f8feefa8767d97">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/riverhog_base_url/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -436,12 +391,10 @@
 <span id="v-9e6a3faab60c71006ba2ec02">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/riverhog_base_url/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -458,8 +411,7 @@
 <span id="v-14e6b76fdb911af850f9c98e">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/transport/const">riverhog-capability/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,8 +421,7 @@
 <span id="v-0789da77cbf8f2579f1fdb92">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/transport/default">riverhog-capability/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -480,16 +431,13 @@
 <span id="v-efd21043c439d8397dd0e0f9">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/properties/transport/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -506,8 +454,7 @@
 <span id="v-72d449b60ba03975df1eeccc">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/required/0">riverhog_base_url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,8 +464,7 @@
 <span id="v-ff0ab04b49f62956f1e181a7">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/required/1">capability_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -528,12 +474,10 @@
 <span id="v-7d65a4dda4e89ba243c8035c">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/required/2">declared_workspace_protection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -543,12 +487,10 @@
 <span id="v-5bffbb9ea18a51bd2fb0704f">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -558,12 +500,10 @@
 <span id="v-0a14d48ee4f5422ff3fbcca8">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/contract/signature">&quot;(*, transport: Literal[&#x27;riverhog-capability/v1&#x27;] = &#x27;riverhog-capability/v1&#x27;, riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], capability_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False, declared_workspace_protection: DeclaredWorkspaceProtection) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -573,8 +513,7 @@
 <span id="v-587c69aeaf028b0fe469c1ea">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/distribution">stove0-observer-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -584,8 +523,7 @@
 <span id="v-058c5aa9e61f336dda630fe8">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/module">stove0_observer_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -595,8 +533,7 @@
 <span id="v-d4dd2596f3750dae5106d2ee">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/name">ObserverRuntimeAuthority</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -606,8 +543,7 @@
 <span id="v-b29503ad59235fba650bac0e">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverRuntimeAuthority/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -619,7 +555,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -631,7 +567,7 @@
 <a href="source-authorities.html#source-62450e01569529ab26f29c60">python:stove0-observer-protocol:stove0_observer_protocol</a> — <code data-source-path="some-implementations/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py">some-implementations/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -642,9 +578,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

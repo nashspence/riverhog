@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a> / <a href="i-b556572a724194c6c4da1e6b.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-minisign-witness state status</h1>
 <p class="context">Independent Minisign collection witness for Riverhog. CLI contract owned by a-riverhog-minisign-witness.</p>
@@ -63,7 +54,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -76,24 +67,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>command-completed</code>
-</td>
-<td>json: identity: <code>a-riverhog-minisign-witness-cli-state-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;status&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;condition&quot;:{&quot;enum&quot;:[&quot;empty&quot;,&quot;current&quot;,&quot;upgrade_required&quot;,&quot;unversioned&quot;,&quot;incompatible&quot;]},&quot;current_revision&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;head_revision&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;name&quot;,&quot;condition&quot;,&quot;current_revision&quot;,&quot;head_revision&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;status&quot;],&quot;type&quot;:&quot;object&quot;}</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>completed</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>command-completed</code></td>
+<td data-label="stdout">json: identity: <code>a-riverhog-minisign-witness-cli-state-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;status&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;condition&quot;:{&quot;enum&quot;:[&quot;empty&quot;,&quot;current&quot;,&quot;upgrade_required&quot;,&quot;unversioned&quot;,&quot;incompatible&quot;]},&quot;current_revision&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;head_revision&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;name&quot;,&quot;condition&quot;,&quot;current_revision&quot;,&quot;head_revision&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;status&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -106,38 +92,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 <tr>
-<td>
-<code>application-error</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>kind: <code>application-error</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>application-error</code></td>
+<td data-label="Exit">
+<code>1</code></td>
+<td data-label="Selection">kind: <code>application-error</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -150,21 +126,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -227,8 +198,7 @@
 <span id="v-34c3cb568ad1682530e15a48">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -238,8 +208,7 @@
 <span id="v-0b841c63bb9f76347d1115dc">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -256,12 +225,10 @@
 <span id="v-171743284528e838a8169dfa">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -278,12 +245,10 @@
 <span id="v-ec232a882fc8b276a39e4c6a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -300,16 +265,13 @@
 <span id="v-0be2551bed8834b444c2efd7">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,8 +288,7 @@
 <span id="v-5920f65b4dde9f8ee807548f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/1/exit_status">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -337,8 +298,7 @@
 <span id="v-db8f374d1b624e3493c2285f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/1/id">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -355,12 +315,10 @@
 <span id="v-fad23e4d081f8e45c170219a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/1/selected_by/kind">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,12 +335,10 @@
 <span id="v-f24f7aaf355e44c309f5cb87">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/1/stderr/all">noncontractual-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,20 +355,16 @@
 <span id="v-c74d947a94514ac024ac357e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/failures/1/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -422,8 +374,7 @@
 <span id="v-7719d6d181d4b924854818f3">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/human_json_relationship">not-applicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -433,8 +384,7 @@
 <span id="v-56c01f2f7fb9036629462caa">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/identity">a-riverhog-minisign-witness-cli-result/state/status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -444,8 +394,7 @@
 <span id="v-7c2ebb4083febba8d3ac4aab">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/profile_id">a-riverhog-minisign-witness-cli-json/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -455,8 +404,7 @@
 <span id="v-cf4d1be468d7c56e1ae62b16">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/structured_output">always-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -480,8 +428,7 @@
 <span id="v-d1266a985c1f224d0e43ba3a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -491,8 +438,7 @@
 <span id="v-abff53d1eedc6737ff268a7b">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/id">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -509,12 +455,10 @@
 <span id="v-a369d0a619a5e1d80f1c74f0">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/selected_by/kind">command-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,12 +475,10 @@
 <span id="v-78c7eac156a2dde146386ad7">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,8 +502,7 @@
 <span id="v-227b17f0d4a68ff4e0ee68ff">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/identity">a-riverhog-minisign-witness-cli-state-status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -571,8 +512,7 @@
 <span id="v-c03b72d589d9cc7c11bad99f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/kind">cli-local-json-schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,8 +529,7 @@
 <span id="v-38ee387727e527903706143a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -614,8 +553,7 @@
 <span id="v-cc3c0be5cb66fed047dfe2b2">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -646,8 +584,7 @@
 <span id="v-8d9429005115a3f680876025">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/0">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -657,8 +594,7 @@
 <span id="v-8e51c3cd8f8aebfbe64fdcca">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/1">current</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -668,8 +604,7 @@
 <span id="v-b6a93503a9140330a2d1a51a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/2">upgrade_required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +614,7 @@
 <span id="v-7f054422217ac9195d678148">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/3">unversioned</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -690,16 +624,13 @@
 <span id="v-fa72f2db80954ecdd0161996">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/4">incompatible</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,8 +654,7 @@
 <span id="v-38e808b2c05e7c2f99442ffc">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/current_revision/type/0">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -734,16 +664,13 @@
 <span id="v-aaefb36599c7311ccbfd1bb3">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/current_revision/type/1">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -760,12 +687,10 @@
 <span id="v-39888a756b3cbc036a3817c6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/head_revision/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -782,16 +707,13 @@
 <span id="v-8d578588e44cbf5a0541350a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/name/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -808,8 +730,7 @@
 <span id="v-a6141a348568242bc3a6234b">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/0">name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -819,8 +740,7 @@
 <span id="v-fb0929e0f3c5433db0266198">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/1">condition</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -830,8 +750,7 @@
 <span id="v-82d26754f31e06190c116ff5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/2">current_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -841,12 +760,10 @@
 <span id="v-70fdcafbdbf02350fbafd45a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/3">head_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -856,16 +773,13 @@
 <span id="v-651ba4f3df9d5faa443372da">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -882,12 +796,10 @@
 <span id="v-994541082558bc1626874c80">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/required/0">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -897,28 +809,22 @@
 <span id="v-bae6617f76b5519909480f4b">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -944,8 +850,7 @@
 <span id="v-aaca36fe540830e7cc527de6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -955,8 +860,7 @@
 <span id="v-4d874d98bbd29dd954ff62c5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -966,8 +870,7 @@
 <span id="v-2c1ac073c9f1f4bf70824a2a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -977,8 +880,7 @@
 <span id="v-286c5843ff93ff9bd843dc30">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -995,8 +897,7 @@
 <span id="v-384d60dabbf6f28aa4533a97">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1013,8 +914,7 @@
 <span id="v-21f3131021b7c486a2ff67ed">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/trigger/options/0">-h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1024,20 +924,16 @@
 <span id="v-dda94fe4f0e11d5e5cbfc4c2">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/status/terminating_controls/0/trigger/options/1">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1049,7 +945,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1061,7 +957,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1072,9 +968,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7097e292dfa22136f062c0e.html">stove0-protocol</a> / <a href="i-78e637d51ea8a0647a012267.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_protocol.EvaluationMatrixPayload</h1>
 <p class="context">Canonical content-opaque collection orchestration contracts for Stove0. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,30 +84,23 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-evaluation-matrix/v1</code>; default: <code>stove0-evaluation-matrix/v1</code>
-</td>
-<td>
-<code>stove0-evaluation-matrix/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-evaluation-matrix/v1</code>; default: <code>stove0-evaluation-matrix/v1</code></td>
+<td data-label="Default">
+<code>stove0-evaluation-matrix/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-669002b757f9a802503001d6">variants</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-9e0854365152f52df06eceb2.html#v-bc8dc94e3b03bbe25bf14dd8">#/$defs/EvaluationVariant</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-669002b757f9a802503001d6">variants</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9e0854365152f52df06eceb2.html#v-bc8dc94e3b03bbe25bf14dd8">#/$defs/EvaluationVariant</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -167,7 +151,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -180,28 +164,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-02f404a3cfd0217c986096e8">parameters</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-9e0854365152f52df06eceb2.html#v-09ae6204e9966bdd519bed56">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-02f404a3cfd0217c986096e8">parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-9e0854365152f52df06eceb2.html#v-09ae6204e9966bdd519bed56">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -251,8 +229,7 @@
 <span id="v-6643c61491dbd2c52fe354f0">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,8 +260,7 @@
 <span id="v-2e75feed91f70e5ecf640cc6">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -308,8 +284,7 @@
 <span id="v-a637c2568327d7f42299ace8">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -319,12 +294,10 @@
 <span id="v-c5941f3dee34ef5b39d27c8f">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -348,12 +321,10 @@
 <span id="v-727a368d214394b56405428e">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/properties/parameters/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-9e0854365152f52df06eceb2.html#v-09ae6204e9966bdd519bed56">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -363,16 +334,13 @@
 <span id="v-57a90a6ec8a2905c9923a852">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/properties/parameters/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -389,12 +357,10 @@
 <span id="v-29b3dc54112da197fa82c881">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -404,12 +370,10 @@
 <span id="v-336cbb5796ebe01578be4f27">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/EvaluationVariant/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,12 +383,10 @@
 <span id="v-09ae6204e9966bdd519bed56">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -434,8 +396,7 @@
 <span id="v-91a8346174e1c2c388bdb124">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -459,8 +420,7 @@
 <span id="v-e9d63b288ca00cbc42faa5dd">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/properties/format/const">stove0-evaluation-matrix/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -470,8 +430,7 @@
 <span id="v-71f3f3f161c0fcc16c2a89fe">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/properties/format/default">stove0-evaluation-matrix/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -481,12 +440,10 @@
 <span id="v-3b87bdd2b39b882acde025b3">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,12 +467,10 @@
 <span id="v-8a8a264f6d702d593515acba">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/properties/variants/items/$ref">#/$defs/EvaluationVariant</code>
 <span class="kind">string</span> <a href="e-9e0854365152f52df06eceb2.html#v-bc8dc94e3b03bbe25bf14dd8">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -525,8 +480,7 @@
 <span id="v-5d7ba13453d4b527478b7e66">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/properties/variants/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -536,16 +490,13 @@
 <span id="v-f3e356a15ba1496599f6e457">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/properties/variants/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -562,12 +513,10 @@
 <span id="v-2d682500c5c8117925fc3a54">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/required/0">variants</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -577,12 +526,10 @@
 <span id="v-0193dc5767a2f3f3c3d9cbbc">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -592,12 +539,10 @@
 <span id="v-5ff191501f29d6add9a0f693">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/contract/signature">&quot;(*, format: Literal[&#x27;stove0-evaluation-matrix/v1&#x27;] = &#x27;stove0-evaluation-matrix/v1&#x27;, variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -607,8 +552,7 @@
 <span id="v-91516b4bec24dcdc3d90e07c">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/distribution">stove0-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -618,8 +562,7 @@
 <span id="v-e5f5987ede047cb16230da96">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/module">stove0_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,8 +572,7 @@
 <span id="v-3b1c9676b706dbc61accf697">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/name">EvaluationMatrixPayload</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -640,8 +582,7 @@
 <span id="v-3cf1f5b531d0295dcf005d1b">
 <code data-value-pointer="/external_contract/python/stove0_protocol.EvaluationMatrixPayload/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -661,7 +602,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -673,7 +614,7 @@
 <a href="source-authorities.html#source-084138045e133c1e06d16ebc">python:stove0-protocol:stove0_protocol</a> — <code data-source-path="some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py">some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -684,9 +625,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a> / <a href="i-5c5fbaec38dbfcb96276df03.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_target_protocol.DepartureEffectTargetDescriptorPayload</h1>
 <p class="context">Dependency-light public contracts for external Stove0 targets. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,78 +84,59 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-departure-effect-target/v1</code>; default: <code>stove0-departure-effect-target/v1</code>
-</td>
-<td>
-<code>stove0-departure-effect-target/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-departure-effect-target/v1</code>; default: <code>stove0-departure-effect-target/v1</code></td>
+<td data-label="Default">
+<code>stove0-departure-effect-target/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>image_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>image_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>implementation_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>implementation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>implementation_version</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>implementation_version</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>scope_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>scope_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -194,8 +166,7 @@
 <span id="v-5a022504ea8b8df8f3617cd2">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -212,8 +183,7 @@
 <span id="v-0e467aa73a3ff9b6c3df56dd">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -237,8 +207,7 @@
 <span id="v-784e0878014d422ee8be0d83">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/format/const">stove0-departure-effect-target/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -248,8 +217,7 @@
 <span id="v-a738c8b14db06c2d1c6ca7ad">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/format/default">stove0-departure-effect-target/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -259,12 +227,10 @@
 <span id="v-d4eb6922f68d3905ce91158b">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,8 +247,7 @@
 <span id="v-967a2eda161612ae0985afaf">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/image_id/pattern">^sha256:[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -292,12 +257,10 @@
 <span id="v-9c452ed67d5ac7ea2ba6a8db">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/image_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -314,8 +277,7 @@
 <span id="v-b992b67a122eff8d3b3bd4c3">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/implementation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -325,12 +287,10 @@
 <span id="v-70b35bd1afcd3a0630007731">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/implementation_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -347,8 +307,7 @@
 <span id="v-17a82d4e0d4e255510320810">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/implementation_version/maxLength">120</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -358,8 +317,7 @@
 <span id="v-522f2f6895ac3974b12d4e26">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/implementation_version/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -369,12 +327,10 @@
 <span id="v-6d4fe44dd1b73455c409c3b5">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/implementation_version/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -391,8 +347,7 @@
 <span id="v-d4003b7b79b66f168c56eec9">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/scope_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -402,12 +357,10 @@
 <span id="v-dfa7eec31bad52c67a05af30">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/scope_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -424,8 +377,7 @@
 <span id="v-e4c0623b05ce618dde017887">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/source_revision/maxLength">200</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -435,8 +387,7 @@
 <span id="v-0b2859a1647e15be18818dcb">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/source_revision/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -446,16 +397,13 @@
 <span id="v-d8b7a80c3279a331acb71325">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/properties/source_revision/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +420,7 @@
 <span id="v-6d1eff1d54c246eb0dbea45f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/required/0">implementation_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,8 +430,7 @@
 <span id="v-551d02c56aed1822c196c4cc">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/required/1">implementation_version</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -494,8 +440,7 @@
 <span id="v-172ae80a6c8e6193a2ddaef0">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/required/2">source_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -505,8 +450,7 @@
 <span id="v-7bc10fc7ec18f601395f5458">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/required/3">image_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -516,12 +460,10 @@
 <span id="v-b3968d0ebc904ec45a1b4700">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/required/4">scope_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,12 +473,10 @@
 <span id="v-99cbfbde84d28fe2c27a2af2">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -546,12 +486,10 @@
 <span id="v-9fe393221f21abf666c1bdb9">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/contract/signature">&quot;(*, format: Literal[&#x27;stove0-departure-effect-target/v1&#x27;] = &#x27;stove0-departure-effect-target/v1&#x27;, implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^sha256:[0-9a-f]{64}$&#x27;, ascii_only=None)], scope_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -561,8 +499,7 @@
 <span id="v-b84f06209b5313413a250f41">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/distribution">stove0-target-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -572,8 +509,7 @@
 <span id="v-894a91364b24a9d0f0a7e7e4">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/module">stove0_target_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -583,8 +519,7 @@
 <span id="v-255d5befe67a2d8e44e311b6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/name">DepartureEffectTargetDescriptorPayload</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -594,8 +529,7 @@
 <span id="v-78cdefb05096ba88e4c907f1">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectTargetDescriptorPayload/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -607,7 +541,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -619,7 +553,7 @@
 <a href="source-authorities.html#source-f4f0b2202672f85e3d080ca7">python:stove0-target-protocol:stove0_target_protocol</a> — <code data-source-path="some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py">some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -630,9 +564,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

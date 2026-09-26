@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: DepartureEffectIntent</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,150 +59,113 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>authorization_view_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>authorization_view_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>departure_cause</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;collection_deleted&quot;,&quot;visibility_lost&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>departure_cause</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;collection_deleted&quot;,&quot;visibility_lost&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>departure_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>departure_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>departure_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>; minLength: <code>1</code>; maxLength: <code>19</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>departure_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>; minLength: <code>1</code>; maxLength: <code>19</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-departure-effect-intent/v1</code>; default: <code>stove0-departure-effect-intent/v1</code>
-</td>
-<td>
-<code>stove0-departure-effect-intent/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-departure-effect-intent/v1</code>; default: <code>stove0-departure-effect-intent/v1</code></td>
+<td data-label="Default">
+<code>stove0-departure-effect-intent/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>last_collection</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-547139d2872135e77a4b6d1d.html#v-f02e615f06a79d6543743044">#/components/schemas/CatalogSyncDescriptor</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>last_collection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-547139d2872135e77a4b6d1d.html#v-f02e615f06a79d6543743044">#/components/schemas/CatalogSyncDescriptor</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>policy_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>policy_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>policy_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>policy_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>policy_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>policy_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_registration_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_registration_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -234,8 +188,7 @@
 <span id="v-7b868268b3ef0171d88c9cd0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -259,8 +212,7 @@
 <span id="v-1af0a2ea94066ac1afe98c36">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -270,8 +222,7 @@
 <span id="v-eb37f8f057780a21bdec4c81">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,8 +232,7 @@
 <span id="v-48e7033d76aad720f6bdbee4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -292,8 +242,7 @@
 <span id="v-030b65b855dc2cfa0a14498f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/title">Authorization View Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -303,12 +252,10 @@
 <span id="v-e6768322ccedafa4692554e2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,8 +279,7 @@
 <span id="v-04b91b6e03965d63826b2ef1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/enum/0">collection_deleted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,12 +289,10 @@
 <span id="v-ff9474b78548dffce57e08d1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/enum/1">visibility_lost</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -358,8 +302,7 @@
 <span id="v-5a1ed9595e782e03d590bbec">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/title">Departure Cause</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -369,12 +312,10 @@
 <span id="v-e9300eed913d927d6de8e9e0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -391,8 +332,7 @@
 <span id="v-7fc485907058c86a1d46b370">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -402,8 +342,7 @@
 <span id="v-2c6c1c43c47c4866433db18d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id/title">Departure Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -413,12 +352,10 @@
 <span id="v-e630ce14fb150ca8b436b3c4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -435,8 +372,7 @@
 <span id="v-c3113299e377c10477314779">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/maxLength">19</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -446,8 +382,7 @@
 <span id="v-b669281fdc071e2f7e5bcd50">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -457,8 +392,7 @@
 <span id="v-e54204cb9f7814a54bf0eaf3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/pattern">^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -468,8 +402,7 @@
 <span id="v-bbc29a9048341b62b5df610c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/title">Departure Revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -479,12 +412,10 @@
 <span id="v-15ea43650a8b633cdf1ed070">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -501,8 +432,7 @@
 <span id="v-c18e3af920505a29c5b6e304">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/const">stove0-departure-effect-intent/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -512,8 +442,7 @@
 <span id="v-658492ab9505c42b3f1db5af">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/default">stove0-departure-effect-intent/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -523,8 +452,7 @@
 <span id="v-46017a814b6503e0412a5792">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -534,12 +462,10 @@
 <span id="v-35a3ffc13b598bb37220c9f5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -556,12 +482,10 @@
 <span id="v-81367fc687e0564725cc3fb1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/last_collection/$ref">#/components/schemas/CatalogSyncDescriptor</code>
 <span class="kind">string</span> <a href="e-547139d2872135e77a4b6d1d.html#v-f02e615f06a79d6543743044">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -578,8 +502,7 @@
 <span id="v-bcec3d382fc0484714a2b370">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,8 +512,7 @@
 <span id="v-538e17ed7f4a04fbecf6e83d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_id/title">Policy Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -600,12 +522,10 @@
 <span id="v-fd4cd934f99574ee7414a641">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -622,8 +542,7 @@
 <span id="v-95a395a821f3ec4e5c978e8b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_revision/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -633,8 +552,7 @@
 <span id="v-7139285be3d6944ee46ac978">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_revision/title">Policy Revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -644,12 +562,10 @@
 <span id="v-bf8d08f23e5785fc16d072f2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -666,8 +582,7 @@
 <span id="v-85ef4cf35c59ba627c220505">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -677,8 +592,7 @@
 <span id="v-8f111c6373ed86f0e583be5a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256/title">Policy Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -688,12 +602,10 @@
 <span id="v-c428946b5add7129c0255439">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -710,8 +622,7 @@
 <span id="v-8e7d7df99115e84d306f7d12">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -721,8 +632,7 @@
 <span id="v-f9deb03ca749aeb53f4dd4ba">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -732,8 +642,7 @@
 <span id="v-ed43fc61ff5a4f28bd94d0b2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -743,8 +652,7 @@
 <span id="v-918db9456d8e05b990dfb0bd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/title">Source Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -754,12 +662,10 @@
 <span id="v-1a715d3e61189671fc917a4c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -776,8 +682,7 @@
 <span id="v-5ae0144cc44404b2a5c247d9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -787,8 +692,7 @@
 <span id="v-033ba6ff392f213b7d68b4e4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity/title">Target Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -798,12 +702,10 @@
 <span id="v-97205dba21bd2e0b8079f22b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -820,8 +722,7 @@
 <span id="v-15c871024e2cb213d25d7a0c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/maxLength">160</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -831,8 +732,7 @@
 <span id="v-8d7fd3d857bed382ed99a46a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -842,8 +742,7 @@
 <span id="v-b04bb7c06aa769b66c3afa6a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/title">Target Registration Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -853,16 +752,13 @@
 <span id="v-178fa79eb1c5f7ade46a141f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -879,8 +775,7 @@
 <span id="v-80b44efb06e2b9362649d94e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/0">policy_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -890,8 +785,7 @@
 <span id="v-a908384962db1fce5dbd91ec">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/1">policy_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -901,8 +795,7 @@
 <span id="v-5bb531cccb260eb4903949ad">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/2">policy_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -912,8 +805,7 @@
 <span id="v-e8d159d2ad4536630a785040">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/3">target_registration_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -923,8 +815,7 @@
 <span id="v-db2574c382b738326a3d0ede">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/4">target_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -934,8 +825,7 @@
 <span id="v-ccdb7adee8f1edbb3e272a09">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/5">source_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -945,8 +835,7 @@
 <span id="v-d3c6566c92b120ddbb8e51b7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/6">authorization_view_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -956,8 +845,7 @@
 <span id="v-ff11c4c48828d3787aa88fad">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/7">last_collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -967,8 +855,7 @@
 <span id="v-ee7816764fd9fc9ca44316f3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/8">departure_cause</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -978,8 +865,7 @@
 <span id="v-f883e4d780f8c66032031b48">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/9">departure_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -989,12 +875,10 @@
 <span id="v-b2243fe6e3e3bda0b20d5ee4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/10">departure_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1004,8 +888,7 @@
 <span id="v-59209907e57926ef9551ab6b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/title">DepartureEffectIntent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1015,8 +898,7 @@
 <span id="v-926d395db29e658c80005237">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1028,7 +910,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1040,7 +922,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1050,8 +932,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1063,97 +944,79 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:19,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:19,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:160,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:160,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

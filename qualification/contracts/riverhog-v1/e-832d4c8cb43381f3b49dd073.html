@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-024fff8142a09f90496a66cc.html">a-riverhog-ftp-spool-custody</a> / <a href="i-f4dcdded6e56ade4804ac42b.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-ftp-spool-custody: payload</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -63,8 +54,7 @@
 <span id="v-34d3fea01b676681610cfddd">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/4/id">payload</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -74,8 +64,7 @@
 <span id="v-fd8092e924867e444dfe9723">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/4/identity">claim file path, byte length, and SHA-256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -85,8 +74,7 @@
 <span id="v-a6b5245403724e01231b1e8a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/4/kind">opaque-bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -106,7 +94,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -122,7 +110,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin">tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -133,9 +121,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

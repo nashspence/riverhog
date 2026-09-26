@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: WorkflowPlanIntent</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,119 +63,89 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>input_retrieval_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
-</td>
-<td>
-<code>available-only</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>input_retrieval_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code></td>
+<td data-label="Default">
+<code>available-only</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-896428112159b1cfe98a3277.html#v-5d469ed24f12af14095f6e9f">#/components/schemas/OperationIdentityRef</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-896428112159b1cfe98a3277.html#v-5d469ed24f12af14095f6e9f">#/components/schemas/OperationIdentityRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-99bb65af4851f2de7229563d">output_policy</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-99bb65af4851f2de7229563d">output_policy</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-0bb17d7fffeb5b88fb1ae2db">requested_target_options</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-0bb17d7fffeb5b88fb1ae2db">requested_target_options</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>result_kind</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code>
-</td>
-<td>
-<code>collection</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>result_kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code></td>
+<td data-label="Default">
+<code>collection</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_grace_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_grace_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code></td>
+<td data-label="Default">
+<code>0</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
-</td>
-<td>
-<code>retain</code>
-</td>
-<td>Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</td>
+<td data-label="Field">
+<code>source_collection_retirement_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<td data-label="Default">
+<code>retain</code></td>
+<td data-label="Description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</td>
 </tr>
 <tr>
-<td>
-<code>target_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_registration_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_registration_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -247,8 +208,7 @@
 <span id="v-eb3f8e8eb0f8fba8e2e3025f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -258,8 +218,7 @@
 <span id="v-d32c77c5685ff09d91522515">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/description">Work-independent fields that deterministically materialize a workflow plan.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,8 +242,7 @@
 <span id="v-b7fe738246c1b727f80fc280">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/input_retrieval_policy/default">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -301,8 +259,7 @@
 <span id="v-bece3edc84f0bdf4007abd75">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/input_retrieval_policy/enum/0">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -312,12 +269,10 @@
 <span id="v-6e6de4576b25f9a6570f2545">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/input_retrieval_policy/enum/1">allow</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,8 +282,7 @@
 <span id="v-dbf4e385ce78649231a3bce8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/input_retrieval_policy/title">Input Retrieval Policy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,12 +292,10 @@
 <span id="v-b3a7dcd857f14160dd9fd286">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/input_retrieval_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,12 +312,10 @@
 <span id="v-c80780a8e71465616df6135e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/operation/$ref">#/components/schemas/OperationIdentityRef</code>
 <span class="kind">string</span> <a href="e-896428112159b1cfe98a3277.html#v-5d469ed24f12af14095f6e9f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -389,12 +339,10 @@
 <span id="v-8128ab7cd368b8647496b56b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/output_policy/additionalProperties/$ref">#/components/schemas/JsonValue</code>
 <span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -404,8 +352,7 @@
 <span id="v-20baab28ccbd87e08ab23050">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/output_policy/title">Output Policy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -415,12 +362,10 @@
 <span id="v-679751451b639bc06c085d2b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/output_policy/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -444,12 +389,10 @@
 <span id="v-a8c6e548be91e4b4dacec8a6">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/requested_target_options/additionalProperties/$ref">#/components/schemas/JsonValue</code>
 <span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -459,8 +402,7 @@
 <span id="v-94bcad7eac9d053818e321f3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/requested_target_options/title">Requested Target Options</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -470,12 +412,10 @@
 <span id="v-11b03b85478d8a327ac6c0e7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/requested_target_options/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -492,8 +432,7 @@
 <span id="v-1364762013ebf8b0ab314bf4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/result_kind/default">collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,8 +449,7 @@
 <span id="v-a5611f5a9eda6fac1d3e587b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/result_kind/enum/0">collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -521,12 +459,10 @@
 <span id="v-42ac7421ced6dccf589f75b2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/result_kind/enum/1">external-effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -536,8 +472,7 @@
 <span id="v-608d191d4b293a5b6acf0498">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/result_kind/title">Result Kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -547,12 +482,10 @@
 <span id="v-cb2fd69d7682e4ecc9c1738b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/result_kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -569,8 +502,7 @@
 <span id="v-8d13a117df04ab1532005aeb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_grace_seconds/default">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -580,8 +512,7 @@
 <span id="v-30dfce94c9e7d212fb68ebcb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_grace_seconds/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -591,8 +522,7 @@
 <span id="v-ffa8767c1f74d3cf3eb21fdc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_grace_seconds/title">Source Collection Retirement Grace Seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -602,12 +532,10 @@
 <span id="v-d9d195f43802574381dd587b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_grace_seconds/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -624,8 +552,7 @@
 <span id="v-1f45f934ee7eec968654a14e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_policy/default">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -635,8 +562,7 @@
 <span id="v-d9d88570db165af287b18d41">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -653,8 +579,7 @@
 <span id="v-f306a3e9fdf52b47760a6455">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_policy/enum/0">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -664,12 +589,10 @@
 <span id="v-50c44830379bb15649438935">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +602,7 @@
 <span id="v-2add8582ef4a619266c76038">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_policy/title">Source Collection Retirement Policy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -690,12 +612,10 @@
 <span id="v-98d2ba596babe8cb4769a04d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/source_collection_retirement_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -712,8 +632,7 @@
 <span id="v-1b58b9c258ef3905fa5e6169">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,8 +642,7 @@
 <span id="v-eda72e2c7283bf1b3ee8f387">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_descriptor_sha256/title">Target Descriptor Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -734,12 +652,10 @@
 <span id="v-ef51b247da6626de9cc6fea4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -756,8 +672,7 @@
 <span id="v-741ce215538b12b7c01b297c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_registration_id/pattern">^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -767,8 +682,7 @@
 <span id="v-419636c21119d1339718c182">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_registration_id/title">Target Registration Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -778,16 +692,13 @@
 <span id="v-5e3f9046551b5d8637e657ef">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_registration_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -804,8 +715,7 @@
 <span id="v-e1714897cc71fbe3a1a0a5b7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/required/0">operation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -815,8 +725,7 @@
 <span id="v-4d33f8fc31eb21c74d186d21">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/required/1">target_registration_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -826,12 +735,10 @@
 <span id="v-c4f319f318f969f9a8d59d43">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/required/2">target_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -841,8 +748,7 @@
 <span id="v-23c8e189de8a15d10a547598">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/title">WorkflowPlanIntent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -852,8 +758,7 @@
 <span id="v-642b2b27631f449ff24197ba">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -865,7 +770,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -877,7 +782,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -887,8 +792,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -900,49 +804,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/output_policy</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/output_policy</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/requested_target_options</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/requested_target_options</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_descriptor_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent/properties/target_descriptor_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

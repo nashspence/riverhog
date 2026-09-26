@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-9283e186006ef9d1d4697f0b.html">review0-target-lib</a> / <a href="i-dc7485bbf0f4a2b2b2f983a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>review0_target_lib.SamplerConfig</h1>
 <p class="context">Shared runtime support for Review0 targets. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,78 +84,59 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>allow_insecure_http</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>false</code>
-</td>
-<td>
-<code>false</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>allow_insecure_http</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>base_url</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>base_url</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>image_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>image_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>token_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -194,8 +166,7 @@
 <span id="v-c258a53371943e1d1c641608">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -212,8 +183,7 @@
 <span id="v-71cea2ba2606b7340f4143cf">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -237,8 +207,7 @@
 <span id="v-d81968390f9644e8a318e821">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/allow_insecure_http/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -248,12 +217,10 @@
 <span id="v-19633c546e049f18d4d9917e">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/allow_insecure_http/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -270,8 +237,7 @@
 <span id="v-32ab933837a05fbda630fb2f">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/base_url/maxLength">2048</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,8 +247,7 @@
 <span id="v-ebb6fda62a54d1d09aa7c6d5">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/base_url/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -292,12 +257,10 @@
 <span id="v-91b524d091ffcafc92a8774d">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/base_url/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -314,8 +277,7 @@
 <span id="v-9439addd1bf3a56e75d3b218">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -325,12 +287,10 @@
 <span id="v-4df8dfac37c1b3f061bc6bca">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -347,8 +307,7 @@
 <span id="v-4b0665c0bea1d846fde498b3">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -358,12 +317,10 @@
 <span id="v-d936bcb6caf70b697f5abf28">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -380,8 +337,7 @@
 <span id="v-5ffc0326dd877e655906741a">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/image_id/pattern">^sha256:[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -391,12 +347,10 @@
 <span id="v-df00e0d351b0552b485f806b">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/image_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -413,8 +367,7 @@
 <span id="v-4adc9bef33c7ab5b3765b578">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/token_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -424,16 +377,13 @@
 <span id="v-58f314fcadca6942f0a1f843">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/properties/token_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -450,8 +400,7 @@
 <span id="v-b8127e087a2ab7cdc7b06a20">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -461,8 +410,7 @@
 <span id="v-aadc216f5c1d13048c7e5660">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/required/1">base_url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +420,7 @@
 <span id="v-3ae58159eedcf8bc2d920eae">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/required/2">token_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,8 +430,7 @@
 <span id="v-64f682aaa76c4856fe0769ef">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/required/3">descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -494,12 +440,10 @@
 <span id="v-a4e71e16fec53352fb0487da">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/required/4">image_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -509,12 +453,10 @@
 <span id="v-3acc7cf72bf4dc0bcc55bb4f">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -524,12 +466,10 @@
 <span id="v-513289ade569e8cc3806c49f">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/contract/signature">&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$&#x27;)], base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], token_file: pathlib.Path, allow_insecure_http: bool = False, descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], image_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^sha256:[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -539,8 +479,7 @@
 <span id="v-63b3c374e20b1e4473c0c664">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/distribution">review0-target-lib</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -550,8 +489,7 @@
 <span id="v-f37f4c567a2cd194578b27cb">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/module">review0_target_lib</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -561,8 +499,7 @@
 <span id="v-945497095e638908cd058d68">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/name">SamplerConfig</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -572,8 +509,7 @@
 <span id="v-b3281b8150814e62c45bc47a">
 <code data-value-pointer="/external_contract/python/review0_target_lib.SamplerConfig/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -593,7 +529,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -605,7 +541,7 @@
 <a href="source-authorities.html#source-665023c8f6eb32ae7c7c0cac">python:review0-target-lib:review0_target_lib</a> — <code data-source-path="some-implementations/stove0/review0/support/src/review0_target_lib/__init__.py">some-implementations/stove0/review0/support/src/review0_target_lib/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -616,9 +552,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

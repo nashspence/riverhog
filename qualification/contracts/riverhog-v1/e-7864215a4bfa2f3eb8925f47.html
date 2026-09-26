@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_protocol.CollectionUploadVolumeSummaryDocument</h1>
 <p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,40 +84,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;pack&quot;,&quot;segment&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;pack&quot;,&quot;segment&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sequence</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-7864215a4bfa2f3eb8925f47.html#v-bdccaccef6c95ff183aa0c66">#/$defs/Sequence256Hex</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-7864215a4bfa2f3eb8925f47.html#v-bdccaccef6c95ff183aa0c66">#/$defs/Sequence256Hex</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>volume_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:pack|segment)-[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>volume_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:pack|segment)-[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -178,8 +160,7 @@
 <span id="v-dff4d3736da98650aa47e812">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -210,8 +191,7 @@
 <span id="v-c48ff8cb5d96bc504e8c2107">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/$defs/Sequence256Hex/pattern">^[0-9a-f]{64}(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -221,16 +201,13 @@
 <span id="v-fa785fbee37a1d3ddd1ba130">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/$defs/Sequence256Hex/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -240,8 +217,7 @@
 <span id="v-4714aae1f479fe9f92548718">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -272,8 +248,7 @@
 <span id="v-fbf87013361c345dd49ced7e">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/properties/kind/enum/0">pack</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,12 +258,10 @@
 <span id="v-ec97fe6065c2ae1d3309874d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/properties/kind/enum/1">segment</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -298,12 +271,10 @@
 <span id="v-a99fc681256cca05c03d81d3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -320,12 +291,10 @@
 <span id="v-f027ad79005ce6bd3474b2c6">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/properties/sequence/$ref">#/$defs/Sequence256Hex</code>
 <span class="kind">string</span> <a href="e-7864215a4bfa2f3eb8925f47.html#v-bdccaccef6c95ff183aa0c66">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -342,8 +311,7 @@
 <span id="v-6c488c5e590733d42bbc18ee">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/properties/volume_id/pattern">^(?:pack|segment)-[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -353,16 +321,13 @@
 <span id="v-b3078bf9598623bc569b3d31">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/properties/volume_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -379,8 +344,7 @@
 <span id="v-a05cf60da7c38a6822fd1b1d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/required/0">volume_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,8 +354,7 @@
 <span id="v-cc32b1682f17dbda8fbf8391">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/required/1">sequence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -401,12 +364,10 @@
 <span id="v-e9c43d86c4e45eb63704c5bc">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/required/2">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -416,12 +377,10 @@
 <span id="v-39556d1024792e0b8e21c7ad">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -431,12 +390,10 @@
 <span id="v-e7769164e0b21256736101e3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/contract/signature">&quot;(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^(?:pack|segment)-[0-9a-f]{64}$&#x27;, ascii_only=None)], sequence: Sequence256Hex, kind: Literal[&#x27;pack&#x27;, &#x27;segment&#x27;]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -446,8 +403,7 @@
 <span id="v-6cd4e3c6952788a9619e7c8e">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/distribution">riverhog-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -457,8 +413,7 @@
 <span id="v-d5f334369b444fd112b8be01">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/module">riverhog_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -468,8 +423,7 @@
 <span id="v-93a975870ee8a4e0150bb7fc">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/name">CollectionUploadVolumeSummaryDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -479,8 +433,7 @@
 <span id="v-797c32bc18dfaa915877aabf">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadVolumeSummaryDocument/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -500,7 +453,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -512,7 +465,7 @@
 <a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -523,9 +476,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

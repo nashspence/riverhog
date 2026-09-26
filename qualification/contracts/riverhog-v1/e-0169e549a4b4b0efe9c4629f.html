@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: TargetPlanBinding</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -65,7 +56,7 @@ identity while preserving the full document in the execution envelope.</code>
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -78,76 +69,58 @@ identity while preserving the full document in the execution envelope.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>operation_contract_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation_contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-993b6f21cdc71afea0810fd2">plan</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-993b6f21cdc71afea0810fd2">plan</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>protocol</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>protocol</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_implementation_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_implementation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -190,8 +163,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-7d02b0ee488600537f1d6fd2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -201,8 +173,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-f30d751b246a3408f6f6c29b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/description">&quot;Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0&#x27;s canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope.&quot;</code>
 <span class="kind">string (JSON spelling for control characters)</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -226,8 +197,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-36fda73a691b38f18f29663a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -237,8 +207,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-010aa4c58d9c7012eb94b185">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256/title">Operation Contract Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -248,12 +217,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-3c11d750d71ea7a76e7d9ea4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -277,12 +244,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-234186163f5412d77d1fa63f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan/additionalProperties/$ref">#/components/schemas/JsonValue</code>
 <span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -292,8 +257,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-ec49e10f69c0c63ac2278d1a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan/title">Plan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -303,12 +267,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-532495e79a5ec7bf0e32699f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -325,8 +287,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-5b279547f95f761af9fb6ad7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -336,8 +297,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-2a74c05f96837c65e50c96e4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256/title">Plan Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -347,12 +307,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-a56d2290a1793e2a8a18a6dc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -369,8 +327,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-5c5324e70d3e5e3f997942cc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/protocol/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -380,8 +337,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-0bc109200d4cb6b5fa59c2c9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/protocol/title">Protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -391,12 +347,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-7896c8165c61d6190001adc8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/protocol/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -413,8 +367,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-a4380c79e874dd902cdc2cea">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -424,8 +377,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-b1504662604557e07df3bdcf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256/title">Target Descriptor Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -435,12 +387,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-250386077620025179a2ac10">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -457,8 +407,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-877d846f7c1361cf81e78cd2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_implementation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -468,8 +417,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-7f3cd4f3c1d6d4f9af5ba228">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_implementation_id/title">Target Implementation Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -479,16 +427,13 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-b3eb19bc735d3a03d61d39c5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_implementation_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -505,8 +450,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-62c6ddadddddd84134e3155f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/required/0">protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -516,8 +460,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-0504870a012cda0dec20cf88">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/required/1">target_implementation_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -527,8 +470,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-0e834bae0442c389ba309762">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/required/2">target_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -538,8 +480,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-23b56e82fe920d7123eddbeb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/required/3">operation_contract_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -549,8 +490,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-00103450a2a3607685e48111">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/required/4">plan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,12 +500,10 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-1afeb3d11227da5d41e47835">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/required/5">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -575,8 +513,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-0ca7c36062992e93c75ddafc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/title">TargetPlanBinding</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -586,8 +523,7 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-346dc2109d4437bc10cbd143">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -599,7 +535,7 @@ identity while preserving the full document in the execution envelope.</code>
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -611,7 +547,7 @@ identity while preserving the full document in the execution envelope.</code>
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -621,8 +557,7 @@ identity while preserving the full document in the execution envelope.</code>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -634,61 +569,52 @@ identity while preserving the full document in the execution envelope.</code>
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

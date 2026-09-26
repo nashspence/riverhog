@@ -86,7 +86,6 @@ MYPY_SOURCES = \
 	some-implementations/riverhog/storage/aws/src \
 	some-implementations/riverhog/storage/backblaze/src \
 	some-implementations/riverhog/storage/filesystem/src \
-	scripts/guidance.py \
 	scripts/transfer_profile.py \
 	scripts/operation_qualification.py \
 	scripts/contract_atlas \
@@ -105,7 +104,7 @@ MYPY_SOURCES = \
 	some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update contract-browser guidance guidance-update performance-objectives performance-objectives-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -145,10 +144,8 @@ help:
 		'  make contract-freeze   Verify the checked-in v1 boundary and external contract.' \
 		'  make contract-freeze-update Regenerate that contract for semantic review.' \
 		'  make contract-browser  Exercise the checked candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
-		'  make guidance          Verify the nonbinding guidance registry and rendered view.' \
-		'  make guidance-update   Regenerate the guidance view after registry review.' \
-		'  make performance-objectives Verify noncontractual objectives and their rendered view.' \
-		'  make performance-objectives-update Regenerate the performance view.' \
+		'  make contract-browser-docker Run the Chromium checks in a disposable official Playwright container.' \
+		'  make profile           Report target, observed transfer or recovery work, and measured comparison without gating.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
 		'  make installation-qualification Stage and qualify independent uv-tool installs.' \
 		'  make release-check     Validate the coordinated release-unit contract.' \
@@ -163,7 +160,6 @@ help:
 		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make a-riverhog-event-relay-smoke  Exercise the already-built final Riverhog event relay image.' \
-		'  make transfer-profile  Profile a supported transfer command with secret-free JSON.' \
 		'  make dist              Build every Python distribution independently.' \
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
 		'  make build-riverhog    Build the Riverhog image.' \
@@ -253,17 +249,11 @@ contract-browser:
 	"$(MISE_BIN)" x -- uv run --locked --all-packages --group dev --group browser \
 		python -m pytest -q tests/browser
 
-guidance:
-	$(call UV_CMD,python scripts/guidance.py check)
+contract-browser-docker:
+	MISE_BIN="$(MISE_BIN)" ./scripts/test_contract_browser_docker.sh
 
-guidance-update:
-	$(call UV_CMD,python scripts/guidance.py update)
-
-performance-objectives:
-	$(call UV_CMD,python scripts/performance_objectives.py check)
-
-performance-objectives-update:
-	$(call UV_CMD,python scripts/performance_objectives.py update)
+profile:
+	$(call UV_CMD,python scripts/transfer_profile.py $(args))
 
 provider-qualification:
 	$(call UV_CMD,python scripts/provider_qualification.py $(args))
@@ -313,9 +303,6 @@ stove0-scale-qualification:
 	@STOVE0_SMOKE_FILE_COUNT="$${STOVE0_SCALE_FILES:-128}" \
 		STOVE0_SMOKE_AUDIO_FRAMES="$${STOVE0_SCALE_AUDIO_FRAMES:-2000}" \
 		./scripts/test_compose_smoke.sh
-
-transfer-profile:
-	$(call UV_CMD,python scripts/transfer_profile.py $(args))
 
 dist:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \

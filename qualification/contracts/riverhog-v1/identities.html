@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<html lang="en" data-audit="on" data-docs="off" data-audit-default="on" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,22 +14,12 @@
 <p>
 <a href="index.html">All authorities</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>Snapshot identities</h1>
 <aside class="audit">
-<p>These digests distinguish semantic, accounting, trace, and presentation identities. They identify this candidate, not its acceptance.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -39,40 +29,34 @@
 </thead>
 <tbody>
 <tr>
-<td>boundary_canonical_sha256</td>
-<td>
-<code>bec88b020598c09ae60e54a709ea00ea09c691f4ababbcfd09ebdc79ae40972c</code>
-</td>
+<td data-label="Identity">boundary_canonical_sha256</td>
+<td data-label="SHA-256">
+<code>bec88b020598c09ae60e54a709ea00ea09c691f4ababbcfd09ebdc79ae40972c</code></td>
 </tr>
 <tr>
-<td>coverage_sha256</td>
-<td>
-<code>859547b0433f6bd8927f2fded1f11a5e12a4403d6497cd95abcd4862587dba66</code>
-</td>
+<td data-label="Identity">coverage_sha256</td>
+<td data-label="SHA-256">
+<code>859547b0433f6bd8927f2fded1f11a5e12a4403d6497cd95abcd4862587dba66</code></td>
 </tr>
 <tr>
-<td>source_projection_sha256</td>
-<td>
-<code>d833c8f8aa2e022f59ac56f315511f8b26a66546781be6b9f18c3c5b5e5c4ad0</code>
-</td>
+<td data-label="Identity">source_projection_sha256</td>
+<td data-label="SHA-256">
+<code>d833c8f8aa2e022f59ac56f315511f8b26a66546781be6b9f18c3c5b5e5c4ad0</code></td>
 </tr>
 <tr>
-<td>trace_sha256</td>
-<td>
-<code>656f1727f3d13641958b32f55bc50be39b9abda21e1bbbb8206170bf884fbe98</code>
-</td>
+<td data-label="Identity">trace_sha256</td>
+<td data-label="SHA-256">
+<code>aeaad7358ace3f8ea163a294690813e907008beac949c7467c16e950c0ad29ef</code></td>
 </tr>
 <tr>
-<td>Contract Closure SHA-256</td>
-<td>
-<code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
-</td>
+<td data-label="Identity">Contract Closure SHA-256</td>
+<td data-label="SHA-256">
+<code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code></td>
 </tr>
 <tr>
-<td>Audit Record SHA-256</td>
-<td>
-<code>d4566ad3ad5623a3d4bc8ff02e0c660009eebfa852f008ab9309b58f9ef9b0b5</code>
-</td>
+<td data-label="Identity">Audit Record SHA-256</td>
+<td data-label="SHA-256">
+<code>a93a2db76ccfe4955fff79e0281c27fcf18019a30fa891526f398864544c4ecc</code></td>
 </tr>
 </tbody>
 </table>
@@ -82,9 +66,12 @@
 </p>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

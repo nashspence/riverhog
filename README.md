@@ -29,9 +29,6 @@ document at `/openapi.json`.
 - [V1 contract candidate](https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/)
   presents the checked Contract Closure with an optional Audit Mode. Its
   [source files](qualification/contracts/riverhog-v1/index.html) are reviewed on `main`.
-- [Guiding heuristics](guidance/README.md) records nonbinding, noncontractual design guidance.
-- [Performance accounting](qualification/performance/README.md) records noncontractual
-  objectives, observations, and independently owned bounds.
 - [Licensing](LICENSE.md) defines the repository's release terms.
 
 Release-level reference documentation belongs to tagged releases. The documentation on

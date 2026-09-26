@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CoordinationSettlement</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,100 +63,75 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>branch_set_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>branch_set_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d20e730907c145786e6ac4f3">children</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-d9c08e023c0b6080901f0cff.html#v-f6790286f883bb65a6c13e4a">#/components/schemas/CoordinationChildSettlementRef</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d20e730907c145786e6ac4f3">children</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-d9c08e023c0b6080901f0cff.html#v-f6790286f883bb65a6c13e4a">#/components/schemas/CoordinationChildSettlementRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-22e70e8b9bd2999c154658ba">collection_result</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-2aecb526ba223e44ba5af364.html#v-a58a7320a146930a717b3bf9">#/components/schemas/CoordinationCollectionResult</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-22e70e8b9bd2999c154658ba">collection_result</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-2aecb526ba223e44ba5af364.html#v-a58a7320a146930a717b3bf9">#/components/schemas/CoordinationCollectionResult</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>contains_external_effects</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>contains_external_effects</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-0e942bf28a509a14e5920a65">final_join_settlement_sha256</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-0e942bf28a509a14e5920a65">final_join_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-coordination-settlement/v1</code>; default: <code>stove0-coordination-settlement/v1</code>
-</td>
-<td>
-<code>stove0-coordination-settlement/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-coordination-settlement/v1</code>; default: <code>stove0-coordination-settlement/v1</code></td>
+<td data-label="Default">
+<code>stove0-coordination-settlement/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>settlement_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>settlement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>work</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">#/components/schemas/WorkIdentity</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>work</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">#/components/schemas/WorkIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -192,7 +158,7 @@
 <p class="shape">any of: <a href="e-2aecb526ba223e44ba5af364.html#v-a58a7320a146930a717b3bf9">#/components/schemas/CoordinationCollectionResult</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -202,16 +168,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-2aecb526ba223e44ba5af364.html#v-a58a7320a146930a717b3bf9">#/components/schemas/CoordinationCollectionResult</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-2aecb526ba223e44ba5af364.html#v-a58a7320a146930a717b3bf9">#/components/schemas/CoordinationCollectionResult</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -228,7 +192,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -238,16 +202,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -270,8 +232,7 @@
 <span id="v-5d7d2807e6fd2cbf52f253d3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,8 +242,7 @@
 <span id="v-3d0c1a6a86163326a2eb3499">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/description">Success-only exact completion of one root or branch-bound coordinator.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -306,8 +266,7 @@
 <span id="v-858acab70179fc674e1ce4df">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/branch_set_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,8 +276,7 @@
 <span id="v-a03b5394dd4c5c0b4ff9672d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/branch_set_sha256/title">Branch Set Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -328,12 +286,10 @@
 <span id="v-44f3d9cea4b9aa0ab579c889">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/branch_set_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -357,12 +313,10 @@
 <span id="v-546c00a59ab4e9eb1707d4c1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/children/items/$ref">#/components/schemas/CoordinationChildSettlementRef</code>
 <span class="kind">string</span> <a href="e-d9c08e023c0b6080901f0cff.html#v-f6790286f883bb65a6c13e4a">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -372,8 +326,7 @@
 <span id="v-0b51a566094d49fb7d6b2ce9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/children/title">Children</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -383,12 +336,10 @@
 <span id="v-c9b91f16d3a8acf4fc8c7ddf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/children/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,12 +370,10 @@
 <span id="v-89646f84f2f9c2c72fc82139">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/collection_result/anyOf/0/$ref">#/components/schemas/CoordinationCollectionResult</code>
 <span class="kind">string</span> <a href="e-2aecb526ba223e44ba5af364.html#v-a58a7320a146930a717b3bf9">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -441,20 +390,16 @@
 <span id="v-1403d824a34dabf3e10d0cf9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/collection_result/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -471,8 +416,7 @@
 <span id="v-8e1feecb955221b2de04fa83">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/contains_external_effects/title">Contains External Effects</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -482,12 +426,10 @@
 <span id="v-0b0a0435499a9dc0489319b8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/contains_external_effects/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -518,8 +460,7 @@
 <span id="v-64c7d7a32165c06ca51fc9df">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/final_join_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -529,12 +470,10 @@
 <span id="v-42b9cc9f4fa94b2573d2f4f2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/final_join_settlement_sha256/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -551,16 +490,13 @@
 <span id="v-d98c946b89a2ca165664174f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/final_join_settlement_sha256/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -570,12 +506,10 @@
 <span id="v-042826c0e1d12f96ba43fde6">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/final_join_settlement_sha256/title">Final Join Settlement Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -592,8 +526,7 @@
 <span id="v-4a05137c679d3c8625778e89">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/format/const">stove0-coordination-settlement/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -603,8 +536,7 @@
 <span id="v-d5214502eed4c44a50b1b00d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/format/default">stove0-coordination-settlement/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -614,8 +546,7 @@
 <span id="v-e89ab009bbc329ebb629e984">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -625,12 +556,10 @@
 <span id="v-6495526f527bbdb4dbbbea70">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -647,8 +576,7 @@
 <span id="v-6babe530e7f77b6ff7be4446">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/settlement_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -658,8 +586,7 @@
 <span id="v-a12396750eb8cef93c3c0c60">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/settlement_sha256/title">Settlement Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -669,12 +596,10 @@
 <span id="v-b33cf6e9417bc223e026b1cb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/settlement_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -691,16 +616,13 @@
 <span id="v-d913981f56f67aef4b2bbdb9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/work/$ref">#/components/schemas/WorkIdentity</code>
 <span class="kind">string</span> <a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,8 +639,7 @@
 <span id="v-355f3569ffd33d9f5567135d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/required/0">work</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -728,8 +649,7 @@
 <span id="v-a056600a6229f84e515b4962">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/required/1">branch_set_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -739,8 +659,7 @@
 <span id="v-8e393f0bd595ba23c4798b39">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/required/2">children</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -750,8 +669,7 @@
 <span id="v-2bd9a78a0acabb3a2bf71c94">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/required/3">contains_external_effects</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -761,12 +679,10 @@
 <span id="v-78bc13bd0fd82d7b8d9bea16">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/required/4">settlement_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -776,8 +692,7 @@
 <span id="v-15bb1ea7e02da37fbedeac3a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/title">CoordinationSettlement</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -787,8 +702,7 @@
 <span id="v-c4f7fee2d0d5a2794bd30595">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -800,7 +714,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -812,7 +726,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -822,8 +736,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -835,61 +748,52 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/branch_set_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/branch_set_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/children</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/children</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/final_join_settlement_sha256/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/final_join_settlement_sha256/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/settlement_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement/properties/settlement_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

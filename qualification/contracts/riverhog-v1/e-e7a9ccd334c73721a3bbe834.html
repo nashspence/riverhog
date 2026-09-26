@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a> / <a href="i-ccba998fc43e3bf42f09d32a.html">Process Protocol Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>GET /v1/observer</h1>
 <p class="context">External-author protocol, runtime, and conformance support for Stove0 content observers. Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.</p>
@@ -77,7 +68,7 @@
 </dd>
 </dl>
 <h4>Errors</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -87,28 +78,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Code">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Code">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>
-<code>observer_failed</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Code">
+<code>observer_failed</code></td>
 </tr>
 </tbody>
 </table>
@@ -130,8 +115,7 @@
 <span id="v-9c307b2e97a3e1af93e94cfb">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/error_schema">ErrorOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -155,8 +139,7 @@
 <span id="v-42b05c2aa1a57e512b146a66">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/errors/0/code">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -166,12 +149,10 @@
 <span id="v-7c8b792d99a0c86ee56af090">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/errors/0/status">400</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -188,8 +169,7 @@
 <span id="v-0c1672f9a3a9dfc49dfc36d4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/errors/1/code">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -199,12 +179,10 @@
 <span id="v-5d5f6913251368f596496663">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/errors/1/status">401</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -221,8 +199,7 @@
 <span id="v-2bb1e7c027ce7dad32e67588">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/errors/2/code">observer_failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -232,16 +209,13 @@
 <span id="v-4a2c45c3545e743c99c19d53">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/errors/2/status">500</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -251,8 +225,7 @@
 <span id="v-ec203ee211b1a9027ee875de">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -262,8 +235,7 @@
 <span id="v-5b0c7365a17fcaa27628aefd">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/path">/v1/observer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -273,8 +245,7 @@
 <span id="v-291b6b2d14f6237ec59f3b19">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/path_parameters">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -291,8 +262,7 @@
 <span id="v-2c4860279d2af49f46101fbf">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/request/kind">none</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -302,12 +272,10 @@
 <span id="v-3025114a1d5178c8aedd65aa">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/request/schema">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -324,8 +292,7 @@
 <span id="v-f363b7743ab5ea3440a03b2c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/response/headers">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -335,8 +302,7 @@
 <span id="v-dce87474812a08aa19a0f096">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/response/kind">json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -346,8 +312,7 @@
 <span id="v-1b3d55b02928f10b16a59ef4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/response/schema">ObserverDescriptor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,16 +329,13 @@
 <span id="v-0f08ec546c1319ad953943f6">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/http_binding/operations/0/response/statuses/0">200</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -393,7 +355,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -405,7 +367,7 @@
 <a href="source-authorities.html#source-dcc0b5485b731056af1211e4">protocol:generated:stove0-observer</a> — <code data-source-path="some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py">some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -416,9 +378,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

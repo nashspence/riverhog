@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-75ef6a5312f729d5f00dd1e3.html">http-api-contracts</a> / <a href="i-71a8236bde90785fb1328cdc.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>http_api_contracts.ErrorBody</h1>
 <p class="context">Public typed HTTP error, health, client, and operation contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,41 +84,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e465fc5cf6db0d72e78e2d64">details</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e465fc5cf6db0d72e78e2d64">details</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -138,7 +119,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -148,18 +129,15 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-a44a48b45564581e430dc3bc">1</a>
-</td>
-<td>
-<code>object</code>; additionalProperties: <code>true</code>
-</td>
+<td data-label="Alternative">
+<a href="#s-a44a48b45564581e430dc3bc">1</a></td>
+<td data-label="Schema">
+<code>object</code>; additionalProperties: <code>true</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -205,8 +183,7 @@
 <span id="v-e81d9ad7539361dc5a52ef55">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -223,8 +200,7 @@
 <span id="v-712aef54e9750ac41156e2bf">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -248,8 +224,7 @@
 <span id="v-e9991474e7ef027a1b1ac749">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/code/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -259,12 +234,10 @@
 <span id="v-beffefebf62db301c977aa67">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -295,8 +268,7 @@
 <span id="v-bf209de01bd38280e44bca8d">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/details/anyOf/0/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -306,12 +278,10 @@
 <span id="v-6824912d1d22973a3810192b">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/details/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -328,16 +298,13 @@
 <span id="v-d5623445c8f1988a8e6550b0">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/details/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -347,12 +314,10 @@
 <span id="v-fdcba27a6bf348d984060ecd">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/details/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -369,8 +334,7 @@
 <span id="v-82e0f82e38dbe2549328a8f5">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -380,16 +344,13 @@
 <span id="v-5bfa742cfa49122b2ad50c6d">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -406,8 +367,7 @@
 <span id="v-ffbbcb4cdd37d725f1df3081">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -417,12 +377,10 @@
 <span id="v-58bed1c904043b3a43c92055">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -432,12 +390,10 @@
 <span id="v-a088576b950ab1048b0cf73c">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -447,12 +403,10 @@
 <span id="v-8d39e038d5be96bdc4fb55b4">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/contract/signature">&#x27;(*, code: Annotated[str, MinLen(min_length=1)], message: Annotated[str, MinLen(min_length=1)], details: dict[str, typing.Any] | None = None) -&gt; None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -462,8 +416,7 @@
 <span id="v-a02aeebd1ad1c7f519333b7f">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/distribution">http-api-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -473,8 +426,7 @@
 <span id="v-7bd38abf12d264048462f728">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/module">http_api_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -484,8 +436,7 @@
 <span id="v-6b37ed451d43b35e10580c64">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/name">ErrorBody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -495,8 +446,7 @@
 <span id="v-1660f7149b0ecf43ca8bae03">
 <code data-value-pointer="/external_contract/python/http_api_contracts.ErrorBody/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -508,7 +458,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -520,7 +470,7 @@
 <a href="source-authorities.html#source-a522df4cfd0a00b90fa3d5b5">python:http-api-contracts:http_api_contracts</a> — <code data-source-path="packages/http-api-contracts/src/http_api_contracts/__init__.py">packages/http-api-contracts/src/http_api_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -531,9 +481,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

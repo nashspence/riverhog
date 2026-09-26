@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-36fe8529cb43310e1be4bb88.html">gogurt-listener</a> / <a href="i-c4ebfdf5dad7102342e6266c.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>gogurt-listener: observed_mounts</h1>
 <p class="context">Portable durable listener runtime and native-platform port for Gogurt. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -33,7 +24,7 @@
 <div class="human-contract">
 <h3>Table: <code>observed_mounts</code>
 </h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -46,56 +37,44 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>mount_point</code>
-</td>
-<td>
-<code>TEXT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>mount_point TEXT NOT NULL PRIMARY KEY</code>
-</td>
+<td data-label="Column">
+<code>mount_point</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>mount_point TEXT NOT NULL PRIMARY KEY</code></td>
 </tr>
 <tr>
-<td>
-<code>present</code>
-</td>
-<td>
-<code>INTEGER</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>present INTEGER NOT NULL CHECK (present IN (0, 1))</code>
-</td>
+<td data-label="Column">
+<code>present</code></td>
+<td data-label="Type">
+<code>INTEGER</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>present INTEGER NOT NULL CHECK (present IN (0, 1))</code></td>
 </tr>
 <tr>
-<td>
-<code>generation</code>
-</td>
-<td>
-<code>INTEGER</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>generation INTEGER NOT NULL CHECK (generation &gt;= 1)</code>
-</td>
+<td data-label="Column">
+<code>generation</code></td>
+<td data-label="Type">
+<code>INTEGER</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>generation INTEGER NOT NULL CHECK (generation &gt;= 1)</code></td>
 </tr>
 <tr>
-<td>
-<code>marker_identity</code>
-</td>
-<td>
-<code>TEXT</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>marker_identity TEXT</code>
-</td>
+<td data-label="Column">
+<code>marker_identity</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>marker_identity TEXT</code></td>
 </tr>
 </tbody>
 </table>
@@ -131,8 +110,7 @@
 <span id="v-7756b37cf34834232cdebd57">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/0/definition">mount_point TEXT NOT NULL PRIMARY KEY</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -142,8 +120,7 @@
 <span id="v-225fb1affd218b7e6ed62cf5">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/0/name">mount_point</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -153,8 +130,7 @@
 <span id="v-33261d61cbaf0b75a34037a8">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/0/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -164,8 +140,7 @@
 <span id="v-73ad1764b41f9c33a7121476">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/0/primary_key">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -175,12 +150,10 @@
 <span id="v-05d555479fad0de74b76223b">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/0/type">TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -204,12 +177,10 @@
 <span id="v-48276a926e87f0f7723ff8ea">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/1/checks/0">(present IN (0, 1))</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -219,8 +190,7 @@
 <span id="v-6dc2774e8aca44565df4a6e3">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/1/definition">present INTEGER NOT NULL CHECK (present IN (0, 1))</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -230,8 +200,7 @@
 <span id="v-6b2064673eb111a6486d2411">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/1/name">present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -241,8 +210,7 @@
 <span id="v-55122b9cb8043fbceca95888">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/1/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -252,12 +220,10 @@
 <span id="v-1dc77b8c86bb3b27e60939dc">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/1/type">INTEGER</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,12 +247,10 @@
 <span id="v-20bd65fc60cdae78a2e4ef12">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/2/checks/0">(generation &gt;= 1)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -296,8 +260,7 @@
 <span id="v-010c44441f9ec4dc707fee49">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/2/definition">generation INTEGER NOT NULL CHECK (generation &gt;= 1)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -307,8 +270,7 @@
 <span id="v-d07748de28b64193eb97ff5f">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/2/name">generation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -318,8 +280,7 @@
 <span id="v-b9d7c7dd36138d8eb2e28ca2">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/2/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,12 +290,10 @@
 <span id="v-4b605519211b6d6c6f8cf0e5">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/2/type">INTEGER</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -351,8 +310,7 @@
 <span id="v-5b44399f9ed2e67ea75d9d22">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/3/definition">marker_identity TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -362,8 +320,7 @@
 <span id="v-02404e557320556ea53459f7">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/3/name">marker_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -373,8 +330,7 @@
 <span id="v-8953cc3ef34599c11d953380">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/3/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -384,16 +340,13 @@
 <span id="v-476bece3f24608287a6143a8">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/columns/3/type">TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -403,8 +356,7 @@
 <span id="v-df6be70147744a22f34fd2b3">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/constraints">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -414,8 +366,7 @@
 <span id="v-12a93db8936d83b0b7932f3b">
 <code data-value-pointer="/external_contract/durable_state/owners/6/structure/tables/1/name">observed_mounts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -435,7 +386,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -449,7 +400,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/gogurt-listener.sqlite.sql">tests/fixtures/state/v1_0001/gogurt-listener.sqlite.sql</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -460,9 +411,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

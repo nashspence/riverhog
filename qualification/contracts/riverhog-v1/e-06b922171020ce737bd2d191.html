@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-fd9a0838e23de4aa43bbeede.html">a-riverhog-cli</a> / <a href="i-fa8d2d449446f7925500e0c7.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-cli local evict</h1>
 <p class="context">Command-line client for Riverhog. CLI contract owned by a-riverhog-cli.</p>
@@ -52,7 +43,7 @@
 </dl>
 <p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
 <h3>Arguments and options</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -64,45 +55,37 @@
 </thead>
 <tbody>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>collection_id</code>
 <br>
-<code>collection_id</code>
-</td>
-<td>required; argument; 1 value(s) per use</td>
-<td>
-<code>integer</code>
-</td>
-<td>not recorded</td>
+<code>collection_id</code></td>
+<td data-label="Invocation">required; argument; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>integer</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>confirm</code>
 <br>
 <code>--confirm</code>
-<br>Alternate: <code>--no-confirm</code>
-</td>
-<td>optional; option; 1 value(s) per use; flag</td>
-<td>
-<code>boolean</code>
-</td>
-<td>
-<code>false</code>
-</td>
+<br>Alternate: <code>--no-confirm</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use; flag</td>
+<td data-label="Type and constraints">
+<code>boolean</code></td>
+<td data-label="Default and environment">
+<code>false</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>json_mode</code>
 <br>
-<code>--json</code>
-</td>
-<td>optional; option; 1 value(s) per use; flag</td>
-<td>
-<code>boolean</code>
-</td>
-<td>
-<code>false</code>
-</td>
+<code>--json</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use; flag</td>
+<td data-label="Type and constraints">
+<code>boolean</code></td>
+<td data-label="Default and environment">
+<code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -127,7 +110,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -140,24 +123,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>command-completed</code>
-</td>
-<td>human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>a-riverhog-cli-local-evict-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;collection_id&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;retrievals_canceled&quot;:{&quot;items&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;type&quot;:&quot;array&quot;},&quot;status&quot;:{&quot;const&quot;:&quot;evicted&quot;}},&quot;required&quot;:[&quot;status&quot;,&quot;collection_id&quot;,&quot;retrievals_canceled&quot;],&quot;type&quot;:&quot;object&quot;}</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>completed</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>command-completed</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>a-riverhog-cli-local-evict-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;collection_id&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;retrievals_canceled&quot;:{&quot;items&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;type&quot;:&quot;array&quot;},&quot;status&quot;:{&quot;const&quot;:&quot;evicted&quot;}},&quot;required&quot;:[&quot;status&quot;,&quot;collection_id&quot;,&quot;retrievals_canceled&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -170,38 +148,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 <tr>
-<td>
-<code>operational</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>kind: <code>application-error</code>
-</td>
-<td>human: <code>empty</code>; json: Python model <code>http-api-contracts.ErrorOut</code>
-</td>
-<td>human: <code>noncontractual-diagnostic</code>; json: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>operational</code></td>
+<td data-label="Exit">
+<code>1</code></td>
+<td data-label="Selection">kind: <code>application-error</code></td>
+<td data-label="stdout">human: <code>empty</code>; json: Python model <code>http-api-contracts.ErrorOut</code></td>
+<td data-label="stderr">human: <code>noncontractual-diagnostic</code>; json: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -214,21 +182,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -293,8 +256,7 @@
 <span id="v-9a4e1dc44f56c39b47ff5a72">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -304,8 +266,7 @@
 <span id="v-80ff75a6a5460f6f03860b9c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/kind">TyperArgument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -315,8 +276,7 @@
 <span id="v-825d7497d20f0445a5c06413">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,8 +286,7 @@
 <span id="v-d5738e042d66df7a7d44ae5c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/name">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -337,8 +296,7 @@
 <span id="v-1ea2d7a6dc9c0475653b5d1b">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -355,12 +313,10 @@
 <span id="v-c58ef236362fd5c3a5bf036c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/options/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,8 +326,7 @@
 <span id="v-f9f088d99048e3f66e31172e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -381,8 +336,7 @@
 <span id="v-c26ff5b5d5ffca39076103e3">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,8 +353,7 @@
 <span id="v-85635d21f31a787bdfe97519">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/type/class">typer._click.types.IntParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,16 +363,13 @@
 <span id="v-f577e8207661c6d7903203fc">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0/type/name">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -436,8 +386,7 @@
 <span id="v-8361eb4c909e63ad71c584ca">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -447,8 +396,7 @@
 <span id="v-9f71181a4907c818896f1090">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -458,8 +406,7 @@
 <span id="v-3d48d67858e5627da8d009d6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,8 +416,7 @@
 <span id="v-defd5d33b5d6b6fd95f74390">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/is_flag">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -480,8 +426,7 @@
 <span id="v-bebe44186c67152ecf57f8db">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -491,8 +436,7 @@
 <span id="v-fc521a68d24144234e4cef84">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -502,8 +446,7 @@
 <span id="v-a83119e12d343ce5b17b1745">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/name">confirm</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -513,8 +456,7 @@
 <span id="v-b9806ea86d56e6ee22be7b61">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,12 +473,10 @@
 <span id="v-aa6152b02188e136796628ba">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/options/0">--confirm</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -546,8 +486,7 @@
 <span id="v-3711a113b937f546aab7db74">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -564,12 +503,10 @@
 <span id="v-cb142b3beaeb71b9d991aac6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/secondary_options/0">--no-confirm</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -586,8 +523,7 @@
 <span id="v-36dfb0c5ef935b820077e33a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/type/class">typer._click.types.BoolParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -597,16 +533,13 @@
 <span id="v-362ec8e82c48f69981e9f565">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1/type/name">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -623,8 +556,7 @@
 <span id="v-29287b9c5b0c7c9566db4f47">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -634,8 +566,7 @@
 <span id="v-0b6271154ae8ab7b66e21c6c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -645,8 +576,7 @@
 <span id="v-84ee9450e85b3a1d55f24cfa">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,8 +586,7 @@
 <span id="v-ac0c4ed4bf7683c4ad105abf">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/is_flag">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -667,8 +596,7 @@
 <span id="v-5526ab41eecbe1539cef75bf">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -678,8 +606,7 @@
 <span id="v-e934209e6fad197bd1f42e91">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,8 +616,7 @@
 <span id="v-65d4dddaa59543a8655fb1dc">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/name">json_mode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -700,8 +626,7 @@
 <span id="v-f9e571b13bc1185fdd883d14">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -718,12 +643,10 @@
 <span id="v-7891a2381547de2009775cf5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/options/0">--json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -733,8 +656,7 @@
 <span id="v-fd4169866a2a007997902cc0">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -744,8 +666,7 @@
 <span id="v-a539cda5ca7ee5b3086c506c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -762,8 +683,7 @@
 <span id="v-e6a5e292f7b501f0b4564edc">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/type/class">typer._click.types.BoolParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -773,16 +693,13 @@
 <span id="v-22a4f0450a80214420e52870">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2/type/name">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -815,8 +732,7 @@
 <span id="v-ebb44904665069c1d3f10fa7">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -826,8 +742,7 @@
 <span id="v-fb0a7cbc79bfcf7169fe0e00">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -844,12 +759,10 @@
 <span id="v-5f0734bda16747baa13dbd42">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -866,12 +779,10 @@
 <span id="v-14092c09266dd968e66db77d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -888,16 +799,13 @@
 <span id="v-fe236a81590e8df83a569294">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -914,8 +822,7 @@
 <span id="v-c24b0a841f888e981facf595">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/exit_status">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -925,8 +832,7 @@
 <span id="v-19ddaadcf054bfec7a9ef19e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/id">operational</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -943,12 +849,10 @@
 <span id="v-0b1b5781213b6f2a02d11796">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/selected_by/kind">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -965,8 +869,7 @@
 <span id="v-e82eeb9c7b51d35b45f3e4b5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stderr/human">noncontractual-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -976,12 +879,10 @@
 <span id="v-3dfd1ed7ff48e9b2f88ed650">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stderr/json">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -998,8 +899,7 @@
 <span id="v-4e270c0afc921ca4971e9efb">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/human">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1016,8 +916,7 @@
 <span id="v-831235bec3c36dff87dd99ea">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/identity">http-api-contracts.ErrorOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1027,8 +926,7 @@
 <span id="v-d66aec08a6e4fc1da70214c2">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/kind">python-model</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1059,8 +957,7 @@
 <span id="v-565981d8d1e29b69d6f27b58">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1084,8 +981,7 @@
 <span id="v-4b8795048acd7e2bd3ba920d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/code/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1095,8 +991,7 @@
 <span id="v-5f6f833f2893f2489a8e43a6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/code/title">Code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1106,12 +1001,10 @@
 <span id="v-cab7b18a87aec21ab1d9cf59">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1142,8 +1035,7 @@
 <span id="v-8aabb056c80e22e2ecba4bcb">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/details/anyOf/0/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1153,12 +1045,10 @@
 <span id="v-77bcfe028f40fc3e7db99a9e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/details/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1175,16 +1065,13 @@
 <span id="v-b9d836ff1127797987f3d56b">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/details/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1194,8 +1081,7 @@
 <span id="v-3ef6bf05731ddf5bd4ac63d2">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/details/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1205,12 +1091,10 @@
 <span id="v-63164e89d895e0fcfbe32194">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/details/title">Details</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1227,8 +1111,7 @@
 <span id="v-040e072882f38dbda928b53a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1238,8 +1121,7 @@
 <span id="v-5317b218b5245770662fd0f2">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/message/title">Message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1249,16 +1131,13 @@
 <span id="v-06faf8f2b9c9b4da8aeb7f4e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1275,8 +1154,7 @@
 <span id="v-2466a3ad269512676c85ec13">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1286,12 +1164,10 @@
 <span id="v-c263990189d25c79430f4331">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1301,8 +1177,7 @@
 <span id="v-49803599d33c01ab426846ce">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/title">ErrorBody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1312,16 +1187,13 @@
 <span id="v-75734b63645551ea9a47ca2c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/$defs/ErrorBody/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1331,8 +1203,7 @@
 <span id="v-63c5f3332eea10764fb7e95d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1356,16 +1227,13 @@
 <span id="v-65ec014070b666cb11c8cddb">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/properties/error/$ref">#/$defs/ErrorBody</code>
 <span class="kind">string</span> <a href="e-06b922171020ce737bd2d191.html#v-e1e0a2ae7f4959d6e7dc9c87">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1382,12 +1250,10 @@
 <span id="v-cbd6588223ee5304825a37d9">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/required/0">error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1397,8 +1263,7 @@
 <span id="v-744dac5215821c7f7ef51482">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/title">ErrorOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1408,28 +1273,22 @@
 <span id="v-150948d47bfca50a6a3b7b54">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/failures/1/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1439,8 +1298,7 @@
 <span id="v-5e7706971658661b2eb26a6f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/human_json_relationship">same-semantic-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1450,8 +1308,7 @@
 <span id="v-0b3c2575773e2cd5b35c26af">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/identity">a-riverhog-cli-result/local/evict/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1461,8 +1318,7 @@
 <span id="v-5aee5cf48db5cd53845325dc">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/profile_id">a-riverhog-cli-human-json/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1472,8 +1328,7 @@
 <span id="v-825fbdf7f07bd96245551755">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/structured_output">optional-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1497,8 +1352,7 @@
 <span id="v-f7b40e0686ad3ab5f3e9d377">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1508,8 +1362,7 @@
 <span id="v-2d63112a5cbebf91d6bb01b7">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/id">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1526,12 +1379,10 @@
 <span id="v-dd711a4598e0262841c6df30">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/selected_by/kind">command-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1548,12 +1399,10 @@
 <span id="v-7e1c9fcae8785927004623db">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1570,8 +1419,7 @@
 <span id="v-7b9ffe2623c961569d7d69be">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/human">noncontractual-presentation-of-command-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1588,8 +1436,7 @@
 <span id="v-2251a5c8fba6aa2ce2a9852c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/identity">a-riverhog-cli-local-evict-result/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1599,8 +1446,7 @@
 <span id="v-7dd6e583e891382e3809a672">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/kind">cli-local-json-schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1617,8 +1463,7 @@
 <span id="v-ccdd17efb9681c65886c651a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1642,8 +1487,7 @@
 <span id="v-e5fe3809ab99c0456ea7148d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/properties/collection_id/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1653,12 +1497,10 @@
 <span id="v-12ec5adf5bd3ecef93ca1768">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/properties/collection_id/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1682,12 +1524,10 @@
 <span id="v-5c88bf37dedc8e77e34063ff">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/properties/retrievals_canceled/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1697,12 +1537,10 @@
 <span id="v-e92c3ec034449eabcad3cfb1">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/properties/retrievals_canceled/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1719,16 +1557,13 @@
 <span id="v-7900ecd67db8041976eb0676">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/properties/status/const">evicted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1745,8 +1580,7 @@
 <span id="v-a60d1a251f322065821f9d3e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/required/0">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1756,8 +1590,7 @@
 <span id="v-ba01ca141c01372cf58a429c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/required/1">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1767,12 +1600,10 @@
 <span id="v-5aaa51f3f7e2bcc707d0dc7f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/required/2">retrievals_canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1782,28 +1613,22 @@
 <span id="v-24c1b4ccaa9641b804f3109c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/result_contract/success/0/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1829,8 +1654,7 @@
 <span id="v-64e98b17cd9859069e5b8084">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1840,8 +1664,7 @@
 <span id="v-aae0c32d04040b5d552fd954">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1851,8 +1674,7 @@
 <span id="v-2ed7c3ade24d46f847f883f4">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1862,8 +1684,7 @@
 <span id="v-b9747e6d5c43203153026dfd">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1880,8 +1701,7 @@
 <span id="v-3b6a3c9bcccba7e6951a342e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1898,20 +1718,16 @@
 <span id="v-f319eae082f434a43b8286d8">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/terminating_controls/0/trigger/options/0">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1940,7 +1756,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1952,7 +1768,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1962,8 +1778,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1975,49 +1790,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-riverhog-cli/commands/local/commands/evict/parameters/2</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

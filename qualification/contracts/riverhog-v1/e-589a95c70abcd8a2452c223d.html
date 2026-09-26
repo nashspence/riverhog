@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-024fff8142a09f90496a66cc.html">a-riverhog-ftp-spool-custody</a> / <a href="i-f4dcdded6e56ade4804ac42b.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-ftp-spool-custody: claim</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -66,7 +57,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -79,89 +70,67 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>claim_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>claim_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-6b20a4b70e826c5d97e4efa7">completion_event_ids</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-6b20a4b70e826c5d97e4efa7">completion_event_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-c9ba3737ad8fbb35cae086eb">files</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-589a95c70abcd8a2452c223d.html#v-625fdcbed136c9ecf8f29a85">#/$defs/FtpClaimFileState</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-c9ba3737ad8fbb35cae086eb">files</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-589a95c70abcd8a2452c223d.html#v-625fdcbed136c9ecf8f29a85">#/$defs/FtpClaimFileState</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>a-riverhog-ftp-spool-claim/v1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>a-riverhog-ftp-spool-claim/v1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-c8b539c3990daa380fdc5816">journals</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; additionalProperties: <code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-c8b539c3990daa380fdc5816">journals</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_event_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_event_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -193,7 +162,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -203,18 +172,15 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-4a69266af00da2d5cf06374c">1</a>
-</td>
-<td>
-<code>array</code>; items: <code>string</code>
-</td>
+<td data-label="Alternative">
+<a href="#s-4a69266af00da2d5cf06374c">1</a></td>
+<td data-label="Schema">
+<code>array</code>; items: <code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -284,7 +250,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -297,76 +263,58 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>current_state_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>current_state_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>journal_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>status</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>captured</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>captured</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -396,7 +344,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -409,100 +357,76 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>custody</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>custody</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>device</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>device</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>event_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>event_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>riverhog-ftp-completion-record/v1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-ftp-completion-record/v1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>inode</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>inode</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -532,7 +456,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -545,100 +469,75 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-12e6c63650ddab7f102e6afa">completion_record</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-589a95c70abcd8a2452c223d.html#v-be329af1ed8966bae7ec7667">#/$defs/CompletionRecordState</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-12e6c63650ddab7f102e6afa">completion_record</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-589a95c70abcd8a2452c223d.html#v-be329af1ed8966bae7ec7667">#/$defs/CompletionRecordState</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>device</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>device</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>inode</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>inode</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>original</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>original</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-76d722bf3514006ec6cedf48">provenance</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a>; <a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-76d722bf3514006ec6cedf48">provenance</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a>; <a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -668,7 +567,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -681,64 +580,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>omission_reason</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>omission_reason</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>status</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>omitted</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>omitted</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -761,7 +645,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-589a95c70abcd8a2452c223d.html#v-be329af1ed8966bae7ec7667">#/$defs/CompletionRecordState</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -771,16 +655,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-589a95c70abcd8a2452c223d.html#v-be329af1ed8966bae7ec7667">#/$defs/CompletionRecordState</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-589a95c70abcd8a2452c223d.html#v-be329af1ed8966bae7ec7667">#/$defs/CompletionRecordState</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -797,7 +679,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -807,16 +689,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a></td>
 </tr>
 </tbody>
 </table>
@@ -839,8 +719,7 @@
 <span id="v-00861e7c0dfd387aa610c4a0">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/id">claim</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -850,8 +729,7 @@
 <span id="v-f866ff45a5a45dea9dfc22a6">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/kind">json-document</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -882,8 +760,7 @@
 <span id="v-667953d3d2aa07d44c20556c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -907,8 +784,7 @@
 <span id="v-393729a028feef17672b7f64">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -918,8 +794,7 @@
 <span id="v-fa5fdf482100467602cd9d6c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/bytes/title">Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -929,12 +804,10 @@
 <span id="v-986c2db8e0d29357b5d246e5">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -951,8 +824,7 @@
 <span id="v-35e240d563604f9bb6ec4c09">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/current_state_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -962,8 +834,7 @@
 <span id="v-a63387be8499d86b68c7e840">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/current_state_id/title">Current State Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -973,12 +844,10 @@
 <span id="v-1de115bb8ecc8f723744edfd">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/current_state_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -995,8 +864,7 @@
 <span id="v-8ce81b0b42b69d4629c6be4d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/journal_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1006,8 +874,7 @@
 <span id="v-b93c4e2f0de8f2f5f77d61f4">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/journal_id/title">Journal Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1017,12 +884,10 @@
 <span id="v-33cbd6e49a0c4515e9a39c31">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/journal_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1039,8 +904,7 @@
 <span id="v-e06dc557246954804492b519">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1050,8 +914,7 @@
 <span id="v-6c957ee10d582e939c5adf73">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/path/title">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1061,12 +924,10 @@
 <span id="v-6a8d2f7544a398ef4eb492c9">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1083,8 +944,7 @@
 <span id="v-f32ce4167acb7fd468a22cc9">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1094,8 +954,7 @@
 <span id="v-d9079678768e175e1ed4ab98">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1105,12 +964,10 @@
 <span id="v-5b95b0d6942b32546f554135">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1127,8 +984,7 @@
 <span id="v-905547dbb9b1f9f797e45491">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/status/const">captured</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1138,8 +994,7 @@
 <span id="v-dd516817f4a714963b839f72">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/status/title">Status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1149,16 +1004,13 @@
 <span id="v-0b580af9a8e520027ab1f6b6">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/status/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1175,8 +1027,7 @@
 <span id="v-8267271329a0d0168b4e72d5">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/0">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1186,8 +1037,7 @@
 <span id="v-e1d5207e79aa9eacdb537728">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/1">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1197,8 +1047,7 @@
 <span id="v-f5684c3bc820a3158e60874b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/2">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1208,8 +1057,7 @@
 <span id="v-f9baacceebe4d4313f0f3914">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/3">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1219,8 +1067,7 @@
 <span id="v-e80231819f86e023443dc8d9">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/4">journal_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1230,12 +1077,10 @@
 <span id="v-2fbf6f3518f3849fd37e3318">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/5">current_state_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1245,8 +1090,7 @@
 <span id="v-b4dd5e7de41bb80caa0c6027">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/title">CapturedProvenanceState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1256,12 +1100,10 @@
 <span id="v-6d05237f69821dabc521ea80">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1278,8 +1120,7 @@
 <span id="v-f6203eb97f5e3ed22da74326">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1303,8 +1144,7 @@
 <span id="v-d449c772e07604bd1fb2d4db">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1314,8 +1154,7 @@
 <span id="v-4350b27151c0bf97cb47b600">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/bytes/title">Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1325,12 +1164,10 @@
 <span id="v-0a78feca24dac449280c9d1d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1347,8 +1184,7 @@
 <span id="v-48d1c6063eaa2403e7370416">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/custody/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1358,8 +1194,7 @@
 <span id="v-643dcf6c53cca04413b6f222">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/custody/title">Custody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1369,12 +1204,10 @@
 <span id="v-62bab7db0ff5ae10eb139ca5">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/custody/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1391,8 +1224,7 @@
 <span id="v-167bedded72600b7c86b23ae">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/device/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1402,8 +1234,7 @@
 <span id="v-bf14323f96484c70229346dc">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/device/title">Device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1413,12 +1244,10 @@
 <span id="v-4da169be3fa6b85ff81c0689">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/device/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1435,8 +1264,7 @@
 <span id="v-8678d899ddff7780464d2204">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/event_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1446,8 +1274,7 @@
 <span id="v-b5e3587f7239d4414d95004b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/event_id/title">Event Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1457,12 +1284,10 @@
 <span id="v-a4dd51a805dca25de696381d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/event_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1479,8 +1304,7 @@
 <span id="v-6bbd3e7ec877b0e7940011bb">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/format/const">riverhog-ftp-completion-record/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1490,8 +1314,7 @@
 <span id="v-8ee0303a8a371380c10db8ff">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1501,12 +1324,10 @@
 <span id="v-5a8f11d22405b62aecf37f2c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1523,8 +1344,7 @@
 <span id="v-90f25be5c11903cea05c28bc">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/inode/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1534,8 +1354,7 @@
 <span id="v-fc8de5a574704e9303ab2595">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/inode/title">Inode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1545,12 +1364,10 @@
 <span id="v-e562e0fd8da174e21e31375f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/inode/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1567,8 +1384,7 @@
 <span id="v-d1ff22f32110d434e090862c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1578,8 +1394,7 @@
 <span id="v-18d8544cb510a9c6f61a6619">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/path/title">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1589,12 +1404,10 @@
 <span id="v-743e5747440044752858fb7d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1611,8 +1424,7 @@
 <span id="v-20d55346c6401fa3e570e118">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/source_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1622,8 +1434,7 @@
 <span id="v-d22ba4339339ed006b44cbd2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/source_id/title">Source Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1633,16 +1444,13 @@
 <span id="v-bb627305a93c45b61295138a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/properties/source_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1659,8 +1467,7 @@
 <span id="v-cf1765f2d4874bb7f6290b3a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1670,8 +1477,7 @@
 <span id="v-e698cd749f92f21fd32d8338">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/1">event_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1681,8 +1487,7 @@
 <span id="v-60f5a58850a4c16ccf3c664d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/2">source_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1692,8 +1497,7 @@
 <span id="v-95738bcc64de874a25df6c29">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/3">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1703,8 +1507,7 @@
 <span id="v-5dae89bb01f7484d47ab4ecf">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/4">custody</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1714,8 +1517,7 @@
 <span id="v-dd305809d4d9f531725f8cf8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/5">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1725,8 +1527,7 @@
 <span id="v-3e2774ebf83bd833edf2b7e2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/6">device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1736,12 +1537,10 @@
 <span id="v-4f899011c1c1dd9ec00ffe97">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/required/7">inode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1751,8 +1550,7 @@
 <span id="v-ef5a5243024e81e971d6e1f7">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/title">CompletionRecordState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1762,12 +1560,10 @@
 <span id="v-de0d251fd913a54fb42e0f5b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CompletionRecordState/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1784,8 +1580,7 @@
 <span id="v-cc3dba7116559b2d6272d916">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1809,8 +1604,7 @@
 <span id="v-82058fa14e76458a057703a2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1820,8 +1614,7 @@
 <span id="v-a0c37ab04af4d6dbaae519dc">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/bytes/title">Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1831,12 +1624,10 @@
 <span id="v-f0f2953b43e1b76f6775b1c5">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1867,12 +1658,10 @@
 <span id="v-5fde8e2cede9386875dfc906">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/completion_record/anyOf/0/$ref">#/$defs/CompletionRecordState</code>
 <span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-be329af1ed8966bae7ec7667">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1889,16 +1678,13 @@
 <span id="v-2a40a9513f9be3ff97f502c8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/completion_record/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1908,12 +1694,10 @@
 <span id="v-2d219e0c3b759918e066074a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/completion_record/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1930,8 +1714,7 @@
 <span id="v-e03bb26287e1aba5ab41677e">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/device/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1941,8 +1724,7 @@
 <span id="v-51d643fdd9450db1c93631bf">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/device/title">Device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1952,12 +1734,10 @@
 <span id="v-73d59c8dc6368955b2783839">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/device/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1974,8 +1754,7 @@
 <span id="v-3baa465a1de1cf3ddcb47563">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/inode/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1985,8 +1764,7 @@
 <span id="v-a53665bfc66163e44b4d2000">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/inode/title">Inode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1996,12 +1774,10 @@
 <span id="v-050837fac1e0e9b30786291f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/inode/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2018,8 +1794,7 @@
 <span id="v-c1953c44e3deed307031594d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/original/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2029,8 +1804,7 @@
 <span id="v-771ee8f143dfef9f813744ee">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/original/title">Original</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2040,12 +1814,10 @@
 <span id="v-288a4a8dce536bf9373dbf6d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/original/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2062,8 +1834,7 @@
 <span id="v-188e17472cef61d397f99660">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2073,8 +1844,7 @@
 <span id="v-1d77939a9da145138f923ce1">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/path/title">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2084,12 +1854,10 @@
 <span id="v-da63e62edcfb83f30b269fd2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2120,12 +1888,10 @@
 <span id="v-22997730f45eb0250e3c3cd4">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/provenance/anyOf/0/$ref">#/$defs/CapturedProvenanceState</code>
 <span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2142,16 +1908,13 @@
 <span id="v-1de836814e44f7d2a8ce68ea">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/provenance/anyOf/1/$ref">#/$defs/OmittedProvenanceState</code>
 <span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2161,12 +1924,10 @@
 <span id="v-f65756f59878d90bf22de0a6">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/provenance/title">Provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2183,8 +1944,7 @@
 <span id="v-46a5f0d34f52367e4b6860ec">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2194,8 +1954,7 @@
 <span id="v-1db47238396dd6c06582d9ad">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2205,16 +1964,13 @@
 <span id="v-65485cc8acf3b970dbdef22a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2231,8 +1987,7 @@
 <span id="v-a52cff43b53d2e4e595f6a9d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/0">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2242,8 +1997,7 @@
 <span id="v-adf7d0bd9f56133f20728ee8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/1">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2253,8 +2007,7 @@
 <span id="v-26861f146da9162034a657ec">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/2">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2264,8 +2017,7 @@
 <span id="v-bbc5c8f94f5e3afc3e1b115d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/3">device</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2275,8 +2027,7 @@
 <span id="v-9587b4b927a49c0ed91e1d7c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/4">inode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2286,8 +2037,7 @@
 <span id="v-0f3bd3b8e882978b6ac8d3a1">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/5">original</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2297,12 +2047,10 @@
 <span id="v-da21e209af3a95e6d673c9d1">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/6">provenance</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2312,8 +2060,7 @@
 <span id="v-63c2dcd02c3d5c8a697fa654">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/title">FtpClaimFileState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2323,12 +2070,10 @@
 <span id="v-290445e0f626d3bfe9bcd6e9">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2345,8 +2090,7 @@
 <span id="v-ff137cf2d1747b5880681bf6">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2370,8 +2114,7 @@
 <span id="v-b519d5bad41e1ac245234d82">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2381,8 +2124,7 @@
 <span id="v-86ff7a3be4791d091edb02da">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/bytes/title">Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2392,12 +2134,10 @@
 <span id="v-d5c37757c4e62bbb7f2d643d">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2414,8 +2154,7 @@
 <span id="v-7db16b40401ea80335f60357">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/omission_reason/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2425,8 +2164,7 @@
 <span id="v-739883bb73b3019aa90a4298">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/omission_reason/title">Omission Reason</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2436,12 +2174,10 @@
 <span id="v-35049556f1055ed2615b378a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/omission_reason/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2458,8 +2194,7 @@
 <span id="v-e3e41002d01ee5d3c8e47cca">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2469,8 +2204,7 @@
 <span id="v-501162209af9a06f115d2395">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/path/title">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2480,12 +2214,10 @@
 <span id="v-50f8ffe660981221edab2ed4">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2502,8 +2234,7 @@
 <span id="v-b1080177fa440ae0063ca36f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2513,8 +2244,7 @@
 <span id="v-47f0e6880c44efb9082ba6a0">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2524,12 +2254,10 @@
 <span id="v-e02a3321ab93fbf79655e707">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2546,8 +2274,7 @@
 <span id="v-c2bf3b61ee57f584fe0b9efc">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/status/const">omitted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2557,8 +2284,7 @@
 <span id="v-28dc55c371de4feaf40c040a">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/status/title">Status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2568,16 +2294,13 @@
 <span id="v-3fa94df3855732b9db02d216">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/status/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2594,8 +2317,7 @@
 <span id="v-ae6729e9c038a81faf7ae932">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/0">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2605,8 +2327,7 @@
 <span id="v-f02d0351cf4b7863df763946">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/1">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2616,8 +2337,7 @@
 <span id="v-e80be73440e5e12ae4abf129">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/2">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2627,8 +2347,7 @@
 <span id="v-320047c49e3079808addaa18">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/3">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2638,12 +2357,10 @@
 <span id="v-ff64c4ca37f40f94d37bfd93">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/4">omission_reason</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2653,8 +2370,7 @@
 <span id="v-3323ebcd3883717fe75fd2e1">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/title">OmittedProvenanceState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2664,16 +2380,13 @@
 <span id="v-a7e7b95990e0fd953fe4dd08">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2683,8 +2396,7 @@
 <span id="v-b5c8e32cff1788bf11ac5bc4">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2708,8 +2420,7 @@
 <span id="v-7ef4b6db8b51bd7a945cb686">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/claim_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2719,8 +2430,7 @@
 <span id="v-79d9cbc046ae2d8a676f40e2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/claim_id/title">Claim Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2730,12 +2440,10 @@
 <span id="v-08355efb35288c5ff5dcd61b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/claim_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2773,12 +2481,10 @@
 <span id="v-712038b5d41e29486ade4746">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/completion_event_ids/anyOf/0/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2788,12 +2494,10 @@
 <span id="v-34ab27380d36bef00e4d625c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/completion_event_ids/anyOf/0/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2810,16 +2514,13 @@
 <span id="v-d3af46604d32114c2d61b3dd">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/completion_event_ids/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2829,8 +2530,7 @@
 <span id="v-ebb49b167aa43b8e69866245">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/completion_event_ids/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2840,12 +2540,10 @@
 <span id="v-4a5bc3564b90bc437f0d4c05">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/completion_event_ids/title">Completion Event Ids</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2869,12 +2567,10 @@
 <span id="v-6a2fce9df6f7b57c7bfbd86c">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/files/items/$ref">#/$defs/FtpClaimFileState</code>
 <span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-625fdcbed136c9ecf8f29a85">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2884,8 +2580,7 @@
 <span id="v-abda26a83cab8963514f7aca">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/files/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2895,8 +2590,7 @@
 <span id="v-a849096cef53f0ba17360445">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/files/title">Files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2906,12 +2600,10 @@
 <span id="v-02fe1d18176bd0dcf2b7cb8f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/files/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2928,8 +2620,7 @@
 <span id="v-ee5bb638eb08d7606ada94e8">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/format/const">a-riverhog-ftp-spool-claim/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2939,8 +2630,7 @@
 <span id="v-aa0f8feec1c51e29a9c8798b">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2950,12 +2640,10 @@
 <span id="v-035819eee0430d756b58d494">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2979,12 +2667,10 @@
 <span id="v-1ca75bc3ae5d377dc2cf8477">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/journals/additionalProperties/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2994,8 +2680,7 @@
 <span id="v-aba57e4ac373563e808702e7">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/journals/title">Journals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3005,12 +2690,10 @@
 <span id="v-8945b622c7014458551fecd2">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/journals/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3027,8 +2710,7 @@
 <span id="v-241d90691fce324f47a65635">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/source/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3038,8 +2720,7 @@
 <span id="v-ed0d83f47e5d502e531c4d73">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/source/title">Source</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3049,12 +2730,10 @@
 <span id="v-49812d36989285a4bd3c09d5">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/source/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3071,8 +2750,7 @@
 <span id="v-84fd1a13809779d22e7ec23f">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/source_event_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3082,8 +2760,7 @@
 <span id="v-4ac66c2eb935a81cc800de4e">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/source_event_id/title">Source Event Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3093,16 +2770,13 @@
 <span id="v-4f4e83bf74e3dceca094319e">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/source_event_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3119,8 +2793,7 @@
 <span id="v-9f26a60ece43a5bd1dd772cb">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3130,8 +2803,7 @@
 <span id="v-3687c64102795904545d75fd">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/1">claim_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3141,8 +2813,7 @@
 <span id="v-9fe3414641e4332b9b4e1624">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/2">source_event_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3152,8 +2823,7 @@
 <span id="v-f603ad9b6fa7fe02378698ef">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/3">source</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3163,8 +2833,7 @@
 <span id="v-efd9c4fac137890a996e1267">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/4">files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3174,12 +2843,10 @@
 <span id="v-2f08f868f568d5d6406c12ef">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/5">journals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3189,8 +2856,7 @@
 <span id="v-a43f29c41a6cf9812c474f52">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/title">FtpClaimState</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3200,12 +2866,10 @@
 <span id="v-e4d610ace1ccb354260a0516">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -3225,7 +2889,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -3241,7 +2905,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin">tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -3252,9 +2916,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

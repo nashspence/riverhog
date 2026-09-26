@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-c76f297b8c160db67d9e3171.html">a-stove0-cli</a> / <a href="i-2721a11a94d428d76ed73f50.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0 evaluation list</h1>
 <p class="context">Command-line client for Stove0. CLI contract owned by a-stove0-cli.</p>
@@ -52,7 +43,7 @@
 </dl>
 <p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
 <h3>Arguments and options</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -64,82 +55,67 @@
 </thead>
 <tbody>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>page_size</code>
 <br>
-<code>--page-size</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>integer range</code>; minimum: <code>1</code>; maximum: <code>100</code>; clamp: <code>false</code>
-</td>
-<td>
-<code>25</code>
-</td>
+<code>--page-size</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>integer range</code>; minimum: <code>1</code>; maximum: <code>100</code>; clamp: <code>false</code></td>
+<td data-label="Default and environment">
+<code>25</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>page_token</code>
 <br>
-<code>--page-token</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>not recorded</td>
+<code>--page-token</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>phase</code>
 <br>
-<code>--phase</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>not recorded</td>
+<code>--phase</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>query</code>
 <br>
-<code>--query</code>, <code>-q</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>not recorded</td>
+<code>--query</code>, <code>-q</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>sort</code>
 <br>
-<code>--sort</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>
-<code>updated_at</code>
-</td>
+<code>--sort</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">
+<code>updated_at</code></td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>order</code>
 <br>
-<code>--order</code>
-</td>
-<td>optional; option; 1 value(s) per use</td>
-<td>
-<code>text</code>
-</td>
-<td>
-<code>desc</code>
-</td>
+<code>--order</code></td>
+<td data-label="Invocation">optional; option; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>text</code></td>
+<td data-label="Default and environment">
+<code>desc</code></td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +140,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -177,24 +153,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>command-completed</code>
-</td>
-<td>human: <code>noncontractual-presentation-of-command-result</code>; json: HTTP response <code>200</code> from <code>GET</code> <code>/v1/evaluations</code> · <code>#/components/schemas/EvaluationPage</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>completed</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>command-completed</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: HTTP response <code>200</code> from <code>GET</code> <code>/v1/evaluations</code> · <code>#/components/schemas/EvaluationPage</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -207,38 +178,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 <tr>
-<td>
-<code>operational</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>kind: <code>application-error</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>operational</code></td>
+<td data-label="Exit">
+<code>1</code></td>
+<td data-label="Selection">kind: <code>application-error</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -251,21 +212,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -330,8 +286,7 @@
 <span id="v-fa462296787a16043337fccd">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -341,8 +296,7 @@
 <span id="v-5e5a09b66df5c77398c8c4bc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/default">25</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -352,8 +306,7 @@
 <span id="v-9abd701482b83865f6fb4721">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -363,8 +316,7 @@
 <span id="v-d5b888c6d7cd7dddd5c5156b">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -374,8 +326,7 @@
 <span id="v-2134e3bf5c21c874e334e086">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -385,8 +336,7 @@
 <span id="v-903775155408ef9b45f14280">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -396,8 +346,7 @@
 <span id="v-35e485ff599677867188a1d1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/name">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -407,8 +356,7 @@
 <span id="v-3a05421839e121dc0601c692">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -425,12 +373,10 @@
 <span id="v-3e2238c417b9892be706d61f">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/options/0">--page-size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -440,8 +386,7 @@
 <span id="v-d84559e37e71c01b81889471">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -451,8 +396,7 @@
 <span id="v-3dabe1b7949b811a2177a4db">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,8 +413,7 @@
 <span id="v-9fd832cdc30076eccd47c8a8">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/clamp">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -480,8 +423,7 @@
 <span id="v-da05ca6eec6870262e7076c9">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/class">typer._click.types.IntRange</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -491,8 +433,7 @@
 <span id="v-5f365ff651ded3ef0496dc2d">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/max_open">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -502,8 +443,7 @@
 <span id="v-bcae3fb5937f7d3681c3ff73">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -513,8 +453,7 @@
 <span id="v-bd3812757d295e3bc9265be9">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/min_open">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -524,8 +463,7 @@
 <span id="v-8e7af15112a3dd1c6005c3be">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -535,16 +473,13 @@
 <span id="v-5716586de5f4a1e3b5fe0432">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0/type/name">integer range</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -561,8 +496,7 @@
 <span id="v-041417f7d596b32fad081266">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -572,8 +506,7 @@
 <span id="v-a53a528138b5bd63b3f45048">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -583,8 +516,7 @@
 <span id="v-3aed73ccf115bafb35927430">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -594,8 +526,7 @@
 <span id="v-4d4079e317c9fa4a1440f183">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -605,8 +536,7 @@
 <span id="v-8ed7c8d713cbe78e1bf37c2f">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -616,8 +546,7 @@
 <span id="v-c95f7b2704daf0074da7a84a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/name">page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -627,8 +556,7 @@
 <span id="v-25643acf1b9236d0fcef1af4">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -645,12 +573,10 @@
 <span id="v-a0a07c3d7bbcf89004134437">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/options/0">--page-token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -660,8 +586,7 @@
 <span id="v-17671761cd20381c0407a219">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -671,8 +596,7 @@
 <span id="v-2dcb33f0e268283bcc183849">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,8 +613,7 @@
 <span id="v-e34af42350839865b9af972d">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -700,16 +623,13 @@
 <span id="v-e77c849f47b67879f911836c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -726,8 +646,7 @@
 <span id="v-7c3649ed0089ac1324f99309">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -737,8 +656,7 @@
 <span id="v-d736a547e4c8d22324a9258f">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -748,8 +666,7 @@
 <span id="v-0f5553aec65352710fbd6d3d">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -759,8 +676,7 @@
 <span id="v-f297491a005a36447b370422">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -770,8 +686,7 @@
 <span id="v-649138ad877ea2a30de6a7fe">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -781,8 +696,7 @@
 <span id="v-b0c2ddd2f2e194f354648029">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/name">phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -792,8 +706,7 @@
 <span id="v-fbfebae9aba36b31285526a2">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -810,12 +723,10 @@
 <span id="v-8ec1d333a712892dd1cd29aa">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/options/0">--phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -825,8 +736,7 @@
 <span id="v-670dc28072058021c900dfaf">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -836,8 +746,7 @@
 <span id="v-914a158107753b6a0890cbcc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -854,8 +763,7 @@
 <span id="v-504025a28b6aa98074e32215">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -865,16 +773,13 @@
 <span id="v-189618d9c1db2131da2f7aa5">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -891,8 +796,7 @@
 <span id="v-f73b8440f4cd0da78bf9c6a5">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -902,8 +806,7 @@
 <span id="v-f57f798411707048c0e18242">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -913,8 +816,7 @@
 <span id="v-04615bc2f03cec930daf0ddf">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -924,8 +826,7 @@
 <span id="v-65430f6b8dfe1be9a19d42c8">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -935,8 +836,7 @@
 <span id="v-7f0a1bbc701dfb625ea1a9fa">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -946,8 +846,7 @@
 <span id="v-2e761ee47167304b3ce466fe">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/name">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -957,8 +856,7 @@
 <span id="v-cc0bd1b9f948d0103039f7eb">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -975,8 +873,7 @@
 <span id="v-3998963192b5c8062015ff40">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/options/0">--query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -986,12 +883,10 @@
 <span id="v-0d8e36eaca2018b0ff77d95a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/options/1">-q</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1001,8 +896,7 @@
 <span id="v-17b54368335c1311dafaa66e">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1012,8 +906,7 @@
 <span id="v-5a7e7a152c11e74c799c5dc1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1030,8 +923,7 @@
 <span id="v-f93d65331752eb731c72c617">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1041,16 +933,13 @@
 <span id="v-debb9f627a1fcc629b301688">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1067,8 +956,7 @@
 <span id="v-46ebd3dba173c0f1793b5ffa">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1078,8 +966,7 @@
 <span id="v-df9b577041bdf8f9c982d5af">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/default">updated_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1089,8 +976,7 @@
 <span id="v-dd3576ce1d5acb3d8f6fe596">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,8 +986,7 @@
 <span id="v-51620183d3e97521e5b1d69a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1111,8 +996,7 @@
 <span id="v-e6473248867a8570077d9569">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1122,8 +1006,7 @@
 <span id="v-5cbf2bea08df9d4760697bef">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1133,8 +1016,7 @@
 <span id="v-0b0edfa8da4269478903444b">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/name">sort</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1144,8 +1026,7 @@
 <span id="v-f9477085376e05a8a282ff70">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1162,12 +1043,10 @@
 <span id="v-740500a8f471534bb28773d1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/options/0">--sort</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1177,8 +1056,7 @@
 <span id="v-cf50fe9f62c612539b01cff7">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1188,8 +1066,7 @@
 <span id="v-7a6c0ca9af2caa0270cfc5c0">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1206,8 +1083,7 @@
 <span id="v-93bec18601841391736a82b7">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1217,16 +1093,13 @@
 <span id="v-86ab79c7394b82668fdebad2">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1243,8 +1116,7 @@
 <span id="v-0659cee1de6e14319d0e8d48">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/count">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1254,8 +1126,7 @@
 <span id="v-f57fcdb6b42e8da15e927a62">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/default">desc</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1265,8 +1136,7 @@
 <span id="v-2c520b2e8725f9f956d316cb">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1276,8 +1146,7 @@
 <span id="v-9959bc5cdbf928a58965b1fc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/is_flag">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1287,8 +1156,7 @@
 <span id="v-c6f1603d3ca4b028ce8268fc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/kind">TyperOption</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1298,8 +1166,7 @@
 <span id="v-247d673c62f4c3dfd2f3fc09">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1309,8 +1176,7 @@
 <span id="v-36090ccce30c841015bad4f9">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/name">order</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1320,8 +1186,7 @@
 <span id="v-d2d4154117e9c8242103d6c8">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1338,12 +1203,10 @@
 <span id="v-636a43b9b6fb247613aaa6ac">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/options/0">--order</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1353,8 +1216,7 @@
 <span id="v-7b0d056a67a0674d64d6470a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1364,8 +1226,7 @@
 <span id="v-a8bbaab17c4a1fa45dfe14f3">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1382,8 +1243,7 @@
 <span id="v-345d1cd6d0796782d265e10c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/type/class">typer._click.types.StringParamType</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1393,16 +1253,13 @@
 <span id="v-e2836cef14b34fed9bf74831">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5/type/name">text</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1435,8 +1292,7 @@
 <span id="v-16fefef1e9a519d2ef4a0cbc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1446,8 +1302,7 @@
 <span id="v-7bdaa2d501441c6013dbb336">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1464,12 +1319,10 @@
 <span id="v-e9bc0eb44d1b33d8251af8a1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1486,12 +1339,10 @@
 <span id="v-0b8aa826c3932294ace97841">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1508,16 +1359,13 @@
 <span id="v-bd7ef99111231e7fe1cde764">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1534,8 +1382,7 @@
 <span id="v-8a90438d98830fbef915fbb9">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/1/exit_status">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1545,8 +1392,7 @@
 <span id="v-08b6136e375fc5d6be568d17">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/1/id">operational</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1563,12 +1409,10 @@
 <span id="v-ef578110d6ab4823ce0ee60a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/1/selected_by/kind">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1585,12 +1429,10 @@
 <span id="v-fabdec75fbfc76bc367499f6">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/1/stderr/all">noncontractual-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1607,20 +1449,16 @@
 <span id="v-576d6c7c3509c5dcd3b3970c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/failures/1/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1630,8 +1468,7 @@
 <span id="v-a5bc68136ff103d9b7078be7">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/human_json_relationship">same-semantic-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1641,8 +1478,7 @@
 <span id="v-ce45b26fe67bb961c40ba022">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/identity">stove0-cli-result/evaluation/list/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1652,8 +1488,7 @@
 <span id="v-53c91a930083c5ece511025a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/profile_id">stove0-cli-human-json/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1663,8 +1498,7 @@
 <span id="v-5d7159035e967afe2ab4e82a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/structured_output">optional-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1688,8 +1522,7 @@
 <span id="v-75aea032b2da23e77dbe7a88">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1699,8 +1532,7 @@
 <span id="v-232a5e3217b9cebd2c586a99">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/id">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1717,12 +1549,10 @@
 <span id="v-eceb099bc681f29188f9e5f0">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/selected_by/kind">command-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1739,12 +1569,10 @@
 <span id="v-afe2de5bbd003559fbfd375c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1761,8 +1589,7 @@
 <span id="v-9a9bf7c1b0f28cbc7f3ebab4">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/human">noncontractual-presentation-of-command-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1779,8 +1606,7 @@
 <span id="v-d5ac78a5779761d560641a3f">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/application">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1790,8 +1616,7 @@
 <span id="v-adc67e9c741b454e90d385b6">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/kind">http-operation-response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1801,8 +1626,7 @@
 <span id="v-323de49d9e21b6fefb42cdaa">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1812,8 +1636,7 @@
 <span id="v-cfa07173cae897508b6252e1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/operation_id">list_evaluations</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1823,8 +1646,7 @@
 <span id="v-2b5b48265471c8ef8b5bddb3">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/path">/v1/evaluations</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1841,12 +1663,10 @@
 <span id="v-1f4a82132de489fe86e3fc56">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/schema/$ref">#/components/schemas/EvaluationPage</code>
 <span class="kind">string</span> <a href="e-0b3e007e58e04fea7275e96d.html#v-f8832b794559b42adb761bda">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1856,24 +1676,19 @@
 <span id="v-8b2d0d1f9299e8c9a8c15c12">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/result_contract/success/0/stdout/json/status">200</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1899,8 +1714,7 @@
 <span id="v-6517ecc8796928c70e99ef10">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1910,8 +1724,7 @@
 <span id="v-7b858d4c3793eb7a18a95402">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1921,8 +1734,7 @@
 <span id="v-67d2a22bd29290ffd0ca6f61">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1932,8 +1744,7 @@
 <span id="v-bfb40854ebdee44ac0f56c38">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1950,8 +1761,7 @@
 <span id="v-bcf5fa91bb36d99c97cc2eb3">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1968,20 +1778,16 @@
 <span id="v-7df53e765440b1fcd019a9ef">
 <code data-value-pointer="/external_contract/cli/stove0/commands/evaluation/commands/list/terminating_controls/0/trigger/options/0">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -2004,7 +1810,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -2016,7 +1822,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -2026,8 +1832,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -2039,97 +1844,79 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/5</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · cli-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;type.maximum&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · cli-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;type.maximum&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/2</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/3</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/evaluation/commands/list/parameters/4</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

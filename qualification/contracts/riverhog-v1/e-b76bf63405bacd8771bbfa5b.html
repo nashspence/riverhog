@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: ArtifactAssociation</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,42 +63,32 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-bcfb55c83b3cd7afd879c705">associated_roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-bcfb55c83b3cd7afd879c705">associated_roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path_identity</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code>
-</td>
-<td>
-<code>same-parent-stem</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path_identity</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code></td>
+<td data-label="Default">
+<code>same-parent-stem</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>primary_role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>primary_role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -150,8 +131,7 @@
 <span id="v-d47e7616af458cb5be5d31ec">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -161,8 +141,7 @@
 <span id="v-1d1d09ce9901a3579da3d2bb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/description">Associate classified artifacts without assigning device meaning to Stove0.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -193,8 +172,7 @@
 <span id="v-3185c8810898f9b1c25cc4fa">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -204,12 +182,10 @@
 <span id="v-035fc4f7b109b127dff336ae">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -219,8 +195,7 @@
 <span id="v-d8495084a198ac7240b375a4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -230,8 +205,7 @@
 <span id="v-6ccf3d1bde198888e33d9417">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles/title">Associated Roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -241,12 +215,10 @@
 <span id="v-36a8903dbf8e631b79eb6290">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -263,8 +235,7 @@
 <span id="v-40c3d1fb683c40cce92afdc4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/path_identity/const">same-parent-stem</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -274,8 +245,7 @@
 <span id="v-5fbf3809e1247378df01f04d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/path_identity/default">same-parent-stem</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -285,8 +255,7 @@
 <span id="v-2fddf1e5e4a19e7b5fac2a2f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/path_identity/title">Path Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -296,12 +265,10 @@
 <span id="v-1e2d505834d7b9063ae21bcf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/path_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -318,8 +285,7 @@
 <span id="v-eb7be85365a13db41f770110">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/primary_role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,8 +295,7 @@
 <span id="v-5dc9044c5f1c32b039f0ad90">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/primary_role/title">Primary Role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -340,16 +305,13 @@
 <span id="v-33d68dfea9af83740196ef4d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/primary_role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -366,8 +328,7 @@
 <span id="v-6025f1a7a6e66b42a5d52bbb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/required/0">primary_role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,12 +338,10 @@
 <span id="v-b2aee130cc4e5110b2be5385">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/required/1">associated_roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,8 +351,7 @@
 <span id="v-9b5d4ccabe5f6e0afd103957">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/title">ArtifactAssociation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -403,8 +361,7 @@
 <span id="v-53cb845b33c4ed414c07132d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -416,7 +373,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -428,7 +385,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -438,8 +395,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -451,25 +407,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation/properties/associated_roles</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

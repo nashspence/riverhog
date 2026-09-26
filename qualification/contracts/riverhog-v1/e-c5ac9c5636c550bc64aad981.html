@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-fa5e9c5931dde462428b4c36.html">stove0-control</a> / <a href="i-f719c12ce8e20d60041be220.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0-control: stove0_event_cursors</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -33,7 +24,7 @@
 <div class="human-contract">
 <h3>Table: <code>stove0_event_cursors</code>
 </h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -46,62 +37,50 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>stream</code>
-</td>
-<td>
-<code>VARCHAR(160)</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>stream VARCHAR(160) NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>stream</code></td>
+<td data-label="Type">
+<code>VARCHAR(160)</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>stream VARCHAR(160) NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>cursor</code>
-</td>
-<td>
-<code>VARCHAR(500)</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>cursor VARCHAR(500) NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>cursor</code></td>
+<td data-label="Type">
+<code>VARCHAR(500)</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>cursor VARCHAR(500) NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>
-<code>INTEGER</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>revision INTEGER NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>revision</code></td>
+<td data-label="Type">
+<code>INTEGER</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>revision INTEGER NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>updated_at</code>
-</td>
-<td>
-<code>VARCHAR(40)</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>updated_at VARCHAR(40) NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>updated_at</code></td>
+<td data-label="Type">
+<code>VARCHAR(40)</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>updated_at VARCHAR(40) NOT NULL</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Table constraints</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -112,26 +91,20 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>primary-key</code>
-</td>
-<td>
-<code></code>
-</td>
-<td>
-<code>PRIMARY KEY (stream)</code>
-</td>
+<td data-label="Kind">
+<code>primary-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>PRIMARY KEY (stream)</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_stove0_event_cursors_revision</code>
-</td>
-<td>
-<code>CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision &gt;= 1)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_stove0_event_cursors_revision</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision &gt;= 1)</code></td>
 </tr>
 </tbody>
 </table>
@@ -167,8 +140,7 @@
 <span id="v-12d124b4b5f4d556afada3dc">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/0/definition">stream VARCHAR(160) NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -178,8 +150,7 @@
 <span id="v-a66e2843f2e02c0ad4d2a355">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/0/name">stream</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -189,8 +160,7 @@
 <span id="v-c867ddf8e55d1acdb846511b">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/0/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -200,12 +170,10 @@
 <span id="v-11d044674b797d0cdd1f3c79">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/0/type">VARCHAR(160)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -222,8 +190,7 @@
 <span id="v-864a90b1b328bc06451c1452">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/1/definition">cursor VARCHAR(500) NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -233,8 +200,7 @@
 <span id="v-44b0e889f89640eb18db97cf">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/1/name">cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -244,8 +210,7 @@
 <span id="v-c2795b4054cc8abbcb76a90b">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/1/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -255,12 +220,10 @@
 <span id="v-b85b6ea289fd54b662ee2ae2">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/1/type">VARCHAR(500)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -277,8 +240,7 @@
 <span id="v-840ee175c61ef9ea29497177">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/2/definition">revision INTEGER NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,8 +250,7 @@
 <span id="v-2af8ea41568d468ee98a987c">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/2/name">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,8 +260,7 @@
 <span id="v-226cbd58fd977f822f27a076">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/2/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,12 +270,10 @@
 <span id="v-be1c43c726a524c7c5979bd0">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/2/type">INTEGER</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,8 +290,7 @@
 <span id="v-7ae2ca663fedcfa0c9bd4fd4">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/3/definition">updated_at VARCHAR(40) NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,8 +300,7 @@
 <span id="v-517bc9a0a38f3fd3d4175868">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/3/name">updated_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -354,8 +310,7 @@
 <span id="v-29d74ceeccf2bf2bea0a8aff">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/3/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -365,16 +320,13 @@
 <span id="v-b421f9671df02a6d465c6775">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/columns/3/type">VARCHAR(40)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -405,12 +357,10 @@
 <span id="v-01ca26ad9727b9902dc031ea">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/0/columns/0">stream</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,8 +370,7 @@
 <span id="v-497c700be101487b42555d10">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/0/definition">PRIMARY KEY (stream)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -431,12 +380,10 @@
 <span id="v-99dc092506fbaef154c87b22">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/0/kind">primary-key</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -453,8 +400,7 @@
 <span id="v-87c4f01728d54fc73847a3bf">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/1/definition">CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision &gt;= 1)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -464,8 +410,7 @@
 <span id="v-6c90648c6c7fc6b2e1f85df7">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/1/expression">(revision &gt;= 1)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -475,8 +420,7 @@
 <span id="v-a75bdd7fe8f669bc12ab94ba">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/1/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -486,16 +430,13 @@
 <span id="v-ef5f12eeca50e801880a398f">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/constraints/1/name">ck_stove0_event_cursors_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -505,8 +446,7 @@
 <span id="v-5d8021c7059a0ba8822dddd9">
 <code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/9/name">stove0_event_cursors</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -526,7 +466,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -540,7 +480,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/stove0.postgresql.sql">tests/fixtures/state/v1_0001/stove0.postgresql.sql</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -551,9 +491,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -16,6 +16,28 @@ from .model import ContractAtlasError, DiscoveredContract, canonical_sha256, poi
 CLOSURE_FORMAT = "riverhog-contract-closure/v1"
 AUDIT_FORMAT = "riverhog-contract-audit-record/v1"
 AUDIT_FILENAME = "riverhog-v1-audit.json"
+AUDIT_PRESENTATION = {
+    "extent_marker": {
+        "glyph": "📦",
+        "label": "Extent",
+        "meaning": (
+            "An open extent qualification affects this declared subject or branch. "
+            "Follow the marker for its recorded scope and candidate checks. "
+            "The marker does not report a runtime failure; "
+            "an unmarked subject carries no approval claim."
+        ),
+    },
+    "reference_routes": [
+        {"path": "audit-key.html", "label": "Audit key"},
+        {"path": "qualifications.html", "label": "Open qualifications"},
+        {"path": "accounting.html", "label": "Accounting checks"},
+        {"path": "sources.html", "label": "Sources and qualifications"},
+        {"path": "configuration.html", "label": "Configuration comparison"},
+        {"path": "relationships.html", "label": "Declared relationships"},
+        {"path": "identities.html", "label": "Snapshot identities"},
+        {"path": "../riverhog-v1-audit.json", "label": "Bound Audit Record"},
+    ],
+}
 
 
 @dataclass(frozen=True)
@@ -75,6 +97,7 @@ _AUDIT_FIELDS = frozenset(
         "counts",
         "policies",
         "source_identities",
+        "presentation",
     }
 )
 _EXTENT_ANALYSIS_FIELDS = frozenset(
@@ -211,6 +234,7 @@ def build_records(discovered: DiscoveredContract) -> tuple[dict[str, object], di
         "counts": copy.deepcopy(root["counts"]),
         "policies": copy.deepcopy(root["policies"]),
         "source_identities": copy.deepcopy(root["identities"]),
+        "presentation": copy.deepcopy(AUDIT_PRESENTATION),
     }
     validate_audit_record(closure, audit)
     return closure, audit
@@ -301,6 +325,8 @@ def validate_audit_record(closure: Mapping[str, object], audit: Mapping[str, obj
         or audit.get("closure_sha256") != canonical_sha256(closure)
     ):
         raise ContractAtlasError("audit record is not bound to this contract closure")
+    if audit["presentation"] != AUDIT_PRESENTATION:
+        raise ContractAtlasError("audit presentation differs from its declared meaning")
     analysis = cast(Mapping[str, object], audit["extent_analysis"])
     if not isinstance(analysis, Mapping) or set(analysis) != _EXTENT_ANALYSIS_FIELDS:
         raise ContractAtlasError("audit extent analysis has an unreviewed field role")

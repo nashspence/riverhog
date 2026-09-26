@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: JoinAdmittedEvent</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,64 +59,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>occurred_at</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>occurred_at</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>payload</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-192e9559124c7cc38a19519c.html#v-43623f3a7b29af940d71a76e">#/components/schemas/JoinAdmittedEventData</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>payload</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-192e9559124c7cc38a19519c.html#v-43623f3a7b29af940d71a76e">#/components/schemas/JoinAdmittedEventData</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>subject</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>subject</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>type</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; const: <code>io.riverhog.stove0.join.admitted</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>io.riverhog.stove0.join.admitted</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -148,8 +124,7 @@
 <span id="v-e6f1ea95429c2c0456295aa9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -173,8 +148,7 @@
 <span id="v-e35cb465fd13b995ee9773da">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -184,8 +158,7 @@
 <span id="v-cbc46a36a5c676a41c5761ed">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/id/title">Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -195,12 +168,10 @@
 <span id="v-4cdef2644c72d3499c4f70e4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -217,8 +188,7 @@
 <span id="v-f165839dfc52537fea52cf38">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -228,8 +198,7 @@
 <span id="v-65f67dabd16d9659e23636db">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -239,8 +208,7 @@
 <span id="v-b899ec5e64ac8dd9e1508b1b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -250,8 +218,7 @@
 <span id="v-7696dc638a476a6ef0dfc2da">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at/title">Occurred At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,12 +228,10 @@
 <span id="v-8114bd56d7a7c92e84680450">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,12 +248,10 @@
 <span id="v-0005500d1e7f6c18d86751bb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/payload/$ref">#/components/schemas/JoinAdmittedEventData</code>
 <span class="kind">string</span> <a href="e-192e9559124c7cc38a19519c.html#v-43623f3a7b29af940d71a76e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -305,8 +268,7 @@
 <span id="v-f4acf0c33356782031212f9a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/subject/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -316,8 +278,7 @@
 <span id="v-8e23827e1a136d793f9a5508">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/subject/title">Subject</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,12 +288,10 @@
 <span id="v-ee9017b9255df56a052f931e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/subject/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,8 +308,7 @@
 <span id="v-59c98d2b91e1b6366792e2ed">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/type/const">io.riverhog.stove0.join.admitted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,8 +318,7 @@
 <span id="v-4df1231ac8f037f29cb76584">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/type/title">Type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -371,16 +328,13 @@
 <span id="v-0274503d1981e8d1e6ee40bf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/type/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -397,8 +351,7 @@
 <span id="v-5965e34e2dee55aae2afea20">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -408,8 +361,7 @@
 <span id="v-0c2ea19b35cef3ec8b111db2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/required/1">type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,8 +371,7 @@
 <span id="v-45803bcf2517f6019771cafb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/required/2">subject</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -430,8 +381,7 @@
 <span id="v-90cd645e5de65b5c3cfd3ea5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/required/3">occurred_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -441,12 +391,10 @@
 <span id="v-5c334306d83bef2934ae94ab">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/required/4">payload</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -456,8 +404,7 @@
 <span id="v-b5df77a5beb6df192a74e88a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/title">JoinAdmittedEvent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,8 +414,7 @@
 <span id="v-797a81b1255f2882d641d254">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -480,7 +426,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -492,7 +438,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -502,8 +448,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -515,25 +460,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent/properties/occurred_at</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

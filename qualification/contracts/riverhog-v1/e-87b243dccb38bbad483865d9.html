@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-c76f297b8c160db67d9e3171.html">a-stove0-cli</a> / <a href="i-2721a11a94d428d76ed73f50.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0 recipe validate</h1>
 <p class="context">Command-line client for Stove0. CLI contract owned by a-stove0-cli.</p>
@@ -52,7 +43,7 @@
 </dl>
 <p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
 <h3>Arguments and options</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -64,16 +55,14 @@
 </thead>
 <tbody>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>path</code>
 <br>
-<code>path</code>
-</td>
-<td>required; argument; 1 value(s) per use</td>
-<td>
-<code>file</code>; exists: <code>true</code>; file okay: <code>true</code>; dir okay: <code>false</code>
-</td>
-<td>not recorded</td>
+<code>path</code></td>
+<td data-label="Invocation">required; argument; 1 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>file</code>; exists: <code>true</code>; file okay: <code>true</code>; dir okay: <code>false</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 </tbody>
 </table>
@@ -98,7 +87,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -111,24 +100,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>command-completed</code>
-</td>
-<td>human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>stove0-recipe-catalog-validation/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;catalog_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-recipe-catalog-validation/v1&quot;},&quot;operation_count&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;recipe_count&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;recipes&quot;:{&quot;items&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;format&quot;,&quot;catalog_sha256&quot;,&quot;operation_count&quot;,&quot;recipe_count&quot;,&quot;recipes&quot;],&quot;type&quot;:&quot;object&quot;}</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>completed</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>command-completed</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>stove0-recipe-catalog-validation/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;catalog_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-recipe-catalog-validation/v1&quot;},&quot;operation_count&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;recipe_count&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;recipes&quot;:{&quot;items&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;format&quot;,&quot;catalog_sha256&quot;,&quot;operation_count&quot;,&quot;recipe_count&quot;,&quot;recipes&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -141,38 +125,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 <tr>
-<td>
-<code>operational</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>kind: <code>application-error</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>operational</code></td>
+<td data-label="Exit">
+<code>1</code></td>
+<td data-label="Selection">kind: <code>application-error</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -185,21 +159,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -264,8 +233,7 @@
 <span id="v-1497628b515929b34a90f9be">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/envvar">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -275,8 +243,7 @@
 <span id="v-73fe478ef95056dba05f70d1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/kind">TyperArgument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -286,8 +253,7 @@
 <span id="v-284df078f5cb1b7f3f264492">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/multiple">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -297,8 +263,7 @@
 <span id="v-1425a0c6f1684d184630162f">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/name">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -308,8 +273,7 @@
 <span id="v-1166645b11d0005c038bb952">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/nargs">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,12 +290,10 @@
 <span id="v-76bffe58661a780dc6d8555a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/options/0">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -341,8 +303,7 @@
 <span id="v-e4106f12449abc3ccc072304">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -352,8 +313,7 @@
 <span id="v-2c4d74736b12c819c576acee">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/secondary_options">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,8 +330,7 @@
 <span id="v-b05bf8a05a909d1b326af295">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/allow_dash">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -381,8 +340,7 @@
 <span id="v-e0fa69c91a3df7bb9f826079">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/class">typer.models.TyperPath</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,8 +350,7 @@
 <span id="v-188dd054b0b9fdd78008241a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/dir_okay">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -403,8 +360,7 @@
 <span id="v-492391adf869a03849b5fef6">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/exists">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -414,8 +370,7 @@
 <span id="v-2e056b5b4088adfa706e8eb0">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/file_okay">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -425,8 +380,7 @@
 <span id="v-bdfbdd96091cf919be906f08">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/name">file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -436,8 +390,7 @@
 <span id="v-d835c7498e9d4b4a91d2bf8c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/readable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -447,8 +400,7 @@
 <span id="v-6b5bc59eabbd64fe82fdb267">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/resolve_path">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -458,16 +410,13 @@
 <span id="v-625f10a474a3fa076f4f9292">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0/type/writable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -500,8 +449,7 @@
 <span id="v-22932551d7c9890edc28c130">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -511,8 +459,7 @@
 <span id="v-a468e4be4c1074aedae064b5">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -529,12 +476,10 @@
 <span id="v-973276f11fad1b192ada8082">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -551,12 +496,10 @@
 <span id="v-97a151d0814015b66a0fd37a">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -573,16 +516,13 @@
 <span id="v-0d108174fc9c057dbcb94fef">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -599,8 +539,7 @@
 <span id="v-cd98d79afbe77cc94b9019ed">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/1/exit_status">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -610,8 +549,7 @@
 <span id="v-d9580518c52989881e87b6d4">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/1/id">operational</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -628,12 +566,10 @@
 <span id="v-8c214fa08d3ec9026408b9fc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/1/selected_by/kind">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -650,12 +586,10 @@
 <span id="v-3554f4ed88a178af57a40e23">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/1/stderr/all">noncontractual-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -672,20 +606,16 @@
 <span id="v-71fd207079c94e324ab01a12">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/failures/1/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -695,8 +625,7 @@
 <span id="v-92eade532c24fc3bdfe86f0b">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/human_json_relationship">same-semantic-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -706,8 +635,7 @@
 <span id="v-25d9608b6e8d4d7f03c036e1">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/identity">stove0-cli-result/recipe/validate/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,8 +645,7 @@
 <span id="v-453cf1558247747da6103878">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/profile_id">stove0-cli-human-json/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -728,8 +655,7 @@
 <span id="v-f97c934fa9f748fcf67ab450">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/structured_output">optional-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -753,8 +679,7 @@
 <span id="v-5dd3e89b2b8fc1c97a0c9bc8">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -764,8 +689,7 @@
 <span id="v-c21881a37c79347d68cb7428">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/id">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -782,12 +706,10 @@
 <span id="v-21ca53a4c022bfe92f1501cb">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/selected_by/kind">command-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -804,12 +726,10 @@
 <span id="v-59432a5922bb0af5635e5760">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -826,8 +746,7 @@
 <span id="v-845946fbfcecd8c55ebbb0ce">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/human">noncontractual-presentation-of-command-result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -844,8 +763,7 @@
 <span id="v-9eec483f6bd2d8fa6f218c9c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/identity">stove0-recipe-catalog-validation/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -855,8 +773,7 @@
 <span id="v-97a3ca35937695a03b959bc5">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/kind">cli-local-json-schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -873,8 +790,7 @@
 <span id="v-ea020f6e0218c72332e43969">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -898,8 +814,7 @@
 <span id="v-322fc33e06d6d5e1689351cf">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/catalog_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -909,12 +824,10 @@
 <span id="v-8bbf516e41378334905e1d03">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/catalog_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -931,12 +844,10 @@
 <span id="v-7a162999ef0eeedc239e0dc9">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/format/const">stove0-recipe-catalog-validation/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -953,8 +864,7 @@
 <span id="v-b6c72a9d0b12de39ae92c940">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/operation_count/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -964,12 +874,10 @@
 <span id="v-8b8fc133620ccf94cd13efeb">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/operation_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -986,8 +894,7 @@
 <span id="v-7c8b4c902935f7191af55857">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/recipe_count/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -997,12 +904,10 @@
 <span id="v-faebe4468103e8be4bd2f2a9">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/recipe_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1026,12 +931,10 @@
 <span id="v-4dd03c3cf64562d3659ffedf">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/recipes/items/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1041,16 +944,13 @@
 <span id="v-8bb35e25cccde8b8e2906cdc">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/properties/recipes/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1067,8 +967,7 @@
 <span id="v-c45e3190790e52e195a047ac">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/required/0">format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1078,8 +977,7 @@
 <span id="v-5c995fe46a1617d7cb0fb4f0">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/required/1">catalog_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1089,8 +987,7 @@
 <span id="v-b6fc78b3454bf8f8923cc0db">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/required/2">operation_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,8 +997,7 @@
 <span id="v-8ebf53085665f66512b25a26">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/required/3">recipe_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1111,12 +1007,10 @@
 <span id="v-5a5bce56ff5da56aabbf601e">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/required/4">recipes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1126,28 +1020,22 @@
 <span id="v-662c5c75ac60d45adc939aae">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/result_contract/success/0/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1173,8 +1061,7 @@
 <span id="v-dfe8d2ca7fe5e4efa0bb08e7">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1184,8 +1071,7 @@
 <span id="v-5d3d16ac70fe5bf8c93e255b">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1195,8 +1081,7 @@
 <span id="v-0a3310add659bba4be3ed96f">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1206,8 +1091,7 @@
 <span id="v-2eb3f595b21594d7c19c986c">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1224,8 +1108,7 @@
 <span id="v-bd789c31d946682340082646">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1242,20 +1125,16 @@
 <span id="v-44d899a2292662a7e653405b">
 <code data-value-pointer="/external_contract/cli/stove0/commands/recipe/commands/validate/terminating_controls/0/trigger/options/0">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1267,7 +1146,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1279,7 +1158,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1289,8 +1168,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1302,25 +1180,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0/commands/recipe/commands/validate/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

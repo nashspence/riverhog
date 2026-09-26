@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">HTTP Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>GET /v1/departure-effects/{departure_id}</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Callable HTTP operations.</p>
@@ -44,7 +35,7 @@
 </dd>
 </dl>
 <h3>Parameters</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -58,25 +49,21 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>departure_id</code>
-</td>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>string</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>departure_id</code></td>
+<td data-label="In">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">
+<code>string</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Responses</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -89,77 +76,58 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>200</code>
-</td>
-<td>Successful Response</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-2108c65ff6c3f422b6220f25.html#v-70df5f54bfb861cfcf6bff85">#/components/schemas/DepartureEffectView</a>
-</td>
-<td>not declared</td>
+<td data-label="Status">
+<code>200</code></td>
+<td data-label="Description">Successful Response</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-2108c65ff6c3f422b6220f25.html#v-70df5f54bfb861cfcf6bff85">#/components/schemas/DepartureEffectView</a></td>
+<td data-label="Error codes">not declared</td>
 </tr>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>Bad Request</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Description">Bad Request</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>Unauthorized</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Description">Unauthorized</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>403</code>
-</td>
-<td>Forbidden</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>forbidden</code>
-</td>
+<td data-label="Status">
+<code>403</code></td>
+<td data-label="Description">Forbidden</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>forbidden</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>Internal Server Error</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>internal_error</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Description">Internal Server Error</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>internal_error</code></td>
 </tr>
 </tbody>
 </table>
@@ -181,8 +149,7 @@
 <span id="v-ae595c48c5145ca54a3d8ba1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/operationId">get_departure_effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -206,8 +173,7 @@
 <span id="v-c90116787c8326744dc3b07a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/parameters/0/in">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -217,8 +183,7 @@
 <span id="v-97c8e82e88688f19bb333098">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/parameters/0/name">departure_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -228,8 +193,7 @@
 <span id="v-8ae966d20e33fdd452365a7b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/parameters/0/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -246,8 +210,7 @@
 <span id="v-0cf7c6d070110755ed6bbd90">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/parameters/0/schema/title">Departure Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -257,20 +220,16 @@
 <span id="v-eafac8717a15e2259a05b26f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/parameters/0/schema/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -315,20 +274,16 @@
 <span id="v-f170995829e73b1d1b20ed8f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/200/content/application~1json/schema/$ref">#/components/schemas/DepartureEffectView</code>
 <span class="kind">string</span> <a href="e-2108c65ff6c3f422b6220f25.html#v-70df5f54bfb861cfcf6bff85">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,12 +293,10 @@
 <span id="v-47476274ea95e98498945b58">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/200/description">Successful Response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -381,20 +334,16 @@
 <span id="v-8f0918e0864a8c066d4b3015">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -404,8 +353,7 @@
 <span id="v-3596a26de71c67de1765dbc1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/400/description">Bad Request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -422,16 +370,13 @@
 <span id="v-bb4336b22ad942772acdaa78">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/400/x-riverhog-error-codes/0">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,20 +414,16 @@
 <span id="v-3a037f68a210a271da9ede62">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -492,8 +433,7 @@
 <span id="v-7165631a4add64064f197dce">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/401/description">Unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,16 +450,13 @@
 <span id="v-46f5f17e49156aae45b86817">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/401/x-riverhog-error-codes/0">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -557,20 +494,16 @@
 <span id="v-ca973d559b5f4520d952cecb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -580,8 +513,7 @@
 <span id="v-4c45a0fa1966f398f083134d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/403/description">Forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -598,16 +530,13 @@
 <span id="v-c84ef477330da6b03dc781fd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/403/x-riverhog-error-codes/0">forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -645,20 +574,16 @@
 <span id="v-fde31e4c6dee5dc7757e32c3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -668,8 +593,7 @@
 <span id="v-2eba33e4f1d5cf4496acb5d1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/500/description">Internal Server Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -686,20 +610,16 @@
 <span id="v-62fe6c0f8de210be5a9f332b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/responses/500/x-riverhog-error-codes/0">internal_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -709,8 +629,7 @@
 <span id="v-8f46a73bdb8dc35232e66ad5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/summary">Get Departure Effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -727,12 +646,10 @@
 <span id="v-41393ff2498c4d2266d4c40e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get/tags/0">departures</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -755,7 +672,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -770,7 +687,7 @@
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -781,7 +698,6 @@
 </ul>
 <details>
 <summary>Structural operation bindings</summary>
-<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
 <table id="v-676913a54d6f318ad24e69a3">
 <tbody>
 <tr>
@@ -792,8 +708,7 @@
 <span id="v-a9b1fd6fd23d7bafa61f5080">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/application">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -803,8 +718,7 @@
 <span id="v-29b80ffc0c19a9b7a439b440">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/classification">human-cli+json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -828,8 +742,7 @@
 <span id="v-3dfc42c4c954ccb4377d4d6c">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/command">departure show</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -839,8 +752,7 @@
 <span id="v-19cbab1bbccf71da67ba1e7d">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/executable">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -850,8 +762,7 @@
 <span id="v-2eaeaa1cc6f1ef85605634c1">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/result_identity">stove0-cli-result/departure/show/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -868,8 +779,7 @@
 <span id="v-56e78b7453020484ebb28e0a">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/source/line">286</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -879,8 +789,7 @@
 <span id="v-b0cb7a637ad32ad1b5d0f802">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/source/module">a_stove0_cli.main</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -890,8 +799,7 @@
 <span id="v-a34c18335fb4b0ee40206048">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/source/path">some-implementations/stove0/application/client/src/a_stove0_cli/main.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -901,20 +809,16 @@
 <span id="v-ed9c3e89ca8932cb817f262d">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_bindings/0/source/symbol">show_departure_effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -931,12 +835,10 @@
 <span id="v-173a139b68fd6af637836d6a">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/cli_commands/0">departure show</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -946,8 +848,7 @@
 <span id="v-0b6efd793b474df40bb95140">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/client">Stove0ApiClient</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -971,8 +872,7 @@
 <span id="v-62a5164e0f7fd0b951fdce73">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/client_bindings/0/public_identity">stove0_api_client.Stove0ApiClient.get_departure_effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -989,8 +889,7 @@
 <span id="v-f13851a8afde84cb3cfbc00f">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/client_bindings/0/source/line">249</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1000,8 +899,7 @@
 <span id="v-8c288853a7375d880fa166e4">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/client_bindings/0/source/module">stove0_api_client.client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1011,8 +909,7 @@
 <span id="v-0a78edbc58f94f45da02dbd2">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/client_bindings/0/source/path">some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1022,20 +919,16 @@
 <span id="v-a717b9c7e894c2d09ad16457">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/client_bindings/0/source/symbol">Stove0ApiClient.get_departure_effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1045,8 +938,7 @@
 <span id="v-00945575fc66d7ca671dc65a">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1056,8 +948,7 @@
 <span id="v-95fd70d58094b54c34e9e8ac">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/operation_id">get_departure_effect</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1067,8 +958,7 @@
 <span id="v-b74c058a1f27ae2c3e0a1e52">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/path">/v1/departure-effects/{departure_id}</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1078,8 +968,7 @@
 <span id="v-99618b5c7ae81964ce045178">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/provider_evidence">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1089,8 +978,7 @@
 <span id="v-2eb84f09a199940f494db270">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/read_collection">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,17 +988,19 @@
 <span id="v-385d7968a7306950ad631d75">
 <code data-value-pointer="/audit/operation-qualification/get_departure_effect/response_authority">operator-projection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
 </details>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

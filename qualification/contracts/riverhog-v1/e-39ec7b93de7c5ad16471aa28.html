@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_protocol.CatalogSyncUpsert</h1>
 <p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,125 +84,94 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_root_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_root_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-39ec7b93de7c5ad16471aa28.html#v-99e4ae8314d40fc2ad7e3551">#/$defs/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-39ec7b93de7c5ad16471aa28.html#v-99e4ae8314d40fc2ad7e3551">#/$defs/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>content_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>content_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-cb158b751ea433c8bfa506fd">description</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-39ec7b93de7c5ad16471aa28.html#v-95ff3511b7c28572aa5f333b">#/$defs/CollectionDescription</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-cb158b751ea433c8bfa506fd">description</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-39ec7b93de7c5ad16471aa28.html#v-95ff3511b7c28572aa5f333b">#/$defs/CollectionDescription</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>description_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>description_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>description_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>; maximum: <code>9007199254740991</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>description_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; maximum: <code>9007199254740991</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>upsert</code>; default: <code>upsert</code>
-</td>
-<td>
-<code>upsert</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>upsert</code>; default: <code>upsert</code></td>
+<td data-label="Default">
+<code>upsert</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>; minLength: <code>1</code>; maxLength: <code>19</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>; minLength: <code>1</code>; maxLength: <code>19</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>tag_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>9007199254740991</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>tag_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>9007199254740991</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>tag_set_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>tag_set_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -231,7 +191,7 @@
 <p class="shape">any of: <a href="e-39ec7b93de7c5ad16471aa28.html#v-95ff3511b7c28572aa5f333b">#/$defs/CollectionDescription</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -241,16 +201,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-39ec7b93de7c5ad16471aa28.html#v-95ff3511b7c28572aa5f333b">#/$defs/CollectionDescription</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-39ec7b93de7c5ad16471aa28.html#v-95ff3511b7c28572aa5f333b">#/$defs/CollectionDescription</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -291,7 +249,7 @@
 <h3>Definition: CollectionId</h3>
 <p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -301,14 +259,13 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>structured schema</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -338,8 +295,7 @@
 <span id="v-4978b40f75b244c8b9e87b4d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,8 +326,7 @@
 <span id="v-b0b211357246d2bb14c61102">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/maxLength">32768</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -381,8 +336,7 @@
 <span id="v-694760481c676324a4c120b3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,8 +346,7 @@
 <span id="v-5ab20c2d8fc81d4c212868d2">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -403,8 +356,7 @@
 <span id="v-7ec846369ffe80187126a1c1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/x-riverhog-encoded-bytes-max">32768</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,8 +373,7 @@
 <span id="v-f3d5f7133e6c3eb1c9b872c8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -432,12 +383,10 @@
 <span id="v-c4ef2360622c2bde3c430b16">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/x-riverhog-extent/reason">bounded-human-authored-catalog-description</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -447,12 +396,10 @@
 <span id="v-7cf2b497ab8ddb1725fb8737">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionDescription/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,8 +430,7 @@
 <span id="v-502f1a900c83c016aa38dbcf">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -494,12 +440,10 @@
 <span id="v-f2187cd8604f1ff40a21de96">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -523,28 +467,22 @@
 <span id="v-a1858837be46fdf462515dd1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -554,8 +492,7 @@
 <span id="v-73eef63e6e51dbf444fb1abe">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -579,8 +516,7 @@
 <span id="v-00e9b3dd42c76e59bdd96b54">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/archive_root_sha256/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -590,8 +526,7 @@
 <span id="v-e245fb5118c434ef77279b06">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/archive_root_sha256/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -601,8 +536,7 @@
 <span id="v-11dc19d78666adc38520dded">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -612,12 +546,10 @@
 <span id="v-90a818e72ee5f6b19c8d0505">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/archive_root_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -634,12 +566,10 @@
 <span id="v-157783d33783e722ad755184">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-39ec7b93de7c5ad16471aa28.html#v-99e4ae8314d40fc2ad7e3551">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,8 +586,7 @@
 <span id="v-73f25b09abe48ac7df52b8ba">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -667,8 +596,7 @@
 <span id="v-688fe79ccea937bc16321016">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -678,8 +606,7 @@
 <span id="v-5744b1a60e9381c614d33e74">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,12 +616,10 @@
 <span id="v-0549339011c488433bb29eb2">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -725,12 +650,10 @@
 <span id="v-da53365b88917d4d717581cb">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description/anyOf/0/$ref">#/$defs/CollectionDescription</code>
 <span class="kind">string</span> <a href="e-39ec7b93de7c5ad16471aa28.html#v-95ff3511b7c28572aa5f333b">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -747,20 +670,16 @@
 <span id="v-5b1f18ae86bac7513a9c086b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -777,8 +696,7 @@
 <span id="v-329de1f17b5fce95929cdfea">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -788,8 +706,7 @@
 <span id="v-3f8042eb4c5754e9032d00b0">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -799,8 +716,7 @@
 <span id="v-e3a08aba8130d661569aa337">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -810,12 +726,10 @@
 <span id="v-1fe1dbe03a4e2d5127acaecf">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -832,8 +746,7 @@
 <span id="v-be66f68f470a01e924ee5c29">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_revision/maximum">9007199254740991</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -843,8 +756,7 @@
 <span id="v-e601913c892878ee07899bf3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_revision/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -854,12 +766,10 @@
 <span id="v-7485f7198d4bc1b41a28cee1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/description_revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -876,8 +786,7 @@
 <span id="v-28c278935f2d8b6b57c067e2">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/operation/const">upsert</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -887,8 +796,7 @@
 <span id="v-7ccaa95f3d902b6cf40513d3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/operation/default">upsert</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -898,12 +806,10 @@
 <span id="v-4094180419458791da8594ed">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/operation/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -920,8 +826,7 @@
 <span id="v-70aa28c796270b89d6894187">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/revision/maxLength">19</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -931,8 +836,7 @@
 <span id="v-2751d4db5a8f620ce354a83b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/revision/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -942,8 +846,7 @@
 <span id="v-236f4db3aa9e6192586b8013">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/revision/pattern">^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -953,12 +856,10 @@
 <span id="v-aecb63c70b920193e2842b51">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/revision/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -975,8 +876,7 @@
 <span id="v-97220662325f96377383b57c">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_revision/maximum">9007199254740991</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -986,8 +886,7 @@
 <span id="v-3e291918e33a0d4ce3517e17">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_revision/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -997,12 +896,10 @@
 <span id="v-d0877031bb23aef0da087973">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1019,8 +916,7 @@
 <span id="v-56117e7f4d85652a21e5f232">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_set_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1030,8 +926,7 @@
 <span id="v-4280caae32a27c627432a5c5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_set_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1041,8 +936,7 @@
 <span id="v-3e4d232fa7d56e98811856a5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_set_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1052,16 +946,13 @@
 <span id="v-230cdf150ab27c1136c82f99">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/tag_set_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1078,8 +969,7 @@
 <span id="v-2141c787127c3cd61bb76496">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1089,8 +979,7 @@
 <span id="v-144be6ab1b1988bf13a86dba">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/1">archive_root_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,8 +989,7 @@
 <span id="v-f8f512b214879fd3fd1a3c89">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/2">content_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1111,8 +999,7 @@
 <span id="v-3bf91ac93574478a32b87503">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/3">description</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1122,8 +1009,7 @@
 <span id="v-1af77f25ce89cc003c980ff0">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/4">description_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1133,8 +1019,7 @@
 <span id="v-af42b6cd4b6ab0033dc3399b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/5">description_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1144,8 +1029,7 @@
 <span id="v-10a05d9ce55709b51a9ae59c">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/6">tag_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1155,8 +1039,7 @@
 <span id="v-bf163c7325d706775ba3834d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/7">tag_set_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1166,12 +1049,10 @@
 <span id="v-a597d6ed1e1212c9d25b8884">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/8">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1181,12 +1062,10 @@
 <span id="v-4259efb4daa44db0e815b360">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1196,12 +1075,10 @@
 <span id="v-d291987a707dbf7317b1dd94">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/signature">&quot;(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern=&#x27;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&#x27;, ascii_only=None)], operation: Literal[&#x27;upsert&#x27;] = &#x27;upsert&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1211,8 +1088,7 @@
 <span id="v-daf485e9af21fa9a88ed340f">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/distribution">riverhog-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1222,8 +1098,7 @@
 <span id="v-e3a4ebd778cc329dbbd69a9d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/module">riverhog_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1233,8 +1108,7 @@
 <span id="v-d67eebe5c422e27649c98481">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/name">CatalogSyncUpsert</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1244,8 +1118,7 @@
 <span id="v-07c0932b3a252630d64e5af1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1257,7 +1130,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1269,7 +1142,7 @@
 <a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1280,9 +1153,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

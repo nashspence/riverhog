@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<html lang="en" data-audit="on" data-docs="off" data-audit-default="on" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,26 +14,16 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="qualifications.html">Audit references</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>Extent qualification: riverhog-archive-volume-part-progression/v1</h1>
 <aside class="audit">
 <section id="audit">
 <h2>Open extent qualification</h2>
-<p class="lead">Completion across bounded segments has no recorded execution result for this witness group. The associated checks are candidates; this gap does not assert that any listed contract fails at runtime.</p>
+<p class="lead">Completion across the declared bounded segments has no recorded execution result. The listed checks are candidates with their recorded scopes.</p>
 <p>Recorded owner: <code>https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>. Association: candidate; executed result: none.</p>
-<p>Recorded scope: Exact declared subjects; candidate test association only.</p>
-<p>Governing declared rule: <a href="policies.html#definition-cc8243a831931f483953f0ab">bounded-segment/v1</a>
+<p>Governing declared rule: <a href="policy-definition-cc8243a831931f483953f0ab.html">bounded-segment/v1</a>
 </p>
 <table id="v-cc8243a831931f483953f0ab">
 <tbody>
@@ -45,8 +35,7 @@
 <span id="v-1b0d1b06e8b974b213d0f618">
 <code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/authority">the owning schema&#x27;s x-riverhog-extent declaration</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -56,8 +45,7 @@
 <span id="v-2eb60cfe1e46f0b405b140a7">
 <code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/completion">the owner-declared progression or repeated-work contract</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -67,8 +55,7 @@
 <span id="v-909f18b8d2593d6b0229f10c">
 <code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/exceeded">bounded-carrier-validation-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -78,8 +65,7 @@
 <span id="v-ca689f64faf85b2896e876ca">
 <code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/policy">segmented_no_total_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -89,8 +75,7 @@
 <span id="v-04349db30a129e4ee931da02">
 <code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/semantic_maximum">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -115,7 +100,7 @@
 <a href="source-commands.html#route-f79927bd2e5d01713492338b">make provider-qualification</a>
 </li>
 </ul>
-<h3>Candidate test associations, not execution results</h3>
+<h3>Candidate test associations</h3>
 <ul>
 <li>
 <code>tests/unit/test_incremental_plan.py::test_artifact_at_a_time_construction_seals_the_exact_one_shot_v1_plans</code> — <code data-source-path="tests/unit/test_incremental_plan.py">tests/unit/test_incremental_plan.py</code>
@@ -130,9 +115,12 @@
 </section>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

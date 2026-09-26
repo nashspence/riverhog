@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-47b7ff64677e81fa8cd81205.html">stove0-recipe-config</a> / <a href="i-ce936608900472b7e7aaaa91.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_recipe_config.ArtifactAssociation</h1>
 <p class="context">Portable deployment-owned Stove0 recipe catalog contracts and validation. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,42 +84,32 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-c6bb642d0cd426565cf2591b">associated_roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-c6bb642d0cd426565cf2591b">associated_roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path_identity</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code>
-</td>
-<td>
-<code>same-parent-stem</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path_identity</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code></td>
+<td data-label="Default">
+<code>same-parent-stem</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>primary_role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>primary_role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -174,8 +155,7 @@
 <span id="v-a4bb638f4144fc55cc2f47ef">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -192,8 +172,7 @@
 <span id="v-fbe21b94c3804c65bda7ae19">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -224,8 +203,7 @@
 <span id="v-16ea5a67cce2ac6002e8f93e">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -235,12 +213,10 @@
 <span id="v-2fdaac67cb30bc1a87b93a85">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/associated_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -250,8 +226,7 @@
 <span id="v-b35bd452cb506076dfa0467e">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/associated_roles/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,12 +236,10 @@
 <span id="v-48829f45b48faff4682ce737">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/associated_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,8 +256,7 @@
 <span id="v-874a9188b77c024f555a7590">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/path_identity/const">same-parent-stem</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -294,8 +266,7 @@
 <span id="v-8bc3020e8cef3b4d7fb05b12">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/path_identity/default">same-parent-stem</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -305,12 +276,10 @@
 <span id="v-e2d0e24c532ddbfc5ad7ab88">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/path_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,8 +296,7 @@
 <span id="v-8a42fda4f6c647fc31ce042e">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/primary_role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,16 +306,13 @@
 <span id="v-10d79b965150a54430626b0f">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/properties/primary_role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,8 +329,7 @@
 <span id="v-ed33f3ec9c46da57f6904e9b">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/required/0">primary_role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -375,12 +339,10 @@
 <span id="v-0a5d853ec3d9fea14aaeea3c">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/required/1">associated_roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,12 +352,10 @@
 <span id="v-aabc0229d5847e9f983dfb72">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -405,12 +365,10 @@
 <span id="v-6ee96b4c1b086cff37f568d6">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/contract/signature">&quot;(*, primary_role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], associated_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], MinLen(min_length=1)], path_identity: Literal[&#x27;same-parent-stem&#x27;] = &#x27;same-parent-stem&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,8 +378,7 @@
 <span id="v-6206c2ac9eab5c157857ebff">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/distribution">stove0-recipe-config</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -431,8 +388,7 @@
 <span id="v-894408085a749d783d334940">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/module">stove0_recipe_config</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -442,8 +398,7 @@
 <span id="v-710a1efd07c6f657625b2994">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/name">ArtifactAssociation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -453,8 +408,7 @@
 <span id="v-9e54fc0abbe1bb0e8a7df65f">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.ArtifactAssociation/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -474,7 +428,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -486,7 +440,7 @@
 <a href="source-authorities.html#source-9e1422d2d65a7be343940afd">python:stove0-recipe-config:stove0_recipe_config</a> — <code data-source-path="some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py">some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -497,9 +451,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

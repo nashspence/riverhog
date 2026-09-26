@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a> / <a href="i-1819470ef776ba441ac46ae3.html">Process Protocol Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>GET /v1/sampler</h1>
 <p class="context">Runtime and conformance support for Review0 samplers. Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.</p>
@@ -77,7 +68,7 @@
 </dd>
 </dl>
 <h4>Errors</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -87,28 +78,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Code">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Code">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>
-<code>sampler_failed</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Code">
+<code>sampler_failed</code></td>
 </tr>
 </tbody>
 </table>
@@ -130,8 +115,7 @@
 <span id="v-56222ca51e107389c560b15f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/error_schema">ErrorOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -155,8 +139,7 @@
 <span id="v-82bf1a1d1f0cc5d5a72b7848">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/errors/0/code">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -166,12 +149,10 @@
 <span id="v-2dc6321a9edfdd7a8282a481">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/errors/0/status">400</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -188,8 +169,7 @@
 <span id="v-467bc87420b8075c1792cb0a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/errors/1/code">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -199,12 +179,10 @@
 <span id="v-ef9f0b407f673d2e69b4a365">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/errors/1/status">401</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -221,8 +199,7 @@
 <span id="v-78b36133eeead7af5b860a33">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/errors/2/code">sampler_failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -232,16 +209,13 @@
 <span id="v-d8307844b3b43abfdade6ec5">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/errors/2/status">500</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -251,8 +225,7 @@
 <span id="v-3da88f24e8cd7abe4ff5c399">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -262,8 +235,7 @@
 <span id="v-6dcae7397bd47ddc3c82a013">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/path">/v1/sampler</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -273,8 +245,7 @@
 <span id="v-1bab71411ff646439f06ada9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/path_parameters">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -291,8 +262,7 @@
 <span id="v-cb72af19d3d3799b86f8cb1c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/request/kind">none</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -302,12 +272,10 @@
 <span id="v-4b4a65a0f049faa0edaa842d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/request/schema">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -324,8 +292,7 @@
 <span id="v-393fa3daea615771b9e29cc8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/response/headers">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -335,8 +302,7 @@
 <span id="v-c900c2a39510a4f22483ade7">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/response/kind">json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -346,8 +312,7 @@
 <span id="v-05400e3499c4f2b9583393e3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/response/schema">SamplerDescriptor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,16 +329,13 @@
 <span id="v-6b4fc20003f8a73dafcffbdb">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/0/response/statuses/0">200</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -393,7 +355,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -405,7 +367,7 @@
 <a href="source-authorities.html#source-8a54180841caa5af2642707d">protocol:generated:review0-sampler</a> — <code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py::sampler_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -416,9 +378,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

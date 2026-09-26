@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: TargetInputPage</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,61 +63,47 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-594372c38bb41f9bf8958714">artifacts</a>
-</td>
-<td>yes</td>
-<td>
+<td data-label="Field">
+<a href="#s-594372c38bb41f9bf8958714">artifacts</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-cbe6ce5dbaf55b039b8407bb.html#v-6d70b9721807de59170ad397">#/components/schemas/InputArtifact</a>; maxItems: <code>256</code>; x-riverhog-extent: structured schema</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>authority</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1def20fed01ca53a945ee1ba.html#v-c05573086849b507bcb2e1ac">#/components/schemas/TargetInputAuthority</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>authority</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1def20fed01ca53a945ee1ba.html#v-c05573086849b507bcb2e1ac">#/components/schemas/TargetInputAuthority</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>complete</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>complete</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e195a811d3a40e4c6a1a21c4">continuation</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e195a811d3a40e4c6a1a21c4">continuation</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e35da8a35655b8f58fa69ab8">next_continuation</a>
-</td>
-<td>no</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e35da8a35655b8f58fa69ab8">next_continuation</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -166,7 +143,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -176,16 +153,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -202,7 +177,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -212,16 +187,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -244,8 +217,7 @@
 <span id="v-a749878f2a5715d92fa5f086">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -255,8 +227,7 @@
 <span id="v-2707e581fac119098ee3fe87">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/description">One bounded continuation step through the exact target input authority.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -287,12 +258,10 @@
 <span id="v-b2a9d6d4b095cfa17d6390d8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/items/$ref">#/components/schemas/InputArtifact</code>
 <span class="kind">string</span> <a href="e-cbe6ce5dbaf55b039b8407bb.html#v-6d70b9721807de59170ad397">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -302,8 +271,7 @@
 <span id="v-0446f0cdd967daa5077bc91d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/maxItems">256</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -313,8 +281,7 @@
 <span id="v-07aacea2c10749ab305aadba">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/title">Artifacts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -324,8 +291,7 @@
 <span id="v-5fd011bb5341ee6966d1f28f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -342,8 +308,7 @@
 <span id="v-88682ecefe7a3012e457741f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/x-riverhog-extent/policy">segmented_no_total_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -353,8 +318,7 @@
 <span id="v-e753b2521c65c15ae4974197">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/x-riverhog-extent/progression">authority-bound-start_ordinal</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,16 +328,13 @@
 <span id="v-c946e839b32c11a0565636b7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts/x-riverhog-extent/reason">bounded-target-input-page</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,12 +351,10 @@
 <span id="v-03f596c6b13ebc0162b9e331">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/authority/$ref">#/components/schemas/TargetInputAuthority</code>
 <span class="kind">string</span> <a href="e-1def20fed01ca53a945ee1ba.html#v-c05573086849b507bcb2e1ac">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,8 +371,7 @@
 <span id="v-99276b8a3758793e4562bd56">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/complete/title">Complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -423,12 +381,10 @@
 <span id="v-2eefe2938ecc3716735f28dd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/complete/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -459,8 +415,7 @@
 <span id="v-899a2d28b843e7162c9c99be">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/continuation/anyOf/0/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -470,12 +425,10 @@
 <span id="v-a749014d5a0e755464f19bd2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/continuation/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -492,16 +445,13 @@
 <span id="v-7f3900c9aa483a06dadbc91f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/continuation/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -511,12 +461,10 @@
 <span id="v-799965627122e9af135cd278">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/continuation/title">Continuation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -547,8 +495,7 @@
 <span id="v-2928a4a00406395e0c26bf60">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/next_continuation/anyOf/0/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -558,12 +505,10 @@
 <span id="v-c89132a68e8cf831ab000923">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/next_continuation/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -580,16 +525,13 @@
 <span id="v-7e437c11f5cc3de0ec5dc2a5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/next_continuation/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -599,16 +541,13 @@
 <span id="v-64945a66a6bf4ea6c4fa4bd3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/next_continuation/title">Next Continuation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -625,8 +564,7 @@
 <span id="v-9af4c48512d901f6f4ebb5be">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/required/0">authority</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -636,8 +574,7 @@
 <span id="v-0a3595cdb921ad74f508a508">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/required/1">complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -647,12 +584,10 @@
 <span id="v-2f727ab5a3f473f49417b938">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/required/2">artifacts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -662,8 +597,7 @@
 <span id="v-5b44e4512a50a03935f26a4e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/title">TargetInputPage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -673,8 +607,7 @@
 <span id="v-5f57432cbefa08a0a14b68cf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -684,7 +617,6 @@
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-34931f753be1ce7059b8a01b.html">stove0-read-collection-progression/v1</a>
@@ -693,7 +625,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -705,7 +637,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -715,8 +647,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -728,49 +659,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts</code>
-</td>
-<td>
-<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
-</td>
-<td>cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;maximum&quot;:256,&quot;progression&quot;:{&quot;authority&quot;:&quot;target-input-authority&quot;,&quot;cursor_parameter&quot;:&quot;continuation&quot;,&quot;fixed_limit&quot;:256,&quot;kind&quot;:&quot;exact-authority-page&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/artifacts</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-c35859ad2c6c8a34ef05c100.html">extent-rule/route-progression/v1</a></td>
+<td data-label="Decision">cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:256,&quot;progression&quot;:{&quot;authority&quot;:&quot;target-input-authority&quot;,&quot;cursor_parameter&quot;:&quot;continuation&quot;,&quot;fixed_limit&quot;:256,&quot;kind&quot;:&quot;exact-authority-page&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/continuation/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/continuation/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/next_continuation/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage/properties/next_continuation/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

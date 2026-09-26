@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-6c0c68dab977066c2d607683.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_core.RecipeDefinition</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,149 +84,109 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>allow_derived_inputs</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>false</code>
-</td>
-<td>
-<code>false</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>allow_derived_inputs</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1c97242948f5fdb065e0602d">artifact_associations</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-80f7a8b2e1e864a0ecd336d4">#/$defs/ArtifactAssociation</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1c97242948f5fdb065e0602d">artifact_associations</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-80f7a8b2e1e864a0ecd336d4">#/$defs/ArtifactAssociation</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>event_input_closure</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>single-finalized-collection</code>; default: <code>single-finalized-collection</code>
-</td>
-<td>
-<code>single-finalized-collection</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>event_input_closure</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>single-finalized-collection</code>; default: <code>single-finalized-collection</code></td>
+<td data-label="Default">
+<code>single-finalized-collection</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d6604860dfe4ed0c2121a435">join</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-2e873f70e1fce66682c5c483">#/$defs/RecipeJoin</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d6604860dfe4ed0c2121a435">join</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-2e873f70e1fce66682c5c483">#/$defs/RecipeJoin</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-4f80cada1c329f6ee2246c24">observers</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b06f9634b7e73a44ec925099">#/$defs/ObserverUse</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-4f80cada1c329f6ee2246c24">observers</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b06f9634b7e73a44ec925099">#/$defs/ObserverUse</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-323d7d176e98e15ac77ef841">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-323d7d176e98e15ac77ef841">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1946289bd0cee8846160caf8">routes</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="#s-11310c256bcf36f726579aa6">exactly one of 2 alternatives</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1946289bd0cee8846160caf8">routes</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="#s-11310c256bcf36f726579aa6">exactly one of 2 alternatives</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_grace_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_grace_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code></td>
+<td data-label="Default">
+<code>0</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
-</td>
-<td>
-<code>retain</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<td data-label="Default">
+<code>retain</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>unmatched_artifact_disposition</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;retain-in-source&quot;,&quot;reject-work&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>unmatched_artifact_disposition</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;retain-in-source&quot;,&quot;reject-work&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -300,7 +251,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-2e873f70e1fce66682c5c483">#/$defs/RecipeJoin</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -310,16 +261,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-2e873f70e1fce66682c5c483">#/$defs/RecipeJoin</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-2e873f70e1fce66682c5c483">#/$defs/RecipeJoin</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -376,7 +325,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -389,42 +338,32 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-4dbc1758b92067d99f52e93a">associated_roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-4dbc1758b92067d99f52e93a">associated_roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path_identity</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code>
-</td>
-<td>
-<code>same-parent-stem</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path_identity</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code></td>
+<td data-label="Default">
+<code>same-parent-stem</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>primary_role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>primary_role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -450,7 +389,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -463,30 +402,23 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_id_pointer</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>; default: <code>/artifact_id</code>
-</td>
-<td>
-<code>/artifact_id</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_id_pointer</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>; default: <code>/artifact_id</code></td>
+<td data-label="Default">
+<code>/artifact_id</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>records_pointer</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>records_pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -508,7 +440,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -521,45 +453,33 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>glob</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>*</code>
-</td>
-<td>
-<code>*</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>glob</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>*</code></td>
+<td data-label="Default">
+<code>*</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e9ed38f9613644762ec9b1d9">media_type</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e9ed38f9613644762ec9b1d9">media_type</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>role</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>stove0.source/v1</code>
-</td>
-<td>
-<code>stove0.source/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>role</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>stove0.source/v1</code></td>
+<td data-label="Default">
+<code>stove0.source/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -585,7 +505,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -598,83 +518,61 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-9672ba29cb13574ace7129a9">artifact_facts</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">#/$defs/ArtifactFactBinding</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-9672ba29cb13574ace7129a9">artifact_facts</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">#/$defs/ArtifactFactBinding</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-3e66ef8600fe3c74dd04153f">artifact_roles</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-3e66ef8600fe3c74dd04153f">artifact_roles</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>observation_contract_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>observation_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operator</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;]</code>; default: <code>equals</code>
-</td>
-<td>
-<code>equals</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operator</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;]</code>; default: <code>equals</code></td>
+<td data-label="Default">
+<code>equals</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>pointer</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>value</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>; default: <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>value</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>; default: <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -720,7 +618,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -733,108 +631,80 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-eb02f7dd52cc2ded735ce8fb">artifact_rules</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</td>
-<td>
-<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-eb02f7dd52cc2ded735ce8fb">artifact_rules</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<td data-label="Default">
+<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>contract_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>contract_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>maximum_result_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>67108864</code>; default: <code>1048576</code>
-</td>
-<td>
-<code>1048576</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>maximum_result_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>67108864</code>; default: <code>1048576</code></td>
+<td data-label="Default">
+<code>1048576</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-4c42e5d7945dce213d93a051">options</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-4c42e5d7945dce213d93a051">options</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>registration_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>registration_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
-</td>
-<td>
-<code>available-only</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code></td>
+<td data-label="Default">
+<code>available-only</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>timeout_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>86400</code>; default: <code>300</code>
-</td>
-<td>
-<code>300</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>timeout_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>86400</code>; default: <code>300</code></td>
+<td data-label="Default">
+<code>300</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -860,7 +730,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -873,52 +743,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>destination</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;target-options&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>destination</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;target-options&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>destination_pointer</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>destination_pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;work-effective-intent&quot;,&quot;work-evaluation&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;work-effective-intent&quot;,&quot;work-evaluation&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_pointer</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -944,7 +802,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -957,123 +815,90 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-be137f7af8822d80b2e20753">artifact_rules</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</td>
-<td>
-<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-be137f7af8822d80b2e20753">artifact_rules</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<td data-label="Default">
+<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e3e820ab92aedd2a982121f1">associated_roles</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e3e820ab92aedd2a982121f1">associated_roles</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-dcc0c384cd865690e07d3744">intent</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-dcc0c384cd865690e07d3744">intent</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>coordination</code>; default: <code>coordination</code>
-</td>
-<td>
-<code>coordination</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>coordination</code>; default: <code>coordination</code></td>
+<td data-label="Default">
+<code>coordination</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-6306987a9b025522876f7cba">primary_role</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-6306987a9b025522876f7cba">primary_role</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-7c0951b6aeaddbf3b484b117">projections</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">#/$defs/OperationProjection</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-7c0951b6aeaddbf3b484b117">projections</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">#/$defs/OperationProjection</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>recipe</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-a3a502e8dbffb7723d1a467a">#/$defs/RecipeIdentityRef</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>recipe</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-a3a502e8dbffb7723d1a467a">#/$defs/RecipeIdentityRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-feda2121385d764fcbca14de">when</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">#/$defs/FactPredicate</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-feda2121385d764fcbca14de">when</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">#/$defs/FactPredicate</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1099,7 +924,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1112,40 +937,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-323d7d176e98e15ac77ef841">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-323d7d176e98e15ac77ef841">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1171,7 +987,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1184,104 +1000,78 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>input_retrieval_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
-</td>
-<td>
-<code>available-only</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>input_retrieval_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code></td>
+<td data-label="Default">
+<code>available-only</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1a79cc8e6abc37da93b4c144">intent</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1a79cc8e6abc37da93b4c144">intent</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-848fd35b80cd019bfff19952">members</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b94c1be1a2ca2f63f414ec92">#/$defs/RecipeJoinMember</a>; minItems: <code>2</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-848fd35b80cd019bfff19952">members</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b94c1be1a2ca2f63f414ec92">#/$defs/RecipeJoinMember</a>; minItems: <code>2</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d7cf417a447974f69ffcf865">projections</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">#/$defs/OperationProjection</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d7cf417a447974f69ffcf865">projections</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">#/$defs/OperationProjection</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-48315f156b3e035f710867d5">target_options</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-48315f156b3e035f710867d5">target_options</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_registration_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_registration_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1307,7 +1097,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1320,28 +1110,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>branch_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>branch_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d7e300bd97f82065a152dc02">output_roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d7e300bd97f82065a152dc02">output_roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1367,7 +1151,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1380,161 +1164,118 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-6dab1f9bb74ea6231435b5de">artifact_rules</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</td>
-<td>
-<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-6dab1f9bb74ea6231435b5de">artifact_rules</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<td data-label="Default">
+<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-5fce2d13ecbe4e676ffdcefa">associated_roles</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-5fce2d13ecbe4e676ffdcefa">associated_roles</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>input_retrieval_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
-</td>
-<td>
-<code>available-only</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>input_retrieval_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code></td>
+<td data-label="Default">
+<code>available-only</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-64326ea29d9c543568eec6b4">intent</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-64326ea29d9c543568eec6b4">intent</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>operation</code>; default: <code>operation</code>
-</td>
-<td>
-<code>operation</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>operation</code>; default: <code>operation</code></td>
+<td data-label="Default">
+<code>operation</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d33925228c3952188053b12f">primary_role</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d33925228c3952188053b12f">primary_role</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-0deb46aeb579b17bdb18ab0a">projections</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">#/$defs/OperationProjection</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-0deb46aeb579b17bdb18ab0a">projections</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">#/$defs/OperationProjection</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-2e2e1467853693531d1b6739">target_options</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-2e2e1467853693531d1b6739">target_options</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_registration_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_registration_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-a5910e75d66a24012fc7b190">when</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">#/$defs/FactPredicate</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-a5910e75d66a24012fc7b190">when</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">#/$defs/FactPredicate</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1551,7 +1292,7 @@
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1561,16 +1302,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-955be0c0653b40a58726df84">#/$defs/RecipeRoute</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-955be0c0653b40a58726df84">#/$defs/RecipeRoute</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-3accea3610cbdc45e93603ba">#/$defs/RecipeCoordinationRoute</a>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-3accea3610cbdc45e93603ba">#/$defs/RecipeCoordinationRoute</a></td>
 </tr>
 </tbody>
 </table>
@@ -1597,7 +1336,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1607,16 +1346,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1627,7 +1364,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">#/$defs/ArtifactFactBinding</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1637,16 +1374,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">#/$defs/ArtifactFactBinding</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">#/$defs/ArtifactFactBinding</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1737,7 +1472,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1747,16 +1482,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1907,7 +1640,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1917,16 +1650,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1996,8 +1727,7 @@
 <span id="v-25cbeb15aea30f141467fa8a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2028,8 +1758,7 @@
 <span id="v-e8b128eaacc6bc68f411ffe7">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2060,8 +1789,7 @@
 <span id="v-df5002cea43af96265c492ed">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2071,12 +1799,10 @@
 <span id="v-30dfdb4adc2d651c74a676ed">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2086,8 +1812,7 @@
 <span id="v-60176ccb6e2379cab6c733e9">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2097,12 +1822,10 @@
 <span id="v-525483f68b933f4ca54ddea8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2119,8 +1842,7 @@
 <span id="v-770a0c58846ed7e4fcb7ae15">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/path_identity/const">same-parent-stem</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2130,8 +1852,7 @@
 <span id="v-b2a2717f39446934bdc56f5c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/path_identity/default">same-parent-stem</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2141,12 +1862,10 @@
 <span id="v-d2cf703c6de2c80b92e36d3e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/path_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2163,8 +1882,7 @@
 <span id="v-76a59628b637b9076b508c6c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/primary_role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2174,16 +1892,13 @@
 <span id="v-2d17e9162d01df5785e3cf1f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/properties/primary_role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2200,8 +1915,7 @@
 <span id="v-1e2249e7a3c4fe463f3542b8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/required/0">primary_role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2211,12 +1925,10 @@
 <span id="v-2bfd5a8776910b91e861654d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/required/1">associated_roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2226,12 +1938,10 @@
 <span id="v-9b73f47a19230320bca3bedb">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactAssociation/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2248,8 +1958,7 @@
 <span id="v-5248696ec869ea471bc5ed30">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2273,8 +1982,7 @@
 <span id="v-52ebd98704c94a3d7cd516c9">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/properties/artifact_id_pointer/default">/artifact_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2284,8 +1992,7 @@
 <span id="v-b4ac07bfc0db2efb887a6b35">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/properties/artifact_id_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2295,12 +2002,10 @@
 <span id="v-529f16087526d347a11abe1c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/properties/artifact_id_pointer/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2317,8 +2022,7 @@
 <span id="v-5d016ecf810bf2935203cd15">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/properties/records_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2328,16 +2032,13 @@
 <span id="v-7faa71faec842f6cda5e306b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/properties/records_pointer/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2354,12 +2055,10 @@
 <span id="v-9c5f3ad03305154745447c25">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/required/0">records_pointer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2369,12 +2068,10 @@
 <span id="v-5a9a684ff79f5e9ed195c71c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactFactBinding/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2391,8 +2088,7 @@
 <span id="v-0c2c0925fe18fa8f8a3e013c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2416,8 +2112,7 @@
 <span id="v-064fb66bb32d1d9a91e29422">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/glob/default">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2427,12 +2122,10 @@
 <span id="v-a8cb58de5ae117991471b16c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/glob/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2463,12 +2156,10 @@
 <span id="v-e7abe48bc660c3fd6acdd76a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/media_type/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2485,16 +2176,13 @@
 <span id="v-dd6bd85ebdb9349baee4160d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/media_type/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2504,12 +2192,10 @@
 <span id="v-f8a8ca2f7dd633ce42e6d12f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/media_type/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2526,8 +2212,7 @@
 <span id="v-2151f2ec048516b78134292e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/role/default">stove0.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2537,8 +2222,7 @@
 <span id="v-9e2104e8822bc71dd96cb0d7">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2548,16 +2232,13 @@
 <span id="v-6d0b9e489a16c10074b11270">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/properties/role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2567,12 +2248,10 @@
 <span id="v-c9f33d14606f52c565395991">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ArtifactRule/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2589,8 +2268,7 @@
 <span id="v-a5bd080e596c5bff4e5659f4">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2628,12 +2306,10 @@
 <span id="v-016f7e05acec7bbfa3405eb0">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_facts/anyOf/0/$ref">#/$defs/ArtifactFactBinding</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2650,16 +2326,13 @@
 <span id="v-ee2257f96b584da82078b4aa">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_facts/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2669,12 +2342,10 @@
 <span id="v-449e84f26d122289df302e26">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_facts/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2691,8 +2362,7 @@
 <span id="v-4968e4b4857a079deff28ea4">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_roles/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2709,8 +2379,7 @@
 <span id="v-e1545b53ff853c201a37cdd5">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2720,12 +2389,10 @@
 <span id="v-83b405c4312268a03fc325bf">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2735,12 +2402,10 @@
 <span id="v-22418ecc6ab3fa06c08b64c2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/artifact_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2757,8 +2422,7 @@
 <span id="v-caf150162f3231a045647604">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/observation_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2768,12 +2432,10 @@
 <span id="v-9ab96262764fefb06e694fe1">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/observation_contract_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2790,8 +2452,7 @@
 <span id="v-969581c94ad970fc456e71cb">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/operator/default">equals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2808,8 +2469,7 @@
 <span id="v-567337c18fc477f73b0de994">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/operator/enum/0">equals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2819,8 +2479,7 @@
 <span id="v-4892feccf4a7004473a7f1ad">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/operator/enum/1">not-equals</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2830,8 +2489,7 @@
 <span id="v-3ca85bb6fe41464c00bbbc4c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/operator/enum/2">contains</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2841,12 +2499,10 @@
 <span id="v-ea5433e8d397c4d8e0a34ab8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/operator/enum/3">exists</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2856,12 +2512,10 @@
 <span id="v-41e5d8aa07dd6d8c7eb479ee">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/operator/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2878,8 +2532,7 @@
 <span id="v-1530ef0e9a0a663979f2d188">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2889,12 +2542,10 @@
 <span id="v-caef029c0caf199231639091">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/pointer/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2911,8 +2562,7 @@
 <span id="v-119923a117a3274dd4a68c22">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/value/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2922,16 +2572,13 @@
 <span id="v-9ce677594e3efdc55b35bf04">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/properties/value/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2948,8 +2595,7 @@
 <span id="v-d81d4239968fad7a64a10e11">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/required/0">observation_contract_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2959,12 +2605,10 @@
 <span id="v-f8e8fcfd535f7afb496d1e2d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/required/1">pointer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2974,12 +2618,10 @@
 <span id="v-feee699d40a8572f96149c26">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/FactPredicate/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2989,8 +2631,7 @@
 <span id="v-67c0d99cde80fb39298a8457">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3007,8 +2648,7 @@
 <span id="v-318b70cf1dd74d03ede48c86">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3018,12 +2658,10 @@
 <span id="v-371d7c4fd26b1b523bde05db">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3040,8 +2678,7 @@
 <span id="v-bd70f726b7fb01f44ca08374">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3079,8 +2716,7 @@
 <span id="v-7d6a207f63657aa7ef6cdc1d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/artifact_rules/default/0/glob">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3090,8 +2726,7 @@
 <span id="v-57b854cbf5c66ad3f525a138">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/artifact_rules/default/0/media_type">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3101,16 +2736,13 @@
 <span id="v-70ec2f7aaf670f9e187d7322">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/artifact_rules/default/0/role">stove0.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3127,12 +2759,10 @@
 <span id="v-7ae7c7610d7aa4c655ef2b07">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/artifact_rules/items/$ref">#/$defs/ArtifactRule</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3142,12 +2772,10 @@
 <span id="v-8e136fa1b53a1d013bea4a7b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/artifact_rules/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3164,8 +2792,7 @@
 <span id="v-747dbf130a2b47ad96140969">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3175,12 +2802,10 @@
 <span id="v-539bbd02f1c8a50f6c1ee19f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/contract_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3197,8 +2822,7 @@
 <span id="v-2c3cbfe5892184c6fa8ccbbf">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/contract_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3208,12 +2832,10 @@
 <span id="v-430dcd0f092e9bcf767dd7e8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/contract_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3230,8 +2852,7 @@
 <span id="v-a5a09b5d3ab32b27ce8d1d3f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/default">1048576</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3241,8 +2862,7 @@
 <span id="v-e84f4f87d47283419747a4c8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/maximum">67108864</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3252,8 +2872,7 @@
 <span id="v-938783cd9a9cf861d53ebf0b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3263,12 +2882,10 @@
 <span id="v-c2523a62def05e5758762bb9">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3292,12 +2909,10 @@
 <span id="v-7da57ffed90c43cccff13946">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/options/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3307,12 +2922,10 @@
 <span id="v-5f6fe81e70e71dc250e50082">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/options/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3329,12 +2942,10 @@
 <span id="v-17794a52697cfd96ee091b71">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/registration_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3351,8 +2962,7 @@
 <span id="v-3e404b0cc1353c69f3e1864b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/retrieval_policy/default">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3369,8 +2979,7 @@
 <span id="v-af41492cda9f97814e20e2f6">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/retrieval_policy/enum/0">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3380,12 +2989,10 @@
 <span id="v-ac5ada480d69aefc0572e4fe">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/retrieval_policy/enum/1">allow</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3395,12 +3002,10 @@
 <span id="v-97aa14d66de423103df8771e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/retrieval_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3417,8 +3022,7 @@
 <span id="v-4a876533965d3fd34b925eaf">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/timeout_seconds/default">300</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3428,8 +3032,7 @@
 <span id="v-18be90bab3d2524338c2fc79">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/timeout_seconds/maximum">86400</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3439,8 +3042,7 @@
 <span id="v-4e6f079c67cad11a82639d11">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/timeout_seconds/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3450,16 +3052,13 @@
 <span id="v-edfde616031f4702e089d4dd">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/properties/timeout_seconds/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3476,8 +3075,7 @@
 <span id="v-70fa5cb51d8509dae9966992">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/required/0">registration_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3487,8 +3085,7 @@
 <span id="v-2d712ee29fc2585dccabe897">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/required/1">contract_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3498,12 +3095,10 @@
 <span id="v-2cf940739e6bf5cebea7e83b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/required/2">contract_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3513,12 +3108,10 @@
 <span id="v-659aad5d8384dac5ac408235">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/ObserverUse/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3535,8 +3128,7 @@
 <span id="v-3edaf8598112a2b40be115c1">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3567,8 +3159,7 @@
 <span id="v-9d075a405e01188c4c1cdfe6">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/destination/enum/0">intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3578,12 +3169,10 @@
 <span id="v-a9d53ec5863eb509aed11cce">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/destination/enum/1">target-options</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3593,12 +3182,10 @@
 <span id="v-cd77ce3dd96c787a8b0d9ad2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/destination/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3615,8 +3202,7 @@
 <span id="v-b27167a1123b66af17ef7555">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/destination_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3626,12 +3212,10 @@
 <span id="v-29b36dc769ad9ce8efe983d3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/destination_pointer/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3655,8 +3239,7 @@
 <span id="v-787c4328797223d4e8b1393e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/source/enum/0">work-effective-intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3666,12 +3249,10 @@
 <span id="v-ae765e5ece72c306ae43b317">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/source/enum/1">work-evaluation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3681,12 +3262,10 @@
 <span id="v-77e0505ac8d3ad3337650dfa">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/source/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3703,8 +3282,7 @@
 <span id="v-7edb1f22cd5c96e706c27999">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/source_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3714,16 +3292,13 @@
 <span id="v-3fc10169e5473fb8a1dbe062">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/properties/source_pointer/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3740,8 +3315,7 @@
 <span id="v-10652a64ce4b57b11aec5f00">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/required/0">source</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3751,8 +3325,7 @@
 <span id="v-0c4e398064c1a8b9d611cdea">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/required/1">source_pointer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3762,8 +3335,7 @@
 <span id="v-6f302ba66a49981f9d7a556f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/required/2">destination</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3773,12 +3345,10 @@
 <span id="v-ac8d6cceff93c75cdef5e731">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/required/3">destination_pointer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3788,12 +3358,10 @@
 <span id="v-db1ee3b9c40161550c354fec">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/OperationProjection/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3810,8 +3378,7 @@
 <span id="v-090ad3ef0d6ec19ca2dd7302">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3849,8 +3416,7 @@
 <span id="v-42b362626ab3b70fa52b5c10">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/default/0/glob">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3860,8 +3426,7 @@
 <span id="v-5eb6bfce45689cef95eddd55">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/default/0/media_type">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3871,16 +3436,13 @@
 <span id="v-c7b3751357b25be2f8744ae5">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/default/0/role">stove0.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3897,12 +3459,10 @@
 <span id="v-b339b569102d2dba2f565fe6">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/items/$ref">#/$defs/ArtifactRule</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3912,12 +3472,10 @@
 <span id="v-a773d982b938794ed53bd9e3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3934,8 +3492,7 @@
 <span id="v-e324fe7795fe0dc0f7d84464">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3952,8 +3509,7 @@
 <span id="v-c64ef8407d2f714c9ce0d1fb">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3963,12 +3519,10 @@
 <span id="v-58cde3d64ca373dadd60efac">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3978,12 +3532,10 @@
 <span id="v-bfecd2196fbc6cffcf19613c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4000,8 +3552,7 @@
 <span id="v-6994fd35a92deccf077199ef">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4011,12 +3562,10 @@
 <span id="v-f0b648b30a44d707a9e7eebc">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4040,12 +3589,10 @@
 <span id="v-76d1b4b3a1eedbd9f92d87b7">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/intent/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4055,12 +3602,10 @@
 <span id="v-577f4c6802d163d9a86b0431">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/intent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4077,8 +3622,7 @@
 <span id="v-d869939cc841bf4ceaba6546">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/kind/const">coordination</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4088,8 +3632,7 @@
 <span id="v-7fa6b6d1c4c189efb9591459">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/kind/default">coordination</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4099,12 +3642,10 @@
 <span id="v-4cf2cbcee66888f1ea127700">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4135,8 +3676,7 @@
 <span id="v-b1c2d1a6f615d89c185e114e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4146,12 +3686,10 @@
 <span id="v-3a236378c96a86a130d50c7a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4168,16 +3706,13 @@
 <span id="v-353195ba888a3b4ec0d6619b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4187,12 +3722,10 @@
 <span id="v-e5e8233334df868b01088498">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4209,8 +3742,7 @@
 <span id="v-d733c19cd257bc02c4f21db4">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/projections/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4227,12 +3759,10 @@
 <span id="v-28edc1705cabf8f595022a9d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/projections/items/$ref">#/$defs/OperationProjection</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4242,12 +3772,10 @@
 <span id="v-9f3819a561729d6d280058f3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/projections/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4264,12 +3792,10 @@
 <span id="v-97b3536c855de54d161d7190">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/recipe/$ref">#/$defs/RecipeIdentityRef</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-a3a502e8dbffb7723d1a467a">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4286,8 +3812,7 @@
 <span id="v-52595c59d6d05fefe2293fca">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/when/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4304,12 +3829,10 @@
 <span id="v-e5373544537704d3b855bfca">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/when/items/$ref">#/$defs/FactPredicate</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4319,16 +3842,13 @@
 <span id="v-9d3e17737eaa5df2ea540918">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/properties/when/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4345,8 +3865,7 @@
 <span id="v-2fc4123d66a98e4ebaf0c64b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4356,12 +3875,10 @@
 <span id="v-1ff8e8c57be62cf4c5d113ff">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/required/1">recipe</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4371,12 +3888,10 @@
 <span id="v-86588e6811bb3c675ae181ad">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeCoordinationRoute/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4393,8 +3908,7 @@
 <span id="v-95af234a128ac672c005fcb2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4418,8 +3932,7 @@
 <span id="v-1617173b67e328cd2cd9a57b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4429,12 +3942,10 @@
 <span id="v-0e63a9a13a1bac3a46ced4d5">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4451,8 +3962,7 @@
 <span id="v-8612b50da0a0b04dd6f1e071">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/properties/revision/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-323d7d176e98e15ac77ef841">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4462,12 +3972,10 @@
 <span id="v-480dc23e07351b998555dcbb">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/properties/revision/ge">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4484,8 +3992,7 @@
 <span id="v-ec459004970f58724697ad2a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4495,16 +4002,13 @@
 <span id="v-edaa280dac1fe2fda02f20c7">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4521,8 +4025,7 @@
 <span id="v-6f2892cf10e0cabc7c35131f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4532,8 +4035,7 @@
 <span id="v-0eaba553f75c0ec7e7df05a4">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/required/1">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4543,12 +4045,10 @@
 <span id="v-9a9e249bf101256b70693efd">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/required/2">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4558,12 +4058,10 @@
 <span id="v-585f7b1277c26cbcec25f76a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeIdentityRef/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4580,8 +4078,7 @@
 <span id="v-37e8136fb63dfa7b5cc5992f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4605,8 +4102,7 @@
 <span id="v-c2f918eaec658dea40f8d7f2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4616,12 +4112,10 @@
 <span id="v-f427b7c838ec580fa7844764">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4638,8 +4132,7 @@
 <span id="v-0c0d0b7bd7ef33ada1989f88">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/default">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4656,8 +4149,7 @@
 <span id="v-bf4d5bb17be432d01f3efed5">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/enum/0">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4667,12 +4159,10 @@
 <span id="v-5b5bd838f4d3f52a19a35c95">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/enum/1">allow</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4682,12 +4172,10 @@
 <span id="v-3399c3193bd862f4455fb510">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4711,12 +4199,10 @@
 <span id="v-058233b4000e356c7ffc01e1">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/intent/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4726,12 +4212,10 @@
 <span id="v-485652bc02f3040dd358740f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/intent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4755,12 +4239,10 @@
 <span id="v-d5a7100b4e52fe44bb2b1b87">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/members/items/$ref">#/$defs/RecipeJoinMember</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-b94c1be1a2ca2f63f414ec92">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4770,8 +4252,7 @@
 <span id="v-8816dfb6e6c0f444c6d1661a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/members/minItems">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4781,12 +4262,10 @@
 <span id="v-1a5d9937f5e72e918a180c92">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/members/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4803,8 +4282,7 @@
 <span id="v-950e575fa8d91941eb703053">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/operation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4814,12 +4292,10 @@
 <span id="v-0ed1f652136192676342c240">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/operation_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4836,8 +4312,7 @@
 <span id="v-c65413b5eb4079664b902d99">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/projections/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4854,12 +4329,10 @@
 <span id="v-4c80239b309666c474cef51b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/projections/items/$ref">#/$defs/OperationProjection</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4869,12 +4342,10 @@
 <span id="v-97de0398ea46a8b34a27d7ea">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/projections/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4898,12 +4369,10 @@
 <span id="v-0069c6221e2cd1f986c426e7">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/target_options/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4913,12 +4382,10 @@
 <span id="v-10affe5e007b1c2f9f208575">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/target_options/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4935,16 +4402,13 @@
 <span id="v-8688587b69899326d8254179">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/properties/target_registration_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4961,8 +4425,7 @@
 <span id="v-4a1dc83be72deb7d34aa66d3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4972,8 +4435,7 @@
 <span id="v-210cc041aed74606d07fece4">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/required/1">members</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4983,8 +4445,7 @@
 <span id="v-53dd4568f68a1e6ef437d7a6">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/required/2">operation_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4994,12 +4455,10 @@
 <span id="v-2e1635a9d6aba67ed198d790">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/required/3">target_registration_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5009,12 +4468,10 @@
 <span id="v-8dce64a5f9c17855626cd563">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoin/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5031,8 +4488,7 @@
 <span id="v-4137419e4289b283445d8d7c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5056,8 +4512,7 @@
 <span id="v-0865ef13a6c83633999f912b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5067,12 +4522,10 @@
 <span id="v-1913b30c765eeba6bb3679f5">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/properties/branch_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5096,8 +4549,7 @@
 <span id="v-1ff3e032231b27b27da985d1">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/properties/output_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5107,12 +4559,10 @@
 <span id="v-ac0414b9989c7533dc7ad98f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/properties/output_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5122,8 +4572,7 @@
 <span id="v-2ca3a8345f51a228effab7d2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/properties/output_roles/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5133,16 +4582,13 @@
 <span id="v-e04fcf1bf55970908efe3ee8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/properties/output_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5159,8 +4605,7 @@
 <span id="v-a0c45f80319b76718c76dce8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/required/0">branch_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5170,12 +4615,10 @@
 <span id="v-11628a610ba9c52472b9b145">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/required/1">output_roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5185,12 +4628,10 @@
 <span id="v-20718b1bc3b8394de66cbcd3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeJoinMember/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5207,8 +4648,7 @@
 <span id="v-b186834d1581c1f6d1a13724">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5246,8 +4686,7 @@
 <span id="v-02978822ede71804355f1224">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/artifact_rules/default/0/glob">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5257,8 +4696,7 @@
 <span id="v-333f78193e01b15221911093">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/artifact_rules/default/0/media_type">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5268,16 +4706,13 @@
 <span id="v-cf25c6d63569d5e1fff53340">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/artifact_rules/default/0/role">stove0.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5294,12 +4729,10 @@
 <span id="v-41de0dd6c7a80c99e97da48a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/artifact_rules/items/$ref">#/$defs/ArtifactRule</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-020f8a6c734bc083bf43a577">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5309,12 +4742,10 @@
 <span id="v-262158813e7963216fcf8eb6">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/artifact_rules/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5331,8 +4762,7 @@
 <span id="v-5af351388a0ea477a216e86d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/associated_roles/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5349,8 +4779,7 @@
 <span id="v-bf5fa4ff91d351058a44cc1e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5360,12 +4789,10 @@
 <span id="v-6a0880965db7b134d78fd8eb">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/associated_roles/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5375,12 +4802,10 @@
 <span id="v-2a141f348360cc9d08e64398">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/associated_roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5397,8 +4822,7 @@
 <span id="v-e4a2ab9b84fa4d175e082062">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5408,12 +4832,10 @@
 <span id="v-d41b9e646d3ec23e172024bc">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5430,8 +4852,7 @@
 <span id="v-794b022f9ede8224f70f7707">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/default">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5448,8 +4869,7 @@
 <span id="v-e2bc2eb3921b6802c3c31c3f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/enum/0">available-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5459,12 +4879,10 @@
 <span id="v-55f14c037195b9c312cc7ef3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/enum/1">allow</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5474,12 +4892,10 @@
 <span id="v-e0eab394a3bedc48a23b7ba5">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5503,12 +4919,10 @@
 <span id="v-e6201f6f6dc03ac43c857d58">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/intent/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5518,12 +4932,10 @@
 <span id="v-d2d214d6374f3392ec3b5251">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/intent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5540,8 +4952,7 @@
 <span id="v-dbef9ab4a8c6bc889fe8a18d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/kind/const">operation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5551,8 +4962,7 @@
 <span id="v-42ee017b3f2e54bada623da3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/kind/default">operation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5562,12 +4972,10 @@
 <span id="v-ff1b9161fbc54652c2e9f2dd">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5584,8 +4992,7 @@
 <span id="v-923c6b073bf7354392f5dbe3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/operation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5595,12 +5002,10 @@
 <span id="v-435b598e8333f84350e6a4b8">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/operation_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5631,8 +5036,7 @@
 <span id="v-c1251bb42f6c293f96a1bf3f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/primary_role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5642,12 +5046,10 @@
 <span id="v-95f96e80a7e18b509ba9f46a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/primary_role/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5664,16 +5066,13 @@
 <span id="v-0629e0c816f1f5b9d9ad3bf0">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/primary_role/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5683,12 +5082,10 @@
 <span id="v-e14e76261b417d6ab300a62c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/primary_role/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5705,8 +5102,7 @@
 <span id="v-0138251e8d2c860b0f8a9340">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/projections/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5723,12 +5119,10 @@
 <span id="v-51e6f5238771a1a66425b5d9">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/projections/items/$ref">#/$defs/OperationProjection</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-5744742ffeef976709658a40">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5738,12 +5132,10 @@
 <span id="v-e019518a17321a6be46b7402">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/projections/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5767,12 +5159,10 @@
 <span id="v-50f7e9f76d9d88f6011df60f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/target_options/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5782,12 +5172,10 @@
 <span id="v-afdc95f5bedcf0f471afc725">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/target_options/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5804,12 +5192,10 @@
 <span id="v-4e231e3c2e395721563c5d83">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/target_registration_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5826,8 +5212,7 @@
 <span id="v-4c80eba047b690502d0ec928">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/when/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5844,12 +5229,10 @@
 <span id="v-6b9836bc275af03f397b860f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/when/items/$ref">#/$defs/FactPredicate</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5859,16 +5242,13 @@
 <span id="v-530008f726345d05221fdf94">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/properties/when/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5885,8 +5265,7 @@
 <span id="v-58636448098032ae09795112">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5896,8 +5275,7 @@
 <span id="v-2743a542eabba238d8e22aee">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/required/1">operation_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5907,12 +5285,10 @@
 <span id="v-7ef88bb86df654dd25917b53">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/required/2">target_registration_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5922,16 +5298,13 @@
 <span id="v-c9907be59446fea6549dd9f3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5941,8 +5314,7 @@
 <span id="v-deafd759bde0c9c2670c6509">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5966,8 +5338,7 @@
 <span id="v-89c867934d461a8dcf63078b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/allow_derived_inputs/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5977,12 +5348,10 @@
 <span id="v-ce6ad9d36311f19808f56d56">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/allow_derived_inputs/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5999,8 +5368,7 @@
 <span id="v-985741072cdb346885675acf">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/artifact_associations/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6017,12 +5385,10 @@
 <span id="v-9eefe255c381bd344dc875d0">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/artifact_associations/items/$ref">#/$defs/ArtifactAssociation</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-80f7a8b2e1e864a0ecd336d4">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6032,12 +5398,10 @@
 <span id="v-a4038e8f3e167e814f6b763c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/artifact_associations/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6054,8 +5418,7 @@
 <span id="v-ca8153dcca089f1ec55044c9">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/event_input_closure/const">single-finalized-collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6065,8 +5428,7 @@
 <span id="v-cc774719888b519f91a68035">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/event_input_closure/default">single-finalized-collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6076,12 +5438,10 @@
 <span id="v-2fb7ee7541e035d58f9b2197">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/event_input_closure/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6098,8 +5458,7 @@
 <span id="v-1fe5f79db9f067012e80d9d2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6109,12 +5468,10 @@
 <span id="v-39c1973420a54c15514e95e0">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6145,12 +5502,10 @@
 <span id="v-696634bfe4dc8156587bea77">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/join/anyOf/0/$ref">#/$defs/RecipeJoin</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-2e873f70e1fce66682c5c483">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6167,16 +5522,13 @@
 <span id="v-b238fb9cdd895b27a1314612">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/join/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6186,12 +5538,10 @@
 <span id="v-fe8544a674aad5eac2be9ce3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/join/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6208,8 +5558,7 @@
 <span id="v-287c890ebe240bf34bd74791">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/observers/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6226,12 +5575,10 @@
 <span id="v-cb50131232334d30bcd06a81">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/observers/items/$ref">#/$defs/ObserverUse</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-b06f9634b7e73a44ec925099">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6241,12 +5588,10 @@
 <span id="v-e5dcc5a32a9409f40ec9257a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/observers/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6263,8 +5608,7 @@
 <span id="v-8186d53da7f129236f1dda67">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/revision/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-323d7d176e98e15ac77ef841">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6274,12 +5618,10 @@
 <span id="v-64c43dcf7202f84be0f22790">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/revision/ge">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6317,8 +5659,7 @@
 <span id="v-23ad32b4a50ac43fce2b4740">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/items/discriminator/mapping/coordination">#/$defs/RecipeCoordinationRoute</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6328,12 +5669,10 @@
 <span id="v-bc989ceb13b80c518ad1e45d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/items/discriminator/mapping/operation">#/$defs/RecipeRoute</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6343,12 +5682,10 @@
 <span id="v-f21bf97e45aee3a3f405e297">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/items/discriminator/propertyName">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6372,12 +5709,10 @@
 <span id="v-8b83d947ac52c185ea41ddad">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/items/oneOf/0/$ref">#/$defs/RecipeRoute</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-955be0c0653b40a58726df84">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6394,20 +5729,16 @@
 <span id="v-2e6777f0c211f0af3a08d873">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/items/oneOf/1/$ref">#/$defs/RecipeCoordinationRoute</code>
 <span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-3accea3610cbdc45e93603ba">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6417,8 +5748,7 @@
 <span id="v-c4aa404342b51cbb497b1636">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6428,12 +5758,10 @@
 <span id="v-ca5b247e45ada7dcb04dcd27">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/routes/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6450,8 +5778,7 @@
 <span id="v-662215aee170b2488331eed2">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_grace_seconds/default">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6461,8 +5788,7 @@
 <span id="v-519b81b69af9ad180db9ee2d">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_grace_seconds/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6472,12 +5798,10 @@
 <span id="v-78757d1e1bcb2fa7c1498313">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_grace_seconds/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6494,8 +5818,7 @@
 <span id="v-367ab28714592eb9f419ba5e">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_policy/default">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6512,8 +5835,7 @@
 <span id="v-d179f15067024b23415c7b91">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_policy/enum/0">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6523,12 +5845,10 @@
 <span id="v-59367688d2d50b95b3554a0c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6538,12 +5858,10 @@
 <span id="v-dc67aa36ad79e9f419647eb3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/source_collection_retirement_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6567,8 +5885,7 @@
 <span id="v-c94b6cd0358a9eb8718dc76f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/unmatched_artifact_disposition/enum/0">retain-in-source</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6578,12 +5895,10 @@
 <span id="v-8609aa1b91e35f6ae64182ac">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/unmatched_artifact_disposition/enum/1">reject-work</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6593,16 +5908,13 @@
 <span id="v-685a152d2dcfd29f0d4ff53f">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/properties/unmatched_artifact_disposition/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6619,8 +5931,7 @@
 <span id="v-6e890e6bc174ef58070a1aa4">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6630,8 +5941,7 @@
 <span id="v-5b13abb338adbe181b291788">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/required/1">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6641,8 +5951,7 @@
 <span id="v-6e3ba6998a609ae1f5ea212c">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/required/2">routes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6652,12 +5961,10 @@
 <span id="v-0f670694b6a3bc1f53a1943a">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/required/3">unmatched_artifact_disposition</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6667,12 +5974,10 @@
 <span id="v-01899ef6e95cf3433d4ddaba">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6682,12 +5987,10 @@
 <span id="v-15abc1659d5273eac4d62a84">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/signature">&quot;(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], revision: Annotated[NonnegativeDecimal, Ge(ge=1)], event_input_closure: Literal[&#x27;single-finalized-collection&#x27;] = &#x27;single-finalized-collection&#x27;, artifact_associations: tuple[stove0_recipe_config.models.ArtifactAssociation, ...] = (), observers: tuple[stove0_recipe_config.models.ObserverUse, ...] = (), routes: Annotated[tuple[Annotated[stove0_recipe_config.models.RecipeRoute | stove0_recipe_config.models.RecipeCoordinationRoute, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;kind&#x27;)], ...], MinLen(min_length=1)], unmatched_artifact_disposition: Literal[&#x27;retain-in-source&#x27;, &#x27;reject-work&#x27;], allow_derived_inputs: bool = False, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, join: stove0_recipe_config.models.RecipeJoin | None = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6697,8 +6000,7 @@
 <span id="v-9e4b232672ff8d4b3c02e6b1">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/distribution">stove0-server</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6708,8 +6010,7 @@
 <span id="v-a611db797ee30bd4b4c77704">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/module">stove0_core</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6719,8 +6020,7 @@
 <span id="v-d1b48c83db3c2d4e371f3534">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/name">RecipeDefinition</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6730,8 +6030,7 @@
 <span id="v-3f1f7951bc1bf7247a86490b">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -6760,7 +6059,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -6772,7 +6071,7 @@
 <a href="source-authorities.html#source-7558b08e7fed034d624d9aed">python:stove0-server:stove0_core</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -6783,9 +6082,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

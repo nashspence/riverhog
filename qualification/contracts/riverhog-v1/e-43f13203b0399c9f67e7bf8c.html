@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-0a9044947708e1ffff5630f5.html">stove0-target-jobs</a> / <a href="i-5e9715dcff7c7358610ec44a.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0-target-jobs: TargetJobStatus</h1>
 <p class="context">Hardware-neutral target protocol, runtime, and conformance support for Stove0. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -61,7 +52,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -74,187 +65,137 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>attempt</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>attempt</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-b016ea6af25a901974928c70">derivation</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-b016ea6af25a901974928c70">derivation</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-6855ffda36ccd4b63f1e6b5a">effect_receipt</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-8b4a24b0e747f17065f1c59f">#/$defs/ExternalEffectReceipt</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-6855ffda36ccd4b63f1e6b5a">effect_receipt</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-8b4a24b0e747f17065f1c59f">#/$defs/ExternalEffectReceipt</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1433170bd461c6aafb40a291">execution_evidence</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-413264cab50d5f49994af57d">#/$defs/TargetExecutionEvidence</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1433170bd461c6aafb40a291">execution_evidence</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-413264cab50d5f49994af57d">#/$defs/TargetExecutionEvidence</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-b2f7acab2d62b49bad4a0c02">failure</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-caf82a2bb7f7526ab58aad22">#/$defs/TargetFailure</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-b2f7acab2d62b49bad4a0c02">failure</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-caf82a2bb7f7526ab58aad22">#/$defs/TargetFailure</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-96106d58e16954cbee585844">inapplicable</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-126011d14ee8d0fae82dc5e1">#/$defs/TargetInapplicable</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-96106d58e16954cbee585844">inapplicable</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-126011d14ee8d0fae82dc5e1">#/$defs/TargetInapplicable</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>job_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>job_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d10dc5a21501bbe1059103de">output_collection</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-60aceae91cdd46fe318c6453">#/$defs/OutputCollectionRef</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d10dc5a21501bbe1059103de">output_collection</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-60aceae91cdd46fe318c6453">#/$defs/OutputCollectionRef</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-a3f8f9e8b406c4901f9ff70d">production</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-50f71a9fe6d5b335d51e6f23">#/$defs/TargetProductionAuthority</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-a3f8f9e8b406c4901f9ff70d">production</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-50f71a9fe6d5b335d51e6f23">#/$defs/TargetProductionAuthority</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>progress</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-62dc4927bca21cd98cbae0e4">#/$defs/TargetProgress</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>progress</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-62dc4927bca21cd98cbae0e4">#/$defs/TargetProgress</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>protocol</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;stove0-transform-target/v1&quot;,&quot;stove0-effect-target/v1&quot;]</code>; default: <code>stove0-transform-target/v1</code>
-</td>
-<td>
-<code>stove0-transform-target/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>protocol</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;stove0-transform-target/v1&quot;,&quot;stove0-effect-target/v1&quot;]</code>; default: <code>stove0-transform-target/v1</code></td>
+<td data-label="Default">
+<code>stove0-transform-target/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>request_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>request_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;queued&quot;,&quot;running&quot;,&quot;canceling&quot;,&quot;interrupted&quot;,&quot;inapplicable&quot;,&quot;succeeded&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;queued&quot;,&quot;running&quot;,&quot;canceling&quot;,&quot;interrupted&quot;,&quot;inapplicable&quot;,&quot;succeeded&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -264,10 +205,9 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-bcf99bff0fc14dcf871fda03">1</a>
-</td>
-<td>structured schema</td>
+<td data-label="Alternative">
+<a href="#s-bcf99bff0fc14dcf871fda03">1</a></td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -326,7 +266,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -336,18 +276,15 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-6a0da19cba117110c8436db0">1</a>
-</td>
-<td>
-<code>object</code>; additionalProperties: <code>true</code>
-</td>
+<td data-label="Alternative">
+<a href="#s-6a0da19cba117110c8436db0">1</a></td>
+<td data-label="Schema">
+<code>object</code>; additionalProperties: <code>true</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -358,7 +295,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-8b4a24b0e747f17065f1c59f">#/$defs/ExternalEffectReceipt</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -368,16 +305,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-8b4a24b0e747f17065f1c59f">#/$defs/ExternalEffectReceipt</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-8b4a24b0e747f17065f1c59f">#/$defs/ExternalEffectReceipt</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -388,7 +323,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-413264cab50d5f49994af57d">#/$defs/TargetExecutionEvidence</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -398,16 +333,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-413264cab50d5f49994af57d">#/$defs/TargetExecutionEvidence</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-413264cab50d5f49994af57d">#/$defs/TargetExecutionEvidence</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -418,7 +351,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-caf82a2bb7f7526ab58aad22">#/$defs/TargetFailure</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -428,16 +361,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-caf82a2bb7f7526ab58aad22">#/$defs/TargetFailure</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-caf82a2bb7f7526ab58aad22">#/$defs/TargetFailure</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -448,7 +379,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-126011d14ee8d0fae82dc5e1">#/$defs/TargetInapplicable</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -458,16 +389,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-126011d14ee8d0fae82dc5e1">#/$defs/TargetInapplicable</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-126011d14ee8d0fae82dc5e1">#/$defs/TargetInapplicable</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -478,7 +407,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-60aceae91cdd46fe318c6453">#/$defs/OutputCollectionRef</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -488,16 +417,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-60aceae91cdd46fe318c6453">#/$defs/OutputCollectionRef</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-60aceae91cdd46fe318c6453">#/$defs/OutputCollectionRef</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -508,7 +435,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-43f13203b0399c9f67e7bf8c.html#v-50f71a9fe6d5b335d51e6f23">#/$defs/TargetProductionAuthority</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -518,16 +445,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-50f71a9fe6d5b335d51e6f23">#/$defs/TargetProductionAuthority</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-50f71a9fe6d5b335d51e6f23">#/$defs/TargetProductionAuthority</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -569,7 +494,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -582,52 +507,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>disposition_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>disposition_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>output_artifact_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>output_artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>output_edge_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>output_edge_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -637,7 +550,7 @@
 <h3>Definition: CollectionId</h3>
 <p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -647,14 +560,13 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>structured schema</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -684,7 +596,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -697,114 +609,86 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>execution_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>execution_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-external-effect-receipt/v1</code>; default: <code>stove0-external-effect-receipt/v1</code>
-</td>
-<td>
-<code>stove0-external-effect-receipt/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-external-effect-receipt/v1</code>; default: <code>stove0-external-effect-receipt/v1</code></td>
+<td data-label="Default">
+<code>stove0-external-effect-receipt/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>job_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>job_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation_contract_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation_contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>receipt_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>receipt_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>request_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>request_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-fa745d2441e407dcb07709f6">result</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-43f13203b0399c9f67e7bf8c.html#v-0c331f06c86521f75392d0cf">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-fa745d2441e407dcb07709f6">result</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-43f13203b0399c9f67e7bf8c.html#v-0c331f06c86521f75392d0cf">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -854,7 +738,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -867,28 +751,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -922,7 +800,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -935,52 +813,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-84184668b606da58f81015c2">roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-43f13203b0399c9f67e7bf8c.html#v-fac44d866e401f784c150c0d">#/$defs/OutputArtifactRoleCount</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-84184668b606da58f81015c2">roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-43f13203b0399c9f67e7bf8c.html#v-fac44d866e401f784c150c0d">#/$defs/OutputArtifactRoleCount</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>total_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-57b7598da1aed20a5fdfd926">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>total_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-57b7598da1aed20a5fdfd926">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1010,7 +876,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1023,52 +889,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_root_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_root_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-bab28859a4451f7ab1857511">#/$defs/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-bab28859a4451f7ab1857511">#/$defs/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>content_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>content_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>derivation_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>derivation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1098,7 +952,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1111,64 +965,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>execution_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>execution_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>operation_contract_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>operation_contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-3d678754f5055cbf4dfc0963">runtime</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-43f13203b0399c9f67e7bf8c.html#v-0c331f06c86521f75392d0cf">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-3d678754f5055cbf4dfc0963">runtime</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-43f13203b0399c9f67e7bf8c.html#v-0c331f06c86521f75392d0cf">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1198,7 +1037,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1211,40 +1050,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retryable</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retryable</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1274,7 +1104,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1287,28 +1117,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1338,7 +1162,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1351,126 +1175,95 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>disposition_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>disposition_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>disposition_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>disposition_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-target-production/v1</code>; default: <code>stove0-target-production/v1</code>
-</td>
-<td>
-<code>stove0-target-production/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-target-production/v1</code>; default: <code>stove0-target-production/v1</code></td>
+<td data-label="Default">
+<code>stove0-target-production/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>job_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>job_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>outputs</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-f27e97cc6d675ddb141987b3">#/$defs/OutputArtifactSetIdentity</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>outputs</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-f27e97cc6d675ddb141987b3">#/$defs/OutputArtifactSetIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>production_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>production_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>riverhog_disposition_set</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-43f13203b0399c9f67e7bf8c.html#v-2f5c39b47e59706d1b9eb631">#/$defs/ArtifactDispositionSetIdentity</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>riverhog_disposition_set</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-43f13203b0399c9f67e7bf8c.html#v-2f5c39b47e59706d1b9eb631">#/$defs/ArtifactDispositionSetIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_edge_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_edge_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_edge_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_edge_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1500,7 +1293,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1513,54 +1306,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>completed</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>phase</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>phase</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-107bc1fc8259a0a82bfb9441">total</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-107bc1fc8259a0a82bfb9441">total</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-02711c2df88bd236c7e9826d">unit</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-02711c2df88bd236c7e9826d">unit</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1586,7 +1365,7 @@
 <h3>if schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1599,15 +1378,12 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>no</td>
-<td>const: <code>failed</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>failed</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1623,7 +1399,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1636,16 +1412,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>failure</code>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>failure</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1655,7 +1428,7 @@
 <h3>else schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1668,16 +1441,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>failure</code>
-</td>
-<td>no</td>
-<td>
-<code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>failure</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1762,7 +1532,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1772,16 +1542,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1798,7 +1566,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1808,16 +1576,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1840,8 +1606,7 @@
 <span id="v-ce52f18e3a83011b24e579bd">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/id">TargetJobStatus</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1872,8 +1637,7 @@
 <span id="v-e5cc5112fee4781df6a84569">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/description">Small identity for one sealed claim-scoped relational disposition set.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1897,8 +1661,7 @@
 <span id="v-097b5ad6f5a68eb2bdea85cf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/disposition_count/title">Disposition Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1908,12 +1671,10 @@
 <span id="v-df1481fc0da3986b1e70a56c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/disposition_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1930,8 +1691,7 @@
 <span id="v-b698eaa238853eab60bd7570">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/output_artifact_count/title">Output Artifact Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1941,12 +1701,10 @@
 <span id="v-80e09b3a1bc2f2469815806a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/output_artifact_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1963,8 +1721,7 @@
 <span id="v-1f96685d2f13ede5f983202d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/output_edge_count/title">Output Edge Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1974,12 +1731,10 @@
 <span id="v-52fff9036dfba1e2cfffed74">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/output_edge_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1996,8 +1751,7 @@
 <span id="v-8dc5268a720cd0f5117326a8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2007,16 +1761,13 @@
 <span id="v-ae18f0b715047ebd896d0e19">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2033,8 +1784,7 @@
 <span id="v-8b6cb29387d2b5b37884a7f6">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/required/0">disposition_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2044,8 +1794,7 @@
 <span id="v-a6388c32e7cfca665bc61744">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/required/1">output_edge_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2055,8 +1804,7 @@
 <span id="v-69cb9539a64d6192bba16837">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/required/2">output_artifact_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2066,12 +1814,10 @@
 <span id="v-b81fd751d85e3dad024bc7d6">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/required/3">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2081,8 +1827,7 @@
 <span id="v-f57640a4c2da2077537321b2">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/title">ArtifactDispositionSetIdentity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2092,12 +1837,10 @@
 <span id="v-46473810c8111c17a81ed507">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ArtifactDispositionSetIdentity/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2128,8 +1871,7 @@
 <span id="v-19e2c441f61242d0ecc94a95">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2139,12 +1881,10 @@
 <span id="v-72c97a1a919b12a5165ff06d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/CollectionId/allOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2168,24 +1908,19 @@
 <span id="v-4fb6738d356d1ebe4f44cf22">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/CollectionId/allOf/1/not/const">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2202,8 +1937,7 @@
 <span id="v-8b1f6081e5b2b0256a4115c9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2227,8 +1961,7 @@
 <span id="v-d6491d3c4555d91c8639bc94">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/execution_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2238,8 +1971,7 @@
 <span id="v-afab513f2c2e32923669d171">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/execution_sha256/title">Execution Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2249,12 +1981,10 @@
 <span id="v-7de8ba6f39ec256df9a63569">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/execution_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2271,8 +2001,7 @@
 <span id="v-3135505b6a933bc60877f667">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/format/const">stove0-external-effect-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2282,8 +2011,7 @@
 <span id="v-b3c71faeeb2a67470ddf4b85">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/format/default">stove0-external-effect-receipt/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2293,8 +2021,7 @@
 <span id="v-3d3fd211619702925ebbb92f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2304,12 +2031,10 @@
 <span id="v-b6e209c04c27b6b6a45260a7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2326,8 +2051,7 @@
 <span id="v-cbc86498ef14c1c4945aef60">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/job_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2337,8 +2061,7 @@
 <span id="v-fa658513dbf872c0ebf0abd9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/job_id/title">Job Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2348,12 +2071,10 @@
 <span id="v-568b1429e78bdf26ec0713ba">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/job_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2370,8 +2091,7 @@
 <span id="v-68e5b3f8585c7ed66bc20935">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/operation_contract_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2381,8 +2101,7 @@
 <span id="v-8f7c80d37fcdfa0c5c2b4d05">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/operation_contract_sha256/title">Operation Contract Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2392,12 +2111,10 @@
 <span id="v-dc4430b467d2fbb3ad4ff56b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/operation_contract_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2414,8 +2131,7 @@
 <span id="v-87b4d78e1b00d93513d82438">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2425,8 +2141,7 @@
 <span id="v-0661b6f484688407a9f00346">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/plan_sha256/title">Plan Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2436,12 +2151,10 @@
 <span id="v-fe95f8ad5e898b28a0f4be5f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2458,8 +2171,7 @@
 <span id="v-fc962b0cf8f5a97ab9850f8a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/receipt_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2469,8 +2181,7 @@
 <span id="v-2519f3c8111eb5e67bd7848e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/receipt_sha256/title">Receipt Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2480,12 +2191,10 @@
 <span id="v-70f715bc263064510692485a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/receipt_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2502,8 +2211,7 @@
 <span id="v-e6902cd2042b6bf2b59bcef4">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/request_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2513,8 +2221,7 @@
 <span id="v-f818206b950749c5d7e4247a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/request_sha256/title">Request Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2524,12 +2231,10 @@
 <span id="v-61cd128864b296ed36082595">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/request_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2553,12 +2258,10 @@
 <span id="v-e94157a151597b8a9bca3a38">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/result/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-0c331f06c86521f75392d0cf">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2568,8 +2271,7 @@
 <span id="v-04e31ccccdee99350c621709">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/result/title">Result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2579,8 +2281,7 @@
 <span id="v-08d192cd7918da31a12565dd">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/result/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2590,8 +2291,7 @@
 <span id="v-fca49fd16e7fc379f17e6c5a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/result/x-riverhog-encoded-bytes-max">65536</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2608,8 +2308,7 @@
 <span id="v-c1e126644ed7594a0f1294d8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/result/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2619,16 +2318,13 @@
 <span id="v-b8d2f87c1f801164c24b78bf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/result/x-riverhog-extent/reason">bounded-external-effect-receipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2645,8 +2341,7 @@
 <span id="v-a10ba608b38aa5556508ce46">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/target_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2656,8 +2351,7 @@
 <span id="v-7b87b6b5fa69ff4630cbc082">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/target_descriptor_sha256/title">Target Descriptor Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2667,16 +2361,13 @@
 <span id="v-d9dac7d57612330ead427b7a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/properties/target_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2693,8 +2384,7 @@
 <span id="v-59e3790cb95dbfa4785cfdf8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/0">job_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2704,8 +2394,7 @@
 <span id="v-84e9a7825d6c40cd3b6cedbd">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/1">request_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2715,8 +2404,7 @@
 <span id="v-414784cf0774116e6f065bcf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/2">target_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2726,8 +2414,7 @@
 <span id="v-335c5aa0c69873cdbfa2cd96">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/3">operation_contract_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2737,8 +2424,7 @@
 <span id="v-b11fd121a27cb8844810d3e1">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/4">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2748,8 +2434,7 @@
 <span id="v-3e0836a5227252f1dec068d1">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/5">execution_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2759,8 +2444,7 @@
 <span id="v-f78cd45b3811866deb1148e8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/6">result</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2770,12 +2454,10 @@
 <span id="v-9ecf4cebead990e6947f79d4">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/required/7">receipt_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2785,8 +2467,7 @@
 <span id="v-c50534f80c63e267cb5602b7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/title">ExternalEffectReceipt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2796,12 +2477,10 @@
 <span id="v-7b5416af662cced4c01fef30">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/ExternalEffectReceipt/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2811,8 +2490,7 @@
 <span id="v-0c331f06c86521f75392d0cf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2829,8 +2507,7 @@
 <span id="v-51700ff7f0b3eed3417fcbeb">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2840,12 +2517,10 @@
 <span id="v-7520a1b1e5f4a7443ce52d54">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2862,8 +2537,7 @@
 <span id="v-998e38b79bb709d8ae67890b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2887,8 +2561,7 @@
 <span id="v-8547e67e0be45e8b6b6386ab">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/properties/count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2898,8 +2571,7 @@
 <span id="v-060775072277a2f6117a4b6a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/properties/count/title">Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2909,12 +2581,10 @@
 <span id="v-898edda2a2a18b2efa9e18ee">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/properties/count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2931,8 +2601,7 @@
 <span id="v-d73cfd0966108916717855e0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2942,8 +2611,7 @@
 <span id="v-d59fa84540f6f3246a77e6ee">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/properties/role/title">Role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2953,16 +2621,13 @@
 <span id="v-d22d7d4c593619f26804a7b7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/properties/role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2979,8 +2644,7 @@
 <span id="v-bf2602889d5e9d0ecbb8c2ab">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/required/0">role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2990,12 +2654,10 @@
 <span id="v-b20fc68e691acf63d588228c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/required/1">count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3005,8 +2667,7 @@
 <span id="v-773e490c7a811d451701778f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/title">OutputArtifactRoleCount</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3016,12 +2677,10 @@
 <span id="v-ef38a5af8ab48bf50d647325">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactRoleCount/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3038,8 +2697,7 @@
 <span id="v-581bfea580e711b6fda85570">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3049,8 +2707,7 @@
 <span id="v-9f563a4e4f7cc97764a15425">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/description">Small identity for target outputs already registered with Riverhog.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3074,8 +2731,7 @@
 <span id="v-4aaa8cecc98ae02452ec35a6">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/artifact_count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3085,8 +2741,7 @@
 <span id="v-21a3450da302bc3fd19d718e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/artifact_count/title">Artifact Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3096,12 +2751,10 @@
 <span id="v-da15e8ddc44b72ae281ce20a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/artifact_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3125,12 +2778,10 @@
 <span id="v-8089737fc22672d34734d739">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/roles/items/$ref">#/$defs/OutputArtifactRoleCount</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-fac44d866e401f784c150c0d">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3140,8 +2791,7 @@
 <span id="v-33f0a13b867e3215c6d2da02">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/roles/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3151,8 +2801,7 @@
 <span id="v-d7972b4d2a85a57729440b73">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/roles/title">Roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3162,12 +2811,10 @@
 <span id="v-205e1306211d30eba3dd9dd0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3184,8 +2831,7 @@
 <span id="v-ffbd4a7378299b0a67a88b59">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3195,8 +2841,7 @@
 <span id="v-f1a233559d1d49582ffb2f5a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3206,12 +2851,10 @@
 <span id="v-e22e5a7bc3fb240c9ce305d0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3228,8 +2871,7 @@
 <span id="v-35c60f791fc7bc06d990b3f8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/total_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-57b7598da1aed20a5fdfd926">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3239,16 +2881,13 @@
 <span id="v-b3f97536bab420c612d44adf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/properties/total_bytes/ge">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3265,8 +2904,7 @@
 <span id="v-a7295c232316fdc9e0e395e0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/required/0">artifact_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3276,8 +2914,7 @@
 <span id="v-89812692c9db76f54882175f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/required/1">total_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3287,8 +2924,7 @@
 <span id="v-4a34426a6aed2fbf781e83de">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/required/2">roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3298,12 +2934,10 @@
 <span id="v-280407566b03df10db6b1caf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/required/3">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3313,8 +2947,7 @@
 <span id="v-f0d4a50dbdb69f8a37a8b6e5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/title">OutputArtifactSetIdentity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3324,12 +2957,10 @@
 <span id="v-e6f3dcb857867378facbfce1">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputArtifactSetIdentity/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3346,8 +2977,7 @@
 <span id="v-1bb1ac9666fb2d59b9f47f7f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3371,8 +3001,7 @@
 <span id="v-e7a8aa8973697ab3021f4191">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3382,8 +3011,7 @@
 <span id="v-946da34e01f911f5b6f86ef0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/archive_root_sha256/title">Archive Root Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3393,12 +3021,10 @@
 <span id="v-252243fc986aefa98b3ad6cf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/archive_root_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3415,12 +3041,10 @@
 <span id="v-e26383ec670097697387e6a5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-bab28859a4451f7ab1857511">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3437,8 +3061,7 @@
 <span id="v-d22b1823941572bde3ee086d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3448,8 +3071,7 @@
 <span id="v-aea5acc43f01c18161f181db">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/content_identity/title">Content Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3459,12 +3081,10 @@
 <span id="v-8d43375d35cd0ef7d371b557">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/content_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3481,8 +3101,7 @@
 <span id="v-da6cbe2f0630bccc19f9e813">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/derivation_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3492,8 +3111,7 @@
 <span id="v-2f5f0f3dac75c009ff317308">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/derivation_sha256/title">Derivation Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3503,16 +3121,13 @@
 <span id="v-daec1362b42600bcb9269db1">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/properties/derivation_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3529,8 +3144,7 @@
 <span id="v-47bde563982b65c0eea3248f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3540,8 +3154,7 @@
 <span id="v-0bfd09e88b6c804af0841756">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/required/1">archive_root_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3551,8 +3164,7 @@
 <span id="v-9b1b043b0265a8fa8bfa402b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/required/2">content_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3562,12 +3174,10 @@
 <span id="v-c6051ce56e6e128c509a4ea7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/required/3">derivation_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3577,8 +3187,7 @@
 <span id="v-7887032e4e49fc7f72dcfdad">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/title">OutputCollectionRef</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3588,12 +3197,10 @@
 <span id="v-7eee18752150dc841d97419b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/OutputCollectionRef/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3610,8 +3217,7 @@
 <span id="v-f38e0e42da86ded55e93fb4b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3635,8 +3241,7 @@
 <span id="v-5d6afe1b577cb441183739bd">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/execution_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3646,8 +3251,7 @@
 <span id="v-751bfa19ede54598226d10c1">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/execution_sha256/title">Execution Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3657,12 +3261,10 @@
 <span id="v-a12f77b4471be5cc4df8c8f7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/execution_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3679,8 +3281,7 @@
 <span id="v-48607b3aeeadbdca62accdf6">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/operation_contract_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3690,8 +3291,7 @@
 <span id="v-c72c91cec76fcf9376621753">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/operation_contract_sha256/title">Operation Contract Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3701,12 +3301,10 @@
 <span id="v-13676e3ce3e548594b41e176">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/operation_contract_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3723,8 +3321,7 @@
 <span id="v-e7f753df40f12e0480686299">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3734,8 +3331,7 @@
 <span id="v-33613db7f50fdd881ce5f148">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/plan_sha256/title">Plan Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3745,12 +3341,10 @@
 <span id="v-544cb2c534cb197436db906c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3774,12 +3368,10 @@
 <span id="v-e933b1d4686cbfa0fbf2569f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/runtime/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-0c331f06c86521f75392d0cf">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3789,8 +3381,7 @@
 <span id="v-ce2efb25abc13f88624230b1">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/runtime/title">Runtime</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3800,12 +3391,10 @@
 <span id="v-c5a70453169910e845118191">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/runtime/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3822,8 +3411,7 @@
 <span id="v-c256a9a66f08c8a94dd154ae">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/target_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3833,8 +3421,7 @@
 <span id="v-dabf8488870db613b5ea7820">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/target_descriptor_sha256/title">Target Descriptor Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3844,16 +3431,13 @@
 <span id="v-5862459000a0c49f0f269bc2">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/properties/target_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3870,8 +3454,7 @@
 <span id="v-a5619be688d0516176777e22">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/required/0">target_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3881,8 +3464,7 @@
 <span id="v-b9945907d5541c5a13c3f713">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/required/1">operation_contract_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3892,8 +3474,7 @@
 <span id="v-017c86f0f1d0ddaa4b5b7ba9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/required/2">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3903,12 +3484,10 @@
 <span id="v-946460b325bfd46672435d2b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/required/3">execution_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3918,8 +3497,7 @@
 <span id="v-98b691e67f080f3f71dd444b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/title">TargetExecutionEvidence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3929,12 +3507,10 @@
 <span id="v-6de0bc718494035805a27ce8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetExecutionEvidence/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3951,8 +3527,7 @@
 <span id="v-9571b04a2ec4ad33f011300e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3976,8 +3551,7 @@
 <span id="v-42eeaaa5c8531cc98bccf66d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3987,8 +3561,7 @@
 <span id="v-70d23b69b256faef7b20c215">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/code/title">Code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3998,12 +3571,10 @@
 <span id="v-6b9b18bffc44a2503a12545f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4020,8 +3591,7 @@
 <span id="v-f8de51cf81dd6091b27ef64c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/message/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4031,8 +3601,7 @@
 <span id="v-69a6c1d56adfdade63d2b3e7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4042,8 +3611,7 @@
 <span id="v-6e779d59d475a660aa7f4da8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/message/title">Message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4053,12 +3621,10 @@
 <span id="v-17197719086e044e6cd0c1c5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4075,8 +3641,7 @@
 <span id="v-54a3c692e9ef69398f11f2d8">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/retryable/title">Retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4086,16 +3651,13 @@
 <span id="v-0468c4cd5c1b087eee8e6af2">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/properties/retryable/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4112,8 +3674,7 @@
 <span id="v-86b4ee0aee6670504c0e2f1d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4123,8 +3684,7 @@
 <span id="v-b9e238298d77d3707e311f6a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4134,12 +3694,10 @@
 <span id="v-9ebe35f5315b60a290dd3ee5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/required/2">retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4149,8 +3707,7 @@
 <span id="v-7bf8b8123c2c4bf32e32716a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/title">TargetFailure</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4160,12 +3717,10 @@
 <span id="v-6156f9224682934c70fd4e7a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetFailure/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4182,8 +3737,7 @@
 <span id="v-4b69b590ce60a89a8b2bece5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4207,8 +3761,7 @@
 <span id="v-e6fdca734c7a6353387eb95b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4218,8 +3771,7 @@
 <span id="v-0ee78df387003dc7e0513716">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/code/title">Code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4229,12 +3781,10 @@
 <span id="v-d6dd776d0842d0ff7c16e557">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4251,8 +3801,7 @@
 <span id="v-2199f94eb5a662587dbb836f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/message/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4262,8 +3811,7 @@
 <span id="v-f13fb742aea23644d26227d3">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4273,8 +3821,7 @@
 <span id="v-cf88a72594789a0bf4483680">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/message/title">Message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4284,16 +3831,13 @@
 <span id="v-f6b4ead4072a4f426d551f9f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4310,8 +3854,7 @@
 <span id="v-9f131467877338f76225bc98">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4321,12 +3864,10 @@
 <span id="v-665cc6b26ec455eabdc4b5b9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4336,8 +3877,7 @@
 <span id="v-9422b6169e222bc6bfb549ed">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/title">TargetInapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4347,12 +3887,10 @@
 <span id="v-68bd2fc35219080ce67bc380">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetInapplicable/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4369,8 +3907,7 @@
 <span id="v-7a448b4bd4cdf34702fca2fc">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4394,8 +3931,7 @@
 <span id="v-4df2b6fa1934f743079d58ee">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/disposition_count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4405,8 +3941,7 @@
 <span id="v-dc50d1b1b27300602168f0cc">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/disposition_count/title">Disposition Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4416,12 +3951,10 @@
 <span id="v-ba7437bdafce063d2f066f84">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/disposition_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4438,8 +3971,7 @@
 <span id="v-f7aed089e3a8cc1d8357081f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/disposition_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4449,8 +3981,7 @@
 <span id="v-1a9fbe0cd6d9eb7e541291e6">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/disposition_sha256/title">Disposition Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4460,12 +3991,10 @@
 <span id="v-62cd39aaf6268e0131116669">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/disposition_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4482,8 +4011,7 @@
 <span id="v-55fdd55eaa38b5091f726966">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/format/const">stove0-target-production/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4493,8 +4021,7 @@
 <span id="v-47041a6b84a9c4005a1a9c56">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/format/default">stove0-target-production/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4504,8 +4031,7 @@
 <span id="v-44c84a367ef093fe12f07185">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4515,12 +4041,10 @@
 <span id="v-f3464af0d2b9d9ec8eb919f7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4537,8 +4061,7 @@
 <span id="v-c5062d22ed31ad8e9fcae31a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/job_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4548,8 +4071,7 @@
 <span id="v-4e74b528324776be7bfa7837">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/job_id/title">Job Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4559,12 +4081,10 @@
 <span id="v-a6be760788eabaf1d7e15df4">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/job_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4581,12 +4101,10 @@
 <span id="v-048d954fd275b8529bc46135">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/outputs/$ref">#/$defs/OutputArtifactSetIdentity</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-f27e97cc6d675ddb141987b3">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4603,8 +4121,7 @@
 <span id="v-465ca262da3cb9a47d79dcdf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4614,8 +4131,7 @@
 <span id="v-e5698c8d5072fc0a0b33ac86">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/plan_sha256/title">Plan Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4625,12 +4141,10 @@
 <span id="v-d3a661cb9d780836191f4e92">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4647,8 +4161,7 @@
 <span id="v-ef135390476f579ea2a6ddea">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/production_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4658,8 +4171,7 @@
 <span id="v-e98cd522805e7da7a9e8ae15">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/production_sha256/title">Production Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4669,12 +4181,10 @@
 <span id="v-f0317ee1285d4d8b39f4cfe9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/production_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4691,12 +4201,10 @@
 <span id="v-802f35b5a166327d512e2db5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/riverhog_disposition_set/$ref">#/$defs/ArtifactDispositionSetIdentity</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-2f5c39b47e59706d1b9eb631">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4713,8 +4221,7 @@
 <span id="v-a7f2cb7cd631d2af2fe2b961">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/source_edge_count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4724,8 +4231,7 @@
 <span id="v-679b0d9811dcc51a78c6a015">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/source_edge_count/title">Source Edge Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4735,12 +4241,10 @@
 <span id="v-cbe2623cde1e6de2282af518">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/source_edge_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4757,8 +4261,7 @@
 <span id="v-72d13a4a236466176d1a067e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/source_edge_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4768,8 +4271,7 @@
 <span id="v-841c7314ac2f81d6147c4124">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/source_edge_sha256/title">Source Edge Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4779,16 +4281,13 @@
 <span id="v-a709550d82c417a506be2526">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/properties/source_edge_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4805,8 +4304,7 @@
 <span id="v-704def378dafee92b1b1d16b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/0">job_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4816,8 +4314,7 @@
 <span id="v-757ba5e227de3a36eedb392e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/1">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4827,8 +4324,7 @@
 <span id="v-deff6596451749be0d4d21a9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/2">outputs</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4838,8 +4334,7 @@
 <span id="v-7c0430d76cf5c900932dd21f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/3">disposition_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4849,8 +4344,7 @@
 <span id="v-8bfd60f5be48ddbfcbffcf4e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/4">disposition_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4860,8 +4354,7 @@
 <span id="v-46d21df9746ddec3097a5c7c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/5">source_edge_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4871,8 +4364,7 @@
 <span id="v-41658eafb53978e2a5d5c35b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/6">source_edge_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4882,8 +4374,7 @@
 <span id="v-7d83d3f6b1a7d6e52141dff7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/7">riverhog_disposition_set</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4893,12 +4384,10 @@
 <span id="v-12f650850934747ac0eb3032">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/required/8">production_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4908,8 +4397,7 @@
 <span id="v-3e9c35a0327035b6a410f482">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/title">TargetProductionAuthority</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4919,12 +4407,10 @@
 <span id="v-b210bdd3372bd764cde52f5d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProductionAuthority/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4941,8 +4427,7 @@
 <span id="v-2b3969e4006dac91346a72ce">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4966,8 +4451,7 @@
 <span id="v-b283010f7398d3434db62f91">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/completed/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4977,8 +4461,7 @@
 <span id="v-6e1a75055e442fe297efeb2a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/completed/title">Completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4988,12 +4471,10 @@
 <span id="v-2e0b62293b45a37e51c6b131">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/completed/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5010,8 +4491,7 @@
 <span id="v-9aa7795c70b32a4f624dad6a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/phase/maxLength">120</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5021,8 +4501,7 @@
 <span id="v-21e9c53c215b525b9bb8a0ae">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/phase/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5032,8 +4511,7 @@
 <span id="v-48a9f0322352266d1efef68b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/phase/title">Phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5043,12 +4521,10 @@
 <span id="v-ce1d5b9d237b2c775b956339">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/phase/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5079,8 +4555,7 @@
 <span id="v-52e25a9393e4bad1244652ed">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/total/anyOf/0/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5090,12 +4565,10 @@
 <span id="v-4ef88db0e17d6735198c1f6c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/total/anyOf/0/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5112,16 +4585,13 @@
 <span id="v-5350f15186b9fda5f4d9dac0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/total/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5131,8 +4601,7 @@
 <span id="v-4c887b84f4ef229cdb07c3df">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/total/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5142,12 +4611,10 @@
 <span id="v-58ed2252bb78b9ea1837be08">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/total/title">Total</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5178,8 +4645,7 @@
 <span id="v-eecea972767eabd066559ae3">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/unit/anyOf/0/maxLength">40</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5189,8 +4655,7 @@
 <span id="v-bf35376a69d66f04df39faa0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/unit/anyOf/0/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5200,12 +4665,10 @@
 <span id="v-9b753087723c66ab201a1c18">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/unit/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5222,16 +4685,13 @@
 <span id="v-01b3459156a40746fb70537d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/unit/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5241,8 +4701,7 @@
 <span id="v-c5599e2c22fb300fa632ef80">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/unit/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5252,16 +4711,13 @@
 <span id="v-0343762449d5fdf3922b92e0">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/properties/unit/title">Unit</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5278,8 +4734,7 @@
 <span id="v-4c3b0d9e8d420a6afdb22059">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/required/0">phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5289,12 +4744,10 @@
 <span id="v-e56d1c0cc7b0965bc58b0ee5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/required/1">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5304,8 +4757,7 @@
 <span id="v-1b9f54f9e89e6e85e2a409c3">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/title">TargetProgress</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5315,16 +4767,13 @@
 <span id="v-a4de29cbf256b67de0d8fcc3">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/$defs/TargetProgress/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5334,8 +4783,7 @@
 <span id="v-380002984e3eeade3edea594">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5380,20 +4828,16 @@
 <span id="v-f4ee21ba900bab21183c5e7f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/allOf/0/else/properties/failure/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5424,20 +4868,16 @@
 <span id="v-170618a70939c215582c531a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/allOf/0/if/properties/state/const">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5468,16 +4908,13 @@
 <span id="v-008fdf9f336785eda884e218">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/allOf/0/then/properties/failure/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5494,24 +4931,19 @@
 <span id="v-8fe2af19d74e2f34e5c55d42">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/allOf/0/then/required/0">failure</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5535,8 +4967,7 @@
 <span id="v-03f342a617ecb6461a30fb95">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/attempt/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5546,8 +4977,7 @@
 <span id="v-5e7d6a841f89fa99eb914015">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/attempt/title">Attempt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5557,12 +4987,10 @@
 <span id="v-d989d6539888266b8f0ca81b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/attempt/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5593,8 +5021,7 @@
 <span id="v-0f6d48f1b1e0df9755735786">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/derivation/anyOf/0/additionalProperties">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5604,12 +5031,10 @@
 <span id="v-8b853757b5160234c3fbd9f2">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/derivation/anyOf/0/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5626,16 +5051,13 @@
 <span id="v-50bda7eacf7a788478aca240">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/derivation/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5645,8 +5067,7 @@
 <span id="v-7356bf8cc4476f79961c6261">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/derivation/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5656,12 +5077,10 @@
 <span id="v-b13935c6b82d658f6cd055ad">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/derivation/title">Derivation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5692,12 +5111,10 @@
 <span id="v-c2f33057c59188012dd2fbe2">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/effect_receipt/anyOf/0/$ref">#/$defs/ExternalEffectReceipt</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-8b4a24b0e747f17065f1c59f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5714,16 +5131,13 @@
 <span id="v-e6a47be25bf6f5d0ff9f53cf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/effect_receipt/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5733,12 +5147,10 @@
 <span id="v-66da11a1d33518ac58530ca4">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/effect_receipt/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5769,12 +5181,10 @@
 <span id="v-a61f7a8218bf742d95e6376e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/execution_evidence/anyOf/0/$ref">#/$defs/TargetExecutionEvidence</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-413264cab50d5f49994af57d">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5791,16 +5201,13 @@
 <span id="v-20597a19e5985c17d5598943">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/execution_evidence/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5810,12 +5217,10 @@
 <span id="v-d18d5e07ea44e640845456fa">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/execution_evidence/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5846,12 +5251,10 @@
 <span id="v-42125d3a76e9eec5896b37f2">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/failure/anyOf/0/$ref">#/$defs/TargetFailure</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-caf82a2bb7f7526ab58aad22">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5868,16 +5271,13 @@
 <span id="v-8ead2ab04ef5a8e6203a0ab3">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/failure/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5887,12 +5287,10 @@
 <span id="v-0058b7dd116a50543f65b7ee">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/failure/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5923,12 +5321,10 @@
 <span id="v-5dc65b11883b875090869f98">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/inapplicable/anyOf/0/$ref">#/$defs/TargetInapplicable</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-126011d14ee8d0fae82dc5e1">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5945,16 +5341,13 @@
 <span id="v-4d6374184151b9187688bc02">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/inapplicable/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5964,12 +5357,10 @@
 <span id="v-ac66e4334ed16778d101001f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/inapplicable/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5986,8 +5377,7 @@
 <span id="v-b6d0638fa2c6b8ae1fbb2a8a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/job_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5997,8 +5387,7 @@
 <span id="v-b3a69aa6d05bc14fba9f382e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/job_id/title">Job Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6008,12 +5397,10 @@
 <span id="v-d4a9ce29e32f665967112e1c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/job_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6044,12 +5431,10 @@
 <span id="v-b198662c5b0b1f412a7673fb">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/output_collection/anyOf/0/$ref">#/$defs/OutputCollectionRef</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-60aceae91cdd46fe318c6453">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6066,16 +5451,13 @@
 <span id="v-9f2d8b2c7025fe37eec2a4c9">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/output_collection/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6085,12 +5467,10 @@
 <span id="v-df12e6b92957ad4b2ce57d1e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/output_collection/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6107,8 +5487,7 @@
 <span id="v-532474aeebae9251642b721d">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6118,8 +5497,7 @@
 <span id="v-87c9a02619fca3b095d3a475">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/plan_sha256/title">Plan Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6129,12 +5507,10 @@
 <span id="v-0e317343840bf08ea4ecba34">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6165,12 +5541,10 @@
 <span id="v-44d0ad4ad6979cc088046129">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/production/anyOf/0/$ref">#/$defs/TargetProductionAuthority</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-50f71a9fe6d5b335d51e6f23">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6187,16 +5561,13 @@
 <span id="v-f4cceb1609a5361eb1e4f702">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/production/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6206,12 +5577,10 @@
 <span id="v-27b31c2f81798bc178550d75">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/production/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6228,12 +5597,10 @@
 <span id="v-b68af67ac8dd8df48cf1c53c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/progress/$ref">#/$defs/TargetProgress</code>
 <span class="kind">string</span> <a href="e-43f13203b0399c9f67e7bf8c.html#v-62dc4927bca21cd98cbae0e4">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6250,8 +5617,7 @@
 <span id="v-ba8e8538aa511c7b3bae185f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/protocol/default">stove0-transform-target/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6268,8 +5634,7 @@
 <span id="v-0319765dbe309cc758e7ef71">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/protocol/enum/0">stove0-transform-target/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6279,12 +5644,10 @@
 <span id="v-ae0f3f9eb5124b3dd9013654">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/protocol/enum/1">stove0-effect-target/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6294,8 +5657,7 @@
 <span id="v-42293e1af8995a5a257b59f3">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/protocol/title">Protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6305,12 +5667,10 @@
 <span id="v-e3f382c83e86a4a82729031a">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/protocol/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6327,8 +5687,7 @@
 <span id="v-63a485f177cbca5f50832d3e">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/request_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6338,8 +5697,7 @@
 <span id="v-29d0de251aecca170132bb20">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/request_sha256/title">Request Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6349,12 +5707,10 @@
 <span id="v-986f2f4a49a7e0070b87d543">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/request_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6378,8 +5734,7 @@
 <span id="v-e026c2847ef7edbfeb7af718">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/0">queued</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6389,8 +5744,7 @@
 <span id="v-70c447cb96025083f1643300">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/1">running</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6400,8 +5754,7 @@
 <span id="v-f509cb9921540d5eb70e7bc6">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/2">canceling</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6411,8 +5764,7 @@
 <span id="v-8591ecf5fd10723844938fe5">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/3">interrupted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6422,8 +5774,7 @@
 <span id="v-a9b83c3e0ada0e5d5c3db848">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/4">inapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6433,8 +5784,7 @@
 <span id="v-0dacdbe171a468ecea24c999">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/5">succeeded</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6444,8 +5794,7 @@
 <span id="v-c1abde41bc3b6da5176718e7">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/6">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6455,12 +5804,10 @@
 <span id="v-513d9da7351af1b668893c64">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/enum/7">canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6470,8 +5817,7 @@
 <span id="v-697c6173dd466cd27f61145b">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/title">State</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6481,16 +5827,13 @@
 <span id="v-5a9037c8edb3d0e2148d0966">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/properties/state/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6507,8 +5850,7 @@
 <span id="v-612391ea79fb70098e58e810">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/required/0">job_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6518,8 +5860,7 @@
 <span id="v-156f905424250250dbd38095">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/required/1">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6529,8 +5870,7 @@
 <span id="v-dbeb799d9f69d645c1d5158c">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/required/2">attempt</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6540,8 +5880,7 @@
 <span id="v-a449ad6979571df577982a00">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/required/3">request_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6551,8 +5890,7 @@
 <span id="v-783d78ae1c87906062793260">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/required/4">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6562,12 +5900,10 @@
 <span id="v-68da6e51663563b404152864">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/required/5">progress</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6577,8 +5913,7 @@
 <span id="v-e0a21eaa2aa53e1b4d8a7c45">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/title">TargetJobStatus</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -6588,12 +5923,10 @@
 <span id="v-9be61aa9571d8b99974d6f04">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/1/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -6613,7 +5946,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -6635,7 +5968,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/stove0-target/effect.status.json">tests/fixtures/state/v1_0001/stove0-target/effect.status.json</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -6646,9 +5979,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import time
 import uuid
 from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
 
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_storage_adapter_protocol import (
     DeletePrefixRequest,
     ObjectLocator,
@@ -21,7 +21,7 @@ from riverhog_storage_adapter_protocol import (
 )
 from riverhog_storage_adapter_support import StorageAdapterClient
 
-from scripts import performance_objectives as performance
+from scripts import performance_measurement as performance
 
 _MIB = 1024 * 1024
 
@@ -42,6 +42,8 @@ def run(
     payload_bytes: int,
     context: Mapping[str, object] | None = None,
     reference: Mapping[str, object] | None = None,
+    target_ratio: float | None = None,
+    reference_unavailable_reason: str = "no-measured-reference",
 ) -> dict[str, object]:
     if type(payload_bytes) is not int or payload_bytes < 1:
         raise ValueError("payload bytes must be positive")
@@ -54,13 +56,12 @@ def run(
             or context["completion_boundary"] != "adapter-complete-and-verified-readback"
         ):
             raise performance.PerformanceError("storage probe comparison context is incompatible")
-    if reference is not None:
-        if context is None:
-            raise performance.PerformanceError("a measured reference requires comparison context")
-        if reference.get("format") != "riverhog-storage-adapter-goodput/v2" or not isinstance(
-            reference.get("samples"), Mapping
-        ):
-            raise performance.PerformanceError("storage probe reference format is incompatible")
+    if reference is not None and (
+        reference.get("format") != "riverhog-storage-adapter-goodput/v3"
+        or not isinstance(reference.get("samples"), Mapping)
+    ):
+        reference = None
+        reference_unavailable_reason = "incompatible-reference-format"
     client = StorageAdapterClient.from_token_file(
         base_url,
         token_file=token_file,
@@ -163,12 +164,11 @@ def run(
         upload_rate = payload_bytes / _MIB / upload_seconds
         read_rate = payload_bytes / _MIB / read_seconds
         samples: dict[str, dict[str, object]] = {}
-        evaluations: dict[str, dict[str, object]] = {}
+        comparisons: dict[str, dict[str, object]] = {}
         reference_samples = reference["samples"] if reference is not None else None
         for direction, seconds in (("upload", upload_seconds), ("read", read_seconds)):
             measured = performance.sample(
-                objective_id=f"storage-{direction}-goodput",
-                scenario=f"storage-adapter-sequential-segment-{segment_bytes}",
+                scenario=f"storage-adapter-{direction}-sequential-segment-{segment_bytes}",
                 workload="synthetic-one-object-read-after-write",
                 context=context,
                 completed_bytes=payload_bytes,
@@ -178,9 +178,19 @@ def run(
             )
             samples[direction] = measured
             prior = reference_samples.get(direction) if reference_samples is not None else None
-            evaluations[direction] = performance.evaluate_sample(measured, prior)
+            comparisons[direction] = performance.compare_sample(
+                measured,
+                prior if isinstance(prior, Mapping) else None,
+                target_ratio=target_ratio,
+                unavailable_reason=(
+                    reference_unavailable_reason
+                    if reference_samples is None
+                    else "direction-reference-unavailable"
+                ),
+            )
         return {
-            "format": "riverhog-storage-adapter-goodput/v2",
+            "format": "riverhog-storage-adapter-goodput/v3",
+            "target": {"payload_bytes": payload_bytes, "reference_ratio": target_ratio},
             "admission_seconds": round(admitted - upload_started, 6),
             "completion_seconds": round(completed_at - written, 6),
             "payload_bytes": payload_bytes,
@@ -191,7 +201,7 @@ def run(
             "upload_mib_per_second": upload_rate,
             "write_seconds": round(written - admitted, 6),
             "samples": samples,
-            "evaluations": evaluations,
+            "comparisons": comparisons,
         }
     finally:
         try:
@@ -206,23 +216,34 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--token-file", required=True, type=Path)
     parser.add_argument("--payload-bytes", type=int, default=128 * _MIB)
     parser.add_argument("--context", type=Path, help="safe measured-comparison context JSON")
-    parser.add_argument("--reference", type=Path, help="matching measured v2 probe result")
+    parser.add_argument("--reference", type=Path, help="matching measured v3 probe result")
+    parser.add_argument(
+        "--target-ratio", type=float, help="optional report-only reference fraction"
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    reference = None
+    reason = "no-measured-reference"
+    if args.reference is not None:
+        try:
+            reference = performance.read_json(args.reference)
+        except performance.PerformanceError:
+            reason = "reference-unavailable-or-invalid"
     print(
-        json.dumps(
+        canonical_json_bytes(
             run(
                 base_url=args.base_url,
                 token_file=args.token_file,
                 payload_bytes=args.payload_bytes,
                 context=performance.read_json(args.context) if args.context else None,
-                reference=performance.read_json(args.reference) if args.reference else None,
+                reference=reference,
+                target_ratio=args.target_ratio,
+                reference_unavailable_reason=reason,
             ),
-            sort_keys=True,
-        )
+        ).decode()
     )
     return 0
 

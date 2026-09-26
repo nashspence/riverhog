@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a> / <a href="i-64a53c93f5fbfec5bcaf1e02.html">Configuration Documents</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-event-relay:configuration:event-relay-config configuration</h1>
 <p class="context">Native lifecycle-event to CloudEvents webhook relay. Configuration Documents contract owned by a-riverhog-event-relay.</p>
@@ -63,7 +54,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -76,84 +67,62 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>batch_size</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>100</code>
-</td>
-<td>
-<code>100</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>batch_size</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>100</code></td>
+<td data-label="Default">
+<code>100</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>poll_interval_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>5</code>
-</td>
-<td>
-<code>5</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>poll_interval_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>5</code></td>
+<td data-label="Default">
+<code>5</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>request_timeout_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>10</code>
-</td>
-<td>
-<code>10</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>request_timeout_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>10</code></td>
+<td data-label="Default">
+<code>10</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-f81c005b3d528a717a25e140">sources</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-796f157ba963429d629b9314.html#v-163e667adaf6efaf900d431f">#/$defs/SourceConfig</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-f81c005b3d528a717a25e140">sources</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-796f157ba963429d629b9314.html#v-163e667adaf6efaf900d431f">#/$defs/SourceConfig</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state_path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state_path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>version</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; default: <code>1</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>version</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; default: <code>1</code></td>
+<td data-label="Default">
+<code>1</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -209,7 +178,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -222,52 +191,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>events_url</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>events_url</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>name</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[A-Za-z0-9._-]+$</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>name</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9._-]+$</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>token_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>webhook_url_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>webhook_url_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -304,8 +261,7 @@
 <span id="v-d167e79bb6e863e151d0d6a3">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,8 +285,7 @@
 <span id="v-dedd4e7655c0ca4b661c35a9">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/events_url/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -340,8 +295,7 @@
 <span id="v-3368a2b91b70bc82ed286d25">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/events_url/title">Events Url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -351,12 +305,10 @@
 <span id="v-30e8c06df1d53d439250b631">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/events_url/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -373,8 +325,7 @@
 <span id="v-6867b3812a0df743226bbd08">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/name/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -384,8 +335,7 @@
 <span id="v-8f82cf9b67ac944266f09cc1">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/name/pattern">^[A-Za-z0-9._-]+$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -395,8 +345,7 @@
 <span id="v-91f15def0a5029b68967edf3">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/name/title">Name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -406,12 +355,10 @@
 <span id="v-31605a1c83f31d7c2efa3d88">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/name/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -428,8 +375,7 @@
 <span id="v-4ca9a5411e521a97ce3bf635">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/token_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -439,8 +385,7 @@
 <span id="v-38845fe549a1764133c8a400">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/token_file/title">Token File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -450,12 +395,10 @@
 <span id="v-6a21815031d806dabf20c8e7">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/token_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +415,7 @@
 <span id="v-9f2de7771a0642e808ce4ed8">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/webhook_url_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -483,8 +425,7 @@
 <span id="v-4c5b55c30cdcd06002b099d0">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/webhook_url_file/title">Webhook Url File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -494,16 +435,13 @@
 <span id="v-e3dfaa338e01cafc86cb7d44">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/properties/webhook_url_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -520,8 +458,7 @@
 <span id="v-b76850e08706c3b9b852549b">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/required/0">name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,8 +468,7 @@
 <span id="v-837c72e7e5fd8bc26e9d878e">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/required/1">events_url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -542,8 +478,7 @@
 <span id="v-1a047d9b1ed2600ce5ebfbdb">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/required/2">token_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -553,12 +488,10 @@
 <span id="v-0362d8495e5cfd72107eb726">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/required/3">webhook_url_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -568,8 +501,7 @@
 <span id="v-579fda1d5ba1aa6120c3a861">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/title">SourceConfig</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -579,16 +511,13 @@
 <span id="v-cecef785c650811e46225596">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$defs/SourceConfig/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -598,8 +527,7 @@
 <span id="v-7365d989eb743603cce4022d">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$id">https://nashspence.github.io/riverhog/v1/config/a-riverhog-event-relay.schema.json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -609,8 +537,7 @@
 <span id="v-9054566ec55adb5faf6f0e16">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -620,8 +547,7 @@
 <span id="v-6b9677ef171911929b8787dc">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -645,8 +571,7 @@
 <span id="v-7784fb7a66b1cfd317728fe0">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size/default">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,8 +581,7 @@
 <span id="v-d82d3c141c26d64d91f48949">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -667,8 +591,7 @@
 <span id="v-4333b995a1429c10f882e304">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -678,8 +601,7 @@
 <span id="v-6b46cdf6ab7aacb355f3e010">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size/title">Batch Size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,12 +611,10 @@
 <span id="v-36a300d0dad7ebff2c0a6db2">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -711,8 +631,7 @@
 <span id="v-b9c3afd37cdcf9f06468f337">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/poll_interval_seconds/default">5</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -722,8 +641,7 @@
 <span id="v-d8ca7964815a9c61acf29de1">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/poll_interval_seconds/exclusiveMinimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -733,8 +651,7 @@
 <span id="v-8a5eb15a149c62572fcf974d">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/poll_interval_seconds/title">Poll Interval Seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -744,12 +661,10 @@
 <span id="v-8881acac8a31116ef93bb190">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/poll_interval_seconds/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -766,8 +681,7 @@
 <span id="v-f7baafa7a76cf1460c038656">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/request_timeout_seconds/default">10</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -777,8 +691,7 @@
 <span id="v-bddf06c95c708e9ee3b6075d">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/request_timeout_seconds/exclusiveMinimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -788,8 +701,7 @@
 <span id="v-5f27c84a963fd32f2b02a2e6">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/request_timeout_seconds/title">Request Timeout Seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -799,12 +711,10 @@
 <span id="v-49bd770d5500519708a9832d">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/request_timeout_seconds/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -828,12 +738,10 @@
 <span id="v-01d5f1a0a9b671adabcb10f3">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources/items/$ref">#/$defs/SourceConfig</code>
 <span class="kind">string</span> <a href="e-796f157ba963429d629b9314.html#v-163e667adaf6efaf900d431f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -843,8 +751,7 @@
 <span id="v-a438d094e1f8097b17ec0b15">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -854,8 +761,7 @@
 <span id="v-a3fd1db48703963e54dd8647">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources/title">Sources</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -865,12 +771,10 @@
 <span id="v-db414a42ad235a00efc6e346">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -887,8 +791,7 @@
 <span id="v-e07f950c4a2a5913902db8ca">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/state_path/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -898,8 +801,7 @@
 <span id="v-556b9893e17ac4a8452cdc8e">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/state_path/title">State Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -909,12 +811,10 @@
 <span id="v-ada3d2075b0bf4dabeafe5ac">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/state_path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -931,8 +831,7 @@
 <span id="v-994d499d37e7ac0e1a6676b8">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/version/default">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -942,8 +841,7 @@
 <span id="v-eceb184d4d51f2ebd9919f6a">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/version/title">Version</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -953,16 +851,13 @@
 <span id="v-98018e342c602ba20b5ca8a8">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/version/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -979,8 +874,7 @@
 <span id="v-9ad44d2519954e2a252973ea">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/required/0">state_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -990,12 +884,10 @@
 <span id="v-ff360ffa854d8db3559440da">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/required/1">sources</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1005,8 +897,7 @@
 <span id="v-12e3daa577ddfc88e2c58539">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/title">EventRelayConfig</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1016,8 +907,7 @@
 <span id="v-8286f8de9eaf02c044a731a5">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1029,7 +919,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+<a href="policy-definition-43f1f247d96b7b042a98a919.html">compatibility/configuration/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1041,7 +931,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
@@ -1051,8 +941,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1064,37 +953,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources</code>
-</td>
-<td>
-<code>configuration-composition/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-riverhog-event-relay:configuration:event-relay-config&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;validated-deployment-composition&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources</code></td>
+<td data-label="Governing rule">
+<code>configuration-composition/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-riverhog-event-relay:configuration:event-relay-config&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;validated-deployment-composition&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

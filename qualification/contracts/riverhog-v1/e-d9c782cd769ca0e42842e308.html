@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-6efea6f4cbc204fa714f57f2.html">riverhog-server</a> / <a href="i-4eb87a4ae6eee85f25e44573.html">Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>RiverhogDocument</h1>
 <p class="context">Encrypted archive management, catalog, and retrieval. Standalone structured-value contracts; these do not define an interaction.</p>
@@ -63,7 +54,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -76,467 +67,340 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_active_passphrase_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_active_passphrase_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-ea597240c60c4500ba7d5612">archive_passphrase_files</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; additionalProperties: <code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-ea597240c60c4500ba7d5612">archive_passphrase_files</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-002c9a9bea4089f4f25da508">archive_read_order</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-002c9a9bea4089f4f25da508">archive_read_order</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>archive_scrypt_work_factor</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>22</code>; default: <code>18</code>
-</td>
-<td>
-<code>18</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_scrypt_work_factor</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>22</code>; default: <code>18</code></td>
+<td data-label="Default">
+<code>18</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-854c5e0c07a691acc118d44d">archive_stores</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-d9c782cd769ca0e42842e308.html#v-c7477255a26c00f3828a29cf">#/$defs/ArchiveStoreDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-854c5e0c07a691acc118d44d">archive_stores</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-d9c782cd769ca0e42842e308.html#v-c7477255a26c00f3828a29cf">#/$defs/ArchiveStoreDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>archive_upload_sweep_interval</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>30s</code>
-</td>
-<td>
-<code>30s</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_upload_sweep_interval</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>30s</code></td>
+<td data-label="Default">
+<code>30s</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>archive_write_store</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_write_store</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>bootstrap_token_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bootstrap_token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>browse_token_lifetime</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>24h</code>
-</td>
-<td>
-<code>24h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>browse_token_lifetime</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>24h</code></td>
+<td data-label="Default">
+<code>24h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>browse_token_signing_key_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>browse_token_signing_key_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>catalog_sync_bootstrap_lifetime</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>7d</code>
-</td>
-<td>
-<code>7d</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>catalog_sync_bootstrap_lifetime</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>7d</code></td>
+<td data-label="Default">
+<code>7d</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>catalog_sync_cursor_lifetime</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>24h</code>
-</td>
-<td>
-<code>24h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>catalog_sync_cursor_lifetime</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>24h</code></td>
+<td data-label="Default">
+<code>24h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>catalog_sync_history_reap_batch_size</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>100</code>
-</td>
-<td>
-<code>100</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>catalog_sync_history_reap_batch_size</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>100</code></td>
+<td data-label="Default">
+<code>100</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>catalog_sync_history_retention</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>30d</code>
-</td>
-<td>
-<code>30d</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>catalog_sync_history_retention</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>30d</code></td>
+<td data-label="Default">
+<code>30d</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>catalog_sync_page_size_max</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>100</code>
-</td>
-<td>
-<code>100</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>catalog_sync_page_size_max</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>100</code></td>
+<td data-label="Default">
+<code>100</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_upload_custody_lease</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>1h</code>
-</td>
-<td>
-<code>1h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_upload_custody_lease</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>1h</code></td>
+<td data-label="Default">
+<code>1h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>database_url_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>database_url_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>event_context_reap_batch_size</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>100</code>
-</td>
-<td>
-<code>100</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>event_context_reap_batch_size</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>100</code></td>
+<td data-label="Default">
+<code>100</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>event_context_retention</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>30d</code>
-</td>
-<td>
-<code>30d</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>event_context_retention</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>30d</code></td>
+<td data-label="Default">
+<code>30d</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>log_level</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>INFO</code>
-</td>
-<td>
-<code>INFO</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>log_level</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>INFO</code></td>
+<td data-label="Default">
+<code>INFO</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-92e2d66278c738287c5d1e0c">public_base_url</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-92e2d66278c738287c5d1e0c">public_base_url</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>range_policy</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-d9c782cd769ca0e42842e308.html#v-a1fac1c36dd8998858844890">#/$defs/RangePolicyDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>range_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-d9c782cd769ca0e42842e308.html#v-a1fac1c36dd8998858844890">#/$defs/RangePolicyDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-40932613412e789201286b2f">range_policy_by_store</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-d9c782cd769ca0e42842e308.html#v-a1fac1c36dd8998858844890">#/$defs/RangePolicyDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-40932613412e789201286b2f">range_policy_by_store</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-d9c782cd769ca0e42842e308.html#v-a1fac1c36dd8998858844890">#/$defs/RangePolicyDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_cache_new_archive_enabled</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>true</code>
-</td>
-<td>
-<code>true</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_cache_new_archive_enabled</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>true</code></td>
+<td data-label="Default">
+<code>true</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_cache_new_archive_lease</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>72h</code>
-</td>
-<td>
-<code>72h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_cache_new_archive_lease</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>72h</code></td>
+<td data-label="Default">
+<code>72h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-edb16f7a86bd691c58709e54">retrieval_cache_stores</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-d9c782cd769ca0e42842e308.html#v-7bd5bf1374c682d8845d0939">#/$defs/CacheStoreDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-edb16f7a86bd691c58709e54">retrieval_cache_stores</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-d9c782cd769ca0e42842e308.html#v-7bd5bf1374c682d8845d0939">#/$defs/CacheStoreDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_cache_sweep_interval</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>5m</code>
-</td>
-<td>
-<code>5m</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_cache_sweep_interval</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>5m</code></td>
+<td data-label="Default">
+<code>5m</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_cache_write_segment_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>67108864</code>
-</td>
-<td>
-<code>67108864</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_cache_write_segment_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>67108864</code></td>
+<td data-label="Default">
+<code>67108864</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_default_lease</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>24h</code>
-</td>
-<td>
-<code>24h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_default_lease</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>24h</code></td>
+<td data-label="Default">
+<code>24h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_estimated_latency</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>48h</code>
-</td>
-<td>
-<code>48h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_estimated_latency</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>48h</code></td>
+<td data-label="Default">
+<code>48h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_max_lease</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>7d</code>
-</td>
-<td>
-<code>7d</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_max_lease</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>7d</code></td>
+<td data-label="Default">
+<code>7d</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_pending_timeout</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>72h</code>
-</td>
-<td>
-<code>72h</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_pending_timeout</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>72h</code></td>
+<td data-label="Default">
+<code>72h</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_restore_poll_interval</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>5m</code>
-</td>
-<td>
-<code>5m</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_restore_poll_interval</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>5m</code></td>
+<td data-label="Default">
+<code>5m</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>throughput</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-d9c782cd769ca0e42842e308.html#v-d58ac68fd5c2b32f243facca">#/$defs/ThroughputDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>throughput</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-d9c782cd769ca0e42842e308.html#v-d58ac68fd5c2b32f243facca">#/$defs/ThroughputDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>volume_policy</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-d9c782cd769ca0e42842e308.html#v-9a7157d57263536ba3e4e1d2">#/$defs/VolumePolicyDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>volume_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-d9c782cd769ca0e42842e308.html#v-9a7157d57263536ba3e4e1d2">#/$defs/VolumePolicyDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -627,7 +491,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -637,16 +501,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -716,7 +578,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -729,97 +591,71 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>allow_insecure_http</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>false</code>
-</td>
-<td>
-<code>false</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>allow_insecure_http</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>base_url</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>base_url</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>download_safety_buffer_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>0B</code>
-</td>
-<td>
-<code>0B</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>download_safety_buffer_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>0B</code></td>
+<td data-label="Default">
+<code>0B</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>maximum_connections</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>32</code>
-</td>
-<td>
-<code>32</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>maximum_connections</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>32</code></td>
+<td data-label="Default">
+<code>32</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-21304f98fe939b1fac3f9840">monthly_download_allowance_bytes</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-21304f98fe939b1fac3f9840">monthly_download_allowance_bytes</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>timeout_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>300</code>
-</td>
-<td>
-<code>300</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>timeout_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>300</code></td>
+<td data-label="Default">
+<code>300</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>token_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -849,7 +685,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -862,97 +698,71 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-f0a25d79b6960a7b0d0ccd3f">admission_budget_bytes</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-f0a25d79b6960a7b0d0ccd3f">admission_budget_bytes</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>admission_enabled</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>true</code>
-</td>
-<td>
-<code>true</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>admission_enabled</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>true</code></td>
+<td data-label="Default">
+<code>true</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>allow_insecure_http</code>
-</td>
-<td>no</td>
-<td>
-<code>boolean</code>; default: <code>false</code>
-</td>
-<td>
-<code>false</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>allow_insecure_http</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>base_url</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>base_url</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>maximum_connections</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>32</code>
-</td>
-<td>
-<code>32</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>maximum_connections</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>32</code></td>
+<td data-label="Default">
+<code>32</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>timeout_seconds</code>
-</td>
-<td>no</td>
-<td>
-<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>300</code>
-</td>
-<td>
-<code>300</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>timeout_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>300</code></td>
+<td data-label="Default">
+<code>300</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>token_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; format: <code>path</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -978,7 +788,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -991,46 +801,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>billing_mode</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;returned_bytes&quot;,&quot;whole_object&quot;]</code>; default: <code>returned_bytes</code>
-</td>
-<td>
-<code>returned_bytes</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>billing_mode</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;returned_bytes&quot;,&quot;whole_object&quot;]</code>; default: <code>returned_bytes</code></td>
+<td data-label="Default">
+<code>returned_bytes</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>max_request_ciphertext_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>67108864</code>
-</td>
-<td>
-<code>67108864</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>max_request_ciphertext_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>67108864</code></td>
+<td data-label="Default">
+<code>67108864</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>merge_gap_ciphertext_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>0</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>merge_gap_ciphertext_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>0</code></td>
+<td data-label="Default">
+<code>0</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1056,7 +854,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1069,144 +867,104 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>age_derivation_concurrency</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>4</code>
-</td>
-<td>
-<code>4</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>age_derivation_concurrency</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>4</code></td>
+<td data-label="Default">
+<code>4</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>age_session_cache_entries</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>; default: <code>128</code>
-</td>
-<td>
-<code>128</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>age_session_cache_entries</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; default: <code>128</code></td>
+<td data-label="Default">
+<code>128</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_max_inflight_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>1073741824</code>
-</td>
-<td>
-<code>1073741824</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_max_inflight_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>1073741824</code></td>
+<td data-label="Default">
+<code>1073741824</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_read_chunk_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>8388608</code>
-</td>
-<td>
-<code>8388608</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_read_chunk_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>8388608</code></td>
+<td data-label="Default">
+<code>8388608</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retrieval_request_concurrency</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>8</code>
-</td>
-<td>
-<code>8</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retrieval_request_concurrency</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>8</code></td>
+<td data-label="Default">
+<code>8</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_read_chunk_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>8388608</code>
-</td>
-<td>
-<code>8388608</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_read_chunk_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>8388608</code></td>
+<td data-label="Default">
+<code>8388608</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>upload_max_inflight_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>1342177280</code>
-</td>
-<td>
-<code>1342177280</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>upload_max_inflight_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>1342177280</code></td>
+<td data-label="Default">
+<code>1342177280</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>upload_prepare_concurrency</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>8</code>
-</td>
-<td>
-<code>8</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>upload_prepare_concurrency</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>8</code></td>
+<td data-label="Default">
+<code>8</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>upload_request_concurrency</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>4</code>
-</td>
-<td>
-<code>4</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>upload_request_concurrency</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>4</code></td>
+<td data-label="Default">
+<code>4</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>write_concurrency</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>4</code>
-</td>
-<td>
-<code>4</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>write_concurrency</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>4</code></td>
+<td data-label="Default">
+<code>4</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1232,7 +990,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1245,88 +1003,64 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>pack_files</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; default: <code>50000</code>
-</td>
-<td>
-<code>50000</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pack_files</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>50000</code></td>
+<td data-label="Default">
+<code>50000</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>pack_member_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>16777216</code>
-</td>
-<td>
-<code>16777216</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pack_member_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>16777216</code></td>
+<td data-label="Default">
+<code>16777216</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>pack_part_plaintext_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>67108864</code>
-</td>
-<td>
-<code>67108864</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pack_part_plaintext_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>67108864</code></td>
+<td data-label="Default">
+<code>67108864</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>pack_source_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>33554432</code>
-</td>
-<td>
-<code>33554432</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>pack_source_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>33554432</code></td>
+<td data-label="Default">
+<code>33554432</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>raw_part_plaintext_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>67108864</code>
-</td>
-<td>
-<code>67108864</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>raw_part_plaintext_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>67108864</code></td>
+<td data-label="Default">
+<code>67108864</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>raw_volume_plaintext_bytes</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; default: <code>17179869184</code>
-</td>
-<td>
-<code>17179869184</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>raw_volume_plaintext_bytes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; default: <code>17179869184</code></td>
+<td data-label="Default">
+<code>17179869184</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -1343,7 +1077,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1353,16 +1087,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1379,7 +1111,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1389,16 +1121,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -1435,8 +1165,7 @@
 <span id="v-2d9469e83dd054de10fa9b94">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1460,8 +1189,7 @@
 <span id="v-f28ba2af0654c6d55e2da0d0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/allow_insecure_http/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1471,8 +1199,7 @@
 <span id="v-2b809803a221ed6153942ee8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/allow_insecure_http/title">Allow Insecure Http</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1482,12 +1209,10 @@
 <span id="v-976cc2b9292c310696dbe7e9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/allow_insecure_http/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1504,8 +1229,7 @@
 <span id="v-4433b69959a3b06a489b8d11">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/base_url/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1515,8 +1239,7 @@
 <span id="v-65eab9a1e41aa04c83d04644">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/base_url/title">Base Url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1526,12 +1249,10 @@
 <span id="v-590c948475dca90aa4d1d5cc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/base_url/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1548,8 +1269,7 @@
 <span id="v-f667af9b4c514b2e091e5747">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/download_safety_buffer_bytes/default">0B</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1559,8 +1279,7 @@
 <span id="v-ca16a0fc716851494f29a340">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/download_safety_buffer_bytes/title">Download Safety Buffer Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1570,12 +1289,10 @@
 <span id="v-07f12bbdbd133a54b2871637">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/download_safety_buffer_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1592,8 +1309,7 @@
 <span id="v-7a47041c057c0adc940ac821">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/maximum_connections/default">32</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1603,8 +1319,7 @@
 <span id="v-5d2b9f4bc0616770a7bc0619">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/maximum_connections/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1614,8 +1329,7 @@
 <span id="v-19b656f96c4bb4713b6cd19b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/maximum_connections/title">Maximum Connections</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1625,12 +1339,10 @@
 <span id="v-61b08498c2b3dbb4e1b3dda8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/maximum_connections/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1661,12 +1373,10 @@
 <span id="v-42bfb8a5336fba832d9eb3df">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/monthly_download_allowance_bytes/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1683,16 +1393,13 @@
 <span id="v-cb2d579ad2fba0dc85a29ca4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/monthly_download_allowance_bytes/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1702,8 +1409,7 @@
 <span id="v-0839a5a9d7bbd514ee41bfa3">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/monthly_download_allowance_bytes/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1713,12 +1419,10 @@
 <span id="v-4f2e9e5493fa13f892555a12">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/monthly_download_allowance_bytes/title">Monthly Download Allowance Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1735,8 +1439,7 @@
 <span id="v-281f6192f7b2af49a799dc74">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/timeout_seconds/default">300</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1746,8 +1449,7 @@
 <span id="v-924434aef67e6a09b6ae88bd">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/timeout_seconds/exclusiveMinimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1757,8 +1459,7 @@
 <span id="v-28193ac170384f0ec4a66870">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/timeout_seconds/title">Timeout Seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1768,12 +1469,10 @@
 <span id="v-d8d88fa3ee788adffd6e3034">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/timeout_seconds/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1790,8 +1489,7 @@
 <span id="v-87be15fe958b137880a1390a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/token_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1801,8 +1499,7 @@
 <span id="v-d96502bfdef03a308b7b8df8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/token_file/title">Token File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1812,16 +1509,13 @@
 <span id="v-050ced5e3392f7a0f1eafe94">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/properties/token_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1838,8 +1532,7 @@
 <span id="v-ed22f0a711f7de2cc8a3b328">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/required/0">base_url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1849,12 +1542,10 @@
 <span id="v-85f8d03a863cee3f77d94eb4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/required/1">token_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1864,8 +1555,7 @@
 <span id="v-2a6e635c0bd573ff2435af3c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/title">ArchiveStoreDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1875,12 +1565,10 @@
 <span id="v-f34d4c3899b76950772628a7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ArchiveStoreDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1897,8 +1585,7 @@
 <span id="v-860fa1d1764a5608ee2fd09d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1936,12 +1623,10 @@
 <span id="v-0048ff4a71fd7112f6d66008">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_budget_bytes/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1958,16 +1643,13 @@
 <span id="v-e36de7e37c3a4061555716b2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_budget_bytes/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1977,8 +1659,7 @@
 <span id="v-0e0d746105dc9fd9112e8209">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_budget_bytes/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1988,12 +1669,10 @@
 <span id="v-942c044f4ea8e34886c24296">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_budget_bytes/title">Admission Budget Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2010,8 +1689,7 @@
 <span id="v-4e38054d65d29d78347143d4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_enabled/default">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2021,8 +1699,7 @@
 <span id="v-8a028871f04e25410c2a1686">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_enabled/title">Admission Enabled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2032,12 +1709,10 @@
 <span id="v-916a20b5230396c3f6d3d62e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/admission_enabled/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2054,8 +1729,7 @@
 <span id="v-d1325d7cb149c7d4bc4fce68">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/allow_insecure_http/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2065,8 +1739,7 @@
 <span id="v-5231bc2917ac05cc4f221f35">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/allow_insecure_http/title">Allow Insecure Http</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2076,12 +1749,10 @@
 <span id="v-d1a1a90e4707242a7900e0e8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/allow_insecure_http/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2098,8 +1769,7 @@
 <span id="v-f02b4c42fd0085675ca67c10">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/base_url/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2109,8 +1779,7 @@
 <span id="v-1516a5dae41679d593bf9aa9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/base_url/title">Base Url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2120,12 +1789,10 @@
 <span id="v-7922bb1ea8f59f6fd3c09749">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/base_url/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2142,8 +1809,7 @@
 <span id="v-0008d544b2822674ea6f3472">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/maximum_connections/default">32</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2153,8 +1819,7 @@
 <span id="v-df796afdb7ec35acfdb3428f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/maximum_connections/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2164,8 +1829,7 @@
 <span id="v-9a7016325a07c0b1ea5f171e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/maximum_connections/title">Maximum Connections</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2175,12 +1839,10 @@
 <span id="v-1405dfe5f345cd2ba80da2f9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/maximum_connections/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2197,8 +1859,7 @@
 <span id="v-8cfc32f858be188932b764d2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/timeout_seconds/default">300</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2208,8 +1869,7 @@
 <span id="v-8f428c04150e0a2ad69dc9d8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/timeout_seconds/exclusiveMinimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2219,8 +1879,7 @@
 <span id="v-96782bb80737940b23522b70">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/timeout_seconds/title">Timeout Seconds</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2230,12 +1889,10 @@
 <span id="v-2a3187b15bc612b1655c4c6a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/timeout_seconds/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2252,8 +1909,7 @@
 <span id="v-52eae04e31992eb7506a2245">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/token_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2263,8 +1919,7 @@
 <span id="v-66846eb335a2e1d77f55f3f8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/token_file/title">Token File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2274,16 +1929,13 @@
 <span id="v-0bf8c043b52074efdf38389a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/properties/token_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2300,8 +1952,7 @@
 <span id="v-3692715c1657e49e49e05001">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/required/0">base_url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2311,12 +1962,10 @@
 <span id="v-1c8bfcaed13db7e776713f10">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/required/1">token_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2326,8 +1975,7 @@
 <span id="v-6d1a9e66c3424294871005f0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/title">CacheStoreDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2337,12 +1985,10 @@
 <span id="v-92b868a3963ac6a2b703392d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/CacheStoreDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2359,8 +2005,7 @@
 <span id="v-208f7d6437d5071b72844114">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2384,8 +2029,7 @@
 <span id="v-367b0e033737f2457d7bf766">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/billing_mode/default">returned_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2402,8 +2046,7 @@
 <span id="v-ef6a3c986eec19b81ab9f155">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/billing_mode/enum/0">returned_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2413,12 +2056,10 @@
 <span id="v-9b5a2c0530bfde2ec7797fb5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/billing_mode/enum/1">whole_object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2428,8 +2069,7 @@
 <span id="v-d8feaa3845bdd4f9c3f3adf3">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/billing_mode/title">Billing Mode</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2439,12 +2079,10 @@
 <span id="v-f950441fa63cdfaa97a54c69">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/billing_mode/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2461,8 +2099,7 @@
 <span id="v-abbe5a086f9bfe20beeeaa52">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/max_request_ciphertext_bytes/default">67108864</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2472,8 +2109,7 @@
 <span id="v-2b820536a6418c1bff1023b2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/max_request_ciphertext_bytes/title">Max Request Ciphertext Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2483,12 +2119,10 @@
 <span id="v-0ec70c3a01180aa6ff3162af">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/max_request_ciphertext_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2505,8 +2139,7 @@
 <span id="v-2bf4e1bcac63f91c0ca9820e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/merge_gap_ciphertext_bytes/default">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2516,8 +2149,7 @@
 <span id="v-b5ed3ed07a4cbc729e37757a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/merge_gap_ciphertext_bytes/title">Merge Gap Ciphertext Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2527,16 +2159,13 @@
 <span id="v-1014db56e62ebb1be027d78f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/properties/merge_gap_ciphertext_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2546,8 +2175,7 @@
 <span id="v-53bb505005273313b130c0bb">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/title">RangePolicyDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2557,12 +2185,10 @@
 <span id="v-a7ab56b47dc08b35a379a62f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/RangePolicyDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2579,8 +2205,7 @@
 <span id="v-3522b587e647476d9c683fe3">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2604,8 +2229,7 @@
 <span id="v-2799782552ede8cab90b884a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_derivation_concurrency/default">4</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2615,8 +2239,7 @@
 <span id="v-53f72222b509ee4cafb7ec3b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_derivation_concurrency/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2626,8 +2249,7 @@
 <span id="v-61551237724b362d90264240">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_derivation_concurrency/title">Age Derivation Concurrency</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2637,12 +2259,10 @@
 <span id="v-22463264cf7e3362768d5f1b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_derivation_concurrency/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2659,8 +2279,7 @@
 <span id="v-725af5e41432397997d1a762">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_session_cache_entries/default">128</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2670,8 +2289,7 @@
 <span id="v-0a08aea31d827625105d7786">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_session_cache_entries/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2681,8 +2299,7 @@
 <span id="v-d3f74114889c8d9f4bc61685">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_session_cache_entries/title">Age Session Cache Entries</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2692,12 +2309,10 @@
 <span id="v-05b9ec7eb990ba3d4235cd14">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/age_session_cache_entries/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2714,8 +2329,7 @@
 <span id="v-e342d8e922937f0c1da1058c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_max_inflight_bytes/default">1073741824</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2725,8 +2339,7 @@
 <span id="v-efbc948aceffb6dafd5e2184">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_max_inflight_bytes/title">Retrieval Max Inflight Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2736,12 +2349,10 @@
 <span id="v-7c0fee60d966d3bfc166b82f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_max_inflight_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2758,8 +2369,7 @@
 <span id="v-4d4a8b7c6b948661b8484293">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_read_chunk_bytes/default">8388608</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2769,8 +2379,7 @@
 <span id="v-bb9fb10354282f920e9f8c3c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_read_chunk_bytes/title">Retrieval Read Chunk Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2780,12 +2389,10 @@
 <span id="v-d37cd0c8e93abaa1fd1649f4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_read_chunk_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2802,8 +2409,7 @@
 <span id="v-335f7dccdcfa4955229443e0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_request_concurrency/default">8</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2813,8 +2419,7 @@
 <span id="v-c29c8ad1008edc15cfb5d436">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_request_concurrency/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2824,8 +2429,7 @@
 <span id="v-b22b25d78d4bf84719152220">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_request_concurrency/title">Retrieval Request Concurrency</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2835,12 +2439,10 @@
 <span id="v-04b4b6a04b6dc8efebb32160">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/retrieval_request_concurrency/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2857,8 +2459,7 @@
 <span id="v-5e6108bab2b29d33b007054b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/source_read_chunk_bytes/default">8388608</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2868,8 +2469,7 @@
 <span id="v-f1de5b0d719ed762d4a2d42b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/source_read_chunk_bytes/title">Source Read Chunk Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2879,12 +2479,10 @@
 <span id="v-d4a815e3d9ff76eaa6f9c1c7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/source_read_chunk_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2901,8 +2499,7 @@
 <span id="v-d21968c8fe22578d98425cfd">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_max_inflight_bytes/default">1342177280</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2912,8 +2509,7 @@
 <span id="v-177f3a602e938bce52914c53">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_max_inflight_bytes/title">Upload Max Inflight Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2923,12 +2519,10 @@
 <span id="v-5537300fa58568cf0167ae77">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_max_inflight_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2945,8 +2539,7 @@
 <span id="v-611bd16ca113144a2274dfcf">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_prepare_concurrency/default">8</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2956,8 +2549,7 @@
 <span id="v-499e8cdc0677db25009303b7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_prepare_concurrency/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2967,8 +2559,7 @@
 <span id="v-81c9adf3355e2524d3fd18cf">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_prepare_concurrency/title">Upload Prepare Concurrency</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2978,12 +2569,10 @@
 <span id="v-28bf10de8cff0cf41ebb67d8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_prepare_concurrency/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3000,8 +2589,7 @@
 <span id="v-845620b5acac4d8e31859463">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_request_concurrency/default">4</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3011,8 +2599,7 @@
 <span id="v-7ab309521be19822883b0c95">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_request_concurrency/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3022,8 +2609,7 @@
 <span id="v-be242f6f723affbc420ae127">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_request_concurrency/title">Upload Request Concurrency</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3033,12 +2619,10 @@
 <span id="v-414c288cba85155885e5a3e2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/upload_request_concurrency/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3055,8 +2639,7 @@
 <span id="v-a25e13bcc1673754f307bc9c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/write_concurrency/default">4</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3066,8 +2649,7 @@
 <span id="v-ca75c35f6cb0f6d90ea2f3e5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/write_concurrency/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3077,8 +2659,7 @@
 <span id="v-344922183788a461454480e9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/write_concurrency/title">Write Concurrency</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3088,16 +2669,13 @@
 <span id="v-ade7c297f6f8ba068409107e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/properties/write_concurrency/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3107,8 +2685,7 @@
 <span id="v-b30bf918aa64f603e348a8b5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/title">ThroughputDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3118,12 +2695,10 @@
 <span id="v-f15f2075293663f7d43df385">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/ThroughputDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3140,8 +2715,7 @@
 <span id="v-f08cc5bc4e5cbbce6b2b27c0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3165,8 +2739,7 @@
 <span id="v-3c3e561429ab8506ac3e2580">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_files/default">50000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3176,8 +2749,7 @@
 <span id="v-e167b7ce97c74fd19d1062cf">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_files/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3187,8 +2759,7 @@
 <span id="v-e656e7fb5d639adbc39d2964">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_files/title">Pack Files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3198,12 +2769,10 @@
 <span id="v-463bd30d54695df9e28c2256">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_files/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3220,8 +2789,7 @@
 <span id="v-e7219f3a658c3396fd3964df">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_member_bytes/default">16777216</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3231,8 +2799,7 @@
 <span id="v-50d9aa9e1270ea760f9e58e1">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_member_bytes/title">Pack Member Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3242,12 +2809,10 @@
 <span id="v-73539f9db0a62be3f4d00717">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_member_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3264,8 +2829,7 @@
 <span id="v-f125fa761d2c5b53b2c46c74">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_part_plaintext_bytes/default">67108864</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3275,8 +2839,7 @@
 <span id="v-1d701eb3ff4e6c3aeefbd352">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_part_plaintext_bytes/title">Pack Part Plaintext Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3286,12 +2849,10 @@
 <span id="v-b36e9695afcf98c309c61590">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_part_plaintext_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3308,8 +2869,7 @@
 <span id="v-dc7f6f60221e0bea3e8c88f4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_source_bytes/default">33554432</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3319,8 +2879,7 @@
 <span id="v-b616d75cf535a44e81d1f47c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_source_bytes/title">Pack Source Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3330,12 +2889,10 @@
 <span id="v-545fff45655b5a8a49e26bed">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/pack_source_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3352,8 +2909,7 @@
 <span id="v-8a6d8efefcd37f2e9328f326">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/raw_part_plaintext_bytes/default">67108864</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3363,8 +2919,7 @@
 <span id="v-fe8e828da90e20e9cadd9598">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/raw_part_plaintext_bytes/title">Raw Part Plaintext Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3374,12 +2929,10 @@
 <span id="v-27ded8a000b03849f7bf45eb">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/raw_part_plaintext_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3396,8 +2949,7 @@
 <span id="v-c9616b227a648fe8ec991e37">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/raw_volume_plaintext_bytes/default">17179869184</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3407,8 +2959,7 @@
 <span id="v-d853887907250d0baddae0b5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/raw_volume_plaintext_bytes/title">Raw Volume Plaintext Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3418,16 +2969,13 @@
 <span id="v-25ce39ee6cf3215abb4f3e70">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/properties/raw_volume_plaintext_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3437,8 +2985,7 @@
 <span id="v-a9a3e88dacfbbf8399827a96">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/title">VolumePolicyDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3448,16 +2995,13 @@
 <span id="v-7ada2cc773c131b6692772e2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$defs/VolumePolicyDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3467,8 +3011,7 @@
 <span id="v-6d231631afa32837ff9137b7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$id">https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3478,8 +3021,7 @@
 <span id="v-642a9645302fd6c200e29620">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3489,8 +3031,7 @@
 <span id="v-294257b7590ba3b93abda844">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3514,8 +3055,7 @@
 <span id="v-887143143f1f7ef435077b2b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_active_passphrase_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3525,8 +3065,7 @@
 <span id="v-37ab1f9838e9e184216f2bb8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_active_passphrase_id/title">Archive Active Passphrase Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3536,12 +3075,10 @@
 <span id="v-334622b5f14078111b7e8f52">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_active_passphrase_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3565,8 +3102,7 @@
 <span id="v-c589f54d870c5d7ae40ef280">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files/additionalProperties/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3576,12 +3112,10 @@
 <span id="v-1db594752a44d07944f7f701">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files/additionalProperties/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3591,8 +3125,7 @@
 <span id="v-9ba5fc87b7e34e46daf0eb55">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files/minProperties">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3602,8 +3135,7 @@
 <span id="v-dea7222808f5b4931e3e0ebf">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files/title">Archive Passphrase Files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3613,12 +3145,10 @@
 <span id="v-dec3f912579e0428dc332fbe">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3642,12 +3172,10 @@
 <span id="v-df60765aea9df040650c4776">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_read_order/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3657,8 +3185,7 @@
 <span id="v-2f4de5b35a011b9d65e2647c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_read_order/title">Archive Read Order</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3668,12 +3195,10 @@
 <span id="v-ca9af6bd5e2f595af1de828f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_read_order/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3690,8 +3215,7 @@
 <span id="v-96948fb8092f06fc51f96aad">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor/default">18</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3701,8 +3225,7 @@
 <span id="v-f01196fba3f51a2a8a4d05be">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor/maximum">22</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3712,8 +3235,7 @@
 <span id="v-27790cac37396e7b0aa4782e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3723,8 +3245,7 @@
 <span id="v-be4e694a8a958fe3d08bc4ab">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor/title">Archive Scrypt Work Factor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3734,12 +3255,10 @@
 <span id="v-6062716a90523f2b0cf33e39">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3763,12 +3282,10 @@
 <span id="v-99b8f31834a5582664dbdac2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_stores/additionalProperties/$ref">#/$defs/ArchiveStoreDocument</code>
 <span class="kind">string</span> <a href="e-d9c782cd769ca0e42842e308.html#v-c7477255a26c00f3828a29cf">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3778,8 +3295,7 @@
 <span id="v-20f45ad885f5f071a3745dfc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_stores/minProperties">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3789,8 +3305,7 @@
 <span id="v-2e2c5d2d6504b572e46167d0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_stores/title">Archive Stores</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3800,12 +3315,10 @@
 <span id="v-0a2dcc6c6a782906a6ad8f7f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_stores/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3822,8 +3335,7 @@
 <span id="v-aff21fdc443962b5ab44b367">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_upload_sweep_interval/default">30s</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3833,8 +3345,7 @@
 <span id="v-aa776f74f274b1c71cd78cf2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_upload_sweep_interval/title">Archive Upload Sweep Interval</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3844,12 +3355,10 @@
 <span id="v-30b894924e84f7259ce15915">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_upload_sweep_interval/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3866,8 +3375,7 @@
 <span id="v-a834d0346e5632313d776841">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_write_store/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3877,8 +3385,7 @@
 <span id="v-f2d1920ec807b8c7049d5c58">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_write_store/title">Archive Write Store</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3888,12 +3395,10 @@
 <span id="v-08e04eed559589cd2629c171">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_write_store/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3910,8 +3415,7 @@
 <span id="v-77c9e88d56bded0fce00a272">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/bootstrap_token_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3921,8 +3425,7 @@
 <span id="v-ab58e1b23d873f97490b0869">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/bootstrap_token_file/title">Bootstrap Token File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3932,12 +3435,10 @@
 <span id="v-816ba0e68feca49922a90f3a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/bootstrap_token_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3954,8 +3455,7 @@
 <span id="v-edc3c7aa7d1be72d810d88e0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/browse_token_lifetime/default">24h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3965,8 +3465,7 @@
 <span id="v-f024eeb07d22d91df5fbaef1">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/browse_token_lifetime/title">Browse Token Lifetime</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3976,12 +3475,10 @@
 <span id="v-161a125178324928cfd06a81">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/browse_token_lifetime/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -3998,8 +3495,7 @@
 <span id="v-57a0d40403e542a10e027fc9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/browse_token_signing_key_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4009,8 +3505,7 @@
 <span id="v-b2f7b4bb9c147ed53c9a6105">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/browse_token_signing_key_file/title">Browse Token Signing Key File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4020,12 +3515,10 @@
 <span id="v-9bd7e3475041cc8140ca02fd">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/browse_token_signing_key_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4042,8 +3535,7 @@
 <span id="v-8460fdaa4c0a872295f9d4fc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_bootstrap_lifetime/default">7d</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4053,8 +3545,7 @@
 <span id="v-5083cd1b2f8e29c5f19f1a8d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_bootstrap_lifetime/title">Catalog Sync Bootstrap Lifetime</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4064,12 +3555,10 @@
 <span id="v-08df2be05fb9f720e8017d23">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_bootstrap_lifetime/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4086,8 +3575,7 @@
 <span id="v-eecb926672adc08459e790fb">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_cursor_lifetime/default">24h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4097,8 +3585,7 @@
 <span id="v-8091f89a3b8fd9e787b7b929">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_cursor_lifetime/title">Catalog Sync Cursor Lifetime</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4108,12 +3595,10 @@
 <span id="v-cbd5d7af36a638a568aaf4b8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_cursor_lifetime/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4130,8 +3615,7 @@
 <span id="v-1807bd3aa06eccbcf8f51dfe">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_reap_batch_size/default">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4141,8 +3625,7 @@
 <span id="v-45d7122f4db0552e14c94d7b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_reap_batch_size/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4152,8 +3635,7 @@
 <span id="v-c65ccb69afdc22fc8d7ae26d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_reap_batch_size/title">Catalog Sync History Reap Batch Size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4163,12 +3645,10 @@
 <span id="v-fb7700af4bb926e20d63f4d1">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_reap_batch_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4185,8 +3665,7 @@
 <span id="v-a89cd6685af47730bcb2cccc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_retention/default">30d</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4196,8 +3675,7 @@
 <span id="v-4ca8d89cda85043bfcf3e602">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_retention/title">Catalog Sync History Retention</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4207,12 +3685,10 @@
 <span id="v-5b396c20bd8606bdb45c9a58">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_history_retention/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4229,8 +3705,7 @@
 <span id="v-2b8ac328dc91c7895e85849b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max/default">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4240,8 +3715,7 @@
 <span id="v-6e49a25e2dd95d5a34205976">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4251,8 +3725,7 @@
 <span id="v-4ebb934c7554c41a91ce791b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4262,8 +3735,7 @@
 <span id="v-f8625cb64a2ce8ef9ff43f5b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max/title">Catalog Sync Page Size Max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4273,12 +3745,10 @@
 <span id="v-4c0eda2fcbe4b0125de651ca">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4295,8 +3765,7 @@
 <span id="v-5b4dad0b8538c4f3b066ea96">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/collection_upload_custody_lease/default">1h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4306,8 +3775,7 @@
 <span id="v-a0eb938fbb387369d1315836">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/collection_upload_custody_lease/title">Collection Upload Custody Lease</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4317,12 +3785,10 @@
 <span id="v-61ce012d1c189a4d499a25e5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/collection_upload_custody_lease/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4339,8 +3805,7 @@
 <span id="v-b93ed073f2cb5c54f9419b2d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/database_url_file/format">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4350,8 +3815,7 @@
 <span id="v-dde14cf6dd57c47a3ddb2743">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/database_url_file/title">Database Url File</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4361,12 +3825,10 @@
 <span id="v-1d5fb5f79ee33a206bb3efc8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/database_url_file/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4383,8 +3845,7 @@
 <span id="v-d2d7ffa770c962b5c77c432b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_reap_batch_size/default">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4394,8 +3855,7 @@
 <span id="v-2fc69a5fdb18f7e98dd067c8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_reap_batch_size/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4405,8 +3865,7 @@
 <span id="v-f424f17cd93793e8a5920cbe">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_reap_batch_size/title">Event Context Reap Batch Size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4416,12 +3875,10 @@
 <span id="v-e80fdcec43ff4680e7835034">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_reap_batch_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4438,8 +3895,7 @@
 <span id="v-40944c80f4f76dd09c48077f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_retention/default">30d</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4449,8 +3905,7 @@
 <span id="v-80981cdb052e1ffb2b718b53">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_retention/title">Event Context Retention</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4460,12 +3915,10 @@
 <span id="v-17a4e011dd90052cb5fe10e0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/event_context_retention/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4482,8 +3935,7 @@
 <span id="v-772163665575511ada3ce292">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/log_level/default">INFO</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4493,8 +3945,7 @@
 <span id="v-ac6b6d21d0e0f2cd2fce381b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/log_level/title">Log Level</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4504,12 +3955,10 @@
 <span id="v-57f9ee160fba010e588bb69c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/log_level/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4540,12 +3989,10 @@
 <span id="v-08447e059ca09913760d5250">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/public_base_url/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4562,16 +4009,13 @@
 <span id="v-0619332cb370f7d97c9f3f0b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/public_base_url/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4581,8 +4025,7 @@
 <span id="v-cc539e887ab9a91340bf6728">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/public_base_url/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4592,12 +4035,10 @@
 <span id="v-3363c5923f6216d7b70406e6">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/public_base_url/title">Public Base Url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4614,12 +4055,10 @@
 <span id="v-93ad707b951ee2067c4cb5c1">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/range_policy/$ref">#/$defs/RangePolicyDocument</code>
 <span class="kind">string</span> <a href="e-d9c782cd769ca0e42842e308.html#v-a1fac1c36dd8998858844890">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4643,12 +4082,10 @@
 <span id="v-a1958630b357d3cc94f5a049">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/range_policy_by_store/additionalProperties/$ref">#/$defs/RangePolicyDocument</code>
 <span class="kind">string</span> <a href="e-d9c782cd769ca0e42842e308.html#v-a1fac1c36dd8998858844890">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4658,8 +4095,7 @@
 <span id="v-ddb5182059196a058f434f6d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/range_policy_by_store/title">Range Policy By Store</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4669,12 +4105,10 @@
 <span id="v-860d702dd6c89dbae7854771">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/range_policy_by_store/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4691,8 +4125,7 @@
 <span id="v-45b8cebada0225c8c2201100">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_new_archive_enabled/default">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4702,8 +4135,7 @@
 <span id="v-a82e8024aa7ca9e11138296c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_new_archive_enabled/title">Retrieval Cache New Archive Enabled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4713,12 +4145,10 @@
 <span id="v-dd8dd37e2f943d1f49691bf5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_new_archive_enabled/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4735,8 +4165,7 @@
 <span id="v-6c446b95f7592c0ddbf9bcde">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_new_archive_lease/default">72h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4746,8 +4175,7 @@
 <span id="v-e2b4fb544262ba128c0525ad">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_new_archive_lease/title">Retrieval Cache New Archive Lease</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4757,12 +4185,10 @@
 <span id="v-2d951b0913caccb03b0a3ede">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_new_archive_lease/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4786,12 +4212,10 @@
 <span id="v-d6c11bd1d4a35ffa1c861b17">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_stores/additionalProperties/$ref">#/$defs/CacheStoreDocument</code>
 <span class="kind">string</span> <a href="e-d9c782cd769ca0e42842e308.html#v-7bd5bf1374c682d8845d0939">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4801,8 +4225,7 @@
 <span id="v-ee27bcf2e9c330503c0b6cb3">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_stores/title">Retrieval Cache Stores</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4812,12 +4235,10 @@
 <span id="v-19babe8bc075572f0eec3083">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_stores/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4834,8 +4255,7 @@
 <span id="v-e811b71042bade1b52eacff4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_sweep_interval/default">5m</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4845,8 +4265,7 @@
 <span id="v-fa27b76031bf42f95f2a31d1">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_sweep_interval/title">Retrieval Cache Sweep Interval</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4856,12 +4275,10 @@
 <span id="v-82ca197f18c8cdc49bb95f46">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_sweep_interval/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4878,8 +4295,7 @@
 <span id="v-2203ed2480558e5bebfcc10c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_write_segment_bytes/default">67108864</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4889,8 +4305,7 @@
 <span id="v-3307aee0509fef67f59f8f78">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_write_segment_bytes/title">Retrieval Cache Write Segment Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4900,12 +4315,10 @@
 <span id="v-98f9fa8d06ef43ef1ac3addc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_write_segment_bytes/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4922,8 +4335,7 @@
 <span id="v-93266f6d31ef9e4aebe7f98e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_default_lease/default">24h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4933,8 +4345,7 @@
 <span id="v-7a1c6046ea2099933768569b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_default_lease/title">Retrieval Default Lease</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4944,12 +4355,10 @@
 <span id="v-bb8cb3be5bbf4dccce67105c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_default_lease/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4966,8 +4375,7 @@
 <span id="v-b4b43e0b2fb400bd70011cd9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_estimated_latency/default">48h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4977,8 +4385,7 @@
 <span id="v-8225444317127717bc90f9e0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_estimated_latency/title">Retrieval Estimated Latency</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -4988,12 +4395,10 @@
 <span id="v-6c3716e34e66ef742e989d4e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_estimated_latency/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5010,8 +4415,7 @@
 <span id="v-8f5e3a845135cbb5ef8a3d54">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_max_lease/default">7d</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5021,8 +4425,7 @@
 <span id="v-4b5fc54ec586d1e704361fea">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_max_lease/title">Retrieval Max Lease</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5032,12 +4435,10 @@
 <span id="v-e2b5381cfb0b8accd671ace7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_max_lease/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5054,8 +4455,7 @@
 <span id="v-fcecf9fe6ac969cb7c423b59">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_pending_timeout/default">72h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5065,8 +4465,7 @@
 <span id="v-1c0992d66f6fcf1c4e997130">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_pending_timeout/title">Retrieval Pending Timeout</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5076,12 +4475,10 @@
 <span id="v-1bf69d9eca3ffe17efcb9499">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_pending_timeout/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5098,8 +4495,7 @@
 <span id="v-f00838211a54a5484c29729b">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_restore_poll_interval/default">5m</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5109,8 +4505,7 @@
 <span id="v-19e9fca0ad078371396bc42f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_restore_poll_interval/title">Retrieval Restore Poll Interval</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5120,12 +4515,10 @@
 <span id="v-06b1f3614de13ca1d5b80841">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_restore_poll_interval/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5142,12 +4535,10 @@
 <span id="v-67d61de469f9d251c3d56992">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/throughput/$ref">#/$defs/ThroughputDocument</code>
 <span class="kind">string</span> <a href="e-d9c782cd769ca0e42842e308.html#v-d58ac68fd5c2b32f243facca">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5164,16 +4555,13 @@
 <span id="v-a39ce9dbd59d9e454d07d50a">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/volume_policy/$ref">#/$defs/VolumePolicyDocument</code>
 <span class="kind">string</span> <a href="e-d9c782cd769ca0e42842e308.html#v-9a7157d57263536ba3e4e1d2">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5190,8 +4578,7 @@
 <span id="v-51f176186a76a410d9267441">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/0">database_url_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5201,8 +4588,7 @@
 <span id="v-85f34d3c085d009ade6ef7ca">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/1">bootstrap_token_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5212,8 +4598,7 @@
 <span id="v-917a494279c580bfe7b59d1e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/2">browse_token_signing_key_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5223,8 +4608,7 @@
 <span id="v-7a13a8229ed2d048cba8fe08">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/3">archive_passphrase_files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5234,8 +4618,7 @@
 <span id="v-53cd56a8bcef2f00f6c05a03">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/4">archive_active_passphrase_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5245,8 +4628,7 @@
 <span id="v-1199a240df5681fc8f52ba26">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/5">archive_write_store</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5256,12 +4638,10 @@
 <span id="v-c27a2322eef8a18cab108280">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/required/6">archive_stores</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5271,8 +4651,7 @@
 <span id="v-573af8553c520356706d72b5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/title">RiverhogDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -5282,8 +4661,7 @@
 <span id="v-1f587e4b42e41753eb46c94d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -5295,7 +4673,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -5307,7 +4685,7 @@
 <a href="source-authorities.html#source-aae39789532a870076a5a379">protocol:https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json</a> — <code data-source-path="riverhog/src/riverhog_core/config.schema.json">riverhog/src/riverhog_core/config.schema.json</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -5317,8 +4695,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -5330,97 +4707,79 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_passphrase_files</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_read_order</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_read_order</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:22,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_scrypt_work_factor</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:22,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_stores</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/archive_stores</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/catalog_sync_page_size_max</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/range_policy_by_store</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/range_policy_by_store</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_stores</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1riverhog-server.schema.json/properties/retrieval_cache_stores</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

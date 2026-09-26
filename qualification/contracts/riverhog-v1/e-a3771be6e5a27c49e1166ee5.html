@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-919a34a8115bd878cd846124.html">riverhog-catalog</a> / <a href="i-5548924e3ea02159ee650edb.html">Durable State</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog-catalog: collection_processing_disposition_sets</h1>
 <p class="context">Encrypted archive management, catalog, and retrieval. Persisted structures, schema heads, and v1 transition obligations.</p>
@@ -33,7 +24,7 @@
 <div class="human-contract">
 <h3>Table: <code>collection_processing_disposition_sets</code>
 </h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -46,296 +37,230 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>claim_id</code>
-</td>
-<td>
-<code>VARCHAR(64)</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>claim_id VARCHAR(64) NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>claim_id</code></td>
+<td data-label="Type">
+<code>VARCHAR(64)</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>claim_id VARCHAR(64) NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>state VARCHAR NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>state</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>state VARCHAR NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>disposition_count</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>disposition_count BIGINT NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>disposition_count</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>disposition_count BIGINT NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>output_edge_count</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>output_edge_count BIGINT NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>output_edge_count</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>output_edge_count BIGINT NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>output_artifact_count</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>output_artifact_count BIGINT NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>output_artifact_count</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>output_artifact_count BIGINT NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>transformed_count</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>transformed_count BIGINT NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>transformed_count</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>transformed_count BIGINT NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>transformed_with_outputs_count</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>transformed_with_outputs_count BIGINT NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>transformed_with_outputs_count</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>transformed_with_outputs_count BIGINT NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>validation_phase</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>validation_phase VARCHAR</code>
-</td>
+<td data-label="Column">
+<code>validation_phase</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>validation_phase VARCHAR</code></td>
 </tr>
 <tr>
-<td>
-<code>validation_collection_id</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>validation_collection_id BIGINT</code>
-</td>
+<td data-label="Column">
+<code>validation_collection_id</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>validation_collection_id BIGINT</code></td>
 </tr>
 <tr>
-<td>
-<code>validation_input_path</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>validation_input_path VARCHAR</code>
-</td>
+<td data-label="Column">
+<code>validation_input_path</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>validation_input_path VARCHAR</code></td>
 </tr>
 <tr>
-<td>
-<code>validation_output_path</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>validation_output_path VARCHAR</code>
-</td>
+<td data-label="Column">
+<code>validation_output_path</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>validation_output_path VARCHAR</code></td>
 </tr>
 <tr>
-<td>
-<code>validation_output_collection_id</code>
-</td>
-<td>
-<code>BIGINT</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>validation_output_collection_id BIGINT</code>
-</td>
+<td data-label="Column">
+<code>validation_output_collection_id</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>validation_output_collection_id BIGINT</code></td>
 </tr>
 <tr>
-<td>
-<code>validation_output_input_path</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>validation_output_input_path VARCHAR</code>
-</td>
+<td data-label="Column">
+<code>validation_output_input_path</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>validation_output_input_path VARCHAR</code></td>
 </tr>
 <tr>
-<td>
-<code>disposition_hash_state</code>
-</td>
-<td>
-<code>TEXT</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>disposition_hash_state TEXT</code>
-</td>
+<td data-label="Column">
+<code>disposition_hash_state</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>disposition_hash_state TEXT</code></td>
 </tr>
 <tr>
-<td>
-<code>output_hash_state</code>
-</td>
-<td>
-<code>TEXT</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>output_hash_state TEXT</code>
-</td>
+<td data-label="Column">
+<code>output_hash_state</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>output_hash_state TEXT</code></td>
 </tr>
 <tr>
-<td>
-<code>disposition_sha256</code>
-</td>
-<td>
-<code>VARCHAR(64)</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>disposition_sha256 VARCHAR(64)</code>
-</td>
+<td data-label="Column">
+<code>disposition_sha256</code></td>
+<td data-label="Type">
+<code>VARCHAR(64)</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>disposition_sha256 VARCHAR(64)</code></td>
 </tr>
 <tr>
-<td>
-<code>output_sha256</code>
-</td>
-<td>
-<code>VARCHAR(64)</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>output_sha256 VARCHAR(64)</code>
-</td>
+<td data-label="Column">
+<code>output_sha256</code></td>
+<td data-label="Type">
+<code>VARCHAR(64)</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>output_sha256 VARCHAR(64)</code></td>
 </tr>
 <tr>
-<td>
-<code>identity_sha256</code>
-</td>
-<td>
-<code>VARCHAR(64)</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>identity_sha256 VARCHAR(64)</code>
-</td>
+<td data-label="Column">
+<code>identity_sha256</code></td>
+<td data-label="Type">
+<code>VARCHAR(64)</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>identity_sha256 VARCHAR(64)</code></td>
 </tr>
 <tr>
-<td>
-<code>failure</code>
-</td>
-<td>
-<code>TEXT</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>failure TEXT</code>
-</td>
+<td data-label="Column">
+<code>failure</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>failure TEXT</code></td>
 </tr>
 <tr>
-<td>
-<code>created_at</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>created_at VARCHAR NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>created_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>created_at VARCHAR NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>updated_at</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>
-<code>updated_at VARCHAR NOT NULL</code>
-</td>
+<td data-label="Column">
+<code>updated_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>updated_at VARCHAR NOT NULL</code></td>
 </tr>
 <tr>
-<td>
-<code>sealed_at</code>
-</td>
-<td>
-<code>VARCHAR</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>sealed_at VARCHAR</code>
-</td>
+<td data-label="Column">
+<code>sealed_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>sealed_at VARCHAR</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Table constraints</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -346,114 +271,84 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>primary-key</code>
-</td>
-<td>
-<code></code>
-</td>
-<td>
-<code>PRIMARY KEY (claim_id)</code>
-</td>
+<td data-label="Kind">
+<code>primary-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>PRIMARY KEY (claim_id)</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_processing_disposition_sets_state</code>
-</td>
-<td>
-<code>CONSTRAINT ck_processing_disposition_sets_state CHECK (state IN (&#x27;receiving&#x27;,&#x27;sealing&#x27;,&#x27;sealed&#x27;,&#x27;failed&#x27;))</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_processing_disposition_sets_state</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_processing_disposition_sets_state CHECK (state IN (&#x27;receiving&#x27;,&#x27;sealing&#x27;,&#x27;sealed&#x27;,&#x27;failed&#x27;))</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_processing_disposition_sets_phase</code>
-</td>
-<td>
-<code>CONSTRAINT ck_processing_disposition_sets_phase CHECK (validation_phase IS NULL OR validation_phase IN (&#x27;dispositions&#x27;,&#x27;outputs&#x27;))</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_processing_disposition_sets_phase</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_processing_disposition_sets_phase CHECK (validation_phase IS NULL OR validation_phase IN (&#x27;dispositions&#x27;,&#x27;outputs&#x27;))</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_processing_disposition_sets_counts</code>
-</td>
-<td>
-<code>CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count &gt;= 0 AND output_edge_count &gt;= 0 AND output_artifact_count &gt;= 0 AND transformed_count &gt;= 0 AND transformed_with_outputs_count &gt;= 0)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_processing_disposition_sets_counts</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count &gt;= 0 AND output_edge_count &gt;= 0 AND output_artifact_count &gt;= 0 AND transformed_count &gt;= 0 AND transformed_with_outputs_count &gt;= 0)</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_processing_disposition_sets_output_counts</code>
-</td>
-<td>
-<code>CONSTRAINT ck_processing_disposition_sets_output_counts CHECK (output_artifact_count &lt;= output_edge_count)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_processing_disposition_sets_output_counts</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_processing_disposition_sets_output_counts CHECK (output_artifact_count &lt;= output_edge_count)</code></td>
 </tr>
 <tr>
-<td>
-<code>foreign-key</code>
-</td>
-<td>
-<code></code>
-</td>
-<td>
-<code>FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE</code>
-</td>
+<td data-label="Kind">
+<code>foreign-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_collection_processing_disposition_sets_claim_id_hex</code>
-</td>
-<td>
-<code>CONSTRAINT ck_collection_processing_disposition_sets_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_collection_processing_disposition_sets_claim_id_hex</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_collection_processing_disposition_sets_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_sha256_66cafd8d5821f368</code>
-</td>
-<td>
-<code>CONSTRAINT ck_sha256_66cafd8d5821f368 CHECK (disposition_sha256 IS NULL OR length(disposition_sha256) = 64 AND lower(disposition_sha256) = disposition_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(disposition_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_sha256_66cafd8d5821f368</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_sha256_66cafd8d5821f368 CHECK (disposition_sha256 IS NULL OR length(disposition_sha256) = 64 AND lower(disposition_sha256) = disposition_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(disposition_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_collection_processing_disposition_sets_output_sha256_hex</code>
-</td>
-<td>
-<code>CONSTRAINT ck_collection_processing_disposition_sets_output_sha256_hex CHECK (output_sha256 IS NULL OR length(output_sha256) = 64 AND lower(output_sha256) = output_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(output_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_collection_processing_disposition_sets_output_sha256_hex</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_collection_processing_disposition_sets_output_sha256_hex CHECK (output_sha256 IS NULL OR length(output_sha256) = 64 AND lower(output_sha256) = output_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(output_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code></td>
 </tr>
 <tr>
-<td>
-<code>check</code>
-</td>
-<td>
-<code>ck_sha256_11dda87dcbdbf203</code>
-</td>
-<td>
-<code>CONSTRAINT ck_sha256_11dda87dcbdbf203 CHECK (identity_sha256 IS NULL OR length(identity_sha256) = 64 AND lower(identity_sha256) = identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(identity_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
-</td>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_sha256_11dda87dcbdbf203</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_sha256_11dda87dcbdbf203 CHECK (identity_sha256 IS NULL OR length(identity_sha256) = 64 AND lower(identity_sha256) = identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(identity_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code></td>
 </tr>
 </tbody>
 </table>
@@ -489,8 +384,7 @@
 <span id="v-eddb57c1204878ae6cb925a9">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/0/definition">claim_id VARCHAR(64) NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -500,8 +394,7 @@
 <span id="v-79328343ee66e2036617f75c">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/0/name">claim_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -511,8 +404,7 @@
 <span id="v-98b03e16c2d0ad0ea8c3e58d">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/0/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -522,12 +414,10 @@
 <span id="v-7aa8a4b6c29c12a55905060e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/0/type">VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -544,8 +434,7 @@
 <span id="v-b9ae727db1b0997176360018">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/1/definition">state VARCHAR NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -555,8 +444,7 @@
 <span id="v-902d1141f9fd3892baf7576e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/1/name">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -566,8 +454,7 @@
 <span id="v-59496c2773b9402f0b783a14">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/1/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -577,12 +464,10 @@
 <span id="v-d12be008f926f9cab4ef8dfb">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/1/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -599,8 +484,7 @@
 <span id="v-23bb6a2a43228b0851a33d6b">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/2/definition">disposition_count BIGINT NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -610,8 +494,7 @@
 <span id="v-1145078515616e302873a226">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/2/name">disposition_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -621,8 +504,7 @@
 <span id="v-95fb11dfc4b48fc657c0e0cc">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/2/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -632,12 +514,10 @@
 <span id="v-7a6eacaf57f9adfce728f179">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/2/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -654,8 +534,7 @@
 <span id="v-51dfd41bfb3f1e5ebeca6c5a">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/3/definition">output_edge_count BIGINT NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -665,8 +544,7 @@
 <span id="v-9b76d51fa2c7f71a321abfe1">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/3/name">output_edge_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -676,8 +554,7 @@
 <span id="v-373e2033a01570d1afa6ad64">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/3/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -687,12 +564,10 @@
 <span id="v-57bdb423827af83f445359c5">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/3/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -709,8 +584,7 @@
 <span id="v-e89b102643716cd363f6d8e8">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/4/definition">output_artifact_count BIGINT NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -720,8 +594,7 @@
 <span id="v-eed7da7dd29654d46a04eafd">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/4/name">output_artifact_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -731,8 +604,7 @@
 <span id="v-d704e6d9b6d5b58f9d4ef069">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/4/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -742,12 +614,10 @@
 <span id="v-60f8d11a539068c249a0ed63">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/4/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -764,8 +634,7 @@
 <span id="v-2385da05e725c8bb8085924e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/5/definition">transformed_count BIGINT NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -775,8 +644,7 @@
 <span id="v-7c4e2d52397592c3c85738b0">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/5/name">transformed_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -786,8 +654,7 @@
 <span id="v-1ec71f2586203a0ff9af723c">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/5/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -797,12 +664,10 @@
 <span id="v-650215fad9407d56e43a1d9a">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/5/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -819,8 +684,7 @@
 <span id="v-aef823a8a2dcc94289ddcbde">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/6/definition">transformed_with_outputs_count BIGINT NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -830,8 +694,7 @@
 <span id="v-152f81622316ccbed36822de">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/6/name">transformed_with_outputs_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -841,8 +704,7 @@
 <span id="v-55d9297904764bf319ec6420">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/6/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -852,12 +714,10 @@
 <span id="v-9a87668f3ef332fd814384a8">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/6/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -874,8 +734,7 @@
 <span id="v-8869d8f40b8e4710ad2c2225">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/7/definition">validation_phase VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -885,8 +744,7 @@
 <span id="v-ef116f0c02a0f89609e083a2">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/7/name">validation_phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -896,8 +754,7 @@
 <span id="v-8c4d69fb28ed08b228018d0e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/7/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -907,12 +764,10 @@
 <span id="v-c966975b6fc1bf94bc892ad3">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/7/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -929,8 +784,7 @@
 <span id="v-92104af188ed917c93990632">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/8/definition">validation_collection_id BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -940,8 +794,7 @@
 <span id="v-55c10c8b3b2f5152a94fb8d5">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/8/name">validation_collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -951,8 +804,7 @@
 <span id="v-4d439fa7aa86788164852328">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/8/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -962,12 +814,10 @@
 <span id="v-4ef7da89a457e1024ce22024">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/8/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -984,8 +834,7 @@
 <span id="v-58483859d402598ad7cec538">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/9/definition">validation_input_path VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -995,8 +844,7 @@
 <span id="v-ad1c13aa37975a109ddfac38">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/9/name">validation_input_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1006,8 +854,7 @@
 <span id="v-b4483443d27c910a21e6c2db">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/9/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1017,12 +864,10 @@
 <span id="v-70209ce36c1b357e4a9aaf4a">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/9/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1039,8 +884,7 @@
 <span id="v-fea3b05ff85eeaa6822ce9ef">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/10/definition">validation_output_path VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1050,8 +894,7 @@
 <span id="v-f40408e7935ea7ba63dacc09">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/10/name">validation_output_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1061,8 +904,7 @@
 <span id="v-8a3490011c9a33edcc860055">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/10/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1072,12 +914,10 @@
 <span id="v-62b53aed880e1427b9642b2b">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/10/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1094,8 +934,7 @@
 <span id="v-b36a8b19fe8506510c6bb42d">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/11/definition">validation_output_collection_id BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1105,8 +944,7 @@
 <span id="v-0ee7da12b501ec7bfb48cd1d">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/11/name">validation_output_collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1116,8 +954,7 @@
 <span id="v-0858f9f5e5f92a6f91ae7a53">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/11/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1127,12 +964,10 @@
 <span id="v-8a49e1393f10201d55c393d4">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/11/type">BIGINT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1149,8 +984,7 @@
 <span id="v-a8a290ca5b90ed7bc38a78e6">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/12/definition">validation_output_input_path VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1160,8 +994,7 @@
 <span id="v-93e6677b20aaaf610b08b16e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/12/name">validation_output_input_path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1171,8 +1004,7 @@
 <span id="v-ba27890e3dfd21c552bcfb33">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/12/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1182,12 +1014,10 @@
 <span id="v-8155fa05fe7a97ff21982105">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/12/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1204,8 +1034,7 @@
 <span id="v-c7c941dd8dfda9512bcba0f0">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/13/definition">disposition_hash_state TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1215,8 +1044,7 @@
 <span id="v-3188d4b028e1ce3144789a59">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/13/name">disposition_hash_state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1226,8 +1054,7 @@
 <span id="v-06ac019a20a977c5c426d49b">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/13/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1237,12 +1064,10 @@
 <span id="v-19a01e035707f796d3871c67">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/13/type">TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1259,8 +1084,7 @@
 <span id="v-a5852e84294b2f1e92e9180b">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/14/definition">output_hash_state TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1270,8 +1094,7 @@
 <span id="v-082211e5e67a10b89a8018eb">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/14/name">output_hash_state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1281,8 +1104,7 @@
 <span id="v-876618158eddcc7796ed73be">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/14/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1292,12 +1114,10 @@
 <span id="v-363940a9831c61ac6554f250">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/14/type">TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1314,8 +1134,7 @@
 <span id="v-3bfd36c7aa24a1cacb1d650c">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/15/definition">disposition_sha256 VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1325,8 +1144,7 @@
 <span id="v-f20f3a58a7dd7b5b7102eb52">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/15/name">disposition_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1336,8 +1154,7 @@
 <span id="v-31ee26dfa6201ef1f29c57c2">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/15/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1347,12 +1164,10 @@
 <span id="v-9140adc57ad4b563bd3be46b">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/15/type">VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1369,8 +1184,7 @@
 <span id="v-08df8c65f6deb2113af2222a">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/16/definition">output_sha256 VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1380,8 +1194,7 @@
 <span id="v-56cf17b0a1fbf96aa77658e4">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/16/name">output_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1391,8 +1204,7 @@
 <span id="v-c95de2db1b7d99f6a3979313">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/16/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1402,12 +1214,10 @@
 <span id="v-9ed0b1f842010b8bca453b1f">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/16/type">VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1424,8 +1234,7 @@
 <span id="v-c68981238ef012363445d949">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/17/definition">identity_sha256 VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1435,8 +1244,7 @@
 <span id="v-386692819fad3de931cdc835">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/17/name">identity_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1446,8 +1254,7 @@
 <span id="v-a24d38cabbdd31dc0ec81140">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/17/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1457,12 +1264,10 @@
 <span id="v-41adc625de7472d761c47efa">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/17/type">VARCHAR(64)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1479,8 +1284,7 @@
 <span id="v-b64dc7e3291e66d2b2cfa354">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/18/definition">failure TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1490,8 +1294,7 @@
 <span id="v-50b583d5284e3be94998bcb2">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/18/name">failure</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1501,8 +1304,7 @@
 <span id="v-4a71b6023b7fa10963d075ef">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/18/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1512,12 +1314,10 @@
 <span id="v-0de8e932ba1e939fc48fbb32">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/18/type">TEXT</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1534,8 +1334,7 @@
 <span id="v-2c037e6facb8ee79014340ae">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/19/definition">created_at VARCHAR NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1545,8 +1344,7 @@
 <span id="v-bc87fa8dbdd3a31d6976ed29">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/19/name">created_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1556,8 +1354,7 @@
 <span id="v-e428a464de376b7253e947f1">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/19/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1567,12 +1364,10 @@
 <span id="v-7955d51b8b1c88975eb00761">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/19/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1589,8 +1384,7 @@
 <span id="v-5c522ec9b6c7164c4170b92a">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/20/definition">updated_at VARCHAR NOT NULL</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1600,8 +1394,7 @@
 <span id="v-2f46dc5293c2a6cb33a84895">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/20/name">updated_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1611,8 +1404,7 @@
 <span id="v-21cbd9cfb4c40444cd848c5d">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/20/nullable">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1622,12 +1414,10 @@
 <span id="v-ecd5c0ac47da467d607e4a16">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/20/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1644,8 +1434,7 @@
 <span id="v-3e3725af86f7a74cda9485ca">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/21/definition">sealed_at VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1655,8 +1444,7 @@
 <span id="v-5f07be369455ea8ad9c867b8">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/21/name">sealed_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1666,8 +1454,7 @@
 <span id="v-0e56f38e29c913ccc46b2d24">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/21/nullable">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1677,16 +1464,13 @@
 <span id="v-e2f6025c508ed2bbb3828d70">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/columns/21/type">VARCHAR</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1717,12 +1501,10 @@
 <span id="v-aca499f754250780365f047e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/0/columns/0">claim_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1732,8 +1514,7 @@
 <span id="v-28e2a4bdeb842e2a46597756">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/0/definition">PRIMARY KEY (claim_id)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1743,12 +1524,10 @@
 <span id="v-870154b63fef2160fe7a0cf4">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/0/kind">primary-key</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1765,8 +1544,7 @@
 <span id="v-2246072d3732e1e8990c28cd">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/1/definition">CONSTRAINT ck_processing_disposition_sets_state CHECK (state IN (&#x27;receiving&#x27;,&#x27;sealing&#x27;,&#x27;sealed&#x27;,&#x27;failed&#x27;))</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1776,8 +1554,7 @@
 <span id="v-823734aa3bee2441e17c2072">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/1/expression">(state IN (&#x27;receiving&#x27;,&#x27;sealing&#x27;,&#x27;sealed&#x27;,&#x27;failed&#x27;))</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1787,8 +1564,7 @@
 <span id="v-2f439f63a3aa578156670650">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/1/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1798,12 +1574,10 @@
 <span id="v-2d954b5b8f56986c112e165c">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/1/name">ck_processing_disposition_sets_state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1820,8 +1594,7 @@
 <span id="v-e6f9e4e6b6bdd024e1507b14">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/2/definition">CONSTRAINT ck_processing_disposition_sets_phase CHECK (validation_phase IS NULL OR validation_phase IN (&#x27;dispositions&#x27;,&#x27;outputs&#x27;))</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1831,8 +1604,7 @@
 <span id="v-46c93d58ee6d4e0c6e2d63e5">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/2/expression">(validation_phase IS NULL OR validation_phase IN (&#x27;dispositions&#x27;,&#x27;outputs&#x27;))</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1842,8 +1614,7 @@
 <span id="v-d135cf434ca5134f55122d74">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/2/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1853,12 +1624,10 @@
 <span id="v-9c56bb646677ce9454bb0544">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/2/name">ck_processing_disposition_sets_phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1875,8 +1644,7 @@
 <span id="v-8fa19563f6e6ba5bffb9ef4e">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/3/definition">CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count &gt;= 0 AND output_edge_count &gt;= 0 AND output_artifact_count &gt;= 0 AND transformed_count &gt;= 0 AND transformed_with_outputs_count &gt;= 0)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1886,8 +1654,7 @@
 <span id="v-97b979f20b234528124b8cc1">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/3/expression">(disposition_count &gt;= 0 AND output_edge_count &gt;= 0 AND output_artifact_count &gt;= 0 AND transformed_count &gt;= 0 AND transformed_with_outputs_count &gt;= 0)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1897,8 +1664,7 @@
 <span id="v-92a429635129a4156d91a7fe">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/3/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1908,12 +1674,10 @@
 <span id="v-22afc8885a9daf3b3194378c">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/3/name">ck_processing_disposition_sets_counts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1930,8 +1694,7 @@
 <span id="v-802ff0fbc9e32b3c531da809">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/4/definition">CONSTRAINT ck_processing_disposition_sets_output_counts CHECK (output_artifact_count &lt;= output_edge_count)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1941,8 +1704,7 @@
 <span id="v-28d4bafacce4e73c8524fb95">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/4/expression">(output_artifact_count &lt;= output_edge_count)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1952,8 +1714,7 @@
 <span id="v-f1c29330e835a541bb3757f6">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/4/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1963,12 +1724,10 @@
 <span id="v-7584cbd6a01821e3d7058c17">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/4/name">ck_processing_disposition_sets_output_counts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1992,12 +1751,10 @@
 <span id="v-22e92921d814ca6a39d95499">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/5/columns/0">claim_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2007,8 +1764,7 @@
 <span id="v-0b93f3c1fb975c9ea72ce6de">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/5/definition">FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2018,8 +1774,7 @@
 <span id="v-2951a324bdb6843bf08245c9">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/5/kind">foreign-key</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2036,8 +1791,7 @@
 <span id="v-3766376b398777d57a588d02">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/5/references/actions">ON DELETE CASCADE</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2054,12 +1808,10 @@
 <span id="v-1fd39544d1042acc611cf882">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/5/references/columns/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2069,16 +1821,13 @@
 <span id="v-306753496d0d6872fcee9793">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/5/references/table">collection_processing_claims</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2095,8 +1844,7 @@
 <span id="v-2cd12782dbdfe403895a3d69">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/6/definition">CONSTRAINT ck_collection_processing_disposition_sets_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2106,8 +1854,7 @@
 <span id="v-691a4d9d332470e330725ad1">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/6/expression">(length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2117,8 +1864,7 @@
 <span id="v-cfad79bf23b0324ff3536451">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/6/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2128,12 +1874,10 @@
 <span id="v-0f223148c9d1e2dcad8fc8c7">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/6/name">ck_collection_processing_disposition_sets_claim_id_hex</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2150,8 +1894,7 @@
 <span id="v-3381b0f8cd207ae06b72618c">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/7/definition">CONSTRAINT ck_sha256_66cafd8d5821f368 CHECK (disposition_sha256 IS NULL OR length(disposition_sha256) = 64 AND lower(disposition_sha256) = disposition_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(disposition_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2161,8 +1904,7 @@
 <span id="v-a365243cb0d9f306dce91d00">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/7/expression">(disposition_sha256 IS NULL OR length(disposition_sha256) = 64 AND lower(disposition_sha256) = disposition_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(disposition_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2172,8 +1914,7 @@
 <span id="v-7b0572e3b23adfb994ab2166">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/7/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2183,12 +1924,10 @@
 <span id="v-1772c4a639b68395e600cda2">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/7/name">ck_sha256_66cafd8d5821f368</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2205,8 +1944,7 @@
 <span id="v-b931b602901dc80a667d29e6">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/8/definition">CONSTRAINT ck_collection_processing_disposition_sets_output_sha256_hex CHECK (output_sha256 IS NULL OR length(output_sha256) = 64 AND lower(output_sha256) = output_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(output_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2216,8 +1954,7 @@
 <span id="v-587956d430bf5d54ea2fccef">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/8/expression">(output_sha256 IS NULL OR length(output_sha256) = 64 AND lower(output_sha256) = output_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(output_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2227,8 +1964,7 @@
 <span id="v-45636ed98027a5dc612ba6fc">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/8/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2238,12 +1974,10 @@
 <span id="v-43042c2b938f9ae5d553f391">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/8/name">ck_collection_processing_disposition_sets_output_sha256_hex</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2260,8 +1994,7 @@
 <span id="v-e07fdb2cb1fc9ecbb1d5a654">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/9/definition">CONSTRAINT ck_sha256_11dda87dcbdbf203 CHECK (identity_sha256 IS NULL OR length(identity_sha256) = 64 AND lower(identity_sha256) = identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(identity_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2271,8 +2004,7 @@
 <span id="v-26fa4a84b26dcae1c06f0ed5">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/9/expression">(identity_sha256 IS NULL OR length(identity_sha256) = 64 AND lower(identity_sha256) = identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(identity_sha256, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2282,8 +2014,7 @@
 <span id="v-62719ea898e9df567c126926">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/9/kind">check</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2293,16 +2024,13 @@
 <span id="v-b83a961122812dc38c7f8056">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/constraints/9/name">ck_sha256_11dda87dcbdbf203</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2312,8 +2040,7 @@
 <span id="v-9de6e9e6b1a43115c3c1bfd7">
 <code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/48/name">collection_processing_disposition_sets</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -2333,7 +2060,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+<a href="policy-definition-ac3d88d871010392771d87e2.html">compatibility/durable-state/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -2347,7 +2074,7 @@
 <code data-source-path="tests/fixtures/state/v1_0001/riverhog.postgresql.sql">tests/fixtures/state/v1_0001/riverhog.postgresql.sql</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
@@ -2358,9 +2085,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

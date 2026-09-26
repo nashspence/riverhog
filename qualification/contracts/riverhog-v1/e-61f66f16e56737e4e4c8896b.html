@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_operator_contracts.SchedulerWorkBatch</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,64 +84,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>cursor</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>cursor</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-355109a36f48b02762054cf4">failures</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-61f66f16e56737e4e4c8896b.html#v-2747364e28d2953e2d620e67">#/$defs/SchedulerFailure</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-355109a36f48b02762054cf4">failures</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-61f66f16e56737e4e4c8896b.html#v-2747364e28d2953e2d620e67">#/$defs/SchedulerFailure</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>next_cursor</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>next_cursor</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-ef32b8f15bae524ca474c717">progressed</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-ef32b8f15bae524ca474c717">progressed</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -206,7 +182,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -219,42 +195,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>error</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>error</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-303f2323bf7373de3ce60801">event_id</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-303f2323bf7373de3ce60801">event_id</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1a4f5f47cf1b114047297408">work_id</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1a4f5f47cf1b114047297408">work_id</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -265,7 +230,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -275,16 +240,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -295,7 +258,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -305,16 +268,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -344,8 +305,7 @@
 <span id="v-893b3b8741b50f359ed92542">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -376,8 +336,7 @@
 <span id="v-c70c5faaa3481579cf7ddbf6">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -401,8 +360,7 @@
 <span id="v-7c290c8fc52d84d577e23d2d">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/error/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,8 +370,7 @@
 <span id="v-26d715e4219d4f24549b235b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/error/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -423,12 +380,10 @@
 <span id="v-605e86a0b936fa9c7ec67406">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/error/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -459,12 +414,10 @@
 <span id="v-28eefa4184edcc1d64118075">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/event_id/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -481,16 +434,13 @@
 <span id="v-988aef3622c20211e3c9dc4c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/event_id/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -500,12 +450,10 @@
 <span id="v-ef9d8a7bcad9942a45f2cd96">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/event_id/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -536,8 +484,7 @@
 <span id="v-2d214499fa28f6bf62bccf54">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/work_id/anyOf/0/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -547,12 +494,10 @@
 <span id="v-18b285804014f8145f0234df">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/work_id/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -569,16 +514,13 @@
 <span id="v-83782734ec5691105a03a096">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/work_id/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -588,16 +530,13 @@
 <span id="v-3cf95fb08d1e3843f344e777">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/properties/work_id/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -614,12 +553,10 @@
 <span id="v-719adad9675436952afafb47">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/required/0">error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,16 +566,13 @@
 <span id="v-d99f93a6422f2c8130391f07">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/$defs/SchedulerFailure/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -648,8 +582,7 @@
 <span id="v-6bc01b557be6663395fbdab8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -673,12 +606,10 @@
 <span id="v-d2fbf046e36f58d3f054c6f4">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/cursor/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -702,12 +633,10 @@
 <span id="v-ca3b529d11ab4a8c44af6f20">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/failures/items/$ref">#/$defs/SchedulerFailure</code>
 <span class="kind">string</span> <a href="e-61f66f16e56737e4e4c8896b.html#v-2747364e28d2953e2d620e67">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,12 +646,10 @@
 <span id="v-086cb4174cac6bc8c147f155">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/failures/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -739,12 +666,10 @@
 <span id="v-09369fcbeb3c32e621890825">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/next_cursor/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -768,8 +693,7 @@
 <span id="v-8163c70e7f68a5298f751c41">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/progressed/items/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -779,12 +703,10 @@
 <span id="v-96d051bc3d0d12ed0713bf1c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/progressed/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -794,12 +716,10 @@
 <span id="v-a96477b561e9b54e04f6725b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/progressed/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -823,8 +743,7 @@
 <span id="v-e5026081fa1b1541f6f92804">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/role/enum/0">controller</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -834,8 +753,7 @@
 <span id="v-b9c652649156cb2828a83fb2">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/role/enum/1">worker</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -845,12 +763,10 @@
 <span id="v-e4f0ad327487ec09181807f9">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/role/enum/2">combined</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -860,16 +776,13 @@
 <span id="v-7a6186b03291529d1644b10d">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/properties/role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -886,8 +799,7 @@
 <span id="v-a67cf9f66d500d12c6f54791">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/required/0">role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -897,8 +809,7 @@
 <span id="v-6e73a3e273e6fe8bab7bbdc8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/required/1">cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -908,8 +819,7 @@
 <span id="v-02699a4ec87fd1e5146f6998">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/required/2">next_cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -919,8 +829,7 @@
 <span id="v-6d51495d5d7156a76e0298b5">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/required/3">progressed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -930,12 +839,10 @@
 <span id="v-1ae76e878968bfd2f37ccf76">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/required/4">failures</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -945,12 +852,10 @@
 <span id="v-4bc9da636a2bbe665ba6f15d">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -960,12 +865,10 @@
 <span id="v-fda32eeaa96b736d822c14b4">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/contract/signature">&quot;(*, role: Literal[&#x27;controller&#x27;, &#x27;worker&#x27;, &#x27;combined&#x27;], cursor: str, next_cursor: str, progressed: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -975,8 +878,7 @@
 <span id="v-9870bed9cd618115d0a724d4">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -986,8 +888,7 @@
 <span id="v-9628750893e0996ad0c09630">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -997,8 +898,7 @@
 <span id="v-f7c8a8072bc22c36658f58a0">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/name">SchedulerWorkBatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1008,8 +908,7 @@
 <span id="v-3b3255e2fcd8dbdcdbe84162">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerWorkBatch/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1021,7 +920,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1033,7 +932,7 @@
 <a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1044,9 +943,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

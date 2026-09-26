@@ -1127,14 +1127,6 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         "performance": {
             "cold_cli_startup": _cold_cli_timings(),
             "local_api": local_timings,
-            "accounting": {
-                "objective_ids": [],
-                "observation_ids": [
-                    "operation-cold-cli-startup",
-                    "operation-local-api-client-wall",
-                ],
-                "source": "scripts/performance_objectives.py",
-            },
             "interpretation": (
                 "Client wall and in-process server/service wall are separate. Provider "
                 "asynchronous phase and transfer timings remain in the linked #442 evidence."

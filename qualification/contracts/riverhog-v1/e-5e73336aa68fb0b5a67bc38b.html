@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_operator_contracts.EvaluationCreatedEventData</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,28 +84,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>evaluation_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>evaluation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>phase</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;planning&quot;,&quot;running&quot;,&quot;partially_complete&quot;,&quot;complete&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>phase</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;planning&quot;,&quot;running&quot;,&quot;partially_complete&quot;,&quot;complete&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -144,8 +129,7 @@
 <span id="v-560311c90a7f3e85cb409e38">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -162,8 +146,7 @@
 <span id="v-d359137b0d27aaacd12ead95">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -187,8 +170,7 @@
 <span id="v-fef39590780dbb2a8b00bf39">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/evaluation_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -198,12 +180,10 @@
 <span id="v-50a0272ecf6920b62845ca19">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/evaluation_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -227,8 +207,7 @@
 <span id="v-2d2075572c5abd70007360fe">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/enum/0">planning</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -238,8 +217,7 @@
 <span id="v-75764612f48b30c5ea22576b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/enum/1">running</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -249,8 +227,7 @@
 <span id="v-9b374a8b374f631125fc760f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/enum/2">partially_complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -260,8 +237,7 @@
 <span id="v-0f69f77a228dca011d414b23">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/enum/3">complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -271,8 +247,7 @@
 <span id="v-f4e1b373e85a1c3e1cbae5fa">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/enum/4">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -282,12 +257,10 @@
 <span id="v-b546caf7ec9084eea7b5d794">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/enum/5">canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -297,16 +270,13 @@
 <span id="v-57327e73bd796e1192d0bf89">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/properties/phase/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -323,8 +293,7 @@
 <span id="v-c0c77bea4b0e0e241f728310">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/required/0">evaluation_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -334,12 +303,10 @@
 <span id="v-34051afc96c086c15d9102e0">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/required/1">phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,12 +316,10 @@
 <span id="v-10138246849bd16593fd37ad">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -364,12 +329,10 @@
 <span id="v-676f5cd61cfdd69635d44cf7">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/contract/signature">&quot;(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], phase: Literal[&#x27;planning&#x27;, &#x27;running&#x27;, &#x27;partially_complete&#x27;, &#x27;complete&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -379,8 +342,7 @@
 <span id="v-be23190b9477c9e420afbf5c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,8 +352,7 @@
 <span id="v-59e18ca097bf670095153798">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -401,8 +362,7 @@
 <span id="v-773daf55cdb29ff182cc7e6a">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/name">EvaluationCreatedEventData</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,8 +372,7 @@
 <span id="v-b4174158a42b63f72ec799e3">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationCreatedEventData/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -436,7 +395,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -448,7 +407,7 @@
 <a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -459,9 +418,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

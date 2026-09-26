@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: AppKeyCreatedOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -54,7 +45,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -67,126 +58,96 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>access</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-603d83f3eddc419e9a245016.html#v-0f785b069adf2e61e6e0781f">#/components/schemas/ApplicationAccessGrantSet</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>access</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-603d83f3eddc419e9a245016.html#v-0f785b069adf2e61e6e0781f">#/components/schemas/ApplicationAccessGrantSet</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>app</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>app</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>created_at</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>created_at</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d9ca89d4cab109d6c6e7cd8b">expires_at</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d9ca89d4cab109d6c6e7cd8b">expires_at</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">#/components/schemas/ApplicationKeyId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">#/components/schemas/ApplicationKeyId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-9dbd92c3f85b1fb674b143cf">last_used_at</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-9dbd92c3f85b1fb674b143cf">last_used_at</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-54bec0ed9482e11f27d80cb6">monthly_download_quota_bytes</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">#/components/schemas/MonthlyDownloadQuotaBytes</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-54bec0ed9482e11f27d80cb6">monthly_download_quota_bytes</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">#/components/schemas/MonthlyDownloadQuotaBytes</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e253c7e9c18b7a91e588b041">revoked_at</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e253c7e9c18b7a91e588b041">revoked_at</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>status</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;active&quot;,&quot;expired&quot;,&quot;revoked&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;active&quot;,&quot;expired&quot;,&quot;revoked&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>token</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>token</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -196,16 +157,14 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-10d16a3d189f65788ebe6ab6">1</a>
-</td>
-<td>structured schema</td>
+<td data-label="Alternative">
+<a href="#s-10d16a3d189f65788ebe6ab6">1</a></td>
+<td data-label="Schema">structured schema</td>
 </tr>
 <tr>
-<td>
-<a href="#s-f7ba579e11cc3e54d7a708d4">2</a>
-</td>
-<td>structured schema</td>
+<td data-label="Alternative">
+<a href="#s-f7ba579e11cc3e54d7a708d4">2</a></td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -222,7 +181,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -232,16 +191,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -258,7 +215,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -268,16 +225,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -288,7 +243,7 @@
 <p class="shape">any of: <a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">#/components/schemas/MonthlyDownloadQuotaBytes</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -298,16 +253,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">#/components/schemas/MonthlyDownloadQuotaBytes</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">#/components/schemas/MonthlyDownloadQuotaBytes</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -324,7 +277,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -334,16 +287,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -376,7 +327,7 @@
 <h3>if schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -389,15 +340,12 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>status</code>
-</td>
-<td>no</td>
-<td>const: <code>revoked</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>revoked</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -407,7 +355,7 @@
 <h3>then schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -420,16 +368,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>revoked_at</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revoked_at</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -439,7 +384,7 @@
 <h3>else schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -452,16 +397,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>revoked_at</code>
-</td>
-<td>no</td>
-<td>
-<code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revoked_at</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -471,7 +413,7 @@
 <h3>if schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -484,15 +426,12 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>status</code>
-</td>
-<td>no</td>
-<td>const: <code>expired</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>expired</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -502,7 +441,7 @@
 <h3>then schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -515,16 +454,13 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>expires_at</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>expires_at</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -547,8 +483,7 @@
 <span id="v-d864794007d6c6da71b02fc0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -593,20 +528,16 @@
 <span id="v-91f9c090b302c2c126f18f9b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/allOf/0/else/properties/revoked_at/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -637,20 +568,16 @@
 <span id="v-b4d0be447061184504a15323">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/allOf/0/if/properties/status/const">revoked</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -681,24 +608,19 @@
 <span id="v-76d386e0f5c9aedc994c63c0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/allOf/0/then/properties/revoked_at/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -736,20 +658,16 @@
 <span id="v-701c4554516531f95061544c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/allOf/1/if/properties/status/const">expired</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -780,28 +698,22 @@
 <span id="v-d600089db3b144fe8d87a379">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/allOf/1/then/properties/expires_at/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -825,12 +737,10 @@
 <span id="v-37317571e1bd8a28612e2764">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/access/$ref">#/components/schemas/ApplicationAccessGrantSet</code>
 <span class="kind">string</span> <a href="e-603d83f3eddc419e9a245016.html#v-0f785b069adf2e61e6e0781f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -847,12 +757,10 @@
 <span id="v-d16da07ddec1cf2039ff88f7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/app/$ref">#/components/schemas/ApplicationName</code>
 <span class="kind">string</span> <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -869,8 +777,7 @@
 <span id="v-8de72639888077f264a2b388">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -880,8 +787,7 @@
 <span id="v-63fa8018f872f87e18e8bedc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -891,8 +797,7 @@
 <span id="v-41847c3a8c80888a7cfeacaa">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -902,8 +807,7 @@
 <span id="v-51339d2c315aa36637fbed45">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at/title">Created At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -913,12 +817,10 @@
 <span id="v-dfaa6eda2a3036037477ef69">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -949,8 +851,7 @@
 <span id="v-1419a28ac5435fb84070208d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/0/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -960,8 +861,7 @@
 <span id="v-0c5f8dc195a049013dc86a80">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/0/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -971,8 +871,7 @@
 <span id="v-682ddddb886e779b17b15c2b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/0/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -982,12 +881,10 @@
 <span id="v-503c18d66e69a25dfaacab7a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1004,16 +901,13 @@
 <span id="v-0db03aeb59c7aa73f2837f05">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1023,12 +917,10 @@
 <span id="v-25e9f9ca78e12f2b438385e8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/title">Expires At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1045,12 +937,10 @@
 <span id="v-635b16bc463fb09240aa4480">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/id/$ref">#/components/schemas/ApplicationKeyId</code>
 <span class="kind">string</span> <a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1081,8 +971,7 @@
 <span id="v-78eff8014596936146379262">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/0/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1092,8 +981,7 @@
 <span id="v-507510d06425e0fe1f0c7bf3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/0/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1103,8 +991,7 @@
 <span id="v-ee3b00722609e2e58ade91bf">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/0/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1114,12 +1001,10 @@
 <span id="v-fdc145290975d74b8e48d0e4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1136,16 +1021,13 @@
 <span id="v-f3a8b6e20d9294560bf1783d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1155,12 +1037,10 @@
 <span id="v-190f04e6551cb267750d03db">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/title">Last Used At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1191,12 +1071,10 @@
 <span id="v-a9da0dde1c0a6b0ed5ed4650">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/monthly_download_quota_bytes/anyOf/0/$ref">#/components/schemas/MonthlyDownloadQuotaBytes</code>
 <span class="kind">string</span> <a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1213,20 +1091,16 @@
 <span id="v-7c77f1275c515c523bcd34f5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/monthly_download_quota_bytes/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1257,8 +1131,7 @@
 <span id="v-6a6963d4a4ed7e78ab94462d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/0/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1268,8 +1141,7 @@
 <span id="v-3729c00112691edf049a3abb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/0/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1279,8 +1151,7 @@
 <span id="v-2292afc63be374ff8a14f90f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/0/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1290,12 +1161,10 @@
 <span id="v-e4deca352ddf3622ad1db471">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1312,16 +1181,13 @@
 <span id="v-42edb9d7ccf1a9db72f11317">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1331,12 +1197,10 @@
 <span id="v-9e1499a5a07ddf986853654e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/title">Revoked At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1360,8 +1224,7 @@
 <span id="v-90edbf7e656f685eff3718a3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/status/enum/0">active</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1371,8 +1234,7 @@
 <span id="v-2565847d2b143aba31b71644">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/status/enum/1">expired</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1382,12 +1244,10 @@
 <span id="v-3746fb2d6c207b2b9c7ea6ca">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/status/enum/2">revoked</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1397,8 +1257,7 @@
 <span id="v-a165e93a24ae3da3ba013c87">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/status/title">Status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1408,12 +1267,10 @@
 <span id="v-112b4e5430356adfa6bae135">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/status/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1430,8 +1287,7 @@
 <span id="v-18e27690607ce988e4d66439">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/token/title">Token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1441,16 +1297,13 @@
 <span id="v-ed685d247ee9ab137c5ca81c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/token/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1467,8 +1320,7 @@
 <span id="v-d6401f5d057c9ebce66cf02e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1478,8 +1330,7 @@
 <span id="v-6cfe138759ecd53c65568f45">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/1">app</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1489,8 +1340,7 @@
 <span id="v-7232793076ba5ad90a92e6e3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/2">access</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1500,8 +1350,7 @@
 <span id="v-173513e48f1852bcebbdd9e3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/3">monthly_download_quota_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1511,8 +1360,7 @@
 <span id="v-73dbb9de42859a550a29edeb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/4">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1522,8 +1370,7 @@
 <span id="v-2096154721a12187c9ce2da7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/5">created_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1533,8 +1380,7 @@
 <span id="v-a6927ebcf673ebed1c405a0f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/6">expires_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1544,8 +1390,7 @@
 <span id="v-d343ea4d03c6e95e8547e7cb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/7">revoked_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1555,8 +1400,7 @@
 <span id="v-1252151e96bd1b8ffbce2284">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/8">last_used_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1566,12 +1410,10 @@
 <span id="v-67159d0fc878b0c517ebe493">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/required/9">token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1581,8 +1423,7 @@
 <span id="v-d5abee02565f7bac03b8600a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/title">AppKeyCreatedOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1592,8 +1433,7 @@
 <span id="v-3b25d9574e16d377ae7a7e36">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1605,7 +1445,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1617,7 +1457,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1627,8 +1467,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1640,61 +1479,52 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/created_at</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/expires_at/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/last_used_at/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut/properties/revoked_at/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

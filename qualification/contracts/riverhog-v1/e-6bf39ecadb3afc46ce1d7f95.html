@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a> / <a href="i-5c5fbaec38dbfcb96276df03.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_target_protocol.OutputArtifactSetIdentity</h1>
 <p class="context">Dependency-light public contracts for external Stove0 targets. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,52 +84,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-a7e23628d494054b7da6b55a">roles</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-6bf39ecadb3afc46ce1d7f95.html#v-96c477b04fa91a5ccbc4e65a">#/$defs/OutputArtifactRoleCount</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-a7e23628d494054b7da6b55a">roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-6bf39ecadb3afc46ce1d7f95.html#v-96c477b04fa91a5ccbc4e65a">#/$defs/OutputArtifactRoleCount</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>total_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-6bf39ecadb3afc46ce1d7f95.html#v-6bdcc3168fa719d3c3d9233f">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>total_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-6bf39ecadb3afc46ce1d7f95.html#v-6bdcc3168fa719d3c3d9233f">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -205,7 +184,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -218,28 +197,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -269,8 +242,7 @@
 <span id="v-abac619cb163c6c8220aa216">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -301,8 +273,7 @@
 <span id="v-306524eb717335e08ba039fc">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -312,12 +283,10 @@
 <span id="v-be6ea65d7775b65e6311b40e">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -334,8 +303,7 @@
 <span id="v-7cea002f19e7f35934c81577">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -359,8 +327,7 @@
 <span id="v-8c03efa2c52929d1a018df9b">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/properties/count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,12 +337,10 @@
 <span id="v-bf04bf1ef61a6d2c326ebfa5">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/properties/count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,8 +357,7 @@
 <span id="v-1412e57852beaf0e96e0d660">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -403,16 +367,13 @@
 <span id="v-1680a7347b3f2f3dbb9b11a3">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/properties/role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -429,8 +390,7 @@
 <span id="v-35ec554c4175e89a5f8790b6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/required/0">role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -440,12 +400,10 @@
 <span id="v-5b68ba06baf93f870c5cf088">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/required/1">count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -455,16 +413,13 @@
 <span id="v-921aee68affca83e31b22656">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/$defs/OutputArtifactRoleCount/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -474,8 +429,7 @@
 <span id="v-01d64e13cb763c5e90ade121">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -499,8 +453,7 @@
 <span id="v-4eb95744226933ceeb1cbf3d">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/artifact_count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,12 +463,10 @@
 <span id="v-e85d4aff27198fbbe90dbb73">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/artifact_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -539,12 +490,10 @@
 <span id="v-9093dcfca7d1eb11af60210f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/roles/items/$ref">#/$defs/OutputArtifactRoleCount</code>
 <span class="kind">string</span> <a href="e-6bf39ecadb3afc46ce1d7f95.html#v-96c477b04fa91a5ccbc4e65a">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -554,8 +503,7 @@
 <span id="v-ae53d28675ea324e473be33d">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/roles/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -565,12 +513,10 @@
 <span id="v-ada2d5f7e9af56571f76f534">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/roles/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -587,8 +533,7 @@
 <span id="v-75ca87c04586f121fa93b8e4">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -598,12 +543,10 @@
 <span id="v-2379a8241245922d012358f3">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -620,8 +563,7 @@
 <span id="v-1e14bf72934f3adacdcfe7e9">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/total_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-6bf39ecadb3afc46ce1d7f95.html#v-6bdcc3168fa719d3c3d9233f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -631,16 +573,13 @@
 <span id="v-c6882903115efa4410d271a6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/properties/total_bytes/ge">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -657,8 +596,7 @@
 <span id="v-211776028150524a595a130d">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/required/0">artifact_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -668,8 +606,7 @@
 <span id="v-5751f18773321666caa5e6f6">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/required/1">total_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +616,7 @@
 <span id="v-16c37e6d03bcb4579b0d0464">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/required/2">roles</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -690,12 +626,10 @@
 <span id="v-ba215b50c5155ea273efb16d">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/required/3">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -705,12 +639,10 @@
 <span id="v-96f0d14a681785a43aa528f0">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -720,12 +652,10 @@
 <span id="v-62cac3dd8e6bfef067184774">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/contract/signature">&quot;(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -735,8 +665,7 @@
 <span id="v-8c70c70601e70eab164d1d90">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/distribution">stove0-target-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -746,8 +675,7 @@
 <span id="v-c2b2a0df193d5c4c44ddb162">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/module">stove0_target_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -757,8 +685,7 @@
 <span id="v-095e1a5956279320f2e8fbec">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/name">OutputArtifactSetIdentity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -768,8 +695,7 @@
 <span id="v-d0a43c4ac26252076b3c2082">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifactSetIdentity/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -795,7 +721,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -807,7 +733,7 @@
 <a href="source-authorities.html#source-f4f0b2202672f85e3d080ca7">python:stove0-target-protocol:stove0_target_protocol</a> — <code data-source-path="some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py">some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -818,9 +744,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

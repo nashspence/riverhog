@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: ListCollectionsOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,107 +59,81 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-ee086bfc7ae94308ac63186e">collections</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-c43e8ae695916b4ae623fe2b.html#v-ec21417e939733a2ff20a2de">#/components/schemas/CollectionSummaryOut</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-ee086bfc7ae94308ac63186e">collections</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-c43e8ae695916b4ae623fe2b.html#v-ec21417e939733a2ff20a2de">#/components/schemas/CollectionSummaryOut</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-606ae27cc21cdfd3e3897824">encryption_format</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-606ae27cc21cdfd3e3897824">encryption_format</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1d90bba3d05ecc443c7aa693">next_page_token</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1d90bba3d05ecc443c7aa693">next_page_token</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>order</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">#/components/schemas/SortOrder</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>order</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">#/components/schemas/SortOrder</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>page_size</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>page_size</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-cab3458920c3945e9ddf9c9a">passphrase_id</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-cab3458920c3945e9ddf9c9a">passphrase_id</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-1bfe84b3db188cd741a78874">query</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-1bfe84b3db188cd741a78874">query</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sort</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-6e8a9894b8578cce6bcb692a.html#v-e246852f0b973d6fa214e13f">#/components/schemas/CollectionSort</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sort</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-6e8a9894b8578cce6bcb692a.html#v-e246852f0b973d6fa214e13f">#/components/schemas/CollectionSort</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-dc348d814d2c77839d023c93">tags</a>
-</td>
-<td>yes</td>
-<td>
+<td data-label="Field">
+<a href="#s-dc348d814d2c77839d023c93">tags</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-cf2aefec442e1ef869b78b9b.html#v-c3ed7114f258f4bf33ee885c">#/components/schemas/CollectionTag</a>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -201,7 +166,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -211,16 +176,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -231,7 +194,7 @@
 <p class="shape">any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -241,16 +204,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -267,7 +228,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -277,16 +238,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -303,7 +262,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -313,16 +272,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -368,8 +325,7 @@
 <span id="v-497381caa91b8c1748839f96">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -400,12 +356,10 @@
 <span id="v-919b92dcf2c674879e3649c0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/collections/items/$ref">#/components/schemas/CollectionSummaryOut</code>
 <span class="kind">string</span> <a href="e-c43e8ae695916b4ae623fe2b.html#v-ec21417e939733a2ff20a2de">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -415,8 +369,7 @@
 <span id="v-3b0249455816704aaf9582e8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/collections/title">Collections</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -426,12 +379,10 @@
 <span id="v-9b3b43386c5e34992a682449">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/collections/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -462,12 +413,10 @@
 <span id="v-7f58cd4433ceb497defff5bd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/encryption_format/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -484,16 +433,13 @@
 <span id="v-f3a192a4dbbf8c1417558558">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/encryption_format/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -503,12 +449,10 @@
 <span id="v-3ff532976a6abb5011c2aef8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/encryption_format/title">Encryption Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -539,12 +483,10 @@
 <span id="v-5930a7696be9db20499f7023">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/next_page_token/anyOf/0/$ref">#/components/schemas/BrowsePageToken</code>
 <span class="kind">string</span> <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -561,20 +503,16 @@
 <span id="v-86858baa3ebe92c56f9bb326">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/next_page_token/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -591,12 +529,10 @@
 <span id="v-d464a7b41f119222aa5b1d8c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/order/$ref">#/components/schemas/SortOrder</code>
 <span class="kind">string</span> <a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -613,8 +549,7 @@
 <span id="v-c72e7f452c56660019bdb7f5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/page_size/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -624,8 +559,7 @@
 <span id="v-727ed5f62070130d38ba07cd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/page_size/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -635,8 +569,7 @@
 <span id="v-a9fdbe5cc79ee8d22d6c0aa8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/page_size/title">Page Size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -646,12 +579,10 @@
 <span id="v-929dfc23ce96e674654b09a2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/page_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -682,12 +613,10 @@
 <span id="v-71ea556c850f76c8cbbab8fe">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/passphrase_id/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -704,16 +633,13 @@
 <span id="v-da9d519683a3f8d70c66004d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/passphrase_id/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,12 +649,10 @@
 <span id="v-66caab90596362ddeeef988d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/passphrase_id/title">Passphrase Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -759,12 +683,10 @@
 <span id="v-4e387a987872242dfbfa7644">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/query/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -781,16 +703,13 @@
 <span id="v-1fd28bd014a7ac33301c5a47">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/query/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -800,12 +719,10 @@
 <span id="v-527d80d35bfe45ab097c8ee8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/query/title">Query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -822,12 +739,10 @@
 <span id="v-e6cf4602a3a0ab06deb44045">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/sort/$ref">#/components/schemas/CollectionSort</code>
 <span class="kind">string</span> <a href="e-6e8a9894b8578cce6bcb692a.html#v-e246852f0b973d6fa214e13f">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -851,12 +766,10 @@
 <span id="v-e370f7e64dd767d57c4476e1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags/items/$ref">#/components/schemas/CollectionTag</code>
 <span class="kind">string</span> <a href="e-cf2aefec442e1ef869b78b9b.html#v-c3ed7114f258f4bf33ee885c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -866,8 +779,7 @@
 <span id="v-8878a7d77b6c2903b022babb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags/maxItems">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -877,8 +789,7 @@
 <span id="v-331278ac2a6f7efd23bffc3c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags/title">Tags</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -888,8 +799,7 @@
 <span id="v-0c24e67898c58ff4c32f153f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -906,8 +816,7 @@
 <span id="v-4e5f53112bdfeaa75639d027">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -917,20 +826,16 @@
 <span id="v-2c8e2ccd19f8df234857bd41">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags/x-riverhog-extent/reason">bounded-exact-tag-selector-batch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -947,8 +852,7 @@
 <span id="v-16d6c26f86cfaa0105986f5d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/0">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -958,8 +862,7 @@
 <span id="v-0a6d0efe38f8aeda1d979339">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/1">next_page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -969,8 +872,7 @@
 <span id="v-61e491181015b30547aa469d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/2">sort</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -980,8 +882,7 @@
 <span id="v-f17d5e3e7007f3ea3b50a664">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/3">order</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -991,8 +892,7 @@
 <span id="v-02aa6af2e882f479c8719208">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/4">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1002,8 +902,7 @@
 <span id="v-4a9aad5a7ce571b890fb2139">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/5">encryption_format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1013,8 +912,7 @@
 <span id="v-70a4d750be46f9e0cea7b60f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/6">passphrase_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1024,8 +922,7 @@
 <span id="v-658d3a866370fcdbc3132995">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/7">tags</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1035,12 +932,10 @@
 <span id="v-a4621db930f8474724d6696b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/required/8">collections</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1050,8 +945,7 @@
 <span id="v-e6f9254a61711da3a0041284">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/title">ListCollectionsOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1061,8 +955,7 @@
 <span id="v-3db1e08d293638b1325f0634">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1072,7 +965,6 @@
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
@@ -1081,7 +973,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1093,7 +985,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1103,8 +995,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1116,49 +1007,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/collections</code>
-</td>
-<td>
-<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
-</td>
-<td>cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;,&quot;response_items_field&quot;:&quot;collections&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/collections</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-c35859ad2c6c8a34ef05c100.html">extent-rule/route-progression/v1</a></td>
+<td data-label="Decision">cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;,&quot;response_items_field&quot;:&quot;collections&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/page_size</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/page_size</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · items · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;reason&quot;:&quot;bounded-exact-tag-selector-batch&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/tags</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · items · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;reason&quot;:&quot;bounded-exact-tag-selector-batch&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

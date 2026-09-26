@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-4efc13a0fac247c0be41c895.html">riverhog-archive-contracts</a> / <a href="i-d9f1b11ab58182f717f11c20.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_archive_contracts.PackArchiveVolume</h1>
 <p class="context">Dependency-light immutable Riverhog archive recovery contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -61,7 +52,7 @@
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,125 +63,92 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>sequence</code>
-</td>
-<td>
-<code>&#x27;int&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>files</code>
-</td>
-<td>
-<code>&#x27;int&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>files</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>source_bytes</code>
-</td>
-<td>
-<code>&#x27;int&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>source_bytes</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>plaintext_bytes</code>
-</td>
-<td>
-<code>&#x27;int&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>plaintext_bytes</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>age_state</code>
-</td>
-<td>
-<code>&#x27;AgeUploadState&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>age_state</code></td>
+<td data-label="Type">
+<code>&#x27;AgeUploadState&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>index_sha256</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>index_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>
-<code>&#x27;str&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>parts</code>
-</td>
-<td>
-<code>&#x27;tuple[StoredPartIdentity, ...]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>parts</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[StoredPartIdentity, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>
-<code>&quot;Literal[&#x27;pack&#x27;]&quot;</code>
-</td>
-<td>
-<code>&#x27;pack&#x27;</code>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Type">
+<code>&quot;Literal[&#x27;pack&#x27;]&quot;</code></td>
+<td data-label="Default">
+<code>&#x27;pack&#x27;</code></td>
 </tr>
 </tbody>
 </table>
@@ -233,8 +191,7 @@
 <span id="v-657468c3fafe667de01c020b">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/0/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -244,8 +201,7 @@
 <span id="v-582bc5ef49087c9050ec9d4d">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/0/name">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -255,12 +211,10 @@
 <span id="v-33f2b781e6bdf87e8cb24fba">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/0/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -277,8 +231,7 @@
 <span id="v-f7752981ce9e6196e6149100">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/1/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,8 +241,7 @@
 <span id="v-d4e2255ec52575deabfbfc51">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/1/name">sequence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,12 +251,10 @@
 <span id="v-2593e8e8ef26c13ad22e85bb">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/1/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -321,8 +271,7 @@
 <span id="v-4c533d07b9c315c5e869b56c">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/2/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -332,8 +281,7 @@
 <span id="v-90d5cb92d2fba6594fcacc14">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/2/name">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -343,12 +291,10 @@
 <span id="v-fce79d881c6652e3908f66fb">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/2/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -365,8 +311,7 @@
 <span id="v-b4ea43a646c9436fc3bd5cf7">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/3/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -376,8 +321,7 @@
 <span id="v-1fe1b50f384d48dfa4dfd83a">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/3/name">files</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -387,12 +331,10 @@
 <span id="v-c2d876234edc7e131de527ba">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/3/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -409,8 +351,7 @@
 <span id="v-0863e41aaba0b18300369099">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/4/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,8 +361,7 @@
 <span id="v-1f701230921ce41086944da9">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/4/name">source_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -431,12 +371,10 @@
 <span id="v-31a439bb7153fc6a7c06101a">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/4/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -453,8 +391,7 @@
 <span id="v-cbc8f52ddfc54e7ac522519b">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/5/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -464,8 +401,7 @@
 <span id="v-5a4261e9764729ebfd1a5f16">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/5/name">plaintext_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -475,12 +411,10 @@
 <span id="v-7347be707e7ad288ca552ed8">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/5/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -497,8 +431,7 @@
 <span id="v-9b167faa141c3ef2bfcaa63d">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/6/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -508,8 +441,7 @@
 <span id="v-a7776a9f680edae790b5d3e7">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/6/name">age_state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -519,12 +451,10 @@
 <span id="v-8971b0db1583facade259fc4">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/6/type">&#x27;AgeUploadState&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -541,8 +471,7 @@
 <span id="v-417845c0475e1d1b36545d8c">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/7/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -552,8 +481,7 @@
 <span id="v-c38c9d0ba7b50b488532f4c5">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/7/name">index_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -563,12 +491,10 @@
 <span id="v-8acd527e39e4724828639f8b">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/7/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -585,8 +511,7 @@
 <span id="v-e5cf607bae7b8e915991170a">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/8/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -596,8 +521,7 @@
 <span id="v-81b5310bf9769fb3018fb1c9">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/8/name">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -607,12 +531,10 @@
 <span id="v-514e1d8e2ea49fa85c831922">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/8/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,8 +551,7 @@
 <span id="v-65eb30b38d3434d9e9c74fb9">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/9/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -640,8 +561,7 @@
 <span id="v-d57158582826260659277911">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/9/name">parts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -651,12 +571,10 @@
 <span id="v-931b91f8d6ee71889bf9dfc4">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/9/type">&#x27;tuple[StoredPartIdentity, ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -673,8 +591,7 @@
 <span id="v-1da75c5958b666c83014ccbc">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/10/default">&#x27;pack&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -684,8 +601,7 @@
 <span id="v-3d00074ac12cb25b0f40c7e0">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/10/name">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -695,16 +611,13 @@
 <span id="v-1a7d34f1c718330763403374">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/fields/10/type">&quot;Literal[&#x27;pack&#x27;]&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -714,8 +627,7 @@
 <span id="v-7e688e6b95ca815ddad23486">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -725,12 +637,10 @@
 <span id="v-1ed2491f735d8afc9762e9c2">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/contract/signature">&#x27;(id: \&#x27;str\&#x27;, sequence: \&#x27;int\&#x27;, path: \&#x27;str\&#x27;, files: \&#x27;int\&#x27;, source_bytes: \&#x27;int\&#x27;, plaintext_bytes: \&#x27;int\&#x27;, age_state: \&#x27;AgeUploadState\&#x27;, index_sha256: \&#x27;str\&#x27;, plan_sha256: \&#x27;str\&#x27;, parts: \&#x27;tuple[StoredPartIdentity, ...]\&#x27;, kind: &quot;Literal[\&#x27;pack\&#x27;]&quot; = \&#x27;pack\&#x27;) -&gt; None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -740,8 +650,7 @@
 <span id="v-91e95c1a69ce25afe087d79e">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/distribution">riverhog-archive-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -751,8 +660,7 @@
 <span id="v-2237439c7c215eac8a2ce761">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/module">riverhog_archive_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -762,8 +670,7 @@
 <span id="v-b581a0f43dfac660a6b0f947">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/name">PackArchiveVolume</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -773,8 +680,7 @@
 <span id="v-05777ad172e85e69fe15f621">
 <code data-value-pointer="/external_contract/python/riverhog_archive_contracts.PackArchiveVolume/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -794,7 +700,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -806,7 +712,7 @@
 <a href="source-authorities.html#source-4557222ddc30f40eac3729ac">python:riverhog-archive-contracts:riverhog_archive_contracts</a> — <code data-source-path="packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py">packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -817,9 +723,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

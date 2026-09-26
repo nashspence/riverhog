@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: JoinDeclaration</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,78 +63,59 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-eca86f5eaec1e866e1b7685c">effective_intent</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-eca86f5eaec1e866e1b7685c">effective_intent</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-join-declaration/v1</code>; default: <code>stove0-join-declaration/v1</code>
-</td>
-<td>
-<code>stove0-join-declaration/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-join-declaration/v1</code>; default: <code>stove0-join-declaration/v1</code></td>
+<td data-label="Default">
+<code>stove0-join-declaration/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>join_declaration_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>join_declaration_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-23dfcec26992b7c9cd663bd0">members</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-7a63de8d98f3693a5530d5dd.html#v-1fcec863de02e1c12b2d4569">#/components/schemas/JoinMemberDeclaration</a>; minItems: <code>2</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-23dfcec26992b7c9cd663bd0">members</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-7a63de8d98f3693a5530d5dd.html#v-1fcec863de02e1c12b2d4569">#/components/schemas/JoinMemberDeclaration</a>; minItems: <code>2</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>recipe</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-add2b2281c4ab9d670cddf91.html#v-b6ede3d89034dd92fa5aa75d">#/components/schemas/RecipeIdentityRef</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>recipe</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-add2b2281c4ab9d670cddf91.html#v-b6ede3d89034dd92fa5aa75d">#/components/schemas/RecipeIdentityRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>workflow_intent</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-97a2edd737fdce06a07e4e6b.html#v-7e51d1430deaf6396783a3eb">#/components/schemas/WorkflowPlanIntent</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>workflow_intent</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-97a2edd737fdce06a07e4e6b.html#v-7e51d1430deaf6396783a3eb">#/components/schemas/WorkflowPlanIntent</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -206,8 +178,7 @@
 <span id="v-ad3ca898ce98de99ddc40469">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -217,8 +188,7 @@
 <span id="v-422859882c2ed7229d353c6e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/description">One optional exact named-subset join declaration.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -249,12 +219,10 @@
 <span id="v-39337c0de22f8316cc8c7eeb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/effective_intent/additionalProperties/$ref">#/components/schemas/JsonValue</code>
 <span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -264,8 +232,7 @@
 <span id="v-d165dab6a6229e2343465e90">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/effective_intent/title">Effective Intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -275,12 +242,10 @@
 <span id="v-d00d2008a6ba8d175ef53bea">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/effective_intent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -297,8 +262,7 @@
 <span id="v-42ae5f97cb84e3dcd5eb72f6">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/format/const">stove0-join-declaration/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -308,8 +272,7 @@
 <span id="v-818d26d989ee61375fdbcae0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/format/default">stove0-join-declaration/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -319,8 +282,7 @@
 <span id="v-f9dd3a4857c9d79c486102d1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -330,12 +292,10 @@
 <span id="v-87be091ce8452b568e59d398">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -352,8 +312,7 @@
 <span id="v-1eac9e5edfb5444eb8bf996c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/join_declaration_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -363,8 +322,7 @@
 <span id="v-ff283cdd0663bb9db24247b3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/join_declaration_sha256/title">Join Declaration Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -374,12 +332,10 @@
 <span id="v-1c10fb8520de4526f8de1e2c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/join_declaration_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -403,12 +359,10 @@
 <span id="v-fda9bd9cd319fa59ac2fb25c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/members/items/$ref">#/components/schemas/JoinMemberDeclaration</code>
 <span class="kind">string</span> <a href="e-7a63de8d98f3693a5530d5dd.html#v-1fcec863de02e1c12b2d4569">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -418,8 +372,7 @@
 <span id="v-6969a3bf8bd4159eadb6f9a9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/members/minItems">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -429,8 +382,7 @@
 <span id="v-e18dbaf48ac2f7ab87306cfc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/members/title">Members</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -440,12 +392,10 @@
 <span id="v-bc0fb11ae0ba255fa59c815f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/members/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -462,12 +412,10 @@
 <span id="v-6a5500170d323ffa6488a52a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/recipe/$ref">#/components/schemas/RecipeIdentityRef</code>
 <span class="kind">string</span> <a href="e-add2b2281c4ab9d670cddf91.html#v-b6ede3d89034dd92fa5aa75d">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -484,16 +432,13 @@
 <span id="v-841270b00a6cb5965817c00f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/workflow_intent/$ref">#/components/schemas/WorkflowPlanIntent</code>
 <span class="kind">string</span> <a href="e-97a2edd737fdce06a07e4e6b.html#v-7e51d1430deaf6396783a3eb">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,8 +455,7 @@
 <span id="v-e47f5f3e3660f9de14a06c64">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/required/0">members</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -521,8 +465,7 @@
 <span id="v-db97604c9684d31ebfeac676">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/required/1">recipe</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -532,8 +475,7 @@
 <span id="v-88f95522eb438832aff67906">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/required/2">workflow_intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -543,12 +485,10 @@
 <span id="v-c251630c5d345d9641bf9a64">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/required/3">join_declaration_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -558,8 +498,7 @@
 <span id="v-bca1349211a133f06878145f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/title">JoinDeclaration</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -569,8 +508,7 @@
 <span id="v-5f45fed464fc672a8aacbe8a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -582,7 +520,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -594,7 +532,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -604,8 +542,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -617,49 +554,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/effective_intent</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/effective_intent</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/join_declaration_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/join_declaration_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/members</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration/properties/members</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-6c0c68dab977066c2d607683.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_core.CoordinationProjection</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Declared public imports and their selected exact structural contracts.</p>
@@ -61,7 +52,7 @@
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,48 +63,36 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>evaluation</code>
-</td>
-<td>
-<code>&#x27;BranchSetEvaluation&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>evaluation</code></td>
+<td data-label="Type">
+<code>&#x27;BranchSetEvaluation&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>selection_documents</code>
-</td>
-<td>
-<code>&#x27;dict[str, ArtifactSelection]&#x27;</code>
-</td>
-<td>
-<code>required</code>
-</td>
+<td data-label="Field">
+<code>selection_documents</code></td>
+<td data-label="Type">
+<code>&#x27;dict[str, ArtifactSelection]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 <tr>
-<td>
-<code>pending_join</code>
-</td>
-<td>
-<code>&#x27;JoinPlan | None&#x27;</code>
-</td>
-<td>
-<code>None</code>
-</td>
+<td data-label="Field">
+<code>pending_join</code></td>
+<td data-label="Type">
+<code>&#x27;JoinPlan | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
 </tr>
 <tr>
-<td>
-<code>pending_join_selections</code>
-</td>
-<td>
-<code>&#x27;tuple[ArtifactSelection, ...]&#x27;</code>
-</td>
-<td>
-<code>()</code>
-</td>
+<td data-label="Field">
+<code>pending_join_selections</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[ArtifactSelection, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>()</code></td>
 </tr>
 </tbody>
 </table>
@@ -156,8 +135,7 @@
 <span id="v-f79fce057d8dc54ccbab43f3">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/0/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -167,8 +145,7 @@
 <span id="v-2a8a611febb304f0a6aae509">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/0/name">evaluation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -178,12 +155,10 @@
 <span id="v-1df56b8cb8e97d91e82c9f60">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/0/type">&#x27;BranchSetEvaluation&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -200,8 +175,7 @@
 <span id="v-150beb77f3f92024c0d0afd3">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/1/default">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -211,8 +185,7 @@
 <span id="v-cd846f25d6e6859fb676ac77">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/1/name">selection_documents</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -222,12 +195,10 @@
 <span id="v-fd4e93366f3bcbdce2bd01b0">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/1/type">&#x27;dict[str, ArtifactSelection]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -244,8 +215,7 @@
 <span id="v-868cf5024517f05f42a4ee76">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/2/default">None</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -255,8 +225,7 @@
 <span id="v-5c60721cb2f1360d4018f263">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/2/name">pending_join</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -266,12 +235,10 @@
 <span id="v-0ce72e1fca8819bef89c0768">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/2/type">&#x27;JoinPlan | None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -288,8 +255,7 @@
 <span id="v-5e4fcdd506648f48615a527d">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/3/default">()</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -299,8 +265,7 @@
 <span id="v-a0e260448bc4e309e0307b26">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/3/name">pending_join_selections</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,16 +275,13 @@
 <span id="v-e2d9d173d96e4a42432c0d85">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/fields/3/type">&#x27;tuple[ArtifactSelection, ...]&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,8 +291,7 @@
 <span id="v-99b4336ad23a9bcd55ebb34a">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -340,12 +301,10 @@
 <span id="v-8674c23b32c3ebd5dfa9e11d">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/contract/signature">&quot;(evaluation: &#x27;BranchSetEvaluation&#x27;, selection_documents: &#x27;dict[str, ArtifactSelection]&#x27;, pending_join: &#x27;JoinPlan | None&#x27; = None, pending_join_selections: &#x27;tuple[ArtifactSelection, ...]&#x27; = ()) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -355,8 +314,7 @@
 <span id="v-9357d4b06655c460e9cdb422">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/distribution">stove0-server</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -366,8 +324,7 @@
 <span id="v-d631cf993d20c42b2e2dd114">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/module">stove0_core</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,8 +334,7 @@
 <span id="v-554088950f65c165c28b0f83">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/name">CoordinationProjection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -388,8 +344,7 @@
 <span id="v-e3270c1173b46c6f2c46bad4">
 <code data-value-pointer="/external_contract/python/stove0_core.CoordinationProjection/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -401,7 +356,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -413,7 +368,7 @@
 <a href="source-authorities.html#source-7558b08e7fed034d624d9aed">python:stove0-server:stove0_core</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -424,9 +379,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

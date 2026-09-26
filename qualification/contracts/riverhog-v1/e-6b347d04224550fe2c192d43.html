@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-44cb26032fa21babe064f712.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog-storage-adapter-conformance</h1>
 <p class="context">HTTP binding and conformance support for Riverhog storage adapters. CLI contract owned by riverhog-storage-adapter-support.</p>
@@ -44,7 +35,7 @@
 </dl>
 <p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
 <h3>Arguments and options</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -56,54 +47,45 @@
 </thead>
 <tbody>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>base_url</code>
 <br>
-<code>--base-url</code>
-</td>
-<td>required; option; None value(s) per use</td>
-<td>
-<code>not recorded</code>
-</td>
-<td>not recorded</td>
+<code>--base-url</code></td>
+<td data-label="Invocation">required; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>not recorded</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>token_file</code>
 <br>
-<code>--token-file</code>
-</td>
-<td>required; option; None value(s) per use</td>
-<td>
-<code>Path</code>
-</td>
-<td>not recorded</td>
+<code>--token-file</code></td>
+<td data-label="Invocation">required; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>Path</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>object_prefix</code>
 <br>
-<code>--object-prefix</code>
-</td>
-<td>required; option; None value(s) per use</td>
-<td>
-<code>not recorded</code>
-</td>
-<td>not recorded</td>
+<code>--object-prefix</code></td>
+<td data-label="Invocation">required; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>not recorded</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>allow_insecure_http</code>
 <br>
-<code>--allow-insecure-http</code>
-</td>
-<td>optional; option; 0 value(s) per use</td>
-<td>
-<code>not recorded</code>
-</td>
-<td>
-<code>false</code>
-</td>
+<code>--allow-insecure-http</code></td>
+<td data-label="Invocation">optional; option; 0 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>not recorded</code></td>
+<td data-label="Default and environment">
+<code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -128,7 +110,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -141,24 +123,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>conformant</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>conformance-completed</code>
-</td>
-<td>json: authority: <code>generated:riverhog-storage-adapter</code>; definition: <code>StorageAdapterConformanceResult</code>; kind: <code>schema-authority</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>conformant</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>conformance-completed</code></td>
+<td data-label="stdout">json: authority: <code>generated:riverhog-storage-adapter</code>; definition: <code>StorageAdapterConformanceResult</code>; kind: <code>schema-authority</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -171,24 +148,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -201,21 +173,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -262,8 +229,7 @@
 <span id="v-7713e25f7a5957620eb01faf">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0/dest">base_url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -273,8 +239,7 @@
 <span id="v-663eeff4f87ced4a3b6686d5">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0/kind">_StoreAction</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -284,8 +249,7 @@
 <span id="v-2b98ba8c957d50f5695dc10a">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0/nargs">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -302,12 +266,10 @@
 <span id="v-f7575327af712b809f565609">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0/options/0">--base-url</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,12 +279,10 @@
 <span id="v-399188b0d4ca5ff06d6ea4f5">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -339,8 +299,7 @@
 <span id="v-eed9797a89cacfad86f08549">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1/dest">token_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -350,8 +309,7 @@
 <span id="v-6485c405e65ecc9d0e4149c8">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1/kind">_StoreAction</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -361,8 +319,7 @@
 <span id="v-2450cd9b917706addfa3b588">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1/nargs">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -379,12 +336,10 @@
 <span id="v-ebea3182c0390e54f0a49eaf">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1/options/0">--token-file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -394,8 +349,7 @@
 <span id="v-29e49b6d70892b45dc778d88">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -405,12 +359,10 @@
 <span id="v-b47fc591840957e69995b149">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1/type">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -427,8 +379,7 @@
 <span id="v-ec4b676f2d56f8ca32f2c06d">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2/dest">object_prefix</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -438,8 +389,7 @@
 <span id="v-2c95909e862a309e82103c26">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2/kind">_StoreAction</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -449,8 +399,7 @@
 <span id="v-eeb1436c23ae127672360a29">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2/nargs">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,12 +416,10 @@
 <span id="v-78427c8f7c1b05ea0a2892e1">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2/options/0">--object-prefix</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -482,12 +429,10 @@
 <span id="v-22323f322fb980fcef6131f8">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -504,8 +449,7 @@
 <span id="v-d60ccad7dddd1906e162045a">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -515,8 +459,7 @@
 <span id="v-456c95a2e798fae0fc420b9b">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3/dest">allow_insecure_http</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -526,8 +469,7 @@
 <span id="v-635cbc1a1d5726c99b3ea738">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3/kind">_StoreTrueAction</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -537,8 +479,7 @@
 <span id="v-3924bb8fe79d946e19d84656">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3/nargs">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -555,12 +496,10 @@
 <span id="v-be163ca4e5cfe92c808151ee">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3/options/0">--allow-insecure-http</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -570,12 +509,10 @@
 <span id="v-8b4b79e18cd55eaffb71f28d">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -608,8 +545,7 @@
 <span id="v-4a1fdc4dd8a40cc84fbf3e8c">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -619,8 +555,7 @@
 <span id="v-7d57e24d7095254f6b88e573">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -637,12 +572,10 @@
 <span id="v-c698f258713caee6a56b4787">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -659,12 +592,10 @@
 <span id="v-6d3f78e1983056ff0c8130d4">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -681,20 +612,16 @@
 <span id="v-90ae24112b1b4a8dce491cd3">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -704,8 +631,7 @@
 <span id="v-f6d1e89bdf96714f43f8c83e">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/human_json_relationship">not-applicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -715,8 +641,7 @@
 <span id="v-f9615a839459d049070d8880">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/identity">riverhog-storage-adapter-conformance-cli-result/root/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -726,8 +651,7 @@
 <span id="v-9b278bfaf65a789e85dd3d16">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/profile_id">riverhog-storage-adapter-conformance-cli/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -737,8 +661,7 @@
 <span id="v-96e3ff49cab5cd013c52b616">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/structured_output">always-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -762,8 +685,7 @@
 <span id="v-a511e84d49ec50ea41ee56ed">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -773,8 +695,7 @@
 <span id="v-0779825aae7cc7de68dd91d9">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/id">conformant</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -791,12 +712,10 @@
 <span id="v-1b97cb35534a159a1b02a3c2">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/selected_by/kind">conformance-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -813,12 +732,10 @@
 <span id="v-b90407e84519e5c50429cca2">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -842,8 +759,7 @@
 <span id="v-50dcbb927acff3675836da2e">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/stdout/json/authority">generated:riverhog-storage-adapter</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -853,8 +769,7 @@
 <span id="v-1bd167d2649dbe6848ce485d">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/stdout/json/definition">StorageAdapterConformanceResult</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -864,24 +779,19 @@
 <span id="v-ea303225f96f5978b7ce565a">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/result_contract/success/0/stdout/json/kind">schema-authority</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -907,8 +817,7 @@
 <span id="v-fa392b722cfef610c8fcf393">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -918,8 +827,7 @@
 <span id="v-6869fb1242549aba14e62b04">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -929,8 +837,7 @@
 <span id="v-fa39933834d81761c518d7c8">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -940,8 +847,7 @@
 <span id="v-06d31a9dcb08ec5f54123e81">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -958,8 +864,7 @@
 <span id="v-ca848ed11da05b41b678ef37">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -976,8 +881,7 @@
 <span id="v-2e0256227cd0a6cbbd824359">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/trigger/options/0">-h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -987,20 +891,16 @@
 <span id="v-fd0deaad9c070885693b75f3">
 <code data-value-pointer="/external_contract/cli/riverhog-storage-adapter-conformance/terminating_controls/0/trigger/options/1">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1012,7 +912,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1024,7 +924,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1034,8 +934,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1047,61 +946,52 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/2</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/riverhog-storage-adapter-conformance/parameters/3</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

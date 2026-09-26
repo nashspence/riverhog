@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_protocol.CollectionUploadUnitAssignmentDocument</h1>
 <p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,40 +84,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>unit</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-e7fc0df57a011a7771f07455">#/$defs/CollectionUploadUnitWorkDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>unit</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-e7fc0df57a011a7771f07455">#/$defs/CollectionUploadUnitWorkDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>volume</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-a20aef85981b30cf41d65694">#/$defs/CollectionUploadVolumeSummaryDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>volume</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-a20aef85981b30cf41d65694">#/$defs/CollectionUploadVolumeSummaryDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -170,7 +152,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -183,52 +165,40 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>offset</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>offset</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -254,7 +224,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -267,63 +237,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>payload_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>payload_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>plaintext_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>plaintext_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-a01a88dc1b08424f5a921a24">sources</a>
-</td>
-<td>yes</td>
-<td>
+<td data-label="Field">
+<a href="#s-a01a88dc1b08424f5a921a24">sources</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-de7b28aeacee163d398f29ee.html#v-d12188e833c77d37d05b6b10">#/$defs/CollectionUploadUnitSourceDocument</a>; maxItems: <code>1000</code>; x-riverhog-extent: structured schema</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;committed&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;committed&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>unit</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>unit</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -349,7 +305,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -362,40 +318,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;pack&quot;,&quot;segment&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;pack&quot;,&quot;segment&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sequence</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-de7b28aeacee163d398f29ee.html#v-3f0edf1d63fc7feb27b6cb94">#/$defs/Sequence256Hex</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-de7b28aeacee163d398f29ee.html#v-3f0edf1d63fc7feb27b6cb94">#/$defs/Sequence256Hex</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>volume_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:pack|segment)-[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>volume_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:pack|segment)-[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -476,8 +423,7 @@
 <span id="v-11174e115667619d42e49b84">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -508,8 +454,7 @@
 <span id="v-654785851a90af1c2b3a1289">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -533,8 +478,7 @@
 <span id="v-175383ae70360fefe003a075">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/artifact_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -544,12 +488,10 @@
 <span id="v-b9ee687df5af2955c9c2fb73">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/artifact_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -566,12 +508,10 @@
 <span id="v-894071b6b5f38b92ee58b65c">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -588,12 +528,10 @@
 <span id="v-110548631cb06e43c8d3eec8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/offset/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -610,16 +548,13 @@
 <span id="v-88d9fb25728e7078f75cd80b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -636,8 +571,7 @@
 <span id="v-e71e364cb0471769c9f5f508">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/required/0">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -647,8 +581,7 @@
 <span id="v-e704d1af188ca1c1472857c8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/required/1">offset</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -658,8 +591,7 @@
 <span id="v-e2792a4529820f15d9646993">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/required/2">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -669,12 +601,10 @@
 <span id="v-32dca7e50969b724d735ece9">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/required/3">artifact_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -684,12 +614,10 @@
 <span id="v-5de5388840c76abfa20a8a46">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -706,8 +634,7 @@
 <span id="v-e43b48745528ccc02214042f">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -731,12 +658,10 @@
 <span id="v-b9c0b54156726e1b1d0f56f5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/payload_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -753,12 +678,10 @@
 <span id="v-5fc6246e19700030c4483144">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/plaintext_bytes/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -782,12 +705,10 @@
 <span id="v-c86f8ee9784393eb35689ac9">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/sources/items/$ref">#/$defs/CollectionUploadUnitSourceDocument</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-d12188e833c77d37d05b6b10">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -797,8 +718,7 @@
 <span id="v-dfd68bc2c20b6800cf70e45d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/sources/maxItems">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -808,8 +728,7 @@
 <span id="v-27dae890af7b4738a6d4158b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/sources/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -826,8 +745,7 @@
 <span id="v-afe53e8059bed648786d85f0">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/sources/x-riverhog-extent/policy">segmented_no_total_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -837,8 +755,7 @@
 <span id="v-92aa5e6806f1ea122f7ea7ab">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/sources/x-riverhog-extent/progression">collection-volume-sequence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -848,16 +765,13 @@
 <span id="v-921aec7f7e96262e5ad68993">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/sources/x-riverhog-extent/reason">bounded-upload-unit-source-map</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -881,8 +795,7 @@
 <span id="v-974f659eecd26e0067f8ed8e">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/state/enum/0">pending</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -892,12 +805,10 @@
 <span id="v-0e43db545d5e1e5f985ae8d8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/state/enum/1">committed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -907,12 +818,10 @@
 <span id="v-1bfb594b27262648686f8c3a">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/state/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -929,16 +838,13 @@
 <span id="v-21ceafa268cd40ba00b6d9b9">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/properties/unit/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -955,8 +861,7 @@
 <span id="v-97294c03f01115882a8f7d5e">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/required/0">unit</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -966,8 +871,7 @@
 <span id="v-8d603d96ba119a6e47306ef4">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/required/1">payload_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -977,8 +881,7 @@
 <span id="v-9dc615c769d6563da3781135">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/required/2">plaintext_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -988,8 +891,7 @@
 <span id="v-e0484da11375c25c1806ccc8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/required/3">sources</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -999,12 +901,10 @@
 <span id="v-58762c4c20733e0e2ed15ba3">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/required/4">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1014,12 +914,10 @@
 <span id="v-1371414108591245ddc06d23">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitWorkDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1036,8 +934,7 @@
 <span id="v-c418ea3ec84bcab09947f319">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1068,8 +965,7 @@
 <span id="v-c63937a2b888e2925c193435">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/properties/kind/enum/0">pack</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1079,12 +975,10 @@
 <span id="v-f5cc2a2dce49d13580de69a9">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/properties/kind/enum/1">segment</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1094,12 +988,10 @@
 <span id="v-e22856441bc3abeb98e85867">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1116,12 +1008,10 @@
 <span id="v-56d724e4e8d926f5e8eccb78">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/properties/sequence/$ref">#/$defs/Sequence256Hex</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-3f0edf1d63fc7feb27b6cb94">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1138,8 +1028,7 @@
 <span id="v-b9c290e14804af64cc4596aa">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/properties/volume_id/pattern">^(?:pack|segment)-[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1149,16 +1038,13 @@
 <span id="v-85b6b34b8fd0b696fb4077f5">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/properties/volume_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1175,8 +1061,7 @@
 <span id="v-16588d3e10d5ff60fe875ef7">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/required/0">volume_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1186,8 +1071,7 @@
 <span id="v-6b725bcff16d8a758a71015a">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/required/1">sequence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1197,12 +1081,10 @@
 <span id="v-2a672171d1f1098ee75a1e81">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/required/2">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1212,12 +1094,10 @@
 <span id="v-f85e595b78fae934395910a2">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadVolumeSummaryDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1234,8 +1114,7 @@
 <span id="v-c1edca1aed2cb248e9a445cd">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1245,12 +1124,10 @@
 <span id="v-730c542dd358f756afcb6702">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1267,8 +1144,7 @@
 <span id="v-5479a0e0dbd1e23857bf97bd">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/Sequence256Hex/pattern">^[0-9a-f]{64}(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1278,16 +1154,13 @@
 <span id="v-262ef6d0020451a4465a1730">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/Sequence256Hex/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1297,8 +1170,7 @@
 <span id="v-1b25300ce9f4f1fd194e3a4b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1322,8 +1194,7 @@
 <span id="v-022f7732be9c765fd19e219d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/properties/plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1333,12 +1204,10 @@
 <span id="v-7b909a907bbd8cd5e64fa0bd">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/properties/plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1355,12 +1224,10 @@
 <span id="v-2ff798444f44b5f90365f633">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/properties/unit/$ref">#/$defs/CollectionUploadUnitWorkDocument</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-e7fc0df57a011a7771f07455">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1377,16 +1244,13 @@
 <span id="v-44a66904b7ea471230bb9327">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/properties/volume/$ref">#/$defs/CollectionUploadVolumeSummaryDocument</code>
 <span class="kind">string</span> <a href="e-de7b28aeacee163d398f29ee.html#v-a20aef85981b30cf41d65694">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1403,8 +1267,7 @@
 <span id="v-b85c09a6daa334ab39dfd4c0">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/required/0">volume</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1414,8 +1277,7 @@
 <span id="v-2c4a3c939a50cac62090153c">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/required/1">plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1425,12 +1287,10 @@
 <span id="v-600fb3f091c5949b61b4770c">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/required/2">unit</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1440,12 +1300,10 @@
 <span id="v-09667644eb1dc6d6427e065a">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1455,12 +1313,10 @@
 <span id="v-f1ff63be88e35b3c15ba8ece">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/signature">&quot;(*, volume: riverhog_protocol.collection_upload_transport.CollectionUploadVolumeSummaryDocument, plan_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], unit: riverhog_protocol.collection_upload_transport.CollectionUploadUnitWorkDocument) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1470,8 +1326,7 @@
 <span id="v-479d0f76ec60f38c4d21ef9f">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/distribution">riverhog-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1481,8 +1336,7 @@
 <span id="v-979066d2d0a2eb23c2179908">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/module">riverhog_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1492,8 +1346,7 @@
 <span id="v-2b5d1d766ef4606ae34efcb7">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/name">CollectionUploadUnitAssignmentDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1503,8 +1356,7 @@
 <span id="v-d2930ada45975d68f5812ce9">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1516,7 +1368,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1528,7 +1380,7 @@
 <a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1539,9 +1391,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: AppAccessListItemOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,84 +59,65 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>app</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>app</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>created_at</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>created_at</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>key_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">#/components/schemas/ApplicationKeyId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>key_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">#/components/schemas/ApplicationKeyId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>key_status</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;active&quot;,&quot;expired&quot;,&quot;revoked&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>key_status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;active&quot;,&quot;expired&quot;,&quot;revoked&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>permission</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-c5de15aeca8ad0f33a297445.html#v-7455dc9b56b3db5fe085641e">#/components/schemas/ApplicationPermission</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>permission</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-c5de15aeca8ad0f33a297445.html#v-7455dc9b56b3db5fe085641e">#/components/schemas/ApplicationPermission</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>resource</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-05427da9595943eba8b6a05f.html#v-08a55fd79a3c8026e92b3ab8">#/components/schemas/ApplicationResource</a>; default: <code>*</code>
-</td>
-<td>
-<code>*</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>resource</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-05427da9595943eba8b6a05f.html#v-08a55fd79a3c8026e92b3ab8">#/components/schemas/ApplicationResource</a>; default: <code>*</code></td>
+<td data-label="Default">
+<code>*</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -155,10 +127,9 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-5cd9df2132c37f7d35fdc245">1</a>
-</td>
-<td>exactly one of: 2 fields; 2 fields; 2 fields; 2 fields</td>
+<td data-label="Alternative">
+<a href="#s-5cd9df2132c37f7d35fdc245">1</a></td>
+<td data-label="Schema">exactly one of: 2 fields; 2 fields; 2 fields; 2 fields</td>
 </tr>
 </tbody>
 </table>
@@ -168,7 +139,7 @@
 <h3>All must match: 1</h3>
 <p class="shape">exactly one of: 2 fields; 2 fields; 2 fields; 2 fields</p>
 <h4>Exactly one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -178,28 +149,24 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-6b98e6a89a61885b280e9b43">1</a>
-</td>
-<td>2 fields</td>
+<td data-label="Alternative">
+<a href="#s-6b98e6a89a61885b280e9b43">1</a></td>
+<td data-label="Schema">2 fields</td>
 </tr>
 <tr>
-<td>
-<a href="#s-06abadca6cfc0c9dbea12605">2</a>
-</td>
-<td>2 fields</td>
+<td data-label="Alternative">
+<a href="#s-06abadca6cfc0c9dbea12605">2</a></td>
+<td data-label="Schema">2 fields</td>
 </tr>
 <tr>
-<td>
-<a href="#s-b6fce7008385b0ca55f3c5e3">3</a>
-</td>
-<td>2 fields</td>
+<td data-label="Alternative">
+<a href="#s-b6fce7008385b0ca55f3c5e3">3</a></td>
+<td data-label="Schema">2 fields</td>
 </tr>
 <tr>
-<td>
-<a href="#s-8d9f16ce160529e971bde15a">4</a>
-</td>
-<td>2 fields</td>
+<td data-label="Alternative">
+<a href="#s-8d9f16ce160529e971bde15a">4</a></td>
+<td data-label="Schema">2 fields</td>
 </tr>
 </tbody>
 </table>
@@ -215,7 +182,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -228,26 +195,20 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>permission</code>
-</td>
-<td>yes</td>
-<td>const: <code>*</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>permission</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">const: <code>*</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>resource</code>
-</td>
-<td>no</td>
-<td>const: <code>*</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>resource</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>*</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -263,7 +224,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -276,27 +237,21 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>permission</code>
-</td>
-<td>yes</td>
-<td>const: <code>collections:create</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>permission</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">const: <code>collections:create</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>resource</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; pattern: <code>^(?:\*|tag:.+)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>resource</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:\*|tag:.+)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -312,7 +267,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -325,27 +280,21 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>permission</code>
-</td>
-<td>yes</td>
-<td>enum: <code>[&quot;archives:manage&quot;,&quot;archives:read&quot;,&quot;catalog:read&quot;,&quot;collection-descriptions:manage&quot;,&quot;collection-tags:manage&quot;,&quot;collections:delete&quot;,&quot;provenance:export&quot;,&quot;provenance:read&quot;,&quot;retrieval:manage&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>permission</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">enum: <code>[&quot;archives:manage&quot;,&quot;archives:read&quot;,&quot;catalog:read&quot;,&quot;collection-descriptions:manage&quot;,&quot;collection-tags:manage&quot;,&quot;collections:delete&quot;,&quot;provenance:export&quot;,&quot;provenance:read&quot;,&quot;retrieval:manage&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>resource</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; pattern: <code>^(?:\*|tag:.+|collection:[1-9][0-9]*)$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>resource</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:\*|tag:.+|collection:[1-9][0-9]*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -361,7 +310,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -374,26 +323,20 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>permission</code>
-</td>
-<td>yes</td>
-<td>enum: <code>[&quot;collection-processing:control&quot;,&quot;collection-processing:execute&quot;,&quot;events:read&quot;,&quot;events:read_all&quot;,&quot;keys:manage&quot;,&quot;quotas:manage&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>permission</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">enum: <code>[&quot;collection-processing:control&quot;,&quot;collection-processing:execute&quot;,&quot;events:read&quot;,&quot;events:read_all&quot;,&quot;keys:manage&quot;,&quot;quotas:manage&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>resource</code>
-</td>
-<td>no</td>
-<td>const: <code>*</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>resource</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>*</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -416,8 +359,7 @@
 <span id="v-d38173e45970599c664a0f02">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,12 +411,10 @@
 <span id="v-ade55a5fe5511088c4641ec7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/0/properties/permission/const">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -491,16 +431,13 @@
 <span id="v-f799ba55c83b2ddf18034568">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/0/properties/resource/const">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,16 +454,13 @@
 <span id="v-b1b4d6e574364640b69e0607">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/0/required/0">permission</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -557,12 +491,10 @@
 <span id="v-e888edb6a3ada23776e6636e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/1/properties/permission/const">collections:create</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -579,8 +511,7 @@
 <span id="v-1083a323029aeeba3ee2af8c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/1/properties/resource/pattern">^(?:\*|tag:.+)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -590,16 +521,13 @@
 <span id="v-28d0fc395d85fbdb1365feec">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/1/properties/resource/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -616,16 +544,13 @@
 <span id="v-958307eaa03eed2faa6f41f7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/1/required/0">permission</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -663,8 +588,7 @@
 <span id="v-c03310d908c72f628f8f25c2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/0">archives:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -674,8 +598,7 @@
 <span id="v-5fe1e1fa8a2d24c4bf01e39a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/1">archives:read</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -685,8 +608,7 @@
 <span id="v-48e3ff2cbacdd1a971bc9506">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/2">catalog:read</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -696,8 +618,7 @@
 <span id="v-6f5c253fde9ca5113ca65165">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/3">collection-descriptions:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -707,8 +628,7 @@
 <span id="v-53cd51db62b7f70a525bac22">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/4">collection-tags:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -718,8 +638,7 @@
 <span id="v-8d350a453b298907dd990e16">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/5">collections:delete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -729,8 +648,7 @@
 <span id="v-28dfeb75fc66f81c562929bd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/6">provenance:export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -740,8 +658,7 @@
 <span id="v-d014786f7abbdcc755fcdad9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/7">provenance:read</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -751,16 +668,13 @@
 <span id="v-43135a6afcf988f31ff3233f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/permission/enum/8">retrieval:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -777,8 +691,7 @@
 <span id="v-15481464e20ec33fc34d814b">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/resource/pattern">^(?:\*|tag:.+|collection:[1-9][0-9]*)$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -788,16 +701,13 @@
 <span id="v-59dd646eefc0709469de8801">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/properties/resource/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -814,16 +724,13 @@
 <span id="v-d5df6a7ced57f05ecf7a596e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/2/required/0">permission</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -861,8 +768,7 @@
 <span id="v-25f6bfd7644474fcf57c24f4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/permission/enum/0">collection-processing:control</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -872,8 +778,7 @@
 <span id="v-257945c93b1bc6af157ac8ef">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/permission/enum/1">collection-processing:execute</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -883,8 +788,7 @@
 <span id="v-fc96fc42cee0a22feecd18bb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/permission/enum/2">events:read</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -894,8 +798,7 @@
 <span id="v-71c2c72d8583498027f077d9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/permission/enum/3">events:read_all</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -905,8 +808,7 @@
 <span id="v-6d4f23063176488d399ab51d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/permission/enum/4">keys:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -916,16 +818,13 @@
 <span id="v-9696054dd2df130411d1c10f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/permission/enum/5">quotas:manage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -942,16 +841,13 @@
 <span id="v-f5e7aac3771d502721d51e1e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/properties/resource/const">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -968,28 +864,22 @@
 <span id="v-f73f0eeb837a4dbe75d810d9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/allOf/0/oneOf/3/required/0">permission</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1013,12 +903,10 @@
 <span id="v-15222ad530b16d06df88f7f8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/app/$ref">#/components/schemas/ApplicationName</code>
 <span class="kind">string</span> <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1035,8 +923,7 @@
 <span id="v-e22d277b8f367a406d565658">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at/maxLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1046,8 +933,7 @@
 <span id="v-d042c421f174e0ce97c368ba">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at/minLength">30</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1057,8 +943,7 @@
 <span id="v-e9b8164b636231b432a98704">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1068,8 +953,7 @@
 <span id="v-066521f9ef60e51aa5872ff7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at/title">Created At</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1079,12 +963,10 @@
 <span id="v-ed986afe8a2dfdf16d2f056f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1101,12 +983,10 @@
 <span id="v-954eda3c6d1228c80b423c6e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/key_id/$ref">#/components/schemas/ApplicationKeyId</code>
 <span class="kind">string</span> <a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1130,8 +1010,7 @@
 <span id="v-d59f051fdf72f7d78201a1c1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/key_status/enum/0">active</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1141,8 +1020,7 @@
 <span id="v-9f3f242b4a95c2de50c93d77">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/key_status/enum/1">expired</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1152,12 +1030,10 @@
 <span id="v-e852578af73cbe1ba580731e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/key_status/enum/2">revoked</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1167,8 +1043,7 @@
 <span id="v-2b1a3566fbbea415fde7177f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/key_status/title">Key Status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1178,12 +1053,10 @@
 <span id="v-c7fea99f39409ab4c25f4290">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/key_status/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1200,12 +1073,10 @@
 <span id="v-2ccde4f1dbd95816a7e8b122">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/permission/$ref">#/components/schemas/ApplicationPermission</code>
 <span class="kind">string</span> <a href="e-c5de15aeca8ad0f33a297445.html#v-7455dc9b56b3db5fe085641e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1222,8 +1093,7 @@
 <span id="v-8746dbeaac3c5f9aa0f2682f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/resource/$ref">#/components/schemas/ApplicationResource</code>
 <span class="kind">string</span> <a href="e-05427da9595943eba8b6a05f.html#v-08a55fd79a3c8026e92b3ab8">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1233,16 +1103,13 @@
 <span id="v-70220cea1c405736b0f803e6">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/resource/default">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1259,8 +1126,7 @@
 <span id="v-a0a960566847ade2eed6ed0e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/required/0">permission</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1270,8 +1136,7 @@
 <span id="v-0ee55c6550cef6b8e48bc605">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/required/1">app</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1281,8 +1146,7 @@
 <span id="v-71500fa2b67fce77143fa266">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/required/2">key_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1292,8 +1156,7 @@
 <span id="v-ad2075f94a1559933e1777aa">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/required/3">key_status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1303,12 +1166,10 @@
 <span id="v-5a42a037e9b018bb828bce75">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/required/4">created_at</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1318,8 +1179,7 @@
 <span id="v-250a15cee0b0fc66d44093d7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/title">AppAccessListItemOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1329,8 +1189,7 @@
 <span id="v-90082cfd17bede631a19b831">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1342,7 +1201,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1354,7 +1213,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1364,8 +1223,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1377,25 +1235,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

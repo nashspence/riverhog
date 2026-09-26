@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-107a12dbaa357067178e1f78.html">review0-sampler-protocol</a> / <a href="i-2272fce0d179e89ca56e9a07.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>review0_sampler_protocol.SamplerResult</h1>
 <p class="context">Protocol contracts for Review0 samplers. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,118 +84,87 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-3e24f2047466398d9b96c2e4">execution_evidence</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-883308165debd4cefd46f210.html#v-8c0daeb701a8deeae1c837f5">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-3e24f2047466398d9b96c2e4">execution_evidence</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-883308165debd4cefd46f210.html#v-8c0daeb701a8deeae1c837f5">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-82c4ac3189ba06478c3f872f">failure</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-883308165debd4cefd46f210.html#v-5434273c238e5d0c563e63d6">#/$defs/SamplerFailure</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-82c4ac3189ba06478c3f872f">failure</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-883308165debd4cefd46f210.html#v-5434273c238e5d0c563e63d6">#/$defs/SamplerFailure</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>review0-sampler-result/v1</code>; default: <code>review0-sampler-result/v1</code>
-</td>
-<td>
-<code>review0-sampler-result/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>review0-sampler-result/v1</code>; default: <code>review0-sampler-result/v1</code></td>
+<td data-label="Default">
+<code>review0-sampler-result/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-cb7015cff7606e5455e5a2a9">inapplicable</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-883308165debd4cefd46f210.html#v-8acf73c5e834eafda0700c70">#/$defs/SamplerInapplicable</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-cb7015cff7606e5455e5a2a9">inapplicable</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-883308165debd4cefd46f210.html#v-8acf73c5e834eafda0700c70">#/$defs/SamplerInapplicable</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-0ef5e89ed76201e1dba33caf">outputs</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-883308165debd4cefd46f210.html#v-06bec3e2bbc605f3c70f7be7">#/$defs/SamplerOutput</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-0ef5e89ed76201e1dba33caf">outputs</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-883308165debd4cefd46f210.html#v-06bec3e2bbc605f3c70f7be7">#/$defs/SamplerOutput</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>request_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>request_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>result_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>result_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sampler_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sampler_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;succeeded&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;succeeded&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -246,7 +206,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-883308165debd4cefd46f210.html#v-5434273c238e5d0c563e63d6">#/$defs/SamplerFailure</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -256,16 +216,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-883308165debd4cefd46f210.html#v-5434273c238e5d0c563e63d6">#/$defs/SamplerFailure</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-883308165debd4cefd46f210.html#v-5434273c238e5d0c563e63d6">#/$defs/SamplerFailure</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -276,7 +234,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-883308165debd4cefd46f210.html#v-8acf73c5e834eafda0700c70">#/$defs/SamplerInapplicable</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -286,16 +244,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-883308165debd4cefd46f210.html#v-8acf73c5e834eafda0700c70">#/$defs/SamplerInapplicable</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-883308165debd4cefd46f210.html#v-8acf73c5e834eafda0700c70">#/$defs/SamplerInapplicable</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -337,7 +293,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -350,40 +306,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retryable</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retryable</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -409,7 +356,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -422,28 +369,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -469,7 +410,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -482,76 +423,58 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-107039176110ab35543d9a31">derived_from</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-107039176110ab35543d9a31">derived_from</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>media_type</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>media_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -597,8 +520,7 @@
 <span id="v-90f0fc39ea5690a4479d473c">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -622,8 +544,7 @@
 <span id="v-8c0daeb701a8deeae1c837f5">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -640,8 +561,7 @@
 <span id="v-305c2f91c0f73bd08c2adb7a">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -665,8 +585,7 @@
 <span id="v-87832572507c9ca446b7f850">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -676,12 +595,10 @@
 <span id="v-aa31a0cc1a9784b50eb747a7">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -698,8 +615,7 @@
 <span id="v-cdcb691339422df0dcb70423">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/properties/message/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -709,8 +625,7 @@
 <span id="v-166ac7eb606bbf3c9f23c837">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -720,12 +635,10 @@
 <span id="v-74f74484efd69a6d8d35e7d0">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -742,16 +655,13 @@
 <span id="v-efc9be94eb4f7827776dc43b">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/properties/retryable/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -768,8 +678,7 @@
 <span id="v-1bf8970c1da3dc0ca6440d3e">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -779,8 +688,7 @@
 <span id="v-121cb5a4189f66c9e2a375bb">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -790,12 +698,10 @@
 <span id="v-93fe8de271891d2a4c3e8602">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/required/2">retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -805,12 +711,10 @@
 <span id="v-a2fef09a8b3c237f3c7af4c6">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerFailure/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -827,8 +731,7 @@
 <span id="v-d8bcfad5558dc7127216a916">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -852,8 +755,7 @@
 <span id="v-fa4ba82736f6a9515d92387a">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -863,12 +765,10 @@
 <span id="v-6c1e0ab9b60ff85acefdaa26">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -885,8 +785,7 @@
 <span id="v-9a7db2faf3b08aa4d1fdc221">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/properties/message/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -896,8 +795,7 @@
 <span id="v-f57a5d4316b54cd77978cdb6">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -907,16 +805,13 @@
 <span id="v-7d5a2cdde7c170b3560dcad8">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -933,8 +828,7 @@
 <span id="v-811c135651f7801a3dface72">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -944,12 +838,10 @@
 <span id="v-068eac43d0eb5002bac20813">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -959,12 +851,10 @@
 <span id="v-7b3e788721cc1a5bb0044540">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerInapplicable/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -981,8 +871,7 @@
 <span id="v-fcad48d9629533b088cc1eac">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1006,8 +895,7 @@
 <span id="v-8e651f76e4dc99c07734a3a0">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1017,12 +905,10 @@
 <span id="v-a1731a8fd09d34818db7ed94">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1046,12 +932,10 @@
 <span id="v-d07b620bd1057d46d4a36d7a">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/derived_from/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1061,8 +945,7 @@
 <span id="v-b8f6dec008cd76e5c1dd1aa9">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/derived_from/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1072,12 +955,10 @@
 <span id="v-8e5973d1b8fd1f484ed37117">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/derived_from/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1094,8 +975,7 @@
 <span id="v-2e59302d34b8c1e90914f6af">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1105,12 +985,10 @@
 <span id="v-f90a20b17c73117a0430049c">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1127,8 +1005,7 @@
 <span id="v-f5d5a22c05ac53bb73bd547d">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/media_type/maxLength">255</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1138,8 +1015,7 @@
 <span id="v-c94669bbb6486a890280c4b8">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/media_type/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1149,12 +1025,10 @@
 <span id="v-31702599131ba702244123ea">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/media_type/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1171,8 +1045,7 @@
 <span id="v-267309789f1db32287c7ed02">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/path/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1182,8 +1055,7 @@
 <span id="v-9f7fc134ee8fe5451d87a531">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1193,12 +1065,10 @@
 <span id="v-12d65c4b1ec8810f1aa1db4d">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1215,8 +1085,7 @@
 <span id="v-2d52d7eff441d5be3498a460">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1226,16 +1095,13 @@
 <span id="v-dbc6f563cd287f1013c031f8">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1252,8 +1118,7 @@
 <span id="v-4d3eff0a721d8cc0f933cf32">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1263,8 +1128,7 @@
 <span id="v-c79d8112565979faf081131a">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/required/1">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1274,8 +1138,7 @@
 <span id="v-d5412ec048d0da74c8c55873">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/required/2">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1285,8 +1148,7 @@
 <span id="v-5cff9dc08c13cc2871d01451">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/required/3">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1296,8 +1158,7 @@
 <span id="v-39890edea5f9f70c575ca9af">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/required/4">media_type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1307,12 +1168,10 @@
 <span id="v-3c87f24a8b804ac75cfbd262">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/required/5">derived_from</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1322,16 +1181,13 @@
 <span id="v-828b5d9b0430521bab47e235">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/$defs/SamplerOutput/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1341,8 +1197,7 @@
 <span id="v-1de13bae6b89b41dfd846f79">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1373,12 +1228,10 @@
 <span id="v-6aeeefe71f75cb25778dbf5f">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/execution_evidence/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-883308165debd4cefd46f210.html#v-8c0daeb701a8deeae1c837f5">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1388,12 +1241,10 @@
 <span id="v-cb1bd2bb70d6a94de15e7524">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/execution_evidence/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1424,12 +1275,10 @@
 <span id="v-5e6f07dad3af5366a1e8227d">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/failure/anyOf/0/$ref">#/$defs/SamplerFailure</code>
 <span class="kind">string</span> <a href="e-883308165debd4cefd46f210.html#v-5434273c238e5d0c563e63d6">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1446,16 +1295,13 @@
 <span id="v-d8c8c1a4a894f1a6b7c393b3">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/failure/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1465,12 +1311,10 @@
 <span id="v-32f67e42c5c1785b4e6e0e59">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/failure/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1487,8 +1331,7 @@
 <span id="v-97419e59dfe03e9cb8bc4aeb">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/format/const">review0-sampler-result/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1498,8 +1341,7 @@
 <span id="v-242cf75f6b321f317627d125">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/format/default">review0-sampler-result/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1509,12 +1351,10 @@
 <span id="v-c3f71cd182724c824d3f203c">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1545,12 +1385,10 @@
 <span id="v-8911fb477de1887814b3a502">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/inapplicable/anyOf/0/$ref">#/$defs/SamplerInapplicable</code>
 <span class="kind">string</span> <a href="e-883308165debd4cefd46f210.html#v-8acf73c5e834eafda0700c70">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1567,16 +1405,13 @@
 <span id="v-339d473fbb02f25b2a96199d">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/inapplicable/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1586,12 +1421,10 @@
 <span id="v-4e6d2743552f1eb927128c35">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/inapplicable/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1608,8 +1441,7 @@
 <span id="v-bbbaac15c49ef13a909a8500">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/outputs/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1626,12 +1458,10 @@
 <span id="v-d75052c5ad79500dfbeec75b">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/outputs/items/$ref">#/$defs/SamplerOutput</code>
 <span class="kind">string</span> <a href="e-883308165debd4cefd46f210.html#v-06bec3e2bbc605f3c70f7be7">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1641,12 +1471,10 @@
 <span id="v-009ab97ac4031fad4756a382">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/outputs/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1663,8 +1491,7 @@
 <span id="v-6d08bd2695e30f0c2ae8a4b1">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/request_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1674,12 +1501,10 @@
 <span id="v-899b0252a6687e3e1e7cdad4">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/request_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1696,8 +1521,7 @@
 <span id="v-b324fc1aa08efadf9c30d3de">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/result_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1707,12 +1531,10 @@
 <span id="v-7c464ba8455c02f8b83f3a36">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/result_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1729,8 +1551,7 @@
 <span id="v-68e3d9d5c6fb8e90783f240d">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/sampler_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1740,12 +1561,10 @@
 <span id="v-5cd564517cb8e0674a229257">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/sampler_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1769,8 +1588,7 @@
 <span id="v-c6c43fcaca1c65f4a1b109d8">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/state/enum/0">succeeded</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1780,8 +1598,7 @@
 <span id="v-c64ea743d1e6009c724ac0ab">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/state/enum/1">inapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1791,8 +1608,7 @@
 <span id="v-fbfbc777c96e7c5ba5669615">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/state/enum/2">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1802,12 +1618,10 @@
 <span id="v-2be9f44184105f4c4ed460fb">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/state/enum/3">canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1817,16 +1631,13 @@
 <span id="v-1b91b68f65e1d66657fbdb48">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/properties/state/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1843,8 +1654,7 @@
 <span id="v-fdf66d39fe1b14a17a0c0517">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/required/0">request_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1854,8 +1664,7 @@
 <span id="v-c9844eea4e401d24519961fe">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/required/1">sampler_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1865,8 +1674,7 @@
 <span id="v-2fbcce530ba9242c0691b1ce">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/required/2">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1876,12 +1684,10 @@
 <span id="v-a2c86681893700bb0a29c54f">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/required/3">result_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1891,12 +1697,10 @@
 <span id="v-e3012f0668eeecc53d590f4b">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1906,12 +1710,10 @@
 <span id="v-55e0ab73bab2e7cfcb17e7c0">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/contract/signature">&quot;(*, format: Literal[&#x27;review0-sampler-result/v1&#x27;] = &#x27;review0-sampler-result/v1&#x27;, request_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], state: Literal[&#x27;succeeded&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], outputs: tuple[review0_sampler_protocol.SamplerOutput, ...] = (), execution_evidence: dict[str, JsonValue] = &lt;factory&gt;, failure: review0_sampler_protocol.SamplerFailure | None = None, inapplicable: review0_sampler_protocol.SamplerInapplicable | None = None, result_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1921,8 +1723,7 @@
 <span id="v-b1d895b10d6fbe531a02bd01">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/distribution">review0-sampler-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1932,8 +1733,7 @@
 <span id="v-0f1446ca2276af71a35d400f">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/module">review0_sampler_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1943,8 +1743,7 @@
 <span id="v-fb610d05c6a1aab17bbd9bbb">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/name">SamplerResult</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1954,8 +1753,7 @@
 <span id="v-80d0aecea96be38371b47248">
 <code data-value-pointer="/external_contract/python/review0_sampler_protocol.SamplerResult/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1984,7 +1782,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1996,7 +1794,7 @@
 <a href="source-authorities.html#source-317a05ab5ec15af049da87c6">python:review0-sampler-protocol:review0_sampler_protocol</a> — <code data-source-path="some-implementations/stove0/review0/sampler/protocol/src/review0_sampler_protocol/__init__.py">some-implementations/stove0/review0/sampler/protocol/src/review0_sampler_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -2007,9 +1805,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

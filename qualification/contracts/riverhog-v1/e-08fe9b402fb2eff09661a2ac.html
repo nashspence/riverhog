@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: KeyDownloadQuotaListOut</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,96 +59,72 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-2bd88bec1e813fb9f6d10a78">active</a>
-</td>
-<td>yes</td>
-<td>any of: <code>boolean</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-2bd88bec1e813fb9f6d10a78">active</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-61d180626b9843925d0e27af">app</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-61d180626b9843925d0e27af">app</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-185405e83df0720b884dbc84">next_page_token</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-185405e83df0720b884dbc84">next_page_token</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>order</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">#/components/schemas/SortOrder</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>order</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">#/components/schemas/SortOrder</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>page_size</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>page_size</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-4cccd8c9cf259e7b74eab838">query</a>
-</td>
-<td>yes</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-4cccd8c9cf259e7b74eab838">query</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-3326d2ce08d02a1c2dfc6f84">quotas</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-33fe00474f3772d4f6925fa2.html#v-c607c0529c07085353624162">#/components/schemas/KeyDownloadQuotaOut</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-3326d2ce08d02a1c2dfc6f84">quotas</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-33fe00474f3772d4f6925fa2.html#v-c607c0529c07085353624162">#/components/schemas/KeyDownloadQuotaOut</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sort</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-8d68cf8c216727522de6caac.html#v-581931c55e9d0a074b946b07">#/components/schemas/DownloadQuotaSort</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sort</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-8d68cf8c216727522de6caac.html#v-581931c55e9d0a074b946b07">#/components/schemas/DownloadQuotaSort</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -174,7 +141,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -184,16 +151,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>boolean</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -204,7 +169,7 @@
 <p class="shape">any of: <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -214,16 +179,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -234,7 +197,7 @@
 <p class="shape">any of: <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -244,16 +207,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">#/components/schemas/BrowsePageToken</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -270,7 +231,7 @@
 </dd>
 </dl>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -280,16 +241,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -328,8 +287,7 @@
 <span id="v-4b20e775779600b3c6b39e04">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -367,12 +325,10 @@
 <span id="v-06c287454098a66e87679245">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/active/anyOf/0/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -389,16 +345,13 @@
 <span id="v-df5ca2b235ec8cdfb1b598a1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/active/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -408,12 +361,10 @@
 <span id="v-9465b9fdbb357ce82ee99ee4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/active/title">Active</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -444,12 +395,10 @@
 <span id="v-592c99f42ab3d23a65fac6db">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/app/anyOf/0/$ref">#/components/schemas/ApplicationName</code>
 <span class="kind">string</span> <a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -466,20 +415,16 @@
 <span id="v-83923058394906cd3e823b86">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/app/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -510,12 +455,10 @@
 <span id="v-409d9a72a27ba0541864a809">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/next_page_token/anyOf/0/$ref">#/components/schemas/BrowsePageToken</code>
 <span class="kind">string</span> <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -532,20 +475,16 @@
 <span id="v-5f2e3db882ba409cd6228818">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/next_page_token/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -562,12 +501,10 @@
 <span id="v-1bd34dd4b5467662b5f0dc18">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/order/$ref">#/components/schemas/SortOrder</code>
 <span class="kind">string</span> <a href="e-564f344546af9db7abff7075.html#v-fc3b295a103acfb3fd9888e3">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -584,8 +521,7 @@
 <span id="v-06745f8e7fe35953bb196dbf">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/page_size/maximum">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -595,8 +531,7 @@
 <span id="v-ed013725970572580bbd7168">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/page_size/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -606,8 +541,7 @@
 <span id="v-a6acd639a324d4fdf1b98341">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/page_size/title">Page Size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -617,12 +551,10 @@
 <span id="v-ba767177fbe470815d7c8c9e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/page_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -653,12 +585,10 @@
 <span id="v-84989d3512ced98cec084c1c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/query/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -675,16 +605,13 @@
 <span id="v-365dafbadfd43f35df6e6803">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/query/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -694,12 +621,10 @@
 <span id="v-f575bea3111ec266af77fb62">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/query/title">Query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,12 +648,10 @@
 <span id="v-7591c1f81f5eb1edfffe73a9">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas/items/$ref">#/components/schemas/KeyDownloadQuotaOut</code>
 <span class="kind">string</span> <a href="e-33fe00474f3772d4f6925fa2.html#v-c607c0529c07085353624162">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -738,8 +661,7 @@
 <span id="v-ef1ceb32670b338640afbb0e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas/title">Quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -749,12 +671,10 @@
 <span id="v-aa85717855489bc1ca4c2e9e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -771,16 +691,13 @@
 <span id="v-be51023dac35b2d031e28f30">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/sort/$ref">#/components/schemas/DownloadQuotaSort</code>
 <span class="kind">string</span> <a href="e-8d68cf8c216727522de6caac.html#v-581931c55e9d0a074b946b07">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -797,8 +714,7 @@
 <span id="v-d74ffa23f8008d75a3327b0a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/0">page_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -808,8 +724,7 @@
 <span id="v-4ec092f0d3b5de6a70e97c28">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/1">next_page_token</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -819,8 +734,7 @@
 <span id="v-edc2ce23a4fa7a152fc71551">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/2">sort</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -830,8 +744,7 @@
 <span id="v-b67c91febb48aa5a11f755a1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/3">order</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -841,8 +754,7 @@
 <span id="v-a3dd81a97676c09619a58f35">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/4">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -852,8 +764,7 @@
 <span id="v-a682e1d19e28c26bd8b2edfb">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/5">app</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -863,8 +774,7 @@
 <span id="v-03df78d89d1c041280c2bee2">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/6">active</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -874,12 +784,10 @@
 <span id="v-8f1da6181d53b4619825525e">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/required/7">quotas</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -889,8 +797,7 @@
 <span id="v-25f631f39fe753b71b129b58">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/title">KeyDownloadQuotaListOut</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -900,8 +807,7 @@
 <span id="v-3d13e04359378b372302cd66">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -911,7 +817,6 @@
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
@@ -920,7 +825,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -932,7 +837,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -942,8 +847,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -955,37 +859,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/page_size</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/page_size</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas</code>
-</td>
-<td>
-<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
-</td>
-<td>cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-c35859ad2c6c8a34ef05c100.html">extent-rule/route-progression/v1</a></td>
+<td data-label="Decision">cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

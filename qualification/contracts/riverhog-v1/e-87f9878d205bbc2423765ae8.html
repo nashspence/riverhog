@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-9bec37329ab1cbbfd4a42b90.html">review0-target-contracts</a> / <a href="i-68b19e8d51d7c053fa76356f.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>review0_target_contracts.ReviewMaterializeIntent</h1>
 <p class="context">Review0 target execution and artifact contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,28 +84,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>sample_plan</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-87f9878d205bbc2423765ae8.html#v-f25f55be885267a0dfd426c7">#/$defs/ReviewSamplePlan</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sample_plan</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-87f9878d205bbc2423765ae8.html#v-f25f55be885267a0dfd426c7">#/$defs/ReviewSamplePlan</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>variant</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-87f9878d205bbc2423765ae8.html#v-694c664c4a60395ee535ff04">#/$defs/ReviewVariantIntent</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>variant</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-87f9878d205bbc2423765ae8.html#v-694c664c4a60395ee535ff04">#/$defs/ReviewVariantIntent</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -159,7 +144,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -172,80 +157,60 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>review0-sample-plan/v1</code>; default: <code>review0-sample-plan/v1</code>
-</td>
-<td>
-<code>review0-sample-plan/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>review0-sample-plan/v1</code>; default: <code>review0-sample-plan/v1</code></td>
+<td data-label="Default">
+<code>review0-sample-plan/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sample_plan_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sample_plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>samples_per_artifact</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>samples_per_artifact</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>selection_method</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>evenly-spaced/v1</code>; default: <code>evenly-spaced/v1</code>
-</td>
-<td>
-<code>evenly-spaced/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>selection_method</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>evenly-spaced/v1</code>; default: <code>evenly-spaced/v1</code></td>
+<td data-label="Default">
+<code>evenly-spaced/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>window_duration_ms</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>window_duration_ms</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-bd11aa9cfd740fd9c95bbcc9">windows</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-87f9878d205bbc2423765ae8.html#v-4492fabe3d0f8240130713ff">#/$defs/ReviewSampleWindow</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-bd11aa9cfd740fd9c95bbcc9">windows</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-87f9878d205bbc2423765ae8.html#v-4492fabe3d0f8240130713ff">#/$defs/ReviewSampleWindow</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -271,7 +236,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -284,40 +249,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>duration_ms</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>duration_ms</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>start_ms</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>start_ms</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -343,7 +299,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -356,28 +312,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e934a2d6aa9161ff32ff9a0d">portable_intent</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-87f9878d205bbc2423765ae8.html#v-57c4c73b99488564bbe49961">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e934a2d6aa9161ff32ff9a0d">portable_intent</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-87f9878d205bbc2423765ae8.html#v-57c4c73b99488564bbe49961">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -439,8 +389,7 @@
 <span id="v-6ffa0a07250bc7153551ea62">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -464,8 +413,7 @@
 <span id="v-57c4c73b99488564bbe49961">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -482,8 +430,7 @@
 <span id="v-74b8de387a8af9cae30f51e6">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -507,8 +454,7 @@
 <span id="v-a75b5cb1f940716137ba44ad">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/format/const">review0-sample-plan/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -518,8 +464,7 @@
 <span id="v-1e7872c87bd828a1cddd2f42">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/format/default">review0-sample-plan/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -529,12 +474,10 @@
 <span id="v-1f4f7513a9658975e7e4ab89">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -551,8 +494,7 @@
 <span id="v-cb56e7a47fb758fd3fa0d8eb">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/sample_plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -562,12 +504,10 @@
 <span id="v-a11e651647706d98e8219c5a">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/sample_plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -584,8 +524,7 @@
 <span id="v-12c720756b4c1672347b8996">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/samples_per_artifact/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -595,12 +534,10 @@
 <span id="v-29d0cf997355f83249b206cb">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/samples_per_artifact/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -617,8 +554,7 @@
 <span id="v-babac2f39bb8415ecafe2ebd">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/selection_method/const">evenly-spaced/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -628,8 +564,7 @@
 <span id="v-b0551d60435af813bf75b2aa">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/selection_method/default">evenly-spaced/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -639,12 +574,10 @@
 <span id="v-fc07b3b7de170873fe86cfc9">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/selection_method/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -661,8 +594,7 @@
 <span id="v-21b089fe2a39f733bcf5d085">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/window_duration_ms/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -672,12 +604,10 @@
 <span id="v-8c30070e25bcb00e1b365ba7">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/window_duration_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -701,12 +631,10 @@
 <span id="v-701eb0acb408b09f6d9e844a">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/windows/items/$ref">#/$defs/ReviewSampleWindow</code>
 <span class="kind">string</span> <a href="e-87f9878d205bbc2423765ae8.html#v-4492fabe3d0f8240130713ff">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -716,8 +644,7 @@
 <span id="v-d0b1a345c5d96e7a5567f8a4">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/windows/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -727,16 +654,13 @@
 <span id="v-3437cb399209c27aa66d78bc">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/properties/windows/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -753,8 +677,7 @@
 <span id="v-cac6edd57b686ea486136739">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/required/0">samples_per_artifact</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -764,8 +687,7 @@
 <span id="v-a4bad5d970d57759ae4f9374">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/required/1">window_duration_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -775,8 +697,7 @@
 <span id="v-982ff44b00bfa740a2c51d49">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/required/2">windows</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -786,12 +707,10 @@
 <span id="v-1bf9625127bd53e2ba9bd9a9">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/required/3">sample_plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -801,12 +720,10 @@
 <span id="v-19e259615e31c5bd576a4d9d">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSamplePlan/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -823,8 +740,7 @@
 <span id="v-00c0890b041d11d4fa8096d5">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -848,8 +764,7 @@
 <span id="v-1bb7f80d3a680e3bc01c2e40">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/artifact_id/maxLength">160</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -859,8 +774,7 @@
 <span id="v-96214c0f3bc1da5b7eb05dde">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/artifact_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -870,12 +784,10 @@
 <span id="v-15b9311794e9460d8a8debd3">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/artifact_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -892,8 +804,7 @@
 <span id="v-7e4b2bfb79cfa1471937ba6a">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/duration_ms/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -903,12 +814,10 @@
 <span id="v-243e8bacf4a73ac3dea85c52">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/duration_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -925,8 +834,7 @@
 <span id="v-b63832526750e540ebb7a4ac">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/start_ms/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -936,16 +844,13 @@
 <span id="v-7cbe0bf9820cc1a6b0a40575">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/properties/start_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -962,8 +867,7 @@
 <span id="v-449a70a2310483199c9c4fa9">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/required/0">artifact_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -973,8 +877,7 @@
 <span id="v-202c9bab2c3cc51e40fde23d">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/required/1">start_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -984,12 +887,10 @@
 <span id="v-cffefbc7fe1ebc3f17f4bd3c">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/required/2">duration_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -999,12 +900,10 @@
 <span id="v-0058190f023173e6339bae1c">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewSampleWindow/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1021,8 +920,7 @@
 <span id="v-b14c722c140f9c046676fa31">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1046,8 +944,7 @@
 <span id="v-138a7b96924db03b58601d11">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/properties/id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1057,12 +954,10 @@
 <span id="v-a325fa8e2a74a2f0c9b621e8">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1086,12 +981,10 @@
 <span id="v-e344b969cd8410d51c7a8abc">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/properties/portable_intent/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-87f9878d205bbc2423765ae8.html#v-57c4c73b99488564bbe49961">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1101,16 +994,13 @@
 <span id="v-ba79841293bf91fc7b7b5209">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/properties/portable_intent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1127,8 +1017,7 @@
 <span id="v-7c04223d67af6203b04d5939">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1138,12 +1027,10 @@
 <span id="v-476eb8e11ddd5f8418f5f044">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/required/1">portable_intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1153,16 +1040,13 @@
 <span id="v-7164ebfd65dc780c950bf6ea">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/$defs/ReviewVariantIntent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1172,8 +1056,7 @@
 <span id="v-8b230e64d172c44d765d904d">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1197,12 +1080,10 @@
 <span id="v-d3907d2e7e2595949d92b0f3">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/properties/sample_plan/$ref">#/$defs/ReviewSamplePlan</code>
 <span class="kind">string</span> <a href="e-87f9878d205bbc2423765ae8.html#v-f25f55be885267a0dfd426c7">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1219,16 +1100,13 @@
 <span id="v-090b9e9f4a5f629e6e76abe5">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/properties/variant/$ref">#/$defs/ReviewVariantIntent</code>
 <span class="kind">string</span> <a href="e-87f9878d205bbc2423765ae8.html#v-694c664c4a60395ee535ff04">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1245,8 +1123,7 @@
 <span id="v-63b149d3e17a12146dd70b1c">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/required/0">sample_plan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1256,12 +1133,10 @@
 <span id="v-1a900f25608e0757159bb8ca">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/required/1">variant</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1271,12 +1146,10 @@
 <span id="v-f6496cefc7b8ac3c029848ec">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1286,12 +1159,10 @@
 <span id="v-98c4c478ea78993fb4c3788f">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/contract/signature">&#x27;(*, sample_plan: review0_target_contracts.models.ReviewSamplePlan, variant: review0_target_contracts.models.ReviewVariantIntent) -&gt; None&#x27;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1301,8 +1172,7 @@
 <span id="v-2261e1aae2704e56783bfd7a">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/distribution">review0-target-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1312,8 +1182,7 @@
 <span id="v-343c52ff35305697a65a29ff">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/module">review0_target_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1323,8 +1192,7 @@
 <span id="v-baea6f9a0ce77a36e16439ab">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/name">ReviewMaterializeIntent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1334,8 +1202,7 @@
 <span id="v-d02cda693ffc680f02860072">
 <code data-value-pointer="/external_contract/python/review0_target_contracts.ReviewMaterializeIntent/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1347,7 +1214,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1359,7 +1226,7 @@
 <a href="source-authorities.html#source-5615f251e553cadbfec817b1">python:review0-target-contracts:review0_target_contracts</a> — <code data-source-path="some-implementations/stove0/review0/contracts/src/review0_target_contracts/__init__.py">some-implementations/stove0/review0/contracts/src/review0_target_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1370,9 +1237,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-997ef9766dc94538af6ca12f.html">a-riverhog-opentimestamps-witness</a> / <a href="i-851bbf623c69d3e25f924016.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a-riverhog-opentimestamps-witness state status</h1>
 <p class="context">Independent OpenTimestamps collection witness for Riverhog. CLI contract owned by a-riverhog-opentimestamps-witness.</p>
@@ -63,7 +54,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -76,24 +67,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>completed</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>command-completed</code>
-</td>
-<td>json: identity: <code>a-riverhog-opentimestamps-witness-cli-state-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;status&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;condition&quot;:{&quot;enum&quot;:[&quot;empty&quot;,&quot;current&quot;,&quot;upgrade_required&quot;,&quot;unversioned&quot;,&quot;incompatible&quot;]},&quot;current_revision&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;head_revision&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;name&quot;,&quot;condition&quot;,&quot;current_revision&quot;,&quot;head_revision&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;status&quot;],&quot;type&quot;:&quot;object&quot;}</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>completed</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>command-completed</code></td>
+<td data-label="stdout">json: identity: <code>a-riverhog-opentimestamps-witness-cli-state-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;status&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;condition&quot;:{&quot;enum&quot;:[&quot;empty&quot;,&quot;current&quot;,&quot;upgrade_required&quot;,&quot;unversioned&quot;,&quot;incompatible&quot;]},&quot;current_revision&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;head_revision&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;name&quot;,&quot;condition&quot;,&quot;current_revision&quot;,&quot;head_revision&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;status&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -106,38 +92,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 <tr>
-<td>
-<code>application-error</code>
-</td>
-<td>
-<code>1</code>
-</td>
-<td>kind: <code>application-error</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>application-error</code></td>
+<td data-label="Exit">
+<code>1</code></td>
+<td data-label="Selection">kind: <code>application-error</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -150,21 +126,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -227,8 +198,7 @@
 <span id="v-3499ea5da11aca33ccb584cb">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -238,8 +208,7 @@
 <span id="v-28268bc6774cbfe2d6080d74">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -256,12 +225,10 @@
 <span id="v-1e8a83b79e55335b1aa3aba0">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -278,12 +245,10 @@
 <span id="v-9ddba7daa8fcf552f2e1f3ed">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -300,16 +265,13 @@
 <span id="v-b4854afb4bdf4a0925d746b3">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -326,8 +288,7 @@
 <span id="v-4f023b323a85b9f3dd40521f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/1/exit_status">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -337,8 +298,7 @@
 <span id="v-5889244fd3a4352f35fb2635">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/1/id">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -355,12 +315,10 @@
 <span id="v-c30cbe6b1ae4e8dd86a56dfe">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/1/selected_by/kind">application-error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -377,12 +335,10 @@
 <span id="v-c141e4fadb67b90c99057cd9">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/1/stderr/all">noncontractual-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,20 +355,16 @@
 <span id="v-d154beb6ece2a6768557db4b">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/failures/1/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -422,8 +374,7 @@
 <span id="v-9a4c1ab41e44674842fc1291">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/human_json_relationship">not-applicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -433,8 +384,7 @@
 <span id="v-c46ec577c610cda5637cc60d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/identity">a-riverhog-opentimestamps-witness-cli-result/state/status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -444,8 +394,7 @@
 <span id="v-ad2e5fee88e66e901f1380f5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/profile_id">a-riverhog-opentimestamps-witness-cli-json/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -455,8 +404,7 @@
 <span id="v-c79541f3309518f96bae007f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/structured_output">always-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -480,8 +428,7 @@
 <span id="v-9af99412f66513fc375d1147">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -491,8 +438,7 @@
 <span id="v-f04e04f2a8a1762ffb20de87">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/id">completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -509,12 +455,10 @@
 <span id="v-1221b4aae6f30044eca0a1e6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/selected_by/kind">command-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -531,12 +475,10 @@
 <span id="v-f7ecc359399aeeb8a02554b3">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -560,8 +502,7 @@
 <span id="v-762564a0cb7829fc8d4252ad">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/identity">a-riverhog-opentimestamps-witness-cli-state-status/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -571,8 +512,7 @@
 <span id="v-70ef0226dd82fe91be611832">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/kind">cli-local-json-schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,8 +529,7 @@
 <span id="v-8b8eed467bb20cbb65e99abf">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -614,8 +553,7 @@
 <span id="v-ef4dc60c9ab3b2319f2259ef">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -646,8 +584,7 @@
 <span id="v-db3584b3ea1bb81ace83c320">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/0">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -657,8 +594,7 @@
 <span id="v-60918f562287596c2ab44a30">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/1">current</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -668,8 +604,7 @@
 <span id="v-9a0bd9c4064f2d4214ef1b6a">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/2">upgrade_required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +614,7 @@
 <span id="v-e727cbdd394a5d61a52b30df">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/3">unversioned</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -690,16 +624,13 @@
 <span id="v-4363a05553f598d826c788c6">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/condition/enum/4">incompatible</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,8 +654,7 @@
 <span id="v-e76af54293c0febec6fcf38e">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/current_revision/type/0">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -734,16 +664,13 @@
 <span id="v-14af4598e7d566a63d56b8f5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/current_revision/type/1">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -760,12 +687,10 @@
 <span id="v-d7f5f3d1da0730838086b5ad">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/head_revision/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -782,16 +707,13 @@
 <span id="v-75953d086befb833b8d8a217">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/properties/name/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -808,8 +730,7 @@
 <span id="v-ae5993c727891de746421627">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/0">name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -819,8 +740,7 @@
 <span id="v-7b5e6d695647c265a958e52c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/1">condition</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -830,8 +750,7 @@
 <span id="v-9d7c6c579055769d0e9f2cdf">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/2">current_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -841,12 +760,10 @@
 <span id="v-2402cfc1237dcedb4a1dce42">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/required/3">head_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -856,16 +773,13 @@
 <span id="v-1b0fb0c8aa178c117451bfda">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/properties/status/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -882,12 +796,10 @@
 <span id="v-8afd4d91c4e89bac24516b01">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/required/0">status</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -897,28 +809,22 @@
 <span id="v-9a44509c831a73b8a55b6b80">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/result_contract/success/0/stdout/json/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -944,8 +850,7 @@
 <span id="v-f8acf1a17b70b829342e46e4">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -955,8 +860,7 @@
 <span id="v-923ee33c8fc634e43f002230">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -966,8 +870,7 @@
 <span id="v-27092631695ca39a4711b12f">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -977,8 +880,7 @@
 <span id="v-c2ba34078a8d7657842287df">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -995,8 +897,7 @@
 <span id="v-d2233dfec7353c5a7bc0e7f8">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1013,8 +914,7 @@
 <span id="v-91073bc257de4457fe9835c1">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/trigger/options/0">-h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1024,20 +924,16 @@
 <span id="v-a61d77e2f9305deb9569d4cd">
 <code data-value-pointer="/external_contract/cli/a-riverhog-opentimestamps-witness/commands/state/commands/status/terminating_controls/0/trigger/options/1">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1049,7 +945,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1061,7 +957,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1072,9 +968,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

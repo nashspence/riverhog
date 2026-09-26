@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f3e5ed0bad8dff78fdb42d2f.html">review0-planner</a> / <a href="i-3027f311af2b3b44a7746579.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>review0-planner</h1>
 <p class="context">Review0 plan construction for Stove0 workflows. CLI contract owned by review0-planner.</p>
@@ -63,7 +54,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -76,24 +67,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>reported</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>contract-report-completed</code>
-</td>
-<td>json: document: <code>{&quot;format&quot;:&quot;review0-contract-report/v1&quot;,&quot;observer_contract&quot;:{&quot;contract_sha256&quot;:&quot;406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a&quot;,&quot;facts_schema&quot;:{&quot;dialect&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;document&quot;:{&quot;$schema&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;artifacts&quot;:{&quot;items&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;artifact_id&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},&quot;duration_ms&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;sampleable_ranges&quot;:{&quot;items&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;duration_ms&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;start_ms&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;start_ms&quot;,&quot;duration_ms&quot;],&quot;type&quot;:&quot;object&quot;},&quot;minItems&quot;:1,&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;artifact_id&quot;,&quot;duration_ms&quot;,&quot;sampleable_ranges&quot;],&quot;type&quot;:&quot;object&quot;},&quot;minItems&quot;:1,&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;artifacts&quot;],&quot;type&quot;:&quot;object&quot;},&quot;format_policy&quot;:&quot;annotation-only&quot;,&quot;id&quot;:&quot;stove0.review.media-sampling-facts/v1&quot;,&quot;profile_sha256&quot;:&quot;730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a&quot;},&quot;facts_semantics&quot;:{&quot;conformance_vectors_sha256&quot;:&quot;6f6c2bc816116299fd5ad0dc3a8e1221c0058df224062677895ad2e06325f7e8&quot;,&quot;id&quot;:&quot;stove0.review.media-sampling-facts-semantics/v1&quot;,&quot;profile_sha256&quot;:&quot;ba56ae95653ee6d82e0505ca5b8794335f6e320edfe8395918a448c5861363da&quot;,&quot;rules&quot;:[&quot;stove0.review.media-sampling-facts.complete-request-subjects/v1&quot;,&quot;stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1&quot;]},&quot;id&quot;:&quot;stove0.review.media-sampling/v1&quot;,&quot;maximum_result_bytes&quot;:262144,&quot;options_schema&quot;:{&quot;dialect&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;document&quot;:{&quot;$schema&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;additionalProperties&quot;:false,&quot;properties&quot;:{},&quot;type&quot;:&quot;object&quot;},&quot;format_policy&quot;:&quot;annotation-only&quot;,&quot;id&quot;:&quot;stove0.review.media-sampling-options/v1&quot;,&quot;profile_sha256&quot;:&quot;9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a&quot;}},&quot;operation_contract&quot;:{&quot;contract_sha256&quot;:&quot;7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb&quot;,&quot;effect_receipt_schema&quot;:null,&quot;id&quot;:&quot;stove0.review.materialize/v1&quot;,&quot;inputs&quot;:[{&quot;allowed_dispositions&quot;:[&quot;preserved&quot;,&quot;transformed&quot;],&quot;maximum&quot;:null,&quot;minimum&quot;:1,&quot;role&quot;:&quot;stove0.review.source/v1&quot;}],&quot;intent_schema&quot;:{&quot;dialect&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;document&quot;:{&quot;$defs&quot;:{&quot;JsonValue&quot;:{},&quot;ReviewSamplePlan&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;format&quot;:{&quot;const&quot;:&quot;review0-sample-plan/v1&quot;,&quot;default&quot;:&quot;review0-sample-plan/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;sample_plan_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Sample Plan Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;samples_per_artifact&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Samples Per Artifact&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;selection_method&quot;:{&quot;const&quot;:&quot;evenly-spaced/v1&quot;,&quot;default&quot;:&quot;evenly-spaced/v1&quot;,&quot;title&quot;:&quot;Selection Method&quot;,&quot;type&quot;:&quot;string&quot;},&quot;window_duration_ms&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Window Duration Ms&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;windows&quot;:{&quot;items&quot;:{&quot;$ref&quot;:&quot;#/$defs/ReviewSampleWindow&quot;},&quot;minItems&quot;:1,&quot;title&quot;:&quot;Windows&quot;,&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;samples_per_artifact&quot;,&quot;window_duration_ms&quot;,&quot;windows&quot;,&quot;sample_plan_sha256&quot;],&quot;title&quot;:&quot;ReviewSamplePlan&quot;,&quot;type&quot;:&quot;object&quot;},&quot;ReviewSampleWindow&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;artifact_id&quot;:{&quot;maxLength&quot;:160,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Artifact Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;duration_ms&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Duration Ms&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;start_ms&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Start Ms&quot;,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;artifact_id&quot;,&quot;start_ms&quot;,&quot;duration_ms&quot;],&quot;title&quot;:&quot;ReviewSampleWindow&quot;,&quot;type&quot;:&quot;object&quot;},&quot;ReviewVariantIntent&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;portable_intent&quot;:{&quot;additionalProperties&quot;:{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;},&quot;title&quot;:&quot;Portable Intent&quot;,&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;id&quot;,&quot;portable_intent&quot;],&quot;title&quot;:&quot;ReviewVariantIntent&quot;,&quot;type&quot;:&quot;object&quot;}},&quot;$schema&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;sample_plan&quot;:{&quot;$ref&quot;:&quot;#/$defs/ReviewSamplePlan&quot;},&quot;variant&quot;:{&quot;$ref&quot;:&quot;#/$defs/ReviewVariantIntent&quot;}},&quot;required&quot;:[&quot;sample_plan&quot;,&quot;variant&quot;],&quot;title&quot;:&quot;ReviewMaterializeIntent&quot;,&quot;type&quot;:&quot;object&quot;},&quot;format_policy&quot;:&quot;annotation-only&quot;,&quot;id&quot;:&quot;stove0.review.materialize-intent/v1&quot;,&quot;profile_sha256&quot;:&quot;eb997cd9a6f54adf0036ea548eca97df7ad335a8618d1af0c7ef65c190a80eaf&quot;},&quot;intent_semantics&quot;:{&quot;conformance_vectors_sha256&quot;:&quot;87c848c1e820178e863cf589b987cb392e4f3f85be1881e5dc3ce7e6de7f51ac&quot;,&quot;id&quot;:&quot;stove0.review.materialize-intent-semantics/v1&quot;,&quot;profile_sha256&quot;:&quot;0af5db45b2087ad40168ff5a95da2c41657e42c83b0c055c976181ecb773c373&quot;,&quot;rules&quot;:[&quot;stove0.review.sample-plan.exact-declared-shape/v1&quot;,&quot;stove0.review.sample-plan.identity-verification/v1&quot;]},&quot;outputs&quot;:[{&quot;derived_from_roles&quot;:[&quot;stove0.review.source/v1&quot;],&quot;maximum&quot;:null,&quot;minimum&quot;:0,&quot;role&quot;:&quot;stove0.review.audio/v1&quot;},{&quot;derived_from_roles&quot;:[&quot;stove0.review.source/v1&quot;],&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;role&quot;:&quot;stove0.review.index/v1&quot;},{&quot;derived_from_roles&quot;:[&quot;stove0.review.source/v1&quot;],&quot;maximum&quot;:null,&quot;minimum&quot;:0,&quot;role&quot;:&quot;stove0.review.video/v1&quot;}],&quot;result_kind&quot;:&quot;collection&quot;,&quot;source_collection_retirement_permitted&quot;:false},&quot;source_collection_retirement_permitted&quot;:false,&quot;status&quot;:&quot;conformant&quot;}</code>; identity: <code>review0-contract-report/v1</code>; kind: <code>cli-local-exact-json</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>reported</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>contract-report-completed</code></td>
+<td data-label="stdout">json: document: <code>{&quot;format&quot;:&quot;review0-contract-report/v1&quot;,&quot;observer_contract&quot;:{&quot;contract_sha256&quot;:&quot;406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a&quot;,&quot;facts_schema&quot;:{&quot;dialect&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;document&quot;:{&quot;$schema&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;artifacts&quot;:{&quot;items&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;artifact_id&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},&quot;duration_ms&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;sampleable_ranges&quot;:{&quot;items&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;duration_ms&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;start_ms&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;start_ms&quot;,&quot;duration_ms&quot;],&quot;type&quot;:&quot;object&quot;},&quot;minItems&quot;:1,&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;artifact_id&quot;,&quot;duration_ms&quot;,&quot;sampleable_ranges&quot;],&quot;type&quot;:&quot;object&quot;},&quot;minItems&quot;:1,&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;artifacts&quot;],&quot;type&quot;:&quot;object&quot;},&quot;format_policy&quot;:&quot;annotation-only&quot;,&quot;id&quot;:&quot;stove0.review.media-sampling-facts/v1&quot;,&quot;profile_sha256&quot;:&quot;730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a&quot;},&quot;facts_semantics&quot;:{&quot;conformance_vectors_sha256&quot;:&quot;6f6c2bc816116299fd5ad0dc3a8e1221c0058df224062677895ad2e06325f7e8&quot;,&quot;id&quot;:&quot;stove0.review.media-sampling-facts-semantics/v1&quot;,&quot;profile_sha256&quot;:&quot;ba56ae95653ee6d82e0505ca5b8794335f6e320edfe8395918a448c5861363da&quot;,&quot;rules&quot;:[&quot;stove0.review.media-sampling-facts.complete-request-subjects/v1&quot;,&quot;stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1&quot;]},&quot;id&quot;:&quot;stove0.review.media-sampling/v1&quot;,&quot;maximum_result_bytes&quot;:262144,&quot;options_schema&quot;:{&quot;dialect&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;document&quot;:{&quot;$schema&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;additionalProperties&quot;:false,&quot;properties&quot;:{},&quot;type&quot;:&quot;object&quot;},&quot;format_policy&quot;:&quot;annotation-only&quot;,&quot;id&quot;:&quot;stove0.review.media-sampling-options/v1&quot;,&quot;profile_sha256&quot;:&quot;9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a&quot;}},&quot;operation_contract&quot;:{&quot;contract_sha256&quot;:&quot;7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb&quot;,&quot;effect_receipt_schema&quot;:null,&quot;id&quot;:&quot;stove0.review.materialize/v1&quot;,&quot;inputs&quot;:[{&quot;allowed_dispositions&quot;:[&quot;preserved&quot;,&quot;transformed&quot;],&quot;maximum&quot;:null,&quot;minimum&quot;:1,&quot;role&quot;:&quot;stove0.review.source/v1&quot;}],&quot;intent_schema&quot;:{&quot;dialect&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;document&quot;:{&quot;$defs&quot;:{&quot;JsonValue&quot;:{},&quot;ReviewSamplePlan&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;format&quot;:{&quot;const&quot;:&quot;review0-sample-plan/v1&quot;,&quot;default&quot;:&quot;review0-sample-plan/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;sample_plan_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Sample Plan Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;samples_per_artifact&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Samples Per Artifact&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;selection_method&quot;:{&quot;const&quot;:&quot;evenly-spaced/v1&quot;,&quot;default&quot;:&quot;evenly-spaced/v1&quot;,&quot;title&quot;:&quot;Selection Method&quot;,&quot;type&quot;:&quot;string&quot;},&quot;window_duration_ms&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Window Duration Ms&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;windows&quot;:{&quot;items&quot;:{&quot;$ref&quot;:&quot;#/$defs/ReviewSampleWindow&quot;},&quot;minItems&quot;:1,&quot;title&quot;:&quot;Windows&quot;,&quot;type&quot;:&quot;array&quot;}},&quot;required&quot;:[&quot;samples_per_artifact&quot;,&quot;window_duration_ms&quot;,&quot;windows&quot;,&quot;sample_plan_sha256&quot;],&quot;title&quot;:&quot;ReviewSamplePlan&quot;,&quot;type&quot;:&quot;object&quot;},&quot;ReviewSampleWindow&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;artifact_id&quot;:{&quot;maxLength&quot;:160,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Artifact Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;duration_ms&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Duration Ms&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;start_ms&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Start Ms&quot;,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;artifact_id&quot;,&quot;start_ms&quot;,&quot;duration_ms&quot;],&quot;title&quot;:&quot;ReviewSampleWindow&quot;,&quot;type&quot;:&quot;object&quot;},&quot;ReviewVariantIntent&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;portable_intent&quot;:{&quot;additionalProperties&quot;:{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;},&quot;title&quot;:&quot;Portable Intent&quot;,&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;id&quot;,&quot;portable_intent&quot;],&quot;title&quot;:&quot;ReviewVariantIntent&quot;,&quot;type&quot;:&quot;object&quot;}},&quot;$schema&quot;:&quot;https://json-schema.org/draft/2020-12/schema&quot;,&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;sample_plan&quot;:{&quot;$ref&quot;:&quot;#/$defs/ReviewSamplePlan&quot;},&quot;variant&quot;:{&quot;$ref&quot;:&quot;#/$defs/ReviewVariantIntent&quot;}},&quot;required&quot;:[&quot;sample_plan&quot;,&quot;variant&quot;],&quot;title&quot;:&quot;ReviewMaterializeIntent&quot;,&quot;type&quot;:&quot;object&quot;},&quot;format_policy&quot;:&quot;annotation-only&quot;,&quot;id&quot;:&quot;stove0.review.materialize-intent/v1&quot;,&quot;profile_sha256&quot;:&quot;eb997cd9a6f54adf0036ea548eca97df7ad335a8618d1af0c7ef65c190a80eaf&quot;},&quot;intent_semantics&quot;:{&quot;conformance_vectors_sha256&quot;:&quot;87c848c1e820178e863cf589b987cb392e4f3f85be1881e5dc3ce7e6de7f51ac&quot;,&quot;id&quot;:&quot;stove0.review.materialize-intent-semantics/v1&quot;,&quot;profile_sha256&quot;:&quot;0af5db45b2087ad40168ff5a95da2c41657e42c83b0c055c976181ecb773c373&quot;,&quot;rules&quot;:[&quot;stove0.review.sample-plan.exact-declared-shape/v1&quot;,&quot;stove0.review.sample-plan.identity-verification/v1&quot;]},&quot;outputs&quot;:[{&quot;derived_from_roles&quot;:[&quot;stove0.review.source/v1&quot;],&quot;maximum&quot;:null,&quot;minimum&quot;:0,&quot;role&quot;:&quot;stove0.review.audio/v1&quot;},{&quot;derived_from_roles&quot;:[&quot;stove0.review.source/v1&quot;],&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;role&quot;:&quot;stove0.review.index/v1&quot;},{&quot;derived_from_roles&quot;:[&quot;stove0.review.source/v1&quot;],&quot;maximum&quot;:null,&quot;minimum&quot;:0,&quot;role&quot;:&quot;stove0.review.video/v1&quot;}],&quot;result_kind&quot;:&quot;collection&quot;,&quot;source_collection_retirement_permitted&quot;:false},&quot;source_collection_retirement_permitted&quot;:false,&quot;status&quot;:&quot;conformant&quot;}</code>; identity: <code>review0-contract-report/v1</code>; kind: <code>cli-local-exact-json</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -106,24 +92,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -136,21 +117,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -213,8 +189,7 @@
 <span id="v-1f393ad26dc5d82831d93579">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -224,8 +199,7 @@
 <span id="v-2917c64c1600da12a6849390">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -242,12 +216,10 @@
 <span id="v-9ebe1f06460fda5db697cd79">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -264,12 +236,10 @@
 <span id="v-8ad80b64d9e62f437f384bbe">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -286,20 +256,16 @@
 <span id="v-ca6f067722221cacb5864c62">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -309,8 +275,7 @@
 <span id="v-c98e96689493d372a74db1dc">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/human_json_relationship">not-applicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -320,8 +285,7 @@
 <span id="v-bc0f62e80601c0a159884836">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/identity">review0-planner-cli-result/root/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -331,8 +295,7 @@
 <span id="v-68017e4685e80bf16ba02579">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/profile_id">review0-planner-cli/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -342,8 +305,7 @@
 <span id="v-8f4c23188557638b3c1fcada">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/structured_output">always-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -367,8 +329,7 @@
 <span id="v-5cbaa8df6fee92a06152c9c4">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -378,8 +339,7 @@
 <span id="v-649b6327df636a534b4e500c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/id">reported</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -396,12 +356,10 @@
 <span id="v-622b72b0d905e24297a9825a">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/selected_by/kind">contract-report-completed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -418,12 +376,10 @@
 <span id="v-d70b54923289d42f38230dd7">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -454,8 +410,7 @@
 <span id="v-86ff0221494d1af42a536228">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/format">review0-contract-report/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -472,8 +427,7 @@
 <span id="v-a2bc0318dab3c69da4c2a5cf">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/contract_sha256">406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -490,8 +444,7 @@
 <span id="v-64fe0049d88c8aaf2ffe089d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/dialect">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -508,8 +461,7 @@
 <span id="v-c7851ecef0586315f1c9f42a">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -519,8 +471,7 @@
 <span id="v-4bf48384d5b2cd62802f6315">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -551,8 +502,7 @@
 <span id="v-25280c6df3f4debe25fd1902">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -576,8 +526,7 @@
 <span id="v-49160070778feb3bd8668ed0">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/artifact_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -587,12 +536,10 @@
 <span id="v-1c861a1cc0a54e430bf8c6be">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/artifact_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -609,8 +556,7 @@
 <span id="v-2d3cbe5d43206c2aa0bf0105">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/duration_ms/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -620,12 +566,10 @@
 <span id="v-fccaa1e6df6e023a902902b1">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/duration_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -649,8 +593,7 @@
 <span id="v-9a780e3251ad22c2b53b8396">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -674,8 +617,7 @@
 <span id="v-1fb02a799460a01eef70f3c6">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/properties/duration_ms/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -685,12 +627,10 @@
 <span id="v-789ae708101a18bdc261c35c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/properties/duration_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -707,8 +647,7 @@
 <span id="v-c693c49eaee20662e08c0fa1">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/properties/start_ms/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -718,16 +657,13 @@
 <span id="v-d6362a13ef9cf5d67c1d7a27">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/properties/start_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -744,8 +680,7 @@
 <span id="v-2fbef964b86e93cad9aa55d4">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/required/0">start_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -755,12 +690,10 @@
 <span id="v-d62745360c1ad0b4a303e4bb">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/required/1">duration_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -770,12 +703,10 @@
 <span id="v-a5e2286d8d0394f3b5ad6e04">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/items/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -785,8 +716,7 @@
 <span id="v-b9e41d04c09abbbb38056c1f">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -796,16 +726,13 @@
 <span id="v-7169faa8092ed7f5edca515a">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/properties/sampleable_ranges/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -822,8 +749,7 @@
 <span id="v-71dfd421d11f543c4bb0b386">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/required/0">artifact_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -833,8 +759,7 @@
 <span id="v-53838c4418119e3bc8d9c9e5">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/required/1">duration_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -844,12 +769,10 @@
 <span id="v-89545994ff3d9fccc318e957">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/required/2">sampleable_ranges</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -859,12 +782,10 @@
 <span id="v-0b61d6f85bd0c588a0669bd9">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/items/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -874,8 +795,7 @@
 <span id="v-78e5ee3fabbcdd55002b5642">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -885,16 +805,13 @@
 <span id="v-5cb9bb43777eac079e970ec3">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/properties/artifacts/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -911,12 +828,10 @@
 <span id="v-d67706d8e30f4abdac3188a2">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/required/0">artifacts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -926,12 +841,10 @@
 <span id="v-8f0323d7f11820387914d4bf">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/document/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -941,8 +854,7 @@
 <span id="v-46cd4817b0db930b63319786">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/format_policy">annotation-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -952,8 +864,7 @@
 <span id="v-8a22b7dd0c69d93052fde372">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/id">stove0.review.media-sampling-facts/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -963,12 +874,10 @@
 <span id="v-b13fd9e231ef4917ffda61e7">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_schema/profile_sha256">730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -985,8 +894,7 @@
 <span id="v-370631d7092a96fbf6de5f34">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_semantics/conformance_vectors_sha256">6f6c2bc816116299fd5ad0dc3a8e1221c0058df224062677895ad2e06325f7e8</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -996,8 +904,7 @@
 <span id="v-bc5745af5dfc5c475cacdb36">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_semantics/id">stove0.review.media-sampling-facts-semantics/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1007,8 +914,7 @@
 <span id="v-3fe65bbe2905d65effce4d55">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_semantics/profile_sha256">ba56ae95653ee6d82e0505ca5b8794335f6e320edfe8395918a448c5861363da</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1025,8 +931,7 @@
 <span id="v-28d104f5b208ec1c2d0474f4">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_semantics/rules/0">stove0.review.media-sampling-facts.complete-request-subjects/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1036,16 +941,13 @@
 <span id="v-1113692bde01cdf32bbca878">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/facts_semantics/rules/1">stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1055,8 +957,7 @@
 <span id="v-5a52131c7e09a2682db9b557">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/id">stove0.review.media-sampling/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1066,8 +967,7 @@
 <span id="v-f38b3d48b27a3ea90f97592b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/maximum_result_bytes">262144</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1084,8 +984,7 @@
 <span id="v-0c7ce7ad1092cfa62f083f64">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/dialect">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1102,8 +1001,7 @@
 <span id="v-492c7ed531673cafce9c399e">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/document/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1113,8 +1011,7 @@
 <span id="v-0f829e635afa7b96f7f4438b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/document/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1124,8 +1021,7 @@
 <span id="v-9aa969728b9b48c0edd66a08">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/document/properties">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1135,12 +1031,10 @@
 <span id="v-9ba9daa9657218dfd6848ad3">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/document/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1150,8 +1044,7 @@
 <span id="v-d1f5a6b2c93c856ab13b59b2">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/format_policy">annotation-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1161,8 +1054,7 @@
 <span id="v-213b93cc1e601acfd7f7457d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/id">stove0.review.media-sampling-options/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1172,16 +1064,13 @@
 <span id="v-34f16418ed60d80590965a3d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/observer_contract/options_schema/profile_sha256">9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1198,8 +1087,7 @@
 <span id="v-e2fdd71d233967e772f16b96">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/contract_sha256">7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1209,8 +1097,7 @@
 <span id="v-86ea3ee5ed355f19ba8ed573">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/effect_receipt_schema">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1220,8 +1107,7 @@
 <span id="v-85d7a26dc091803a0090a550">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/id">stove0.review.materialize/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1252,8 +1138,7 @@
 <span id="v-811a80be5331b23972c0cc3c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/inputs/0/allowed_dispositions/0">preserved</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1263,12 +1148,10 @@
 <span id="v-794bd2852c0d914c0602dda4">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/inputs/0/allowed_dispositions/1">transformed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1278,8 +1161,7 @@
 <span id="v-8d4e09ff2d3f6f5ed2c0af7b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/inputs/0/maximum">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1289,8 +1171,7 @@
 <span id="v-d3ad1aa99deff76f30385811">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/inputs/0/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1300,16 +1181,13 @@
 <span id="v-22adcc599d141aebb27d9f2c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/inputs/0/role">stove0.review.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1326,8 +1204,7 @@
 <span id="v-a0844f69ba5b82a07f263051">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/dialect">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1351,8 +1228,7 @@
 <span id="v-5c3f07b1184183d4c2182d04">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1369,8 +1245,7 @@
 <span id="v-cd66daa7b4cfdc31d8f53d81">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1394,8 +1269,7 @@
 <span id="v-f94d04157e06b8421ac2caea">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/format/const">review0-sample-plan/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1405,8 +1279,7 @@
 <span id="v-bf67cdece46bd0ad18db70d3">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/format/default">review0-sample-plan/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1416,8 +1289,7 @@
 <span id="v-41f378106e4eb3d1417a60e5">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1427,12 +1299,10 @@
 <span id="v-2c1797225a2afae7ff9cf86a">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1449,8 +1319,7 @@
 <span id="v-83f8bb5994040806253d07e1">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/sample_plan_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1460,8 +1329,7 @@
 <span id="v-53ec4f3f7e45fe65502ac7a9">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/sample_plan_sha256/title">Sample Plan Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1471,12 +1339,10 @@
 <span id="v-543078793ce87b045c3ac6ce">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/sample_plan_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1493,8 +1359,7 @@
 <span id="v-8a8965881da196033e143055">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/samples_per_artifact/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1504,8 +1369,7 @@
 <span id="v-f13c91afcd62fb808cefb2ae">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/samples_per_artifact/title">Samples Per Artifact</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1515,12 +1379,10 @@
 <span id="v-c9d338b67ac45a3307193780">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/samples_per_artifact/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1537,8 +1399,7 @@
 <span id="v-c2d733596dce212f7f21892b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/selection_method/const">evenly-spaced/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1548,8 +1409,7 @@
 <span id="v-2fff8df1f46e01051fcde482">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/selection_method/default">evenly-spaced/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1559,8 +1419,7 @@
 <span id="v-29427616935875cfe2054225">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/selection_method/title">Selection Method</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1570,12 +1429,10 @@
 <span id="v-12f7013f3b90b921e8afcfa6">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/selection_method/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1592,8 +1449,7 @@
 <span id="v-f073a74c1071fcbab7f1f0fb">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/window_duration_ms/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1603,8 +1459,7 @@
 <span id="v-950bd3fdacc43029d5aa5397">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/window_duration_ms/title">Window Duration Ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1614,12 +1469,10 @@
 <span id="v-1c3a8c90088c4892d1bb7d36">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/window_duration_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1643,12 +1496,10 @@
 <span id="v-0167cf363879369585d49e1c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/windows/items/$ref">#/$defs/ReviewSampleWindow</code>
 <span class="kind">string</span> <a href="e-49359710d9737809768ffda7.html#v-39c47ec25c2a63e38a8669e0">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1658,8 +1509,7 @@
 <span id="v-a4b025fdbbde659988beffb0">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/windows/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1669,8 +1519,7 @@
 <span id="v-e275abbcb1525183a7b1f1ce">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/windows/title">Windows</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1680,16 +1529,13 @@
 <span id="v-846f7dea6fc5b4b1dfdf9a2d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/properties/windows/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1706,8 +1552,7 @@
 <span id="v-22e9564471887dc4abcae60d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/required/0">samples_per_artifact</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1717,8 +1562,7 @@
 <span id="v-28a1f7925d68853189fffc1f">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/required/1">window_duration_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1728,8 +1572,7 @@
 <span id="v-a47f13e95f709632447b827e">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/required/2">windows</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1739,12 +1582,10 @@
 <span id="v-9596271030e6e499bf71d84a">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/required/3">sample_plan_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1754,8 +1595,7 @@
 <span id="v-a88d150606c5c50a40fdf8a8">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/title">ReviewSamplePlan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1765,12 +1605,10 @@
 <span id="v-c0f830e10324949967b98370">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSamplePlan/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1787,8 +1625,7 @@
 <span id="v-dd704d759b00ec922656bd1b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1812,8 +1649,7 @@
 <span id="v-1d256cd4566a0db8e7daa243">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/artifact_id/maxLength">160</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1823,8 +1659,7 @@
 <span id="v-bcd6dfd7af81d0b54b32ba43">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/artifact_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1834,8 +1669,7 @@
 <span id="v-fe529cdd27ae7a3e5d263da7">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/artifact_id/title">Artifact Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1845,12 +1679,10 @@
 <span id="v-9fd28ac80e9070e5f1f07d6d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/artifact_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1867,8 +1699,7 @@
 <span id="v-001ec4b388cbfbf4a3bae31c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/duration_ms/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1878,8 +1709,7 @@
 <span id="v-ad9d7f6ee54614dbb887785c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/duration_ms/title">Duration Ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1889,12 +1719,10 @@
 <span id="v-0b876f4b12c773aab78414d1">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/duration_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1911,8 +1739,7 @@
 <span id="v-d189856e9f64567a920b5c53">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/start_ms/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1922,8 +1749,7 @@
 <span id="v-bf5b162cbdfd82eb37173423">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/start_ms/title">Start Ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1933,16 +1759,13 @@
 <span id="v-9a6d818866bdad6146e13968">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/properties/start_ms/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1959,8 +1782,7 @@
 <span id="v-c6f4863be9d0fda8724f2e85">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/required/0">artifact_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1970,8 +1792,7 @@
 <span id="v-3ea54075596a6a6d2f68fb95">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/required/1">start_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1981,12 +1802,10 @@
 <span id="v-a08dc940c9e36a89b8bcb891">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/required/2">duration_ms</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1996,8 +1815,7 @@
 <span id="v-7ef475037e2ac59ee2d08c93">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/title">ReviewSampleWindow</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2007,12 +1825,10 @@
 <span id="v-ce7d4ecb8406ec2ade51add3">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewSampleWindow/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2029,8 +1845,7 @@
 <span id="v-145eaff78e45365aa340bd82">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2054,8 +1869,7 @@
 <span id="v-dee35412729d02d8ed584cc9">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/properties/id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2065,8 +1879,7 @@
 <span id="v-a66ebd922f57252d084149bb">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/properties/id/title">Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2076,12 +1889,10 @@
 <span id="v-8d8217021643d63c2ff944cb">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2105,12 +1916,10 @@
 <span id="v-5be592e298ef111163eb2370">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/properties/portable_intent/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-49359710d9737809768ffda7.html#v-5c3f07b1184183d4c2182d04">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2120,8 +1929,7 @@
 <span id="v-1394d85ed936d19d3c5efa0b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/properties/portable_intent/title">Portable Intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2131,16 +1939,13 @@
 <span id="v-0f54749acd841da8ef90faae">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/properties/portable_intent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2157,8 +1962,7 @@
 <span id="v-aaf4f766ec2a5a6a04d4c545">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2168,12 +1972,10 @@
 <span id="v-d9990380c77d26272b351fda">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/required/1">portable_intent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2183,8 +1985,7 @@
 <span id="v-c73099ca8a784db9bad43fab">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/title">ReviewVariantIntent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2194,16 +1995,13 @@
 <span id="v-a964f2836555a81f373a61be">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$defs/ReviewVariantIntent/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2213,8 +2011,7 @@
 <span id="v-c032c1f5b4d8db5b256dc87e">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2224,8 +2021,7 @@
 <span id="v-c2fa9e85f4ee373ab5cc1624">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2249,12 +2045,10 @@
 <span id="v-a2dae6e57479b68545a540bd">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/properties/sample_plan/$ref">#/$defs/ReviewSamplePlan</code>
 <span class="kind">string</span> <a href="e-49359710d9737809768ffda7.html#v-da5ce4ff5f39d368a51db7b4">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2271,16 +2065,13 @@
 <span id="v-1e3d7543b05461b2bc63b176">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/properties/variant/$ref">#/$defs/ReviewVariantIntent</code>
 <span class="kind">string</span> <a href="e-49359710d9737809768ffda7.html#v-05b3061c3f361957998f5b62">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2297,8 +2088,7 @@
 <span id="v-4a99cabe9cd2c61e46ef8282">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/required/0">sample_plan</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2308,12 +2098,10 @@
 <span id="v-0018929045949a425426a155">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/required/1">variant</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2323,8 +2111,7 @@
 <span id="v-f7d34725b713dab6b631d91c">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/title">ReviewMaterializeIntent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2334,12 +2121,10 @@
 <span id="v-97321b0c112b2edccb4d4a11">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/document/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2349,8 +2134,7 @@
 <span id="v-5481776bd921da3ddd3eada6">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/format_policy">annotation-only</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2360,8 +2144,7 @@
 <span id="v-3104393ed2e3eaab4cd762ec">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/id">stove0.review.materialize-intent/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2371,12 +2154,10 @@
 <span id="v-0416e72a7fd76dd23f82654e">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_schema/profile_sha256">eb997cd9a6f54adf0036ea548eca97df7ad335a8618d1af0c7ef65c190a80eaf</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2393,8 +2174,7 @@
 <span id="v-49507f8b2aa3a5c779a3d028">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_semantics/conformance_vectors_sha256">87c848c1e820178e863cf589b987cb392e4f3f85be1881e5dc3ce7e6de7f51ac</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2404,8 +2184,7 @@
 <span id="v-945baecccfe3d23194169760">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_semantics/id">stove0.review.materialize-intent-semantics/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2415,8 +2194,7 @@
 <span id="v-bf9b2a1d63a6d6954f6015ab">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_semantics/profile_sha256">0af5db45b2087ad40168ff5a95da2c41657e42c83b0c055c976181ecb773c373</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2433,8 +2211,7 @@
 <span id="v-cb446feaf1c8c563a9e03386">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_semantics/rules/0">stove0.review.sample-plan.exact-declared-shape/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2444,16 +2221,13 @@
 <span id="v-e481d2780f321833f24aa08f">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/intent_semantics/rules/1">stove0.review.sample-plan.identity-verification/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2484,12 +2258,10 @@
 <span id="v-a156ba796f3db87c2193f02e">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/0/derived_from_roles/0">stove0.review.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2499,8 +2271,7 @@
 <span id="v-58ef717c07cefbc8b82a98cd">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/0/maximum">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2510,8 +2281,7 @@
 <span id="v-ba8a122adeb475c034b1a427">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/0/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2521,12 +2291,10 @@
 <span id="v-845fddedf8dff5f1c07cf804">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/0/role">stove0.review.audio/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2550,12 +2318,10 @@
 <span id="v-640dfbd2153435602b033fd5">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/1/derived_from_roles/0">stove0.review.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2565,8 +2331,7 @@
 <span id="v-2ad1d5e687c25e84ba502ee3">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/1/maximum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2576,8 +2341,7 @@
 <span id="v-c1dc6afbdec0be72cc929be1">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/1/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2587,12 +2351,10 @@
 <span id="v-474822064517cf19007b2bd0">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/1/role">stove0.review.index/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2616,12 +2378,10 @@
 <span id="v-6fb4acc9b6f0c557b138f0b6">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/2/derived_from_roles/0">stove0.review.source/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2631,8 +2391,7 @@
 <span id="v-d3139d32ee7eaf2fb8093720">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/2/maximum">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2642,8 +2401,7 @@
 <span id="v-fdcc08aa810f8918cbc7893b">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/2/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2653,16 +2411,13 @@
 <span id="v-41fdc21feeb6cbd66415d5bd">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/outputs/2/role">stove0.review.video/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2672,8 +2427,7 @@
 <span id="v-8dab949f3dbd1eab8ad76afc">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/result_kind">collection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2683,12 +2437,10 @@
 <span id="v-eda501ab6031ab5d81e3bd80">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/operation_contract/source_collection_retirement_permitted">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2698,8 +2450,7 @@
 <span id="v-6c1ee01e42cf0403c62cb3bf">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/source_collection_retirement_permitted">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2709,12 +2460,10 @@
 <span id="v-fbb8421b00aa9de3bd6ff33d">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/document/status">conformant</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2724,8 +2473,7 @@
 <span id="v-6eb40e593d0e530cb67fb9ce">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/identity">review0-contract-report/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2735,24 +2483,19 @@
 <span id="v-950e68e07359695c53ab30ae">
 <code data-value-pointer="/external_contract/cli/review0-planner/result_contract/success/0/stdout/json/kind">cli-local-exact-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -2778,8 +2521,7 @@
 <span id="v-ac06a378431200d494a7ba90">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2789,8 +2531,7 @@
 <span id="v-880e8bac71f5e9ade72b1da9">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2800,8 +2541,7 @@
 <span id="v-d6984fd6abd279a2b9456ebf">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2811,8 +2551,7 @@
 <span id="v-e2af1a3187f46e99282077f3">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2829,8 +2568,7 @@
 <span id="v-e230e1bd351075ac31b06107">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2847,8 +2585,7 @@
 <span id="v-f62fbe86cd9438c27bda1771">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/trigger/options/0">-h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2858,20 +2595,16 @@
 <span id="v-934b60e3afa6e3adc39f9939">
 <code data-value-pointer="/external_contract/cli/review0-planner/terminating_controls/0/trigger/options/1">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -2883,7 +2616,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -2895,7 +2628,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -2906,9 +2639,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

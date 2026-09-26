@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>riverhog_protocol.ProcessingClaimOutcomesSettleDocument</h1>
 <p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,42 +84,32 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>fence</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>fence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_grace_seconds</code>
-</td>
-<td>no</td>
-<td>
-<a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">#/$defs/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_grace_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_collection_retirement_policy</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
-</td>
-<td>
-<code>retain</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<td data-label="Default">
+<code>retain</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -150,7 +131,7 @@
 <h3>if schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -163,15 +144,12 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>source_collection_retirement_policy</code>
-</td>
-<td>no</td>
-<td>const: <code>retain</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>retain</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -181,7 +159,7 @@
 <h3>then schema</h3>
 <p class="shape">1 fields</p>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -194,15 +172,12 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>source_collection_retirement_grace_seconds</code>
-</td>
-<td>no</td>
-<td>const: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_collection_retirement_grace_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -248,8 +223,7 @@
 <span id="v-77324895205f28dfc26a2213">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -280,8 +254,7 @@
 <span id="v-f2090386e4d02f5e98e48a2a">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -291,16 +264,13 @@
 <span id="v-c0ddb43ea4ba7291ae2fe5fe">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -310,8 +280,7 @@
 <span id="v-22ce6bb1d9864d8b39e19237">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -342,20 +311,16 @@
 <span id="v-c5b83a4b650944c56b1706d4">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/if/properties/source_collection_retirement_policy/const">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -379,8 +344,7 @@
 <span id="v-e445e8a4fa2d8593fc409837">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -390,12 +354,10 @@
 <span id="v-36ebb0b9608f62315e166125">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/fence/ge">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -412,8 +374,7 @@
 <span id="v-bcdd103cf6119f24bc719199">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_grace_seconds/$ref">#/$defs/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -423,12 +384,10 @@
 <span id="v-4355a8a325f4988343c7b8f8">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_grace_seconds/ge">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -445,8 +404,7 @@
 <span id="v-72308fb6b4abd42e424d7062">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_policy/default">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -463,8 +421,7 @@
 <span id="v-dd3f807c5d20573ff537124f">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_policy/enum/0">retain</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -474,12 +431,10 @@
 <span id="v-494403b5c705b9677a8fcadc">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -489,16 +444,13 @@
 <span id="v-5423a2b2a3a4248a35a32967">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_policy/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -515,12 +467,10 @@
 <span id="v-7f978b78bb816a9f4f55e45b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/required/0">fence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -551,20 +501,16 @@
 <span id="v-b16c24734d96b90a4a01e095">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/then/properties/source_collection_retirement_grace_seconds/const">0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -574,12 +520,10 @@
 <span id="v-da4e21848db1ff16df2a2d22">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,12 +533,10 @@
 <span id="v-fe913c20e8a3b100dec44ea9">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -604,8 +546,7 @@
 <span id="v-c38840d457290bffa4c515b1">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/distribution">riverhog-protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -615,8 +556,7 @@
 <span id="v-4a37585a4861d7fc64338113">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/module">riverhog_protocol</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -626,8 +566,7 @@
 <span id="v-702b52e10318612ee387049d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/name">ProcessingClaimOutcomesSettleDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -637,8 +576,7 @@
 <span id="v-7a6fcbbcd5d93b41c2820c22">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -664,7 +602,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -676,7 +614,7 @@
 <a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -687,9 +625,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

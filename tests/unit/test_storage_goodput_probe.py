@@ -9,7 +9,7 @@ from uuid import uuid4
 
 import pytest
 
-from scripts import performance_objectives as performance
+from scripts import performance_measurement as performance
 
 
 @pytest.fixture
@@ -108,8 +108,8 @@ def test_probe_without_reference_reports_absolute_rates_but_no_pass(
 ) -> None:
     module, client = probe
     result = module.run(base_url="http://fixture", token_file=tmp_path / "token", payload_bytes=9)
-    assert result["format"] == "riverhog-storage-adapter-goodput/v2"
-    assert all(item["status"] == "not-evaluated" for item in result["evaluations"].values())
+    assert result["format"] == "riverhog-storage-adapter-goodput/v3"
+    assert all(item["status"] == "not-compared" for item in result["comparisons"].values())
     assert result["samples"]["upload"]["elapsed_seconds"] == 3
     assert result["samples"]["read"]["elapsed_seconds"] == 1
     assert result["upload_mib_per_second"] > 0
@@ -129,11 +129,11 @@ def test_probe_compares_only_matching_measured_direction(
         "context": context(),
     }
     reference = module.run(**kwargs)
-    measured = module.run(**kwargs, reference=reference)
-    assert all(item["status"] == "met" for item in measured["evaluations"].values())
+    measured = module.run(**kwargs, reference=reference, target_ratio=0.9)
+    assert all(item["status"] == "met" for item in measured["comparisons"].values())
     reference["samples"]["upload"] = reference["samples"]["read"]
-    mismatched = module.run(**kwargs, reference=reference)
-    assert mismatched["evaluations"]["upload"]["status"] == "not-evaluated"
+    mismatched = module.run(**kwargs, reference=reference, target_ratio=0.9)
+    assert mismatched["comparisons"]["upload"]["status"] == "not-compared"
 
 
 def test_probe_corruption_is_failure_not_goodput_miss(

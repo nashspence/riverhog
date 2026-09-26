@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: ArtifactSelection</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,66 +63,50 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>artifact_count</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-718513cbc7260a7526fc1dc8">artifacts</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-362f19c5bb493bf059527d4c.html#v-42d670e575c3fc916e1e8a5c">#/components/schemas/WorkArtifactSubject</a>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-718513cbc7260a7526fc1dc8">artifacts</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-362f19c5bb493bf059527d4c.html#v-42d670e575c3fc916e1e8a5c">#/components/schemas/WorkArtifactSubject</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-artifact-selection/v1</code>; default: <code>stove0-artifact-selection/v1</code>
-</td>
-<td>
-<code>stove0-artifact-selection/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-artifact-selection/v1</code>; default: <code>stove0-artifact-selection/v1</code></td>
+<td data-label="Default">
+<code>stove0-artifact-selection/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>selection_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>selection_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>total_bytes</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-33b4d877a91123444c1e51d6.html#v-d3b3166d063534403f12c3ea">#/components/schemas/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>total_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-33b4d877a91123444c1e51d6.html#v-d3b3166d063534403f12c3ea">#/components/schemas/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -174,8 +149,7 @@
 <span id="v-4084b51d43756aed8d298db9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -185,8 +159,7 @@
 <span id="v-413c8d021c144fdecec1ae84">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/description">One exact, content-addressed selection of immutable artifacts.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -210,8 +183,7 @@
 <span id="v-c6cc903a8072726c0e8b2f81">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifact_count/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -221,8 +193,7 @@
 <span id="v-105535dc552460855bbb668a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifact_count/title">Artifact Count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -232,12 +203,10 @@
 <span id="v-8bb4006590678db6a5f99421">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifact_count/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,12 +230,10 @@
 <span id="v-075d6df1e981a29008ff4051">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifacts/items/$ref">#/components/schemas/WorkArtifactSubject</code>
 <span class="kind">string</span> <a href="e-362f19c5bb493bf059527d4c.html#v-42d670e575c3fc916e1e8a5c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -276,8 +243,7 @@
 <span id="v-b538b9128049e7db42940cad">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifacts/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -287,8 +253,7 @@
 <span id="v-79e6bd9c54734ea43b7aeedb">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifacts/title">Artifacts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -298,12 +263,10 @@
 <span id="v-cbb52dc3c199b6502d9651c9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifacts/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -320,8 +283,7 @@
 <span id="v-acf95dd9c51cf6fdb057490c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/format/const">stove0-artifact-selection/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -331,8 +293,7 @@
 <span id="v-b999fe82e9db263cb38f1a7b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/format/default">stove0-artifact-selection/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -342,8 +303,7 @@
 <span id="v-0ac3a20b16221999106f4cf5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -353,12 +313,10 @@
 <span id="v-29395cbf0ea0d390eaee2501">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -375,8 +333,7 @@
 <span id="v-acdabb1464b9a8efeaee6716">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/selection_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -386,8 +343,7 @@
 <span id="v-6f3b097064403c2f383cf7e1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/selection_sha256/title">Selection Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -397,12 +353,10 @@
 <span id="v-a1c0f359c16281b362db3dd4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/selection_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,8 +373,7 @@
 <span id="v-496f837dc552cd771ef43e77">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/total_bytes/$ref">#/components/schemas/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-33b4d877a91123444c1e51d6.html#v-d3b3166d063534403f12c3ea">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -430,16 +383,13 @@
 <span id="v-323cab102015934006e74bee">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/total_bytes/ge">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -456,8 +406,7 @@
 <span id="v-ea8f26a7f950edb4a2fd0bca">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/required/0">artifacts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -467,8 +416,7 @@
 <span id="v-6276c5c84ac3ad0aa086fe1a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/required/1">artifact_count</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -478,8 +426,7 @@
 <span id="v-4aa39594edff6533eb8dd32b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/required/2">total_bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -489,12 +436,10 @@
 <span id="v-cef3e9e89ebcc65e5426de05">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/required/3">selection_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -504,8 +449,7 @@
 <span id="v-24a1678880d9d85d4f900ac2">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/title">ArtifactSelection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -515,8 +459,7 @@
 <span id="v-d52f6dc4514d214f79974dca">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -528,7 +471,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -540,7 +483,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -550,8 +493,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -563,37 +505,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifacts</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/artifacts</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/selection_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection/properties/selection_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

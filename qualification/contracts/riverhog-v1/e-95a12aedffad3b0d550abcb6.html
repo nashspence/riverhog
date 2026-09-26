@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b02b401b34110aaf9c72e138.html">a-stove0-media-archive-contract-lib</a> / <a href="i-618013ad0af9b5bd920650da.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>a_stove0_media_archive_contract_lib.MediaProjectionPolicy</h1>
 <p class="context">Media archive target contracts for Stove0. Declared public imports and their selected exact structural contracts.</p>
@@ -76,7 +67,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -89,99 +80,71 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-ca4cb0d8c2bf928e01ef30cf">creators</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-ca4cb0d8c2bf928e01ef30cf">creators</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-fc3657119156f31425e57220">device_make</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-fc3657119156f31425e57220">device_make</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-b1fac2c0b38400c7e6c7d66e">device_model</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-b1fac2c0b38400c7e6c7d66e">device_model</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-44cba3bccb4b59b8cccf5a4e">field_preferences</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-95a12aedffad3b0d550abcb6.html#v-e6af5f9bd1dc71b0b88ae2e1">#/$defs/MediaFieldPreference</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-44cba3bccb4b59b8cccf5a4e">field_preferences</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-95a12aedffad3b0d550abcb6.html#v-e6af5f9bd1dc71b0b88ae2e1">#/$defs/MediaFieldPreference</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-media-projection-policy/v1</code>; default: <code>stove0-media-projection-policy/v1</code>
-</td>
-<td>
-<code>stove0-media-projection-policy/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-media-projection-policy/v1</code>; default: <code>stove0-media-projection-policy/v1</code></td>
+<td data-label="Default">
+<code>stove0-media-projection-policy/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-e788d83e7b828c3eaee0e7ee">gps</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-95a12aedffad3b0d550abcb6.html#v-8131912f0c45a5dcc55da726">#/$defs/MediaGps</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-e788d83e7b828c3eaee0e7ee">gps</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-95a12aedffad3b0d550abcb6.html#v-8131912f0c45a5dcc55da726">#/$defs/MediaGps</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-0553b71626533f1accd36fc0">tags</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <code>string</code>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-0553b71626533f1accd36fc0">tags</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -213,7 +176,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -223,16 +186,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -243,7 +204,7 @@
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -253,16 +214,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<code>string</code>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -285,7 +244,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-95a12aedffad3b0d550abcb6.html#v-8131912f0c45a5dcc55da726">#/$defs/MediaGps</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -295,16 +254,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-95a12aedffad3b0d550abcb6.html#v-8131912f0c45a5dcc55da726">#/$defs/MediaGps</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-95a12aedffad3b0d550abcb6.html#v-8131912f0c45a5dcc55da726">#/$defs/MediaGps</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -342,7 +299,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -355,28 +312,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-ac5a64c4832e1f595062dc88">fields</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-ac5a64c4832e1f595062dc88">fields</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>name</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;capture-time&quot;,&quot;creator&quot;,&quot;device-make&quot;,&quot;device-model&quot;,&quot;gps-latitude&quot;,&quot;gps-longitude&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>name</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;capture-time&quot;,&quot;creator&quot;,&quot;device-make&quot;,&quot;device-model&quot;,&quot;gps-latitude&quot;,&quot;gps-longitude&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -402,7 +353,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -415,28 +366,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>latitude</code>
-</td>
-<td>yes</td>
-<td>
-<code>number</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>latitude</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>number</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>longitude</code>
-</td>
-<td>yes</td>
-<td>
-<code>number</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>longitude</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>number</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -482,8 +427,7 @@
 <span id="v-58f78bc0f43ec7c304052350">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -514,8 +458,7 @@
 <span id="v-18c0668dd091a89fbb13b731">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -546,12 +489,10 @@
 <span id="v-ed0eb2c24c6e371d137b1e98">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/fields/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -561,8 +502,7 @@
 <span id="v-39c24abb6cc4c69b3b46e4bd">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/fields/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -572,12 +512,10 @@
 <span id="v-daa47659e98618f73453a0d0">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/fields/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -601,8 +539,7 @@
 <span id="v-83a0eef7196aa941be5bc02e">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/enum/0">capture-time</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -612,8 +549,7 @@
 <span id="v-116e46c7eb346da9bc5f68a8">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/enum/1">creator</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -623,8 +559,7 @@
 <span id="v-74569f1b9097ae90cdcd2e47">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/enum/2">device-make</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -634,8 +569,7 @@
 <span id="v-d95d9216874cda0f3e71228a">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/enum/3">device-model</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -645,8 +579,7 @@
 <span id="v-8408d29c6220b74623406b9c">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/enum/4">gps-latitude</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,12 +589,10 @@
 <span id="v-92a8534ec3893c4d465dcd5a">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/enum/5">gps-longitude</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -671,16 +602,13 @@
 <span id="v-d620366a9ab6a4f0f107e187">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/properties/name/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -697,8 +625,7 @@
 <span id="v-a6acad54df9bfe4220786ae2">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/required/0">name</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -708,12 +635,10 @@
 <span id="v-b28a4fad12f6199d7015080d">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/required/1">fields</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,12 +648,10 @@
 <span id="v-e79b4ab0960495b7d6f06ab8">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaFieldPreference/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -745,8 +668,7 @@
 <span id="v-6999bae8ff14ee55f09989ad">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaGps/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -770,12 +692,10 @@
 <span id="v-8462c5e19e6a039360c2bf09">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaGps/properties/latitude/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -792,16 +712,13 @@
 <span id="v-cb8ab2696f732796b440c431">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaGps/properties/longitude/type">number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -818,8 +735,7 @@
 <span id="v-7b0d44eac2d0b2f2b9d05de1">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaGps/required/0">latitude</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -829,12 +745,10 @@
 <span id="v-3071b0faf8f96d95c8503d18">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaGps/required/1">longitude</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -844,16 +758,13 @@
 <span id="v-1098ba95d47200e5a8a3f5b3">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/$defs/MediaGps/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -863,8 +774,7 @@
 <span id="v-8b22a9503dbdf025a23091a0">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -888,8 +798,7 @@
 <span id="v-c0103ede95e707eabc0b7fa0">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/creators/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -906,12 +815,10 @@
 <span id="v-941842385e2830d965b4e84c">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/creators/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -921,12 +828,10 @@
 <span id="v-0611699be2d3fa0a8954375f">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/creators/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -957,12 +862,10 @@
 <span id="v-1f68f728c9449c133c8a4af3">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/device_make/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -979,16 +882,13 @@
 <span id="v-abd046a6f6d2b36fcd771552">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/device_make/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -998,12 +898,10 @@
 <span id="v-3dad3c994ac5478d1e27db3b">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/device_make/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1034,12 +932,10 @@
 <span id="v-f777a707fa2d79345ba75842">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/device_model/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1056,16 +952,13 @@
 <span id="v-5bd6d21a9582db6e85eaa7ce">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/device_model/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1075,12 +968,10 @@
 <span id="v-2665a421ffed11270ae3e473">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/device_model/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1097,8 +988,7 @@
 <span id="v-542f41e0e072477d607b73c0">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/field_preferences/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1115,12 +1005,10 @@
 <span id="v-c32f372f7585e14b089aaa3d">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/field_preferences/items/$ref">#/$defs/MediaFieldPreference</code>
 <span class="kind">string</span> <a href="e-95a12aedffad3b0d550abcb6.html#v-e6af5f9bd1dc71b0b88ae2e1">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1130,12 +1018,10 @@
 <span id="v-860ecba18f502fdd5b62b7f9">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/field_preferences/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1152,8 +1038,7 @@
 <span id="v-3e862607e06031d7d1a2f6b2">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/format/const">stove0-media-projection-policy/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1163,8 +1048,7 @@
 <span id="v-5c57d508449d4a1931259092">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/format/default">stove0-media-projection-policy/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1174,12 +1058,10 @@
 <span id="v-5bae530ff2d7cd8bf596cc00">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1210,12 +1092,10 @@
 <span id="v-1deb513596873c1cab064daa">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/gps/anyOf/0/$ref">#/$defs/MediaGps</code>
 <span class="kind">string</span> <a href="e-95a12aedffad3b0d550abcb6.html#v-8131912f0c45a5dcc55da726">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1232,16 +1112,13 @@
 <span id="v-5a6bceff4556f553bf752339">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/gps/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1251,12 +1128,10 @@
 <span id="v-71654fb45d0eaaffda65f84e">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/gps/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1273,8 +1148,7 @@
 <span id="v-58e11e844209fdaeb010f1d1">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/tags/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1291,12 +1165,10 @@
 <span id="v-a7f86138db102845483fb5ed">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/tags/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1306,16 +1178,13 @@
 <span id="v-28de6a9715792b98049fdf10">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/properties/tags/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1325,12 +1194,10 @@
 <span id="v-3f7bebe2428f61d512421da2">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1340,12 +1207,10 @@
 <span id="v-469569263ea097fbefda5ff3">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/contract/signature">&quot;(*, format: Literal[&#x27;stove0-media-projection-policy/v1&#x27;] = &#x27;stove0-media-projection-policy/v1&#x27;, device_make: str | None = None, device_model: str | None = None, gps: a_stove0_media_archive_contract_lib.projection_policy.MediaGps | None = None, creators: tuple[str, ...] = (), tags: tuple[str, ...] = (), field_preferences: tuple[a_stove0_media_archive_contract_lib.projection_policy.MediaFieldPreference, ...] = ()) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1355,8 +1220,7 @@
 <span id="v-4f1edd1fca43da5da7453f57">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/distribution">a-stove0-media-archive-contract-lib</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1366,8 +1230,7 @@
 <span id="v-e8321db6c79a9751f7a356e3">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/module">a_stove0_media_archive_contract_lib</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1377,8 +1240,7 @@
 <span id="v-ec1df0ff0b7e56b061bb2d24">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/name">MediaProjectionPolicy</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1388,8 +1250,7 @@
 <span id="v-543b9ca8df6c4255eb905277">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_contract_lib.MediaProjectionPolicy/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1418,7 +1279,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1430,7 +1291,7 @@
 <a href="source-authorities.html#source-3f8c4376e0c8ad7aa88aff77">python:a-stove0-media-archive-contract-lib:a_stove0_media_archive_contract_lib</a> — <code data-source-path="some-implementations/stove0/targets/media-archive/contracts/src/a_stove0_media_archive_contract_lib/__init__.py">some-implementations/stove0/targets/media-archive/contracts/src/a_stove0_media_archive_contract_lib/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1441,9 +1302,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: ApplicationAccessGrantSet</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -58,7 +49,7 @@
 </dd>
 </dl>
 <h4>All must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,10 +59,9 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-24d6a66d36131a88a4fc8c88">1</a>
-</td>
-<td>structured schema</td>
+<td data-label="Alternative">
+<a href="#s-24d6a66d36131a88a4fc8c88">1</a></td>
+<td data-label="Schema">structured schema</td>
 </tr>
 </tbody>
 </table>
@@ -140,16 +130,13 @@
 <span id="v-62a06304b588d7b331967801">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/if/contains/properties/permission/const">*</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -166,12 +153,10 @@
 <span id="v-2a36da81fb848ba8f4f5e97c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/if/contains/required/0">permission</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -181,16 +166,13 @@
 <span id="v-265d65253c8985234485a6ae">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/if/contains/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -207,8 +189,7 @@
 <span id="v-467f10b9d42df718660fa5cf">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then/maxItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -225,8 +206,7 @@
 <span id="v-a14c945efa68bfbd2b5792ed">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -236,24 +216,19 @@
 <span id="v-4ebb89d47937f28b0f4ce45d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then/x-riverhog-extent/reason">wildcard-access-grant-is-exclusive</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -263,8 +238,7 @@
 <span id="v-03ba28cdba561862b0fec6a8">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/description">A nonempty, duplicate-free public grant set with canonical wildcard use.</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,12 +255,10 @@
 <span id="v-01985869de70233a3ba5279f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/items/$ref">#/components/schemas/ApplicationAccessGrant</code>
 <span class="kind">string</span> <a href="e-5076d5a23e07db84772a51b2.html#v-ee1b3c97d7250737f591fc06">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -296,8 +268,7 @@
 <span id="v-f9ff2923654e3d22c96be1a6">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -307,8 +278,7 @@
 <span id="v-5859614d27c908506d85fff4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/title">ApplicationAccessGrantSet</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -318,8 +288,7 @@
 <span id="v-88edbaab8a4da55f22c18701">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -329,8 +298,7 @@
 <span id="v-56710369301eb2b3b0449424">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/uniqueItems">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -342,7 +310,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -354,7 +322,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -364,8 +332,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -377,37 +344,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · items · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;reason&quot;:&quot;wildcard-access-grant-is-exclusive&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · items · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;reason&quot;:&quot;wildcard-access-grant-is-exclusive&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

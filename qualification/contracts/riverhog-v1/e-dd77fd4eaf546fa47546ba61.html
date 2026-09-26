@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a> / <a href="i-492ccb6e7c74420d22dbb0ec.html">Process Protocol Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>generated:review0-sampler: SamplerResult</h1>
 <p class="context">Runtime and conformance support for Review0 samplers. Structured values exchanged by a process protocol.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,118 +59,87 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<a href="#s-0bb917e254ba221081df2cbc">execution_evidence</a>
-</td>
-<td>no</td>
-<td>
-<code>object</code>; additionalProperties: <a href="e-dd77fd4eaf546fa47546ba61.html#v-d5d187f50eaa4992b721d4e1">#/$defs/JsonValue</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-0bb917e254ba221081df2cbc">execution_evidence</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-dd77fd4eaf546fa47546ba61.html#v-d5d187f50eaa4992b721d4e1">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-3af351dc05ca224304b46e56">failure</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-dd77fd4eaf546fa47546ba61.html#v-02099ededb3dd51502786176">#/$defs/SamplerFailure</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-3af351dc05ca224304b46e56">failure</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-dd77fd4eaf546fa47546ba61.html#v-02099ededb3dd51502786176">#/$defs/SamplerFailure</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>review0-sampler-result/v1</code>; default: <code>review0-sampler-result/v1</code>
-</td>
-<td>
-<code>review0-sampler-result/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>review0-sampler-result/v1</code>; default: <code>review0-sampler-result/v1</code></td>
+<td data-label="Default">
+<code>review0-sampler-result/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-10b145a8fa91429017b71f0b">inapplicable</a>
-</td>
-<td>no</td>
-<td>default: <code>null</code>; any of: <a href="e-dd77fd4eaf546fa47546ba61.html#v-1292d87f5e99e838ad3ac3ec">#/$defs/SamplerInapplicable</a>; <code>null</code>
-</td>
-<td>
-<code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-10b145a8fa91429017b71f0b">inapplicable</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-dd77fd4eaf546fa47546ba61.html#v-1292d87f5e99e838ad3ac3ec">#/$defs/SamplerInapplicable</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-12375f2559fad151a05b4bd5">outputs</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-dd77fd4eaf546fa47546ba61.html#v-8f0a74d14916f0a4bde9c449">#/$defs/SamplerOutput</a>; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-12375f2559fad151a05b4bd5">outputs</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-dd77fd4eaf546fa47546ba61.html#v-8f0a74d14916f0a4bde9c449">#/$defs/SamplerOutput</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>request_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>request_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>result_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>result_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sampler_descriptor_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sampler_descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>state</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;succeeded&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;succeeded&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -225,7 +185,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-dd77fd4eaf546fa47546ba61.html#v-02099ededb3dd51502786176">#/$defs/SamplerFailure</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -235,16 +195,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-dd77fd4eaf546fa47546ba61.html#v-02099ededb3dd51502786176">#/$defs/SamplerFailure</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-dd77fd4eaf546fa47546ba61.html#v-02099ededb3dd51502786176">#/$defs/SamplerFailure</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -255,7 +213,7 @@
 <p class="shape">default: <code>null</code>; any of: <a href="e-dd77fd4eaf546fa47546ba61.html#v-1292d87f5e99e838ad3ac3ec">#/$defs/SamplerInapplicable</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -265,16 +223,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-dd77fd4eaf546fa47546ba61.html#v-1292d87f5e99e838ad3ac3ec">#/$defs/SamplerInapplicable</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-dd77fd4eaf546fa47546ba61.html#v-1292d87f5e99e838ad3ac3ec">#/$defs/SamplerInapplicable</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -324,7 +280,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -337,40 +293,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retryable</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retryable</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -400,7 +347,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -413,28 +360,22 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>code</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>message</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -464,7 +405,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -477,76 +418,58 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>bytes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-7e61584d5b0f022a3cfe6d2a">derived_from</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; minItems: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-7e61584d5b0f022a3cfe6d2a">derived_from</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>media_type</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>media_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -596,8 +519,7 @@
 <span id="v-d5d187f50eaa4992b721d4e1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -614,8 +536,7 @@
 <span id="v-2cac23971254b0fcbc483922">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -639,8 +560,7 @@
 <span id="v-6a5930895d5b6ece925c8015">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -650,8 +570,7 @@
 <span id="v-6172554c6627e56843b6b102">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/code/title">Code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -661,12 +580,10 @@
 <span id="v-ccfd8f4984c48d990673699f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -683,8 +600,7 @@
 <span id="v-69417bdcd3dc1209be0bced2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/message/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -694,8 +610,7 @@
 <span id="v-a5f32a652c42f1d2b0d6808a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -705,8 +620,7 @@
 <span id="v-b7aea317873f78398b2d0b02">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/message/title">Message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -716,12 +630,10 @@
 <span id="v-c2a811cd68277da1c7b148a6">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -738,8 +650,7 @@
 <span id="v-e0ec1b0ed7ab226443a1594e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/retryable/title">Retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -749,16 +660,13 @@
 <span id="v-cca7b5094bc421600711316e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/properties/retryable/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -775,8 +683,7 @@
 <span id="v-f7184ca32b664a97676e321d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -786,8 +693,7 @@
 <span id="v-63d107790957d7a0ef4c4c5c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -797,12 +703,10 @@
 <span id="v-f8258ff139337362ce5bf2d0">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/required/2">retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -812,8 +716,7 @@
 <span id="v-569012ba7e310a06fcd298c5">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/title">SamplerFailure</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -823,12 +726,10 @@
 <span id="v-9d0408c97abf9c1bf41e5391">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerFailure/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -845,8 +746,7 @@
 <span id="v-7c2b81ecbd80c3c5ca448477">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -870,8 +770,7 @@
 <span id="v-1075813c3077f3c7814cf137">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -881,8 +780,7 @@
 <span id="v-e277c67744038d9390934543">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/code/title">Code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -892,12 +790,10 @@
 <span id="v-6c41cb9e83ca757f4dd15566">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/code/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -914,8 +810,7 @@
 <span id="v-736e7637c7aed1d3b92b0915">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/message/maxLength">1000</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -925,8 +820,7 @@
 <span id="v-5d8ed8768e6f28f776277da2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/message/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -936,8 +830,7 @@
 <span id="v-e20ccc84bf1f10d6c6778d22">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/message/title">Message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -947,16 +840,13 @@
 <span id="v-14bb4f81310a73994e15a751">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/properties/message/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -973,8 +863,7 @@
 <span id="v-4e7d66d3aecd68c9864d1a5a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/required/0">code</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -984,12 +873,10 @@
 <span id="v-7dd4bfcfa4153ca3487ae2fc">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/required/1">message</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -999,8 +886,7 @@
 <span id="v-e891ba731f115f151353bb61">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/title">SamplerInapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1010,12 +896,10 @@
 <span id="v-5ad4b0172be17356281406c9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerInapplicable/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1032,8 +916,7 @@
 <span id="v-3c96f200369b8bfae07b6c94">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1057,8 +940,7 @@
 <span id="v-125f2e335585be422893574d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/bytes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1068,8 +950,7 @@
 <span id="v-d0a6bf156955b879cb613aa8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/bytes/title">Bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1079,12 +960,10 @@
 <span id="v-ad4f2dfe094f7ba84a03cad4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/bytes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1108,12 +987,10 @@
 <span id="v-241cb2feb63a99d6cbceb59f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/derived_from/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1123,8 +1000,7 @@
 <span id="v-28252a3fe02298b8ce783287">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/derived_from/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1134,8 +1010,7 @@
 <span id="v-a56553039612a92df8fb63ef">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/derived_from/title">Derived From</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1145,12 +1020,10 @@
 <span id="v-81d19b422ce7a8ee23d9ddc1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/derived_from/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1167,8 +1040,7 @@
 <span id="v-f984f790ab2c154ade88d43f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1178,8 +1050,7 @@
 <span id="v-b9d6c97e64680e6722acc846">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/id/title">Id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1189,12 +1060,10 @@
 <span id="v-d21699a191a4c448e0eb5f1a">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1211,8 +1080,7 @@
 <span id="v-b5a5c544d5586bca3ec2f9e5">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/media_type/maxLength">255</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1222,8 +1090,7 @@
 <span id="v-e15a380184dfc02ff84430cd">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/media_type/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1233,8 +1100,7 @@
 <span id="v-454931687b417ddee0961343">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/media_type/title">Media Type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1244,12 +1110,10 @@
 <span id="v-eade8e13e921680b03faa48d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/media_type/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1266,8 +1130,7 @@
 <span id="v-7a06035caa15c3bac630a584">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/path/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1277,8 +1140,7 @@
 <span id="v-45737863a8f49c36f4b0504e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/path/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1288,8 +1150,7 @@
 <span id="v-3edea77f0f025458e2d6c159">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/path/title">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1299,12 +1160,10 @@
 <span id="v-373d50a0bf94b1addff8a99d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/path/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1321,8 +1180,7 @@
 <span id="v-2cf936921ab254de7237bfff">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1332,8 +1190,7 @@
 <span id="v-145c6a5043b958cbe660ec7c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/sha256/title">Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1343,16 +1200,13 @@
 <span id="v-af906b6fcec3767d0c6e4fd3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/properties/sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1369,8 +1223,7 @@
 <span id="v-eaec96f59209b68f12b877eb">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1380,8 +1233,7 @@
 <span id="v-510d8a272b6e8f59c1933831">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/required/1">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1391,8 +1243,7 @@
 <span id="v-57a5f4670d369d8e6609c9a2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/required/2">bytes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1402,8 +1253,7 @@
 <span id="v-0b1bf5c73968c089ee8bfab6">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/required/3">sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1413,8 +1263,7 @@
 <span id="v-e5b7a40af4347f0e2222a3d2">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/required/4">media_type</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1424,12 +1273,10 @@
 <span id="v-38110a90bc176c6b5f0a1aa5">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/required/5">derived_from</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1439,8 +1286,7 @@
 <span id="v-874e5d947f40f3bee1816157">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/title">SamplerOutput</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1450,16 +1296,13 @@
 <span id="v-4c1bbb7684084488dd08fb99">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/$defs/SamplerOutput/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1469,8 +1312,7 @@
 <span id="v-91e1fe24b8752a03d99754d3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1501,12 +1343,10 @@
 <span id="v-452ea815b9827464297c47aa">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/execution_evidence/additionalProperties/$ref">#/$defs/JsonValue</code>
 <span class="kind">string</span> <a href="e-dd77fd4eaf546fa47546ba61.html#v-d5d187f50eaa4992b721d4e1">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1516,8 +1356,7 @@
 <span id="v-6431740d30d4f61b78e5f126">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/execution_evidence/title">Execution Evidence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1527,12 +1366,10 @@
 <span id="v-b12e2d0d8241b2273bf5e393">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/execution_evidence/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1563,12 +1400,10 @@
 <span id="v-e20bdb65499ff5a1b6b59e31">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/failure/anyOf/0/$ref">#/$defs/SamplerFailure</code>
 <span class="kind">string</span> <a href="e-dd77fd4eaf546fa47546ba61.html#v-02099ededb3dd51502786176">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1585,16 +1420,13 @@
 <span id="v-691edb0834e5e9912575485e">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/failure/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1604,12 +1436,10 @@
 <span id="v-2f080454ab1ad9523ad5b340">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/failure/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1626,8 +1456,7 @@
 <span id="v-ce7ff8c559b615b2e05f5e69">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/format/const">review0-sampler-result/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1637,8 +1466,7 @@
 <span id="v-e9289c327a858f36b7fa4d77">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/format/default">review0-sampler-result/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1648,8 +1476,7 @@
 <span id="v-1e533a21a2bd2f7570b7bffc">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1659,12 +1486,10 @@
 <span id="v-de0d74a682ea4409d1e3aa5c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1695,12 +1520,10 @@
 <span id="v-dc411813fcd374ff60a1b60b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/inapplicable/anyOf/0/$ref">#/$defs/SamplerInapplicable</code>
 <span class="kind">string</span> <a href="e-dd77fd4eaf546fa47546ba61.html#v-1292d87f5e99e838ad3ac3ec">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1717,16 +1540,13 @@
 <span id="v-fb70b748e94141de69858247">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/inapplicable/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1736,12 +1556,10 @@
 <span id="v-9b8c53baa4a9d59fd5c1dca1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/inapplicable/default">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1758,8 +1576,7 @@
 <span id="v-df165d4f88308a87924ee619">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/outputs/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1776,12 +1593,10 @@
 <span id="v-ed3937d2cbec54e99fe54382">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/outputs/items/$ref">#/$defs/SamplerOutput</code>
 <span class="kind">string</span> <a href="e-dd77fd4eaf546fa47546ba61.html#v-8f0a74d14916f0a4bde9c449">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1791,8 +1606,7 @@
 <span id="v-1336dd41db9473d81213d832">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/outputs/title">Outputs</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1802,12 +1616,10 @@
 <span id="v-5405958739b8dfadc8456c00">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/outputs/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1824,8 +1636,7 @@
 <span id="v-0f41040dbbf4c0593a6588a8">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/request_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1835,8 +1646,7 @@
 <span id="v-2ccb04f5ab6252e35f072ef1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/request_sha256/title">Request Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1846,12 +1656,10 @@
 <span id="v-1fcf72663f6d6944b941bf08">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/request_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1868,8 +1676,7 @@
 <span id="v-f4e3bb5d0a27ede54451be2c">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/result_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1879,8 +1686,7 @@
 <span id="v-2641943b9639324f92149f79">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/result_sha256/title">Result Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1890,12 +1696,10 @@
 <span id="v-06ae78fd4a0d696c65c71bc1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/result_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1912,8 +1716,7 @@
 <span id="v-290f1be9c654cadbf09afa0d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/sampler_descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1923,8 +1726,7 @@
 <span id="v-5f12d7dba05dd156a534427d">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/sampler_descriptor_sha256/title">Sampler Descriptor Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1934,12 +1736,10 @@
 <span id="v-d4f7b16acd21c3ffe5a47ba4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/sampler_descriptor_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1963,8 +1763,7 @@
 <span id="v-84541992e83f1f07ca9feb05">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/state/enum/0">succeeded</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1974,8 +1773,7 @@
 <span id="v-5ae93dc3a41d726ca14d6169">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/state/enum/1">inapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1985,8 +1783,7 @@
 <span id="v-9b8ac00d579bf4fc2576d017">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/state/enum/2">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1996,12 +1793,10 @@
 <span id="v-a9f9d7ba4e5623400df50b3f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/state/enum/3">canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2011,8 +1806,7 @@
 <span id="v-39f57962b2f0f6ecc9c7ebd3">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/state/title">State</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2022,16 +1816,13 @@
 <span id="v-1f47c86dc79f21a85fce6711">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/state/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2048,8 +1839,7 @@
 <span id="v-1c4927b65856b29f4370df8f">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/required/0">request_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2059,8 +1849,7 @@
 <span id="v-d29d6af3161e0abc2e8a91a9">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/required/1">sampler_descriptor_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2070,8 +1859,7 @@
 <span id="v-5cc7e4eb6daba65abeef2ad4">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/required/2">state</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2081,12 +1869,10 @@
 <span id="v-1c086a4cc94837bdf9cf3800">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/required/3">result_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2096,8 +1882,7 @@
 <span id="v-754bfe77e0887137c779e460">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/title">SamplerResult</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2107,8 +1892,7 @@
 <span id="v-b29804915be76a94ecd888be">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -2128,7 +1912,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -2140,7 +1924,7 @@
 <a href="source-authorities.html#source-8a54180841caa5af2642707d">protocol:generated:review0-sampler</a> — <code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py::sampler_schema_bundle</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -2150,8 +1934,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -2163,73 +1946,61 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/execution_evidence</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · entries · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/execution_evidence</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/outputs</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/outputs</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/request_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/request_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/result_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/result_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/sampler_descriptor_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerResult/properties/sampler_descriptor_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a> / <a href="i-9f6785dfbc677f0f451484fd.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CompletionFailureStatus</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,40 +59,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>attempts</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>attempts</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>reason</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>reason</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>retryable</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>retryable</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -124,8 +106,7 @@
 <span id="v-07d9a51dc1dc6a8b4a38e314">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -149,8 +130,7 @@
 <span id="v-578967c31d6342664f64e6fc">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/attempts/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -160,8 +140,7 @@
 <span id="v-0b1c903b7d0e9ffcedeea736">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/attempts/title">Attempts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -171,12 +150,10 @@
 <span id="v-9c39498a7adf4dfd5dfb5fe8">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/attempts/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -193,8 +170,7 @@
 <span id="v-794cfb4e3409ba60c74597ec">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/reason/title">Reason</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -204,12 +180,10 @@
 <span id="v-476223c1659ec08374138ef1">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/reason/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -226,8 +200,7 @@
 <span id="v-b7ae8054a334748bdf20c86e">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/retryable/title">Retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -237,16 +210,13 @@
 <span id="v-0a686da4afb06b8a67aac4b8">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/properties/retryable/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -263,8 +233,7 @@
 <span id="v-c253cadc043d49ea4e0dd47f">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/required/0">reason</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -274,8 +243,7 @@
 <span id="v-a5996360f5e1c581c47f0475">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/required/1">retryable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -285,12 +253,10 @@
 <span id="v-c42629178f81a3f8e9ccce16">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/required/2">attempts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -300,8 +266,7 @@
 <span id="v-bfca75237becedf7d6e8351b">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/title">CompletionFailureStatus</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -311,8 +276,7 @@
 <span id="v-0d12734dba90b1f1122ae303">
 <code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/CompletionFailureStatus/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -324,7 +288,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -336,7 +300,7 @@
 <a href="source-authorities.html#source-fdb5f95db76e4741f768b51b">openapi:a-riverhog-ftp-spool</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -347,9 +311,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

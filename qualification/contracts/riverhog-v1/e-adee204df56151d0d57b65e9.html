@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CatalogSyncCheckpoint</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,54 +59,41 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>authorization_view_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>authorization_view_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>catalog_cursor</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>catalog_cursor</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>riverhog-catalog-sync/v1</code>; default: <code>riverhog-catalog-sync/v1</code>
-</td>
-<td>
-<code>riverhog-catalog-sync/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-catalog-sync/v1</code>; default: <code>riverhog-catalog-sync/v1</code></td>
+<td data-label="Default">
+<code>riverhog-catalog-sync/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>source_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>source_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -138,8 +116,7 @@
 <span id="v-4202917118ee3b2c71fa5587">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -163,8 +140,7 @@
 <span id="v-54f2facdec5a2b01a711714a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -174,8 +150,7 @@
 <span id="v-fba5f9b23f0aabdf4e756519">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -185,8 +160,7 @@
 <span id="v-317f05c4745fd9edbb3c9d51">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -196,8 +170,7 @@
 <span id="v-600b44b33132ea9c769948d5">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity/title">Authorization View Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -207,12 +180,10 @@
 <span id="v-6d80941b418bd8934334118a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -229,8 +200,7 @@
 <span id="v-fa234408810799bbeac222ee">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/catalog_cursor/maxLength">4096</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -240,8 +210,7 @@
 <span id="v-07a5dfa76b0db99d232b579a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/catalog_cursor/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -251,8 +220,7 @@
 <span id="v-e57335500354f90f74f6d5f1">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/catalog_cursor/title">Catalog Cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -262,12 +230,10 @@
 <span id="v-faa6f153d6e546df6fd8da2a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/catalog_cursor/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -284,8 +250,7 @@
 <span id="v-597049fc3d8a93f0e733a1e0">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/format/const">riverhog-catalog-sync/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -295,8 +260,7 @@
 <span id="v-7a121c6611cefb59515ca173">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/format/default">riverhog-catalog-sync/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -306,8 +270,7 @@
 <span id="v-a83dbfbd06df958619acebd7">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/format/title">Format</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -317,12 +280,10 @@
 <span id="v-e31f03fe1d424842b49f174c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -339,8 +300,7 @@
 <span id="v-4aa3c86051e7a8103d38a2dc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -350,8 +310,7 @@
 <span id="v-2ac8ba16fed08cad48804ddc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -361,8 +320,7 @@
 <span id="v-f2df428b77a3a460d8f10a55">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -372,8 +330,7 @@
 <span id="v-08a867e4fcdacc465e7a211a">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity/title">Source Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -383,16 +340,13 @@
 <span id="v-bf0f49758c1abc6b98faf369">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -409,8 +363,7 @@
 <span id="v-75c9770eff6dde2d718a1944">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/required/0">source_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -420,8 +373,7 @@
 <span id="v-91ea18e11c3ab71b591d6976">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/required/1">authorization_view_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -431,12 +383,10 @@
 <span id="v-bb70f502119f5c9d95ddacbc">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/required/2">catalog_cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -446,8 +396,7 @@
 <span id="v-20a428ce84b7a50d7977268c">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/title">CatalogSyncCheckpoint</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -457,8 +406,7 @@
 <span id="v-b913c0e64ef1c24109e2b422">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -470,7 +418,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -482,7 +430,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -492,8 +440,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -505,49 +452,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/authorization_view_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/catalog_cursor</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/catalog_cursor</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint/properties/source_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_operator_contracts.WorkUpdatedEventData</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
@@ -80,7 +71,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -93,40 +84,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>phase</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>phase</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>2</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>2</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>work_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>work_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -156,8 +138,7 @@
 <span id="v-9b141eb126555d2459aabd2e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -174,8 +155,7 @@
 <span id="v-f918ec93b8e117b85fa7f226">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -206,8 +186,7 @@
 <span id="v-fdaf4ff22b4abf47caf370ac">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/0">eligible</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -217,8 +196,7 @@
 <span id="v-7e9c97e479821403f220296f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/1">claimed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -228,8 +206,7 @@
 <span id="v-45af96d2703316168692bab8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/2">observing</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -239,8 +216,7 @@
 <span id="v-e0098dd4cc377d7915c7726e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/3">planning</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -250,8 +226,7 @@
 <span id="v-f6f81a030d47124787fb91b7">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/4">target_preflight</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,8 +236,7 @@
 <span id="v-c03a30e30334244c2599bac5">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/5">queued</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -272,8 +246,7 @@
 <span id="v-a3ff8bb7821e77b7aa6e1c0f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/6">executing</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,8 +256,7 @@
 <span id="v-be6d9b9e2b4856b592180825">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/7">output_finalizing</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -294,8 +266,7 @@
 <span id="v-48a5fc156e44fa4170538910">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/8">verifying</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -305,8 +276,7 @@
 <span id="v-09efc3f64f9e5e0903100a39">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/9">settled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -316,8 +286,7 @@
 <span id="v-32329b393241d57df3ee2d7c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/10">source_collection_retirement_pending</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,8 +296,7 @@
 <span id="v-f6babad231cb487627862b04">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/11">coordinating</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,8 +306,7 @@
 <span id="v-a3c52d0bc43e43c578e0db87">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/12">abandon_pending</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,8 +316,7 @@
 <span id="v-2b20c0c9b87e6d3a09ab3698">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/13">complete</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,8 +326,7 @@
 <span id="v-3ad81505c1341b57d4991559">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/14">inapplicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -371,8 +336,7 @@
 <span id="v-b8af164206434adbd688bda7">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/15">failed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -382,12 +346,10 @@
 <span id="v-0b6c137e4a0ec33b279788b4">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/16">canceled</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -397,12 +359,10 @@
 <span id="v-348079f6ab2e73b19638d5ad">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -419,8 +379,7 @@
 <span id="v-963edb62b270e46f90049fd6">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/revision/minimum">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -430,12 +389,10 @@
 <span id="v-e675ec052dc389d8dd18140e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -452,8 +409,7 @@
 <span id="v-0b549e955edd1d2a549caec9">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/work_id/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -463,16 +419,13 @@
 <span id="v-933e75046202c2b7d3245335">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/work_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -489,8 +442,7 @@
 <span id="v-3c6aa8cc2cac5698d3af1ab8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/required/0">work_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -500,8 +452,7 @@
 <span id="v-ff3f945bc4cc1ccdbfe8f2df">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/required/1">phase</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -511,12 +462,10 @@
 <span id="v-669c0673f8923af5da397ebb">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/required/2">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -526,12 +475,10 @@
 <span id="v-535e4ffd1835dfb5410e8308">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -541,12 +488,10 @@
 <span id="v-28e16cd24939eba43443de89">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/signature">&quot;(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=2)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -556,8 +501,7 @@
 <span id="v-303e701b6bbd671c2f512eae">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -567,8 +511,7 @@
 <span id="v-c37299f5ebbd2e81b34d1a95">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -578,8 +521,7 @@
 <span id="v-7b7d9dbe0e30fc68015bc049">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/name">WorkUpdatedEventData</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,8 +531,7 @@
 <span id="v-aff6066a248cb3cff80fafe7">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -613,7 +554,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -625,7 +566,7 @@
 <a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -636,9 +577,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

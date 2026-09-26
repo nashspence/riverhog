@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: CatalogSyncDescriptor</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,111 +59,84 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>archive_root_sha256</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>archive_root_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-4abd83e4b54a09651a98427b.html#v-2990c9fa719ce64611926aab">#/components/schemas/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-4abd83e4b54a09651a98427b.html#v-2990c9fa719ce64611926aab">#/components/schemas/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>content_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>content_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-08da37b2cc7b3d54faf8c6d3">description</a>
-</td>
-<td>yes</td>
-<td>any of: <a href="e-0809c641d67a459846c0f90f.html#v-a9656ba901bbdaddb5a4e346">#/components/schemas/CollectionDescription</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-08da37b2cc7b3d54faf8c6d3">description</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <a href="e-0809c641d67a459846c0f90f.html#v-a9656ba901bbdaddb5a4e346">#/components/schemas/CollectionDescription</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>description_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>description_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>description_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>; maximum: <code>9007199254740991</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>description_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; maximum: <code>9007199254740991</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>; minLength: <code>1</code>; maxLength: <code>19</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>; minLength: <code>1</code>; maxLength: <code>19</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>tag_revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>; maximum: <code>9007199254740991</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>tag_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>9007199254740991</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>tag_set_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>tag_set_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -183,7 +147,7 @@
 <p class="shape">any of: <a href="e-0809c641d67a459846c0f90f.html#v-a9656ba901bbdaddb5a4e346">#/components/schemas/CollectionDescription</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -193,16 +157,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-0809c641d67a459846c0f90f.html#v-a9656ba901bbdaddb5a4e346">#/components/schemas/CollectionDescription</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-0809c641d67a459846c0f90f.html#v-a9656ba901bbdaddb5a4e346">#/components/schemas/CollectionDescription</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -225,8 +187,7 @@
 <span id="v-984f32413c9c3580e061f08e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -250,8 +211,7 @@
 <span id="v-c45d40779d8cc17cd53d6093">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,8 +221,7 @@
 <span id="v-efbec4d7b81b55665869ea41">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -272,8 +231,7 @@
 <span id="v-b47f73eb540b94013a6ff8c7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -283,8 +241,7 @@
 <span id="v-b96b48ffad7ff0cddd71dab3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256/title">Archive Root Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -294,12 +251,10 @@
 <span id="v-0dce3f0cd13967190e360d74">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -316,12 +271,10 @@
 <span id="v-32deb200be262b7ae7520ab9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/collection_id/$ref">#/components/schemas/CollectionId</code>
 <span class="kind">string</span> <a href="e-4abd83e4b54a09651a98427b.html#v-2990c9fa719ce64611926aab">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,8 +291,7 @@
 <span id="v-05814dacf5119a2295c09173">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -349,8 +301,7 @@
 <span id="v-57cbe14636183d4e98e43fc5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -360,8 +311,7 @@
 <span id="v-69fc91eb71e435e16feaea69">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -371,8 +321,7 @@
 <span id="v-63d8184efd39ea3d1d7152cd">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity/title">Content Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -382,12 +331,10 @@
 <span id="v-c7d7883fc9530419218fec06">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -418,12 +365,10 @@
 <span id="v-414ecb18148dd538f997871f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description/anyOf/0/$ref">#/components/schemas/CollectionDescription</code>
 <span class="kind">string</span> <a href="e-0809c641d67a459846c0f90f.html#v-a9656ba901bbdaddb5a4e346">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -440,20 +385,16 @@
 <span id="v-4ea50fdb8c548864f6d8d272">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -470,8 +411,7 @@
 <span id="v-b6bdcdb4758a0b3f4c9da7ab">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -481,8 +421,7 @@
 <span id="v-e42347ab20209e870f6dc462">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -492,8 +431,7 @@
 <span id="v-65bb620e14fa72a842ed4d54">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -503,8 +441,7 @@
 <span id="v-30aa72d9717afce74208da91">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity/title">Description Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -514,12 +451,10 @@
 <span id="v-324d01d9a896ae94e2a94af5">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -536,8 +471,7 @@
 <span id="v-5e9bfcf934134052a2d95189">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_revision/maximum">9007199254740991</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -547,8 +481,7 @@
 <span id="v-d0be50dd2cefcb614bf7229d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_revision/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -558,8 +491,7 @@
 <span id="v-14d5ff3471a20ee3ce19d80d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_revision/title">Description Revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -569,12 +501,10 @@
 <span id="v-13317dee7fcf2f7cf7d2cd92">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -591,8 +521,7 @@
 <span id="v-331a8bb21ea97b0ff69e09a0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision/maxLength">19</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -602,8 +531,7 @@
 <span id="v-2894dff9f684fe19212c128f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -613,8 +541,7 @@
 <span id="v-cfd23df570236d70f1d166e4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision/pattern">^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -624,8 +551,7 @@
 <span id="v-03f15a0e0b38d640d5e482f7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision/title">Revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -635,12 +561,10 @@
 <span id="v-2c61835e6d53dfbddc598a84">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -657,8 +581,7 @@
 <span id="v-97ad617cfcdd12273ce8eb8f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_revision/maximum">9007199254740991</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -668,8 +591,7 @@
 <span id="v-0963dbe56bc128034bad6611">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_revision/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -679,8 +601,7 @@
 <span id="v-7623c9b52b663d88c181cb3a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_revision/title">Tag Revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -690,12 +611,10 @@
 <span id="v-c89b97a92e481d5a81d41a87">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -712,8 +631,7 @@
 <span id="v-badabea06a4c93ef409baa30">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity/maxLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -723,8 +641,7 @@
 <span id="v-5fbb30638e200221ca4df8fe">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity/minLength">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -734,8 +651,7 @@
 <span id="v-097328356a4713805a4fee35">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -745,8 +661,7 @@
 <span id="v-35b8421cd6668a1261d1010e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity/title">Tag Set Identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -756,16 +671,13 @@
 <span id="v-fb9550b684f1d95f166814ed">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -782,8 +694,7 @@
 <span id="v-d2bf5ed747b10c2080402b36">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/0">collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -793,8 +704,7 @@
 <span id="v-ff421cdc86b9b71b067e8ac3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/1">archive_root_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -804,8 +714,7 @@
 <span id="v-8e373326c27c5b9b5d5ff816">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/2">content_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -815,8 +724,7 @@
 <span id="v-aad89e5dfde167d653bd4638">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/3">description</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -826,8 +734,7 @@
 <span id="v-fca4373542e7b0dde609d938">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/4">description_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -837,8 +744,7 @@
 <span id="v-6c23ff31eb64b6db80075135">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/5">description_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -848,8 +754,7 @@
 <span id="v-1364912eca2b45b5ea7a1498">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/6">tag_revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -859,8 +764,7 @@
 <span id="v-564287bff9b6d1d5dfc26fa8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/7">tag_set_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -870,12 +774,10 @@
 <span id="v-70027253d43703d413a41980">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/required/8">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -885,8 +787,7 @@
 <span id="v-105c0bd5a8026430bc08892b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/title">CatalogSyncDescriptor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -896,8 +797,7 @@
 <span id="v-934d07f6c507c5ddb0a2b830">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -909,7 +809,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -921,7 +821,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -931,8 +831,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -944,97 +843,79 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/archive_root_sha256</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/content_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_revision</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/description_revision</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:19,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/revision</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:19,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_revision</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>value · schema-value · contract_max</td>
-<td>
-<code>{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_revision</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor/properties/tag_set_identity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

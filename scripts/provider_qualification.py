@@ -2203,9 +2203,6 @@ def evidence_from_checkpoint(checkpoint: QualificationCheckpoint) -> dict[str, o
             "artifact_surfaces": sorted(artifact.surface for artifact in checkpoint.artifacts),
         },
         "performance": {
-            "objective_ids": [],
-            "observation_ids": ["provider-qualification-elapsed"],
-            "source": "scripts/performance_objectives.py",
             "measured_fields": ["started_at", "completed_at", "phases"],
         },
         "status": "passed" if checkpoint.phase == "cleaned" else "failed",

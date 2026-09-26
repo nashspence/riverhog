@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0_operator_contracts.DepartureCatalog</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
@@ -76,7 +67,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -89,32 +80,24 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-departures/v1</code>; default: <code>stove0-departures/v1</code>
-</td>
-<td>
-<code>stove0-departures/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-departures/v1</code>; default: <code>stove0-departures/v1</code></td>
+<td data-label="Default">
+<code>stove0-departures/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-f71bf306e0e37cead5012421">policies</a>
-</td>
-<td>no</td>
-<td>
-<code>array</code>; items: <a href="e-75facc2548c6abcf8b9e8fae.html#v-2d906cccd53229d93f9db661">#/$defs/DeparturePolicy</a>; maxItems: <code>100</code>; x-riverhog-extent: structured schema; default: <code>[]</code>
-</td>
-<td>
-<code>[]</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-f71bf306e0e37cead5012421">policies</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-75facc2548c6abcf8b9e8fae.html#v-2d906cccd53229d93f9db661">#/$defs/DeparturePolicy</a>; maxItems: <code>100</code>; x-riverhog-extent: structured schema; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -171,7 +154,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -184,18 +167,14 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>all</code>; default: <code>all</code>
-</td>
-<td>
-<code>all</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>all</code>; default: <code>all</code></td>
+<td data-label="Default">
+<code>all</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -252,7 +231,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -265,77 +244,58 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>format</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>stove0-departure-policy/v1</code>; default: <code>stove0-departure-policy/v1</code>
-</td>
-<td>
-<code>stove0-departure-policy/v1</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-departure-policy/v1</code>; default: <code>stove0-departure-policy/v1</code></td>
+<td data-label="Default">
+<code>stove0-departure-policy/v1</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>revision</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>1</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-74dea725e973b1842cb5ebbf">selector</a>
-</td>
-<td>yes</td>
-<td>exactly one of: <a href="e-75facc2548c6abcf8b9e8fae.html#v-85b14ec8f0fef4ea0cebb752">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-75facc2548c6abcf8b9e8fae.html#v-e5bffe2faeb4e69999eb3938">#/$defs/TaggedAdmissionSelector</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-74dea725e973b1842cb5ebbf">selector</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">exactly one of: <a href="e-75facc2548c6abcf8b9e8fae.html#v-85b14ec8f0fef4ea0cebb752">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-75facc2548c6abcf8b9e8fae.html#v-e5bffe2faeb4e69999eb3938">#/$defs/TaggedAdmissionSelector</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_identity</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>target_registration_id</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>target_registration_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -361,7 +321,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -374,29 +334,23 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>kind</code>
-</td>
-<td>no</td>
-<td>
-<code>string</code>; const: <code>tags</code>; default: <code>tags</code>
-</td>
-<td>
-<code>tags</code>
-</td>
-<td>
-</td>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>tags</code>; default: <code>tags</code></td>
+<td data-label="Default">
+<code>tags</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-a63b259afae48512b17cc0c7">required</a>
-</td>
-<td>yes</td>
-<td>
+<td data-label="Field">
+<a href="#s-a63b259afae48512b17cc0c7">required</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-75facc2548c6abcf8b9e8fae.html#v-7b2172737a0e8cb61503c632">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -413,7 +367,7 @@
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -423,16 +377,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-75facc2548c6abcf8b9e8fae.html#v-85b14ec8f0fef4ea0cebb752">#/$defs/AllVisibleAdmissionSelector</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-75facc2548c6abcf8b9e8fae.html#v-85b14ec8f0fef4ea0cebb752">#/$defs/AllVisibleAdmissionSelector</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<a href="e-75facc2548c6abcf8b9e8fae.html#v-e5bffe2faeb4e69999eb3938">#/$defs/TaggedAdmissionSelector</a>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<a href="e-75facc2548c6abcf8b9e8fae.html#v-e5bffe2faeb4e69999eb3938">#/$defs/TaggedAdmissionSelector</a></td>
 </tr>
 </tbody>
 </table>
@@ -485,8 +437,7 @@
 <span id="v-81444a2401c692a334372901">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/kind">class</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,8 +468,7 @@
 <span id="v-1e78deb1162952be9c0d4121">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -542,8 +492,7 @@
 <span id="v-2642bb18761ef555834698fd">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/const">all</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -553,8 +502,7 @@
 <span id="v-5cf908797e2025cf72c8453f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/default">all</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -564,16 +512,13 @@
 <span id="v-06c0581b3cb76b1c7555aab1">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -583,12 +528,10 @@
 <span id="v-d1f956f196ccf600b38a4292">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -605,8 +548,7 @@
 <span id="v-1a3f1a0003d72ab0c195b8c5">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/maxLength">65536</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -616,8 +558,7 @@
 <span id="v-a076c57c60db89e081cd19b3">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -627,8 +568,7 @@
 <span id="v-0e020d52a548f75e9f8c7f1b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -638,8 +578,7 @@
 <span id="v-fc0e05778929f23bdb4d1ceb">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -656,8 +595,7 @@
 <span id="v-d0c653fc37a0a8cd350953f5">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -667,12 +605,10 @@
 <span id="v-eb1b1488a1fb59dcddd284f2">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -682,12 +618,10 @@
 <span id="v-6a705789104c076bad1f020d">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -704,8 +638,7 @@
 <span id="v-ebfdaf6252a3dba997a57d7e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -729,8 +662,7 @@
 <span id="v-bbf61ece839f4ffaa5314abc">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/format/const">stove0-departure-policy/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -740,8 +672,7 @@
 <span id="v-17037522f15304409a042ba5">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/format/default">stove0-departure-policy/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -751,12 +682,10 @@
 <span id="v-982a954cd45c476b78f2d8e8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -773,8 +702,7 @@
 <span id="v-5dbad02324894106cadeb089">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -784,12 +712,10 @@
 <span id="v-195453bd6282c66fe48d57bf">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -806,8 +732,7 @@
 <span id="v-4bc1f8668a9b0bbd574a28a3">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/revision/minimum">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -817,12 +742,10 @@
 <span id="v-64beb78c35121245bcd5fcc1">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/revision/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -853,8 +776,7 @@
 <span id="v-98a5855b444ec04b96b1fa39">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -864,12 +786,10 @@
 <span id="v-0db06452e5ed7b3a87bca545">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -879,12 +799,10 @@
 <span id="v-323cdc4c243e81000a5699a0">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/selector/discriminator/propertyName">kind</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -908,12 +826,10 @@
 <span id="v-a3972eafb5251519a77471fc">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
 <span class="kind">string</span> <a href="e-75facc2548c6abcf8b9e8fae.html#v-85b14ec8f0fef4ea0cebb752">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -930,20 +846,16 @@
 <span id="v-22caab006970a898f48cb6df">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
 <span class="kind">string</span> <a href="e-75facc2548c6abcf8b9e8fae.html#v-e5bffe2faeb4e69999eb3938">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -960,8 +872,7 @@
 <span id="v-05e2f6f12023954d3e84f413">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/target_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -971,12 +882,10 @@
 <span id="v-4a5d4a12aafe2eb027970fec">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/target_identity/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -993,8 +902,7 @@
 <span id="v-bc025754f4432a58937bd40e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/target_registration_id/maxLength">160</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1004,8 +912,7 @@
 <span id="v-422e06b08ef21ea2813c4126">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/target_registration_id/minLength">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1015,16 +922,13 @@
 <span id="v-791993d697ded8c5149036ed">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/properties/target_registration_id/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1041,8 +945,7 @@
 <span id="v-156cd9e80aa0e0bc4b99b6f9">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/required/0">id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1052,8 +955,7 @@
 <span id="v-405f16de999a63483fe68846">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/required/1">revision</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1063,8 +965,7 @@
 <span id="v-3c3e1ccb5a33dd999f58e85e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/required/2">selector</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1074,8 +975,7 @@
 <span id="v-05058db7282c3b92698fb208">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/required/3">target_registration_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1085,12 +985,10 @@
 <span id="v-6715e754cfa65a26484f1342">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/required/4">target_identity</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1100,12 +998,10 @@
 <span id="v-eac7a3e75985d2de276d2d6b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/DeparturePolicy/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1122,8 +1018,7 @@
 <span id="v-1fa88330ace070961c1f99d8">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1147,8 +1042,7 @@
 <span id="v-fc027895d982164e2d61208d">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/const">tags</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1158,8 +1052,7 @@
 <span id="v-b5286d3ad24cc927fefa9a9c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/default">tags</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1169,12 +1062,10 @@
 <span id="v-0cfba493087d2ea6b9f9595a">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1198,12 +1089,10 @@
 <span id="v-cd6ac06289a49581ac017c87">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
 <span class="kind">string</span> <a href="e-75facc2548c6abcf8b9e8fae.html#v-7b2172737a0e8cb61503c632">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1213,8 +1102,7 @@
 <span id="v-7aceaae4ac8724e95f2cd47f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/maxItems">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1224,8 +1112,7 @@
 <span id="v-8ec5d19299eff40683ce1a34">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/minItems">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1235,8 +1122,7 @@
 <span id="v-472becf992f0093a7ac383ad">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1253,8 +1139,7 @@
 <span id="v-6e814bbcbf910f934c2e6bf3">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1264,20 +1149,16 @@
 <span id="v-c4bfa29a9c3b7e912a45e4cc">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1294,12 +1175,10 @@
 <span id="v-75305041a42d05d057ee0033">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/required/0">required</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1309,16 +1188,13 @@
 <span id="v-7b035c82ec9beb1e88210ce9">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/$defs/TaggedAdmissionSelector/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1328,8 +1204,7 @@
 <span id="v-09c40b05f35bdba0a6fee9c1">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1353,8 +1228,7 @@
 <span id="v-f10f1156a480bad6cfeb91fc">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/format/const">stove0-departures/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1364,8 +1238,7 @@
 <span id="v-b729b04654dafcd91156c127">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/format/default">stove0-departures/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1375,12 +1248,10 @@
 <span id="v-f2396dc31a3a46eec712934a">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/format/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1397,8 +1268,7 @@
 <span id="v-cd5ad0e1511e10ce5b502d90">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/policies/default">[]</code>
 <span class="kind">array</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1415,12 +1285,10 @@
 <span id="v-4b8bc47743502b7615dd3f49">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/policies/items/$ref">#/$defs/DeparturePolicy</code>
 <span class="kind">string</span> <a href="e-75facc2548c6abcf8b9e8fae.html#v-2d906cccd53229d93f9db661">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1430,8 +1298,7 @@
 <span id="v-a8cfaa6fa6c4371ba713ed1f">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/policies/maxItems">100</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1441,8 +1308,7 @@
 <span id="v-e599fdbe2632f492e38bc628">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/policies/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1459,8 +1325,7 @@
 <span id="v-4a4a6783c68eccf330cb967b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/policies/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1470,20 +1335,16 @@
 <span id="v-004ce22b845807c3f2a3a485">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/properties/policies/x-riverhog-extent/reason">bounded-deployment-departure-catalog</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1493,12 +1354,10 @@
 <span id="v-2ee37e7f8f09a0046187c2de">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/schema/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1508,12 +1367,10 @@
 <span id="v-9fc781db57f16e5be7b0f3ba">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/contract/signature">&quot;(*, format: Literal[&#x27;stove0-departures/v1&#x27;] = &#x27;stove0-departures/v1&#x27;, policies: Annotated[tuple[stove0_operator_contracts.DeparturePolicy, ...], MaxLen(max_length=100)] = ()) -&gt; None&quot;</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1523,8 +1380,7 @@
 <span id="v-7aa37111f79073bb04d53845">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1534,8 +1390,7 @@
 <span id="v-26f33462749c79436617aa5b">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1545,8 +1400,7 @@
 <span id="v-612ed958d61fe8a9aa50db16">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/name">DepartureCatalog</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1556,8 +1410,7 @@
 <span id="v-086ac5a3ae31337b74859ca2">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.DepartureCatalog/unit">export</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1580,7 +1433,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+<a href="policy-definition-7d6f9abc7960129ddde6a0c6.html">compatibility/python-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1592,7 +1445,7 @@
 <a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1603,9 +1456,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

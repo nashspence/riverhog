@@ -20,6 +20,7 @@ from contract_atlas.html_rendering import (  # noqa: E402
     _authority_file,
     _element_file,
     _inventory_file,
+    _policy_definition_file,
     render_contract,
 )
 from contract_atlas.model import canonical_bytes, canonical_sha256  # noqa: E402
@@ -95,7 +96,7 @@ def browser() -> Browser:
             instance.close()
 
 
-def test_candidate_modes_history_direct_links_zoom_and_no_js(
+def test_candidate_modes_history_direct_links_and_no_js(
     candidate_site: tuple[str, str, str], browser: Browser
 ) -> None:
     base, element_file, literal = candidate_site
@@ -130,14 +131,9 @@ def test_candidate_modes_history_direct_links_zoom_and_no_js(
     assert page.url.endswith(element_file)
     assert not page.locator("#audit").is_visible()
 
-    page.set_viewport_size({"width": 640, "height": 800})
-    page.evaluate("document.documentElement.style.zoom = '2'")
-    assert page.evaluate(
-        "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
-    )
     context.close()
 
-    no_js = browser.new_context(java_script_enabled=False, viewport={"width": 640, "height": 800})
+    no_js = browser.new_context(java_script_enabled=False, viewport={"width": 390, "height": 800})
     page = no_js.new_page()
     page.goto(base + path)
     assert page.locator("#contract").is_visible()
@@ -147,10 +143,11 @@ def test_candidate_modes_history_direct_links_zoom_and_no_js(
     page.locator("header p").first.locator("a").first.click()
     assert page.url.endswith("/contract-candidate/riverhog-v1/index.html")
     assert page.get_by_role("heading", name="Riverhog v1 Contract Render").is_visible()
+    assert page.locator("noscript summary").filter(has_text="Audit references").is_visible()
     no_js.close()
 
 
-def test_authority_to_extent_marker_navigation_and_zoom(
+def test_authority_to_extent_marker_navigation(
     candidate_site: tuple[str, str, str], browser: Browser
 ) -> None:
     base, _unused_element_file, _literal = candidate_site
@@ -173,7 +170,7 @@ def test_authority_to_extent_marker_navigation_and_zoom(
     element = owners[owner_pointer]
     authority = str(element["authority"])
     interface = str(element["interface"])
-    context = browser.new_context(viewport={"width": 640, "height": 800})
+    context = browser.new_context(viewport={"width": 390, "height": 800})
     page = context.new_page()
     page.goto(f"{base}/contract-candidate/riverhog-v1/index.html?audit=1")
     root_marker = page.locator(f'a.audit-marker[href="{_authority_file(authority)}#audit-scope"]')
@@ -195,10 +192,6 @@ def test_authority_to_extent_marker_navigation_and_zoom(
     direct_audit_url = page.url.split("?", 1)[0]
     page.goto(direct_audit_url)
     assert page.get_by_role("heading", name="Open extent qualification").is_visible()
-    page.evaluate("document.documentElement.style.zoom = '2'")
-    assert page.evaluate(
-        "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
-    )
     context.close()
 
 
@@ -210,11 +203,112 @@ def test_documentation_fixture_mode_keeps_the_contract_visible(
     page = context.new_page()
     page.goto(f"{base}/fixture/riverhog-v1/{element_file}")
     contract_html = page.locator("#contract").inner_html()
-    assert page.locator("#audit-mode").is_disabled()
+    assert page.locator("#audit-mode").count() == 0
     assert not page.locator("#documentation").is_visible()
     page.locator("#docs-mode").check()
     assert page.locator("#documentation").is_visible()
     assert "Fixture explanation." in page.locator("#documentation").inner_text()
     assert page.locator("#contract").inner_html() == contract_html
     assert "docs=1" in page.url
+    context.close()
+
+
+def test_selection_and_matrix_tables_use_labeled_cards_at_phone_and_desktop_width(
+    candidate_site: tuple[str, str, str], browser: Browser
+) -> None:
+    base, _element_file_name, _literal = candidate_site
+    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    schema = next(
+        item
+        for item in bundle.closure["elements"]
+        if item["title"] == "schemas: AddCollectionUploadTagsRequest"
+    )
+    schema_without_description = next(
+        item for item in bundle.closure["elements"] if item["title"] == "schemas: AppKeyCreatedOut"
+    )
+    context = browser.new_context(viewport={"width": 390, "height": 844})
+    page = context.new_page()
+    page.goto(f"{base}/contract-candidate/riverhog-v1/index.html")
+    cards = page.locator(".authority-cards > article")
+    assert cards.count() > 1
+    assert cards.first.evaluate("node => getComputedStyle(node).borderStyle") == "solid"
+    assert cards.first.locator(":scope > h3 > a").count() >= 1
+    assert cards.first.locator(":scope > .authority-interfaces a").count() >= 1
+    title_box = cards.first.locator("h3").bounding_box()
+    description_box = cards.first.locator(".authority-description").bounding_box()
+    assert title_box is not None and description_box is not None
+    assert description_box["y"] >= title_box["y"] + title_box["height"]
+    page.set_viewport_size({"width": 1280, "height": 844})
+    assert cards.first.evaluate("node => getComputedStyle(node).borderStyle") == "solid"
+    title_box = cards.first.locator("h3").bounding_box()
+    description_box = cards.first.locator(".authority-description").bounding_box()
+    assert title_box is not None and description_box is not None
+    assert description_box["y"] >= title_box["y"] + title_box["height"]
+    page.set_viewport_size({"width": 390, "height": 844})
+    assert page.evaluate(
+        "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
+    )
+    for path in (
+        _authority_file("riverhog"),
+        _inventory_file("riverhog-application-access", "python"),
+        _inventory_file("riverhog", "http-schemas"),
+        _inventory_file("riverhog", "http-operations"),
+        _inventory_file("riverhog-catalog", "durable-state"),
+        "source-authorities.html?audit=1",
+        _policy_definition_file("/external_contract/extents/rules/bounded-segment~1v1"),
+        _element_file(str(schema["id"])),
+    ):
+        page.goto(f"{base}/contract-candidate/riverhog-v1/{path}")
+        table = page.locator("table").first
+        assert table.count() == 1, path
+        assert table.evaluate("node => getComputedStyle(node).display") == "block", path
+        assert (
+            table.locator("tbody").first.evaluate("node => getComputedStyle(node).display")
+            == "grid"
+        ), path
+        assert (
+            table.locator("tbody tr").first.evaluate("node => getComputedStyle(node).display")
+            == "block"
+        ), path
+        if table.locator("thead").count():
+            assert table.locator("thead").first.is_hidden(), path
+            assert all(
+                cell.get_attribute("data-label")
+                for cell in table.locator("tbody tr").first.locator("td").all()
+            ), path
+        assert page.evaluate(
+            "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
+        ), path
+    page.set_viewport_size({"width": 1280, "height": 844})
+    for path in (
+        _inventory_file("riverhog", "http-operations"),
+        "source-authorities.html?audit=1",
+        _element_file(str(schema["id"])),
+    ):
+        page.goto(f"{base}/contract-candidate/riverhog-v1/{path}")
+        table = page.locator("table").first
+        assert table.locator("thead").first.is_hidden(), path
+        assert (
+            table.locator("tbody").first.evaluate("node => getComputedStyle(node).display")
+            == "grid"
+        ), path
+        assert (
+            table.locator("tbody tr").first.evaluate("node => getComputedStyle(node).display")
+            == "block"
+        ), path
+        assert page.evaluate(
+            "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
+        ), path
+    page.goto(
+        f"{base}/contract-candidate/riverhog-v1/"
+        + _element_file(str(schema_without_description["id"]))
+    )
+    assert page.locator('table td[data-label="Description"]').first.is_hidden()
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(f"{base}/contract-candidate/riverhog-v1/" + _inventory_file("a-riverhog-cli", "cli"))
+    assert page.locator(".command-tree").is_visible()
+    assert page.locator(".command-tree a").count() > 1
+    assert page.evaluate(
+        "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
+    )
     context.close()

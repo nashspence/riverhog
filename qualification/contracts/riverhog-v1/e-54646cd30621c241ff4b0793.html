@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">HTTP Operations</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>GET /v1/artifact-selections/{selection_sha256}</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Callable HTTP operations.</p>
@@ -48,7 +39,7 @@
 </dd>
 </dl>
 <h3>Parameters</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -62,39 +53,31 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>selection_sha256</code>
-</td>
-<td>
-<code>path</code>
-</td>
-<td>yes</td>
-<td>not declared</td>
-<td>
-<code>string</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>selection_sha256</code></td>
+<td data-label="In">
+<code>path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">
+<code>string</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>continuation</code>
-</td>
-<td>
-<code>query</code>
-</td>
-<td>no</td>
-<td>not declared</td>
-<td>any of: <code>string</code>; <code>null</code>
-</td>
-<td>
-</td>
+<td data-label="Name">
+<code>continuation</code></td>
+<td data-label="In">
+<code>query</code></td>
+<td data-label="Required">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Schema">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Responses</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -107,92 +90,69 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>200</code>
-</td>
-<td>Successful Response</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-0414c3bfbbf9ff980def5927.html#v-1f953a503d566fbfe91050bc">#/components/schemas/ArtifactSelectionPage</a>
-</td>
-<td>not declared</td>
+<td data-label="Status">
+<code>200</code></td>
+<td data-label="Description">Successful Response</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-0414c3bfbbf9ff980def5927.html#v-1f953a503d566fbfe91050bc">#/components/schemas/ArtifactSelectionPage</a></td>
+<td data-label="Error codes">not declared</td>
 </tr>
 <tr>
-<td>
-<code>400</code>
-</td>
-<td>Bad Request</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>bad_request</code>
-</td>
+<td data-label="Status">
+<code>400</code></td>
+<td data-label="Description">Bad Request</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>bad_request</code></td>
 </tr>
 <tr>
-<td>
-<code>401</code>
-</td>
-<td>Unauthorized</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>unauthorized</code>
-</td>
+<td data-label="Status">
+<code>401</code></td>
+<td data-label="Description">Unauthorized</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>unauthorized</code></td>
 </tr>
 <tr>
-<td>
-<code>403</code>
-</td>
-<td>Forbidden</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>forbidden</code>
-</td>
+<td data-label="Status">
+<code>403</code></td>
+<td data-label="Description">Forbidden</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>forbidden</code></td>
 </tr>
 <tr>
-<td>
-<code>404</code>
-</td>
-<td>Not Found</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>not_found</code>
-</td>
+<td data-label="Status">
+<code>404</code></td>
+<td data-label="Description">Not Found</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>not_found</code></td>
 </tr>
 <tr>
-<td>
-<code>500</code>
-</td>
-<td>Internal Server Error</td>
-<td>
-<code>application/json</code>
-</td>
-<td>
-<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
-</td>
-<td>
-<code>internal_error</code>
-</td>
+<td data-label="Status">
+<code>500</code></td>
+<td data-label="Description">Internal Server Error</td>
+<td data-label="Media type">
+<code>application/json</code></td>
+<td data-label="Schema">
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a></td>
+<td data-label="Error codes">
+<code>internal_error</code></td>
 </tr>
 </tbody>
 </table>
@@ -214,8 +174,7 @@
 <span id="v-f26db813682140f6652e7b10">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/operationId">get_artifact_selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -239,8 +198,7 @@
 <span id="v-e9970b40f5e94f5f6264caa7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/0/in">path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -250,8 +208,7 @@
 <span id="v-c59859492008084f217ed023">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/0/name">selection_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -261,8 +218,7 @@
 <span id="v-fdcd9f49ceebe4cf324ea47b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/0/required">true</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -279,8 +235,7 @@
 <span id="v-8fc8d2b2d901989fb021aa12">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/0/schema/title">Selection Sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -290,16 +245,13 @@
 <span id="v-032b3421c4bff235b8a26f07">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/0/schema/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -316,8 +268,7 @@
 <span id="v-d0f9d42ac4eaba9d5e87e712">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/1/in">query</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -327,8 +278,7 @@
 <span id="v-f274741ab4d12aab7231e984">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/1/name">continuation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -338,8 +288,7 @@
 <span id="v-7177b2deb33fbcfca6301453">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/1/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,12 +319,10 @@
 <span id="v-20f14dceb51b3e3871db1435">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/1/schema/anyOf/0/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -392,16 +339,13 @@
 <span id="v-9bc38fdcfd39fc77123ae08d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/1/schema/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -411,20 +355,16 @@
 <span id="v-10f2b434dda59b5bae8eaaaf">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/parameters/1/schema/title">Continuation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -469,20 +409,16 @@
 <span id="v-448201c73d1bcd007f8e95f6">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/200/content/application~1json/schema/$ref">#/components/schemas/ArtifactSelectionPage</code>
 <span class="kind">string</span> <a href="e-0414c3bfbbf9ff980def5927.html#v-1f953a503d566fbfe91050bc">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -492,12 +428,10 @@
 <span id="v-562ff892f620a00bec25ab56">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/200/description">Successful Response</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -535,20 +469,16 @@
 <span id="v-9617a0c5e05b875e0a57ce61">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -558,8 +488,7 @@
 <span id="v-9ce41dca8fa6a5ec77fb0c82">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/400/description">Bad Request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -576,16 +505,13 @@
 <span id="v-dd29a8704d950a0be6ed36c7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/400/x-riverhog-error-codes/0">bad_request</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -623,20 +549,16 @@
 <span id="v-639d8709e66969cfe71b97a3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -646,8 +568,7 @@
 <span id="v-3308247329642a0a640f9627">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/401/description">Unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -664,16 +585,13 @@
 <span id="v-680075e62f751cae456793fe">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/401/x-riverhog-error-codes/0">unauthorized</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -711,20 +629,16 @@
 <span id="v-cb8f15aff15790b58abafc59">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -734,8 +648,7 @@
 <span id="v-a49e52b7b9e6efa496647e89">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/403/description">Forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -752,16 +665,13 @@
 <span id="v-9c50b22f9deafe1e8c1eb67f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/403/x-riverhog-error-codes/0">forbidden</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -799,20 +709,16 @@
 <span id="v-560239c1c0a1bd513ee32805">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/404/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -822,8 +728,7 @@
 <span id="v-cb0854b59932e4aabda977ff">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/404/description">Not Found</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -840,16 +745,13 @@
 <span id="v-a3d84bf8e46e3e0ade24e127">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/404/x-riverhog-error-codes/0">not_found</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -887,20 +789,16 @@
 <span id="v-ea621ee2e4a64042878d22c7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
 <span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -910,8 +808,7 @@
 <span id="v-78561b9094ab26d6db7087c6">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/500/description">Internal Server Error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -928,20 +825,16 @@
 <span id="v-0795bcaab23ad9288926e9c8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/responses/500/x-riverhog-error-codes/0">internal_error</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -951,8 +844,7 @@
 <span id="v-19efa1c50599e24be1b7d03d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/summary">Get Artifact Selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -969,12 +861,10 @@
 <span id="v-243c418b8c0b7e25858820ca">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/tags/0">artifact-selections</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -991,8 +881,7 @@
 <span id="v-db96d5c08530a257d9ccfb9d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/x-riverhog-read-collection/authority">artifact-selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1002,8 +891,7 @@
 <span id="v-e9ce72dfcf6e16c691ec4bd9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/x-riverhog-read-collection/authority_parameter">selection_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1013,8 +901,7 @@
 <span id="v-b552cd842c5b3d74600ee382">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/x-riverhog-read-collection/cursor_parameter">continuation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1024,8 +911,7 @@
 <span id="v-e5c40ecfa65a97fb961bbe8c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/x-riverhog-read-collection/fixed_limit">256</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1035,12 +921,10 @@
 <span id="v-13f81b7ef3b7fa578060dc6d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get/x-riverhog-read-collection/kind">exact-authority-page</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -1061,7 +945,6 @@
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Open extent qualification</h3>
-<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
 <ul>
 <li>
 <a href="q-34931f753be1ce7059b8a01b.html">stove0-read-collection-progression/v1</a>
@@ -1070,7 +953,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1085,7 +968,7 @@
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -1095,8 +978,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1108,23 +990,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get</code>
-</td>
-<td>
-<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
-</td>
-<td>logical-result-cardinality · items · segmented_no_total_max</td>
-<td>
-<code>{&quot;progression&quot;:{&quot;authority&quot;:&quot;artifact-selection&quot;,&quot;authority_parameter&quot;:&quot;selection_sha256&quot;,&quot;cursor_parameter&quot;:&quot;continuation&quot;,&quot;fixed_limit&quot;:256,&quot;kind&quot;:&quot;exact-authority-page&quot;},&quot;reason&quot;:&quot;bounded-route-progression&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-c35859ad2c6c8a34ef05c100.html">extent-rule/route-progression/v1</a></td>
+<td data-label="Decision">logical-result-cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;progression&quot;:{&quot;authority&quot;:&quot;artifact-selection&quot;,&quot;authority_parameter&quot;:&quot;selection_sha256&quot;,&quot;cursor_parameter&quot;:&quot;continuation&quot;,&quot;fixed_limit&quot;:256,&quot;kind&quot;:&quot;exact-authority-page&quot;},&quot;reason&quot;:&quot;bounded-route-progression&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <details>
 <summary>Structural operation bindings</summary>
-<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
 <table id="v-383423f0a20db28a4fb5f130">
 <tbody>
 <tr>
@@ -1135,8 +1013,7 @@
 <span id="v-cc5cf3e392d73f1cb4a69b74">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/application">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1146,8 +1023,7 @@
 <span id="v-3d5e4c8c94731e0293b283f3">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/classification">human-cli+json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1171,8 +1047,7 @@
 <span id="v-4b5267e917d7099f83b7c052">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/command">selection show</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1182,8 +1057,7 @@
 <span id="v-d645616f0f12fd117c0a4bd3">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/executable">stove0</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1193,8 +1067,7 @@
 <span id="v-7661ede6e39874a6a843dc21">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/result_identity">stove0-cli-result/selection/show/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1211,8 +1084,7 @@
 <span id="v-e018fdf77a901795ade699e6">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/source/line">372</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1222,8 +1094,7 @@
 <span id="v-274eeccb68e069c973bbd208">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/source/module">a_stove0_cli.main</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1233,8 +1104,7 @@
 <span id="v-b4e74e29be6acfaf5987c744">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/source/path">some-implementations/stove0/application/client/src/a_stove0_cli/main.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1244,20 +1114,16 @@
 <span id="v-58cd3d21570690bc083fe9ca">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_bindings/0/source/symbol">get_artifact_selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1274,12 +1140,10 @@
 <span id="v-3c674e7a6421b79cfe1b5403">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/cli_commands/0">selection show</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1289,8 +1153,7 @@
 <span id="v-972bbda7eb3ebc6e81fb2dd6">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/client">Stove0ApiClient</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1314,8 +1177,7 @@
 <span id="v-da80bd6ec8b3c598a6b9f69e">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/client_bindings/0/public_identity">stove0_api_client.Stove0ApiClient.get_artifact_selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1332,8 +1194,7 @@
 <span id="v-6229bfdc9a4ed1bcef1934db">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/client_bindings/0/source/line">335</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1343,8 +1204,7 @@
 <span id="v-a30324ac954c4e05cc8c535f">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/client_bindings/0/source/module">stove0_api_client.client</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1354,8 +1214,7 @@
 <span id="v-0931fa442e07b1f5ffd7ffa6">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/client_bindings/0/source/path">some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1365,20 +1224,16 @@
 <span id="v-196ef4ce9a6f8c05c6396954">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/client_bindings/0/source/symbol">Stove0ApiClient.get_artifact_selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1388,8 +1243,7 @@
 <span id="v-57fc24e991bb015592b516b5">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/method">GET</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1399,8 +1253,7 @@
 <span id="v-dbc94486cf0101115360f070">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/operation_id">get_artifact_selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1410,8 +1263,7 @@
 <span id="v-42291aaf38b54817e3230b7d">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/path">/v1/artifact-selections/{selection_sha256}</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1421,8 +1273,7 @@
 <span id="v-7b9679b5bcecc973f8aabe1a">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/provider_evidence">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1439,8 +1290,7 @@
 <span id="v-62d4b8aff7866bcfa57647bf">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/read_collection/authority">artifact-selection</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1450,8 +1300,7 @@
 <span id="v-7611b991d7561a63d70bbacb">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/read_collection/authority_parameter">selection_sha256</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1461,8 +1310,7 @@
 <span id="v-83b4bd3d06072fab72fee3a8">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/read_collection/cursor_parameter">continuation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1472,8 +1320,7 @@
 <span id="v-63385854d3c4b4f2628c44e4">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/read_collection/fixed_limit">256</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1483,12 +1330,10 @@
 <span id="v-1374c273e9c656e4b81cf264">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/read_collection/kind">exact-authority-page</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1498,17 +1343,19 @@
 <span id="v-a5c6500afe815bf8f4355ff3">
 <code data-value-pointer="/audit/operation-qualification/get_artifact_selection/response_authority">canonical-document</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
 </details>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

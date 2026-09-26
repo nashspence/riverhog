@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-8470c96ee489cd4f8b565936.html">a-riverhog-windows-provenance-contract-lib</a> / <a href="i-8362573a31ae863c64fc148a.html">Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json</h1>
 <p class="context">Windows filesystem observation contracts for Riverhog provenance. Standalone structured-value contracts; these do not define an interaction.</p>
@@ -59,7 +50,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -72,195 +63,147 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>allocation_size</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>allocation_size</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>change_time_ticks</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>change_time_ticks</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>creation_time_ticks</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>creation_time_ticks</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>delete_pending</code>
-</td>
-<td>yes</td>
-<td>
-<code>boolean</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>delete_pending</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>end_of_file</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>end_of_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>file_attributes</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>file_attributes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>file_id_bits</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; enum: <code>[64,128]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>file_id_bits</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; enum: <code>[64,128]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>file_id_hex</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; pattern: <code>^[0-9a-f]+$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>file_id_hex</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]+$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>file_id_scheme</code>
-</td>
-<td>yes</td>
-<td>enum: <code>[&quot;windows-file-id-128&quot;,&quot;windows-file-index-64&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>file_id_scheme</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">enum: <code>[&quot;windows-file-id-128&quot;,&quot;windows-file-index-64&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>file_index_64</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>file_index_64</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>last_access_time_ticks</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>last_access_time_ticks</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>last_write_time_ticks</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>last_write_time_ticks</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>number_of_links</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>number_of_links</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>reparse_tag</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>reparse_tag</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-59bba6e3483bae7933ed40ab">storage</a>
-</td>
-<td>yes</td>
-<td>
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-59bba6e3483bae7933ed40ab">storage</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>volume_serial_number</code>
-</td>
-<td>yes</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>volume_serial_number</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -282,7 +225,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -295,88 +238,67 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>byte_offset_for_partition_alignment</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>byte_offset_for_partition_alignment</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>byte_offset_for_sector_alignment</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>byte_offset_for_sector_alignment</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>filesystem_effective_physical_bytes_per_sector_for_atomicity</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>filesystem_effective_physical_bytes_per_sector_for_atomicity</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>flags</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>flags</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>logical_bytes_per_sector</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>logical_bytes_per_sector</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>physical_bytes_per_sector_for_atomicity</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>physical_bytes_per_sector_for_atomicity</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>physical_bytes_per_sector_for_performance</code>
-</td>
-<td>no</td>
-<td>
-<code>integer</code>; minimum: <code>0</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>physical_bytes_per_sector_for_performance</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -399,8 +321,7 @@
 <span id="v-e625ee524c1c80ef67980987">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/$id">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,8 +331,7 @@
 <span id="v-623ed0a5f6ae8f026ca1b3c7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/$schema">https://json-schema.org/draft/2020-12/schema</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,8 +341,7 @@
 <span id="v-8a90b22b6c0986509035ebb7">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -446,8 +365,7 @@
 <span id="v-2483a8d68001bcbbc85d7e9f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/allocation_size/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -457,12 +375,10 @@
 <span id="v-75a1fe153829abd0bfdf348c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/allocation_size/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -479,12 +395,10 @@
 <span id="v-fd8f3f5d6b2c717d46766190">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/change_time_ticks/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -501,12 +415,10 @@
 <span id="v-1cffdc1e23b8a08fa8d90f88">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/creation_time_ticks/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -523,12 +435,10 @@
 <span id="v-6c8379a848c71dff8e9af9bc">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/delete_pending/type">boolean</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -545,8 +455,7 @@
 <span id="v-b651ac990927671f8909879d">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/end_of_file/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -556,12 +465,10 @@
 <span id="v-fd6361d460aea8f23011c2c8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/end_of_file/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -578,8 +485,7 @@
 <span id="v-7dac9bff8ad97b74dbce75e0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_attributes/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -589,12 +495,10 @@
 <span id="v-21f5fc350a0cd200100f46f3">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_attributes/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -618,8 +522,7 @@
 <span id="v-aa33281f1b3a07ceabd9a47e">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_bits/enum/0">64</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -629,12 +532,10 @@
 <span id="v-cc01f6abc985f8f9336f9a1f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_bits/enum/1">128</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -644,12 +545,10 @@
 <span id="v-e89f64b220f978f2c0d0f907">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_bits/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -666,8 +565,7 @@
 <span id="v-9f39eb5280dbe9da59f6af63">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_hex/pattern">^[0-9a-f]+$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -677,12 +575,10 @@
 <span id="v-3025079fbcdc60f338332625">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_hex/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -706,8 +602,7 @@
 <span id="v-c24dce418bb4835d3b6d9b10">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_scheme/enum/0">windows-file-id-128</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -717,16 +612,13 @@
 <span id="v-e05eaef894c371272ebcb8c8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_scheme/enum/1">windows-file-index-64</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -743,8 +635,7 @@
 <span id="v-43c857d112792fda26572298">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_index_64/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -754,12 +645,10 @@
 <span id="v-8b31f67b9738574950ab3418">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_index_64/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -776,12 +665,10 @@
 <span id="v-ef329fda8b42e7cf776b4dbb">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/last_access_time_ticks/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -798,12 +685,10 @@
 <span id="v-0c0d5a7867b72cd9d6339398">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/last_write_time_ticks/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -820,8 +705,7 @@
 <span id="v-051e20125eca561afa2cbd10">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/number_of_links/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -831,12 +715,10 @@
 <span id="v-5bc2583acd94af5628296f23">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/number_of_links/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -853,8 +735,7 @@
 <span id="v-62f0c43e4783e5dbf2a91cd4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/reparse_tag/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -864,12 +745,10 @@
 <span id="v-dbfbbc113b50fe94ae8f01d0">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/reparse_tag/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -886,8 +765,7 @@
 <span id="v-02a5031da118243a77c5e2f9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -911,8 +789,7 @@
 <span id="v-ef2ef408a40631cec6522af4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_partition_alignment/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -922,12 +799,10 @@
 <span id="v-c96d8edf2ed9e9e53e471b15">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_partition_alignment/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -944,8 +819,7 @@
 <span id="v-279de03fd8a58b96743fc596">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_sector_alignment/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -955,12 +829,10 @@
 <span id="v-0aeb6b37e0c12d0f0c79fad4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_sector_alignment/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -977,8 +849,7 @@
 <span id="v-0b1cf74a6d02487d6c825072">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/filesystem_effective_physical_bytes_per_sector_for_atomicity/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -988,12 +859,10 @@
 <span id="v-a5ea10ad4d887e851dba62a8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/filesystem_effective_physical_bytes_per_sector_for_atomicity/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1010,8 +879,7 @@
 <span id="v-25c6d42e9179af79f1479851">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/flags/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1021,12 +889,10 @@
 <span id="v-c4096e982c196b1da43c5dec">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/flags/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1043,8 +909,7 @@
 <span id="v-36ad3743595594dd705c90e2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/logical_bytes_per_sector/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1054,12 +919,10 @@
 <span id="v-3630ac11f1a0ba5ad1939e25">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/logical_bytes_per_sector/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1076,8 +939,7 @@
 <span id="v-0e4f03ff91c12308db4d8f97">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_atomicity/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1087,12 +949,10 @@
 <span id="v-78aa0ebd0389ba5c48a3c9a5">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_atomicity/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1109,8 +969,7 @@
 <span id="v-aa77d5dfe58645f2e21995c1">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_performance/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1120,16 +979,13 @@
 <span id="v-88b5e5013ab742324dbef55f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_performance/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1139,12 +995,10 @@
 <span id="v-85d91220f8245a8be28b4a2c">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1161,8 +1015,7 @@
 <span id="v-79ce1e63ad3cb8f8db8dfc38">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/volume_serial_number/minimum">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1172,16 +1025,13 @@
 <span id="v-c99d79113a34190e0ff0c4db">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/volume_serial_number/type">integer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1198,8 +1048,7 @@
 <span id="v-e0cc26ebc0f89be5ebbb4aed">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/0">volume_serial_number</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1209,8 +1058,7 @@
 <span id="v-191b0f7b41c9bee2b5da8984">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/1">file_id_hex</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1220,8 +1068,7 @@
 <span id="v-96fc33a496d9202c5086d375">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/2">file_id_bits</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1231,8 +1078,7 @@
 <span id="v-471f869cff43264a6101a543">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/3">file_id_scheme</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1242,8 +1088,7 @@
 <span id="v-8d5e55323ab1ed243e3736d2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/4">file_index_64</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1253,8 +1098,7 @@
 <span id="v-f2ff19307b1ce831d3a13d52">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/5">creation_time_ticks</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1264,8 +1108,7 @@
 <span id="v-b2db54cb05f87b098fdb6672">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/6">last_access_time_ticks</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1275,8 +1118,7 @@
 <span id="v-6966eb116e75fa5d364dffb4">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/7">last_write_time_ticks</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1286,8 +1128,7 @@
 <span id="v-4cb58e9b0624708dcd0aeed8">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/8">change_time_ticks</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1297,8 +1138,7 @@
 <span id="v-37a7add7e9f837f6a5ea6613">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/9">file_attributes</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1308,8 +1148,7 @@
 <span id="v-3abea859f6bced0667befd72">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/10">reparse_tag</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1319,8 +1158,7 @@
 <span id="v-4cdb3d57fa93a5d4010538fd">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/11">allocation_size</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1330,8 +1168,7 @@
 <span id="v-b89109dee98baa8b0a7ae529">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/12">end_of_file</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1341,8 +1178,7 @@
 <span id="v-d2ed0808769572f48c215793">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/13">number_of_links</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1352,8 +1188,7 @@
 <span id="v-70f33472ee12b226f9990e49">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/14">delete_pending</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1363,12 +1198,10 @@
 <span id="v-153b4695b47e65bd448a55c9">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/required/15">storage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1378,8 +1211,7 @@
 <span id="v-704cd8c542b7a2179e41f0a2">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -1391,7 +1223,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+<a href="policy-definition-20ed0aa4fc1801c826ad848a.html">compatibility/components/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -1403,7 +1235,7 @@
 <a href="source-authorities.html#source-232ad4e8328fcbe83c9fc6bf">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json</a> — <code data-source-path="some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-file-stat.schema.json">some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-file-stat.schema.json</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -1413,8 +1245,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -1426,145 +1257,115 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/allocation_size</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/allocation_size</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/end_of_file</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/end_of_file</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_attributes</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_attributes</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_bits</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_id_bits</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_index_64</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/file_index_64</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_partition_alignment</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_partition_alignment</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_sector_alignment</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/byte_offset_for_sector_alignment</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/filesystem_effective_physical_bytes_per_sector_for_atomicity</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/filesystem_effective_physical_bytes_per_sector_for_atomicity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/logical_bytes_per_sector</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/logical_bytes_per_sector</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_atomicity</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_atomicity</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_performance</code>
-</td>
-<td>
-<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
-</td>
-<td>value · schema-value · extension_owned</td>
-<td>
-<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json/properties/storage/properties/physical_bytes_per_sector_for_performance</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-880614cb87cca076bd22dc5e.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">value · schema-value · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

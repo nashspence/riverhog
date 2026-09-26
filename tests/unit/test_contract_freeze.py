@@ -5,6 +5,7 @@ import copy
 import importlib.util
 import inspect
 import json
+import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass
@@ -131,19 +132,56 @@ def test_prior_read_authority_links_remain_contract_side_audit_context() -> None
     )
 
 
-def test_schema_discovery_does_not_consume_guidance(
+def test_schema_discovery_excludes_unowned_repository_json(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     module = load_script()
     source = tmp_path / "packages/protocol/example.schema.json"
     source.parent.mkdir(parents=True)
     source.write_text('{"$id":"example"}', encoding="utf-8")
-    context = tmp_path / "guidance/unrelated.schema.json"
+    context = tmp_path / "notes/unrelated.schema.json"
     context.parent.mkdir()
     context.write_text('{"$id":"unrelated"}', encoding="utf-8")
     monkeypatch.setattr(module, "ROOT", tmp_path)
 
     assert module._repository_schema_paths() == [source]
+
+
+def test_contract_projection_does_not_consume_profile_measurements() -> None:
+    source = r"""
+import os, sys
+from pathlib import Path
+root = Path(sys.argv[1])
+forbidden = {
+    root / "scripts/performance_measurement.py",
+    root / "scripts/transfer_profile.py",
+    root / "tests/harness/storage_adapter_goodput_probe.py",
+}
+def audit(event, args):
+    if event == "import" and args[0] in {
+        "scripts.performance_measurement", "scripts.transfer_profile"
+    }:
+        raise RuntimeError("contract projection imported a profiler")
+    if event in {"open", "os.listdir", "os.scandir"} and args:
+        value = args[0]
+        if isinstance(value, (str, bytes, os.PathLike)):
+            path = Path(os.path.abspath(os.fsdecode(value)))
+            if path in forbidden:
+                raise RuntimeError("contract projection read a profiler")
+sys.addaudithook(audit)
+sys.path.insert(0, str(root / "scripts"))
+import contract_freeze
+contract_freeze.contract_projection()
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", source, str(REPO_ROOT)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=300,
+    )
+    assert completed.returncode == 0, completed.stderr[-4000:]
 
 
 def test_checked_contract_freeze_matches_every_executable_authority(

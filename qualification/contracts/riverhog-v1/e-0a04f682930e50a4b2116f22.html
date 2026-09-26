@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a> / <a href="i-e6ba739e0b692aa9b862b85d.html">CLI</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>stove0-observer-schemas</h1>
 <p class="context">External-author protocol, runtime, and conformance support for Stove0 content observers. CLI contract owned by stove0-observer-support.</p>
@@ -44,7 +35,7 @@
 </dl>
 <p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
 <h3>Arguments and options</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -56,30 +47,25 @@
 </thead>
 <tbody>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>output</code>
 <br>
-<code>--output</code>
-</td>
-<td>optional; option; None value(s) per use</td>
-<td>
-<code>Path</code>
-</td>
-<td>not recorded</td>
+<code>--output</code></td>
+<td data-label="Invocation">optional; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>Path</code></td>
+<td data-label="Default and environment">not recorded</td>
 </tr>
 <tr>
-<td>
+<td data-label="Parameter and spelling">
 <code>compact</code>
 <br>
-<code>--compact</code>
-</td>
-<td>optional; option; 0 value(s) per use</td>
-<td>
-<code>not recorded</code>
-</td>
-<td>
-<code>false</code>
-</td>
+<code>--compact</code></td>
+<td data-label="Invocation">optional; option; 0 value(s) per use</td>
+<td data-label="Type and constraints">
+<code>not recorded</code></td>
+<td data-label="Default and environment">
+<code>false</code></td>
 </tr>
 </tbody>
 </table>
@@ -104,7 +90,7 @@
 </dd>
 </dl>
 <h4>Success outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -117,38 +103,28 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>emitted</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>option-absent</code>; parameter: <code>output</code>
-</td>
-<td>json: authority: <code>generated:stove0-observer</code>; kind: <code>document-authority</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>emitted</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>option-absent</code>; parameter: <code>output</code></td>
+<td data-label="stdout">json: authority: <code>generated:stove0-observer</code>; kind: <code>document-authority</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 <tr>
-<td>
-<code>written</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>kind: <code>option-present</code>; parameter: <code>output</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>empty</code>
-</td>
+<td data-label="Outcome">
+<code>written</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>option-present</code>; parameter: <code>output</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h4>Failure outcomes</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -161,24 +137,19 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>usage</code>
-</td>
-<td>
-<code>2</code>
-</td>
-<td>kind: <code>parser-rejected-invocation</code>
-</td>
-<td>all: <code>empty</code>
-</td>
-<td>all: <code>noncontractual-usage-diagnostic</code>
-</td>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 <h3>Terminating controls</h3>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -191,21 +162,16 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>help</code>
-</td>
-<td>
-<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
-</td>
-<td>
-<code>0</code>
-</td>
-<td>
-<code>noncontractual-framework-help</code>
-</td>
-<td>
-<code>empty</code>
-</td>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
 </tr>
 </tbody>
 </table>
@@ -252,8 +218,7 @@
 <span id="v-7635390888315c5472e4d7b4">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/0/dest">output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -263,8 +228,7 @@
 <span id="v-2960e15db721b01a9d4ee188">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/0/kind">_StoreAction</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -274,8 +238,7 @@
 <span id="v-109054a071dce663e04cdbae">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/0/nargs">null</code>
 <span class="kind">null</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -292,12 +255,10 @@
 <span id="v-9601ebe16172c8fe96cc8e6c">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/0/options/0">--output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -307,8 +268,7 @@
 <span id="v-628ee10902655d9478dd2db9">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/0/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -318,12 +278,10 @@
 <span id="v-5b701b348316f602ff46f47a">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/0/type">Path</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -340,8 +298,7 @@
 <span id="v-ac0bc865b341b5eed517a332">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/1/default">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -351,8 +308,7 @@
 <span id="v-77bde5981ffea6179cd3d5ac">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/1/dest">compact</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -362,8 +318,7 @@
 <span id="v-f207b3de7464880cbc8a73dd">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/1/kind">_StoreTrueAction</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -373,8 +328,7 @@
 <span id="v-20514af4dee07030d9449af9">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/1/nargs">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -391,12 +345,10 @@
 <span id="v-8712dc755343166ea2d76b5c">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/1/options/0">--compact</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -406,12 +358,10 @@
 <span id="v-fc027f05c0e3a12e9122a9e4">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/parameters/1/required">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -444,8 +394,7 @@
 <span id="v-c2966577a6b8fc482a3c35ec">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/failures/0/exit_status">2</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -455,8 +404,7 @@
 <span id="v-880569c723e3713e33a6ff03">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/failures/0/id">usage</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -473,12 +421,10 @@
 <span id="v-ffc9c6aeb7cb8557c3e87434">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -495,12 +441,10 @@
 <span id="v-af1f40547ef547feee67ebaa">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,20 +461,16 @@
 <span id="v-98720641d1246c3d0482aa50">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/failures/0/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -540,8 +480,7 @@
 <span id="v-402beb7349b0c551dae2747e">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/human_json_relationship">not-applicable</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -551,8 +490,7 @@
 <span id="v-8bb2d8e2ef9931c178666556">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/identity">stove0-observer-schemas-cli-result/root/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -562,8 +500,7 @@
 <span id="v-17bc1df9b8d3a6c90653d843">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/profile_id">stove0-observer-schemas-cli/v1</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -573,8 +510,7 @@
 <span id="v-c8948cfde31a673011651eba">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/structured_output">always-json</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -598,8 +534,7 @@
 <span id="v-942cd6dca7687102483a42f4">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -609,8 +544,7 @@
 <span id="v-aec3abea4184f3ee383ba83f">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/id">emitted</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -627,8 +561,7 @@
 <span id="v-7496705c6e74f51d7f635803">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/selected_by/kind">option-absent</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -638,12 +571,10 @@
 <span id="v-23826dac9fec966d2ea02cd9">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/selected_by/parameter">output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -660,12 +591,10 @@
 <span id="v-7bd32cbd33b707faf2777fdc">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -689,8 +618,7 @@
 <span id="v-d364eece3c16f922f32a9e38">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/stdout/json/authority">generated:stove0-observer</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -700,20 +628,16 @@
 <span id="v-d3b826712c90289cceaae43e">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/0/stdout/json/kind">document-authority</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -730,8 +654,7 @@
 <span id="v-0f78699ef397d583130197cb">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/1/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -741,8 +664,7 @@
 <span id="v-69f512bf20091ce77b72676b">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/1/id">written</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -759,8 +681,7 @@
 <span id="v-7fcf236cfc1cf87061f8aee7">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/1/selected_by/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -770,12 +691,10 @@
 <span id="v-20a86944d28095fc318f04f7">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/1/selected_by/parameter">output</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -792,12 +711,10 @@
 <span id="v-d749bc24333cb3fe7b2056cd">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/1/stderr/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -814,20 +731,16 @@
 <span id="v-3f88898c5d1fd3b78a3e3eb1">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/result_contract/success/1/stdout/all">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -853,8 +766,7 @@
 <span id="v-add6b8f7d1d7d8f23219912d">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/exit_status">0</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -864,8 +776,7 @@
 <span id="v-e9063f5b6c07d98d9e98f0d1">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/id">help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -875,8 +786,7 @@
 <span id="v-091c547c04b9aa5bb2d06881">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/stderr">empty</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -886,8 +796,7 @@
 <span id="v-7cf8444496feebcc0fb4b812">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/stdout">noncontractual-framework-help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -904,8 +813,7 @@
 <span id="v-dfb5b598edb13db14d0cbe36">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/trigger/kind">option-present</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -922,8 +830,7 @@
 <span id="v-1770eb0c71cc6e742ab795b9">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/trigger/options/0">-h</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -933,20 +840,16 @@
 <span id="v-21ad9e75290bfca34c4f9396">
 <code data-value-pointer="/external_contract/cli/stove0-observer-schemas/terminating_controls/0/trigger/options/1">--help</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
 </table>
@@ -958,7 +861,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+<a href="policy-definition-11a2acfae8928808a0f9e3b7.html">compatibility/cli/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -970,7 +873,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
@@ -980,8 +883,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -993,37 +895,34 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/cli/stove0-observer-schemas/parameters/0</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0-observer-schemas/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/cli/stove0-observer-schemas/parameters/1</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>cardinality · values-per-occurrence · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/cli/stove0-observer-schemas/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

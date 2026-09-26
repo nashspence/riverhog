@@ -7,13 +7,16 @@ function apply(){const url=new URL(location.href);
   const requestedAudit=url.searchParams.get('audit');
   root.dataset.audit=(requestedAudit==='1'||
     (requestedAudit===null&&root.dataset.auditDefault==='on'))&&audit&&!audit.disabled?'on':'off';
-  root.dataset.docs=url.searchParams.get('docs')==='1'&&docs&&!docs.disabled?'on':'off';
+  const requestedDocs=url.searchParams.get('docs');
+  root.dataset.docs=(requestedDocs==='1'||
+    (requestedDocs===null&&root.dataset.docsDefault==='on'))&&docs&&!docs.disabled?'on':'off';
   if(audit)audit.checked=root.dataset.audit==='on';
   if(docs)docs.checked=root.dataset.docs==='on';}
 function changed(){const url=new URL(location.href);
   for(const [key,control] of [['audit',audit],['docs',docs]]){
     if(control&&control.checked)url.searchParams.set(key,'1');
-    else if(key==='audit'&&root.dataset.auditDefault==='on')url.searchParams.set(key,'0');
+    else if((key==='audit'&&root.dataset.auditDefault==='on')||
+            (key==='docs'&&root.dataset.docsDefault==='on'))url.searchParams.set(key,'0');
     else url.searchParams.delete(key);
   }
   history.pushState(null,'',url);apply();}

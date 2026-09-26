@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: ProcessingClaimSettleDocument</h1>
 <p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,51 +59,39 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>derivation</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-060d7c6f8cf2949991c64359.html#v-ca215019979116313ba424f0">#/components/schemas/CollectionDerivationDocument</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>derivation</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-060d7c6f8cf2949991c64359.html#v-ca215019979116313ba424f0">#/components/schemas/CollectionDerivationDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>fence</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>fence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-593c65a4f2cb3f97f581a794">outcome</a>
-</td>
-<td>no</td>
-<td>any of: <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a>; <code>null</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-593c65a4f2cb3f97f581a794">outcome</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>output_collection_id</code>
-</td>
-<td>yes</td>
-<td>
-<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>output_collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -123,7 +102,7 @@
 <p class="shape">any of: <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -133,16 +112,14 @@
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>
-<a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a>
-</td>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a></td>
 </tr>
 <tr>
-<td>2</td>
-<td>
-<code>null</code>
-</td>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -165,8 +142,7 @@
 <span id="v-aa276b43d8175aae6eae0840">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -190,12 +166,10 @@
 <span id="v-c1b8de7ac9faa21e8ab76923">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/properties/derivation/$ref">#/components/schemas/CollectionDerivationDocument</code>
 <span class="kind">string</span> <a href="e-060d7c6f8cf2949991c64359.html#v-ca215019979116313ba424f0">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -212,8 +186,7 @@
 <span id="v-022136bdb6c447faf8cc9d43">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/properties/fence/$ref">#/components/schemas/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -223,12 +196,10 @@
 <span id="v-96d9a60ea43ade3d3ed12765">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/properties/fence/ge">1</code>
 <span class="kind">number</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -259,12 +230,10 @@
 <span id="v-3666da1c37a580a1f8300a21">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/properties/outcome/anyOf/0/$ref">#/components/schemas/ProcessingOutcomeBindingDocument</code>
 <span class="kind">string</span> <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -281,20 +250,16 @@
 <span id="v-e6ff9554667d5da70ae5f661">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/properties/outcome/anyOf/1/type">null</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -311,16 +276,13 @@
 <span id="v-3dd26f34489472a2252161d4">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/properties/output_collection_id/$ref">#/components/schemas/CollectionId</code>
 <span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -337,8 +299,7 @@
 <span id="v-3611b58a5ae36af2a2f835cd">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/required/0">fence</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -348,8 +309,7 @@
 <span id="v-2437a8bbc8680480cf50a435">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/required/1">output_collection_id</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -359,12 +319,10 @@
 <span id="v-64cb119dc9a0b9a70aeb6e77">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/required/2">derivation</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -374,8 +332,7 @@
 <span id="v-c084ae42f800155c984b14a3">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/title">ProcessingClaimSettleDocument</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -385,8 +342,7 @@
 <span id="v-7cefd7d377ec18168402d6ff">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -398,7 +354,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -410,7 +366,7 @@
 <a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -421,9 +377,12 @@
 </ul>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>

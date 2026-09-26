@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,17 +14,8 @@
 <p>
 <a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
-<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
-<label class="mode">
-<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
-<p class="audit-cue">
-<a href="audit-key.html">Audit key and 📦 meaning</a>
-</p>
-<noscript>
-<p>Contract-only reading remains available without JavaScript.</p>
-</noscript>
 </header>
 <h1>schemas: SchedulerWorkBatch</h1>
 <p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
@@ -55,7 +46,7 @@
 </dd>
 </dl>
 <h4>Fields</h4>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -68,64 +59,49 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>cursor</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>cursor</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-d6d47a1ee9053dbf0ee301ee">failures</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <a href="e-5d29d6b6758ba600b41f9882.html#v-b7d5d741d5c07e496c9eef4c">#/components/schemas/SchedulerFailure</a>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-d6d47a1ee9053dbf0ee301ee">failures</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-5d29d6b6758ba600b41f9882.html#v-b7d5d741d5c07e496c9eef4c">#/components/schemas/SchedulerFailure</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>next_cursor</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>next_cursor</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<a href="#s-66986d978d4ba26d66f9330b">progressed</a>
-</td>
-<td>yes</td>
-<td>
-<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<a href="#s-66986d978d4ba26d66f9330b">progressed</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
-<td>
-<code>role</code>
-</td>
-<td>yes</td>
-<td>
-<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code>
-</td>
-<td>not declared</td>
-<td>
-</td>
+<td data-label="Field">
+<code>role</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
 </tr>
 </tbody>
 </table>
@@ -180,8 +156,7 @@
 <span id="v-b1faad51778560c85cd4dfb9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/additionalProperties">false</code>
 <span class="kind">boolean</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -205,8 +180,7 @@
 <span id="v-0c3f0adc08e49610d594076f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/cursor/title">Cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -216,12 +190,10 @@
 <span id="v-c7f78e3c327372c7241ee3d1">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/cursor/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -245,12 +217,10 @@
 <span id="v-960e48b9058df0ca84428d81">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures/items/$ref">#/components/schemas/SchedulerFailure</code>
 <span class="kind">string</span> <a href="e-5d29d6b6758ba600b41f9882.html#v-b7d5d741d5c07e496c9eef4c">Definition</a>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -260,8 +230,7 @@
 <span id="v-e5dcf3a6d892fb8c5b4856b0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures/title">Failures</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -271,12 +240,10 @@
 <span id="v-b6228cc8d43be816de22b5e4">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -293,8 +260,7 @@
 <span id="v-ab1a47c48638ca9bde95a34a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/next_cursor/title">Next Cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -304,12 +270,10 @@
 <span id="v-48dcec15ca02a08dc8d1703f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/next_cursor/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -333,8 +297,7 @@
 <span id="v-41b22b4c1d6a719f222d5b0d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -344,12 +307,10 @@
 <span id="v-67a4b781a24c30755bd5faf8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -359,8 +320,7 @@
 <span id="v-fb9b6c40a1fea633045fa7d3">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/title">Progressed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -370,12 +330,10 @@
 <span id="v-02dfa00ffa6306aea4d7d65d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/type">array</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -399,8 +357,7 @@
 <span id="v-d214224a30012b2dda56ce9a">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/enum/0">controller</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -410,8 +367,7 @@
 <span id="v-7c1cf0c3e0b33908098644a8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/enum/1">worker</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -421,12 +377,10 @@
 <span id="v-922d6c042ccdceaa3a808b1f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/enum/2">combined</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -436,8 +390,7 @@
 <span id="v-ad501044b81b4e2491c3dbd9">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/title">Role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -447,16 +400,13 @@
 <span id="v-eb4f9b81716895e9c1b29e00">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/type">string</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -473,8 +423,7 @@
 <span id="v-38995c383046d1575147a900">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/0">role</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -484,8 +433,7 @@
 <span id="v-163bb51f3123cc3b5449c1f7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/1">cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -495,8 +443,7 @@
 <span id="v-3c2202c0399fcc4b9433653d">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/2">next_cursor</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -506,8 +453,7 @@
 <span id="v-1fca76522c3ae9cc06ede94b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/3">progressed</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -517,12 +463,10 @@
 <span id="v-51c2d44c212842658f6e58a8">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/4">failures</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
-</table>
-</td>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -532,8 +476,7 @@
 <span id="v-722e47111c1edebe12c6224f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/title">SchedulerWorkBatch</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 <tr>
 <th scope="row">
@@ -543,8 +486,7 @@
 <span id="v-264d2157f8b8cd2e62011974">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/type">object</code>
 <span class="kind">string</span>
-</span>
-</td>
+</span></td>
 </tr>
 </tbody>
 </table>
@@ -556,7 +498,7 @@
 <h3>Governing policies</h3>
 <ul>
 <li>
-<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+<a href="policy-definition-9e2eb4b18cddd83e76e7e791.html">compatibility/http-api/v1</a>
 </li>
 </ul>
 <h3>Source associations</h3>
@@ -568,7 +510,7 @@
 <a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
-<h3>Candidate validation routes, not execution results</h3>
+<h3>Qualification routes</h3>
 <ul>
 <li>
 <a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
@@ -578,8 +520,7 @@
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
-<p>These records index source constraints; they do not add limits or progression promises.</p>
-<div class="table-scroll">
+<div class="record-collection">
 <table>
 <thead>
 <tr>
@@ -591,49 +532,43 @@
 </thead>
 <tbody>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items</code>
-</td>
-<td>
-<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
-</td>
-<td>length · characters · fixed</td>
-<td>
-<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items</code></td>
+<td data-label="Governing rule">
+<a href="policy-definition-6b20b7da6a50de6d4b7f5291.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
-<td>
-<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed</code>
-</td>
-<td>
-<code>no-semantic-maximum/v1</code>
-</td>
-<td>cardinality · items · operational_policy</td>
-<td>
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
-</td>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </aside>
 <footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
 </p>
+</details>
 </footer>
 </main>
 </body>
