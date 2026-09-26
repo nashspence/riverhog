@@ -20,9 +20,8 @@ from riverhog_age import (
     decrypt_age_scrypt,
     encrypt_age_scrypt,
     iter_decrypt_age_scrypt,
-    parse_scrypt_header,
-    parse_scrypt_header_from_age_file,
 )
+from riverhog_age.resumable_age import parse_scrypt_header, parse_scrypt_header_from_age_file
 
 PASS = b"correct horse battery staple"
 FAST_LOG_N = 14
