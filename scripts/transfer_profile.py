@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-import json
+import math
 import os
 import re
 import subprocess
@@ -15,9 +15,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from uuid import uuid4
 
+from riverhog_canonical_json import canonical_json_bytes
+
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from scripts import performance_objectives as performance
+from scripts import performance_measurement as performance
 
 MIB = 1024 * 1024
 
@@ -50,8 +52,6 @@ SCENARIO_OPERATIONS: Mapping[str, frozenset[str]] = {
 }
 NETWORK_SCENARIOS = frozenset(SCENARIO_OPERATIONS) - {"a-riverhog-recovery-tool"}
 WORKLOADS = ("large-file", "many-small-files", "resume")
-if NETWORK_SCENARIOS != performance.NETWORK_SCENARIOS or set(WORKLOADS) != performance.WORKLOADS:
-    raise RuntimeError("performance objective scope differs from transfer profiler scope")
 _FIELD_RE = re.compile(r"([a-z_]+)=([^ ]+)")
 
 
@@ -69,6 +69,16 @@ def _positive_int(value: str) -> int:
     parsed = int(value)
     if parsed <= 0:
         raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
+
+
+def _positive_ratio(value: str) -> float:
+    try:
+        parsed = float(value)
+    except (ValueError, OverflowError) as exc:
+        raise argparse.ArgumentTypeError("must be a positive finite ratio") from exc
+    if not math.isfinite(parsed) or parsed <= 0:
+        raise argparse.ArgumentTypeError("must be a positive finite ratio")
     return parsed
 
 
@@ -133,8 +143,8 @@ def _parser() -> argparse.ArgumentParser:
         epilog=(
             "For comparable goodput, supply --context and a measured --reference. The command "
             "receives RIVERHOG_PERFORMANCE_RUN_ID and RIVERHOG_PERFORMANCE_RECEIPT; a successful "
-            "exit without an exact verified-completion receipt remains an observation. See the "
-            "generated Performance accounting view in the repository Context links."
+            "exit without an exact verified-completion receipt remains an observation. "
+            "A target or comparison is report-only."
         ),
     )
     parser.add_argument("--scenario", choices=sorted(SCENARIO_OPERATIONS), required=True)
@@ -149,7 +159,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--reference",
         type=Path,
-        help="another measured matching v2 profile; nominal capacity is not a reference",
+        help="another measured matching v3 profile; nominal capacity is not a reference",
+    )
+    parser.add_argument(
+        "--target-ratio",
+        type=_positive_ratio,
+        help="optional report-only fraction of the measured reference rate",
     )
     parser.add_argument(
         "--transfer-log",
@@ -170,10 +185,6 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         command.pop(0)
     if not command:
         parser.error("a command is required after --")
-    if args.reference is not None and args.context is None:
-        parser.error("--reference requires --context")
-    if args.scenario not in NETWORK_SCENARIOS and args.reference is not None:
-        parser.error("recovery profiles have no registered goodput objective")
     expected = SCENARIO_OPERATIONS[args.scenario]
     if args.transfer_log is not None and not expected:
         parser.error("a-riverhog-recovery-tool has no server transfer log")
@@ -190,14 +201,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             if args.context is not None
             else None
         )
-        reference = None
+        if context is not None and context["byte_domain"] != "logical-payload":
+            raise performance.PerformanceError("transfer comparison requires logical payload bytes")
+        reference: Mapping[str, object] | None = None
+        unavailable_reason = "no-measured-reference"
         if args.reference is not None:
-            prior = performance.read_json(args.reference)
-            if prior.get("format") != "riverhog-transfer-profile/v2":
-                raise performance.PerformanceError(
-                    "reference is not a measured v2 transfer profile"
-                )
-            reference = prior["sample"]
+            try:
+                prior = performance.read_json(args.reference)
+                if prior.get("format") != "riverhog-transfer-profile/v3" or not isinstance(
+                    prior.get("sample"), Mapping
+                ):
+                    unavailable_reason = "incompatible-reference-format"
+                else:
+                    reference = prior["sample"]
+            except performance.PerformanceError:
+                unavailable_reason = "reference-unavailable-or-invalid"
         run_id = str(uuid4())
         with tempfile.TemporaryDirectory(prefix="riverhog-performance-") as temporary:
             receipt_path = Path(temporary) / "completion.json"
@@ -205,72 +223,153 @@ def main(argv: Sequence[str] | None = None) -> int:
             environment["RIVERHOG_PERFORMANCE_RUN_ID"] = run_id
             environment["RIVERHOG_PERFORMANCE_RECEIPT"] = str(receipt_path)
             started = time.perf_counter()
-            completed = subprocess.run(
-                command,
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                env=environment,
-            )
+            try:
+                completed = subprocess.run(
+                    command,
+                    check=False,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    env=environment,
+                )
+            except OSError:
+                completed = None
             elapsed = time.perf_counter() - started
-            if completed.returncode:
-                return (
-                    completed.returncode if completed.returncode > 0 else 128 - completed.returncode
-                )
             verified = False
-            if receipt_path.exists():
-                receipt = performance.read_json(receipt_path)
-                if (
-                    set(receipt)
-                    != {"format", "run_id", "completed_bytes", "completed_items", "verified"}
-                    or receipt["format"] != "riverhog-performance-completion/v1"
-                    or receipt["run_id"] != run_id
-                    or type(receipt["completed_bytes"]) is not int
-                    or receipt["completed_bytes"] != args.payload_bytes
-                    or type(receipt["completed_items"]) is not int
-                    or receipt["completed_items"] != args.items
-                    or receipt["verified"] is not True
-                ):
-                    raise performance.PerformanceError(
-                        "completion receipt is not exact and verified"
+            receipt_state = "not-written"
+            if completed is not None and completed.returncode == 0 and receipt_path.exists():
+                try:
+                    receipt = performance.read_json(receipt_path)
+                    verified = (
+                        set(receipt)
+                        == {"format", "run_id", "completed_bytes", "completed_items", "verified"}
+                        and receipt["format"] == "riverhog-performance-completion/v1"
+                        and receipt["run_id"] == run_id
+                        and type(receipt["completed_bytes"]) is int
+                        and receipt["completed_bytes"] == args.payload_bytes
+                        and type(receipt["completed_items"]) is int
+                        and receipt["completed_items"] == args.items
+                        and receipt["verified"] is True
                     )
-                verified = True
-        measured = performance.sample(
-            objective_id="transfer-goodput" if args.scenario in NETWORK_SCENARIOS else None,
-            scenario=args.scenario,
-            workload=args.workload,
-            context=context,
-            completed_bytes=args.payload_bytes,
-            elapsed_seconds=elapsed,
-            completion_verified=verified,
-            run_id=run_id,
-        )
-        log_summary = (
-            asdict(
-                summarize_transfer_log(
-                    args.transfer_log.read_text(encoding="utf-8"),
-                    expected_operations=SCENARIO_OPERATIONS[args.scenario],
-                )
+                except performance.PerformanceError:
+                    verified = False
+                receipt_state = "verified" if verified else "invalid"
+        target = {
+            "scenario": args.scenario,
+            "workload": args.workload,
+            "payload_bytes": args.payload_bytes,
+            "items": args.items,
+            "reference_ratio": args.target_ratio,
+        }
+        if completed is None or completed.returncode != 0:
+            print(
+                canonical_json_bytes(
+                    {
+                        "format": "riverhog-transfer-profile/v3",
+                        "target": target,
+                        "observed": {
+                            "command_exit_code": (
+                                completed.returncode if completed is not None else None
+                            ),
+                            "elapsed_seconds": elapsed,
+                            "completion_verified": False,
+                            "launch_state": "launched" if completed is not None else "failed",
+                        },
+                        "sample": None,
+                        "comparison": {
+                            "status": "not-compared",
+                            "reason": (
+                                "command-failed"
+                                if completed is not None
+                                else "command-launch-failed"
+                            ),
+                            "report_only": True,
+                        },
+                    }
+                ).decode(),
+                flush=True,
             )
-            if args.transfer_log is not None
-            else None
-        )
+            return 0
+        try:
+            measured = performance.sample(
+                scenario=args.scenario,
+                workload=args.workload,
+                context=context,
+                completed_bytes=args.payload_bytes,
+                elapsed_seconds=elapsed,
+                completion_verified=verified,
+                run_id=run_id,
+            )
+        except (performance.PerformanceError, OverflowError, ZeroDivisionError):
+            print(
+                canonical_json_bytes(
+                    {
+                        "format": "riverhog-transfer-profile/v3",
+                        "target": target,
+                        "observed": {
+                            "command_exit_code": 0,
+                            "elapsed_seconds": elapsed,
+                            "completion_verified": verified,
+                            "receipt_state": receipt_state,
+                            "measurement_state": "unavailable",
+                        },
+                        "sample": None,
+                        "comparison": {
+                            "status": "not-compared",
+                            "reason": "measurement-unavailable",
+                            "report_only": True,
+                        },
+                    }
+                ).decode(),
+                flush=True,
+            )
+            return 0
+        log_summary = None
+        log_state = "not-supplied"
+        if args.transfer_log is not None:
+            try:
+                log_summary = asdict(
+                    summarize_transfer_log(
+                        args.transfer_log.read_text(encoding="utf-8"),
+                        expected_operations=SCENARIO_OPERATIONS[args.scenario],
+                    )
+                )
+            except (OSError, UnicodeError, ValueError):
+                log_state = "unavailable-or-incomplete"
+            else:
+                log_state = "summarized"
         result = {
-            "format": "riverhog-transfer-profile/v2",
+            "format": "riverhog-transfer-profile/v3",
+            "target": target,
+            "observed": {
+                "command_exit_code": 0,
+                "elapsed_seconds": elapsed,
+                "completion_verified": verified,
+                "receipt_state": receipt_state,
+            },
             "sample": measured,
-            "evaluation": performance.evaluate_sample(measured, reference),
+            "comparison": performance.compare_sample(
+                measured,
+                reference if args.scenario in NETWORK_SCENARIOS else None,
+                target_ratio=args.target_ratio,
+                unavailable_reason=(
+                    "scenario-has-no-reference"
+                    if args.scenario not in NETWORK_SCENARIOS
+                    else unavailable_reason
+                ),
+            ),
             "rate_basis": "receipt-verified" if verified else "declared-workload-unverified",
             "mib_per_second": args.payload_bytes / elapsed / MIB,
             "items": args.items,
             "items_per_second": round(args.items / elapsed, 3),
             "seconds_per_item": round(elapsed / args.items, 6),
             "transfer_log": log_summary,
+            "transfer_log_state": log_state,
             "transfer_log_scope": (
                 "diagnostic segment and phase totals; not unique end-to-end goodput"
             ),
         }
-        print(json.dumps(result, sort_keys=True, allow_nan=False), flush=True)
-        return 0  # An objective miss is only a report.
+        print(canonical_json_bytes(result).decode(), flush=True)
+        return 0
     except (OSError, ValueError, KeyError, TypeError):
         # Never echo the command, log, environment, or potentially private input paths.
         print("transfer profile failed: invalid measurement input or execution", file=sys.stderr)

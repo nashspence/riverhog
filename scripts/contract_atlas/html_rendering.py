@@ -6,7 +6,7 @@ import hashlib
 import html
 import posixpath
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from html.parser import HTMLParser
 from pathlib import PurePosixPath
@@ -15,7 +15,7 @@ from urllib.parse import quote, urlsplit
 
 from .human_contract import command_path, inventory_fact, render_human
 from .model import INTERFACE_REGISTRY, ContractAtlasError, canonical_bytes, canonical_sha256
-from .records import validate_audit_record, validate_closure
+from .records import AUDIT_PRESENTATION, validate_audit_record, validate_closure
 
 DIRECTORY = "riverhog-v1"
 _REVISION = re.compile(r"[0-9a-f]{40}\Z")
@@ -27,34 +27,55 @@ h1{font-size:1.75rem;overflow-wrap:anywhere}h2{font-size:1.3rem;margin-top:1.5em
 a{color:#174e72;text-underline-offset:3px}
 a:focus-visible,input:focus-visible,summary:focus-visible{
   outline:3px solid #174e72;outline-offset:3px}
-table{border-collapse:collapse;width:100%;margin:12px 0 20px}
-th,td{border-bottom:1px solid #ddd;text-align:left;vertical-align:top;
-  padding:7px 10px;overflow-wrap:anywhere}
-th{background:#f5f5f5;font-size:.9rem}
-.table-scroll{max-width:100%;overflow-x:auto}.table-scroll table{min-width:580px}
+table{display:block;border-collapse:collapse;width:100%;margin:12px 0 20px}
+table tbody{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px}
+table thead{display:none}
+table tr{display:block;min-width:0;border:1px solid #d8dfe3;border-radius:5px;padding:8px 10px}
+table tr.module{grid-column:1/-1;border:0;border-radius:0;margin-top:10px;padding:0}
+table tr.member{margin-left:14px;width:calc(100% - 14px);border-left:3px solid #b7ccd7}
+table th,table td{display:block;border:0;text-align:left;vertical-align:top;
+  padding:2px 0;overflow-wrap:anywhere}
+table td:empty{display:none}
+table td[data-label]:before{content:attr(data-label) ": ";font-weight:600}
+.selection-table td:first-child:before,.inventory-table td[data-label]:before{content:none}
+.selection-table td:first-child{font-weight:600}
+.record-collection{max-width:100%}
+.selection-list{padding-left:24px}.selection-list li{margin:5px 0}
 table table{font-size:.9rem;margin:2px 0 8px}
 code{font:.9em/1.5 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
 .literal-prose{font:inherit}.kind,.meta{color:#555;font-size:.82rem}.kind{display:block}
-.member td:first-child{padding-left:30px}.mode{display:none;margin-right:1em}
+.mode{display:none;margin-right:1em}
 html[data-js=yes] .mode{display:inline-block}
 .audit,.documentation,.audit-cue,.docs-cue{display:none}
 html[data-audit=on] .audit{display:block}html[data-audit=on] .audit-cue{display:inline}
 html[data-docs=on] .documentation{display:block}html[data-docs=on] .docs-cue{display:inline}
 .audit,.documentation{border-left:3px solid #89969f;padding:4px 18px;margin:28px 0}
 .documentation{border-left-color:#6e8c71}details{margin:12px 0}summary{cursor:pointer}
+.audit-references,.documentation-references{border:0;padding:0;margin:4px 0}
+.references{margin:5px 0}.references summary{font-size:.9rem;color:#4a4a4a}
+.references ul{margin:5px 0 8px}
+.contract-references{font-size:.9rem;margin:8px 0}
 .audit-marker{font-size:1.1em;margin-left:.25em}.lead{font-size:1.08rem}
 .facts{display:grid;grid-template-columns:minmax(140px,220px) minmax(0,1fr);gap:3px 16px}
 .facts dt{font-weight:600}.facts dd{margin:0 0 8px}
 .schema-section{border-top:1px solid #ddd;margin-top:18px;padding-top:10px}
 .shape{color:#343d43}.exact{border-top:1px solid #ddd;padding-top:10px;margin-top:30px}
-.exact summary{font-weight:600}.authorities>li{margin:0 0 14px}
+.exact summary{font-weight:600}
+.authority-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:12px;margin:14px 0}
+.authority-card{border:1px solid #d8dfe3;border-radius:5px;padding:12px;min-width:0}
+.authority-card h3{margin:0}.authority-card p{margin:4px 0 10px}
+.authority-interface{padding:2px 0}
 .command-tree,.command-tree ul{list-style:none;padding-left:20px}
 .command-tree li{border-left:2px solid #d6dfe4;padding-left:10px;margin:5px 0}
 .context{color:#4a4a4a}.comparison-promise{font:inherit}
 footer{border-top:1px solid #ddd;margin-top:32px;padding-top:16px;font-size:.83rem}
 @media(max-width:700px){main{padding:18px 12px 40px}html{font-size:15px}
-  th,td{padding:7px 5px}h1{font-size:1.5rem}.facts{grid-template-columns:1fr;gap:0}
-  .facts dd{margin-bottom:12px}}
+  h1{font-size:1.5rem}.facts{grid-template-columns:1fr;gap:0}
+  .facts dd{margin-bottom:12px}
+  .authority-cards{grid-template-columns:1fr}
+  table tbody{grid-template-columns:1fr}
+}
 @media print{.mode{display:none!important}main{max-width:none;padding:0}}
 """
 _MODES = """'use strict';
@@ -66,13 +87,16 @@ function apply(){const url=new URL(location.href);
   const requestedAudit=url.searchParams.get('audit');
   root.dataset.audit=(requestedAudit==='1'||
     (requestedAudit===null&&root.dataset.auditDefault==='on'))&&audit&&!audit.disabled?'on':'off';
-  root.dataset.docs=url.searchParams.get('docs')==='1'&&docs&&!docs.disabled?'on':'off';
+  const requestedDocs=url.searchParams.get('docs');
+  root.dataset.docs=(requestedDocs==='1'||
+    (requestedDocs===null&&root.dataset.docsDefault==='on'))&&docs&&!docs.disabled?'on':'off';
   if(audit)audit.checked=root.dataset.audit==='on';
   if(docs)docs.checked=root.dataset.docs==='on';}
 function changed(){const url=new URL(location.href);
   for(const [key,control] of [['audit',audit],['docs',docs]]){
     if(control&&control.checked)url.searchParams.set(key,'1');
-    else if(key==='audit'&&root.dataset.auditDefault==='on')url.searchParams.set(key,'0');
+    else if((key==='audit'&&root.dataset.auditDefault==='on')||
+            (key==='docs'&&root.dataset.docsDefault==='on'))url.searchParams.set(key,'0');
     else url.searchParams.delete(key);
   }
   history.pushState(null,'',url);apply();}
@@ -128,6 +152,31 @@ def _element_file(identity: str) -> str:
 
 def _inventory_file(authority: str, interface: str) -> str:
     return f"i-{_hash(authority + chr(0) + interface)}.html"
+
+
+def _selection_identity(
+    authority: str, interface: str, title: str, pointer: str, value: object
+) -> str:
+    """Use the shortest identity derivable within an authority and interface."""
+
+    if interface == "python" and isinstance(value, Mapping):
+        if value.get("unit") == "member" and isinstance(value.get("name"), str):
+            return str(value["name"])
+        prefix = str(value.get("module", "")) + "."
+        if title.startswith(prefix):
+            return title[len(prefix) :]
+    if interface == "http-schemas":
+        return _parts(pointer)[-1]
+    if interface == "durable-state" and isinstance(value, Mapping):
+        name = value.get("name")
+        if isinstance(name, str):
+            return name
+    for prefix in (authority + ":configuration:", authority + ": ", "schemas: "):
+        if title.startswith(prefix):
+            return title[len(prefix) :]
+    if interface == "process-protocol-schemas" and ": " in title:
+        return title.rsplit(": ", 1)[-1]
+    return title
 
 
 def _authority_file(authority: str) -> str:
@@ -419,12 +468,8 @@ def _source_locations_html(source: Mapping[str, object], revision: str | None) -
     return "<br>".join(dict.fromkeys(locations)) or f"<code>{_esc(source['id'])}</code>"
 
 
-def _policy_anchor(identity: str) -> str:
-    return "policy-" + _hash(identity)
-
-
-def _policy_definition_anchor(pointer: str) -> str:
-    return "definition-" + _hash(pointer)
+def _policy_definition_file(pointer: str) -> str:
+    return "policy-definition-" + _hash(pointer) + ".html"
 
 
 def _source_anchor(identity: str) -> str:
@@ -481,7 +526,7 @@ def _audit_panel(
             )["rules"],
         )
         rule_display = (
-            _link("policies.html#" + _policy_definition_anchor(rule_pointer), rule_id)
+            _link(_policy_definition_file(rule_pointer), rule_id)
             if str(decision["rule"]) in normative_rules
             else f"<code>{_esc(decision['rule'])}</code>"
         )
@@ -504,10 +549,7 @@ def _audit_panel(
     body = '<aside class="audit" id="audit"><h2>Audit context · noncontractual</h2>'
     if extent_groups:
         body += (
-            "<h3>Open extent qualification</h3><p>This subject is within the recorded "
-            "scope of the following extent evidence gap. The linked group explains the "
-            "limitation before candidate tests and identifies every affected subject. "
-            "A group association is not an observed failure of this element.</p><ul>"
+            "<h3>Open extent qualification</h3><ul>"
             + "".join(
                 f"<li>{_link(_qualification_file(identity), identity)}</li>"
                 for identity in extent_groups
@@ -516,10 +558,17 @@ def _audit_panel(
         )
     policy_ids = cast(Sequence[str], overlay["policy_ids"])
     if policy_ids:
+        policy_definitions = {
+            str(record["id"]): str(record["definition_pointer"])
+            for records in cast(
+                Mapping[str, Sequence[Mapping[str, object]]], audit["policies"]
+            ).values()
+            for record in records
+        }
         body += (
             "<h3>Governing policies</h3><ul>"
             + "".join(
-                f"<li>{_link('policies.html#' + _policy_anchor(identity), identity)}</li>"
+                f"<li>{_link(_policy_definition_file(policy_definitions[identity]), identity)}</li>"
                 for identity in policy_ids
             )
             + "</ul>"
@@ -527,17 +576,13 @@ def _audit_panel(
     body += (
         "<h3>Source associations</h3><ul>"
         + source_items
-        + "</ul><h3>Candidate validation routes, not execution results</h3><ul>"
+        + "</ul><h3>Qualification routes</h3><ul>"
         + routes
         + "</ul>"
     )
     if decision_rows:
-        body += (
-            "<h3>Generated extent analysis</h3><p>These records index source constraints; "
-            "they do not add limits or progression promises.</p>"
-            + _table_html(
-                ("Exact subject", "Governing rule", "Decision", "Bounds or reason"), decision_rows
-            )
+        body += "<h3>Generated extent analysis</h3>" + _table_html(
+            ("Exact subject", "Governing rule", "Decision", "Bounds or reason"), decision_rows
         )
     if element["interface"] == "configuration-environment":
         configuration_rows = []
@@ -562,12 +607,8 @@ def _audit_panel(
                     )
                 )
         if configuration_rows:
-            body += (
-                "<h3>Configuration authority and bindings</h3><p>These are discovered "
-                "declaration and consumer facts, not observed effective configuration.</p>"
-                + _table_html(
-                    ("Kind", "Consumer", "Source", "Authority or expression"), configuration_rows
-                )
+            body += "<h3>Configuration authority and bindings</h3>" + _table_html(
+                ("Kind", "Consumer", "Source", "Authority or expression"), configuration_rows
             )
     if element["interface"] == "http-operations":
         pointer = cast(Sequence[str], element["pointers"])[0]
@@ -592,8 +633,6 @@ def _audit_panel(
             if matched:
                 body += (
                     "<details><summary>Structural operation bindings</summary>"
-                    "<p>These bind maintained client, CLI, response authority, and provider "
-                    "routes. They are not executed qualification results.</p>"
                     + _value_html(
                         matched[0],
                         "/audit/operation-qualification/" + _token(str(value["operationId"])),
@@ -677,9 +716,11 @@ def _authority_relationships(
 
 
 def _audit_marker(target: str) -> str:
+    marker = cast(Mapping[str, str], AUDIT_PRESENTATION["extent_marker"])
+    label = f"Open {marker['label'].lower()} qualification"
     return (
         '<span class="audit-cue"> ' + f'<a class="audit-marker" href="{_esc(target)}" '
-        'aria-label="Open extent qualification" title="Open extent qualification">📦</a></span>'
+        f'aria-label="{_esc(label)}" title="{_esc(label)}">{_esc(marker["glyph"])}</a></span>'
     )
 
 
@@ -727,11 +768,7 @@ def _audit_scope(groups: Sequence[str], *, label: str, count: int) -> str:
     )
     return (
         '<aside class="audit" id="audit-scope"><h2>Open extent qualifications in this scope</h2>'
-        f"<p>{count} declared contract subjects in {_esc(label)} are within the listed extent "
-        "evidence gaps. A group can cover several subjects; these are not separate observed "
-        "runtime failures. Follow the 📦 markers for the affected children.</p><ul>"
-        + links
-        + "</ul><p>An unmarked entry has no approval implied.</p></aside>"
+        f"<p>{count} subjects · {_esc(label)}</p><ul>" + links + "</ul></aside>"
     )
 
 
@@ -744,18 +781,6 @@ def _qualification_page(
 ) -> str:
     rule_pointer = str(witness["rule_pointer"])
     rule = _at(closure, rule_pointer)
-    if witness["rule_id"] == "route-progression/v1":
-        limitation = (
-            "End-to-end progression across the declared route group has no recorded execution "
-            "result here. The associated checks are candidates with stated scopes; one-page "
-            "or structural checks do not establish traversal for every listed route."
-        )
-    else:
-        limitation = (
-            "Completion across bounded segments has no recorded execution result for this "
-            "witness group. The associated checks are candidates; this gap does not assert "
-            "that any listed contract fails at runtime."
-        )
     subject_rows = []
     owned = sorted(owners, key=len, reverse=True)
     for pointer in cast(Sequence[str], witness["subject_pointers"]):
@@ -795,15 +820,15 @@ def _qualification_page(
         for route in cast(Sequence[str], witness["gates"])
     )
     rule_link = _link(
-        "policies.html#" + _policy_definition_anchor(rule_pointer),
+        _policy_definition_file(rule_pointer),
         str(witness["rule_id"]),
     )
     return (
         '<section id="audit"><h2>Open extent qualification</h2>'
-        + f'<p class="lead">{_esc(limitation)}</p>'
+        + f'<p class="lead">{_esc(witness["audit_scope"])}</p>'
         + f"<p>Recorded owner: <code>{_esc(witness['owner'])}</code>. "
-        "Association: candidate; executed result: none.</p>"
-        + f"<p>Recorded scope: {_esc(witness['audit_scope'])}</p>"
+        + f"Association: {_esc(witness['association_status'])}; "
+        + f"executed result: {_esc(witness['result_reference'] or 'none')}.</p>"
         + f"<p>Governing declared rule: {rule_link}</p>"
         + _value_html(rule, rule_pointer)
         + "<h3>Exact affected subjects</h3><ul>"
@@ -817,7 +842,7 @@ def _qualification_page(
         + "<h3>Candidate commands</h3><ul>"
         + gate_rows
         + "</ul>"
-        + "<h3>Candidate test associations, not execution results</h3><ul>"
+        + "<h3>Candidate test associations</h3><ul>"
         + test_rows
         + "</ul></section>"
     )
@@ -832,45 +857,37 @@ def _shell(
     documentation: bool,
     breadcrumbs: str = "",
     audit_only: bool = False,
+    documentation_only: bool = False,
 ) -> bytes:
     controls = (
-        '<label class="mode"><input id="audit-mode" type="checkbox"'
-        + ("" if audit else " disabled")
-        + "> Audit Mode</label>"
-        + '<label class="mode"><input id="docs-mode" type="checkbox"'
-        + ("" if documentation else " disabled")
-        + "> Documentation Mode</label>"
-    )
-    status = (
-        '<p class="meta">Generated v1 candidate; no freeze or qualification '
-        "acceptance is claimed.</p>"
-        + ("" if audit else '<p class="meta">Audit Record not supplied.</p>')
+        '<label class="mode"><input id="audit-mode" type="checkbox"> Audit Mode</label>'
+        if audit
+        else ""
+    ) + (
+        '<label class="mode"><input id="docs-mode" type="checkbox"> Documentation Mode</label>'
+        if documentation
+        else ""
     )
     footer = (
-        "<footer>"
+        '<footer><details class="artifact-details"><summary>Exact artifacts</summary>'
         + _link("../riverhog-v1.json", "Exact Contract Closure")
         + (" · " + _link("../riverhog-v1-audit.json", "Bound Audit Record") if audit else "")
         + " · "
         + _link("manifest.json", "Artifact manifest")
-        + f"<p>Closure SHA-256: <code>{closure_sha256}</code></p></footer>"
+        + f"<p>Closure SHA-256: <code>{closure_sha256}</code></p></details></footer>"
     )
     page = (
-        '<!doctype html><html lang="en" data-audit="off" data-docs="off" '
-        + f'data-audit-default="{"on" if audit_only else "off"}">'
+        f'<!doctype html><html lang="en" data-audit="{"on" if audit_only else "off"}" '
+        f'data-docs="{"on" if documentation_only else "off"}" '
+        f'data-audit-default="{"on" if audit_only else "off"}" '
+        f'data-docs-default="{"on" if documentation_only else "off"}">'
         '<head><meta charset="utf-8"><meta name="viewport" '
         'content="width=device-width,initial-scale=1">'
         f"<title>{_esc(title)} · Riverhog Contract Render</title>"
         '<link rel="stylesheet" href="style.css"><script src="modes.js" defer></script></head>'
         "<body><main><header>"
         + breadcrumbs
-        + status
         + controls
-        + (
-            f'<p class="audit-cue">{_link("audit-key.html", "Audit key and 📦 meaning")}</p>'
-            if audit
-            else ""
-        )
-        + "<noscript><p>Contract-only reading remains available without JavaScript.</p></noscript>"
         + "</header>"
         + f"<h1>{_esc(title)}</h1>"
         + body
@@ -879,11 +896,15 @@ def _shell(
     )
     # Checked candidate pages are reviewed in Git. Keep each HTML tag on its
     # own line so a changed contract value produces a bounded source diff.
-    return page.replace("><", ">\n<").replace(">\n</code>", "></code>").encode("utf-8")
+    return (
+        page.replace("><", ">\n<")
+        .replace(">\n</code>", "></code>")
+        .replace(">\n</td>", "></td>")
+        .encode("utf-8")
+    )
 
 
 def _cli_tree(
-    closure: Mapping[str, object],
     members: Sequence[Mapping[str, object]],
     affected: Mapping[str, tuple[str, ...]],
 ) -> str:
@@ -900,11 +921,6 @@ def _cli_tree(
     def branch(path: tuple[str, ...]) -> str:
         element = by_path[path]
         identity = str(element["id"])
-        pointers = cast(Sequence[str], element["pointers"])
-        parameters = next(
-            (pointer for pointer in pointers if pointer.endswith("/parameters")), None
-        )
-        count = len(cast(Sequence[object], _at(closure, parameters))) if parameters else 0
         cue = _audit_marker(_element_file(identity) + "#audit") if affected.get(identity) else ""
         children = sorted(
             candidate
@@ -916,7 +932,6 @@ def _cli_tree(
             f'<li data-element="{_esc(identity)}">'
             + _link(_element_file(identity), path[-1])
             + cue
-            + f' <span class="meta">{count} parameters</span>'
             + nested
             + "</li>"
         )
@@ -931,11 +946,21 @@ def _cli_tree(
     )
 
 
-def _table_html(headers: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
+def _table_html(
+    headers: Sequence[str], rows: Sequence[Sequence[str]], *, selection: bool = False
+) -> str:
     heading = "".join(f'<th scope="col">{_esc(item)}</th>' for item in headers)
-    body = "".join("<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows)
+    body = "".join(
+        "<tr>"
+        + "".join(
+            f'<td data-label="{_esc(headers[index])}">{cell}</td>' for index, cell in enumerate(row)
+        )
+        + "</tr>"
+        for row in rows
+    )
+    table_class = ' class="selection-table"' if selection else ""
     return (
-        '<div class="table-scroll"><table><thead><tr>'
+        f'<div class="record-collection"><table{table_class}><thead><tr>'
         + heading
         + "</tr></thead><tbody>"
         + body
@@ -994,16 +1019,16 @@ def _policy_pages(
             element = elements[str(overlay["id"])]
             for policy_identity in cast(Sequence[str], overlay["policy_ids"]):
                 policy_elements[policy_identity].append(element)
-    sections = []
+    family_links = []
     files: dict[str, bytes] = {}
     for label, base, definitions_by_name in definitions:
-        parts = [f"<h2>{_esc(label)}</h2><ul>"]
+        family_path = "policy-family-" + _hash(base) + ".html"
+        parts = ['<ul class="selection-list">']
         for name, value in sorted(definitions_by_name.items()):
             pointer = base + "/" + _token(str(name))
             owner_id = _owning_element(pointer, owners)
             title = str(name).replace("_", " ")
-            destination = _element_file(owner_id) if owner_id else None
-            heading = _link(destination, title) if destination else _esc(title)
+            definition_path = _policy_definition_file(pointer)
             meaning = (
                 f"<p>{_esc(value)}</p>"
                 if isinstance(value, str)
@@ -1056,8 +1081,7 @@ def _policy_pages(
                         authority_rows.append((_link(child, authority), str(len(items))))
                         files[child] = _shell(
                             f"{policy_id}: {authority}",
-                            '<aside class="audit"><p>Indexed contract elements under this '
-                            "authority; this index is not an executed result.</p>"
+                            '<aside class="audit">'
                             + _table_html(("Contract element", "Owned pointer"), rows_for(items))
                             + "</aside>",
                             digest,
@@ -1081,9 +1105,7 @@ def _policy_pages(
                     )
                 files[path] = _shell(
                     f"Indexed applications: {policy_id}",
-                    '<aside class="audit"><p>These are recorded element applications, '
-                    "not an exhaustive interpretation of policy scope or proof that "
-                    "the policy was exercised.</p><h2>Indexed contract elements</h2>"
+                    '<aside class="audit"><h2>Indexed contract elements</h2>'
                     + indexed
                     + (
                         "<h2>Declared scope pointers</h2>"
@@ -1100,20 +1122,51 @@ def _policy_pages(
                     + _link("index.html", "All authorities")
                     + " / "
                     + _link("policies.html", "Governing policies")
+                    + " / "
+                    + _link(family_path, label)
+                    + " / "
+                    + _link(definition_path, title)
                     + "</p>",
                 )
-            anchor = f' id="{_policy_anchor(str(policy["id"]))}"' if policy is not None else ""
-            definition_anchor = _policy_definition_anchor(pointer)
-            parts.append(
-                f'<li{anchor}><span id="{definition_anchor}"></span>'
-                f"<strong>{heading}</strong>{application}{meaning}</li>"
+            subject = (
+                "<p>Contract subject: "
+                + _link(_element_file(owner_id), str(elements[owner_id]["title"]))
+                + "</p>"
+                if owner_id
+                else ""
             )
+            files[definition_path] = _shell(
+                f"{label}: {title}",
+                "<h2>Definition</h2>" + meaning + subject + application,
+                digest,
+                audit=audit is not None,
+                documentation=documentation,
+                breadcrumbs="<p>"
+                + _link("index.html", "All authorities")
+                + " / "
+                + _link("policies.html", "Governing policies")
+                + " / "
+                + _link(family_path, label)
+                + "</p>",
+            )
+            parts.append(f"<li>{_link(definition_path, title)}</li>")
         parts.append("</ul>")
-        sections.append("".join(parts))
+        files[family_path] = _shell(
+            label,
+            "".join(parts),
+            digest,
+            audit=audit is not None,
+            documentation=documentation,
+            breadcrumbs="<p>"
+            + _link("index.html", "All authorities")
+            + " / "
+            + _link("policies.html", "Governing policies")
+            + "</p>",
+        )
+        family_links.append(f"<li>{_link(family_path, label)} ({len(definitions_by_name)})</li>")
     files["policies.html"] = _shell(
         "Governing policies",
-        "<p>These definitions belong to the current Contract Closure. Audit Mode adds "
-        "recorded application scopes without changing the definitions.</p>" + "".join(sections),
+        '<ul class="selection-list">' + "".join(family_links) + "</ul>",
         digest,
         audit=audit is not None,
         documentation=documentation,
@@ -1150,13 +1203,15 @@ def _audit_reference_pages(
             + "</p>",
         )
 
+    marker = cast(
+        Mapping[str, str],
+        cast(Mapping[str, object], audit["presentation"])["extent_marker"],
+    )
     page(
         "audit-key.html",
         "Audit key",
-        "<h2>Linked audit markers</h2><p><strong>📦 Extent:</strong> this declared branch "
-        "or subject is affected by an open extent qualification/evidence gap. Follow the "
-        "linked marker for its exact scope and human explanation. It is not a severity "
-        "score or an observed runtime bug. An unmarked subject has no approval implied.</p>",
+        f"<p><strong>{_esc(marker['glyph'])} {_esc(marker['label'])}:</strong> "
+        f"{_esc(marker['meaning'])}</p>",
     )
     counts = cast(Mapping[str, object], audit["counts"])
     count_rows = [
@@ -1168,9 +1223,7 @@ def _audit_reference_pages(
     page(
         "accounting.html",
         "Accounting checks",
-        "<p>Discovery and reconciliation account for the current candidate. They do not "
-        "certify its behavior or approval.</p>"
-        + _table_html(("Measure", "Recorded value"), count_rows)
+        _table_html(("Measure", "Recorded value"), count_rows)
         + "<details><summary>Discovery anomalies, accounting, and disposition records</summary>"
         + _value_html(discovery, "/audit/discovery")
         + "</details>"
@@ -1201,16 +1254,13 @@ def _audit_reference_pages(
     page(
         "source-authorities.html",
         "Source authorities",
-        "<p>Each recorded source association routes to its owning declaration. "
-        "The bound Audit Record retains declarations and consumer bindings.</p>"
-        + _table_html(("Source identity", "Applications", "Executable locations"), source_rows),
+        _table_html(("Source identity", "Applications", "Executable locations"), source_rows),
         parent="sources.html",
     )
     page(
         "source-fixtures.html",
         "Source fixtures",
-        "<p>Recorded source fixtures are audit associations, not executed results.</p>"
-        + _table_html(("Source identity", "Fixture", "SHA-256"), fixture_rows),
+        _table_html(("Source identity", "Fixture", "SHA-256"), fixture_rows),
         parent="sources.html",
     )
     route_counts: dict[str, int] = defaultdict(int)
@@ -1244,9 +1294,7 @@ def _audit_reference_pages(
     page(
         "source-commands.html",
         "Candidate qualification routes",
-        "<p>Routes and operation bindings are candidate associations. Their presence does "
-        "not assert execution or complete behavioral coverage.</p>"
-        + _table_html(("Route", "Associated elements", "Candidate witness groups"), route_rows)
+        _table_html(("Route", "Associated elements", "Candidate witness groups"), route_rows)
         + "<h3>Operation qualification bindings</h3>"
         + _table_html(("Application", "Operation", "Classification", "Client"), operation_rows),
         parent="sources.html",
@@ -1271,9 +1319,7 @@ def _audit_reference_pages(
     page(
         "qualifications.html",
         "Recorded qualifications",
-        "<p>📦 identifies only open extent qualifications. Other candidate associations "
-        "below carry no 📦 marker and no executed-result claim.</p>"
-        + _table_html(("Open extent group", "Recorded scope", "Subjects"), qualification_rows)
+        _table_html(("Open extent group", "Recorded scope", "Subjects"), qualification_rows)
         + "<h3>Read authority candidate associations</h3>"
         + _table_html(("Identity", "Recorded limitation", "Subjects"), read_rows),
         parent="sources.html",
@@ -1281,8 +1327,7 @@ def _audit_reference_pages(
     page(
         "sources.html",
         "Sources and qualifications",
-        "<p>Source bindings, candidate tests, and open extent qualifications are "
-        "noncontractual audit records. No executed attestation is implied.</p><ul>"
+        "<ul>"
         + f"<li>{_link('source-authorities.html', 'Source authorities')}</li>"
         + f"<li>{_link('source-commands.html', 'Candidate qualification routes')}</li>"
         + f"<li>{_link('source-fixtures.html', 'Source fixtures')}</li>"
@@ -1312,9 +1357,7 @@ def _audit_reference_pages(
     page(
         "configuration-settings.html",
         "Environment setting comparison",
-        "<p>Recorded owner, consumer, and default-expression facts are discovered source "
-        "facts, not observations of effective configuration.</p>"
-        + _table_html(("Setting", "Owner", "Consumers", "Default expressions"), setting_rows),
+        _table_html(("Setting", "Owner", "Consumers", "Default expressions"), setting_rows),
         parent="configuration.html",
     )
     patterns = cast(Sequence[Mapping[str, object]], registry["patterns"])
@@ -1330,8 +1373,7 @@ def _audit_reference_pages(
     page(
         "configuration-families.html",
         "Parameterized setting families",
-        "<p>Parameterized setting families are discovered from declared parser inputs.</p>"
-        + _table_html(("Owner", "Template", "Consumers", "Settings"), pattern_rows),
+        _table_html(("Owner", "Template", "Consumers", "Settings"), pattern_rows),
         parent="configuration.html",
     )
     document_registry = cast(Mapping[str, object], trace["configuration_document_registry"])
@@ -1356,8 +1398,7 @@ def _audit_reference_pages(
     page(
         "configuration-documents.html",
         "Configuration document comparison",
-        "<p>Declared document owners, consumers, and parser sources.</p>"
-        + _table_html(("Document", "Owner", "Consumers", "Input shape", "Source"), document_rows),
+        _table_html(("Document", "Owner", "Consumers", "Input shape", "Source"), document_rows),
         parent="configuration.html",
     )
     reconciliation = cast(Mapping[str, object], registry["coverage"])
@@ -1369,8 +1410,7 @@ def _audit_reference_pages(
     page(
         "configuration-reconciliation.html",
         "Configuration reconciliation",
-        "<p>Discovery and ownership accounting for this candidate.</p>"
-        + _table_html(("Check", "Recorded result"), reconciliation_rows)
+        _table_html(("Check", "Recorded result"), reconciliation_rows)
         + "<details><summary>Exact registry counts and dispositions</summary>"
         + _value_html(configuration_counts, "/audit/trace/configuration_registry/counts")
         + _value_html(registry["dispositions"], "/audit/trace/configuration_registry/dispositions")
@@ -1380,8 +1420,7 @@ def _audit_reference_pages(
     page(
         "configuration.html",
         "Configuration comparison",
-        "<p>Current settings, parameterized families, and documents are compared by "
-        "their recorded owners and consumers.</p><ul>"
+        "<ul>"
         + f"<li>{_link('configuration-settings.html', 'Environment settings')}</li>"
         + f"<li>{_link('configuration-families.html', 'Parameterized families')}</li>"
         + f"<li>{_link('configuration-documents.html', 'Configuration documents')}</li>"
@@ -1415,7 +1454,7 @@ def _audit_reference_pages(
         group = str(extension["group"])
         node = f"extension-point:{group}"
         owner = str(extension["owner"])
-        nodes[node] = ("extension point", group, owner, f"Entry point owned by {owner}.")
+        nodes[node] = ("extension point", group, owner, "")
         semantic_interfaces[node] = ((owner, "python"),)
         edges.append((f"component:{owner}", "owns extension point", node, ""))
         for provider in cast(Sequence[Mapping[str, object]], extension["providers"]):
@@ -1435,7 +1474,7 @@ def _audit_reference_pages(
             "process protocol",
             name,
             owner,
-            f"Independently deployed protocol owned by {owner}.",
+            "",
         )
         support = str(protocol["binding_support"])
         semantic_interfaces[node] = (
@@ -1480,7 +1519,7 @@ def _audit_reference_pages(
             "installation",
             method,
             "release",
-            "Coordinated end-user installation method.",
+            "",
         )
         edges.append((f"component:{unit['distribution']}", "installed as", node, root))
     if any(source not in nodes or target not in nodes for source, _, target, _ in edges):
@@ -1544,7 +1583,8 @@ def _audit_reference_pages(
         page(
             context_path,
             name,
-            f"<p>{_esc(purpose)}</p><p>Mechanism: {_esc(kind)}. "
+            (f"<p>{_esc(purpose)}</p>" if purpose else "")
+            + f"<p>Mechanism: {_esc(kind)}. "
             + "Owner: "
             + _link(_authority_file(owner), owner)
             + " ("
@@ -1558,7 +1598,7 @@ def _audit_reference_pages(
             + (
                 _table_html(("Provider", "Maintained purpose", "Binding"), provider_rows)
                 if provider_rows
-                else "<p>No supplied implementation is declared.</p>"
+                else ""
             ),
             parent="relationships.html",
         )
@@ -1595,25 +1635,19 @@ def _audit_reference_pages(
     page(
         "relationship-nodes.html",
         "Relationship nodes",
-        "<p>Exact component, image, extension, protocol, and installation nodes derived "
-        "from the declared boundary and release records.</p>"
-        + _table_html(
-            ("Identity", "Kind", "Name", "Role or owner", "Maintained purpose"), node_rows
-        ),
+        _table_html(("Identity", "Kind", "Name", "Role or owner", "Maintained purpose"), node_rows),
         parent="relationships.html",
     )
     page(
         "relationship-edges.html",
         "Relationship edges",
-        "<p>Each edge is a declared dependency, packaging, extension, protocol, or "
-        "installation relationship. Its endpoints link to exact nodes.</p>"
-        + _table_html(("From", "Relationship", "To", "Scope or binding"), edge_rows),
+        _table_html(("From", "Relationship", "To", "Scope or binding"), edge_rows),
         parent="relationships.html",
     )
     page(
         "relationships.html",
         "Declared relationships",
-        "<p>The declared boundary and release records define these joins.</p><ul>"
+        "<ul>"
         + f"<li>{_link('relationship-nodes.html', 'Relationship nodes')} ({len(nodes)})</li>"
         + f"<li>{_link('relationship-edges.html', 'Relationship edges')} ({len(edges)})</li>"
         + "</ul><h2>Extension and process protocol contexts</h2><ul>"
@@ -1633,9 +1667,7 @@ def _audit_reference_pages(
     page(
         "identities.html",
         "Snapshot identities",
-        "<p>These digests distinguish semantic, accounting, trace, and presentation "
-        "identities. They identify this candidate, not its acceptance.</p>"
-        + _table_html(("Identity", "SHA-256"), identity_rows)
+        _table_html(("Identity", "SHA-256"), identity_rows)
         + "<p>"
         + _link("../riverhog-v1.json", "Exact Contract Closure")
         + " · "
@@ -1669,6 +1701,7 @@ def render_contract(
     if source_revision is not None and not _REVISION.fullmatch(source_revision):
         raise ContractAtlasError("source revision must be an exact commit SHA")
     explanations, guides = _documentation(closure, documentation)
+    documentation_available = bool(explanations or guides)
     closure_sha256 = canonical_sha256(closure)
     elements = cast(Sequence[Mapping[str, object]], closure["elements"])
     overlays = (
@@ -1735,15 +1768,21 @@ def render_contract(
                 _audit_marker(inventory_path + "#audit-scope") if interface_groups else ""
             )
             root_interface_links.append(
-                f"<li>{_link(inventory_path, label)}{interface_cue} ({len(members)})</li>"
-            )
-            interface_rows.append(
-                "<tr><td>"
+                '<div class="authority-interface">'
                 + _link(inventory_path, label)
                 + interface_cue
-                + f"</td><td>{len(members)}</td><td>{_esc(purpose)}</td></tr>"
+                + f' <span class="meta">({len(members)})</span></div>'
+            )
+            interface_rows.append(
+                '<tr><td data-label="Interface">'
+                + _link(inventory_path, label)
+                + interface_cue
+                + f'</td><td data-label="Elements">{len(members)}</td>'
+                + f'<td data-label="Purpose">{_esc(purpose)}</td></tr>'
             )
             rows: list[str] = []
+            list_rows: list[str] = []
+            fact_count = 0
             ordered = sorted(
                 members, key=lambda item: (str(item["title"]).casefold(), str(item["id"]))
             )
@@ -1770,6 +1809,32 @@ def render_contract(
                     ordered.extend(
                         sorted(children.get(identity, []), key=lambda item: str(item["title"]))
                     )
+            local_names = {
+                str(item["id"]): _selection_identity(
+                    authority,
+                    interface,
+                    str(item["title"]),
+                    cast(Sequence[str], item["pointers"])[0],
+                    _at(closure, cast(Sequence[str], item["pointers"])[0]),
+                )
+                for item in ordered
+            }
+            name_scopes: dict[str, str] = {}
+            for item in ordered:
+                identity = str(item["id"])
+                if interface == "python":
+                    value = cast(
+                        Mapping[str, object],
+                        _at(closure, cast(Sequence[str], item["pointers"])[0]),
+                    )
+                    name_scopes[identity] = str(
+                        value["owner"] if value.get("unit") == "member" else value["module"]
+                    )
+                else:
+                    name_scopes[identity] = interface
+            name_counts = Counter(
+                (name_scopes[identity], name) for identity, name in local_names.items()
+            )
             current_module: str | None = None
             for element in ordered:
                 identity = str(element["id"])
@@ -1794,27 +1859,35 @@ def render_contract(
                     if affected.get(identity)
                     else ""
                 )
-                name = _link(_element_file(identity), str(element["title"])) + cue
+                short_name = local_names[identity]
+                display_name = (
+                    short_name
+                    if name_counts[(name_scopes[identity], short_name)] == 1
+                    else str(element["title"])
+                )
+                name = _link(_element_file(identity), display_name) + cue
                 if interface == "python":
                     kind = cast(
                         Mapping[str, object], cast(Mapping[str, object], record_value)["contract"]
                     )["kind"]
-                    fact = _literal(kind, pointer + "/contract/kind")
+                    fact = f"<code>{_esc(kind)}</code>"
                 elif interface == "compatibility-guarantees":
-                    fact = _literal(record_value, pointer, prose=True)
+                    fact = f'<span class="comparison-promise">{_esc(record_value)}</span>'
                 elif interface == "cli":
                     fact = ""
                 else:
                     fact = inventory_fact(interface, record_value, pointer)
+                fact_count += bool(fact)
                 member_class = ' class="member"' if is_member else ""
                 rows.append(
                     f'<tr data-element="{_esc(identity)}"{member_class}>'
-                    + "<td>"
+                    + '<td data-label="Element">'
                     + name
-                    + "</td><td>"
+                    + '<td data-label="Recorded fact">'
                     + fact
                     + "</td></tr>"
                 )
+                list_rows.append(f'<li data-element="{_esc(identity)}">{name}</li>')
                 doc_body = ""
                 if identity in explanations:
                     doc_body = (
@@ -1862,7 +1935,7 @@ def render_contract(
                     + doc_body,
                     closure_sha256,
                     audit=audit is not None,
-                    documentation=documentation is not None,
+                    documentation=documentation_available,
                     breadcrumbs=breadcrumbs,
                 )
             heading = (
@@ -1873,9 +1946,13 @@ def render_contract(
                 else "Recorded comparison facts"
             )
             inventory = (
-                _cli_tree(closure, members, affected)
+                _cli_tree(members, affected)
                 if interface == "cli"
-                else '<div class="table-scroll"><table><thead><tr><th>Element</th><th>'
+                else '<ul class="selection-list">' + "".join(list_rows) + "</ul>"
+                if not fact_count
+                else '<div class="record-collection">'
+                '<table class="selection-table inventory-table">'
+                "<thead><tr><th>Element</th><th>"
                 + _esc(heading)
                 + "</th></tr></thead><tbody>"
                 + "".join(rows)
@@ -1891,7 +1968,7 @@ def render_contract(
                 ),
                 closure_sha256,
                 audit=audit is not None,
-                documentation=documentation is not None,
+                documentation=documentation_available,
                 breadcrumbs="<p>"
                 + _link("index.html", "All authorities")
                 + " / "
@@ -1901,7 +1978,8 @@ def render_contract(
         authority_body = (
             f'<p class="lead">{_esc(descriptions[authority])}</p>'
             + _authority_relationships(closure, authority, available_authorities)
-            + '<h2>Interfaces</h2><div class="table-scroll"><table><thead><tr>'
+            + '<h2>Interfaces</h2><div class="record-collection">'
+            '<table class="selection-table"><thead><tr>'
             "<th>Interface</th><th>Elements</th><th>Purpose</th></tr></thead><tbody>"
             + "".join(interface_rows)
             + "</tbody></table></div>"
@@ -1912,16 +1990,18 @@ def render_contract(
             authority_body,
             closure_sha256,
             audit=audit is not None,
-            documentation=documentation is not None,
+            documentation=documentation_available,
             breadcrumbs="<p>" + _link("index.html", "All authorities") + "</p>",
         )
         root_entries.append(
-            "<li>"
+            '<article class="authority-card"><h3>'
             + _link(_authority_file(authority), authority)
             + authority_cue
-            + f" — {_esc(descriptions[authority])}<ul>"
+            + '</h3><p class="authority-description">'
+            + _esc(descriptions[authority])
+            + '</p><div class="authority-interfaces">'
             + "".join(root_interface_links)
-            + "</ul></li>"
+            + "</div></article>"
         )
     guide_links: list[str] = []
     for guide in guides:
@@ -1942,45 +2022,48 @@ def render_contract(
             closure_sha256,
             audit=audit is not None,
             documentation=True,
+            documentation_only=True,
             breadcrumbs="<p>" + _link("index.html", "All authorities") + "</p>",
         )
     body = (
-        f'<p class="meta">Generated v1 candidate · {len(elements)} discovered contract '
-        "elements · inclusion is not approval or qualification.</p>"
-        "<p>"
+        '<nav class="contract-references" aria-label="Contract references">'
         + _link("policies.html", "Governing policies")
         + " · "
         + _link("../riverhog-v1.json", "Exact Contract Closure")
-        + "</p>"
-        + '<h2>Authorities and interfaces</h2><ul class="authorities">'
-        + "".join(root_entries)
-        + "</ul>"
+        + "</nav>"
     )
     if audit is not None:
-        body += (
-            '<aside class="audit"><h2>Audit references · noncontractual</h2>'
-            "<p>Audit associations are candidate accounting, not executed results. "
-            "No marker implies approval.</p><ul>"
-            + f"<li>{_link('accounting.html', 'Accounting checks')}</li>"
-            + f"<li>{_link('sources.html', 'Sources and qualifications')}</li>"
-            + f"<li>{_link('configuration.html', 'Configuration comparison')}</li>"
-            + f"<li>{_link('relationships.html', 'Declared relationships')}</li>"
-            + f"<li>{_link('identities.html', 'Snapshot identities')}</li>"
-            + f"<li>{_link('audit-key.html', 'Audit key')}</li>"
-            + "</ul></aside>"
+        presentation = cast(Mapping[str, object], audit["presentation"])
+        routes = cast(Sequence[Mapping[str, str]], presentation["reference_routes"])
+        audit_references = (
+            '<details class="references"><summary>Audit references</summary><ul>'
+            + "".join(f"<li>{_link(route['path'], route['label'])}</li>" for route in routes)
+            + "</ul></details>"
         )
+        body += '<aside class="audit audit-references">' + audit_references + "</aside>"
+        body += "<noscript>" + audit_references + "</noscript>"
     if guides:
-        body += (
-            '<aside class="documentation"><h2>Guides</h2><ul>'
+        documentation_references = (
+            '<details class="references"><summary>Documentation references</summary><ul>'
             + "".join(guide_links)
-            + "</ul></aside>"
+            + "</ul></details>"
         )
+        body += (
+            '<aside class="documentation documentation-references">'
+            + documentation_references
+            + "</aside>"
+        )
+        body += "<noscript>" + documentation_references + "</noscript>"
+    body += (
+        f'<h2>Authorities and interfaces</h2><p class="meta">{len(elements)} declared '
+        'contract elements</p><div class="authority-cards">' + "".join(root_entries) + "</div>"
+    )
     files["index.html"] = _shell(
         "Riverhog v1 Contract Render",
         body,
         closure_sha256,
         audit=audit is not None,
-        documentation=documentation is not None,
+        documentation=documentation_available,
     )
     files.update(
         _policy_pages(
@@ -1989,7 +2072,7 @@ def render_contract(
             owners,
             elements_by_id,
             closure_sha256,
-            documentation is not None,
+            documentation_available,
         )
     )
     if audit is not None:
@@ -2002,7 +2085,7 @@ def render_contract(
                 witnesses,
                 affected,
                 closure_sha256,
-                documentation is not None,
+                documentation_available,
                 source_revision,
             )
         )

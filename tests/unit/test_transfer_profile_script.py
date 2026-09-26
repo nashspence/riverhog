@@ -10,8 +10,9 @@ from types import ModuleType
 from uuid import uuid4
 
 import pytest
+from riverhog_canonical_json import canonical_json_bytes
 
-from scripts import performance_objectives as performance
+from scripts import performance_measurement as performance
 
 REPO = Path(__file__).resolve().parents[2]
 SCRIPT = REPO / "scripts" / "transfer_profile.py"
@@ -76,7 +77,7 @@ def test_transfer_log_summary_selects_scenario_and_omits_identity() -> None:
     assert "secret-digest" not in repr(summary)
 
 
-def test_transfer_profile_runs_without_echoing_command(
+def test_transfer_profile_reports_jcs_without_echoing_command(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -96,7 +97,6 @@ def test_transfer_profile_runs_without_echoing_command(
     context_path = tmp_path / "context.json"
     context_path.write_text(json.dumps(context), encoding="utf-8")
     reference = performance.sample(
-        objective_id="transfer-goodput",
         scenario="riverhog-ingress",
         workload="large-file",
         context=context,
@@ -107,7 +107,7 @@ def test_transfer_profile_runs_without_echoing_command(
     )
     reference_path = tmp_path / "reference.json"
     reference_path.write_text(
-        json.dumps({"format": "riverhog-transfer-profile/v2", "sample": reference}),
+        json.dumps({"format": "riverhog-transfer-profile/v3", "sample": reference}),
         encoding="utf-8",
     )
 
@@ -154,6 +154,8 @@ def test_transfer_profile_runs_without_echoing_command(
                 str(context_path),
                 "--reference",
                 str(reference_path),
+                "--target-ratio",
+                "0.9",
                 "--transfer-log",
                 str(log),
                 "--",
@@ -165,13 +167,17 @@ def test_transfer_profile_runs_without_echoing_command(
         == 0
     )
 
-    result = json.loads(capsys.readouterr().out)
+    output = capsys.readouterr().out
+    result = json.loads(output)
+    assert output.encode() == canonical_json_bytes(result) + b"\n"
     assert commands == [["riverhog", "upload", "/private/input"]]
     assert result["mib_per_second"] == 100.0
-    assert result["evaluation"]["status"] == "missed"
-    assert result["evaluation"]["reference_ratio"] == 0.8
-    assert result["evaluation"]["candidate_bytes_per_second"] == 100 * module.MIB
-    assert result["evaluation"]["reference_bytes_per_second"] == 125 * module.MIB
+    assert result["target"]["reference_ratio"] == 0.9
+    assert result["comparison"]["status"] == "missed"
+    assert result["comparison"]["report_only"] is True
+    assert result["comparison"]["reference_ratio"] == 0.8
+    assert result["comparison"]["candidate_bytes_per_second"] == 100 * module.MIB
+    assert result["comparison"]["reference_bytes_per_second"] == 125 * module.MIB
     assert result["rate_basis"] == "receipt-verified"
     assert result["items_per_second"] == 0.5
     assert result["seconds_per_item"] == 2.0
@@ -179,10 +185,19 @@ def test_transfer_profile_runs_without_echoing_command(
     assert "/private/input" not in json.dumps(result)
 
 
-def test_measured_reference_requires_context() -> None:
+def test_missing_reference_or_context_is_reported_without_failing_profile(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     module = load_script()
-
-    with pytest.raises(SystemExit):
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda command, **_kwargs: subprocess.CompletedProcess(command, 0),
+    )
+    ticks = iter((1.0, 2.0))
+    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
+    assert (
         module.main(
             [
                 "--scenario",
@@ -192,11 +207,19 @@ def test_measured_reference_requires_context() -> None:
                 "--payload-bytes",
                 "1",
                 "--reference",
-                "reference.json",
+                "missing.json",
+                "--target-ratio",
+                "0.9",
                 "--",
                 "true",
             ]
         )
+        == 0
+    )
+    result = json.loads(capsys.readouterr().out)
+    assert result["comparison"]["status"] == "not-compared"
+    assert result["comparison"]["reason"] == "reference-unavailable-or-invalid"
+    assert result["target"]["reference_ratio"] == 0.9
 
 
 def test_recovery_tool_profile_does_not_require_network_baseline(
@@ -232,11 +255,120 @@ def test_recovery_tool_profile_does_not_require_network_baseline(
         == 0
     )
     result = json.loads(capsys.readouterr().out)
-    assert result["sample"]["objective_id"] is None
-    assert result["evaluation"]["status"] == "not-evaluated"
-    assert result["evaluation"]["reason"] == "no-objective"
+    assert result["comparison"]["status"] == "not-compared"
+    assert result["comparison"]["reason"] == "scenario-has-no-reference"
     assert result["rate_basis"] == "declared-workload-unverified"
     assert result["items"] == 20
     assert result["items_per_second"] == 20.0
     assert result["seconds_per_item"] == 0.05
     assert os.access(SCRIPT, os.X_OK)
+
+
+def test_command_failure_reports_observation_and_exits_zero(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda command, **_kwargs: subprocess.CompletedProcess(command, 17),
+    )
+    ticks = iter((1.0, 2.0))
+    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--target-ratio",
+                "0.9",
+                "--",
+                "false",
+            ]
+        )
+        == 0
+    )
+    result = json.loads(capsys.readouterr().out)
+    assert result["observed"]["command_exit_code"] == 17
+    assert result["sample"] is None
+    assert result["comparison"] == {
+        "status": "not-compared",
+        "reason": "command-failed",
+        "report_only": True,
+    }
+
+
+def test_command_launch_failure_is_a_report_not_a_gate(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+
+    def unavailable(*_args: object, **_kwargs: object) -> None:
+        raise FileNotFoundError("private-command-name")
+
+    monkeypatch.setattr(module.subprocess, "run", unavailable)
+    ticks = iter((1.0, 2.0))
+    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--",
+                "private-command-name",
+            ]
+        )
+        == 0
+    )
+    result = json.loads(capsys.readouterr().out)
+    assert result["observed"]["launch_state"] == "failed"
+    assert result["comparison"]["reason"] == "command-launch-failed"
+    assert "private-command-name" not in json.dumps(result)
+
+
+def test_absent_transfer_log_operations_do_not_gate_completed_work(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda command, **_kwargs: subprocess.CompletedProcess(command, 0),
+    )
+    ticks = iter((1.0, 2.0))
+    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
+    log = tmp_path / "transfer.log"
+    log.write_text("no matching operation", encoding="utf-8")
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--transfer-log",
+                str(log),
+                "--",
+                "true",
+            ]
+        )
+        == 0
+    )
+    result = json.loads(capsys.readouterr().out)
+    assert result["transfer_log"] is None
+    assert result["transfer_log_state"] == "unavailable-or-incomplete"
+    assert result["comparison"]["status"] == "not-compared"

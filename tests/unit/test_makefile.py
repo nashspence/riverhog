@@ -348,7 +348,7 @@ def test_compose_mounts_document_and_separate_secret_files() -> None:
             "--public-key /tmp/release.pub",
         ),
         (
-            "transfer-profile",
+            "profile",
             (
                 "args=--scenario a-riverhog-recovery-tool --workload large-file "
                 "--payload-bytes 1 -- true",
@@ -922,7 +922,7 @@ def test_help_describes_make_targets(tmp_path: Path) -> None:
     assert "make compile" in completed.stdout
     assert "make ruff-fix" in completed.stdout
     assert "make test" in completed.stdout
-    assert "make transfer-profile" in completed.stdout
+    assert "make profile" in completed.stdout
     assert "args='...'" in completed.stdout
     assert "FILES='...'" in completed.stdout
     assert "PYTHON_PATHS='...'" in completed.stdout

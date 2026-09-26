@@ -17,8 +17,6 @@ HAND_MAINTAINED_MARKDOWN = {
     REPO / "docs/architecture.md",
 }
 GENERATED_ATLAS = REPO / "qualification/contracts/riverhog-v1"
-GENERATED_GUIDANCE = REPO / "guidance/README.md"
-GENERATED_PERFORMANCE = REPO / "qualification/performance/README.md"
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
     REPO / "some-implementations/gogurt",
@@ -104,11 +102,17 @@ def test_all_markdown_is_reachable_and_links_resolve() -> None:
 
 def test_hand_maintained_markdown_surface_is_explicit() -> None:
     assert {
-        path
-        for path in _markdown_files()
-        if GENERATED_ATLAS not in path.parents
-        and path not in {GENERATED_GUIDANCE, GENERATED_PERFORMANCE}
+        path for path in _markdown_files() if GENERATED_ATLAS not in path.parents
     } == HAND_MAINTAINED_MARKDOWN
+
+
+def test_agents_guidance_stays_compact_and_routes_enforceable_policy_to_tests() -> None:
+    agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+    assert len(agents.split()) <= 900
+    assert "scoped policy tests" in agents
+    assert "Enforceable repository policy belongs in clearly named tests." in " ".join(
+        agents.split()
+    )
 
 
 def test_main_context_documents_are_exact_and_directly_routed() -> None:
@@ -152,8 +156,6 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
-        GENERATED_GUIDANCE,
-        GENERATED_PERFORMANCE,
         REPO / "qualification/contracts/riverhog-v1/index.html",
     }
     assert "https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/" in readme

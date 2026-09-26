@@ -18,7 +18,6 @@ import yaml
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
-from scripts import performance_objectives as performance
 from tests import operation_observer
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -161,17 +160,7 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert payload["provider_evidence"]["required_for"]
     assert payload["performance"]["cold_cli_startup"]["riverhog"]["median_ms"] == 1.0
     assert payload["performance"]["local_api"]["operations"]
-    assert payload["performance"]["accounting"] == {
-        "objective_ids": [],
-        "observation_ids": [
-            "operation-cold-cli-startup",
-            "operation-local-api-client-wall",
-        ],
-        "source": "scripts/performance_objectives.py",
-    }
-    assert set(payload["performance"]["accounting"]["observation_ids"]) <= {
-        item.id for item in performance.OBSERVATIONS
-    }
+    assert set(payload["performance"]) == {"cold_cli_startup", "local_api", "interpretation"}
     assert payload["qualification"]["positive_local_lifecycles"]["status"] == "not_established"
     assert payload["qualification"]["positive_local_lifecycles"][
         "operations_with_successful_responses"
