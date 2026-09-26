@@ -1,0 +1,77 @@
+x-image: &image
+  image: ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_IMAGE_REF:-a-riverhog-opentimestamps-witness:dev}
+  build:
+    context: ../../../..
+    dockerfile: some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/Dockerfile
+    args:
+      SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+
+x-runtime: &runtime
+  <<: *image
+  read_only: true
+  user: "65532:65532"
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  environment:
+    TZ: ${TZ:-UTC}
+  volumes:
+    - witness-state:/state
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
+
+services:
+  state-init:
+    image: alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+    restart: "no"
+    read_only: true
+    network_mode: none
+    cap_drop: ["ALL"]
+    cap_add: ["CHOWN"]
+    security_opt: ["no-new-privileges:true"]
+    command: ["chown", "65532:65532", "/state"]
+    volumes: ["witness-state:/state"]
+
+  state:
+    <<: *runtime
+    restart: "no"
+    network_mode: none
+    depends_on:
+      state-init:
+        condition: service_completed_successfully
+    command: ["--state", "/state/witness.sqlite3", "state", "upgrade"]
+
+  run:
+    <<: *runtime
+    restart: unless-stopped
+    depends_on:
+      state:
+        condition: service_completed_successfully
+    environment:
+      TZ: ${TZ:-UTC}
+      RIVERHOG_BASE_URL: ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_RIVERHOG_BASE_URL:?Riverhog base URL is required}
+      RIVERHOG_TOKEN_FILE: /run/secrets/riverhog_token
+      RIVERHOG_ALLOW_INSECURE_HTTP: ${RIVERHOG_ALLOW_INSECURE_HTTP:-false}
+    secrets: ["riverhog_token"]
+    networks: ["riverhog-control"]
+    command:
+      - --state
+      - /state/witness.sqlite3
+      - run
+      - --calendar
+      - ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URL_1:?First HTTPS calendar is required}
+      - --calendar
+      - ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URL_2:?Second HTTPS calendar is required}
+      - --poll-seconds
+      - ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_POLL_SECONDS:-60}
+
+secrets:
+  riverhog_token:
+    file: ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_RIVERHOG_TOKEN_FILE:?Riverhog token file is required}
+
+volumes:
+  witness-state:
+
+networks:
+  riverhog-control:
+    external: true
+    name: ${RIVERHOG_CONTROL_NETWORK:-riverhog_default}

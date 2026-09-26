@@ -1,0 +1,7 @@
+bucket: replace-with-aws-bucket
+region: replace-with-aws-region
+token_file: /run/secrets/storage-adapter-token
+access_key_id_file: /run/secrets/aws-access-key-id
+secret_access_key_file: /run/secrets/aws-secret-access-key
+read_mode: restore_required
+archive_storage_class: DEEP_ARCHIVE

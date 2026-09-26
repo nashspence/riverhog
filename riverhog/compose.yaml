@@ -1,5 +1,13 @@
 x-riverhog-environment: &riverhog-environment
   RIVERHOG_CONFIG: /etc/riverhog/config.yaml
+  TZ: ${TZ:-UTC}
+
+x-riverhog-hardening: &riverhog-hardening
+  read_only: true
+  user: "65532:65532"
+  group_add: ["${RIVERHOG_SECRET_FILE_GID:-65532}"]
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
 
 services:
   garage:
@@ -122,6 +130,7 @@ services:
       - ./postgres-init/10-riverhog-prerequisites.sql:/docker-entrypoint-initdb.d/10-riverhog-prerequisites.sql:ro
 
   state:
+    <<: *riverhog-hardening
     image: ${RIVERHOG_IMAGE_REF:-riverhog-app:dev}
     build:
       context: ..
@@ -129,9 +138,8 @@ services:
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
     restart: "no"
-    read_only: true
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
     depends_on:
       postgres:
         condition: service_healthy
@@ -143,6 +151,7 @@ services:
       - ${RIVERHOG_DATABASE_URL_HOST_PATH:-../tests/harness/riverhog-database-url}:/run/secrets/riverhog-database-url:ro
 
   app:
+    <<: *riverhog-hardening
     image: ${RIVERHOG_IMAGE_REF:-riverhog-app:dev}
     build:
       context: ..
@@ -150,9 +159,8 @@ services:
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
     restart: unless-stopped
-    read_only: true
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
     depends_on:
       postgres:
         condition: service_healthy

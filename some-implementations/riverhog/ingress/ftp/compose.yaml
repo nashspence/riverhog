@@ -49,7 +49,7 @@ services:
         source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
     networks: ["default", "riverhog-control"]
     ports:
       - "${A_RIVERHOG_FTP_SPOOL_API_BIND_ADDR:-127.0.0.1}:${A_RIVERHOG_FTP_SPOOL_API_PORT:-8082}:8080"
@@ -120,7 +120,7 @@ services:
         source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
     healthcheck:
       test:
         - CMD

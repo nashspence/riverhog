@@ -1,0 +1,70 @@
+x-image: &image
+  image: ${A_RIVERHOG_EVENT_RELAY_IMAGE_REF:-a-riverhog-event-relay:dev}
+  build:
+    context: ../../../..
+    dockerfile: some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile
+    args:
+      SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+
+x-runtime: &runtime
+  <<: *image
+  read_only: true
+  user: "65532:65532"
+  group_add: ["${A_RIVERHOG_EVENT_RELAY_SECRET_FILE_GID:-65532}"]
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  environment:
+    TZ: ${TZ:-UTC}
+  volumes:
+    - relay-state:/state
+    - type: bind
+      source: ${A_RIVERHOG_EVENT_RELAY_CONFIG_HOST_PATH:?Event relay config is required}
+      target: /etc/riverhog/event-relay.yaml
+      read_only: true
+  secrets: ["event-source-token", "event-webhook-url"]
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
+
+services:
+  state-init:
+    image: alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+    restart: "no"
+    read_only: true
+    network_mode: none
+    cap_drop: ["ALL"]
+    cap_add: ["CHOWN"]
+    security_opt: ["no-new-privileges:true"]
+    command: ["chown", "65532:65532", "/state"]
+    volumes: ["relay-state:/state"]
+
+  state:
+    <<: *runtime
+    restart: "no"
+    network_mode: none
+    depends_on:
+      state-init:
+        condition: service_completed_successfully
+    command: ["--config", "/etc/riverhog/event-relay.yaml", "state", "upgrade"]
+
+  run:
+    <<: *runtime
+    restart: unless-stopped
+    depends_on:
+      state:
+        condition: service_completed_successfully
+    networks: ["riverhog-control"]
+    command: ["--config", "/etc/riverhog/event-relay.yaml"]
+
+secrets:
+  event-source-token:
+    file: ${A_RIVERHOG_EVENT_RELAY_SOURCE_TOKEN_FILE:?Event source token file is required}
+  event-webhook-url:
+    file: ${A_RIVERHOG_EVENT_RELAY_WEBHOOK_URL_FILE:?Event webhook URL file is required}
+
+volumes:
+  relay-state:
+
+networks:
+  riverhog-control:
+    external: true
+    name: ${RIVERHOG_CONTROL_NETWORK:-riverhog_default}

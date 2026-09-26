@@ -413,9 +413,9 @@ def contract_body(
 
 def _documentation(
     closure: Mapping[str, object], document: Mapping[str, object] | None
-) -> tuple[dict[str, str], list[Mapping[str, object]]]:
+) -> tuple[dict[str, str], list[Mapping[str, object]], dict[str, Mapping[str, object]]]:
     if document is None:
-        return {}, []
+        return {}, [], {}
     if (
         set(document)
         != {
@@ -426,8 +426,9 @@ def _documentation(
             "source_revision",
             "explanations",
             "guides",
+            "cli_commands",
         }
-        or document["format"] != "riverhog-contract-documentation-record/v1"
+        or document["format"] != "riverhog-contract-documentation-record/v2"
     ):
         raise ContractAtlasError("documentation record has an unknown or incomplete format")
     if document["closure_sha256"] != canonical_sha256(closure) or any(
@@ -456,7 +457,71 @@ def _documentation(
         subjects = cast(Sequence[str], guide["subjects"])
         if not subjects or len(subjects) != len(set(subjects)) or not set(subjects) <= ids:
             raise ContractAtlasError("documentation guide has stale subjects")
-    return explanations, list(guides)
+    cli_ids = {
+        str(item["id"])
+        for item in cast(Sequence[Mapping[str, object]], closure["elements"])
+        if item["interface"] == "cli"
+    }
+    cli_commands: dict[str, Mapping[str, object]] = {}
+    for item in cast(Sequence[Mapping[str, object]], document["cli_commands"]):
+        if set(item) != {
+            "element_id",
+            "synopsis",
+            "description",
+            "summary",
+            "epilog",
+            "parameters",
+            "subcommands",
+        }:
+            raise ContractAtlasError("CLI documentation has unreviewed fields")
+        subject = item["element_id"]
+        if not isinstance(subject, str) or subject not in cli_ids or subject in cli_commands:
+            raise ContractAtlasError("CLI documentation has a duplicate or stale subject")
+        if not isinstance(item["synopsis"], str) or not item["synopsis"]:
+            raise ContractAtlasError("CLI documentation synopsis is empty")
+        if any(not isinstance(item[key], str) for key in ("description", "summary", "epilog")):
+            raise ContractAtlasError("CLI documentation prose is invalid")
+        for parameter in cast(Sequence[Mapping[str, object]], item["parameters"]):
+            if set(parameter) != {"name", "display", "metavar", "help"} or any(
+                not isinstance(parameter[key], str) for key in parameter
+            ):
+                raise ContractAtlasError("CLI documentation parameter is invalid")
+        for subcommand in cast(Sequence[Mapping[str, object]], item["subcommands"]):
+            if set(subcommand) != {"name", "summary"} or any(
+                not isinstance(subcommand[key], str) for key in subcommand
+            ):
+                raise ContractAtlasError("CLI documentation subcommand is invalid")
+        cli_commands[subject] = item
+    if set(cli_commands) != cli_ids:
+        raise ContractAtlasError("CLI documentation does not cover every command")
+    return explanations, list(guides), cli_commands
+
+
+def _cli_documentation(item: Mapping[str, object]) -> str:
+    lines = ['<aside class="documentation" id="documentation"><h2>CLI help · noncontractual</h2>']
+    lines.append(f"<p><strong>Synopsis:</strong> <code>{_esc(item['synopsis'])}</code></p>")
+    for key in ("summary", "description", "epilog"):
+        if item[key]:
+            lines.append(f"<p>{_esc(item[key])}</p>")
+    parameters = cast(Sequence[Mapping[str, str]], item["parameters"])
+    if parameters:
+        lines.append('<h3>Options and arguments</h3><dl class="facts">')
+        for parameter in parameters:
+            label = parameter["display"]
+            if parameter["metavar"] and parameter["metavar"] not in label:
+                label += " " + parameter["metavar"]
+            lines.append(f"<dt><code>{_esc(label)}</code></dt><dd>{_esc(parameter['help'])}</dd>")
+        lines.append("</dl>")
+    subcommands = cast(Sequence[Mapping[str, str]], item["subcommands"])
+    if subcommands:
+        lines.append('<h3>Subcommands</h3><dl class="facts">')
+        for subcommand in subcommands:
+            lines.append(
+                f"<dt><code>{_esc(subcommand['name'])}</code></dt>"
+                f"<dd>{_esc(subcommand['summary'])}</dd>"
+            )
+        lines.append("</dl>")
+    return "".join(lines) + "</aside>"
 
 
 def _source_html(source: Mapping[str, object], source_revision: str | None) -> str:
@@ -964,6 +1029,7 @@ def _shell(
 def _cli_tree(
     members: Sequence[Mapping[str, object]],
     affected: Mapping[str, tuple[str, ...]],
+    documentation: Mapping[str, Mapping[str, object]],
 ) -> str:
     by_path: dict[tuple[str, ...], Mapping[str, object]] = {}
     for element in members:
@@ -979,6 +1045,9 @@ def _cli_tree(
         element = by_path[path]
         identity = str(element["id"])
         cue = _audit_marker(_element_file(identity) + "#audit") if affected.get(identity) else ""
+        help_item = documentation.get(identity)
+        summary = str(help_item["summary"]) if help_item is not None else ""
+        summary_cue = f' <span class="docs-cue">{_esc(summary)}</span>' if summary else ""
         children = sorted(
             candidate
             for candidate in by_path
@@ -989,6 +1058,7 @@ def _cli_tree(
             f'<li data-element="{_esc(identity)}">'
             + _link(_element_file(identity), path[-1])
             + cue
+            + summary_cue
             + nested
             + "</li>"
         )
@@ -1679,8 +1749,8 @@ def render_contract(
         validate_audit_record(closure, audit)
     if source_revision is not None and not _REVISION.fullmatch(source_revision):
         raise ContractAtlasError("source revision must be an exact commit SHA")
-    explanations, guides = _documentation(closure, documentation)
-    documentation_available = bool(explanations or guides)
+    explanations, guides, cli_commands = _documentation(closure, documentation)
+    documentation_available = bool(explanations or guides or cli_commands)
     closure_sha256 = canonical_sha256(closure)
     elements = cast(Sequence[Mapping[str, object]], closure["elements"])
     overlays = (
@@ -1875,6 +1945,8 @@ def render_contract(
                         + _esc(explanations[identity])
                         + "</p></aside>"
                     )
+                if identity in cli_commands:
+                    doc_body += _cli_documentation(cli_commands[identity])
                 breadcrumbs = (
                     "<p>"
                     + _link("index.html", "All authorities")
@@ -1926,7 +1998,7 @@ def render_contract(
                 else "Recorded comparison facts"
             )
             inventory = (
-                _cli_tree(members, affected)
+                _cli_tree(members, affected, cli_commands)
                 if interface == "cli"
                 else '<ul class="selection-list">' + "".join(list_rows) + "</ul>"
                 if not fact_count

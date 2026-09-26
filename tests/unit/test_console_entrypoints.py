@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import argparse
 import importlib.metadata
+import json
 import os
 import subprocess
+import sys
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -12,28 +15,6 @@ from a_riverhog_cli.main import app as a_riverhog_cli_app
 from a_riverhog_ftp_spool.app import build_parser as build_adapter_parser
 from a_stove0_cli.main import app as stove0_app
 from typer.main import get_command
-
-CONSOLE_DISTRIBUTIONS = {
-    "a-riverhog-cli": "a-riverhog-cli",
-    "riverhog-api": "riverhog-server",
-    "a-riverhog-recovery-tool": "a-riverhog-recovery-tool",
-    "a-riverhog-ftp-spool": "a-riverhog-ftp-spool",
-    "a-riverhog-filesystem-store-materialize": ("a-riverhog-filesystem-store"),
-    "stove0": "a-stove0-cli",
-    "stove0-server": "stove0-server",
-    "a-stove0-exiftool-observer": "a-stove0-exiftool-observer",
-    "a-stove0-ffprobe-sampling-observer": "a-stove0-ffprobe-sampling-observer",
-    "a-stove0-nvenc-av1-opus-target": "a-stove0-nvenc-av1-opus-target",
-    "a-review0-nvenc-av1-opus-sampler": "a-review0-nvenc-av1-opus-sampler",
-    "a-stove0-opus-target": "a-stove0-opus-target",
-    "a-review0-opus-sampler": "a-review0-opus-sampler",
-    "a-review0-materializer": "a-review0-materializer",
-    "a-review0-rclone-target": "a-review0-rclone-target",
-    "review0-sampler-conformance": "review0-sampler-lib",
-    "review0-sampler-schemas": "review0-sampler-lib",
-    "gogurt": "gogurt",
-    "a-riverhog-event-relay": "a-riverhog-event-relay",
-}
 
 LIFECYCLE_EVENT_LIST_COMMANDS = (
     ("a-riverhog-cli", "event", "list", "--help"),
@@ -84,29 +65,84 @@ def _run_help(command: tuple[str, ...]) -> subprocess.CompletedProcess[str]:
     )
 
 
-@pytest.mark.parametrize("command", CONSOLE_DISTRIBUTIONS)
-def test_published_console_entrypoint_help_is_side_effect_free(command: str) -> None:
-    completed = _run_help((command, "--help"))
-
-    assert completed.returncode == 0, completed.stderr
-    assert "usage" in completed.stdout.casefold()
-
-
-@pytest.mark.parametrize("command,distribution", CONSOLE_DISTRIBUTIONS.items())
-def test_published_console_entrypoint_reports_installed_version(
-    command: str,
-    distribution: str,
-) -> None:
-    completed = subprocess.run(
-        [command, "--version"],
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=10,
+@pytest.fixture(scope="module")
+def checked_console_closure() -> dict[str, Any]:
+    return json.loads(
+        (
+            Path(__file__).resolve().parents[2] / "qualification/contracts/riverhog-v1.json"
+        ).read_text(encoding="utf-8")
     )
 
-    assert completed.returncode == 0, completed.stderr
-    assert completed.stdout.strip() == importlib.metadata.version(distribution)
+
+@pytest.fixture(scope="module")
+def published_console_scripts(checked_console_closure: dict[str, Any]) -> dict[str, str]:
+    closure = checked_console_closure
+    components = closure["boundaries"]["components"]
+    published = {
+        name: component["distribution"]
+        for component in components
+        for name in component["console_scripts"]
+    }
+    assert set(published) == set(closure["external_contract"]["cli"])
+    return published
+
+
+def test_published_console_entrypoint_help_is_side_effect_free(
+    published_console_scripts: dict[str, str], tmp_path: Path
+) -> None:
+    for command in sorted(published_console_scripts):
+        executable = Path(sys.executable).parent / command
+        assert executable.is_file(), f"published console script is not installed: {command}"
+        home = tmp_path / command
+        home.mkdir()
+        environment = os.environ.copy()
+        environment.update(
+            {
+                "HOME": str(home),
+                "XDG_CONFIG_HOME": str(home),
+                "XDG_CACHE_HOME": str(home),
+                "COLUMNS": "240",
+                "NO_COLOR": "1",
+                "TERM": "dumb",
+            }
+        )
+        completed = subprocess.run(
+            [str(executable), "--help"],
+            cwd=home,
+            env=environment,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        assert completed.returncode == 0, (command, completed.stderr)
+        assert "usage" in completed.stdout.casefold(), command
+        assert not list(home.iterdir()), f"{command} --help wrote into its home or cwd"
+
+
+def test_published_console_entrypoint_reports_installed_version(
+    published_console_scripts: dict[str, str],
+    checked_console_closure: dict[str, Any],
+) -> None:
+    versioned = {
+        name
+        for name, root in checked_console_closure["external_contract"]["cli"].items()
+        if any(control["id"] == "version" for control in root["terminating_controls"])
+    }
+    for command, distribution in sorted(published_console_scripts.items()):
+        if command not in versioned:
+            continue
+        executable = Path(sys.executable).parent / command
+        assert executable.is_file(), f"published console script is not installed: {command}"
+        completed = subprocess.run(
+            [str(executable), "--version"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        assert completed.returncode == 0, (command, completed.stderr)
+        assert completed.stdout.strip() == importlib.metadata.version(distribution)
 
 
 @pytest.mark.parametrize(

@@ -1,0 +1,52 @@
+services:
+  store:
+    image: ${A_RIVERHOG_AWS_STORE_IMAGE_REF:-a-riverhog-aws-store:dev}
+    build:
+      context: ../../../..
+      dockerfile: some-implementations/riverhog/storage/aws/Dockerfile
+      args:
+        SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+    restart: unless-stopped
+    read_only: true
+    user: "65532:65532"
+    group_add: ["${A_RIVERHOG_AWS_STORE_SECRET_FILE_GID:-65532}"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      TZ: ${TZ:-UTC}
+      A_RIVERHOG_AWS_STORE_CONFIG: /etc/riverhog/aws-store.yaml
+    volumes:
+      - type: bind
+        source: ${A_RIVERHOG_AWS_STORE_CONFIG_HOST_PATH:?AWS store config is required}
+        target: /etc/riverhog/aws-store.yaml
+        read_only: true
+    secrets: ["storage-adapter-token", "aws-access-key-id", "aws-secret-access-key"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
+    networks: ["riverhog-control"]
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import json, urllib.request;
+          payload = json.load(urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=5));
+          assert payload == {'service': 'a-riverhog-aws-store', 'status': 'ok'}
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+secrets:
+  storage-adapter-token:
+    file: ${A_RIVERHOG_AWS_STORE_TOKEN_FILE:?Storage adapter token file is required}
+  aws-access-key-id:
+    file: ${A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID_FILE:?AWS access key ID file is required}
+  aws-secret-access-key:
+    file: ${A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY_FILE:?AWS secret key file is required}
+
+networks:
+  riverhog-control:
+    external: true
+    name: ${RIVERHOG_CONTROL_NETWORK:-riverhog_default}

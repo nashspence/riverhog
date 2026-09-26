@@ -176,12 +176,18 @@ def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
     inventory = release["state"]
     assert inventory["format"] == "riverhog-durable-state-inventory/v1"
     owners = inventory["owners"]
-    assert all("classification" not in owner for owner in owners)
+    assert {owner["classification"] for owner in owners} == {
+        "durable-user-content",
+        "durable-user-evidence",
+        "operational-state",
+        "installation-identity",
+    }
     assert all(
         set(owner)
         == {
             "id",
             "distribution",
+            "classification",
             "format",
             "head",
             "transition",

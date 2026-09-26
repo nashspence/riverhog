@@ -130,6 +130,37 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert qualification["storage_providers"] == module.STORAGE_PROVIDER_QUALIFICATION
 
 
+def test_release_rejects_unclassified_durable_state(tmp_path: Path) -> None:
+    module = load_script()
+    _copy_release_contract(module, tmp_path)
+    release_path = tmp_path / "release.toml"
+    release_path.write_text(
+        release_path.read_text(encoding="utf-8").replace(
+            'classification = "durable-user-evidence"\n', "", 1
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(module.ReleaseError, match="durable-state owner is incomplete"):
+        module.validate_release_contract(tmp_path)
+
+
+def test_release_rejects_apache_custodial_distribution(tmp_path: Path) -> None:
+    module = load_script()
+    _copy_release_contract(module, tmp_path)
+    pyproject = (
+        tmp_path
+        / "some-implementations/riverhog/applications/a-riverhog-minisign-witness/pyproject.toml"
+    )
+    pyproject.write_text(
+        pyproject.read_text(encoding="utf-8").replace(
+            'license = "CAL-1.0"', 'license = "Apache-2.0"'
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(module.ReleaseError, match="custodial durable-state owner must ship"):
+        module.validate_release_contract(tmp_path)
+
+
 def test_shared_supplied_library_cannot_claim_unprefixed_family_name() -> None:
     module = load_script()
     projects = module.validate_release_contract(REPO_ROOT)

@@ -24,6 +24,24 @@ from riverhog_protocol.errors import CatalogSyncViewChanged, RiverhogError
 URL = "https://calendar.example"
 
 
+def test_compose_token_file_is_read_without_putting_its_contents_in_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    token_file = tmp_path / "riverhog-token"
+    token_file.write_text("file-backed-token\n", encoding="utf-8")
+    monkeypatch.setenv("RIVERHOG_TOKEN_FILE", str(token_file))
+    monkeypatch.delenv("RIVERHOG_TOKEN", raising=False)
+    seen: list[str] = []
+
+    def client(*, token: str) -> object:
+        seen.append(token)
+        return object()
+
+    monkeypatch.setattr(witness_cli, "ApiClient", client)
+    witness_cli._api_client()
+    assert seen == ["file-backed-token"]
+
+
 class Api:
     view_changed = False
 
@@ -159,11 +177,13 @@ def test_run_matures_due_proof_when_catalog_cannot_advance(
     assert calendar.calls == 1
     assert isinstance(store.evidence(digest)["proof"], bytes)
     expected = "ingestion paused" if failure == "reset" else "ingestion failed"
-    assert expected in capsys.readouterr().err
+    diagnostics = capsys.readouterr().err
+    assert expected in diagnostics
+    assert "proof revisions retained" in diagnostics
 
 
 def test_run_advances_catalog_when_calendar_is_unavailable(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     path = tmp_path / "ots.db"
     upgrade_state(path)
@@ -182,6 +202,8 @@ def test_run_advances_catalog_when_calendar_is_unavailable(
     assert store.progress().position.phase == "following"
     digest = result["matured_statement"]
     assert isinstance(digest, str)
+    diagnostics = capsys.readouterr().err
+    assert "0 proof revisions retained; retry scheduled" in diagnostics
     due = store.evidence(digest)["due"]
     assert isinstance(due, int)
     assert store.mature_once(Calendar(), now=due) == digest

@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
+from contract_atlas.cli_documentation import build_cli_documentation_record  # noqa: E402
 from contract_atlas.html_rendering import (  # noqa: E402
     _authority_file,
     _element_file,
@@ -24,6 +25,7 @@ from contract_atlas.html_rendering import (  # noqa: E402
 )
 from contract_atlas.model import ContractAtlasError, canonical_bytes, canonical_sha256  # noqa: E402
 from contract_atlas.records import load_bundle  # noqa: E402
+from contract_freeze import _cli_parsers  # noqa: E402
 
 
 class VisibleFacts(HTMLParser):
@@ -328,22 +330,15 @@ def test_root_audit_and_documentation_references_coexist_without_empty_chrome(
     assert "<noscript>" in root
 
     selected = cast(list[dict[str, object]], closure["elements"])[0]
-    documentation = {
-        "format": "riverhog-contract-documentation-record/v1",
-        "closure_sha256": canonical_sha256(closure),
-        "release_scope": "unit fixture",
-        "build_scope": "unit fixture",
-        "source_revision": "unit fixture",
-        "explanations": [],
-        "guides": [
-            {
-                "id": "one-guide",
-                "title": "One guide",
-                "text": "Fixture guidance.",
-                "subjects": [selected["id"]],
-            }
-        ],
-    }
+    documentation = build_cli_documentation_record(closure, _cli_parsers())
+    documentation["guides"] = [
+        {
+            "id": "one-guide",
+            "title": "One guide",
+            "text": "Fixture guidance.",
+            "subjects": [selected["id"]],
+        }
+    ]
     combined = render_contract(closure, audit, documentation)
     validate_render(combined)
     combined_root = combined["riverhog-v1/index.html"].decode()
@@ -520,12 +515,13 @@ def test_documentation_examples_bind_exact_subjects_without_changing_contract_bo
     explanation = "This example links the exact pattern; it adds no new rule."
     guide = "Read the pattern, then check its owning source and qualification evidence."
     documentation = {
-        "format": "riverhog-contract-documentation-record/v1",
+        "format": "riverhog-contract-documentation-record/v2",
         "closure_sha256": canonical_sha256(selected),
         "release_scope": "v1 candidate fixture",
         "build_scope": "unit fixture",
         "source_revision": "unit fixture",
         "explanations": [{"element_id": chosen["id"], "text": explanation}],
+        "cli_commands": [],
         "guides": [
             {
                 "id": "read-one-pattern",

@@ -1,0 +1,7 @@
+bucket: replace-with-b2-bucket
+region: replace-with-b2-region
+endpoint_url: https://s3.example.invalid
+token_file: /run/secrets/storage-adapter-token
+access_key_id_file: /run/secrets/b2-access-key-id
+secret_access_key_file: /run/secrets/b2-secret-access-key
+force_path_style: true

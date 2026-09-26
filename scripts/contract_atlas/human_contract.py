@@ -704,6 +704,7 @@ def _durable(values: Sequence[tuple[str, object]], references: Mapping[str, str]
                 "format",
                 "head",
                 "transition",
+                "classification",
                 "kind",
                 "dialect",
                 "user_version",

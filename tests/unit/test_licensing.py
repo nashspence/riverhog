@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import re
+import sys
 import tomllib
+from fnmatch import fnmatch
 from pathlib import Path
 
 import yaml
@@ -9,22 +11,17 @@ import yaml
 from tests.workspace import workspace_pyprojects
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SERVER_PROJECTS = {
-    Path("riverhog/pyproject.toml"),
-    Path("some-implementations/riverhog/storage/aws/pyproject.toml"),
-    Path("some-implementations/riverhog/storage/backblaze/pyproject.toml"),
-    Path("some-implementations/riverhog/storage/filesystem/pyproject.toml"),
-    Path("some-implementations/stove0/application/server/pyproject.toml"),
-    Path("some-implementations/stove0/observers/ffprobe-sampling/pyproject.toml"),
-    Path("some-implementations/stove0/observers/exiftool/pyproject.toml"),
-    Path("some-implementations/stove0/review0/samplers/nvenc-av1-opus/pyproject.toml"),
-    Path("some-implementations/stove0/targets/nvenc-av1-opus/target/pyproject.toml"),
-    Path("some-implementations/stove0/targets/opus/target/pyproject.toml"),
-    Path("some-implementations/stove0/review0/samplers/opus/pyproject.toml"),
-    Path("some-implementations/stove0/review0/materialize-target/pyproject.toml"),
-    Path("some-implementations/stove0/review0/rclone-effect-target/pyproject.toml"),
-    Path("some-implementations/stove0/review0/support/pyproject.toml"),
-}
+
+
+def _reuse_license(path: Path, policy: dict[str, object]) -> str:
+    selected = ""
+    for annotation in policy["annotations"]:
+        paths = annotation["path"]
+        patterns = [paths] if isinstance(paths, str) else paths
+        if any(fnmatch(path.as_posix(), pattern) for pattern in patterns):
+            selected = annotation["SPDX-License-Identifier"]
+    assert selected
+    return selected
 
 
 def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() -> None:
@@ -42,6 +39,9 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
         "some-implementations/riverhog/storage/aws/**",
         "some-implementations/riverhog/storage/backblaze/**",
         "some-implementations/riverhog/storage/filesystem/**",
+        "some-implementations/riverhog/ingress/ftp/**",
+        "some-implementations/riverhog/applications/a-riverhog-minisign-witness/**",
+        "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/**",
         "some-implementations/stove0/application/server/**",
         "some-implementations/stove0/observers/exiftool/**",
         "some-implementations/stove0/observers/ffprobe-sampling/**",
@@ -52,6 +52,11 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
     assert annotations[1]["SPDX-License-Identifier"] == "CAL-1.0"
     assert annotations[2]["path"] == [
         "riverhog/openapi/**",
+        "some-implementations/stove0/review0/contracts/**",
+        "some-implementations/stove0/review0/planning/**",
+        "some-implementations/stove0/review0/sampler/client/**",
+        "some-implementations/stove0/review0/sampler/protocol/**",
+        "some-implementations/stove0/review0/sampler/support/**",
     ]
     assert annotations[2]["SPDX-License-Identifier"] == "Apache-2.0"
     assert len(annotations) == 3
@@ -64,15 +69,43 @@ def test_every_workspace_distribution_declares_and_contains_its_component_licens
     apache = (REPO_ROOT / "LICENSES/Apache-2.0.txt").read_bytes()
     cal = (REPO_ROOT / "LICENSES/CAL-1.0.txt").read_bytes()
     assert b"Take any action with the Work that would infringe any patent" in cal
+    policy = tomllib.loads((REPO_ROOT / "REUSE.toml").read_text(encoding="utf-8"))
 
     for pyproject in workspace_pyprojects(REPO_ROOT):
         relative = pyproject.relative_to(REPO_ROOT)
-        expected_license = "CAL-1.0" if relative in SERVER_PROJECTS else "Apache-2.0"
+        expected_license = _reuse_license(relative, policy)
         expected_text = cal if expected_license == "CAL-1.0" else apache
         config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
         assert config["project"]["license"] == expected_license
         assert config["project"]["license-files"] == ["LICENSE"]
         assert (pyproject.parent / "LICENSE").read_bytes() == expected_text
+
+
+def test_custodial_state_licenses_match_source_packages_images_and_release_evidence() -> None:
+    if str(REPO_ROOT / "scripts") not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from scripts import release
+
+    config = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
+    policy = tomllib.loads((REPO_ROOT / "REUSE.toml").read_text(encoding="utf-8"))
+    projects = {
+        tomllib.loads(path.read_text(encoding="utf-8"))["project"]["name"]: path
+        for path in workspace_pyprojects(REPO_ROOT)
+    }
+    publication = release.publication_contract(REPO_ROOT)
+    for owner in config["state"]["owners"]:
+        if owner["classification"] not in {"durable-user-content", "durable-user-evidence"}:
+            continue
+        name = owner["distribution"]
+        pyproject = projects[name]
+        assert _reuse_license(pyproject.relative_to(REPO_ROOT), policy) == "CAL-1.0"
+        assert publication["distributions"][name]["license_expression"] == "CAL-1.0"
+        assert f"`{pyproject.parent.relative_to(REPO_ROOT).as_posix()}/**`" in (
+            REPO_ROOT / "LICENSE.md"
+        ).read_text(encoding="utf-8")
+        for image_name, image in config["images"]["runtime"].items():
+            if name in image["distributions"]:
+                assert publication["runtime_images"][image_name]["license_expression"] == "CAL-1.0"
 
 
 def test_every_workspace_distribution_uses_the_canonical_build_system() -> None:

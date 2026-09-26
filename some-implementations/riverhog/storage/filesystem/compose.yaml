@@ -1,0 +1,68 @@
+x-image: &image
+  image: ${A_RIVERHOG_FILESYSTEM_STORE_IMAGE_REF:-a-riverhog-filesystem-store:dev}
+  build:
+    context: ../../../..
+    dockerfile: some-implementations/riverhog/storage/filesystem/Dockerfile
+    args:
+      SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+
+x-runtime: &runtime
+  <<: *image
+  read_only: true
+  user: "65532:65532"
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  environment:
+    TZ: ${TZ:-UTC}
+    A_RIVERHOG_FILESYSTEM_STORE_ROOT: /var/lib/riverhog-filesystem
+    A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES: ${A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES:-0B}
+  volumes: ["filesystem-state:/var/lib/riverhog-filesystem"]
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m
+
+services:
+  state-init:
+    <<: *runtime
+    restart: "no"
+    network_mode: none
+    command: ["python", "-m", "a_riverhog_filesystem_store.incarnation", "/var/lib/riverhog-filesystem"]
+
+  store:
+    <<: *runtime
+    restart: unless-stopped
+    group_add: ["${A_RIVERHOG_FILESYSTEM_STORE_SECRET_FILE_GID:-65532}"]
+    depends_on:
+      state-init:
+        condition: service_completed_successfully
+    environment:
+      TZ: ${TZ:-UTC}
+      A_RIVERHOG_FILESYSTEM_STORE_ROOT: /var/lib/riverhog-filesystem
+      A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES: ${A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES:-0B}
+      A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE: /run/secrets/storage-adapter-token
+    secrets: ["storage-adapter-token"]
+    networks: ["riverhog-control"]
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import json, urllib.request;
+          payload = json.load(urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=5));
+          assert payload == {'service': 'a-riverhog-filesystem-store', 'status': 'ok'}
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+secrets:
+  storage-adapter-token:
+    file: ${A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE:?Storage adapter token file is required}
+
+volumes:
+  filesystem-state:
+
+networks:
+  riverhog-control:
+    external: true
+    name: ${RIVERHOG_CONTROL_NETWORK:-riverhog_default}

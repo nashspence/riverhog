@@ -222,6 +222,7 @@ format = "riverhog-durable-state-inventory/v1"
 [[state.owners]]
 id = "riverhog-catalog"
 distribution = "riverhog-server"
+classification = "durable-user-content"
 format = "state-schema/postgresql"
 head = "v1_0001"
 transition = "forward-migration-chain"
@@ -231,6 +232,7 @@ fixtures = ["tests/fixtures/state/v1_0001/riverhog.postgresql.sql"]
 [[state.owners]]
 id = "a-riverhog-cli-local"
 distribution = "a-riverhog-cli"
+classification = "operational-state"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
@@ -240,6 +242,7 @@ fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-cli.sqlite.sql"]
 [[state.owners]]
 id = "a-riverhog-event-relay-cursor"
 distribution = "a-riverhog-event-relay"
+classification = "operational-state"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
@@ -249,6 +252,7 @@ fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-event-relay.sqlite.sql"]
 [[state.owners]]
 id = "a-riverhog-minisign-witness-ledger"
 distribution = "a-riverhog-minisign-witness"
+classification = "durable-user-evidence"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
@@ -258,6 +262,7 @@ fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-minisign-witness.sqlite.sql
 [[state.owners]]
 id = "a-riverhog-opentimestamps-witness-ledger"
 distribution = "a-riverhog-opentimestamps-witness"
+classification = "durable-user-evidence"
 format = "state-schema/sqlite"
 head = "v1_0001"
 transition = "forward-migration-chain"
@@ -267,6 +272,7 @@ fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-opentimestamps-witness.sqli
 [[state.owners]]
 id = "stove0-control"
 distribution = "stove0-server"
+classification = "operational-state"
 format = "state-schema/postgresql"
 head = "v1_0001"
 transition = "forward-migration-chain"
@@ -276,6 +282,7 @@ fixtures = ["tests/fixtures/state/v1_0001/stove0.postgresql.sql"]
 [[state.owners]]
 id = "gogurt-listener"
 distribution = "gogurt-listener-runtime"
+classification = "operational-state"
 format = "gogurt-listener-state/v1"
 head = "1"
 transition = "forward-migration-chain"
@@ -285,6 +292,7 @@ fixtures = ["tests/fixtures/state/v1_0001/gogurt-listener.sqlite.sql"]
 [[state.owners]]
 id = "stove0-target-jobs"
 distribution = "stove0-target-support"
+classification = "operational-state"
 format = "stove0-target-job-state/v1"
 head = "v1"
 transition = "backward-readable-documents"
@@ -299,6 +307,7 @@ fixtures = [
 [[state.owners]]
 id = "a-riverhog-ftp-spool-custody"
 distribution = "a-riverhog-ftp-spool"
+classification = "durable-user-content"
 format = "a-riverhog-ftp-spool-claim/v1"
 head = "v1"
 transition = "backward-readable-documents"
@@ -311,6 +320,7 @@ fixtures = [
 [[state.owners]]
 id = "riverhog-provenance-installation"
 distribution = "riverhog-provenance"
+classification = "installation-identity"
 format = "riverhog-provenance-installation-id/v1"
 head = "v1"
 transition = "immutable-identity"

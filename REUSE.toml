@@ -12,6 +12,9 @@ path = [
   "some-implementations/riverhog/storage/aws/**",
   "some-implementations/riverhog/storage/backblaze/**",
   "some-implementations/riverhog/storage/filesystem/**",
+  "some-implementations/riverhog/ingress/ftp/**",
+  "some-implementations/riverhog/applications/a-riverhog-minisign-witness/**",
+  "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/**",
   "some-implementations/stove0/application/server/**",
   "some-implementations/stove0/observers/exiftool/**",
   "some-implementations/stove0/observers/ffprobe-sampling/**",
@@ -26,6 +29,11 @@ SPDX-License-Identifier = "CAL-1.0"
 [[annotations]]
 path = [
   "riverhog/openapi/**",
+  "some-implementations/stove0/review0/contracts/**",
+  "some-implementations/stove0/review0/planning/**",
+  "some-implementations/stove0/review0/sampler/client/**",
+  "some-implementations/stove0/review0/sampler/protocol/**",
+  "some-implementations/stove0/review0/sampler/support/**",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Nash Spence"

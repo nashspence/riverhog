@@ -82,7 +82,7 @@ def result_contract(
                 "id": "runtime-returned",
                 "exit_status": 0,
                 "stdout": {"all": "no-command-result"},
-                "stderr": {"all": "empty"},
+                "stderr": {"all": "noncontractual-runtime-log-or-empty"},
             }
         ],
         "failures": common["failures"],

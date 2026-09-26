@@ -196,8 +196,9 @@ def test_checked_contract_freeze_matches_every_executable_authority(
 
     assert ARTIFACT.read_bytes() == module.canonical_bytes(bundle.closure)
     assert module.AUDIT_OUTPUT.read_bytes() == module.canonical_bytes(bundle.audit)
+    documentation = module.build_cli_documentation_record(bundle.closure, module._cli_parsers())
     assert module._checked_candidate_matches(
-        bundle, module.render_contract(bundle.closure, bundle.audit)
+        bundle, module.render_contract(bundle.closure, bundle.audit, documentation)
     )
     assert projection["format"] == "riverhog-contract-freeze/v1"
     assert set(projection) == {"format", "series", "boundaries", "external_contract"}
@@ -854,6 +855,34 @@ def test_installed_entry_points_all_resolve_to_included_cli_trees(
         if item["dest"] == "port"
     )
     assert port["default"] == 8080
+
+
+def test_service_runtime_result_contracts_leave_stderr_available_for_diagnostics(
+    checked_contract_closure: dict[str, Any],
+) -> None:
+    cli = checked_contract_closure["discovered"].root["projection"]["external_contract"]["cli"]
+    runtime_commands: set[str] = set()
+
+    def visit(authority: str, node: dict[str, Any], path: str) -> None:
+        result = node.get("result_contract")
+        if result is not None:
+            for outcome in result["success"]:
+                stdout = outcome["stdout"]
+                if "no-command-result" not in stdout.values():
+                    continue
+                runtime_commands.add(f"{authority} {path}".strip())
+                assert outcome["stderr"] in (
+                    {"all": "noncontractual-runtime-log"},
+                    {"all": "noncontractual-runtime-log-or-empty"},
+                    {"human": "noncontractual-runtime-status"},
+                )
+        for child_name, child in node.get("commands", {}).items():
+            visit(authority, child, f"{path} {child_name}".strip())
+
+    for authority, root in cli.items():
+        visit(authority, root, "")
+    assert "a-riverhog-minisign-witness run" in runtime_commands
+    assert "a-riverhog-opentimestamps-witness run" in runtime_commands
 
 
 def test_python_model_schema_ignores_only_schema_prose_annotations() -> None:
