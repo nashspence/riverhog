@@ -704,8 +704,26 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
     assert "b2-retrieval-cache-adapter" in deployment["run"]
     assert "default_container; default_container()" in deployment["run"]
     assert "timeout 30s" in deployment["run"]
-    assert "pg_dump" in snapshot["run"]
-    assert "536870912" in snapshot["run"]
+    assert 'provider_qualification_checkpoint.py capture "$STATE_DIR"' in snapshot["run"]
+    assert snapshot["id"] == "snapshot"
+    assert "steps.terminal_key.outcome == 'success'" in snapshot["if"]
+    terminal_key = next(step for step in steps if step.get("id") == "terminal_key")
+    assert 'revoke-terminal "$STATE_DIR"' in terminal_key["run"]
+    assert terminal_key["if"] == "always() && steps.deployment.outcome == 'success'"
+    assert set(terminal_key["env"]) == {"RIVERHOG_QUALIFICATION_BOOTSTRAP_TOKEN"}
+    pair_check = next(
+        step
+        for step in steps
+        if step["name"] == "Verify exact continuation pair before provider access"
+    )
+    assert pair_check["if"] == "needs.resolve.outputs.action == 'poll'"
+    assert 'verify-pair "$STATE_INPUT_DIR"' in pair_check["run"]
+    assert steps.index(pair_check) < steps.index(b2_check)
+    assert 'verify-pair "$state_dir"' in state["run"]
+    restore = next(step for step in steps if step["name"] == "Restore disposable database state")
+    assert "pg_restore --exit-on-error" in restore["run"]
+    operate = next(step for step in steps if step.get("id") == "operate")
+    assert steps.index(operate) < steps.index(terminal_key) < steps.index(snapshot)
 
     package = next(
         step
@@ -713,11 +731,16 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
         if step["name"] == "Package resumable dummy state and public evidence"
     )
     assert package["if"] == (
-        "always() && env.STATE_DIR != '' && steps.deployment.outcome == 'success'"
+        "always() && env.STATE_DIR != '' && steps.deployment.outcome == 'success' "
+        "&& steps.snapshot.outcome == 'success'"
     )
     upload = next(step for step in steps if step["name"] == "Upload bounded qualification state")
     assert 'if [[ "$phase" == cleaned || "$phase" == failed ]]' in package["run"]
     assert 'cp "$STATE_DIR/checkpoint.json" "$STATE_DIR/database.dump"' in package["run"]
+    assert '"$STATE_DIR/continuation.json" "$artifact_dir/"' in package["run"]
+    assert 'verify-pair "$artifact_dir"' in package["run"]
+    assert upload["if"] == "always() && steps.package.outcome == 'success'"
+    assert steps.index(snapshot) < steps.index(package) < steps.index(upload)
     assert "retention_days=90" in package["run"]
     assert upload["with"] == {
         "name": "provider-qualification-state",
