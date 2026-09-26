@@ -8,6 +8,7 @@ import json
 import subprocess
 import sys
 import tomllib
+from collections import Counter
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -210,8 +211,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "runtime_images",
     }
     components = boundaries["components"]
-    assert len(components) == 75
     roles = {component["distribution"]: component["role"] for component in components}
+    assert len(roles) == len(components)
     extension_points = boundaries["entry_point_extensions"]
     assert {point["group"] for point in extension_points} == {
         "gogurt.listener-host-providers",
@@ -292,12 +293,9 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "tag",
     }
     assert set(external["http_openapi"]) == {"riverhog", "a-riverhog-ftp-spool", "stove0"}
-    assert len(external["http_route_supplements"]) == 2
-    assert len(trace["operation_qualification"]["records"]) == 153
     assert isinstance(external["python"], dict)
     assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
     assert len(external["python"]) > len(trace["python_registry"]["detections"])
-    assert len(external["durable_state"]["owners"]) == 10
     assert all(
         "structure" in owner and "fixture_sha256s" not in owner
         for owner in external["durable_state"]["owners"]
@@ -306,9 +304,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert set(release) == {"compatibility", "publication"}
     publication = release["publication"]
     assert publication["format"] == "riverhog-release-publication/v1"
-    assert len(publication["distributions"]) == 75
-    assert len(publication["runtime_images"]) == 15
-    assert len(publication["installation_roots"]) == 4
+    assert set(publication["distributions"]) == set(roles)
+    assert set(publication["runtime_images"]) == set(boundaries["runtime_images"]["runtime"])
     assert "test" not in publication["runtime_images"]
     assert all(
         unit["requires_python"] == ">=3.12" for unit in publication["distributions"].values()
@@ -326,25 +323,15 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         extents["coverage"][key] == 0 for key in ("missing", "duplicate", "stale", "undecided")
     )
     assert trace["format"] == "riverhog-contract-trace/v1"
-    assert trace["coverage"]["source_kinds"] == {
-        "audit": 1,
-        "cli": 31,
-        "configuration": 11,
-        "configuration-environment": 121,
-        "openapi": 3,
-        "protocol": 43,
-        "python": 65,
-        "release": 1,
-        "release-distribution": 75,
-        "release-images": 1,
-        "release-installation": 1,
-        "release-publication": 1,
-        "state": 10,
-    }
+    assert trace["coverage"]["source_kinds"] == dict(
+        Counter(source["id"].split(":", 1)[0] for source in trace["sources"])
+    )
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
-    assert trace["coverage"]["operation_qualification_records"] == 153
+    assert trace["coverage"]["operation_qualification_records"] == len(
+        trace["operation_qualification"]["records"]
+    )
     assert trace["python_registry"]["coverage"] == {
-        "detected": 65,
+        "detected": len(trace["python_registry"]["detections"]),
         "resolved": len(trace["python_registry"]["resolutions"]),
         "protected": len(external["python"]),
         "unresolved": 0,

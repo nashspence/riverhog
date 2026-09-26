@@ -8,15 +8,17 @@ from pathlib import Path
 
 import pytest
 from riverhog_age import (
-    PAYLOAD_NONCE_SIZE,
     AgeDecryptError,
     AgeFormatError,
     ResumableAgeScryptSession,
     decrypt_age_scrypt,
+)
+from riverhog_age.resumable_age import (
+    PAYLOAD_NONCE_SIZE,
+    decrypt_payload_chunks,
     parse_scrypt_header_from_age_file,
     split_plaintext_chunks,
 )
-from riverhog_age.resumable_age import decrypt_payload_chunks
 
 
 def _testdata_root() -> Path:

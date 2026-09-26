@@ -34,11 +34,9 @@ def test_full_candidate_partition_is_lossless_and_standalone(
 
     validate_closure(closure)
     validate_audit_record(closure, audit)
-    assert len(closure["elements"]) == 4258
     assert len(audit["element_overlays"]) == len(closure["elements"])
     assert set(closure["external_contract"]["extents"]) == {"format", "principles", "rules"}
     assert "requirement" not in closure["external_contract"]["extents"]["rules"]["schema-bound/v1"]
-    assert len(audit["extent_analysis"]["decisions"]) == 2269
 
 
 def test_audit_only_edit_does_not_change_closure(

@@ -1,9 +1,6 @@
 from .resumable_age import (
     AEAD_TAG_SIZE,
     CHUNK_SIZE,
-    DEFAULT_CHUNKS_PER_AGE_UNIT,
-    DEFAULT_SCRYPT_LOG_N,
-    PAYLOAD_NONCE_SIZE,
     AgeAlignedUnitPlan,
     AgeDecryptError,
     AgeFormatError,
@@ -14,20 +11,11 @@ from .resumable_age import (
     decrypt_age_scrypt,
     encrypt_age_scrypt,
     iter_decrypt_age_scrypt,
-    iter_decrypt_payload_chunks,
-    make_age_aligned_unit_plans,
-    parse_scrypt_header,
-    parse_scrypt_header_from_age_file,
-    plaintext_bytes_for_ciphertext_offset,
-    split_plaintext_chunks,
 )
 
 __all__ = [
     "AEAD_TAG_SIZE",
     "CHUNK_SIZE",
-    "DEFAULT_CHUNKS_PER_AGE_UNIT",
-    "DEFAULT_SCRYPT_LOG_N",
-    "PAYLOAD_NONCE_SIZE",
     "AgeDecryptError",
     "AgeFormatError",
     "ResumableAgeScryptSession",
@@ -38,10 +26,4 @@ __all__ = [
     "decrypt_age_scrypt",
     "encrypt_age_scrypt",
     "iter_decrypt_age_scrypt",
-    "iter_decrypt_payload_chunks",
-    "make_age_aligned_unit_plans",
-    "parse_scrypt_header",
-    "parse_scrypt_header_from_age_file",
-    "plaintext_bytes_for_ciphertext_offset",
-    "split_plaintext_chunks",
 ]
