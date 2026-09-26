@@ -174,7 +174,7 @@ def _compatibility_policies(interface: str) -> list[str]:
         "versioning-tags": "compatibility/components/v1",
         "schema": "compatibility/components/v1",
     }
-    if interface in {"extent", "compatibility-guarantees"}:
+    if interface in {"extent", "compatibility-guarantees", "publication-policies"}:
         return []
     return [mapping[interface]]
 
@@ -368,6 +368,7 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
     for section, interface in (
         ("versioning", "versioning-tags"),
         ("coordinates", "publication-locations"),
+        ("policy", "publication-policies"),
     ):
         for name in sorted(cast(Mapping[str, object], publication[section])):
             _add_element(
@@ -1240,8 +1241,7 @@ def _projection_coverage(
     ]
     if len(definition_pointers) != len(set(definition_pointers)):
         raise ContractAtlasError("policy source ownership is duplicated")
-    # A definition already owned by an element is a reference, not a second
-    # projection owner. The remaining publication definitions are policy-owned.
+    # Policy definitions owned by elements are references, not second owners.
     policy_pointers = [pointer for pointer in definition_pointers if pointer not in pointers]
     noncontractual_pointers = [
         pointer
@@ -1532,6 +1532,7 @@ def _validate_release_units(
     for section, interface in (
         ("versioning", "versioning-tags"),
         ("coordinates", "publication-locations"),
+        ("policy", "publication-policies"),
         ("distributions", "python-distributions"),
         ("runtime_images", "runtime-images"),
         ("installation_roots", "installation-roots"),
@@ -1610,16 +1611,7 @@ def _validate_release_units(
             }
         if policy_ids & publication_policy_ids != expected_publication_policies:
             raise ContractAtlasError(f"release publication policy application is stale: {pointer}")
-    if any(
-        pointer in actual
-        for pointer in (
-            f"{base}/schema",
-            *(
-                f"{base}/policy/{_escape_pointer(str(name))}"
-                for name in cast(Mapping[str, object], publication["policy"])
-            ),
-        )
-    ):
-        raise ContractAtlasError("release metadata or policy is duplicated as a semantic unit")
+    if f"{base}/schema" in actual:
+        raise ContractAtlasError("release metadata is duplicated as a semantic unit")
     if "platforms" in release:
         raise ContractAtlasError("release envelope exposes a global platform claim")

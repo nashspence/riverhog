@@ -29,7 +29,6 @@ AUDIT_PRESENTATION = {
     },
     "reference_routes": [
         {"path": "audit-key.html", "label": "Audit key"},
-        {"path": "qualifications.html", "label": "Open qualifications"},
         {"path": "accounting.html", "label": "Accounting checks"},
         {"path": "sources.html", "label": "Sources and qualifications"},
         {"path": "configuration.html", "label": "Configuration comparison"},

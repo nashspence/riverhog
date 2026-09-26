@@ -20,19 +20,22 @@ from .records import AUDIT_PRESENTATION, validate_audit_record, validate_closure
 DIRECTORY = "riverhog-v1"
 _REVISION = re.compile(r"[0-9a-f]{40}\Z")
 _STYLES = """
-*{box-sizing:border-box}html{background:#fff;color:#242424;font:16px/1.55 system-ui,sans-serif}
+*{box-sizing:border-box}html{--bg:#fff;--fg:#242424;--link:#174e72;
+  --line:#d8dfe3;--rule:#ddd;--muted:#555;--context:#4a4a4a;
+  --shape:#343d43;--member:#b7ccd7;--audit:#89969f;--docs:#6e8c71;
+  color-scheme:light;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
 body{margin:0}main{max-width:1120px;margin:auto;padding:24px 28px 64px;overflow-wrap:anywhere}
-header{border-bottom:1px solid #ccc;padding-bottom:14px}header p{margin:.4em 0}
+header{border-bottom:1px solid var(--rule);padding-bottom:14px}header p{margin:.4em 0}
 h1{font-size:1.75rem;overflow-wrap:anywhere}h2{font-size:1.3rem;margin-top:1.5em}h3{font-size:1.08rem}
-a{color:#174e72;text-underline-offset:3px}
+a{color:var(--link);text-underline-offset:3px}
 a:focus-visible,input:focus-visible,summary:focus-visible{
-  outline:3px solid #174e72;outline-offset:3px}
+  outline:3px solid var(--link);outline-offset:3px}
 table{display:block;border-collapse:collapse;width:100%;margin:12px 0 20px}
 table tbody{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px}
 table thead{display:none}
-table tr{display:block;min-width:0;border:1px solid #d8dfe3;border-radius:5px;padding:8px 10px}
+table tr{display:block;min-width:0;border:1px solid var(--line);border-radius:5px;padding:8px 10px}
 table tr.module{grid-column:1/-1;border:0;border-radius:0;margin-top:10px;padding:0}
-table tr.member{margin-left:14px;width:calc(100% - 14px);border-left:3px solid #b7ccd7}
+table tr.member{margin-left:14px;width:calc(100% - 14px);border-left:3px solid var(--member)}
 table th,table td{display:block;border:0;text-align:left;vertical-align:top;
   padding:2px 0;overflow-wrap:anywhere}
 table td:empty{display:none}
@@ -43,33 +46,44 @@ table td[data-label]:before{content:attr(data-label) ": ";font-weight:600}
 .selection-list{padding-left:24px}.selection-list li{margin:5px 0}
 table table{font-size:.9rem;margin:2px 0 8px}
 code{font:.9em/1.5 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
-.literal-prose{font:inherit}.kind,.meta{color:#555;font-size:.82rem}.kind{display:block}
+.literal-prose{font:inherit}.kind,.meta{color:var(--muted);font-size:.82rem}.kind{display:block}
 .mode{display:none;margin-right:1em}
 html[data-js=yes] .mode{display:inline-block}
 .audit,.documentation,.audit-cue,.docs-cue{display:none}
 html[data-audit=on] .audit{display:block}html[data-audit=on] .audit-cue{display:inline}
 html[data-docs=on] .documentation{display:block}html[data-docs=on] .docs-cue{display:inline}
-.audit,.documentation{border-left:3px solid #89969f;padding:4px 18px;margin:28px 0}
-.documentation{border-left-color:#6e8c71}details{margin:12px 0}summary{cursor:pointer}
+.audit,.documentation{border-left:3px solid var(--audit);padding:4px 18px;margin:28px 0}
+.documentation{border-left-color:var(--docs)}details{margin:12px 0}summary{cursor:pointer}
 .audit-references,.documentation-references{border:0;padding:0;margin:4px 0}
-.references{margin:5px 0}.references summary{font-size:.9rem;color:#4a4a4a}
+.references{margin:5px 0}.references summary{font-size:.9rem;color:var(--context)}
 .references ul{margin:5px 0 8px}
-.contract-references{font-size:.9rem;margin:8px 0}
 .audit-marker{font-size:1.1em;margin-left:.25em}.lead{font-size:1.08rem}
 .facts{display:grid;grid-template-columns:minmax(140px,220px) minmax(0,1fr);gap:3px 16px}
 .facts dt{font-weight:600}.facts dd{margin:0 0 8px}
-.schema-section{border-top:1px solid #ddd;margin-top:18px;padding-top:10px}
-.shape{color:#343d43}.exact{border-top:1px solid #ddd;padding-top:10px;margin-top:30px}
+.schema-section{border-top:1px solid var(--rule);margin-top:18px;padding-top:10px}
+.shape{color:var(--shape)}.exact{border-top:1px solid var(--rule);padding-top:10px;margin-top:30px}
 .exact summary{font-weight:600}
+.authority-filter{display:none;margin:12px 0}
+html[data-js=yes] .authority-filter{display:block}
+.authority-filter label{display:block;font-weight:600}
+.authority-filter input{width:min(100%,24rem);padding:6px 8px;
+  border:1px solid var(--line);
+  border-radius:5px;background:var(--bg);color:var(--fg);font:inherit}
+.authority-filter .meta{display:block}
+.authority-card[hidden]{display:none}
 .authority-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
   gap:12px;margin:14px 0}
-.authority-card{border:1px solid #d8dfe3;border-radius:5px;padding:12px;min-width:0}
+.authority-card{border:1px solid var(--line);border-radius:5px;padding:12px;min-width:0}
 .authority-card h3{margin:0}.authority-card p{margin:4px 0 10px}
 .authority-interface{padding:2px 0}
 .command-tree,.command-tree ul{list-style:none;padding-left:20px}
-.command-tree li{border-left:2px solid #d6dfe4;padding-left:10px;margin:5px 0}
-.context{color:#4a4a4a}.comparison-promise{font:inherit}
-footer{border-top:1px solid #ddd;margin-top:32px;padding-top:16px;font-size:.83rem}
+.command-tree li{border-left:2px solid var(--line);padding-left:10px;margin:5px 0}
+.context{color:var(--context)}.comparison-promise{font:inherit}
+footer{border-top:1px solid var(--rule);margin-top:32px;padding-top:16px;font-size:.83rem}
+@media(prefers-color-scheme:dark){html{--bg:#171d22;--fg:#e8edf0;--link:#8bd0fb;
+  --line:#52616b;--rule:#44525c;--muted:#bac5cb;--context:#c4cdd2;
+  --shape:#d4dee3;--member:#7193a4;--audit:#9db4c2;--docs:#9bc5a1;
+  color-scheme:dark}}
 @media(max-width:700px){main{padding:18px 12px 40px}html{font-size:15px}
   h1{font-size:1.5rem}.facts{grid-template-columns:1fr;gap:0}
   .facts dd{margin-bottom:12px}
@@ -83,6 +97,22 @@ const root=document.documentElement;
 const audit=document.getElementById('audit-mode');
 const docs=document.getElementById('docs-mode');
 root.dataset.js='yes';
+const authorityFilter=document.getElementById('authority-filter');
+if(authorityFilter){
+  const cards=[...document.querySelectorAll('#authority-cards > .authority-card')];
+  const count=document.getElementById('authority-filter-count');
+  function filterAuthorities(){
+    const query=authorityFilter.value.trim().toLowerCase();
+    let shown=0;
+    for(const card of cards){
+      card.hidden=!card.dataset.authority.toLowerCase().includes(query);
+      if(!card.hidden)shown++;
+    }
+    count.textContent=shown+' of '+cards.length+' authorities';
+  }
+  authorityFilter.addEventListener('input',filterAuthorities);
+  filterAuthorities();
+}
 function apply(){const url=new URL(location.href);
   const requestedAudit=url.searchParams.get('audit');
   root.dataset.audit=(requestedAudit==='1'||
@@ -167,6 +197,10 @@ def _selection_identity(
             return title[len(prefix) :]
     if interface == "http-schemas":
         return _parts(pointer)[-1]
+    if interface == "http-security-schemes":
+        return _parts(pointer)[-1]
+    if authority == "release" and ": " in title:
+        return title.split(": ", 1)[1]
     if interface == "durable-state" and isinstance(value, Mapping):
         name = value.get("name")
         if isinstance(name, str):
@@ -468,8 +502,11 @@ def _source_locations_html(source: Mapping[str, object], revision: str | None) -
     return "<br>".join(dict.fromkeys(locations)) or f"<code>{_esc(source['id'])}</code>"
 
 
-def _policy_definition_file(pointer: str) -> str:
-    return "policy-definition-" + _hash(pointer) + ".html"
+def _policy_element_file(pointer: str, owners: Mapping[str, str]) -> str:
+    owner = _owning_element(pointer, owners)
+    if owner is None:
+        raise ContractAtlasError(f"policy definition has no contract element: {pointer}")
+    return _element_file(owner)
 
 
 def _source_anchor(identity: str) -> str:
@@ -486,6 +523,7 @@ def _audit_panel(
     overlay: Mapping[str, object] | None,
     audit: Mapping[str, object] | None,
     source_revision: str | None,
+    owners: Mapping[str, str],
     extent_groups: Sequence[str] = (),
 ) -> str:
     if audit is None or overlay is None:
@@ -526,7 +564,7 @@ def _audit_panel(
             )["rules"],
         )
         rule_display = (
-            _link(_policy_definition_file(rule_pointer), rule_id)
+            _link(_policy_element_file(rule_pointer, owners), rule_id)
             if str(decision["rule"]) in normative_rules
             else f"<code>{_esc(decision['rule'])}</code>"
         )
@@ -568,8 +606,27 @@ def _audit_panel(
         body += (
             "<h3>Governing policies</h3><ul>"
             + "".join(
-                f"<li>{_link(_policy_definition_file(policy_definitions[identity]), identity)}</li>"
+                "<li>"
+                + _link(_policy_element_file(policy_definitions[identity], owners), identity)
+                + "</li>"
                 for identity in policy_ids
+            )
+            + "</ul>"
+        )
+    owned_policies = [
+        str(record["id"])
+        for records in cast(
+            Mapping[str, Sequence[Mapping[str, object]]], audit["policies"]
+        ).values()
+        for record in records
+        if str(record["definition_pointer"]) in cast(Sequence[str], element["pointers"])
+    ]
+    if owned_policies:
+        body += (
+            "<h3>Indexed applications</h3><ul>"
+            + "".join(
+                f"<li>{_link('p-' + _hash(identity) + '.html', identity)}</li>"
+                for identity in owned_policies
             )
             + "</ul>"
         )
@@ -820,7 +877,7 @@ def _qualification_page(
         for route in cast(Sequence[str], witness["gates"])
     )
     rule_link = _link(
-        _policy_definition_file(rule_pointer),
+        _policy_element_file(rule_pointer, owners),
         str(witness["rule_id"]),
     )
     return (
@@ -973,205 +1030,102 @@ def _owning_element(pointer: str, owners: Mapping[str, str]) -> str | None:
     return owners[max(matches, key=len)] if matches else None
 
 
-def _policy_pages(
-    closure: Mapping[str, object],
-    audit: Mapping[str, object] | None,
+def _policy_application_pages(
+    audit: Mapping[str, object],
     owners: Mapping[str, str],
     elements: Mapping[str, Mapping[str, object]],
     digest: str,
     documentation: bool,
 ) -> dict[str, bytes]:
-    external = cast(Mapping[str, object], closure["external_contract"])
-    release = cast(Mapping[str, object], external["release"])
-    publication = cast(Mapping[str, object], release["publication"])
-    extents = cast(Mapping[str, object], external["extents"])
-    definitions = (
-        (
-            "Compatibility",
-            "/external_contract/release/compatibility",
-            cast(Mapping[str, object], release["compatibility"]),
-        ),
-        (
-            "Publication",
-            "/external_contract/release/publication/policy",
-            cast(Mapping[str, object], publication["policy"]),
-        ),
-        (
-            "Extent principles",
-            "/external_contract/extents/principles",
-            cast(Mapping[str, object], extents["principles"]),
-        ),
-        (
-            "Extent rules",
-            "/external_contract/extents/rules",
-            cast(Mapping[str, object], extents["rules"]),
-        ),
-    )
-    policy_by_pointer: dict[str, Mapping[str, object]] = {}
-    policy_elements: dict[str, list[Mapping[str, object]]] = defaultdict(list)
-    if audit is not None:
-        for policy_records in cast(
-            Mapping[str, Sequence[Mapping[str, object]]], audit["policies"]
-        ).values():
-            for record in policy_records:
-                policy_by_pointer[str(record["definition_pointer"])] = record
-        for overlay in cast(Sequence[Mapping[str, object]], audit["element_overlays"]):
-            element = elements[str(overlay["id"])]
-            for policy_identity in cast(Sequence[str], overlay["policy_ids"]):
-                policy_elements[policy_identity].append(element)
-    family_links = []
+    """Keep audit application indexes; definitions live in their authority elements."""
+
+    applied_elements: dict[str, list[Mapping[str, object]]] = defaultdict(list)
+    for overlay in cast(Sequence[Mapping[str, object]], audit["element_overlays"]):
+        element = elements[str(overlay["id"])]
+        for identity in cast(Sequence[str], overlay["policy_ids"]):
+            applied_elements[identity].append(element)
     files: dict[str, bytes] = {}
-    for label, base, definitions_by_name in definitions:
-        family_path = "policy-family-" + _hash(base) + ".html"
-        parts = ['<ul class="selection-list">']
-        for name, value in sorted(definitions_by_name.items()):
-            pointer = base + "/" + _token(str(name))
-            owner_id = _owning_element(pointer, owners)
-            title = str(name).replace("_", " ")
-            definition_path = _policy_definition_file(pointer)
-            meaning = (
-                f"<p>{_esc(value)}</p>"
-                if isinstance(value, str)
-                else _table_html(
-                    ("Declared rule fact", "Value"),
-                    [
-                        (_esc(key.replace("_", " ")), _literal(item, pointer + "/" + _token(key)))
-                        for key, item in sorted(cast(Mapping[str, object], value).items())
-                    ],
-                )
+    for records in cast(Mapping[str, Sequence[Mapping[str, object]]], audit["policies"]).values():
+        for record in records:
+            identity = str(record["id"])
+            definition = _policy_element_file(str(record["definition_pointer"]), owners)
+            path = f"p-{_hash(identity)}.html"
+            applications = sorted(
+                applied_elements[identity],
+                key=lambda item: (str(item["authority"]), str(item["title"]), str(item["id"])),
             )
-            application = ""
-            policy = policy_by_pointer.get(pointer)
-            if policy is not None:
-                policy_id = str(policy["id"])
-                path = f"p-{_hash(policy_id)}.html"
-                application = (
-                    f'<span class="audit-cue"> · {_link(path, "Indexed applications")}</span>'
-                )
-                scope_rows = []
-                for applied in cast(Sequence[str], policy.get("applies_to", ())):
-                    owner = _owning_element(applied, owners)
-                    target = (
-                        _link(_element_file(owner), str(elements[owner]["title"]))
-                        if owner
-                        else f"<code>{_esc(applied)}</code>"
-                    )
-                    scope_rows.append((target, f"<code>{_esc(applied)}</code>"))
-                applications = sorted(
-                    policy_elements[policy_id],
-                    key=lambda item: (str(item["authority"]), str(item["title"]), str(item["id"])),
-                )
-                by_authority: dict[str, list[Mapping[str, object]]] = defaultdict(list)
-                for item in applications:
-                    by_authority[str(item["authority"])].append(item)
+            by_authority: dict[str, list[Mapping[str, object]]] = defaultdict(list)
+            for item in applications:
+                by_authority[str(item["authority"])].append(item)
 
-                def rows_for(items: Sequence[Mapping[str, object]]) -> list[tuple[str, str]]:
-                    return [
-                        (
-                            _link(_element_file(str(item["id"])), str(item["title"])),
-                            f"<code>{_esc(cast(Sequence[str], item['pointers'])[0])}</code>",
-                        )
-                        for item in items
-                    ]
+            def rows_for(items: Sequence[Mapping[str, object]]) -> list[tuple[str, str]]:
+                return [
+                    (
+                        _link(_element_file(str(item["id"])), str(item["title"])),
+                        f"<code>{_esc(cast(Sequence[str], item['pointers'])[0])}</code>",
+                    )
+                    for item in items
+                ]
 
-                if len(applications) > 150 and len(by_authority) > 1:
-                    authority_rows = []
-                    for authority, items in sorted(by_authority.items()):
-                        child = f"p-{_hash(policy_id)}-a-{_hash(authority)}.html"
-                        authority_rows.append((_link(child, authority), str(len(items))))
-                        files[child] = _shell(
-                            f"{policy_id}: {authority}",
-                            '<aside class="audit">'
-                            + _table_html(("Contract element", "Owned pointer"), rows_for(items))
-                            + "</aside>",
-                            digest,
-                            audit=True,
-                            documentation=documentation,
-                            audit_only=True,
-                            breadcrumbs="<p>"
-                            + _link("index.html", "All authorities")
-                            + " / "
-                            + _link("policies.html", "Governing policies")
-                            + " / "
-                            + _link(path, "Indexed applications")
-                            + "</p>",
-                        )
-                    indexed = _table_html(("Authority", "Indexed elements"), authority_rows)
-                else:
-                    indexed = (
-                        _table_html(("Contract element", "Owned pointer"), rows_for(applications))
-                        if applications
-                        else "<p>No contract elements are indexed here.</p>"
+            if len(applications) > 150 and len(by_authority) > 1:
+                authority_rows = []
+                for authority, items in sorted(by_authority.items()):
+                    child = f"p-{_hash(identity)}-a-{_hash(authority)}.html"
+                    authority_rows.append((_link(child, authority), str(len(items))))
+                    files[child] = _shell(
+                        f"{identity}: {authority}",
+                        '<aside class="audit">'
+                        + _table_html(("Contract element", "Owned pointer"), rows_for(items))
+                        + "</aside>",
+                        digest,
+                        audit=True,
+                        documentation=documentation,
+                        audit_only=True,
+                        breadcrumbs="<p>"
+                        + _link("index.html", "All authorities")
+                        + " / "
+                        + _link(definition, "Policy definition")
+                        + " / "
+                        + _link(path, "Indexed applications")
+                        + "</p>",
                     )
-                files[path] = _shell(
-                    f"Indexed applications: {policy_id}",
-                    '<aside class="audit"><h2>Indexed contract elements</h2>'
-                    + indexed
-                    + (
-                        "<h2>Declared scope pointers</h2>"
-                        + _table_html(("Contract subject", "Exact scope"), scope_rows)
-                        if scope_rows
-                        else ""
-                    )
-                    + "</aside>",
-                    digest,
-                    audit=True,
-                    documentation=documentation,
-                    audit_only=True,
-                    breadcrumbs="<p>"
-                    + _link("index.html", "All authorities")
-                    + " / "
-                    + _link("policies.html", "Governing policies")
-                    + " / "
-                    + _link(family_path, label)
-                    + " / "
-                    + _link(definition_path, title)
-                    + "</p>",
+                indexed = _table_html(("Authority", "Indexed elements"), authority_rows)
+            else:
+                indexed = (
+                    _table_html(("Contract element", "Owned pointer"), rows_for(applications))
+                    if applications
+                    else "<p>No contract elements are indexed here.</p>"
                 )
-            subject = (
-                "<p>Contract subject: "
-                + _link(_element_file(owner_id), str(elements[owner_id]["title"]))
-                + "</p>"
-                if owner_id
-                else ""
-            )
-            files[definition_path] = _shell(
-                f"{label}: {title}",
-                "<h2>Definition</h2>" + meaning + subject + application,
+            scope_rows = []
+            for pointer in cast(Sequence[str], record.get("applies_to", ())):
+                owner = _owning_element(pointer, owners)
+                target = (
+                    _link(_element_file(owner), str(elements[owner]["title"]))
+                    if owner
+                    else f"<code>{_esc(pointer)}</code>"
+                )
+                scope_rows.append((target, f"<code>{_esc(pointer)}</code>"))
+            files[path] = _shell(
+                f"Indexed applications: {identity}",
+                '<aside class="audit"><h2>Indexed contract elements</h2>'
+                + indexed
+                + (
+                    "<h2>Declared scope pointers</h2>"
+                    + _table_html(("Contract subject", "Exact scope"), scope_rows)
+                    if scope_rows
+                    else ""
+                )
+                + "</aside>",
                 digest,
-                audit=audit is not None,
+                audit=True,
                 documentation=documentation,
+                audit_only=True,
                 breadcrumbs="<p>"
                 + _link("index.html", "All authorities")
                 + " / "
-                + _link("policies.html", "Governing policies")
-                + " / "
-                + _link(family_path, label)
+                + _link(definition, "Policy definition")
                 + "</p>",
             )
-            parts.append(f"<li>{_link(definition_path, title)}</li>")
-        parts.append("</ul>")
-        files[family_path] = _shell(
-            label,
-            "".join(parts),
-            digest,
-            audit=audit is not None,
-            documentation=documentation,
-            breadcrumbs="<p>"
-            + _link("index.html", "All authorities")
-            + " / "
-            + _link("policies.html", "Governing policies")
-            + "</p>",
-        )
-        family_links.append(f"<li>{_link(family_path, label)} ({len(definitions_by_name)})</li>")
-    files["policies.html"] = _shell(
-        "Governing policies",
-        '<ul class="selection-list">' + "".join(family_links) + "</ul>",
-        digest,
-        audit=audit is not None,
-        documentation=documentation,
-        breadcrumbs="<p>" + _link("index.html", "All authorities") + "</p>",
-    )
     return files
 
 
@@ -1220,14 +1174,39 @@ def _audit_reference_pages(
         if not isinstance(value, Mapping)
     ]
     discovery = cast(Mapping[str, object], audit["discovery"])
+    anomalies = cast(Mapping[str, int], discovery["anomalies"])
+    coverage = cast(Mapping[str, int], discovery["projection_coverage"])
+    meta_coverage = cast(
+        Mapping[str, object], cast(Mapping[str, object], discovery["meta_closure"])["coverage"]
+    )
+
+    def measure_rows(values: Mapping[str, object]) -> list[tuple[str, str]]:
+        return [
+            (_esc(key.replace("_", " ")), f"<code>{_esc(value)}</code>")
+            for key, value in sorted(values.items())
+            if not isinstance(value, Mapping)
+        ]
+
+    breakdowns = "".join(
+        "<details><summary>By "
+        + _esc(name.replace("by_", "").replace("_", " "))
+        + "</summary>"
+        + _table_html(("Scope", "Elements"), measure_rows(cast(Mapping[str, object], counts[name])))
+        + "</details>"
+        for name in ("by_authority", "by_interface", "by_detector", "by_policy")
+    )
     page(
         "accounting.html",
         "Accounting checks",
         _table_html(("Measure", "Recorded value"), count_rows)
-        + "<details><summary>Discovery anomalies, accounting, and disposition records</summary>"
-        + _value_html(discovery, "/audit/discovery")
-        + "</details>"
-        + "<p>See also the "
+        + "<h2>Discovery anomalies</h2>"
+        + _table_html(("Check", "Count"), measure_rows(anomalies))
+        + "<h2>Projection coverage</h2>"
+        + _table_html(("Measure", "Count"), measure_rows(coverage))
+        + "<h2>Protected channels</h2>"
+        + _table_html(("Measure", "Count"), measure_rows(meta_coverage))
+        + breakdowns
+        + "<p>Inspect individual candidates, detections, dispositions, and resolutions in the "
         + _link("../riverhog-v1-audit.json", "exact bound Audit Record")
         + ".</p>",
     )
@@ -1732,7 +1711,7 @@ def render_contract(
     available_authorities = {authority for authority, _interface in groups}
     files: dict[str, bytes] = {"style.css": _STYLES.encode(), "modes.js": _MODES.encode()}
     root_entries: list[str] = []
-    for authority in sorted(available_authorities):
+    for authority in sorted(available_authorities, key=lambda name: (name != "release", name)):
         interfaces = sorted(
             (
                 (interface, groups[(authority, interface)])
@@ -1930,6 +1909,7 @@ def render_contract(
                         overlays.get(identity),
                         audit,
                         source_revision,
+                        owners,
                         affected.get(identity, ()),
                     )
                     + doc_body,
@@ -1994,7 +1974,7 @@ def render_contract(
             breadcrumbs="<p>" + _link("index.html", "All authorities") + "</p>",
         )
         root_entries.append(
-            '<article class="authority-card"><h3>'
+            f'<article class="authority-card" data-authority="{_esc(authority)}"><h3>'
             + _link(_authority_file(authority), authority)
             + authority_cue
             + '</h3><p class="authority-description">'
@@ -2025,13 +2005,7 @@ def render_contract(
             documentation_only=True,
             breadcrumbs="<p>" + _link("index.html", "All authorities") + "</p>",
         )
-    body = (
-        '<nav class="contract-references" aria-label="Contract references">'
-        + _link("policies.html", "Governing policies")
-        + " · "
-        + _link("../riverhog-v1.json", "Exact Contract Closure")
-        + "</nav>"
-    )
+    body = ""
     if audit is not None:
         presentation = cast(Mapping[str, object], audit["presentation"])
         routes = cast(Sequence[Mapping[str, str]], presentation["reference_routes"])
@@ -2056,7 +2030,14 @@ def render_contract(
         body += "<noscript>" + documentation_references + "</noscript>"
     body += (
         f'<h2>Authorities and interfaces</h2><p class="meta">{len(elements)} declared '
-        'contract elements</p><div class="authority-cards">' + "".join(root_entries) + "</div>"
+        'contract elements</p><div class="authority-filter">'
+        '<label for="authority-filter">Filter by authority name</label>'
+        '<input id="authority-filter" type="search" autocomplete="off" '
+        'aria-controls="authority-cards">'
+        '<span id="authority-filter-count" class="meta" role="status" aria-live="polite"></span>'
+        '</div><div id="authority-cards" class="authority-cards">'
+        + "".join(root_entries)
+        + "</div>"
     )
     files["index.html"] = _shell(
         "Riverhog v1 Contract Render",
@@ -2066,14 +2047,11 @@ def render_contract(
         documentation=documentation_available,
     )
     files.update(
-        _policy_pages(
-            closure,
-            audit,
-            owners,
-            elements_by_id,
-            closure_sha256,
-            documentation_available,
+        _policy_application_pages(
+            audit, owners, elements_by_id, closure_sha256, documentation_available
         )
+        if audit is not None
+        else {}
     )
     if audit is not None:
         files.update(

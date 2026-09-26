@@ -893,6 +893,7 @@ def render_human(
             "compatibility-guarantees",
             "installation-roots",
             "publication-locations",
+            "publication-policies",
             "python-distributions",
             "release-artifacts",
             "runtime-images",

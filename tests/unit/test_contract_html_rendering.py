@@ -18,7 +18,6 @@ from contract_atlas.html_rendering import (  # noqa: E402
     _element_file,
     _hash,
     _inventory_file,
-    _policy_definition_file,
     contract_body,
     render_contract,
     validate_render,
@@ -99,8 +98,10 @@ def test_authority_map_and_known_human_interface_families(
     root = files["riverhog-v1/index.html"].decode()
     authorities = {str(element["authority"]) for element in elements}
     interfaces = {(str(element["authority"]), str(element["interface"])) for element in elements}
-    assert '<div class="authority-cards">' in root
-    assert root.count('<article class="authority-card">') == len(authorities)
+    assert '<div id="authority-cards" class="authority-cards">' in root
+    assert root.count('<article class="authority-card" data-authority=') == len(authorities)
+    assert root.index('data-authority="release"') < root.index('data-authority="riverhog"')
+    assert 'id="authority-filter"' in root
     assert "Generated v1 candidate; no freeze or qualification" not in root
     assert "Is this exactly the external contract" not in root
     for authority in authorities:
@@ -127,6 +128,7 @@ def test_authority_map_and_known_human_interface_families(
         "compatibility-guarantees": ('class="promise"',),
         "extent": ('class="promise"',),
         "runtime-images": ("Publication and compatibility facts", "platforms"),
+        "publication-policies": ('class="promise"',),
     }
     for interface, phrases in samples.items():
         candidates = [item for item in elements if item["interface"] == interface]
@@ -196,24 +198,93 @@ def test_broad_policy_applications_retain_element_and_authority_routes(
     assert f'href="{_element_file(str(chosen["id"]))}"' in files["riverhog-v1/" + child].decode()
 
 
-def test_policy_selection_leads_to_family_then_exact_definition(
+def test_policy_definitions_have_one_authority_page_and_keep_audit_application_routes(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, audit, files = rendered_candidate
+    root = files["riverhog-v1/index.html"].decode()
+    assert "policies.html" not in files
+    assert "Governing policies" not in root
+    assert root.count(">Exact Contract Closure</a>") == 1
+    elements = cast(list[dict[str, object]], closure["elements"])
+    owners = {
+        pointer: element for element in elements for pointer in cast(list[str], element["pointers"])
+    }
+    for records in cast(dict[str, list[dict[str, object]]], audit["policies"]).values():
+        for record in records:
+            pointer = str(record["definition_pointer"])
+            owner = owners[pointer]
+            element_path = _element_file(str(owner["id"]))
+            assert "riverhog-v1/" + element_path in files
+            application_path = f"p-{_hash(str(record['id']))}.html"
+            assert f'href="{element_path}"' in files["riverhog-v1/" + application_path].decode()
+            assert f'href="{application_path}"' in files["riverhog-v1/" + element_path].decode()
+    release_policies = [
+        item
+        for item in elements
+        if item["authority"] == "release" and item["interface"] == "publication-policies"
+    ]
+    assert len(release_policies) == 3
+    release_index = files[
+        "riverhog-v1/" + _inventory_file("release", "publication-policies")
+    ].decode()
+    for item in release_policies:
+        assert f'href="{_element_file(str(item["id"]))}"' in release_index
+
+
+def test_accounting_summarizes_discovery_and_routes_exact_records_to_audit_json(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    _closure, audit, files = rendered_candidate
+    accounting = files["riverhog-v1/accounting.html"]
+    assert len(accounting) < 35_000
+    assert not any(path.startswith("riverhog-v1/accounting-") for path in files)
+    page = accounting.decode()
+    for heading in ("Discovery anomalies", "Projection coverage", "Protected channels"):
+        assert heading in page
+    for key in cast(dict[str, object], audit["discovery"])["anomalies"]:
+        assert key.replace("_", " ") in page
+    assert 'href="../riverhog-v1-audit.json"' in page
+    assert "Record 1" not in page
+
+
+def test_audit_references_use_one_qualification_route(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    _closure, _audit, files = rendered_candidate
+    root = files["riverhog-v1/index.html"].decode()
+    sources = files["riverhog-v1/sources.html"].decode()
+    assert 'href="sources.html">Sources and qualifications</a>' in root
+    assert 'href="qualifications.html"' not in root
+    assert 'href="qualifications.html">Recorded qualifications</a>' in sources
+
+
+def test_interface_lists_use_local_element_names_without_repeated_prefixes(
     rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
 ) -> None:
     closure, _audit, files = rendered_candidate
-    root = files["riverhog-v1/index.html"].decode()
-    policy_root = files["riverhog-v1/policies.html"].decode()
-    pointer = "/external_contract/release/compatibility/cli"
-    family = "policy-family-" + _hash("/external_contract/release/compatibility") + ".html"
-    definition = _policy_definition_file(pointer)
-    promise = cast(dict[str, Any], closure["external_contract"])["release"]["compatibility"]["cli"]
-    assert root.index("Contract references") < root.index("Authorities and interfaces")
-    assert "Audit key and 📦 meaning" not in root
-    assert f'href="{family}"' in policy_root
-    for family_name in ("Compatibility", "Publication", "Extent principles", "Extent rules"):
-        assert f">{family_name}</a>" in policy_root
-    assert promise not in policy_root
-    assert f'href="{definition}"' in files["riverhog-v1/" + family].decode()
-    assert promise in files["riverhog-v1/" + definition].decode()
+    for element in cast(list[dict[str, object]], closure["elements"]):
+        if element["authority"] != "release":
+            continue
+        title = str(element["title"])
+        if ": " not in title:
+            continue
+        local_name = title.split(": ", 1)[1]
+        inventory = files[
+            "riverhog-v1/" + _inventory_file(str(element["authority"]), str(element["interface"]))
+        ].decode()
+        assert f">{local_name}</a>" in inventory
+        assert f">{title}</a>" not in inventory
+    scheme = next(
+        element
+        for element in cast(list[dict[str, object]], closure["elements"])
+        if element["title"] == "securitySchemes: HTTPBearer"
+    )
+    inventory = files[
+        "riverhog-v1/" + _inventory_file(str(scheme["authority"]), str(scheme["interface"]))
+    ].decode()
+    assert ">HTTPBearer</a>" in inventory
+    assert ">securitySchemes: HTTPBearer</a>" not in inventory
 
 
 def test_selection_inventories_use_local_names_and_skip_empty_shape_filler(
