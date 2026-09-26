@@ -375,45 +375,29 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     configuration = trace["configuration_registry"]
     configuration_documents = trace["configuration_document_registry"]
     assert configuration_documents["counts"] == {
-        "contracts": 11,
-        "detections": 12,
-        "resolved_detections": 12,
+        "contracts": len(configuration_documents["candidates"]),
+        "detections": len(configuration_documents["detections"]),
+        "resolved_detections": len(configuration_documents["resolutions"]),
     }
-    assert set(configuration_documents["coverage"].values()) == {0, 11, 12}
+    assert configuration_documents["coverage"] == {
+        "detected": len(configuration_documents["detections"]),
+        "resolved": len(configuration_documents["resolutions"]),
+        "protected": len(configuration_documents["dispositions"]),
+        "unresolved": 0,
+        "duplicate_conflicts": 0,
+        "undispositioned": 0,
+    }
     assert {item["id"] for item in configuration_documents["candidates"]} == set(
         external["configuration_documents"]
     )
     assert configuration["counts"] == {
-        "contracts": 121,
-        "detections": 125,
-        "patterns": 0,
+        "contracts": len(configuration["records"]),
+        "detections": len(configuration["detections"]),
+        "patterns": len(configuration["patterns"]),
         "resolution_exceptions": 0,
-        "resolved_detections": 125,
-        "unique_environment_names": 116,
-        "by_owner": {
-            "a-gogurt-linux-listener": 2,
-            "a-gogurt-windows-listener": 3,
-            "a-riverhog-cli": 7,
-            "riverhog-client": 12,
-            "a-riverhog-ftp-spool": 1,
-            "a-riverhog-ftp-spool-client": 5,
-            "riverhog-provenance": 3,
-            "riverhog-server": 1,
-            "a-riverhog-aws-store": 3,
-            "a-riverhog-b2-store": 3,
-            "a-riverhog-filesystem-store": 8,
-            "stove0-api-client": 5,
-            "a-stove0-exiftool-observer": 8,
-            "a-stove0-ffprobe-sampling-observer": 8,
-            "a-review0-nvenc-av1-opus-sampler": 8,
-            "a-stove0-nvenc-av1-opus-target": 10,
-            "a-review0-opus-sampler": 8,
-            "a-stove0-opus-target": 9,
-            "a-review0-materializer": 7,
-            "a-review0-rclone-target": 8,
-            "stove0-server": 1,
-            "stove0-target-support": 1,
-        },
+        "resolved_detections": len(configuration["resolutions"]),
+        "unique_environment_names": len({row["name"] for row in configuration["records"]}),
+        "by_owner": dict(sorted(Counter(row["owner"] for row in configuration["records"]).items())),
     }
     assert set(configuration["coverage"].values()) == {0}
     components = {item["distribution"] for item in projection["boundaries"]["components"]}

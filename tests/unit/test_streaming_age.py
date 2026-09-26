@@ -16,7 +16,6 @@ def test_age_session_cache_single_flights_concurrent_scrypt_derivation(monkeypat
     state = ResumableAgeScryptSession.create(
         "archive passphrase",
         log_n=1,
-        plaintext_size=123,
     ).export_state(plaintext_size=123)
     original = ResumableAgeScryptSession.from_state
     count = 0
@@ -43,7 +42,6 @@ def test_prepare_age_part_consumes_large_source_chunk_without_plaintext_part_sta
     session = ResumableAgeScryptSession.create(
         "archive passphrase",
         log_n=1,
-        plaintext_size=len(content),
     )
     plan = session.age_aligned_unit_plans(
         len(content),
@@ -69,7 +67,6 @@ def test_age_session_cache_bounds_distinct_scrypt_derivations(monkeypatch) -> No
         ResumableAgeScryptSession.create(
             "archive passphrase",
             log_n=1,
-            plaintext_size=index + 1,
         ).export_state(plaintext_size=index + 1)
         for index in range(4)
     )

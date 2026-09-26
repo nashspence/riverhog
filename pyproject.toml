@@ -123,7 +123,9 @@ show_error_codes = true
 show_error_context = false
 no_error_summary = true
 color_output = false
-files = [
+
+[tool.riverhog.mypy]
+support_paths = [
   "scripts/transfer_profile.py",
   "scripts/operation_qualification.py",
   "scripts/contract_atlas",

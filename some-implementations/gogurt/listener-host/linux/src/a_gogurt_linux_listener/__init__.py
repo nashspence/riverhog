@@ -56,7 +56,7 @@ def _systemd_quote(value: str) -> str:
     return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
-def render_systemd_unit(command: Sequence[str]) -> bytes:
+def _render_systemd_unit(command: Sequence[str]) -> bytes:
     rendered = " ".join(_systemd_quote(value) for value in command)
     return (
         "[Unit]\n"
@@ -92,7 +92,7 @@ class SystemdUserAdapter:
         del paths
         registration = self.registration_file
         registration.parent.mkdir(parents=True, exist_ok=True)
-        atomic_write(registration, render_systemd_unit(command), mode=PRIVATE_FILE_MODE)
+        atomic_write(registration, _render_systemd_unit(command), mode=PRIVATE_FILE_MODE)
         self._run(["systemctl", "--user", "daemon-reload"])
         self._run(["systemctl", "--user", "enable", registration.name])
         self._run(["systemctl", "--user", "start", registration.name])
@@ -195,6 +195,5 @@ __all__ = [
     "SystemdUserAdapter",
     "default_listener_paths",
     "listener_adapter",
-    "render_systemd_unit",
     "resolve_listener_executable",
 ]

@@ -3875,7 +3875,7 @@ def operate_qualification(
             )
             write_checkpoint(checkpoint_path, checkpoint)
 
-        if checkpoint.phase in {"restore-requested", "restore-pending"}:
+        if checkpoint.phase in {"restore-requested", "restore-pending", "restored"}:
             if checkpoint.collection_id is None or checkpoint.retrieval_job_id is None:
                 raise QualificationError("restore checkpoint identity is incomplete")
             collection_id = checkpoint.collection_id
@@ -3896,6 +3896,8 @@ def operate_qualification(
             job = api.get_retrieval_job(checkpoint.retrieval_job_id)
             state = str(job.get("state", ""))
             if state == "requested":
+                if checkpoint.phase == "restored":
+                    raise QualificationError("restored retrieval regressed to requested")
                 checkpoint = advance_checkpoint(
                     checkpoint,
                     phase="restore-pending",
@@ -3915,14 +3917,19 @@ def operate_qualification(
                 )
                 write_checkpoint(checkpoint_path, checkpoint)
                 return checkpoint
+            if state == "completed" and checkpoint.phase == "restored":
+                raise QualificationError(
+                    "retrieval was acknowledged before verification was durably recorded"
+                )
             if state != "ready":
                 raise QualificationError(f"Deep Archive retrieval has unknown state: {state}")
-            checkpoint = advance_checkpoint(
-                checkpoint,
-                phase="restored",
-                assertions=("deep-archive-restore-ready",),
-            )
-            write_checkpoint(checkpoint_path, checkpoint)
+            if checkpoint.phase != "restored":
+                checkpoint = advance_checkpoint(
+                    checkpoint,
+                    phase="restored",
+                    assertions=("deep-archive-restore-ready",),
+                )
+                write_checkpoint(checkpoint_path, checkpoint)
             renewed = api.renew_retrieval_job(
                 checkpoint.retrieval_job_id,
                 lease_seconds=lease_seconds,

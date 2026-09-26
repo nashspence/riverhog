@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -36,15 +37,12 @@ official_age = pytest.mark.skipif(
 )
 
 
-def new_test_session(plaintext_size=None):
-    return ResumableAgeScryptSession.create(
-        PASS,
-        log_n=FAST_LOG_N,
-        file_key=FILE_KEY,
-        scrypt_salt=SCRYPT_SALT,
-        payload_nonce=PAYLOAD_NONCE,
-        plaintext_size=plaintext_size,
-    )
+def new_test_session():
+    with patch(
+        "riverhog_age.resumable_age.os.urandom",
+        side_effect=(FILE_KEY, SCRYPT_SALT, PAYLOAD_NONCE),
+    ):
+        return ResumableAgeScryptSession.create(PASS, log_n=FAST_LOG_N)
 
 
 @pytest.mark.parametrize(
@@ -53,7 +51,7 @@ def new_test_session(plaintext_size=None):
 )
 def test_round_trip_for_relevant_sizes(size):
     plaintext = bytes((i * 131 + 7) % 256 for i in range(size))
-    session = new_test_session(size)
+    session = new_test_session()
     age_file = session.encrypt_plaintext(plaintext)
 
     assert age_file.startswith(b"age-encryption.org/v1\n-> scrypt ")
@@ -165,7 +163,7 @@ def test_production_work_factor_interop_with_official_age_batchpass(tmp_path):
 
 def test_deterministic_regeneration_after_export_import_state():
     plaintext = os.urandom(CHUNK_SIZE * 3 + 333)
-    session1 = new_test_session(len(plaintext))
+    session1 = new_test_session()
     state = session1.export_state(plaintext_size=len(plaintext)).to_json_bytes()
 
     session2 = ResumableAgeScryptSession.from_state(PASS, UploadState.from_json_bytes(state))
@@ -184,7 +182,7 @@ def test_deterministic_regeneration_after_export_import_state():
 
 def test_age_aligned_unit_plans_reconstruct_exact_age_file():
     plaintext = os.urandom(CHUNK_SIZE * 7 + 9)
-    session = new_test_session(len(plaintext))
+    session = new_test_session()
     full = session.encrypt_plaintext(plaintext)
 
     # Use small grouping so this test exercises multiple units without huge fixtures.
@@ -208,7 +206,7 @@ def test_age_aligned_unit_plans_reconstruct_exact_age_file():
 
 def test_resume_from_middle_missing_part():
     plaintext = os.urandom(CHUNK_SIZE * 9 + 321)
-    original = new_test_session(len(plaintext))
+    original = new_test_session()
     state = original.export_state(plaintext_size=len(plaintext)).to_json_bytes()
     plans = original.age_aligned_unit_plans(len(plaintext), chunks_per_unit=2)
 
@@ -384,7 +382,7 @@ def test_age_unit_plan_has_no_provider_count_or_size_limits():
 
 def test_ranged_plaintext_provider_reconstructs_exact_age_file():
     plaintext = bytes((i * 7 + 11) % 256 for i in range(CHUNK_SIZE * 5 + 711))
-    session = new_test_session(len(plaintext))
+    session = new_test_session()
     full = session.encrypt_plaintext(plaintext)
     plans = session.age_aligned_unit_plans(len(plaintext), chunks_per_unit=2)
 

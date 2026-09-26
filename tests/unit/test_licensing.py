@@ -114,23 +114,28 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
 
 
 def test_published_images_carry_source_and_license_identity() -> None:
-    images = {
-        "riverhog/Dockerfile": "CAL-1.0",
-        "some-implementations/riverhog/ingress/ftp/Dockerfile": "Apache-2.0",
-        "some-implementations/riverhog/storage/aws/Dockerfile": "CAL-1.0",
-        "some-implementations/riverhog/storage/backblaze/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/application/server/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/observers/exiftool/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/targets/opus/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/review0/materialize-target/Dockerfile": "CAL-1.0",
-        "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": "CAL-1.0",
-        (
-            "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"
-        ): "Apache-2.0",
+    release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
+    bake = (REPO_ROOT / "docker-bake.hcl").read_text(encoding="utf-8")
+    image_blocks = re.findall(r'^target "([^"]+)" \{(.*?)^\}', bake, re.MULTILINE | re.DOTALL)
+    dockerfiles = {
+        name: match.group(1)
+        for name, body in image_blocks
+        if (match := re.search(r'^\s*dockerfile = "([^"]+)"', body, re.MULTILINE))
     }
-    for relative, expected_license in images.items():
+    assert set(dockerfiles) == set(release["images"]["runtime"]) | set(
+        release["images"]["test_only"]
+    )
+    policy = tomllib.loads((REPO_ROOT / "REUSE.toml").read_text(encoding="utf-8"))
+    override = policy["annotations"][1]
+    assert override["SPDX-License-Identifier"] == "CAL-1.0"
+
+    for name in release["images"]["runtime"]:
+        relative = dockerfiles[name]
+        expected_license = (
+            "CAL-1.0"
+            if any(relative.startswith(pattern.removesuffix("**")) for pattern in override["path"])
+            else "Apache-2.0"
+        )
         dockerfile = (REPO_ROOT / relative).read_text(encoding="utf-8")
         assert f'org.opencontainers.image.licenses="{expected_license}"' in dockerfile
         assert 'org.opencontainers.image.revision="${SOURCE_REVISION}"' in dockerfile

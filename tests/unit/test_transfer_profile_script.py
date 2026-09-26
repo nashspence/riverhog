@@ -208,7 +208,7 @@ def test_transfer_profile_reports_jcs_without_echoing_command(
     assert "/private/input" not in json.dumps(result)
 
 
-def test_missing_reference_or_context_is_reported_without_failing_profile(
+def test_omitted_reference_or_context_is_reported_without_failing_profile(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -229,8 +229,6 @@ def test_missing_reference_or_context_is_reported_without_failing_profile(
                 "resume",
                 "--payload-bytes",
                 "1",
-                "--reference",
-                "missing.json",
                 "--target-ratio",
                 "0.9",
                 "--",
@@ -241,7 +239,7 @@ def test_missing_reference_or_context_is_reported_without_failing_profile(
     )
     result = json.loads(capsys.readouterr().out)
     assert result["comparison"]["status"] == "not-compared"
-    assert result["comparison"]["reason"] == "reference-unavailable-or-invalid"
+    assert result["comparison"]["reason"] == "no-measured-reference"
     assert result["target"]["reference_ratio"] == 0.9
 
 
@@ -287,7 +285,7 @@ def test_recovery_tool_profile_does_not_require_network_baseline(
     assert os.access(SCRIPT, os.X_OK)
 
 
-def test_command_failure_reports_observation_and_exits_zero(
+def test_command_failure_reports_observation_and_exits_nonzero(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -314,7 +312,7 @@ def test_command_failure_reports_observation_and_exits_zero(
                 "false",
             ]
         )
-        == 0
+        == 2
     )
     result = json.loads(capsys.readouterr().out)
     assert result["observed"]["command_exit_code"] == 17
@@ -326,7 +324,7 @@ def test_command_failure_reports_observation_and_exits_zero(
     }
 
 
-def test_command_launch_failure_is_a_report_not_a_gate(
+def test_command_launch_failure_reports_and_exits_nonzero(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -351,7 +349,7 @@ def test_command_launch_failure_is_a_report_not_a_gate(
                 "private-command-name",
             ]
         )
-        == 0
+        == 2
     )
     result = json.loads(capsys.readouterr().out)
     assert result["observed"]["launch_state"] == "failed"
@@ -395,3 +393,111 @@ def test_absent_transfer_log_operations_do_not_gate_completed_work(
     assert result["transfer_log"] is None
     assert result["transfer_log_state"] == "unavailable-or-incomplete"
     assert result["comparison"]["status"] == "not-compared"
+
+
+@pytest.mark.parametrize("reference", ["missing", "malformed", "invalid-sample"])
+def test_explicit_invalid_reference_fails_before_running_command(
+    reference: str,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+    path = tmp_path / "reference.json"
+    if reference == "malformed":
+        path.write_text("{", encoding="utf-8")
+    elif reference == "invalid-sample":
+        path.write_text(
+            json.dumps({"format": "riverhog-transfer-profile/v3", "sample": {}}),
+            encoding="utf-8",
+        )
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda *_args, **_kwargs: pytest.fail("invalid reference started the workload"),
+    )
+
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--reference",
+                str(path),
+                "--",
+                "true",
+            ]
+        )
+        == 2
+    )
+    assert capsys.readouterr().out == ""
+
+
+def test_invalid_completion_receipt_fails_profiling(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+
+    def run(_command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        environment = kwargs["env"]
+        assert isinstance(environment, dict)
+        Path(environment["RIVERHOG_PERFORMANCE_RECEIPT"]).write_text(
+            json.dumps({"format": "riverhog-performance-completion/v1", "verified": True}),
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(["true"], 0)
+
+    monkeypatch.setattr(module.subprocess, "run", run)
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--",
+                "true",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "invalid measurement input or execution" in captured.err
+
+
+def test_impossible_measurement_fails_profiling(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda command, **_kwargs: subprocess.CompletedProcess(command, 0),
+    )
+    monkeypatch.setattr(module.time, "perf_counter", lambda: 1.0)
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--",
+                "true",
+            ]
+        )
+        == 2
+    )
+    result = json.loads(capsys.readouterr().out)
+    assert result["comparison"]["reason"] == "measurement-unavailable"

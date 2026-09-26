@@ -33,3 +33,10 @@ compose run --rm --no-deps \
   test \
   -q \
   "${postgres_tests[@]}"
+
+if [[ -z "${POSTGRES_TESTS:-}" || "${RIVERHOG_PROVIDER_CHECKPOINT_HOST_TEST:-}" == "1" ]]; then
+  export RIVERHOG_TEST_POSTGRES_URL="${database_url}"
+  RIVERHOG_PROVIDER_CHECKPOINT_HOST_TEST=1 \
+    mise x -- uv run --locked --group dev python -m pytest -q \
+      tests/integration/test_provider_qualification_checkpoint_roundtrip.py
+fi

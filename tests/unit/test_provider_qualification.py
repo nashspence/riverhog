@@ -20,6 +20,8 @@ from riverhog_protocol import (
     CollectionUploadWorkBatchDocument,
 )
 
+from scripts import provider_qualification_checkpoint as continuation
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/provider_qualification.py"
 CONFIG = REPO_ROOT / "qualification/provider/config.toml"
@@ -1355,6 +1357,7 @@ def test_operator_advances_across_short_restore_invocations(
 
     class _Api:
         ready = False
+        completed = False
 
         def get_collection_upload_session(self, collection_id: int) -> dict[str, object]:
             assert collection_id == 42
@@ -1409,6 +1412,8 @@ def test_operator_advances_across_short_restore_invocations(
 
         def get_retrieval_job(self, job_id: str) -> dict[str, object]:
             assert job_id == "job-42"
+            if self.completed:
+                return {"id": job_id, "state": "completed"}
             if not self.ready:
                 return {"id": job_id, "state": "requested"}
             return {
@@ -1418,6 +1423,7 @@ def test_operator_advances_across_short_restore_invocations(
 
         def acknowledge_retrieval_job(self, job_id: str) -> dict[str, object]:
             assert job_id == "job-42"
+            self.completed = True
             return {"state": "completed"}
 
         def renew_retrieval_job(
@@ -1508,9 +1514,58 @@ def test_operator_advances_across_short_restore_invocations(
     assert first.qualification_key_id == "a" * 16
 
     api.ready = True
+    original_write = module.write_checkpoint
+
+    def fail_after_restored(path, value):  # type: ignore[no-untyped-def]
+        original_write(path, value)
+        if value.phase == "restored":
+            raise RuntimeError("interrupted after durable restored checkpoint")
+
+    monkeypatch.setattr(module, "write_checkpoint", fail_after_restored)
+    with pytest.raises(RuntimeError, match="interrupted after durable restored checkpoint"):
+        module.operate_qualification(
+            config=config,
+            checkpoint=first,
+            checkpoint_path=checkpoint_path,
+            corpus=corpus,
+            corpus_root=corpus_root,
+            base_url="http://127.0.0.1:8000",
+            allow_insecure_http=True,
+            buckets=module.resolve_buckets(config, values),
+            cloudfront=object(),
+            values=values,
+        )
+    persisted = module.load_checkpoint(checkpoint_path)
+    assert persisted.phase == "restored"
+    (tmp_path / "database.dump").write_bytes(b"unit-only sealed database artifact")
+    (tmp_path / "continuation.json").write_text(
+        json.dumps(continuation.pair_manifest(persisted.as_dict(), tmp_path)),
+        encoding="utf-8",
+    )
+    continuation.verify_pair(module.load_checkpoint(checkpoint_path).as_dict(), tmp_path)
+    monkeypatch.setattr(module, "write_checkpoint", original_write)
+
+    api.completed = True
+    with pytest.raises(
+        module.QualificationError,
+        match="acknowledged before verification was durably recorded",
+    ):
+        module.operate_qualification(
+            config=config,
+            checkpoint=persisted,
+            checkpoint_path=checkpoint_path,
+            corpus=corpus,
+            corpus_root=corpus_root,
+            base_url="http://127.0.0.1:8000",
+            allow_insecure_http=True,
+            buckets=module.resolve_buckets(config, values),
+            cloudfront=object(),
+            values=values,
+        )
+    api.completed = False
     second = module.operate_qualification(
         config=config,
-        checkpoint=first,
+        checkpoint=module.load_checkpoint(checkpoint_path),
         checkpoint_path=checkpoint_path,
         corpus=corpus,
         corpus_root=corpus_root,
@@ -1527,7 +1582,7 @@ def test_operator_advances_across_short_restore_invocations(
     assert calls.count("_wait_archive_copy") == 1
     assert calls.count("_retire_copy") == 1
     assert calls.count("_cleanup_b2_namespace") == 1
-    assert qualification_key_ids == [None, "a" * 16]
+    assert qualification_key_ids == [None, "a" * 16, "a" * 16, "a" * 16]
     assert {item.surface for item in second.artifacts} == {
         "aws-deep-archive",
         "b2-archive",

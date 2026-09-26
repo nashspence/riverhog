@@ -280,7 +280,6 @@ def make_archive(
     age_session = ResumableAgeScryptSession.create(
         TEST_ARCHIVE_PASSPHRASE,
         log_n=1,
-        plaintext_size=len(plaintext),
     )
     pack_ciphertext = age_session.encrypt_plaintext(plaintext)
     part = StoredArchivePart(
