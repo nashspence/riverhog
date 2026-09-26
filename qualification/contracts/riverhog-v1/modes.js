@@ -3,6 +3,22 @@ const root=document.documentElement;
 const audit=document.getElementById('audit-mode');
 const docs=document.getElementById('docs-mode');
 root.dataset.js='yes';
+const authorityFilter=document.getElementById('authority-filter');
+if(authorityFilter){
+  const cards=[...document.querySelectorAll('#authority-cards > .authority-card')];
+  const count=document.getElementById('authority-filter-count');
+  function filterAuthorities(){
+    const query=authorityFilter.value.trim().toLowerCase();
+    let shown=0;
+    for(const card of cards){
+      card.hidden=!card.dataset.authority.toLowerCase().includes(query);
+      if(!card.hidden)shown++;
+    }
+    count.textContent=shown+' of '+cards.length+' authorities';
+  }
+  authorityFilter.addEventListener('input',filterAuthorities);
+  filterAuthorities();
+}
 function apply(){const url=new URL(location.href);
   const requestedAudit=url.searchParams.get('audit');
   root.dataset.audit=(requestedAudit==='1'||

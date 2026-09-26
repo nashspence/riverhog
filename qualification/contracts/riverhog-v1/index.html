@@ -15,18 +15,12 @@
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 </header>
 <h1>Riverhog v1 Contract Render</h1>
-<nav class="contract-references" aria-label="Contract references">
-<a href="policies.html">Governing policies</a> · <a href="../riverhog-v1.json">Exact Contract Closure</a>
-</nav>
 <aside class="audit audit-references">
 <details class="references">
 <summary>Audit references</summary>
 <ul>
 <li>
 <a href="audit-key.html">Audit key</a>
-</li>
-<li>
-<a href="qualifications.html">Open qualifications</a>
 </li>
 <li>
 <a href="accounting.html">Accounting checks</a>
@@ -57,9 +51,6 @@
 <a href="audit-key.html">Audit key</a>
 </li>
 <li>
-<a href="qualifications.html">Open qualifications</a>
-</li>
-<li>
 <a href="accounting.html">Accounting checks</a>
 </li>
 <li>
@@ -81,9 +72,50 @@
 </details>
 </noscript>
 <h2>Authorities and interfaces</h2>
-<p class="meta">4255 declared contract elements</p>
-<div class="authority-cards">
-<article class="authority-card">
+<p class="meta">4258 declared contract elements</p>
+<div class="authority-filter">
+<label for="authority-filter">Filter by authority name</label>
+<input id="authority-filter" type="search" autocomplete="off" aria-controls="authority-cards">
+<span id="authority-filter-count" class="meta" role="status" aria-live="polite">
+</span>
+</div>
+<div id="authority-cards" class="authority-cards">
+<article class="authority-card" data-authority="release">
+<h3>
+<a href="a-a4d451ec23463726f72c43d6.html">release</a>
+</h3>
+<p class="authority-description">Coordinated v1 compatibility and publication promises.</p>
+<div class="authority-interfaces">
+<div class="authority-interface">
+<a href="i-1e214ab4bb25a95a95c29945.html">Runtime Images</a> <span class="meta">(15)</span>
+</div>
+<div class="authority-interface">
+<a href="i-fc6f58e1b7443f92268d7b37.html">Python Distributions</a> <span class="meta">(75)</span>
+</div>
+<div class="authority-interface">
+<a href="i-82f5c3bf19190fffd8fae72f.html">Installation Roots</a> <span class="meta">(4)</span>
+</div>
+<div class="authority-interface">
+<a href="i-30c5fff681eff09d44826fef.html">Release Artifacts</a> <span class="meta">(12)</span>
+</div>
+<div class="authority-interface">
+<a href="i-1700e1ea48074e5581b44844.html">Publication Locations</a> <span class="meta">(2)</span>
+</div>
+<div class="authority-interface">
+<a href="i-f9a04f8acabad16ea8ded06b.html">Artifact Verification</a> <span class="meta">(3)</span>
+</div>
+<div class="authority-interface">
+<a href="i-7a0f80685643b92064a74016.html">Publication Policies</a> <span class="meta">(3)</span>
+</div>
+<div class="authority-interface">
+<a href="i-c05a12c3c3ff1978e9dcb9f9.html">Versioning and Tags</a> <span class="meta">(5)</span>
+</div>
+<div class="authority-interface">
+<a href="i-4287b32e1049bfc58bd14674.html">Compatibility Guarantees</a> <span class="meta">(9)</span>
+</div>
+</div>
+</article>
+<article class="authority-card" data-authority="a-gogurt-linux-listener">
 <h3>
 <a href="a-38e452bb65db28d70901030e.html">a-gogurt-linux-listener</a>
 </h3>
@@ -97,7 +129,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-gogurt-linux-volume">
 <h3>
 <a href="a-ee04d983dd6330ca738bff3e.html">a-gogurt-linux-volume</a>
 </h3>
@@ -108,7 +140,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-gogurt-macos-listener">
 <h3>
 <a href="a-db62650cb52cffcd307303a6.html">a-gogurt-macos-listener</a>
 </h3>
@@ -119,7 +151,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-gogurt-macos-volume">
 <h3>
 <a href="a-1e64f4c86d491d261ee60d15.html">a-gogurt-macos-volume</a>
 </h3>
@@ -130,7 +162,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-gogurt-path-volume-lib">
 <h3>
 <a href="a-00e1c89a946459ddae7145df.html">a-gogurt-path-volume-lib</a>
 </h3>
@@ -141,7 +173,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-gogurt-windows-listener">
 <h3>
 <a href="a-793e1d74725fdb763b34f7b1.html">a-gogurt-windows-listener</a>
 </h3>
@@ -155,7 +187,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-gogurt-windows-volume">
 <h3>
 <a href="a-427413e780718d3f49f4965a.html">a-gogurt-windows-volume</a>
 </h3>
@@ -166,7 +198,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-review0-materializer">
 <h3>
 <a href="a-515aafaf4215b2b35c4a7f47.html">a-review0-materializer</a>
 </h3>
@@ -186,7 +218,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-review0-nvenc-av1-opus-sampler">
 <h3>
 <a href="a-62bc4c07fbc3946b0281b885.html">a-review0-nvenc-av1-opus-sampler</a>
 </h3>
@@ -203,7 +235,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-review0-opus-sampler">
 <h3>
 <a href="a-2927dc06cfac55396516e49e.html">a-review0-opus-sampler</a>
 </h3>
@@ -220,7 +252,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-review0-rclone-target">
 <h3>
 <a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a>
 </h3>
@@ -243,7 +275,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-aws-store">
 <h3>
 <a href="a-58baadba7585d7c671b342be.html">a-riverhog-aws-store</a>
 </h3>
@@ -266,7 +298,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-b2-store">
 <h3>
 <a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a>
 </h3>
@@ -286,7 +318,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-cli">
 <h3>
 <a href="a-fd9a0838e23de4aa43bbeede.html">a-riverhog-cli</a>
 </h3>
@@ -300,7 +332,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-cli-local">
 <h3>
 <a href="a-7f6e32ca9ffd14d7303a237e.html">a-riverhog-cli-local</a>
 </h3>
@@ -311,7 +343,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-event-relay">
 <h3>
 <a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a>
 </h3>
@@ -328,7 +360,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-event-relay-cursor">
 <h3>
 <a href="a-9e3edf5cd3aae4347df5b263.html">a-riverhog-event-relay-cursor</a>
 </h3>
@@ -339,7 +371,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-filesystem-store">
 <h3>
 <a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a>
 </h3>
@@ -356,7 +388,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-ftp-spool">
 <h3>
 <a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a>
 <span class="audit-cue"> <a class="audit-marker" href="a-ddde5b8757ae966f662aa0b7.html#audit-scope" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
@@ -397,7 +429,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-ftp-spool-client">
 <h3>
 <a href="a-26f9a24cc37e6719930cfee3.html">a-riverhog-ftp-spool-client</a>
 </h3>
@@ -411,7 +443,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-ftp-spool-custody">
 <h3>
 <a href="a-024fff8142a09f90496a66cc.html">a-riverhog-ftp-spool-custody</a>
 </h3>
@@ -422,7 +454,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-linux-provenance-contract-lib">
 <h3>
 <a href="a-ff8afa89a33b95fa541f982a.html">a-riverhog-linux-provenance-contract-lib</a>
 </h3>
@@ -436,7 +468,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-macos-provenance-contract-lib">
 <h3>
 <a href="a-fb2358ad47710133b38954e0.html">a-riverhog-macos-provenance-contract-lib</a>
 </h3>
@@ -450,7 +482,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-minisign-witness">
 <h3>
 <a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a>
 </h3>
@@ -461,7 +493,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-minisign-witness-ledger">
 <h3>
 <a href="a-f64ff9148fca22e3d259826e.html">a-riverhog-minisign-witness-ledger</a>
 </h3>
@@ -472,7 +504,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-opentimestamps-witness">
 <h3>
 <a href="a-997ef9766dc94538af6ca12f.html">a-riverhog-opentimestamps-witness</a>
 </h3>
@@ -483,7 +515,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-opentimestamps-witness-ledger">
 <h3>
 <a href="a-de16e3f627dbd75d13d07522.html">a-riverhog-opentimestamps-witness-ledger</a>
 </h3>
@@ -494,7 +526,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-recovery-tool">
 <h3>
 <a href="a-f9814067f49c0bdafec5c1c4.html">a-riverhog-recovery-tool</a>
 </h3>
@@ -508,7 +540,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-s3-store-lib">
 <h3>
 <a href="a-94ec07ecbceb1ca1884643a5.html">a-riverhog-s3-store-lib</a>
 </h3>
@@ -519,7 +551,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-windows-provenance-contract-lib">
 <h3>
 <a href="a-8470c96ee489cd4f8b565936.html">a-riverhog-windows-provenance-contract-lib</a>
 </h3>
@@ -533,7 +565,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-riverhog-witness-contract-lib">
 <h3>
 <a href="a-09875dbcfdb5084fab41aaef.html">a-riverhog-witness-contract-lib</a>
 </h3>
@@ -544,7 +576,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-cli">
 <h3>
 <a href="a-c76f297b8c160db67d9e3171.html">a-stove0-cli</a>
 </h3>
@@ -555,7 +587,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-exiftool-observer">
 <h3>
 <a href="a-811ba54f7ca39e3a4bd07193.html">a-stove0-exiftool-observer</a>
 </h3>
@@ -572,7 +604,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-ffprobe-sampling-observer">
 <h3>
 <a href="a-a2ad4baffe19842efe11464f.html">a-stove0-ffprobe-sampling-observer</a>
 </h3>
@@ -589,7 +621,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-media-archive-contract-lib">
 <h3>
 <a href="a-b02b401b34110aaf9c72e138.html">a-stove0-media-archive-contract-lib</a>
 </h3>
@@ -600,7 +632,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-media-archive-lib">
 <h3>
 <a href="a-ff0e298f4e542280e02e651e.html">a-stove0-media-archive-lib</a>
 </h3>
@@ -611,7 +643,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-media-metadata-contract-lib">
 <h3>
 <a href="a-702ca9e84f677c2a85b03c36.html">a-stove0-media-metadata-contract-lib</a>
 </h3>
@@ -622,7 +654,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-media-sampling-contract-lib">
 <h3>
 <a href="a-5d5464f56bd953da5880c190.html">a-stove0-media-sampling-contract-lib</a>
 </h3>
@@ -633,7 +665,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-nvenc-av1-opus-target">
 <h3>
 <a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a>
 </h3>
@@ -650,7 +682,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="a-stove0-opus-target">
 <h3>
 <a href="a-89f2883f4196013d63e617b2.html">a-stove0-opus-target</a>
 </h3>
@@ -667,7 +699,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="extent-contract">
 <h3>
 <a href="a-9466de1ef9acbeb8eac4cd39.html">extent-contract</a>
 </h3>
@@ -678,7 +710,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="gogurt">
 <h3>
 <a href="a-7d1604db9f02e3c3241e15c1.html">gogurt</a>
 </h3>
@@ -689,7 +721,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="gogurt-core">
 <h3>
 <a href="a-25e914e2b06c839829d4b5c9.html">gogurt-core</a>
 </h3>
@@ -703,7 +735,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="gogurt-listener">
 <h3>
 <a href="a-36fe8529cb43310e1be4bb88.html">gogurt-listener</a>
 </h3>
@@ -714,7 +746,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="gogurt-listener-runtime">
 <h3>
 <a href="a-e65035070761b00c61d94426.html">gogurt-listener-runtime</a>
 </h3>
@@ -725,7 +757,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="http-api-contracts">
 <h3>
 <a href="a-75ef6a5312f729d5f00dd1e3.html">http-api-contracts</a>
 </h3>
@@ -736,7 +768,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="lifecycle-events">
 <h3>
 <a href="a-df5e76723e9407b9c14259de.html">lifecycle-events</a>
 </h3>
@@ -747,39 +779,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
-<h3>
-<a href="a-a4d451ec23463726f72c43d6.html">release</a>
-</h3>
-<p class="authority-description">Coordinated v1 compatibility and publication promises.</p>
-<div class="authority-interfaces">
-<div class="authority-interface">
-<a href="i-1e214ab4bb25a95a95c29945.html">Runtime Images</a> <span class="meta">(15)</span>
-</div>
-<div class="authority-interface">
-<a href="i-fc6f58e1b7443f92268d7b37.html">Python Distributions</a> <span class="meta">(75)</span>
-</div>
-<div class="authority-interface">
-<a href="i-82f5c3bf19190fffd8fae72f.html">Installation Roots</a> <span class="meta">(4)</span>
-</div>
-<div class="authority-interface">
-<a href="i-30c5fff681eff09d44826fef.html">Release Artifacts</a> <span class="meta">(12)</span>
-</div>
-<div class="authority-interface">
-<a href="i-1700e1ea48074e5581b44844.html">Publication Locations</a> <span class="meta">(2)</span>
-</div>
-<div class="authority-interface">
-<a href="i-f9a04f8acabad16ea8ded06b.html">Artifact Verification</a> <span class="meta">(3)</span>
-</div>
-<div class="authority-interface">
-<a href="i-c05a12c3c3ff1978e9dcb9f9.html">Versioning and Tags</a> <span class="meta">(5)</span>
-</div>
-<div class="authority-interface">
-<a href="i-4287b32e1049bfc58bd14674.html">Compatibility Guarantees</a> <span class="meta">(9)</span>
-</div>
-</div>
-</article>
-<article class="authority-card">
+<article class="authority-card" data-authority="review0-planner">
 <h3>
 <a href="a-f3e5ed0bad8dff78fdb42d2f.html">review0-planner</a>
 </h3>
@@ -793,7 +793,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="review0-sampler-client">
 <h3>
 <a href="a-46c3d1e0f244e69f1ac6b9ad.html">review0-sampler-client</a>
 </h3>
@@ -804,7 +804,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="review0-sampler-lib">
 <h3>
 <a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a>
 </h3>
@@ -827,7 +827,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="review0-sampler-protocol">
 <h3>
 <a href="a-107a12dbaa357067178e1f78.html">review0-sampler-protocol</a>
 </h3>
@@ -838,7 +838,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="review0-target-contracts">
 <h3>
 <a href="a-9bec37329ab1cbbfd4a42b90.html">review0-target-contracts</a>
 </h3>
@@ -849,7 +849,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="review0-target-lib">
 <h3>
 <a href="a-9283e186006ef9d1d4697f0b.html">review0-target-lib</a>
 </h3>
@@ -863,7 +863,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog">
 <h3>
 <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a>
 <span class="audit-cue"> <a class="audit-marker" href="a-cfb6aad90e04e42b98fd7ae3.html#audit-scope" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
@@ -889,7 +889,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-age">
 <h3>
 <a href="a-93f473c5765d8814df08e4f9.html">riverhog-age</a>
 </h3>
@@ -900,7 +900,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-application-access">
 <h3>
 <a href="a-1cd02f33d0f0e67400963067.html">riverhog-application-access</a>
 </h3>
@@ -911,7 +911,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-archive-contracts">
 <h3>
 <a href="a-4efc13a0fac247c0be41c895.html">riverhog-archive-contracts</a>
 <span class="audit-cue"> <a class="audit-marker" href="a-4efc13a0fac247c0be41c895.html#audit-scope" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
@@ -929,7 +929,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-canonical-json">
 <h3>
 <a href="a-b58c15f39fb0ccd647ab1741.html">riverhog-canonical-json</a>
 </h3>
@@ -940,7 +940,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-catalog">
 <h3>
 <a href="a-919a34a8115bd878cd846124.html">riverhog-catalog</a>
 </h3>
@@ -951,7 +951,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-client">
 <h3>
 <a href="a-813668008c58c34f22497fe7.html">riverhog-client</a>
 </h3>
@@ -965,7 +965,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-protocol">
 <h3>
 <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a>
 </h3>
@@ -979,7 +979,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-provenance">
 <h3>
 <a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a>
 <span class="audit-cue"> <a class="audit-marker" href="a-81870add6571b2868fd78b0e.html#audit-scope" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
@@ -1000,7 +1000,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-provenance-contracts">
 <h3>
 <a href="a-bc20dd7716669253f524a47d.html">riverhog-provenance-contracts</a>
 </h3>
@@ -1011,7 +1011,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-provenance-installation">
 <h3>
 <a href="a-d7a8175a04ce531099ef01f5.html">riverhog-provenance-installation</a>
 </h3>
@@ -1022,7 +1022,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-server">
 <h3>
 <a href="a-6efea6f4cbc204fa714f57f2.html">riverhog-server</a>
 </h3>
@@ -1042,7 +1042,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-storage-adapter-asgi-support">
 <h3>
 <a href="a-6c9c248e52be4234a4941ea6.html">riverhog-storage-adapter-asgi-support</a>
 </h3>
@@ -1053,7 +1053,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-storage-adapter-protocol">
 <h3>
 <a href="a-f4c498cb15427cce58c8b8cd.html">riverhog-storage-adapter-protocol</a>
 </h3>
@@ -1064,7 +1064,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="riverhog-storage-adapter-support">
 <h3>
 <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a>
 <span class="audit-cue"> <a class="audit-marker" href="a-20f64efed79fb2e94ef137f4.html#audit-scope" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
@@ -1091,7 +1091,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="state-schema">
 <h3>
 <a href="a-dc7e110390277417d04a795d.html">state-schema</a>
 </h3>
@@ -1102,7 +1102,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0">
 <h3>
 <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a>
 <span class="audit-cue"> <a class="audit-marker" href="a-be3cf0a42a9d2c43a6660b21.html#audit-scope" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
@@ -1125,7 +1125,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-api-client">
 <h3>
 <a href="a-d81d0dac73e8a21e3eac2e2b.html">stove0-api-client</a>
 </h3>
@@ -1139,7 +1139,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-control">
 <h3>
 <a href="a-fa5e9c5931dde462428b4c36.html">stove0-control</a>
 </h3>
@@ -1150,7 +1150,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-observer-client">
 <h3>
 <a href="a-904415b677f6949d7d978fe0.html">stove0-observer-client</a>
 </h3>
@@ -1161,7 +1161,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-observer-protocol">
 <h3>
 <a href="a-4896799d0d02b62aed32603a.html">stove0-observer-protocol</a>
 </h3>
@@ -1172,7 +1172,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-observer-support">
 <h3>
 <a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a>
 </h3>
@@ -1195,7 +1195,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-operator-contracts">
 <h3>
 <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a>
 </h3>
@@ -1206,7 +1206,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-protocol">
 <h3>
 <a href="a-b7097e292dfa22136f062c0e.html">stove0-protocol</a>
 </h3>
@@ -1217,7 +1217,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-recipe-config">
 <h3>
 <a href="a-47b7ff64677e81fa8cd81205.html">stove0-recipe-config</a>
 </h3>
@@ -1231,7 +1231,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-server">
 <h3>
 <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a>
 </h3>
@@ -1254,7 +1254,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-target-client">
 <h3>
 <a href="a-c4df57cb2aae082005a35482.html">stove0-target-client</a>
 </h3>
@@ -1265,7 +1265,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-target-jobs">
 <h3>
 <a href="a-0a9044947708e1ffff5630f5.html">stove0-target-jobs</a>
 </h3>
@@ -1276,7 +1276,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-target-protocol">
 <h3>
 <a href="a-096638de6c16bdc06120df18.html">stove0-target-protocol</a>
 </h3>
@@ -1287,7 +1287,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="stove0-target-support">
 <h3>
 <a href="a-a23132e8892754e98db86957.html">stove0-target-support</a>
 </h3>
@@ -1313,7 +1313,7 @@
 </div>
 </div>
 </article>
-<article class="authority-card">
+<article class="authority-card" data-authority="time-formats">
 <h3>
 <a href="a-26dd4906606046dac0aa0fac.html">time-formats</a>
 </h3>
@@ -1329,7 +1329,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+<p>Closure SHA-256: <code>6e0a401e8cca4b94faa6cb13a590dc68afe2e31e511d6f58edb65d75d39079ae</code>
 </p>
 </details>
 </footer>

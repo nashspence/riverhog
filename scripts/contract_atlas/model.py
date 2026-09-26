@@ -382,6 +382,15 @@ _INTERFACE_DESCRIPTORS = (
         "release",
     ),
     InterfaceDescriptor(
+        "publication-policies",
+        "Publication Policies",
+        "Rules governing published distribution, installation, and image identities.",
+        6,
+        ("make release-check", "make dist-smoke", "make build"),
+        "release",
+        "release",
+    ),
+    InterfaceDescriptor(
         "python",
         "Python",
         "Declared public imports and their selected exact structural contracts.",

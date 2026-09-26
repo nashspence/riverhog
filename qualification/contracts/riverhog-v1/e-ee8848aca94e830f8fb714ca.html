@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Policy: image identity scope · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-a4d451ec23463726f72c43d6.html">release</a> / <a href="i-7a0f80685643b92064a74016.html">Publication Policies</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+</header>
+<h1>Policy: image identity scope</h1>
+<p class="context">Coordinated v1 compatibility and publication promises. Rules governing published distribution, installation, and image identities.</p>
+<section id="contract" data-contract="publication-policies:release:policy-image-identity-scope:cfdb3bad4c">
+<h2>Contract</h2>
+<div class="human-contract">
+<p class="promise">Runtime descriptors use OCI ImageID (the image configuration SHA-256 digest). A platform-specific image-manifest digest pins a deployed image; an image-index digest identifies the publication set, including attestations. Nonpublishing qualification records local ImageIDs; publication evidence records platform manifest digests. Per-release identities are not permanent v1 contract constants.</p>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/release/publication/policy/image_identity_scope</code>
+</h4>
+<span id="v-21db8888913b2abad506cbbf">
+<code data-value-pointer="/external_contract/release/publication/policy/image_identity_scope">Runtime descriptors use OCI ImageID (the image configuration SHA-256 digest). A platform-specific image-manifest digest pins a deployed image; an image-index digest identifies the publication set, including attestations. Nonpublishing qualification records local ImageIDs; publication evidence records platform manifest digests. Per-release identities are not permanent v1 contract constants.</code>
+<span class="kind">string</span>
+</span>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Indexed applications</h3>
+<ul>
+<li>
+<a href="p-8fb44d24369aa3f2654e7e43.html">publication/image-identity-scope/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-03a2f48338f5e4266c3c60dd">release-publication:planner</a> — <code data-source-path="scripts/release.py">scripts/release.py::publication_contract</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c5380dbe5fe03e44a5c0d8d6">release:release.toml</a> — <code data-source-path="release.toml">release.toml</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
+</li>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>6e0a401e8cca4b94faa6cb13a590dc68afe2e31e511d6f58edb65d75d39079ae</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

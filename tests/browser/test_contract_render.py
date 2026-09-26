@@ -20,7 +20,6 @@ from contract_atlas.html_rendering import (  # noqa: E402
     _authority_file,
     _element_file,
     _inventory_file,
-    _policy_definition_file,
     render_contract,
 )
 from contract_atlas.model import canonical_bytes, canonical_sha256  # noqa: E402
@@ -255,7 +254,15 @@ def test_selection_and_matrix_tables_use_labeled_cards_at_phone_and_desktop_widt
         _inventory_file("riverhog", "http-operations"),
         _inventory_file("riverhog-catalog", "durable-state"),
         "source-authorities.html?audit=1",
-        _policy_definition_file("/external_contract/extents/rules/bounded-segment~1v1"),
+        _element_file(
+            str(
+                next(
+                    item["id"]
+                    for item in bundle.closure["elements"]
+                    if "/external_contract/extents/rules/bounded-segment~1v1" in item["pointers"]
+                )
+            )
+        ),
         _element_file(str(schema["id"])),
     ):
         page.goto(f"{base}/contract-candidate/riverhog-v1/{path}")
@@ -311,4 +318,34 @@ def test_selection_and_matrix_tables_use_labeled_cards_at_phone_and_desktop_widt
     assert page.evaluate(
         "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
     )
+    context.close()
+
+
+def test_authority_filter_dark_mode_and_accounting_navigation(
+    candidate_site: tuple[str, str, str], browser: Browser
+) -> None:
+    base, _element_file_name, _literal = candidate_site
+    context = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="dark")
+    page = context.new_page()
+    page.goto(f"{base}/contract-candidate/riverhog-v1/index.html")
+    cards = page.locator("#authority-cards > .authority-card")
+    assert cards.first.get_attribute("data-authority") == "release"
+    assert page.evaluate("getComputedStyle(document.documentElement).colorScheme") == "dark"
+    assert (
+        page.evaluate("getComputedStyle(document.documentElement).backgroundColor")
+        != "rgb(255, 255, 255)"
+    )
+    assert (
+        page.evaluate("getComputedStyle(document.querySelector('a')).color") != "rgb(23, 78, 114)"
+    )
+    authority_filter = page.get_by_role("searchbox", name="Filter by authority name")
+    authority_filter.fill("riverhog-catalog")
+    assert page.locator("#authority-filter-count").inner_text().startswith("1 of ")
+    assert page.locator("#authority-cards > .authority-card:visible").count() == 1
+    authority_filter.fill("")
+    assert page.locator("#authority-cards > .authority-card:visible").count() == cards.count()
+    page.goto(f"{base}/contract-candidate/riverhog-v1/accounting.html?audit=1")
+    assert page.get_by_role("heading", name="Accounting checks").is_visible()
+    assert page.get_by_role("heading", name="Discovery anomalies").is_visible()
+    assert page.get_by_role("link", name="exact bound Audit Record").is_visible()
     context.close()
