@@ -119,6 +119,25 @@ markers = [
 [tool.mypy]
 python_version = "3.12"
 strict = true
+show_error_codes = true
+show_error_context = false
+no_error_summary = true
+color_output = false
+files = [
+  "scripts/transfer_profile.py",
+  "scripts/operation_qualification.py",
+  "scripts/contract_atlas",
+  "scripts/contract_freeze.py",
+  "scripts/provider_qualification.py",
+  "scripts/provider_qualification_checkpoint.py",
+  "scripts/release.py",
+  "scripts/runtime_image_identity.py",
+  "scripts/release_installation.py",
+  "scripts/test_a_riverhog_event_relay_image.py",
+  "scripts/test_witness_image.py",
+  "scripts/qualify_installation.py",
+  "scripts/run_mypy.py",
+]
 
 [[tool.mypy.overrides]]
 module = "a_riverhog_linux_provenance_observer"

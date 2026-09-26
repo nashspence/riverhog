@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import subprocess
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -185,7 +186,12 @@ def test_release_resolver_covers_inventory_and_writes_pins(
     monkeypatch.setattr(module, "resolve_image", resolve)
     result = module.resolve_release_images(ROOT / "release.toml", "1.0.0")
     assert result["format"] == "riverhog-runtime-image-identities/v1"
-    assert len(result["images"]) == len(seen) == 15
+    declared = tomllib.loads((ROOT / "release.toml").read_text(encoding="utf-8"))["images"][
+        "runtime"
+    ]
+    assert set(result["images"]) == set(declared)
+    assert len(seen) == len(declared)
+    assert set(seen) == {(value["repository"], "1.0.0") for value in declared.values()}
     env = module.compose_env(result)
     assert (
         "A_STOVE0_OPUS_TARGET_IMAGE_REF="

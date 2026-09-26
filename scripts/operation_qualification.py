@@ -1046,6 +1046,8 @@ def _event_cursor_restart_claim(
         "restart qualification.",
         "local_api_process_restart": {
             "status": "passed" if feeds and witnessed.keys() == feeds.keys() else "not_established",
+            "required_feeds": len(feeds),
+            "passed_feeds": len(witnessed),
             "scope": "Fresh Python processes recreate API compositions over persisted SQLite. "
             "Official clients use real ASGI routes; owner services seed the event fixtures.",
             "limitations": "Does not qualify deployed images, PostgreSQL, crash recovery, "
@@ -1109,14 +1111,17 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
             },
             "cli_human_json_projection": {
                 "status": "not_established",
-                "reason": "This timing report does not record successful CLI projection "
-                "assertions.",
-                "operations": sum(item.classification == "human-cli+json" for item in matrix),
+                "reason": "This timing report does not record successful, semantically paired "
+                "human and JSON CLI assertions across the required scope.",
+                "required_operations": sum(
+                    item.classification == "human-cli+json" for item in matrix
+                ),
             },
             "bounded_state_access": {
                 "status": "not_established",
-                "reason": "Operation timings do not measure state-access bounds.",
-                "applications": ["riverhog", "a-riverhog-ftp-spool", "stove0"],
+                "reason": "Operation timings do not measure state-access bounds across "
+                "the required applications.",
+                "required_applications": sorted({item.application for item in matrix}),
             },
             "event_cursor_restart_resume": restart_claim,
             "provider_backed_lifecycles": {
@@ -1182,7 +1187,9 @@ def evidence_markdown(payload: dict[str, Any]) -> str:
             "",
             "## Local event-cursor process restart",
             "",
-            f"**{local['status'].replace('_', ' ')}** — {local['scope']}",
+            f"**{local['status'].replace('_', ' ')}** — "
+            f"{local['passed_feeds']} of {local['required_feeds']} required feeds. "
+            f"{local['scope']}",
             "",
             local["limitations"],
             "",

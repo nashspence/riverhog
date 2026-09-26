@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import tomllib
 from pathlib import Path
 
@@ -165,32 +166,19 @@ def test_every_first_party_image_build_requests_an_sbom_attestation() -> None:
     workflow = yaml.safe_load((REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"))
     compose_helper = (REPO_ROOT / "scripts/_compose_env.sh").read_text(encoding="utf-8")
 
-    image_targets = [
-        "riverhog",
-        "a-riverhog-ftp-spool",
-        "a-riverhog-aws-store",
-        "a-riverhog-b2-store",
-        "a-riverhog-filesystem-store",
-        "stove0",
-        "a-stove0-ffprobe-sampling-observer",
-        "a-stove0-exiftool-observer",
-        "a-stove0-nvenc-av1-opus-target",
-        "a-stove0-opus-target",
-        "a-review0-materializer",
-        "a-review0-rclone-target",
-        "a-riverhog-event-relay",
-        "a-riverhog-minisign-witness",
-        "a-riverhog-opentimestamps-witness",
-        "test",
-    ]
+    group = re.search(r'group "default" \{(?P<body>.*?)\n\}', bake, re.DOTALL)
+    assert group is not None
+    image_targets = set(re.findall(r'"([^"]+)"', group.group("body")))
+    declared_targets = set(re.findall(r'^target "([^"]+)" \{', bake, re.MULTILINE)) - {
+        "image-common"
+    }
+    assert image_targets == declared_targets
     sbom_generator = (
         "docker.io/docker/buildkit-syft-scanner:stable-1@"
         "sha256:79e7b013cbec16bbb436f312819a49a4a57752b2270c1a9332ae1a10fcc82a68"
     )
-    assert bake.count('target "') == len(image_targets) + 1
     assert 'target "image-common"' in bake
     assert f'"type=sbom,generator={sbom_generator}"' in bake
-    assert all(f'target "{target}"' in bake for target in image_targets)
     assert bake.count('inherits   = ["image-common"]') == len(image_targets)
     assert 'docker buildx bake --file "$(BAKE_FILE)" --load' in makefile
     image_steps = workflow["jobs"]["images"]["steps"]

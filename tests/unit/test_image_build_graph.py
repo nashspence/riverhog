@@ -288,7 +288,7 @@ def test_bake_graph_is_the_canonical_image_build_contract() -> None:
         "images"
     ]["runtime"]
 
-    assert graph["group"] == {"default": {"targets": list(IMAGE_CONTRACTS)}}
+    assert set(graph["group"]["default"]["targets"]) == set(graph["target"])
     assert graph["common"] == {
         "platforms": ["linux/amd64"],
         "args": {"SOURCE_DATE_EPOCH": "0"},
@@ -576,7 +576,7 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
     assert workflow["permissions"] == {"contents": "read"}
 
     job = workflow["jobs"]["images"]
-    assert job["strategy"]["matrix"] == {"target": list(IMAGE_CONTRACTS)}
+    assert job["strategy"]["matrix"] == {"target": _bake_graph()["group"]["default"]["targets"]}
     assert job["env"] == {"DOCKER_BUILD_RECORD_UPLOAD": "false"}
     steps = {step["name"]: step for step in job["steps"]}
     assert steps["Configure Docker Buildx"] == {

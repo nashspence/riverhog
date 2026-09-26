@@ -180,8 +180,14 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert len(contract["closure_sha256"]) == 64
     assert len(contract["audit_sha256"]) == 64
     assert len(contract["extent_analysis_sha256"]) == 64
-    assert payload["qualification"]["cli_human_json_projection"]["status"] == "not_established"
-    assert payload["qualification"]["bounded_state_access"]["status"] == "not_established"
+    cli_claim = payload["qualification"]["cli_human_json_projection"]
+    assert cli_claim["status"] == "not_established"
+    assert cli_claim["required_operations"] == sum(
+        item.classification == "human-cli+json" for item in matrix
+    )
+    state_claim = payload["qualification"]["bounded_state_access"]
+    assert state_claim["status"] == "not_established"
+    assert state_claim["required_applications"] == sorted({item.application for item in matrix})
     assert payload["qualification"]["event_cursor_restart_resume"]["status"] == "not_established"
     assert all(set(item) == set(module.Operation.__dataclass_fields__) for item in operations)
 
@@ -277,6 +283,7 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
     assert claim["status"] == "not_established"
     local = claim["local_api_process_restart"]
     assert local["status"] == "passed"
+    assert local["passed_feeds"] == local["required_feeds"] == len(local["operations"])
     assert {(item["application"], item["operation_id"]) for item in local["operations"]} == {
         ("riverhog", "list_lifecycle_events"),
         ("stove0", "list_events"),
