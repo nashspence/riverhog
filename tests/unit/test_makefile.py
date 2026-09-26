@@ -622,7 +622,7 @@ def test_postgres_concurrency_target_uses_disposable_postgres(tmp_path: Path) ->
 
     assert completed.returncode == 0, completed.stderr
     assert [line.split("|", 1)[1] for line in _read_log_lines(uv_log_path)] == [
-        "x -- uv run --locked --group dev python -m pytest -q "
+        "x -- uv run --locked --group dev python -m pytest -p no:cacheprovider -q "
         "tests/integration/test_provider_qualification_checkpoint_roundtrip.py"
     ]
     docker_log = "\n".join(_read_log_lines(docker_log_path))
