@@ -5,7 +5,6 @@ MISE_BIN ?= mise
 FILES ?= .
 TESTS ?= packages some-implementations riverhog tests/unit
 UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --instafail --durations=30 --durations-min=0.25
-POSTGRES_TESTS ?= tests/integration/test_catalog_schema_postgres.py tests/integration/test_collection_deletion_concurrency.py tests/integration/test_collection_upload_custody_concurrency.py tests/integration/test_download_allowance_concurrency.py tests/integration/test_lifecycle_event_concurrency.py tests/integration/test_public_selector_plans_postgres.py tests/integration/test_retrieval_cache_admission_concurrency.py tests/integration/test_stove0_postgres_concurrency.py
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
@@ -14,97 +13,9 @@ RELEASE_SIGNING_KEY ?=
 RELEASE_PUBLIC_KEY ?=
 UV_RUN = "$(MISE_BIN)" x -- uv run --locked --all-packages --group dev
 BAKE_FILE = docker-bake.hcl
-MYPY_FLAGS = --show-error-codes --hide-error-context --no-error-summary --no-color-output
-MYPY_SOURCES = \
-	some-implementations/stove0/application/client/src \
-	some-implementations/gogurt/packages/core/src \
-	some-implementations/gogurt/packages/listener-runtime/src \
-	some-implementations/gogurt/mounted-volume/path-support/src \
-	some-implementations/gogurt/listener-host/linux/src \
-	some-implementations/gogurt/listener-host/macos/src \
-	some-implementations/gogurt/listener-host/windows/src \
-	some-implementations/gogurt/mounted-volume/linux/src \
-	some-implementations/gogurt/mounted-volume/macos/src \
-	some-implementations/gogurt/mounted-volume/windows/src \
-	some-implementations/stove0/observers/exiftool/src \
-	some-implementations/stove0/observers/ffprobe-sampling/src \
-	some-implementations/stove0/review0/samplers/nvenc-av1-opus/src \
-	some-implementations/stove0/targets/nvenc-av1-opus/target/src \
-	some-implementations/stove0/review0/samplers/opus/src \
-	some-implementations/stove0/targets/opus/target/src \
-	some-implementations/stove0/review0/materialize-target/src \
-	some-implementations/stove0/review0/rclone-effect-target/src \
-	some-implementations/stove0/review0/support/src \
-	some-implementations/stove0/application/server/src \
-	packages/riverhog-application-access/src \
-	packages/config-validation/src \
-	packages/http-api-contracts/src \
-	packages/lifecycle-events/src \
-	packages/riverhog-age/src \
-	packages/riverhog-archive-contracts/src \
-	packages/riverhog-canonical-json/src \
-	some-implementations/riverhog/ingress/ftp-api-client/src \
-	packages/riverhog-client/src \
-	packages/riverhog-protocol/src \
-	packages/riverhog-provenance-contracts/src \
-	some-implementations/riverhog/provenance/contracts/linux/src \
-	some-implementations/riverhog/provenance/observers/linux/src \
-	some-implementations/riverhog/provenance/contracts/macos/src \
-	some-implementations/riverhog/provenance/observers/macos/src \
-	some-implementations/riverhog/provenance/contracts/windows/src \
-	some-implementations/riverhog/provenance/observers/windows/src \
-	packages/riverhog-storage-adapter-asgi-support/src \
-	packages/riverhog-storage-adapter-protocol/src \
-	some-implementations/riverhog/storage/s3-support/src \
-	packages/riverhog-storage-adapter-support/src \
-	some-implementations/stove0/packages/api-client/src \
-	some-implementations/stove0/packages/observer-client/src \
-	some-implementations/stove0/packages/observer-protocol/src \
-	some-implementations/stove0/packages/observer-support/src \
-	some-implementations/stove0/packages/operator-contracts/src \
-	some-implementations/stove0/targets/media-archive/contracts/src \
-	some-implementations/stove0/targets/media-archive/support/src \
-	some-implementations/stove0/observers/contracts/media-metadata/src \
-	some-implementations/stove0/observers/contracts/media-sampling/src \
-	some-implementations/stove0/packages/protocol/src \
-	some-implementations/stove0/packages/recipe-config/src \
-	some-implementations/stove0/review0/planning/src \
-	some-implementations/stove0/review0/contracts/src \
-	some-implementations/stove0/review0/sampler/client/src \
-	some-implementations/stove0/review0/sampler/protocol/src \
-	some-implementations/stove0/review0/sampler/support/src \
-	some-implementations/stove0/packages/target-client/src \
-	some-implementations/stove0/packages/target-protocol/src \
-	some-implementations/stove0/packages/target-support/src \
-	packages/riverhog-provenance/src \
-	packages/state-schema/src \
-	packages/time-formats/src \
-	some-implementations/riverhog/applications/a-riverhog-cli/src \
-	some-implementations/riverhog/ingress/ftp/src \
-	some-implementations/riverhog/recovery/src \
-	riverhog/src \
-	some-implementations/riverhog/storage/aws/src \
-	some-implementations/riverhog/storage/backblaze/src \
-	some-implementations/riverhog/storage/filesystem/src \
-	scripts/transfer_profile.py \
-	scripts/operation_qualification.py \
-	scripts/contract_atlas \
-	scripts/contract_freeze.py \
-	scripts/provider_qualification.py \
-	scripts/release.py \
-	scripts/runtime_image_identity.py \
-	scripts/release_installation.py \
-	scripts/test_a_riverhog_event_relay_image.py \
-	scripts/test_witness_image.py \
-	scripts/qualify_installation.py \
-	some-implementations/gogurt/application/src \
-	some-implementations/riverhog/applications/a-riverhog-event-relay/src \
-	some-implementations/riverhog/packages/a-riverhog-witness-contract-lib/src \
-	some-implementations/riverhog/applications/a-riverhog-minisign-witness/src \
-	some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update contract-browser contract-browser-docker profile provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke dist dist-smoke build bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -119,10 +30,10 @@ define BAKE_IMAGE
 	@revision="$$(git rev-parse --verify HEAD)"; \
 	created="$$(git show -s --format=%cI HEAD)"; \
 	docker buildx bake --file "$(BAKE_FILE)" --load \
-		--set "$(1).args.SOURCE_REVISION=$$revision" \
-		--set "$(1).args.BUILD_CREATED=$$created" \
-		--set "$(1).args.SOURCE_DATE_EPOCH=0" \
-		--set "$(1).args.RELEASE_VERSION=development" "$(1)"
+		--set "*.args.SOURCE_REVISION=$$revision" \
+		--set "*.args.BUILD_CREATED=$$created" \
+		--set "*.args.SOURCE_DATE_EPOCH=0" \
+		--set "*.args.RELEASE_VERSION=development" "$(1)"
 endef
 
 help:
@@ -162,23 +73,8 @@ help:
 		'  make a-riverhog-event-relay-smoke  Exercise the already-built final Riverhog event relay image.' \
 		'  make dist              Build every Python distribution independently.' \
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
-		'  make build-riverhog    Build the Riverhog image.' \
-		'  make build-a-riverhog-ftp-spool Build the FTP spool image.' \
-		'  make build-a-riverhog-aws-store Build the AWS store image.' \
-		'  make build-a-riverhog-b2-store Build the B2 store image.' \
-		'  make build-a-riverhog-filesystem-store Build the filesystem store image.' \
-		'  make build-stove0      Build the stove0 service image.' \
-		'  make build-a-stove0-exiftool-observer Build the ExifTool observer image.' \
-		'  make build-a-stove0-ffprobe-sampling-observer Build the FFprobe observer image.' \
-		'  make build-a-stove0-nvenc-av1-opus-target Build the NVENC AV1 + Opus target/sampler image.' \
-		'  make build-a-stove0-opus-target Build the slim Opus target/sampler image.' \
-		'  make build-a-review0-materializer Build the review materialization target image.' \
-		'  make build-a-review0-rclone-target Build the Review0 rclone target image.' \
-		'  make build-a-riverhog-event-relay  Build the Riverhog event relay image.' \
-		'  make build-a-riverhog-minisign-witness Build the Minisign witness image.' \
-		'  make build-a-riverhog-opentimestamps-witness Build the OpenTimestamps witness image.' \
-		'  make build-test        Build the test image.' \
-		'  make build             Build every application and test image.' \
+		'  make build-<bake-target> Build one target declared in docker-bake.hcl.' \
+		'  make build             Build the docker-bake.hcl default image group.' \
 		'  make bootstrap-garage  Start Garage and apply the checked-in bucket/key bootstrap.' \
 		'  make down              Tear the compose-managed test stack down.' \
 		'  make test              Run lint, then unit.' \
@@ -218,7 +114,7 @@ format-check:
 fix: ruff-fix format
 
 mypy:
-	$(call UV_CMD,python -m mypy $(MYPY_SOURCES) $(MYPY_FLAGS) $(args))
+	$(call UV_CMD,python scripts/run_mypy.py $(args))
 
 lint: license format-check ruff mypy
 
@@ -316,50 +212,11 @@ dist-smoke: dist
 	@$(UV_RUN) python scripts/release.py verify-distributions
 	@MISE_BIN="$(MISE_BIN)" ./scripts/test_distributions.sh
 
-build-riverhog:
-	$(call BAKE_IMAGE,riverhog)
+.PHONY: FORCE
+FORCE:
 
-build-a-riverhog-ftp-spool:
-	$(call BAKE_IMAGE,a-riverhog-ftp-spool)
-
-build-a-riverhog-aws-store:
-	$(call BAKE_IMAGE,a-riverhog-aws-store)
-
-build-a-riverhog-b2-store:
-	$(call BAKE_IMAGE,a-riverhog-b2-store)
-
-build-a-riverhog-filesystem-store:
-	$(call BAKE_IMAGE,a-riverhog-filesystem-store)
-
-build-stove0:
-	$(call BAKE_IMAGE,stove0)
-
-build-a-stove0-exiftool-observer:
-	$(call BAKE_IMAGE,a-stove0-exiftool-observer)
-
-build-a-stove0-ffprobe-sampling-observer:
-	$(call BAKE_IMAGE,a-stove0-ffprobe-sampling-observer)
-
-build-a-stove0-nvenc-av1-opus-target:
-	$(call BAKE_IMAGE,a-stove0-nvenc-av1-opus-target)
-
-build-a-stove0-opus-target:
-	$(call BAKE_IMAGE,a-stove0-opus-target)
-
-build-a-review0-materializer:
-	$(call BAKE_IMAGE,a-review0-materializer)
-
-build-a-review0-rclone-target:
-	$(call BAKE_IMAGE,a-review0-rclone-target)
-
-build-a-riverhog-event-relay:
-	$(call BAKE_IMAGE,a-riverhog-event-relay)
-
-build-a-riverhog-minisign-witness:
-	$(call BAKE_IMAGE,a-riverhog-minisign-witness)
-
-build-a-riverhog-opentimestamps-witness:
-	$(call BAKE_IMAGE,a-riverhog-opentimestamps-witness)
+build-%: FORCE
+	$(call BAKE_IMAGE,$*)
 
 a-riverhog-event-relay-smoke:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -368,10 +225,8 @@ a-riverhog-event-relay-smoke:
 	fi
 	@"$(MISE_BIN)" x python -- python scripts/test_a_riverhog_event_relay_image.py
 
-build-test:
-	$(call BAKE_IMAGE,test)
-
-build: build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test
+build:
+	$(call BAKE_IMAGE,default)
 
 bootstrap-garage:
 	@./scripts/bootstrap_garage.sh

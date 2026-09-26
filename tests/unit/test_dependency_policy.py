@@ -7,6 +7,7 @@ from pathlib import Path
 
 import yaml
 
+from scripts.run_mypy import mypy_paths
 from tests.workspace import workspace_pyprojects
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -68,36 +69,7 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
     assert mise["settings"]["http_retries"] == 5
     assert mise["settings"]["lockfile"] is True
     assert "dev" in pyproject["dependency-groups"]
-    assert pyproject["tool"]["uv"]["workspace"]["members"] == [
-        "packages/*",
-        "some-implementations/gogurt/application",
-        "some-implementations/gogurt/listener-host/*",
-        "some-implementations/gogurt/mounted-volume/*",
-        "some-implementations/gogurt/packages/*",
-        "some-implementations/riverhog/applications/*",
-        "some-implementations/riverhog/packages/*",
-        "some-implementations/riverhog/ingress/*",
-        "some-implementations/riverhog/provenance/contracts/*",
-        "some-implementations/riverhog/provenance/observers/*",
-        "some-implementations/riverhog/recovery",
-        "some-implementations/riverhog/storage/*",
-        "some-implementations/stove0/application/client",
-        "some-implementations/stove0/application/server",
-        "some-implementations/stove0/observers/exiftool",
-        "some-implementations/stove0/observers/ffprobe-sampling",
-        "some-implementations/stove0/observers/contracts/*",
-        "some-implementations/stove0/targets/media-archive/*",
-        "some-implementations/stove0/review0/contracts",
-        "some-implementations/stove0/review0/materialize-target",
-        "some-implementations/stove0/review0/planning",
-        "some-implementations/stove0/review0/rclone-effect-target",
-        "some-implementations/stove0/review0/support",
-        "some-implementations/stove0/review0/sampler/*",
-        "some-implementations/stove0/review0/samplers/*",
-        "some-implementations/stove0/targets/*/target",
-        "some-implementations/stove0/packages/*",
-        "riverhog",
-    ]
+    assert pyproject["tool"]["uv"]["workspace"]["members"]
     assert (REPO_ROOT / "mise.lock").is_file()
     assert (REPO_ROOT / "uv.lock").is_file()
     assert "mise.local.toml" in gitignore
@@ -112,7 +84,7 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
 
 def test_every_workspace_component_enters_the_default_python_gates() -> None:
     config = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    mypy_sources = set(_make_words("MYPY_SOURCES"))
+    mypy_sources = set(mypy_paths(REPO_ROOT))
     unit_roots = tuple(REPO_ROOT / path for path in _make_words("TESTS"))
     compile_roots = tuple(REPO_ROOT / path for path in _make_words("PYTHON_PATHS"))
     pytest_roots = tuple(
@@ -130,6 +102,20 @@ def test_every_workspace_component_enters_the_default_python_gates() -> None:
         if tests.is_dir() and any(tests.rglob("test_*.py")):
             assert any(tests.is_relative_to(root) for root in unit_roots)
             assert any(tests.is_relative_to(root) for root in pytest_roots)
+
+
+def test_mypy_discovery_includes_new_workspace_source(tmp_path: Path) -> None:
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.uv.workspace]\nmembers = ["packages/*"]\n'
+        '[tool.mypy]\nfiles = ["scripts/support.py"]\n',
+        encoding="utf-8",
+    )
+    new_component = tmp_path / "packages/new-component"
+    new_component.mkdir(parents=True)
+    (new_component / "pyproject.toml").write_text('[project]\nname = "new-component"\n')
+    (new_component / "src").mkdir()
+
+    assert mypy_paths(tmp_path) == ["packages/new-component/src", "scripts/support.py"]
 
 
 def test_native_test_tools_are_pinned_to_reproducible_sources() -> None:

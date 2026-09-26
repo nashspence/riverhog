@@ -405,50 +405,14 @@ def test_local_targets_fail_clearly_when_mise_is_missing(tmp_path: Path) -> None
     assert "MISE_BIN=/abs/path/to/mise" in completed.stderr
 
 
-def test_mypy_target_covers_source_and_service_apps(tmp_path: Path) -> None:
+def test_mypy_target_uses_workspace_source_discovery(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(tmp_path, "mypy", "args=--strict")
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(docker_log_path) == []
-    uv_log_lines = _read_log_lines(uv_log_path)
-    assert len(uv_log_lines) == 1
-    assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[0]
-    for source in (
-        "some-implementations/stove0/observers/exiftool/src",
-        "some-implementations/stove0/observers/ffprobe-sampling/src",
-        "some-implementations/stove0/review0/samplers/nvenc-av1-opus/src",
-        "some-implementations/stove0/targets/nvenc-av1-opus/target/src",
-        "some-implementations/stove0/review0/samplers/opus/src",
-        "some-implementations/stove0/targets/opus/target/src",
-        "some-implementations/stove0/review0/materialize-target/src",
-        "some-implementations/stove0/review0/rclone-effect-target/src",
-        "some-implementations/stove0/review0/support/src",
-        "some-implementations/stove0/application/server/src",
-        "some-implementations/stove0/targets/media-archive/contracts/src",
-        "some-implementations/stove0/targets/media-archive/support/src",
-        "some-implementations/stove0/observers/contracts/media-metadata/src",
-        "some-implementations/stove0/observers/contracts/media-sampling/src",
-        "some-implementations/stove0/packages/observer-client/src",
-        "some-implementations/stove0/review0/planning/src",
-        "some-implementations/stove0/review0/sampler/protocol/src",
-        "some-implementations/stove0/review0/sampler/support/src",
-        "some-implementations/stove0/review0/sampler/client/src",
-        "some-implementations/stove0/review0/contracts/src",
-        "some-implementations/stove0/packages/target-client/src",
-    ):
-        assert source in uv_log_lines[0]
-    assert (
-        "some-implementations/riverhog/applications/a-riverhog-cli/src "
-        "some-implementations/riverhog/ingress/ftp/src some-implementations/riverhog/recovery/src"
-        in uv_log_lines[0]
-    )
-    assert "scripts/operation_qualification.py" in uv_log_lines[0]
-    assert "scripts/provider_qualification.py" in uv_log_lines[0]
-    assert (
-        "some-implementations/gogurt/application/src "
-        "some-implementations/riverhog/applications/a-riverhog-event-relay/src" in uv_log_lines[0]
-    )
-    assert "--no-error-summary --no-color-output --strict" in uv_log_lines[0]
+    assert _read_log_lines(uv_log_path) == [
+        "|x -- uv run --locked --all-packages --group dev python scripts/run_mypy.py --strict"
+    ]
 
 
 def test_provider_qualification_target_uses_locked_workspace(tmp_path: Path) -> None:
@@ -477,11 +441,13 @@ def test_lint_runs_license_format_ruff_and_mypy(tmp_path: Path) -> None:
     assert "python -m reuse lint" in uv_log_lines[0]
     assert "python -m ruff format --check ." in uv_log_lines[1]
     assert "python -m ruff check ." in uv_log_lines[2]
-    assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[3]
+    assert "python scripts/run_mypy.py" in uv_log_lines[3]
 
 
 def test_build_targets_use_the_canonical_bake_graph(tmp_path: Path) -> None:
-    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "build")
+    completed, docker_log_path, uv_log_path = _run_make(
+        tmp_path, "build", "build-riverhog", "build-test"
+    )
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(uv_log_path) == []
@@ -499,31 +465,13 @@ def test_build_targets_use_the_canonical_bake_graph(tmp_path: Path) -> None:
         capture_output=True,
         text=True,
     ).stdout.strip()
-    targets = (
-        "riverhog",
-        "a-riverhog-ftp-spool",
-        "a-riverhog-aws-store",
-        "a-riverhog-b2-store",
-        "a-riverhog-filesystem-store",
-        "stove0",
-        "a-stove0-exiftool-observer",
-        "a-stove0-ffprobe-sampling-observer",
-        "a-stove0-nvenc-av1-opus-target",
-        "a-stove0-opus-target",
-        "a-review0-materializer",
-        "a-review0-rclone-target",
-        "a-riverhog-event-relay",
-        "a-riverhog-minisign-witness",
-        "a-riverhog-opentimestamps-witness",
-        "test",
-    )
     assert _read_log_lines(docker_log_path) == [
         "|buildx bake --file docker-bake.hcl --load "
-        f"--set {target}.args.SOURCE_REVISION={revision} "
-        f"--set {target}.args.BUILD_CREATED={created} "
-        f"--set {target}.args.SOURCE_DATE_EPOCH=0 "
-        f"--set {target}.args.RELEASE_VERSION=development {target}"
-        for target in targets
+        f"--set *.args.SOURCE_REVISION={revision} "
+        f"--set *.args.BUILD_CREATED={created} "
+        "--set *.args.SOURCE_DATE_EPOCH=0 "
+        f"--set *.args.RELEASE_VERSION=development {target}"
+        for target in ("default", "riverhog", "test")
     ]
 
 
@@ -681,6 +629,7 @@ def test_postgres_concurrency_target_uses_disposable_postgres(tmp_path: Path) ->
     assert "tests/integration/test_collection_deletion_concurrency.py" in docker_log
     assert "tests/integration/test_download_allowance_concurrency.py" in docker_log
     assert "tests/integration/test_retrieval_cache_admission_concurrency.py" in docker_log
+    assert "tests/integration/test_provider_qualification_checkpoint_postgres.py" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
 
 
@@ -769,8 +718,8 @@ def test_repo_wide_lint_targets_cover_source_and_service_apps() -> None:
     assert "python -m ruff check --fix $(FILES)" in makefile
     assert "python -m ruff format $(FILES)" in makefile
     assert "python -m ruff format --check $(FILES)" in makefile
-    assert "MYPY_SOURCES" in makefile
-    assert "riverhog/src" in makefile
+    assert "python scripts/run_mypy.py $(args)" in makefile
+    assert "[tool.uv.workspace]" in pyproject
     assert "strict = true" in pyproject
 
 
@@ -880,7 +829,7 @@ def test_test_aggregate_runs_lint_then_unit(tmp_path: Path) -> None:
     assert "python -m reuse lint" in uv_log_lines[0]
     assert "python -m ruff format --check ." in uv_log_lines[1]
     assert "python -m ruff check ." in uv_log_lines[2]
-    assert "python -m mypy some-implementations/stove0/application/client/src" in uv_log_lines[3]
+    assert "python scripts/run_mypy.py" in uv_log_lines[3]
     assert (
         "python -m pytest -q -n 4 --dist=loadscope --instafail "
         "--durations=30 --durations-min=0.25 "
@@ -902,19 +851,12 @@ def test_help_describes_make_targets(tmp_path: Path) -> None:
 
     assert completed.returncode == 0, completed.stderr
     assert "make bootstrap-garage" in completed.stdout
-    assert "make build-riverhog" in completed.stdout
-    assert "make build-a-riverhog-ftp-spool" in completed.stdout
-    assert "make build-stove0" in completed.stdout
-    assert "make build-a-stove0-exiftool-observer" in completed.stdout
-    assert "make build-a-stove0-ffprobe-sampling-observer" in completed.stdout
-    assert "make build-a-stove0-nvenc-av1-opus-target" in completed.stdout
-    assert "make build-a-stove0-opus-target" in completed.stdout
-    assert "make build-a-review0-materializer" in completed.stdout
-    assert "make build-a-review0-rclone-target" in completed.stdout
-    assert "make build-a-riverhog-event-relay" in completed.stdout
+    assert "make build-<bake-target>" in completed.stdout
+    assert (
+        "make build             Build the docker-bake.hcl default image group." in completed.stdout
+    )
     assert "make a-riverhog-event-relay-smoke" in completed.stdout
     assert "make stove0-scale-qualification" in completed.stdout
-    assert "make build-test" in completed.stdout
     assert "make dist-smoke" in completed.stdout
     assert "make fix" in completed.stdout
     assert "make format" in completed.stdout

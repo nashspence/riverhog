@@ -17,6 +17,19 @@ CONTRACT_PAGES_WORKFLOW = REPO_ROOT / ".github/workflows/contract-pages.yml"
 PROVIDER_QUALIFICATION_COMPOSE = REPO_ROOT / "tests/harness/provider-qualification.compose.yaml"
 MISE_LOCK = REPO_ROOT / "mise.lock"
 DATABASE_QUALIFICATION_SCRIPT = REPO_ROOT / "scripts/database_qualification.py"
+UPLOAD_ARTIFACT_USE = "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+
+
+def test_artifact_uploads_use_one_pinned_node24_action() -> None:
+    uploads = [
+        step["uses"]
+        for path in (REPO_ROOT / ".github/workflows").glob("*.yml")
+        for job in yaml.load(path.read_text(), Loader=yaml.BaseLoader)["jobs"].values()
+        for step in job.get("steps", [])
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    ]
+    assert uploads
+    assert all(use == UPLOAD_ARTIFACT_USE for use in uploads)
 
 
 def test_contract_candidate_pages_uses_exact_green_main_and_preview_environment() -> None:
@@ -690,6 +703,8 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
     } == {item.strip() for item in image_build["with"]["targets"].split(",")}
     assert "RIVERHOG_QUALIFICATION_STORAGE_ADAPTER_TOKEN_PATH" in key_material["run"]
     assert 'test -z "${RIVERHOG_DATABASE_URL:-}"' in deployment_env["run"]
+    assert "runtime-config $CONFIG_PATH" in deployment_env["run"]
+    assert 'test -s "$runtime_env.database-url"' in deployment_env["run"]
     assert "RIVERHOG_DATABASE_URL=" in deployment_env["run"]
     assert "docker volume ls" in deployment_env["run"]
     assert "sudo chown 65532:65532" in runtime_secrets["run"]
@@ -697,6 +712,8 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
     assert "RIVERHOG_QUALIFICATION_CLOUDFRONT_PRIVATE_KEY_PATH" in runtime_secrets["run"]
     assert "RIVERHOG_QUALIFICATION_STORAGE_ADAPTER_TOKEN_PATH" in runtime_secrets["run"]
     assert "postgresql+psycopg://riverhog:riverhog@postgres:5432/riverhog" in deployment["run"]
+    assert ".services.app.environment.RIVERHOG_CONFIG" in deployment["run"]
+    assert '"/run/secrets/riverhog-database-url"' in deployment["run"]
     assert "tests/harness/provider-qualification.compose.yaml" in deployment["run"]
     assert "logs --no-color --tail 80" in deployment["run"]
     assert "aws-deep-archive-adapter" in deployment["run"]
@@ -704,8 +721,26 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
     assert "b2-retrieval-cache-adapter" in deployment["run"]
     assert "default_container; default_container()" in deployment["run"]
     assert "timeout 30s" in deployment["run"]
-    assert "pg_dump" in snapshot["run"]
-    assert "536870912" in snapshot["run"]
+    assert 'provider_qualification_checkpoint.py capture "$STATE_DIR"' in snapshot["run"]
+    assert snapshot["id"] == "snapshot"
+    assert "steps.terminal_key.outcome == 'success'" in snapshot["if"]
+    terminal_key = next(step for step in steps if step.get("id") == "terminal_key")
+    assert 'revoke-terminal "$STATE_DIR"' in terminal_key["run"]
+    assert terminal_key["if"] == "always() && steps.deployment.outcome == 'success'"
+    assert set(terminal_key["env"]) == {"RIVERHOG_QUALIFICATION_BOOTSTRAP_TOKEN"}
+    pair_check = next(
+        step
+        for step in steps
+        if step["name"] == "Verify exact continuation pair before provider access"
+    )
+    assert pair_check["if"] == "needs.resolve.outputs.action == 'poll'"
+    assert 'verify-pair "$STATE_INPUT_DIR"' in pair_check["run"]
+    assert steps.index(pair_check) < steps.index(b2_check)
+    assert 'verify-pair "$state_dir"' in state["run"]
+    restore = next(step for step in steps if step["name"] == "Restore disposable database state")
+    assert "pg_restore --exit-on-error" in restore["run"]
+    operate = next(step for step in steps if step.get("id") == "operate")
+    assert steps.index(operate) < steps.index(terminal_key) < steps.index(snapshot)
 
     package = next(
         step
@@ -713,11 +748,16 @@ def test_provider_qualification_is_resumable_dummy_only_and_cloudfront_required(
         if step["name"] == "Package resumable dummy state and public evidence"
     )
     assert package["if"] == (
-        "always() && env.STATE_DIR != '' && steps.deployment.outcome == 'success'"
+        "always() && env.STATE_DIR != '' && steps.deployment.outcome == 'success' "
+        "&& steps.snapshot.outcome == 'success'"
     )
     upload = next(step for step in steps if step["name"] == "Upload bounded qualification state")
     assert 'if [[ "$phase" == cleaned || "$phase" == failed ]]' in package["run"]
     assert 'cp "$STATE_DIR/checkpoint.json" "$STATE_DIR/database.dump"' in package["run"]
+    assert '"$STATE_DIR/continuation.json" "$artifact_dir/"' in package["run"]
+    assert 'verify-pair "$artifact_dir"' in package["run"]
+    assert upload["if"] == "always() && steps.package.outcome == 'success'"
+    assert steps.index(snapshot) < steps.index(package) < steps.index(upload)
     assert "retention_days=90" in package["run"]
     assert upload["with"] == {
         "name": "provider-qualification-state",
