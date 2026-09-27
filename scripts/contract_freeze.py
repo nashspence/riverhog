@@ -389,10 +389,7 @@ def _stable_repr(value: object) -> str:
 
 
 def _class_surface(value: type[object]) -> dict[str, object]:
-    surface: dict[str, object] = {
-        "kind": "class",
-        "signature": _signature(value),
-    }
+    surface: dict[str, object] = {"kind": "class"}
     if issubclass(value, Enum):
         surface["enum_values"] = {
             name: _json_value(member.value) for name, member in value.__members__.items()
@@ -419,6 +416,9 @@ def _class_surface(value: type[object]) -> dict[str, object]:
             }
             for field in fields(value)
         ]
+    # Pydantic may finish a model's generated signature while building its
+    # schema. Discover both from the same fully initialized model state.
+    surface["signature"] = _signature(value)
     return surface
 
 
