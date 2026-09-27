@@ -898,7 +898,6 @@ def test_python_model_schema_ignores_only_schema_prose_annotations() -> None:
         value: str = Field(description="Second documentation-only field description.")
 
     assert module._class_surface(First)["schema"] == module._class_surface(Second)["schema"]
-
     raw = {
         "title": "Presentation only",
         "description": "Presentation only",
@@ -927,6 +926,32 @@ def test_python_model_schema_ignores_only_schema_prose_annotations() -> None:
         "title": "literal value",
         "description": "literal value",
     }
+
+
+def test_python_model_signature_is_discovered_after_schema_initialization() -> None:
+    source = """
+import sys
+from riverhog_protocol import ExternalEffectSettlementDocument
+from stove0_recipe_config import RecipeNoAction
+sys.path.insert(0, 'scripts')
+import contract_freeze
+for model, field in (
+    (RecipeNoAction, 'code:'),
+    (ExternalEffectSettlementDocument, 'claim_id:'),
+):
+    surface = contract_freeze._class_surface(model)
+    assert surface['signature'] == contract_freeze._signature(model)
+    assert field in surface['signature']
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", source],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+    assert completed.returncode == 0, completed.stderr[-4000:]
 
 
 def test_python_model_schema_retains_defaults_and_validation_structure() -> None:
