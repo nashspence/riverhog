@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
@@ -61,6 +62,12 @@ from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from sqlalchemy import create_engine, delete, select
 from sqlalchemy.orm import sessionmaker
+from stove0_core.riverhog import _no_output_discard_approval
+from stove0_recipe_config import (
+    ArtifactFactBinding,
+    RecipeSourceLossEvidenceSlot,
+    RecipeSourceLossRule,
+)
 from time_formats import parse_utc_timestamp
 
 from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
@@ -1391,6 +1398,8 @@ def _no_output_claim(
     artifact: CollectionArtifactIdentity | None = None,
     retire: bool = True,
     upload_evidence: bool = True,
+    endorse_loss: bool | None = None,
+    observation_verdict: object = True,
 ) -> NoOutputSettlement:
     selected = artifact or _artifact(root)
     work = {"format": "fixture-work/v1", "marker": "no-output", "inputs": [root.as_dict()]}
@@ -1452,8 +1461,8 @@ def _no_output_claim(
             "observer_contract_sha256": "6" * 64,
             "subjects": [subject],
             "facts_schema": {"profile_sha256": "5" * 64},
-            "facts": {"considered": True},
-            "facts_sha256": canonical_json_sha256({"considered": True}),
+            "facts": {"considered": observation_verdict},
+            "facts_sha256": canonical_json_sha256({"considered": observation_verdict}),
             "state": "observed",
         }
         result = {**result_body, "result_sha256": canonical_json_sha256(result_body)}
@@ -1480,12 +1489,13 @@ def _no_output_claim(
             ],
             "reason": "The selected rule found no successor necessary.",
         }
-        approval = ArtifactDiscardApproval(
-            controller_id="stove0",
-            rule_sha256=rule_sha256,
-            evidence_json=canonical_json_bytes(evidence).decode("utf-8"),
-            evidence_sha256=canonical_json_sha256(evidence),
-        )
+        if endorse_loss is not False:
+            approval = ArtifactDiscardApproval(
+                controller_id="stove0",
+                rule_sha256=rule_sha256,
+                evidence_json=canonical_json_bytes(evidence).decode("utf-8"),
+                evidence_sha256=canonical_json_sha256(evidence),
+            )
     service.record_dispositions(
         str(claim["id"]),
         fence=1,
@@ -1533,6 +1543,56 @@ def test_source_loss_approval_requires_retained_exact_observation(
     service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
     with pytest.raises(Conflict, match="lacks exact successful evidence"):
         _no_output_claim(service, root, approved_loss=True, upload_evidence=False)
+
+
+def test_mismatched_no_output_verdict_cannot_retire_source(
+    tmp_path: Path, request: FixtureRequest
+) -> None:
+    factory = _session_factory(tmp_path, request)
+    root = _setup(factory)
+    service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
+    subject = _artifact(root)
+    slot = RecipeSourceLossEvidenceSlot(
+        observation_contract_id="fixture.observation/v1",
+        observation_contract_sha256="6" * 64,
+        facts_profile_sha256="5" * 64,
+        artifact_facts=ArtifactFactBinding(records_pointer="/records"),
+        verdict_pointer="/considered",
+        verdict_value=True,
+    )
+    rule = RecipeSourceLossRule(id="fixture.discard/v1", evidence_slots=(slot,))
+    approval = _no_output_discard_approval(
+        subject,
+        rule,
+        cast(Any, SimpleNamespace(observations=())),
+        controller_id="stove0",
+        reason="No successor is needed.",
+        index={
+            (slot.observation_contract_id, slot.facts_profile_sha256, subject): [
+                ("9" * 64, [{"considered": 1}])
+            ]
+        },
+    )
+    assert approval is None
+
+    document = _no_output_claim(
+        service,
+        root,
+        approved_loss=True,
+        endorse_loss=approval is not None,
+        observation_verdict=1,
+    )
+    settled = service.settle_claim_no_output(
+        document.claim_id, fence=1, settlement=document.as_dict(), principal=_principal()
+    )
+    assert settled["state"] == "settled"
+    with pytest.raises(Conflict, match="lacks a verified safe disposition"):
+        service.begin_source_collection_retirement(
+            document.claim_id, fence=1, principal=_principal()
+        )
+    with factory() as session:
+        assert session.get(CollectionRecord, root.collection_id) is not None
+        assert session.get(CollectionFileRecord, (root.collection_id, subject.path)) is not None
 
 
 @pytest.mark.parametrize("approved_loss", [False, True])
