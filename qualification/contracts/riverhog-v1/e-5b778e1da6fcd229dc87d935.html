@@ -65,7 +65,7 @@
 <code>phase</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;no_output_pending&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -257,7 +257,7 @@
 </th>
 <td>
 <span id="v-d4c83d1eddeca336d52f7f81">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/12">abandon_pending</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/12">no_output_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -267,7 +267,7 @@
 </th>
 <td>
 <span id="v-26af16077f36afeca574ab15">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/13">complete</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/13">abandon_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -277,7 +277,7 @@
 </th>
 <td>
 <span id="v-aabc0dbb58f23728cdb38fd1">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/14">no_action</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/14">complete</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -287,7 +287,7 @@
 </th>
 <td>
 <span id="v-20f0f05022bd82dc987c17d1">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/15">inapplicable</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/15">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -297,7 +297,7 @@
 </th>
 <td>
 <span id="v-7e7857d3e402cf33a91fd7c5">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/16">failed</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/16">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -307,7 +307,17 @@
 </th>
 <td>
 <span id="v-2bfe58f7f8ea14e8cab38d64">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/17">canceled</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/17">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-12500f8e0bf4cb8bbfeee2e1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData/properties/phase/enum/18">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -540,7 +550,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

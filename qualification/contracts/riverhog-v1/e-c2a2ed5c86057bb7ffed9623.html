@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-aaf6c52d44f3930e7641272c">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -84,12 +84,48 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-6ae9e84d1927f92f472f05fb">source_loss</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-4d792c47faabba97f588b58d.html#v-7c85edf325e99d50fe8a45c2">#/components/schemas/RecipeSourceLossRule</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-cf90f393f4b5f76a9546c525">when</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-e9eb028c725728a8a096c5e0.html#v-22c7204e70d74fb96c3926e1">#/components/schemas/FactPredicate</a>; minItems: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6ae9e84d1927f92f472f05fb">
+<h3>Field: source_loss</h3>
+<p class="shape">any of: <a href="e-4d792c47faabba97f588b58d.html#v-7c85edf325e99d50fe8a45c2">#/components/schemas/RecipeSourceLossRule</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-4d792c47faabba97f588b58d.html#v-7c85edf325e99d50fe8a45c2">#/components/schemas/RecipeSourceLossRule</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -237,6 +273,66 @@
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeNoAction/properties/message/type">string</code>
 <span class="kind">string</span>
 </span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_loss</code>
+</th>
+<td>
+<table id="v-6ae9e84d1927f92f472f05fb">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-6c20a0210b945e61a9370f38">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-8d879d87100bf3782cf7ff16">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d6acacd348774a4f6daa34c8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeNoAction/properties/source_loss/anyOf/0/$ref">#/components/schemas/RecipeSourceLossRule</code>
+<span class="kind">string</span> <a href="e-4d792c47faabba97f588b58d.html#v-7c85edf325e99d50fe8a45c2">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-7c700f315a3972a8f7e51bad">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-171585435e5a11284ffddd05">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeNoAction/properties/source_loss/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -433,7 +529,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

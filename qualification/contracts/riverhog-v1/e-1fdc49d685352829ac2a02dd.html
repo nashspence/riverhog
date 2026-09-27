@@ -245,6 +245,12 @@
 <li>
 <a href="#s-955be0c0653b40a58726df84">RecipeRoute</a>
 </li>
+<li>
+<a href="#s-e55aa9c5dbb16a74612165c0">RecipeSourceLossEvidenceSlot</a>
+</li>
+<li>
+<a href="#s-7ec4dffa28b1928a0ac494b6">RecipeSourceLossRule</a>
+</li>
 </ul>
 </section>
 <section class="schema-section" id="s-1c97242948f5fdb065e0602d">
@@ -1311,7 +1317,7 @@
 <section class="schema-section" id="s-8750e0eed150ecb917414add">
 <h3>Definition: RecipeNoAction</h3>
 <p class="shape">
-<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -1356,6 +1362,15 @@
 <td data-label="Shape and bounds">
 <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-56da89b5e0e224b37bb8cc20">source_loss</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-7ec4dffa28b1928a0ac494b6">#/$defs/RecipeSourceLossRule</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -1524,6 +1539,150 @@
 <code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-b67d93d394a9d7bc218caeb1">#/$defs/FactPredicate</a>; default: <code>[]</code></td>
 <td data-label="Default">
 <code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e55aa9c5dbb16a74612165c0">
+<h3>Definition: RecipeSourceLossEvidenceSlot</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;observation_contract_id&quot;,&quot;observation_contract_sha256&quot;,&quot;facts_profile_sha256&quot;,&quot;artifact_facts&quot;,&quot;verdict_pointer&quot;,&quot;verdict_value&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_facts</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">#/$defs/ArtifactFactBinding</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>facts_profile_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observation_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observation_contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>verdict_pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>verdict_value</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-7ec4dffa28b1928a0ac494b6">
+<h3>Definition: RecipeSourceLossRule</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;evidence_slots&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-38c4f94084fb8e8b145c8ed3">evidence_slots</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-e55aa9c5dbb16a74612165c0">#/$defs/RecipeSourceLossEvidenceSlot</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 </tbody>
@@ -1924,6 +2083,34 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-56da89b5e0e224b37bb8cc20">
+<h3>Field: source_loss</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-1fdc49d685352829ac2a02dd.html#v-7ec4dffa28b1928a0ac494b6">#/$defs/RecipeSourceLossRule</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-1fdc49d685352829ac2a02dd.html#v-7ec4dffa28b1928a0ac494b6">#/$defs/RecipeSourceLossRule</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-d71b7e18296792bcba12f05d">
 <h3>Field: when</h3>
 <p class="shape">
@@ -2045,6 +2232,22 @@
 <dt>type</dt>
 <dd>
 <code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-38c4f94084fb8e8b145c8ed3">
+<h3>Field: evidence_slots</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-1fdc49d685352829ac2a02dd.html#v-e55aa9c5dbb16a74612165c0">#/$defs/RecipeSourceLossEvidenceSlot</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
 </dd>
 </dl>
 </section>
@@ -5534,6 +5737,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>source_loss</code>
+</th>
+<td>
+<table id="v-56da89b5e0e224b37bb8cc20">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8cb1dbd45ca064c08c08fd79">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-63e7d94af10403bfa5680870">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-140759fa749d5854207ac98b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeNoAction/properties/source_loss/anyOf/0/$ref">#/$defs/RecipeSourceLossRule</code>
+<span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-7ec4dffa28b1928a0ac494b6">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-586f6d61164112e6d1b72d52">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-683442b5bd02cce619108683">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeNoAction/properties/source_loss/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-11948c8b20f9901b2eebee42">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeNoAction/properties/source_loss/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>when</code>
 </th>
 <td>
@@ -6322,6 +6595,426 @@
 <td>
 <span id="v-c9907be59446fea6549dd9f3">
 <code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeRoute/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeSourceLossEvidenceSlot</code>
+</th>
+<td>
+<table id="v-e55aa9c5dbb16a74612165c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-cd865a79f636a2e9377c4d3f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-837c1b680639f9d7f8293894">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_facts</code>
+</th>
+<td>
+<table id="v-7900624d19213a6d2cd3eced">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c3e2fb4ce0c4e88f1419909e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/artifact_facts/$ref">#/$defs/ArtifactFactBinding</code>
+<span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-96a56437c40e621a5a334052">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>facts_profile_sha256</code>
+</th>
+<td>
+<table id="v-42781937106f2f3584f4cf3a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-266d6d52b49cbbc4b1feeda1">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/facts_profile_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b9ce16480d79f855aecdea43">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/facts_profile_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observation_contract_id</code>
+</th>
+<td>
+<table id="v-6b79c4f474a8bbc8590ef24a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e00399c754c03c0e677be67e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/observation_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-03504fc4186f5cc19e6c3e81">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/observation_contract_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observation_contract_sha256</code>
+</th>
+<td>
+<table id="v-8f20d4db637b98aee9f97478">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7eb8a7fa253400329e5883f0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/observation_contract_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7e6884141decb179fcc18b2c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/observation_contract_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>verdict_pointer</code>
+</th>
+<td>
+<table id="v-dd7d3373228dc99cddf621db">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f6ce694152d86734a125d724">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/verdict_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ceb319ece19f3549fcf4ce10">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/verdict_pointer/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>verdict_value</code>
+</th>
+<td>
+<table id="v-5d0190b48b4a5570136c17b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0984a6b16127fbaf166c68aa">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/properties/verdict_value/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-67c0d99cde80fb39298a8457">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-1e7d9f99610ab311888fa3d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-126214ecbd51732f49e20a10">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/required/0">observation_contract_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-86d8b50a05d54faffbaa5387">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/required/1">observation_contract_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-aa37d9e71a88ef0578ecd1b2">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/required/2">facts_profile_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-d5acc01babce42427d320b7e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/required/3">artifact_facts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-87dbada8f6e9400dc24b4183">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/required/4">verdict_pointer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-3947a2fdc25726637dfd895f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/required/5">verdict_value</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-44550e4ce083e61b06407fbc">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossEvidenceSlot/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeSourceLossRule</code>
+</th>
+<td>
+<table id="v-7ec4dffa28b1928a0ac494b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-70dea5cfb948472425bac09a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1b55e3e37e8e7b2204f985a4">
+<tbody>
+<tr>
+<th scope="row">
+<code>evidence_slots</code>
+</th>
+<td>
+<table id="v-38c4f94084fb8e8b145c8ed3">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-c6079e12e7ba71659087207a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c5f123c059fc989dc3639bfd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/properties/evidence_slots/items/$ref">#/$defs/RecipeSourceLossEvidenceSlot</code>
+<span class="kind">string</span> <a href="e-1fdc49d685352829ac2a02dd.html#v-e55aa9c5dbb16a74612165c0">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-6970133bd7288e805034cade">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/properties/evidence_slots/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-720418a6372e1e780bfddb86">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/properties/evidence_slots/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-21e45d22543aaba62ddb1f5c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e194b014697264fc4686f896">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1d2661a9a784f248ec3433e4">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/properties/id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-33a02a1c19ae53f2dbb1c47d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-8de5d8318e31bd7aa48c085e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/required/0">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-47b34c581cc7be0cc3da91c6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/required/1">evidence_slots</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8bd7a2b304fca0112f6baf3d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeDefinition/contract/schema/$defs/RecipeSourceLossRule/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7150,7 +7843,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

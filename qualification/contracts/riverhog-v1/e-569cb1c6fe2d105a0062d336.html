@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=2)]) -&gt; None&quot;</code>
+<code>&quot;(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;no_output_pending&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=2)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-9ffc16ff53baf754ba1d593f">
@@ -90,7 +90,7 @@
 <code>phase</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;no_output_pending&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -306,7 +306,7 @@
 </th>
 <td>
 <span id="v-a3c52d0bc43e43c578e0db87">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/12">abandon_pending</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/12">no_output_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -316,7 +316,7 @@
 </th>
 <td>
 <span id="v-2b20c0c9b87e6d3a09ab3698">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/13">complete</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/13">abandon_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -326,7 +326,7 @@
 </th>
 <td>
 <span id="v-3ad81505c1341b57d4991559">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/14">no_action</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/14">complete</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -336,7 +336,7 @@
 </th>
 <td>
 <span id="v-b8af164206434adbd688bda7">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/15">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/15">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -346,7 +346,7 @@
 </th>
 <td>
 <span id="v-0b6c137e4a0ec33b279788b4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/16">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/16">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -356,7 +356,17 @@
 </th>
 <td>
 <span id="v-4899df6605453397053b07e5">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/17">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/17">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-4b0bd1bd84972c8eddc30d8c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/schema/properties/phase/enum/18">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -498,7 +508,7 @@
 </th>
 <td>
 <span id="v-28e16cd24939eba43443de89">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/signature">&quot;(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=2)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkUpdatedEventData/contract/signature">&quot;(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;no_output_pending&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=2)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -592,7 +602,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, role: Union[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], Literal[&#x27;*&#x27;]], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
+<code>&quot;(*, role: Union[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], Literal[&#x27;*&#x27;]], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;not-carried-forward&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-e2ea8b8c5557ecff8bf4afda">
@@ -89,7 +89,7 @@
 <td data-label="Field">
 <a href="#s-a561d92e4d4e86610bdef127">allowed_dispositions</a></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -127,7 +127,7 @@
 </section>
 <section class="schema-section" id="s-a561d92e4d4e86610bdef127">
 <h3>Field: allowed_dispositions</h3>
-<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code>
+<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -143,7 +143,7 @@
 <td data-label="Alternative">
 <a href="#s-830cc9d77a9f66d38e4584e9">1</a></td>
 <td data-label="Schema">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -213,7 +213,7 @@
 <section class="schema-section" id="s-830cc9d77a9f66d38e4584e9">
 <h3>At least one must match: 1</h3>
 <p class="shape">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -333,7 +333,7 @@
 </th>
 <td>
 <span id="v-dbd5971bbae3b89e2d553b65">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/schema/properties/allowed_dispositions/anyOf/0/items/enum/2">omitted</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/schema/properties/allowed_dispositions/anyOf/0/items/enum/2">not-carried-forward</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -343,7 +343,17 @@
 </th>
 <td>
 <span id="v-5611d557bd3d9b383636c803">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/schema/properties/allowed_dispositions/anyOf/0/items/enum/3">rejected</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/schema/properties/allowed_dispositions/anyOf/0/items/enum/3">omitted</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-6547082af93dcb657284a752">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/schema/properties/allowed_dispositions/anyOf/0/items/enum/4">rejected</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -654,7 +664,7 @@
 </th>
 <td>
 <span id="v-768712fd8a2f8754fc8d57c6">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/signature">&quot;(*, role: Union[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], Literal[&#x27;*&#x27;]], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputArtifactContract/contract/signature">&quot;(*, role: Union[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], Literal[&#x27;*&#x27;]], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;not-carried-forward&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -748,7 +758,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

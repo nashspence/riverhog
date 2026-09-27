@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;stove0-branch-set/v1&#x27;] = &#x27;stove0-branch-set/v1&#x27;, parent_work: stove0_protocol.models.WorkIdentity, decision_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], evidence_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = (), branches: Annotated[tuple[Annotated[stove0_protocol.fork_join.BranchPlan | stove0_protocol.fork_join.CoordinationBranchPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;kind&#x27;)], ...], MinLen(min_length=1)], join: stove0_protocol.fork_join.JoinDeclaration | None = None, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;stove0-branch-set/v1&#x27;] = &#x27;stove0-branch-set/v1&#x27;, parent_work: stove0_protocol.models.WorkIdentity, decision_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], evidence_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = (), branches: Annotated[tuple[Annotated[stove0_protocol.fork_join.BranchPlan | stove0_protocol.fork_join.CoordinationBranchPlan | stove0_protocol.fork_join.NoOutputBranchPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;kind&#x27;)], ...], MinLen(min_length=1)], join: stove0_protocol.fork_join.JoinDeclaration | None = None, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-30e73dc260df3cb627755169">
@@ -99,7 +99,7 @@
 <a href="#s-5b2da67281a89f375825d16c">branches</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <a href="#s-c43a61771245f62c6aba5901">exactly one of 2 alternatives</a>; minItems: <code>1</code></td>
+<code>array</code>; items: <a href="#s-c43a61771245f62c6aba5901">exactly one of 3 alternatives</a>; minItems: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -236,6 +236,9 @@
 <a href="#s-fb6fe79cb8d17136c28bdaaf">JsonValue</a>
 </li>
 <li>
+<a href="#s-ae88f3003d595aa62e6b3a4f">NoOutputBranchPlan</a>
+</li>
+<li>
 <a href="#s-a345e58c75ba46f1c1820349">NonnegativeDecimal</a>
 </li>
 <li>
@@ -246,6 +249,9 @@
 </li>
 <li>
 <a href="#s-469ab2f604381b5be39d9700">OutputCollectionPolicy</a>
+</li>
+<li>
+<a href="#s-9e71ef8a414b7b8e68964890">PreviewOutcome</a>
 </li>
 <li>
 <a href="#s-a98f2f0277a241a18eccd43a">RecipeIdentityRef</a>
@@ -267,7 +273,7 @@
 <section class="schema-section" id="s-5b2da67281a89f375825d16c">
 <h3>Field: branches</h3>
 <p class="shape">
-<code>array</code>; items: <a href="#s-c43a61771245f62c6aba5901">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+<code>array</code>; items: <a href="#s-c43a61771245f62c6aba5901">exactly one of 3 alternatives</a>; minItems: <code>1</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -1690,6 +1696,106 @@
 <h3>Definition: JsonValue</h3>
 <p class="shape">any JSON value</p>
 </section>
+<section class="schema-section" id="s-ae88f3003d595aa62e6b3a4f">
+<h3>Definition: NoOutputBranchPlan</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;artifact_selection&quot;,&quot;work&quot;,&quot;observations&quot;,&quot;outcome&quot;,&quot;decision_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_selection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-fb6c4d019ed948eac9e2a460.html#v-e4fae573b44f483a15bad12e">#/$defs/ArtifactSelectionRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>branch_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>decision_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>no-output</code>; default: <code>no-output</code></td>
+<td data-label="Default">
+<code>no-output</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f25dc7c3777ac01939efc577">observations</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fb6c4d019ed948eac9e2a460.html#v-9fd5d0757869868caee4bc0a">#/$defs/ContentObservationEvidence</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>outcome</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-fb6c4d019ed948eac9e2a460.html#v-9e71ef8a414b7b8e68964890">#/$defs/PreviewOutcome</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>work</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-fb6c4d019ed948eac9e2a460.html#v-003bfc60077c5db4b2352988">#/$defs/WorkIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-a345e58c75ba46f1c1820349">
 <h3>Definition: NonnegativeDecimal</h3>
 <p class="shape">
@@ -1912,6 +2018,69 @@
 <tr>
 <td data-label="Field">
 <a href="#s-99fb745f76973d5cde653ee2">use_cache</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9e71ef8a414b7b8e68964890">
+<h3>Definition: PreviewOutcome</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-6b1e264ee1f13145f518e321">retryable</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
 <td data-label="Default">
@@ -2466,12 +2635,12 @@
 </section>
 <section class="schema-section" id="s-c43a61771245f62c6aba5901">
 <h3>items schema</h3>
-<p class="shape">exactly one of: <a href="e-fb6c4d019ed948eac9e2a460.html#v-68ec3d00c6b650f905e69ed4">#/$defs/BranchPlan</a>; <a href="e-fb6c4d019ed948eac9e2a460.html#v-adb13afaef3928826b038591">#/$defs/CoordinationBranchPlan</a>
+<p class="shape">exactly one of: <a href="e-fb6c4d019ed948eac9e2a460.html#v-68ec3d00c6b650f905e69ed4">#/$defs/BranchPlan</a>; <a href="e-fb6c4d019ed948eac9e2a460.html#v-adb13afaef3928826b038591">#/$defs/CoordinationBranchPlan</a>; <a href="e-fb6c4d019ed948eac9e2a460.html#v-ae88f3003d595aa62e6b3a4f">#/$defs/NoOutputBranchPlan</a>
 </p>
 <dl class="facts">
 <dt>discriminator</dt>
 <dd>
-<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;,&quot;no-output&quot;:&quot;#/$defs/NoOutputBranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
@@ -2493,6 +2662,11 @@
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
 <a href="e-fb6c4d019ed948eac9e2a460.html#v-adb13afaef3928826b038591">#/$defs/CoordinationBranchPlan</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">
+<a href="e-fb6c4d019ed948eac9e2a460.html#v-ae88f3003d595aa62e6b3a4f">#/$defs/NoOutputBranchPlan</a></td>
 </tr>
 </tbody>
 </table>
@@ -2827,6 +3001,18 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-f25dc7c3777ac01939efc577">
+<h3>Field: observations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fb6c4d019ed948eac9e2a460.html#v-9fd5d0757869868caee4bc0a">#/$defs/ContentObservationEvidence</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-1f004695e79a95fa3534f641">
 <h3>Field: archive_store</h3>
 <p class="shape">default: <code>null</code>; any of: <a href="e-fb6c4d019ed948eac9e2a460.html#v-429e3487477057197fb879f6">#/$defs/ArchiveStoreName</a>; <code>null</code>
@@ -2881,6 +3067,34 @@
 </section>
 <section class="schema-section" id="s-99fb745f76973d5cde653ee2">
 <h3>Field: use_cache</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6b1e264ee1f13145f518e321">
+<h3>Field: retryable</h3>
 <p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
@@ -7619,6 +7833,316 @@
 </tr>
 <tr>
 <th scope="row">
+<code>NoOutputBranchPlan</code>
+</th>
+<td>
+<table id="v-ae88f3003d595aa62e6b3a4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-4452fef03bf382b4cceb5b1e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-cd43604239fdbb0e8ca346db">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_selection</code>
+</th>
+<td>
+<table id="v-0c7ad29cdf3b31a258aaeae4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3de692366607bb7f023d0406">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/artifact_selection/$ref">#/$defs/ArtifactSelectionRef</code>
+<span class="kind">string</span> <a href="e-fb6c4d019ed948eac9e2a460.html#v-e4fae573b44f483a15bad12e">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-f55296eabbaaebdcb842c631">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e1996c07bb504b1f94caab42">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-73d9c6e2f5870051ef9ee0f9">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>decision_sha256</code>
+</th>
+<td>
+<table id="v-26bac69e5a176a37b7d84441">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e31aff1b9517ac3b92c39339">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/decision_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-008be76e4895244d79f31879">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/decision_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-6c0d5069023af08a02cffb2b">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-d9d43d48ddda3818507a86ab">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/kind/const">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-26a0b7b16c57022d0b43692b">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/kind/default">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-839104f4dcc23d1e92d0ff5d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observations</code>
+</th>
+<td>
+<table id="v-f25dc7c3777ac01939efc577">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-afbbc13fc7b9402a614177ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ca0054b3d121f3d8b0aef1e3">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/observations/items/$ref">#/$defs/ContentObservationEvidence</code>
+<span class="kind">string</span> <a href="e-fb6c4d019ed948eac9e2a460.html#v-9fd5d0757869868caee4bc0a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7fc6dca55ef455b626dcd345">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/observations/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-18157911b7c016fa0fdba152">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1d9a5a31013372b86adb4c9f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/outcome/$ref">#/$defs/PreviewOutcome</code>
+<span class="kind">string</span> <a href="e-fb6c4d019ed948eac9e2a460.html#v-9e71ef8a414b7b8e68964890">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-4afaab01363348bccabc0ae5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d2a256fe0ffbec2ab8a432a5">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/properties/work/$ref">#/$defs/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-fb6c4d019ed948eac9e2a460.html#v-003bfc60077c5db4b2352988">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-45888c5c041e8f0b48330120">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e9382ffce7009e3c0b65b30f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/required/0">branch_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7146b9d01fe49eecb31840ec">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/required/1">artifact_selection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-80379988ccd4b86f8cde6fdb">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/required/2">work</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-477063f92461935f18e51424">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/required/3">observations</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-66018d5b6c0441de8fa81478">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/required/4">outcome</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-d95183bbfbe9e873a379501a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/required/5">decision_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e600fb4e87b20c9949bd0c59">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/NoOutputBranchPlan/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>NonnegativeDecimal</code>
 </th>
 <td>
@@ -8361,6 +8885,216 @@
 <td>
 <span id="v-c5bff8e9277e8b8b6c4c7927">
 <code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/OutputCollectionPolicy/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>PreviewOutcome</code>
+</th>
+<td>
+<table id="v-9e71ef8a414b7b8e68964890">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-6759459e91bcf69db57b4e56">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-16aa81e18a77ab952cff47f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-2f9a0d8575b7fafb996eb2d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-778b56433bc9b880abed97f7">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-73acb708e26c6f6cc5ba5022">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-9e7494d0f3a2d7cbee2bf3ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-c0bb39be2b4c3d4be656ffb0">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-d122a13b77c794a8276d11cf">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b3053e492e654274fab6e690">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>retryable</code>
+</th>
+<td>
+<table id="v-6b1e264ee1f13145f518e321">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-2b220dadd9c355e186b7e5c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-6e86b525b4097ee73d4b1f72">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-94677c02e9f3d62e31981294">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9bc81ead2fe5fcb793964486">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7ea63debee2645996e205184">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fdc2e97522debd0e49d57c4c">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/properties/retryable/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e119fe50ab700a1f93de36a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9a3c827fc80b2f53fe7b401e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-6fbeb6f7aa9855acb16656b7">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-93e8ab7e49d92924617187a9">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/$defs/PreviewOutcome/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10545,6 +11279,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>no-output</code>
+</th>
+<td>
+<span id="v-936072bdd037d539b305ef24">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/properties/branches/items/discriminator/mapping/no-output">#/$defs/NoOutputBranchPlan</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -10603,6 +11347,26 @@
 <span id="v-3d87b1baf43cb6780fe6e749">
 <code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/properties/branches/items/oneOf/1/$ref">#/$defs/CoordinationBranchPlan</code>
 <span class="kind">string</span> <a href="e-fb6c4d019ed948eac9e2a460.html#v-adb13afaef3928826b038591">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-cf50e58e68b37ca885afc66c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-881db9285785596e9a57e035">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/schema/properties/branches/items/oneOf/2/$ref">#/$defs/NoOutputBranchPlan</code>
+<span class="kind">string</span> <a href="e-fb6c4d019ed948eac9e2a460.html#v-ae88f3003d595aa62e6b3a4f">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -11029,7 +11793,7 @@
 </th>
 <td>
 <span id="v-e9b9db92b9ae34c6547f3660">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/signature">&quot;(*, format: Literal[&#x27;stove0-branch-set/v1&#x27;] = &#x27;stove0-branch-set/v1&#x27;, parent_work: stove0_protocol.models.WorkIdentity, decision_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], evidence_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = (), branches: Annotated[tuple[Annotated[stove0_protocol.fork_join.BranchPlan | stove0_protocol.fork_join.CoordinationBranchPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;kind&#x27;)], ...], MinLen(min_length=1)], join: stove0_protocol.fork_join.JoinDeclaration | None = None, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetPlan/contract/signature">&quot;(*, format: Literal[&#x27;stove0-branch-set/v1&#x27;] = &#x27;stove0-branch-set/v1&#x27;, parent_work: stove0_protocol.models.WorkIdentity, decision_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], evidence_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = (), branches: Annotated[tuple[Annotated[stove0_protocol.fork_join.BranchPlan | stove0_protocol.fork_join.CoordinationBranchPlan | stove0_protocol.fork_join.NoOutputBranchPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;kind&#x27;)], ...], MinLen(min_length=1)], join: stove0_protocol.fork_join.JoinDeclaration | None = None, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11132,7 +11896,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

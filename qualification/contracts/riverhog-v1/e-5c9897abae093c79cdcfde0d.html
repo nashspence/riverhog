@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-4ddd41618ef2f2f53a4cc4ed">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -62,6 +62,14 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-9397f3c2cddb24d2139b8191">code</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>input_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -71,12 +79,88 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-3339461560384d2d7989b475">message</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>status</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9397f3c2cddb24d2139b8191">
+<h3>Field: code</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Code</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3339461560384d2d7989b475">
+<h3>Field: message</h3>
+<p class="shape">any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Message</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -108,6 +192,86 @@
 <td>
 <table id="v-e221c02ef61c3c1d08069503">
 <tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-9397f3c2cddb24d2139b8191">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-657aa26db353dccde54ad78c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9c1af665e8ac5941e9ba350a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-608f642201a988c71a2e62c7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/code/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f220d41f2677bd2705225d4d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/code/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-780f229f13af70b20830f963">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2ffeab5312b54141ee49856b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/code/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-15c02df69a4bcfe002b51b82">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/code/title">Code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>input_id</code>
@@ -142,6 +306,96 @@
 <td>
 <span id="v-afd7155c52d028105f06513b">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/input_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-3339461560384d2d7989b475">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-877672a85d700d1192d0ba78">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-09070097431644733298465e">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-db22f7b9674257c30b01f81a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/message/anyOf/0/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-54cfd6740c970db2da3de19d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/message/anyOf/0/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-30e3941ac6cfc68dbcc46973">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/message/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-5e461b26796244b940378edb">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b5d8159a898bbd773df55cb1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/message/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0a9bb5aa61022cd667a41d80">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/message/title">Message</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -188,7 +442,7 @@
 </th>
 <td>
 <span id="v-4a0466fccb09c2939dd6cb65">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/2">omitted</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/2">not-carried-forward</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -198,7 +452,17 @@
 </th>
 <td>
 <span id="v-b78746f895de0d0118ca2055">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/3">rejected</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/3">omitted</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-952a6ac8c9c320cae61eb2e3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/status/enum/4">rejected</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -312,12 +576,36 @@
 <a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration/properties/message/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

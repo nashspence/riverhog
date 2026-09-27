@@ -15,12 +15,14 @@ from riverhog_protocol import (
 from riverhog_protocol.collection_workflow_transport import (
     ArtifactDispositionSetDocument,
     ArtifactDispositionSetIdentityDocument,
+    ConsiderationEvidenceOutDocument,
     ExactSetIdentityDocument,
     ProcessingClaimPlanDocument,
     ProcessingOutcomeIdentityDocument,
 )
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
+    CollectionArtifactIdentity,
     CollectionDerivation,
     CollectionProcessingOutcomeIdentity,
     CollectionRootIdentity,
@@ -37,7 +39,15 @@ from stove0_core import (
     Stove0WorkService,
     WorkRecord,
 )
-from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
+from stove0_core.riverhog import _no_output_discard_approval
+from stove0_observer_protocol import (
+    ContentObservationEvidence,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
+    ObserverImplementation,
+)
 from stove0_operator_contracts import WorkView
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
@@ -52,18 +62,28 @@ from stove0_protocol import (
     ExecutionEnvelopePayload,
     JsonSchemaValidationProfile,
     OperationIdentityRef,
+    PreviewOutcome,
     RecipeIdentityRef,
     TargetPlanBinding,
     WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPlanPayload,
+    WorkflowPreview,
+    WorkflowPreviewPayload,
     WorkflowPreviewRequest,
     WorkflowPreviewRequestPayload,
     WorkIdentity,
     WorkPayload,
     canonical_json_sha256,
     evaluate_branch_set,
+)
+from stove0_recipe_config import (
+    ArtifactFactBinding,
+    FactPredicate,
+    RecipeNoAction,
+    RecipeSourceLossEvidenceSlot,
+    RecipeSourceLossRule,
 )
 from stove0_target_protocol import (
     AcceptedTargetJob,
@@ -310,6 +330,7 @@ class FixtureApi:
         self.effect_settlement_sha256: str | None = None
         self.effect_document: dict[str, object] | None = None
         self.lose_effect_ack = False
+        self.dispositions: list[dict[str, object]] = []
 
     def create_or_resume_processing_claim(self, **kwargs: Any) -> dict[str, Any]:
         self.calls.append(("claim", kwargs))
@@ -323,6 +344,13 @@ class FixtureApi:
             "work_id": kwargs["work_id"],
             "state": self.claim_state,
         }
+
+    def record_processing_claim_consideration_evidence(
+        self, claim_id: str, **kwargs: Any
+    ) -> ConsiderationEvidenceOutDocument:
+        self.calls.append(("consideration_evidence", {"claim_id": claim_id, **kwargs}))
+        assert riverhog_canonical_json_sha256(kwargs["document"]) == kwargs["sha256"]
+        return ConsiderationEvidenceOutDocument(sha256=kwargs["sha256"])
 
     def renew_processing_claim(self, claim_id: str, **kwargs: Any) -> dict[str, Any]:
         self.calls.append(("renew", {"claim_id": claim_id, **kwargs}))
@@ -466,7 +494,11 @@ class FixtureApi:
         }
 
     def get_processing_claim_dispositions(self, claim_id: str) -> ArtifactDispositionSetDocument:
-        identity = _disposition_set()
+        identity = (
+            ArtifactDispositionSetIdentity(1, 0, 0, _sha("6"))
+            if self.plan is not None and self.plan.result_kind != "collection"
+            else _disposition_set()
+        )
         return ArtifactDispositionSetDocument(
             claim_id=claim_id,
             state="sealed",
@@ -475,6 +507,35 @@ class FixtureApi:
             output_artifact_count=str(identity.output_artifact_count),
             identity=ArtifactDispositionSetIdentityDocument.model_validate(identity.as_dict()),
         )
+
+    def list_processing_claim_artifacts(self, claim_id: str, **kwargs: Any) -> Any:
+        assert self.plan is not None and kwargs["start_ordinal"] == 0
+        assert kwargs["identity_sha256"] == self.plan.artifacts.sha256
+        return SimpleNamespace(
+            start_ordinal=0,
+            identity=SimpleNamespace(sha256=self.plan.artifacts.sha256),
+            artifacts=(
+                SimpleNamespace(
+                    collection=SimpleNamespace(
+                        collection_id=1,
+                        archive_root_sha256=_sha("2"),
+                        content_identity=_sha("3"),
+                    ),
+                    path="source/input.bin",
+                    bytes=12,
+                    sha256=_sha("e"),
+                ),
+            ),
+            next_ordinal=None,
+        )
+
+    def record_processing_claim_dispositions(self, claim_id: str, **kwargs: Any) -> None:
+        self.dispositions.extend(kwargs["dispositions"])
+
+    def seal_processing_claim_dispositions(
+        self, claim_id: str, **kwargs: Any
+    ) -> ArtifactDispositionSetDocument:
+        return self.get_processing_claim_dispositions(claim_id)
 
     def get_portable_collection_inventory(
         self,
@@ -1254,3 +1315,311 @@ def test_failed_or_uncertain_effect_work_cannot_request_source_retirement(outcom
         state.begin_source_collection_retirement(
             work.work_id, (1,), expected_revision=unresolved.revision
         )
+
+
+def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict() -> None:
+    work, _workflow, _plan, _evidence = _authorities()
+    source = _input_selection(work).artifacts[0]
+    schema = JsonSchemaValidationProfile.from_schema("fixture.consideration/v1", {"type": "object"})
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id=work.work_id,
+            observer_registration_id="fixture-observer",
+            observer_descriptor_sha256=_sha("4"),
+            observer_contract_id="fixture.consideration/v1",
+            observer_contract_sha256=_sha("5"),
+            subjects=(source,),
+        )
+    )
+    facts = {
+        "records": [{"artifact_id": source.id, "discard": True}],
+        "unrelated_blob": "x" * 10_000,
+    }
+    result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
+            request_id=request.request_id,
+            state="observed",
+            observer=ObserverImplementation(
+                id="fixture-observer/v1",
+                version="1",
+                source_revision="fixture",
+                descriptor_sha256=request.observer_descriptor_sha256,
+            ),
+            observer_contract_id=request.observer_contract_id,
+            observer_contract_sha256=request.observer_contract_sha256,
+            subjects=request.subjects,
+            facts_schema=schema,
+            facts=facts,
+            facts_sha256=canonical_json_sha256(facts),
+        )
+    )
+    preview_request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
+    preview = WorkflowPreview.seal(
+        WorkflowPreviewPayload(
+            preview_id=preview_request.preview_id,
+            state="no_action",
+            work=work,
+            observations=(ContentObservationEvidence(request=request, result=result),),
+            outcome=PreviewOutcome(code="fixture.no-action/v1", message="Discard selected bytes."),
+        )
+    )
+    slot = RecipeSourceLossEvidenceSlot(
+        observation_contract_id=request.observer_contract_id,
+        observation_contract_sha256=request.observer_contract_sha256,
+        facts_profile_sha256=schema.profile_sha256,
+        artifact_facts=ArtifactFactBinding(records_pointer="/records"),
+        verdict_pointer="/discard",
+        verdict_value=True,
+    )
+    rule = RecipeSourceLossRule(id="fixture.discard/v1", evidence_slots=(slot,))
+    identity = CollectionArtifactIdentity(
+        collection=CollectionRootIdentity(
+            source.collection.collection_id,
+            source.collection.archive_root_sha256,
+            source.collection.content_identity,
+        ),
+        path=source.path,
+        bytes=source.bytes,
+        sha256=source.sha256,
+    )
+    approval = _no_output_discard_approval(
+        identity, rule, preview, controller_id="stove0", reason="Discard selected bytes."
+    )
+    assert approval is not None and approval.rule_sha256 == rule.sha256
+    assert len(approval.evidence_json) < 1000
+    assert (
+        _no_output_discard_approval(
+            CollectionArtifactIdentity(
+                collection=identity.collection,
+                path="source/other.bin",
+                bytes=identity.bytes,
+                sha256=identity.sha256,
+            ),
+            rule,
+            preview,
+            controller_id="stove0",
+            reason="Discard selected bytes.",
+        )
+        is None
+    )
+    weaker = RecipeSourceLossRule(
+        id=rule.id,
+        evidence_slots=(slot.model_copy(update={"facts_profile_sha256": _sha("a")}),),
+    )
+    assert (
+        _no_output_discard_approval(
+            identity, weaker, preview, controller_id="stove0", reason="Discard selected bytes."
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize("approve_loss", [False, True])
+def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
+    approve_loss: bool,
+) -> None:
+    work, _workflow, _plan, _evidence = _authorities()
+    observations: tuple[ContentObservationEvidence, ...] = ()
+    source_loss: RecipeSourceLossRule | None = None
+    if approve_loss:
+        source = _input_selection(work).artifacts[0]
+        schema = JsonSchemaValidationProfile.from_schema(
+            "fixture.consideration/v1", {"type": "object"}
+        )
+        request = ContentObservationRequest.seal(
+            ContentObservationRequestPayload(
+                work_id=work.work_id,
+                observer_registration_id="fixture-observer",
+                observer_descriptor_sha256=_sha("4"),
+                observer_contract_id="fixture.consideration/v1",
+                observer_contract_sha256=_sha("5"),
+                subjects=(source,),
+            )
+        )
+        facts = {"done": True, "records": [{"artifact_id": source.id, "discard": True}]}
+        result = ContentObservationResult.seal(
+            ContentObservationResultPayload(
+                request_id=request.request_id,
+                state="observed",
+                observer=ObserverImplementation(
+                    id="fixture-observer/v1",
+                    version="1",
+                    source_revision="fixture",
+                    descriptor_sha256=request.observer_descriptor_sha256,
+                ),
+                observer_contract_id=request.observer_contract_id,
+                observer_contract_sha256=request.observer_contract_sha256,
+                subjects=request.subjects,
+                facts_schema=schema,
+                facts=facts,
+                facts_sha256=canonical_json_sha256(facts),
+            )
+        )
+        observations = (ContentObservationEvidence(request=request, result=result),)
+        source_loss = RecipeSourceLossRule(
+            id="fixture.discard/v1",
+            evidence_slots=(
+                RecipeSourceLossEvidenceSlot(
+                    observation_contract_id=request.observer_contract_id,
+                    observation_contract_sha256=request.observer_contract_sha256,
+                    facts_profile_sha256=schema.profile_sha256,
+                    artifact_facts=ArtifactFactBinding(records_pointer="/records"),
+                    verdict_pointer="/discard",
+                    verdict_value=True,
+                ),
+            ),
+        )
+    preview_request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
+    preview = WorkflowPreview.seal(
+        WorkflowPreviewPayload(
+            preview_id=preview_request.preview_id,
+            state="no_action",
+            work=work,
+            observations=observations,
+            outcome=PreviewOutcome(code="fixture.no-action/v1", message="No output is needed."),
+        )
+    )
+    no_action = RecipeNoAction(
+        code="fixture.no-action/v1",
+        message="No output is needed.",
+        when=(
+            FactPredicate(
+                observation_contract_id=(
+                    "fixture.consideration/v1" if approve_loss else "fixture.observation/v1"
+                ),
+                pointer="/done",
+                value=True,
+            ),
+        ),
+        source_loss=source_loss,
+    )
+    record = WorkRecord(
+        work=work,
+        phase="no_output_pending",
+        claim=ClaimBinding(claim_id=_claim_id(), fence=1),
+        no_action_preview=preview,
+        no_output_retirement_policy=("retire-after-settlement" if approve_loss else "retain"),
+    )
+
+    class NoOutputApi(FixtureApi):
+        no_output_sha256: str | None = None
+        dispositions: list[dict[str, object]]
+
+        def __init__(self) -> None:
+            super().__init__()
+            self.dispositions = []
+
+        def get_processing_claim(self, claim_id: str) -> _AttrDict:
+            return _AttrDict(
+                id=claim_id,
+                fence=self.fence,
+                state=self.claim_state,
+                plan=self.plan,
+                consumer=_AttrDict(app="stove0"),
+                no_output_settlement_sha256=self.no_output_sha256,
+            )
+
+        def seal_processing_claim_plan(self, claim_id: str, **kwargs: Any) -> _AttrDict:
+            super().seal_processing_claim_plan(claim_id, **kwargs)
+            return self.get_processing_claim(claim_id)
+
+        def get_collection(self, collection_id: int) -> dict[str, Any]:
+            return {
+                "id": str(collection_id),
+                "archive_root_sha256": _sha("2"),
+                "content_identity": _sha("3"),
+            }
+
+        def get_portable_collection_inventory(
+            self,
+            collection_id: int,
+            *,
+            cursor: str | None,
+            limit: int,
+            inventory_identity: str | None,
+        ) -> PortableCollectionInventoryPage:
+            assert cursor is None and limit == 1000 and inventory_identity is None
+            return PortableCollectionInventoryPage(
+                authority=PortableCollectionInventoryAuthority(
+                    header=PortableCollectionHeader(
+                        collection=str(collection_id),
+                        content_identity=_sha("3"),
+                        encryption_format="age/v1",
+                        passphrase_id="fixture-passphrase",
+                        provenance_mode="omitted",
+                    ),
+                    inventory_identity=_sha("5"),
+                    file_count="1",
+                    file_bytes="12",
+                ),
+                files=[
+                    ImmutableFileIdentityDocument(
+                        path="source/input.bin", bytes="12", sha256=_sha("e")
+                    )
+                ],
+                complete=True,
+            )
+
+        def list_processing_claim_artifacts(self, claim_id: str, **kwargs: Any) -> Any:
+            assert self.plan is not None
+            return SimpleNamespace(
+                start_ordinal=0,
+                identity=SimpleNamespace(sha256=self.plan.artifacts.sha256),
+                artifacts=(
+                    SimpleNamespace(
+                        collection=SimpleNamespace(
+                            collection_id=1,
+                            archive_root_sha256=_sha("2"),
+                            content_identity=_sha("3"),
+                        ),
+                        path="source/input.bin",
+                        bytes=12,
+                        sha256=_sha("e"),
+                    ),
+                ),
+                next_ordinal=None,
+            )
+
+        def record_processing_claim_dispositions(self, claim_id: str, **kwargs: Any) -> None:
+            self.dispositions.extend(kwargs["dispositions"])
+
+        def get_processing_claim_dispositions(
+            self, claim_id: str
+        ) -> ArtifactDispositionSetDocument:
+            identity = ArtifactDispositionSetIdentity(1, 0, 0, _sha("6"))
+            return ArtifactDispositionSetDocument(
+                claim_id=claim_id,
+                state="sealed",
+                disposition_count="1",
+                output_edge_count="0",
+                output_artifact_count="0",
+                identity=ArtifactDispositionSetIdentityDocument.model_validate(identity.as_dict()),
+            )
+
+        def seal_processing_claim_dispositions(
+            self, claim_id: str, **kwargs: Any
+        ) -> ArtifactDispositionSetDocument:
+            return self.get_processing_claim_dispositions(claim_id)
+
+        def settle_processing_claim_no_output(self, claim_id: str, **kwargs: Any) -> _AttrDict:
+            self.calls.append(("settle-no-output", kwargs))
+            digest = riverhog_canonical_json_sha256(kwargs["settlement"])
+            if self.no_output_sha256 is not None:
+                assert self.no_output_sha256 == digest
+            self.no_output_sha256 = digest
+            self.claim_state = "settled"
+            return self.get_processing_claim(claim_id)
+
+    api = NoOutputApi()
+    client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
+    policy = "retire-after-settlement" if approve_loss else "retain"
+    first = client.verify_and_settle_no_output(record, no_action, policy, 0)
+    assert first == api.no_output_sha256
+    assert len(api.dispositions) == 1
+    assert api.dispositions[0]["status"] == "not-carried-forward"
+    assert ("discard_approval" in api.dispositions[0]) is approve_loss
+    assert len([name for name, _ in api.calls if name == "consideration_evidence"]) == int(
+        approve_loss
+    )
+    assert client.verify_and_settle_no_output(record, no_action, policy, 0) == first
+    assert len(api.dispositions) == 1

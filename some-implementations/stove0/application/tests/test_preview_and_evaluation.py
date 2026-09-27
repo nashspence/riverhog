@@ -559,7 +559,7 @@ def test_no_action_evaluation_child_is_successful_without_output() -> None:
     assert _evaluation_phase((child,)) == "complete"
 
 
-def test_planned_no_action_abandons_its_claim_before_terminal_success() -> None:
+def test_planned_no_action_requires_riverhog_settlement_before_terminal_success() -> None:
     work = _work()
     store = InMemoryWorkStore()
     service = Stove0WorkService(store)
@@ -583,11 +583,61 @@ def test_planned_no_action_abandons_its_claim_before_terminal_success() -> None:
         )
     )
     pending = service.mark_no_action(work.work_id, preview, expected_revision=record.revision)
-    assert pending.phase == "abandon_pending" and pending.abandon_outcome == "no_action"
-    finished = service.complete_abandon(work.work_id, expected_revision=pending.revision)
+    assert pending.phase == "no_output_pending" and pending.abandon_outcome is None
+    finished = service.verify_no_output(work.work_id, _sha("f"), expected_revision=pending.revision)
     assert finished.phase == "no_action"
+    assert finished.no_output_settlement_sha256 == _sha("f")
     assert finished.no_action_preview == preview
     assert finished.target_request is None and finished.output is None
+
+
+def test_no_output_retirement_waits_for_settlement_and_exact_collection_deletion() -> None:
+    work = _work()
+    store = InMemoryWorkStore()
+    service = Stove0WorkService(store)
+    record = store.create(
+        WorkRecord(
+            work=work,
+            phase="planning",
+            claim=ClaimBinding(claim_id="fixture-claim", fence=1),
+        )
+    )
+    request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
+    preview = WorkflowPreview.seal(
+        WorkflowPreviewPayload(
+            preview_id=request.preview_id,
+            state="no_action",
+            work=work,
+            outcome=PreviewOutcome(code="fixture.no-output/v1", message="No output is required."),
+        )
+    )
+    pending = service.mark_no_action(
+        work.work_id,
+        preview,
+        source_collection_retirement_policy="retire-after-settlement",
+        expected_revision=record.revision,
+    )
+    with pytest.raises(RuntimeError):
+        service.begin_source_collection_retirement(
+            work.work_id,
+            (work.inputs[0].collection_id,),
+            expected_revision=pending.revision,
+        )
+    settled = service.verify_no_output(work.work_id, _sha("f"), expected_revision=pending.revision)
+    assert settled.phase == "settled"
+    retiring = service.begin_source_collection_retirement(
+        work.work_id,
+        (work.inputs[0].collection_id,),
+        expected_revision=settled.revision,
+    )
+    assert retiring.phase == "source_collection_retirement_pending"
+    complete = service.record_source_collection_deleted(
+        work.work_id,
+        work.inputs[0].collection_id,
+        expected_revision=retiring.revision,
+    )
+    assert complete.phase == "complete"
+    assert complete.no_output_settlement_sha256 == _sha("f")
 
 
 def test_workflow_preview_recursively_binds_nested_observation_and_leaf_preflight() -> None:

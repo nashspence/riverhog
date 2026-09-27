@@ -253,7 +253,7 @@
 <section class="schema-section" id="s-18f076659c20bdcf9f675c03">
 <h3>Definition: ProcessingOutcomeIdentityDocument</h3>
 <p class="shape">
-<code>object</code>; 9 fields; additionalProperties: <code>false</code>; exactly one of: 5 fields; 5 fields</p>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>; exactly one of: 6 fields; 6 fields; 6 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -319,6 +319,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-2f13faa9db864e6a01a0c9da">no_output_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>outcome_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -340,7 +349,7 @@
 <code>result_kind</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;no-output&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -378,12 +387,17 @@
 <tr>
 <td data-label="Alternative">
 <a href="#s-7aaf733fe5c4308e05267c26">1</a></td>
-<td data-label="Schema">5 fields</td>
+<td data-label="Schema">6 fields</td>
 </tr>
 <tr>
 <td data-label="Alternative">
 <a href="#s-a1e830543e6f667d36924ede">2</a></td>
-<td data-label="Schema">5 fields</td>
+<td data-label="Schema">6 fields</td>
+</tr>
+<tr>
+<td data-label="Alternative">
+<a href="#s-43fa0364e029b715d2163905">3</a></td>
+<td data-label="Schema">6 fields</td>
 </tr>
 </tbody>
 </table>
@@ -473,6 +487,34 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-2f13faa9db864e6a01a0c9da">
+<h3>Field: no_output_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-11c1783d8d42d256df3b1f3e">
 <h3>Field: output_collection</h3>
 <p class="shape">default: <code>null</code>; any of: <a href="e-9b2ba1e3f2a7680b801a8706.html#v-a752b1ef24edbb81c33e5aba">#/$defs/CollectionRootIdentityDocument</a>; <code>null</code>
@@ -503,7 +545,7 @@
 </section>
 <section class="schema-section" id="s-7aaf733fe5c4308e05267c26">
 <h3>Exactly one must match: 1</h3>
-<p class="shape">5 fields</p>
+<p class="shape">6 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -552,6 +594,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>no_output_settlement_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>output_collection</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -573,7 +624,7 @@
 </section>
 <section class="schema-section" id="s-a1e830543e6f667d36924ede">
 <h3>Exactly one must match: 2</h3>
-<p class="shape">5 fields</p>
+<p class="shape">6 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -622,6 +673,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>no_output_settlement_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>output_collection</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -634,6 +694,85 @@
 <code>result_kind</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">const: <code>external-effect</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-43fa0364e029b715d2163905">
+<h3>Exactly one must match: 3</h3>
+<p class="shape">6 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;no_output_settlement_sha256&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>derivation_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_settlement_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>no_output_settlement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_collection</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>no-output</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1051,6 +1190,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-1204f6a63a97d9d21ce696af">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e778efa030c3c7a5007a5cce">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/0/properties/no_output_settlement_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>output_collection</code>
 </th>
 <td>
@@ -1201,6 +1360,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-32a21de79b4f498f532252a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fa7163ae86fcfa8a5407570b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/1/properties/no_output_settlement_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>output_collection</code>
 </th>
 <td>
@@ -1266,6 +1445,166 @@
 <td>
 <span id="v-5f52f5cc3a2cb5befeea974d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/1/required/1">effect_settlement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-43fa0364e029b715d2163905">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c683a8120fd2bd71912162a4">
+<tbody>
+<tr>
+<th scope="row">
+<code>derivation_sha256</code>
+</th>
+<td>
+<table id="v-2162ae6deb214b4a66981519">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b05e94dc02cccd801f23c737">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/properties/derivation_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-1c94e3c2646d369d4d718916">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6403a1aa6a1ee5995547f811">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/properties/effect_receipt_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-77bbc29a1e794ebd2493f490">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b174c36f0a9584db6fb0f470">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/properties/effect_settlement_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-62045f30e616dbe0cfb49696">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e9cad4956cebc9204620e330">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/properties/no_output_settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_collection</code>
+</th>
+<td>
+<table id="v-402ad2dffcf9ca6f5c98dbf0">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-80e23a1cbfd7524a4910bda0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/properties/output_collection/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_kind</code>
+</th>
+<td>
+<table id="v-388cb23251780e789958cdb5">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-0279b6fd5cfb379d8920bdc0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/properties/result_kind/const">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-8fac64214db8b91e1ffe0e1f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-963a3f8bc0415a38a64a456d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/oneOf/2/required/0">no_output_settlement_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1557,6 +1896,86 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-2f13faa9db864e6a01a0c9da">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-fe61cff8462886f3a63efcf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-88bd4e642527e34b7d804686">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9bbf1b0c2ee163d0c63bec75">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/properties/no_output_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5c6793a78fae04e4530cc31b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/properties/no_output_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-7d879cf67311be7430e7c86a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6bf0972a8ae009165cbaef21">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/properties/no_output_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-24630200a59eb15680b93ea1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/properties/no_output_settlement_sha256/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>outcome_id</code>
 </th>
 <td>
@@ -1686,6 +2105,16 @@
 <td>
 <span id="v-b41aae4df6014f1861d4641e">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/properties/result_kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-e2dbbdb3eabe8b46a36343c6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesAppendDocument/contract/schema/$defs/ProcessingOutcomeIdentityDocument/properties/result_kind/enum/2">no-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2137,7 +2566,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

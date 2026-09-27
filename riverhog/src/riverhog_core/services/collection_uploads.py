@@ -57,6 +57,7 @@ from riverhog_protocol.collection_workflows import (
     DERIVATION_EVIDENCE_PATH,
     DERIVATION_OUTPUT_EVIDENCE_PREFIX,
     PRODUCER_EVIDENCE_PATH,
+    ArtifactDiscardApproval,
     ArtifactDisposition,
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
@@ -4517,8 +4518,15 @@ def _transform_derivation_evidence(
                 input_archive_root_sha256=input_record.archive_root_sha256,
                 input_path=row.path,
                 status=cast(Any, row.status),
-                code=row.failure_code,
-                message=row.failure_message,
+                code=row.reason_code,
+                message=row.reason_message,
+                effect_receipt_sha256=row.effect_receipt_sha256,
+                discard_approval=(
+                    ArtifactDiscardApproval.from_mapping(json.loads(row.discard_approval_json))
+                    if row.discard_approval_json is not None
+                    else None
+                ),
+                retain_required=row.retain_required,
             ).as_dict()
             for row, input_record in disposition_rows
         ]

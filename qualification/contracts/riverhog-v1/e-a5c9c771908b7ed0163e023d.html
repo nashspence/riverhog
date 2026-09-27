@@ -747,7 +747,7 @@
 <section class="schema-section" id="s-0729737436862e23ead47674">
 <h3>Definition: ProcessingClaimDocument</h3>
 <p class="shape">
-<code>object</code>; 22 fields; additionalProperties: <code>false</code>; all of: structured schema; structured schema; structured schema</p>
+<code>object</code>; 23 fields; additionalProperties: <code>false</code>; all of: structured schema; structured schema; structured schema</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -863,6 +863,15 @@
 <td data-label="Shape and bounds">
 <a href="e-a5c9c771908b7ed0163e023d.html#v-4631ed20b1a46af9348cc684">#/$defs/ReceivingSetDocument</a></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-0d1c051e367298e9dfcd68ce">no_output_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -1224,7 +1233,7 @@
 <code>result_kind</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code></td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;no-output&quot;]</code>; default: <code>collection</code></td>
 <td data-label="Default">
 <code>collection</code></td>
 <td data-label="Description"></td>
@@ -1583,6 +1592,34 @@
 </section>
 <section class="schema-section" id="s-7a61669029679a49412937d9">
 <h3>Field: effect_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0d1c051e367298e9dfcd68ce">
+<h3>Field: no_output_settlement_sha256</h3>
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
@@ -5007,6 +5044,86 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-0d1c051e367298e9dfcd68ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-3a962c5b377268253e1ab924">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d27e634d57b18698682ed20e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f0123c9e3131c0f6ac85e798">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument/contract/schema/$defs/ProcessingClaimDocument/properties/no_output_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0f0cb0766860eb908a01c004">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument/contract/schema/$defs/ProcessingClaimDocument/properties/no_output_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a0ae9f604510143aa01d7c76">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-db1f9ef133449c3950650e1c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument/contract/schema/$defs/ProcessingClaimDocument/properties/no_output_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f028412c060ec8b32b6404a2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument/contract/schema/$defs/ProcessingClaimDocument/properties/no_output_settlement_sha256/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>outcome_settlement</code>
 </th>
 <td>
@@ -6769,6 +6886,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-8413a7d8f5312b4a5d35506a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument/contract/schema/$defs/ProcessingClaimPlanDocument/properties/result_kind/enum/2">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -7837,7 +7964,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

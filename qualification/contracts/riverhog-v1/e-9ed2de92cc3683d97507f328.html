@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;stove0-work-view/v1&#x27;] = &#x27;stove0-work-view/v1&#x27;, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=1)], claim: stove0_operator_contracts.WorkClaimView | None = None, preview_acceptance: stove0_operator_contracts.PreviewAcceptanceView | None = None, no_action_preview: stove0_protocol.fork_join.WorkflowPreview | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_operator_contracts.WorkFailureView | None = None, inapplicable: stove0_operator_contracts.WorkInapplicableView | None = None, abandon_outcome: Optional[Literal[&#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;stove0-work-view/v1&#x27;] = &#x27;stove0-work-view/v1&#x27;, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;no_output_pending&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=1)], claim: stove0_operator_contracts.WorkClaimView | None = None, preview_acceptance: stove0_operator_contracts.PreviewAcceptanceView | None = None, no_action_preview: stove0_protocol.fork_join.WorkflowPreview | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, no_output_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_operator_contracts.WorkFailureView | None = None, inapplicable: stove0_operator_contracts.WorkInapplicableView | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-a40389dd8c0e33cf06444bde">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 27 fields; additionalProperties: <code>false</code>
+<code>object</code>; 28 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -89,7 +89,7 @@
 <td data-label="Field">
 <a href="#s-ab960e0d3db8424de3888b3c">abandon_outcome</a></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -206,6 +206,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-bd949ef70322c42cef711a16">no_output_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-2eac372f784bfbad3682b3a6">observation_requests</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -238,7 +247,7 @@
 <code>phase</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;no_output_pending&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -444,6 +453,9 @@
 <a href="#s-51b717ae8204527d047400c7">JsonValue</a>
 </li>
 <li>
+<a href="#s-bccba7375a5419d5e3b2b2c6">NoOutputBranchPlan</a>
+</li>
+<li>
 <a href="#s-d3736abf2d2aec8024e783cc">NonnegativeDecimal</a>
 </li>
 <li>
@@ -543,7 +555,7 @@
 </section>
 <section class="schema-section" id="s-ab960e0d3db8424de3888b3c">
 <h3>Field: abandon_outcome</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -558,7 +570,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -839,6 +851,34 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-9ed2de92cc3683d97507f328.html#v-7cbd1c7608136c7055cf9ebe">#/$defs/WorkflowPreview</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bd949ef70322c42cef711a16">
+<h3>Field: no_output_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1482,7 +1522,7 @@
 <a href="#s-3fcbb525695b3190886f58b5">branches</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <a href="#s-f23496b3c2c2f36bf7adad2e">exactly one of 2 alternatives</a>; minItems: <code>1</code></td>
+<code>array</code>; items: <a href="#s-f23496b3c2c2f36bf7adad2e">exactly one of 3 alternatives</a>; minItems: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2505,7 +2545,7 @@
 <code>kind</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;coordination&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;no-output&quot;,&quot;coordination&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -3712,6 +3752,106 @@
 <section class="schema-section" id="s-51b717ae8204527d047400c7">
 <h3>Definition: JsonValue</h3>
 <p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-bccba7375a5419d5e3b2b2c6">
+<h3>Definition: NoOutputBranchPlan</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;artifact_selection&quot;,&quot;work&quot;,&quot;observations&quot;,&quot;outcome&quot;,&quot;decision_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_selection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">#/$defs/ArtifactSelectionRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>branch_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>decision_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>no-output</code>; default: <code>no-output</code></td>
+<td data-label="Default">
+<code>no-output</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-332679ef0034063c9e557242">observations</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-4f3cc3755e264a36faac0089">#/$defs/ContentObservationEvidence</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>outcome</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-9ed2de92cc3683d97507f328.html#v-d0f4fff777f96316d4656a03">#/$defs/PreviewOutcome</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>work</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-d3736abf2d2aec8024e783cc">
 <h3>Definition: NonnegativeDecimal</h3>
@@ -6394,7 +6534,7 @@
 <section class="schema-section" id="s-3fcbb525695b3190886f58b5">
 <h3>Field: branches</h3>
 <p class="shape">
-<code>array</code>; items: <a href="#s-f23496b3c2c2f36bf7adad2e">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+<code>array</code>; items: <a href="#s-f23496b3c2c2f36bf7adad2e">exactly one of 3 alternatives</a>; minItems: <code>1</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -6956,6 +7096,18 @@
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-332679ef0034063c9e557242">
+<h3>Field: observations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-4f3cc3755e264a36faac0089">#/$defs/ContentObservationEvidence</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -7765,12 +7917,12 @@
 </section>
 <section class="schema-section" id="s-f23496b3c2c2f36bf7adad2e">
 <h3>items schema</h3>
-<p class="shape">exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-1e5a1e87dc768f2541a016d5">#/$defs/BranchPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-1519e82c693281196ef56a23">#/$defs/CoordinationBranchPlan</a>
+<p class="shape">exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-1e5a1e87dc768f2541a016d5">#/$defs/BranchPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-1519e82c693281196ef56a23">#/$defs/CoordinationBranchPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-bccba7375a5419d5e3b2b2c6">#/$defs/NoOutputBranchPlan</a>
 </p>
 <dl class="facts">
 <dt>discriminator</dt>
 <dd>
-<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;,&quot;no-output&quot;:&quot;#/$defs/NoOutputBranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
@@ -7792,6 +7944,11 @@
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
 <a href="e-9ed2de92cc3683d97507f328.html#v-1519e82c693281196ef56a23">#/$defs/CoordinationBranchPlan</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">
+<a href="e-9ed2de92cc3683d97507f328.html#v-bccba7375a5419d5e3b2b2c6">#/$defs/NoOutputBranchPlan</a></td>
 </tr>
 </tbody>
 </table>
@@ -9037,6 +9194,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>no-output</code>
+</th>
+<td>
+<span id="v-afd77c813f267ed38441188c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/BranchSetPlan/properties/branches/items/discriminator/mapping/no-output">#/$defs/NoOutputBranchPlan</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -9095,6 +9262,26 @@
 <span id="v-32ef3ccc96ed461e66d6c12c">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/BranchSetPlan/properties/branches/items/oneOf/1/$ref">#/$defs/CoordinationBranchPlan</code>
 <span class="kind">string</span> <a href="e-9ed2de92cc3683d97507f328.html#v-1519e82c693281196ef56a23">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-68723c6874abc69c9500793e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6a8dbba2be2c26190c92a022">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/BranchSetPlan/properties/branches/items/oneOf/2/$ref">#/$defs/NoOutputBranchPlan</code>
+<span class="kind">string</span> <a href="e-9ed2de92cc3683d97507f328.html#v-bccba7375a5419d5e3b2b2c6">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -12629,7 +12816,17 @@
 </th>
 <td>
 <span id="v-bacd5e9fa5da2233990decc8">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/CoordinationChildSettlementRef/properties/kind/enum/2">coordination</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/CoordinationChildSettlementRef/properties/kind/enum/2">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c2656e041a2768e933e494e9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/CoordinationChildSettlementRef/properties/kind/enum/3">coordination</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -16734,6 +16931,316 @@
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/JsonValue">{}</code>
 <span class="kind">object</span>
 </span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>NoOutputBranchPlan</code>
+</th>
+<td>
+<table id="v-bccba7375a5419d5e3b2b2c6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-6b583336a0e28daeb350c83e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-ca77c993456d453d3859f254">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_selection</code>
+</th>
+<td>
+<table id="v-60b31cbbdd7be489399782e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-78f8a252b570bf5dbefdef0b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/artifact_selection/$ref">#/$defs/ArtifactSelectionRef</code>
+<span class="kind">string</span> <a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-6bd0bf47b10edeaab0a0f15a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-40f673f4d6c1a6b5f645ca42">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2d27d421a29983dcd809f3d5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>decision_sha256</code>
+</th>
+<td>
+<table id="v-e3afb428e5e0474707d243c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-eaef33463abecdbe23b1b626">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/decision_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d6b60ceb3a165a711815fa30">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/decision_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-b7d1ea46b3d5c5a27de07988">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-60f6a1e50381807cdbdf4eee">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/kind/const">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-20f68e29a0838925ba5bf0e0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/kind/default">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2202219668d68e8e92775731">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observations</code>
+</th>
+<td>
+<table id="v-332679ef0034063c9e557242">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-f48e96b898a35651cda6d128">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3c226fb70cfe0bbeafcca577">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/observations/items/$ref">#/$defs/ContentObservationEvidence</code>
+<span class="kind">string</span> <a href="e-9ed2de92cc3683d97507f328.html#v-4f3cc3755e264a36faac0089">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3bb9a32184bb951cd52c86a7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/observations/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-06485f8667fb4b22ea0f4627">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cd43b2ee1f3d1bafe02a4567">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/outcome/$ref">#/$defs/PreviewOutcome</code>
+<span class="kind">string</span> <a href="e-9ed2de92cc3683d97507f328.html#v-d0f4fff777f96316d4656a03">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-22462f1edc50715a0c2207ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a079ce25d33bcf941e7041d7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/properties/work/$ref">#/$defs/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ccd1d7952fe89c7215ba5ad9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-225358069dd1a15d8553df8a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/required/0">branch_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-3aade1de4d635f08acba6bec">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/required/1">artifact_selection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-34984d5772490c05f792df33">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/required/2">work</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-23b0d7c521bb149f8cdc42f8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/required/3">observations</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-6d93bd54e0a39810e875ea4f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/required/4">outcome</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-cf176dca328e412b8d984f07">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/required/5">decision_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5963031f297223960a6aeea8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/$defs/NoOutputBranchPlan/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -26119,7 +26626,7 @@
 </th>
 <td>
 <span id="v-6bbebcd2fc4578094a519015">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/0">no_action</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/0">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -26129,7 +26636,7 @@
 </th>
 <td>
 <span id="v-289aef623dad20078a193be4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/1">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/1">failed</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -26139,17 +26646,7 @@
 </th>
 <td>
 <span id="v-c52a71a185169af561d18eb4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/2">failed</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>3</code>
-</th>
-<td>
-<span id="v-53d965514b6d966bac4bf8c4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/3">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/abandon_outcome/anyOf/0/enum/2">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -26997,6 +27494,86 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-bd949ef70322c42cef711a16">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d5e827eceb3ccfcd3bb99426">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a58729260055796d9636d124">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-23c9d3c71a5ee83189cb6315">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/no_output_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f390ca68323e530d3fc6c9b6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/no_output_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c2daf24d6b0a5c30e41a66a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-466f37fef38e048c56cc064a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/no_output_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-c3f7a27a28a0319632428c51">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/no_output_settlement_sha256/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>observation_requests</code>
 </th>
 <td>
@@ -27305,7 +27882,7 @@
 </th>
 <td>
 <span id="v-b8eb64950b32d750df573645">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/12">abandon_pending</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/12">no_output_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -27315,7 +27892,7 @@
 </th>
 <td>
 <span id="v-a63b7208815ba041a96e6233">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/13">complete</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/13">abandon_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -27325,7 +27902,7 @@
 </th>
 <td>
 <span id="v-fc55150df0a1b63c1cbda552">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/14">no_action</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/14">complete</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -27335,7 +27912,7 @@
 </th>
 <td>
 <span id="v-9719f5a02a35367545820f8c">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/15">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/15">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -27345,7 +27922,7 @@
 </th>
 <td>
 <span id="v-4aa1f845b316e5f3b372d72e">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/16">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/16">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -27355,7 +27932,17 @@
 </th>
 <td>
 <span id="v-ed88edc31eafba2481874517">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/17">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/17">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-a444731e394290bfa9006f19">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/schema/properties/phase/enum/18">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -28087,7 +28674,7 @@
 </th>
 <td>
 <span id="v-50a2295057df684db63936e6">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/signature">&quot;(*, format: Literal[&#x27;stove0-work-view/v1&#x27;] = &#x27;stove0-work-view/v1&#x27;, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=1)], claim: stove0_operator_contracts.WorkClaimView | None = None, preview_acceptance: stove0_operator_contracts.PreviewAcceptanceView | None = None, no_action_preview: stove0_protocol.fork_join.WorkflowPreview | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_operator_contracts.WorkFailureView | None = None, inapplicable: stove0_operator_contracts.WorkInapplicableView | None = None, abandon_outcome: Optional[Literal[&#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkView/contract/signature">&quot;(*, format: Literal[&#x27;stove0-work-view/v1&#x27;] = &#x27;stove0-work-view/v1&#x27;, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;no_output_pending&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=1)], claim: stove0_operator_contracts.WorkClaimView | None = None, preview_acceptance: stove0_operator_contracts.PreviewAcceptanceView | None = None, no_action_preview: stove0_protocol.fork_join.WorkflowPreview | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, no_output_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_operator_contracts.WorkFailureView | None = None, inapplicable: stove0_operator_contracts.WorkInapplicableView | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -28181,7 +28768,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

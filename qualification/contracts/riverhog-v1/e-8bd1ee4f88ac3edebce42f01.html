@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-24a8ecfb8537b6c479b3caba">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 3 fields; additionalProperties: <code>false</code>; exactly one of: 2 fields; 2 fields</p>
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>; exactly one of: 4 fields; 4 fields; 4 fields; 4 fields</p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
@@ -61,6 +61,30 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-371fb006ea086b1b33adf0b3">decision</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-5954a48805264b0fa202845d.html#v-56026778a17f7191d535252c">#/components/schemas/ArtifactDispositionDecisionDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-809092ab551131d4eb68ef64">discard_approval</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-ea9be3758c4da60e5c653a76.html#v-6c1131c45ab00ef10a40b00b">#/components/schemas/ArtifactDiscardApprovalDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-15a3429645d9b75061d2889b">effect_receipt_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-f848c334947f08682d2fd9b2">failure</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">any of: <a href="e-cef0f8667d7eff46cbbe7fe2.html#v-5e36909c8c21e7956a273361">#/components/schemas/ArtifactDispositionFailureDocument</a>; <code>null</code></td>
@@ -78,10 +102,18 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-ade508f42768068156961520">retain_required</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>status</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;effect-applied&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -101,12 +133,112 @@
 <tr>
 <td data-label="Alternative">
 <a href="#s-27b164a0749b0df4cac880c5">1</a></td>
-<td data-label="Schema">2 fields</td>
+<td data-label="Schema">4 fields</td>
 </tr>
 <tr>
 <td data-label="Alternative">
 <a href="#s-0bdc389c28dbaf06345e659a">2</a></td>
-<td data-label="Schema">2 fields</td>
+<td data-label="Schema">4 fields</td>
+</tr>
+<tr>
+<td data-label="Alternative">
+<a href="#s-b8a1d1d0d898d9ec84d5aff7">3</a></td>
+<td data-label="Schema">4 fields</td>
+</tr>
+<tr>
+<td data-label="Alternative">
+<a href="#s-67801c56e041ea6c836bb222">4</a></td>
+<td data-label="Schema">4 fields</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-371fb006ea086b1b33adf0b3">
+<h3>Field: decision</h3>
+<p class="shape">any of: <a href="e-5954a48805264b0fa202845d.html#v-56026778a17f7191d535252c">#/components/schemas/ArtifactDispositionDecisionDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-5954a48805264b0fa202845d.html#v-56026778a17f7191d535252c">#/components/schemas/ArtifactDispositionDecisionDocument</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-809092ab551131d4eb68ef64">
+<h3>Field: discard_approval</h3>
+<p class="shape">any of: <a href="e-ea9be3758c4da60e5c653a76.html#v-6c1131c45ab00ef10a40b00b">#/components/schemas/ArtifactDiscardApprovalDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-ea9be3758c4da60e5c653a76.html#v-6c1131c45ab00ef10a40b00b">#/components/schemas/ArtifactDiscardApprovalDocument</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-15a3429645d9b75061d2889b">
+<h3>Field: effect_receipt_sha256</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Effect Receipt Sha256</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -140,9 +272,43 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-ade508f42768068156961520">
+<h3>Field: retain_required</h3>
+<p class="shape">any of: <code>boolean</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Retain Required</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-27b164a0749b0df4cac880c5">
 <h3>Exactly one must match: 1</h3>
-<p class="shape">2 fields</p>
+<p class="shape">4 fields</p>
 <h4>Fields</h4>
 <div class="record-collection">
 <table>
@@ -156,6 +322,24 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>decision</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>failure</code></td>
@@ -179,7 +363,129 @@
 </section>
 <section class="schema-section" id="s-0bdc389c28dbaf06345e659a">
 <h3>Exactly one must match: 2</h3>
-<p class="shape">2 fields</p>
+<p class="shape">4 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;effect_receipt_sha256&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>decision</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>failure</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>effect-applied</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b8a1d1d0d898d9ec84d5aff7">
+<h3>Exactly one must match: 3</h3>
+<p class="shape">4 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;decision&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>decision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>failure</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">const: <code>not-carried-forward</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-67801c56e041ea6c836bb222">
+<h3>Exactly one must match: 4</h3>
+<p class="shape">4 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -199,6 +505,24 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>decision</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>failure</code></td>
@@ -260,6 +584,46 @@
 <td>
 <table id="v-508c1bbeb8b1e0a96eaf5c22">
 <tbody>
+<tr>
+<th scope="row">
+<code>decision</code>
+</th>
+<td>
+<table id="v-63c1e64070dc87b211dd8d57">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-492b18ae548c1326c31e527c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/0/properties/decision/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-826921bc5d208f764453b0b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2fb727ce3196fcd1cea9eebe">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/0/properties/effect_receipt_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>failure</code>
@@ -342,6 +706,46 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>decision</code>
+</th>
+<td>
+<table id="v-83a679b2fef0140ae595c243">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c83dd128648f5bcc80ada244">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/decision/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-bdd0a1aa850d9102e13b11e1">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a32dc7fe67aa4eab8a6ba3bc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/effect_receipt_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>failure</code>
 </th>
 <td>
@@ -353,7 +757,7 @@
 </th>
 <td>
 <span id="v-f94116d2c24ae3dcf5bed4ca">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/failure/type">object</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/failure/type">null</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -369,33 +773,13 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>enum</code>
+<code>const</code>
 </th>
 <td>
-<table id="v-07e60f98e29478f1b25b17d4">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-99675224cf5d84ae22a1449e">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/status/enum/0">omitted</code>
+<span id="v-46815136c2d69c37b40d8421">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/status/const">effect-applied</code>
 <span class="kind">string</span>
 </span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-60dad36639d3eeb7bd177833">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/properties/status/enum/1">rejected</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -416,7 +800,267 @@
 </th>
 <td>
 <span id="v-bcd09831f8f800c190d70985">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/required/0">failure</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/1/required/0">effect_receipt_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-b8a1d1d0d898d9ec84d5aff7">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-cecc881ddd3e4704fb8d0ce3">
+<tbody>
+<tr>
+<th scope="row">
+<code>decision</code>
+</th>
+<td>
+<table id="v-6680a9cacb0dd24c1db49cb1">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fae27b4f2e24c3880aecb176">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/2/properties/decision/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-e13b5a47c09c7256e5717816">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cde280fad228298dd17d5ef2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/2/properties/effect_receipt_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>failure</code>
+</th>
+<td>
+<table id="v-1b2ee4b534fb1df716b4c998">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-44b58aab4f91b653b2abb4ea">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/2/properties/failure/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<table id="v-b8569eec7552b4d9f10ec0de">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-00f666202d37bef2db44cb5d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/2/properties/status/const">not-carried-forward</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-638a3444d14dec21e216390b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fac5576928e3a5b7faa72750">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/2/required/0">decision</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-67801c56e041ea6c836bb222">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-b5448ea16c49b1cd42899a64">
+<tbody>
+<tr>
+<th scope="row">
+<code>decision</code>
+</th>
+<td>
+<table id="v-dee8e1c9f13dda90651bb31b">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e2322f22e4bd823385e1b962">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/3/properties/decision/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-8ce0dd395aabb66cda549f50">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-045a0ff32893d39eed34fa10">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/3/properties/effect_receipt_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>failure</code>
+</th>
+<td>
+<table id="v-35307bfbc2632da648a6047c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f26312a273651b3379fe1aec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/3/properties/failure/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<table id="v-d833c9d282f8001b02d63944">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-340e7909b67d8db4538032e1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c0548c80d9f12322bcf491c1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/3/properties/status/enum/0">omitted</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-203e6da8344acf27a732608b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/3/properties/status/enum/1">rejected</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2a79de2ded9ad719a17f50fb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-041ae31e4ba1ff4b81be5d87">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/oneOf/3/required/0">failure</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -436,6 +1080,206 @@
 <td>
 <table id="v-be21d421d1975093bbc7f4e3">
 <tbody>
+<tr>
+<th scope="row">
+<code>decision</code>
+</th>
+<td>
+<table id="v-371fb006ea086b1b33adf0b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-01cf0df7b41dd46c4d3c2916">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-02208cd110e165b6b5c9b0f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c2861804e24962c7409b4549">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/decision/anyOf/0/$ref">#/components/schemas/ArtifactDispositionDecisionDocument</code>
+<span class="kind">string</span> <a href="e-5954a48805264b0fa202845d.html#v-56026778a17f7191d535252c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-ab1e32bed71ed74169216464">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-13e1cc7530a987ea3a5e3971">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/decision/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>discard_approval</code>
+</th>
+<td>
+<table id="v-809092ab551131d4eb68ef64">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-da472b0ebd2e0a6781219a42">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b1da42c28de73eea7743b393">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d4ed948e71beb50218698ff3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/discard_approval/anyOf/0/$ref">#/components/schemas/ArtifactDiscardApprovalDocument</code>
+<span class="kind">string</span> <a href="e-ea9be3758c4da60e5c653a76.html#v-6c1131c45ab00ef10a40b00b">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-fcfc5142cb1258b521201b86">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-815090b9d063e6a304b41102">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/discard_approval/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-15a3429645d9b75061d2889b">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c4cbaa5827ff84b134be3870">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e22ce6079d6f8b2f9216bdb8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f5062ee7efb2318dbfd07c76">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/effect_receipt_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66c92122fabbeccb45d66c46">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/effect_receipt_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-47fee12dac5f30a99a70228f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cd0ce70454977b36881b9e28">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/effect_receipt_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6e7e94b337180e2e1176e132">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/effect_receipt_sha256/title">Effect Receipt Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>failure</code>
@@ -518,6 +1362,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>retain_required</code>
+</th>
+<td>
+<table id="v-ade508f42768068156961520">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-ca5b8909f9b2a65d3323caeb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b7fcd89ca07345f2bd024206">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a76c38597351f49c1395df1d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/retain_required/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b745f841474c13a2342f3677">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0a29219f161959684d061dfe">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/retain_required/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b66f2f8f61493c565f00f341">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/retain_required/title">Retain Required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>status</code>
 </th>
 <td>
@@ -556,7 +1470,7 @@
 </th>
 <td>
 <span id="v-a85c1839495b087b89157f76">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/status/enum/2">omitted</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/status/enum/2">effect-applied</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -566,7 +1480,27 @@
 </th>
 <td>
 <span id="v-43566f835656cba6fd4059ee">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/status/enum/3">rejected</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/status/enum/3">not-carried-forward</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f06c965382f5c5a3eca4de1c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/status/enum/4">omitted</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-6bdb1d7a75db2ee883e2fdda">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/status/enum/5">rejected</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -680,12 +1614,36 @@
 <a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument/properties/effect_receipt_sha256/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], succeeded_branches: tuple[stove0_protocol.fork_join.BranchSettlement, ...], succeeded_effects: tuple[stove0_protocol.fork_join.BranchEffectSettlement, ...], succeeded_coordinations: tuple[stove0_protocol.fork_join.CoordinationSettlement, ...], unsettled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], failed_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], inapplicable_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], interrupted_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], canceled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], join_ready: bool, resolved_join_plan: stove0_protocol.fork_join.JoinPlan | None, join_state: Literal[&#x27;not-declared&#x27;, &#x27;waiting&#x27;, &#x27;ready&#x27;, &#x27;succeeded&#x27;, &#x27;failed&#x27;, &#x27;inapplicable&#x27;, &#x27;interrupted&#x27;, &#x27;canceled&#x27;], join_settlement: stove0_protocol.fork_join.JoinSettlement | None, unsettled_work_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...], branch_set_succeeded: bool, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None, source_collection_retirement_requested: bool, coordination_complete_for_retirement: bool) -&gt; None&quot;</code>
+<code>&quot;(*, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], succeeded_branches: tuple[stove0_protocol.fork_join.BranchSettlement, ...], succeeded_effects: tuple[stove0_protocol.fork_join.BranchEffectSettlement, ...], succeeded_no_outputs: tuple[stove0_protocol.fork_join.BranchNoOutputSettlement, ...], succeeded_coordinations: tuple[stove0_protocol.fork_join.CoordinationSettlement, ...], unsettled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], failed_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], inapplicable_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], interrupted_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], canceled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], join_ready: bool, resolved_join_plan: stove0_protocol.fork_join.JoinPlan | None, join_state: Literal[&#x27;not-declared&#x27;, &#x27;waiting&#x27;, &#x27;ready&#x27;, &#x27;succeeded&#x27;, &#x27;failed&#x27;, &#x27;inapplicable&#x27;, &#x27;interrupted&#x27;, &#x27;canceled&#x27;], join_settlement: stove0_protocol.fork_join.JoinSettlement | None, unsettled_work_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...], branch_set_succeeded: bool, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None, source_collection_retirement_requested: bool, coordination_complete_for_retirement: bool) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-6bd4ef694c689f3ef6bb847d">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 18 fields; additionalProperties: <code>false</code>
+<code>object</code>; 19 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;branch_set_sha256&quot;,&quot;succeeded_branches&quot;,&quot;succeeded_effects&quot;,&quot;succeeded_coordinations&quot;,&quot;unsettled_branch_ids&quot;,&quot;failed_branch_ids&quot;,&quot;inapplicable_branch_ids&quot;,&quot;interrupted_branch_ids&quot;,&quot;canceled_branch_ids&quot;,&quot;join_ready&quot;,&quot;resolved_join_plan&quot;,&quot;join_state&quot;,&quot;join_settlement&quot;,&quot;unsettled_work_ids&quot;,&quot;branch_set_succeeded&quot;,&quot;coordination_settlement&quot;,&quot;source_collection_retirement_requested&quot;,&quot;coordination_complete_for_retirement&quot;]</code>
+<code>[&quot;branch_set_sha256&quot;,&quot;succeeded_branches&quot;,&quot;succeeded_effects&quot;,&quot;succeeded_no_outputs&quot;,&quot;succeeded_coordinations&quot;,&quot;unsettled_branch_ids&quot;,&quot;failed_branch_ids&quot;,&quot;inapplicable_branch_ids&quot;,&quot;interrupted_branch_ids&quot;,&quot;canceled_branch_ids&quot;,&quot;join_ready&quot;,&quot;resolved_join_plan&quot;,&quot;join_state&quot;,&quot;join_settlement&quot;,&quot;unsettled_work_ids&quot;,&quot;branch_set_succeeded&quot;,&quot;coordination_settlement&quot;,&quot;source_collection_retirement_requested&quot;,&quot;coordination_complete_for_retirement&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -228,6 +228,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-ef3d382bbf4511392ba23294">succeeded_no_outputs</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-56c419a4f740a9d92f28c452.html#v-4bcce09a19234ebe498b5d99">#/$defs/BranchNoOutputSettlement</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-37531a3243b6dd744f0a1cc5">unsettled_branch_ids</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -257,6 +266,9 @@
 </li>
 <li>
 <a href="#s-4a95cdec01d8a2e6f9d7a294">BranchEffectSettlement</a>
+</li>
+<li>
+<a href="#s-4bcce09a19234ebe498b5d99">BranchNoOutputSettlement</a>
 </li>
 <li>
 <a href="#s-d733b6629adef73ffc810558">BranchSettlement</a>
@@ -524,6 +536,18 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-ef3d382bbf4511392ba23294">
+<h3>Field: succeeded_no_outputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-56c419a4f740a9d92f28c452.html#v-4bcce09a19234ebe498b5d99">#/$defs/BranchNoOutputSettlement</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-37531a3243b6dd744f0a1cc5">
 <h3>Field: unsettled_branch_ids</h3>
 <p class="shape">
@@ -717,6 +741,97 @@
 <tr>
 <td data-label="Field">
 <code>workflow_plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4bcce09a19234ebe498b5d99">
+<h3>Definition: BranchNoOutputSettlement</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;work_id&quot;,&quot;decision_sha256&quot;,&quot;no_output_settlement_sha256&quot;,&quot;settlement_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>branch_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>decision_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-branch-no-output-settlement/v1</code>; default: <code>stove0-branch-no-output-settlement/v1</code></td>
+<td data-label="Default">
+<code>stove0-branch-no-output-settlement/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>no_output_settlement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>settlement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>work_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
@@ -1575,7 +1690,7 @@
 <code>kind</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;coordination&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;no-output&quot;,&quot;coordination&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -4625,6 +4740,296 @@
 </tr>
 <tr>
 <th scope="row">
+<code>BranchNoOutputSettlement</code>
+</th>
+<td>
+<table id="v-4bcce09a19234ebe498b5d99">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-eec42c61b7695b7ad577730f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-6fd1137c04c09bb60c6d07f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-60c90895be9bbdd496822c06">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a87bdb764fdce47743336dae">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1c2fbe0d91f3f2473c8cd7ad">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>decision_sha256</code>
+</th>
+<td>
+<table id="v-29b850c79226cda08a5c4403">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cddbe475fbf243036add6669">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/decision_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1c2a05cc278e007b8231374e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/decision_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-c5595a40d078fa3eeb89773f">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-f1edad613cd709b704b0df64">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/format/const">stove0-branch-no-output-settlement/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-7004f4e4ff7ac6a3b96ac25a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/format/default">stove0-branch-no-output-settlement/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f6f4e8c7e634b5ef6d43d78d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-7c4a0e53d38c208f9aa0d538">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-481aabd0fabd0e23ffe7a3e1">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/no_output_settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-436d2bf106494f0816596002">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/no_output_settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>settlement_sha256</code>
+</th>
+<td>
+<table id="v-b3b8cd3ba3086f537dbc023a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0cbb2dbfb3ef87d17dabe748">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-39851527bafb858fb919db8d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-f0935d0da425182392a8bc1d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-87182bf98dbfb21dc1d96dea">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-36af541663cc4f3f98fdb816">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-cb5ffafb91ab9eb39be37090">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b954c2ff48d02353f52f9b05">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/required/0">branch_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c5eeb3a5167fd7bac3975304">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/required/1">work_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-7e882248dcb437d3d4e1428a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/required/2">decision_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-e54bc9deaf6bfd59bac4904c">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/required/3">no_output_settlement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-e706a40c6abf40c8c161b45a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/required/4">settlement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d06ecb9efb1572af51b4c6c7">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/BranchNoOutputSettlement/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>BranchSettlement</code>
 </th>
 <td>
@@ -7537,7 +7942,17 @@
 </th>
 <td>
 <span id="v-0f5b4afdd98380dec62e4026">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/CoordinationChildSettlementRef/properties/kind/enum/2">coordination</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/CoordinationChildSettlementRef/properties/kind/enum/2">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-6a886c2ac0e56fc5198469bc">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/$defs/CoordinationChildSettlementRef/properties/kind/enum/3">coordination</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14345,6 +14760,46 @@
 </tr>
 <tr>
 <th scope="row">
+<code>succeeded_no_outputs</code>
+</th>
+<td>
+<table id="v-ef3d382bbf4511392ba23294">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-7f881fb5d490d444a73836ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f855da7dc53230961cc678db">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/properties/succeeded_no_outputs/items/$ref">#/$defs/BranchNoOutputSettlement</code>
+<span class="kind">string</span> <a href="e-56c419a4f740a9d92f28c452.html#v-4bcce09a19234ebe498b5d99">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6ee73120533ee9a442db21a4">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/properties/succeeded_no_outputs/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>unsettled_branch_ids</code>
 </th>
 <td>
@@ -14489,7 +14944,7 @@
 </th>
 <td>
 <span id="v-7a7586b896f4572853b4bcad">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/3">succeeded_coordinations</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/3">succeeded_no_outputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14499,7 +14954,7 @@
 </th>
 <td>
 <span id="v-e8ab6292839e95ccb66feff5">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/4">unsettled_branch_ids</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/4">succeeded_coordinations</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14509,7 +14964,7 @@
 </th>
 <td>
 <span id="v-2bd6c78c0c74f7929f1435b5">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/5">failed_branch_ids</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/5">unsettled_branch_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14519,7 +14974,7 @@
 </th>
 <td>
 <span id="v-fc392fe3317a8ce2a6d86d9a">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/6">inapplicable_branch_ids</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/6">failed_branch_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14529,7 +14984,7 @@
 </th>
 <td>
 <span id="v-946ad1060433f1b7855f2cfc">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/7">interrupted_branch_ids</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/7">inapplicable_branch_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14539,7 +14994,7 @@
 </th>
 <td>
 <span id="v-7e30db33bae5c09ca046bb26">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/8">canceled_branch_ids</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/8">interrupted_branch_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14549,7 +15004,7 @@
 </th>
 <td>
 <span id="v-b514e6218bbbc0322dcad26a">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/9">join_ready</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/9">canceled_branch_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14559,7 +15014,7 @@
 </th>
 <td>
 <span id="v-417af59576f05926a898c0ef">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/10">resolved_join_plan</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/10">join_ready</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14569,7 +15024,7 @@
 </th>
 <td>
 <span id="v-bfdb34fa2c933d7cbb975125">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/11">join_state</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/11">resolved_join_plan</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14579,7 +15034,7 @@
 </th>
 <td>
 <span id="v-7f5888c50f7e0a244f9c5a86">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/12">join_settlement</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/12">join_state</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14589,7 +15044,7 @@
 </th>
 <td>
 <span id="v-45775925e437ef23d11cc69a">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/13">unsettled_work_ids</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/13">join_settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14599,7 +15054,7 @@
 </th>
 <td>
 <span id="v-02184d45032de9528ad315e9">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/14">branch_set_succeeded</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/14">unsettled_work_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14609,7 +15064,7 @@
 </th>
 <td>
 <span id="v-195ccd389915f36ed72bf30e">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/15">coordination_settlement</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/15">branch_set_succeeded</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14619,7 +15074,7 @@
 </th>
 <td>
 <span id="v-d561d05f1daa9cbdcd5851e4">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/16">source_collection_retirement_requested</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/16">coordination_settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14629,7 +15084,17 @@
 </th>
 <td>
 <span id="v-c1edd3463ebd3dd07c4abc3b">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/17">coordination_complete_for_retirement</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/17">source_collection_retirement_requested</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-79efa48b11dd8262cd2d559f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/schema/required/18">coordination_complete_for_retirement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14655,7 +15120,7 @@
 </th>
 <td>
 <span id="v-00e0b1edda96966454e9a229">
-<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/signature">&quot;(*, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], succeeded_branches: tuple[stove0_protocol.fork_join.BranchSettlement, ...], succeeded_effects: tuple[stove0_protocol.fork_join.BranchEffectSettlement, ...], succeeded_coordinations: tuple[stove0_protocol.fork_join.CoordinationSettlement, ...], unsettled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], failed_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], inapplicable_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], interrupted_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], canceled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], join_ready: bool, resolved_join_plan: stove0_protocol.fork_join.JoinPlan | None, join_state: Literal[&#x27;not-declared&#x27;, &#x27;waiting&#x27;, &#x27;ready&#x27;, &#x27;succeeded&#x27;, &#x27;failed&#x27;, &#x27;inapplicable&#x27;, &#x27;interrupted&#x27;, &#x27;canceled&#x27;], join_settlement: stove0_protocol.fork_join.JoinSettlement | None, unsettled_work_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...], branch_set_succeeded: bool, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None, source_collection_retirement_requested: bool, coordination_complete_for_retirement: bool) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetEvaluation/contract/signature">&quot;(*, branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], succeeded_branches: tuple[stove0_protocol.fork_join.BranchSettlement, ...], succeeded_effects: tuple[stove0_protocol.fork_join.BranchEffectSettlement, ...], succeeded_no_outputs: tuple[stove0_protocol.fork_join.BranchNoOutputSettlement, ...], succeeded_coordinations: tuple[stove0_protocol.fork_join.CoordinationSettlement, ...], unsettled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], failed_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], inapplicable_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], interrupted_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], canceled_branch_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...], join_ready: bool, resolved_join_plan: stove0_protocol.fork_join.JoinPlan | None, join_state: Literal[&#x27;not-declared&#x27;, &#x27;waiting&#x27;, &#x27;ready&#x27;, &#x27;succeeded&#x27;, &#x27;failed&#x27;, &#x27;inapplicable&#x27;, &#x27;interrupted&#x27;, &#x27;canceled&#x27;], join_settlement: stove0_protocol.fork_join.JoinSettlement | None, unsettled_work_ids: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...], branch_set_succeeded: bool, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None, source_collection_retirement_requested: bool, coordination_complete_for_retirement: bool) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14738,7 +15203,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

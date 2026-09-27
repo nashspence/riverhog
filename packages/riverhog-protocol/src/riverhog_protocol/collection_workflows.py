@@ -45,11 +45,20 @@ DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH = 64
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _SEMANTIC_ID_RE = re.compile(r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$", re.ASCII)
 _SOURCE_COLLECTION_RETIREMENT_POLICIES = {"retain", "retire-after-settlement"}
-_DISPOSITION_STATES = {"transformed", "preserved", "omitted", "rejected"}
+_DISPOSITION_STATES = {
+    "transformed",
+    "preserved",
+    "effect-applied",
+    "not-carried-forward",
+    "omitted",
+    "rejected",
+}
 
 JsonValue = None | bool | int | float | str | list["JsonValue"] | dict[str, "JsonValue"]
 SourceCollectionRetirementPolicy = Literal["retain", "retire-after-settlement"]
-DispositionState = Literal["transformed", "preserved", "omitted", "rejected"]
+DispositionState = Literal[
+    "transformed", "preserved", "effect-applied", "not-carried-forward", "omitted", "rejected"
+]
 
 
 def derivation_evidence_page_path(
@@ -218,11 +227,12 @@ class CollectionProcessingOutcomeIdentity:
     source_claim_id: str
     source_fence: int
     execution_id: str
-    result_kind: Literal["collection", "external-effect"]
+    result_kind: Literal["collection", "external-effect", "no-output"]
     output_collection: CollectionRootIdentity | None = None
     derivation_sha256: str | None = None
     effect_receipt_sha256: str | None = None
     effect_settlement_sha256: str | None = None
+    no_output_settlement_sha256: str | None = None
 
     def __post_init__(self) -> None:
         _semantic_id(self.outcome_id, "outcome id")
@@ -233,7 +243,11 @@ class CollectionProcessingOutcomeIdentity:
             if self.output_collection is None or self.derivation_sha256 is None:
                 raise ValueError("collection outcome requires a root and derivation")
             _sha256(self.derivation_sha256, "derivation identity")
-            if self.effect_receipt_sha256 is not None or self.effect_settlement_sha256 is not None:
+            if (
+                self.effect_receipt_sha256 is not None
+                or self.effect_settlement_sha256 is not None
+                or self.no_output_settlement_sha256 is not None
+            ):
                 raise ValueError("collection outcome cannot contain an effect")
         elif self.result_kind == "external-effect":
             if self.effect_receipt_sha256 is None or self.effect_settlement_sha256 is None:
@@ -242,8 +256,26 @@ class CollectionProcessingOutcomeIdentity:
                 )
             _sha256(self.effect_receipt_sha256, "effect receipt identity")
             _sha256(self.effect_settlement_sha256, "effect settlement identity")
-            if self.output_collection is not None or self.derivation_sha256 is not None:
+            if (
+                self.output_collection is not None
+                or self.derivation_sha256 is not None
+                or self.no_output_settlement_sha256 is not None
+            ):
                 raise ValueError("effect outcome cannot contain a collection result")
+        elif self.result_kind == "no-output":
+            if self.no_output_settlement_sha256 is None:
+                raise ValueError("no-output outcome requires its Riverhog settlement")
+            _sha256(self.no_output_settlement_sha256, "no-output settlement identity")
+            if any(
+                value is not None
+                for value in (
+                    self.output_collection,
+                    self.derivation_sha256,
+                    self.effect_receipt_sha256,
+                    self.effect_settlement_sha256,
+                )
+            ):
+                raise ValueError("no-output outcome cannot contain material or effect results")
         else:
             raise ValueError("unknown processing outcome result kind")
 
@@ -261,22 +293,26 @@ class CollectionProcessingOutcomeIdentity:
                 output_collection=self.output_collection.as_dict(),
                 derivation_sha256=self.derivation_sha256,
             )
-        else:
+        elif self.result_kind == "external-effect":
             result.update(
                 effect_receipt_sha256=self.effect_receipt_sha256,
                 effect_settlement_sha256=self.effect_settlement_sha256,
             )
+        else:
+            result["no_output_settlement_sha256"] = self.no_output_settlement_sha256
         return result
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> CollectionProcessingOutcomeIdentity:
         common = {"outcome_id", "source_claim_id", "source_fence", "execution_id", "result_kind"}
-        kind = value.get("result_kind")
-        specific = (
-            {"output_collection", "derivation_sha256"}
-            if kind == "collection"
-            else {"effect_receipt_sha256", "effect_settlement_sha256"}
-        )
+        kind = str(value.get("result_kind") or "")
+        specific = {
+            "collection": {"output_collection", "derivation_sha256"},
+            "external-effect": {"effect_receipt_sha256", "effect_settlement_sha256"},
+            "no-output": {"no_output_settlement_sha256"},
+        }.get(kind)
+        if specific is None:
+            raise ValueError("processing outcome result kind is invalid")
         if set(value) != common | specific:
             raise ValueError("processing outcome fields are invalid")
         output = value.get("output_collection")
@@ -287,13 +323,14 @@ class CollectionProcessingOutcomeIdentity:
             source_claim_id=str(value["source_claim_id"]),
             source_fence=_positive_decimal(value["source_fence"], "source claim fence"),
             execution_id=str(value["execution_id"]),
-            result_kind=cast(Literal["collection", "external-effect"], kind),
+            result_kind=cast(Literal["collection", "external-effect", "no-output"], kind),
             output_collection=(
                 CollectionRootIdentity.from_mapping(output) if isinstance(output, Mapping) else None
             ),
             derivation_sha256=cast(str | None, value.get("derivation_sha256")),
             effect_receipt_sha256=cast(str | None, value.get("effect_receipt_sha256")),
             effect_settlement_sha256=cast(str | None, value.get("effect_settlement_sha256")),
+            no_output_settlement_sha256=cast(str | None, value.get("no_output_settlement_sha256")),
         )
 
 
@@ -594,7 +631,52 @@ class TransformIntent:
         )
 
 
-@dataclass(frozen=True, order=True, slots=True)
+@dataclass(frozen=True, slots=True)
+class ArtifactDiscardApproval:
+    """Controller-endorsed, exact consideration evidence for source loss."""
+
+    controller_id: str
+    rule_sha256: str
+    evidence_json: str
+    evidence_sha256: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self, "controller_id", _visible_text(self.controller_id, "controller id", maximum=300)
+        )
+        object.__setattr__(self, "rule_sha256", _sha256(self.rule_sha256, "discard rule"))
+        evidence = _json_object(json.loads(self.evidence_json), "consideration evidence")
+        encoded = canonical_json_bytes(evidence).decode("utf-8")
+        if self.evidence_json != encoded:
+            raise ValueError("consideration evidence must be canonical JSON")
+        object.__setattr__(
+            self, "evidence_sha256", _sha256(self.evidence_sha256, "consideration evidence")
+        )
+        if canonical_json_sha256(evidence) != self.evidence_sha256:
+            raise ValueError("consideration evidence differs from its identity")
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "controller_id": self.controller_id,
+            "rule_sha256": self.rule_sha256,
+            "evidence": json.loads(self.evidence_json),
+            "evidence_sha256": self.evidence_sha256,
+        }
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, object]) -> ArtifactDiscardApproval:
+        if set(value) != {"controller_id", "rule_sha256", "evidence", "evidence_sha256"}:
+            raise ValueError("discard approval fields are invalid")
+        evidence = _json_object(value.get("evidence"), "consideration evidence")
+        return cls(
+            controller_id=str(value["controller_id"]),
+            rule_sha256=str(value["rule_sha256"]),
+            evidence_json=canonical_json_bytes(evidence).decode("utf-8"),
+            evidence_sha256=str(value["evidence_sha256"]),
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class ArtifactDisposition:
     input_collection_id: CollectionId
     input_archive_root_sha256: str
@@ -602,6 +684,9 @@ class ArtifactDisposition:
     status: DispositionState
     code: str | None = None
     message: str | None = None
+    effect_receipt_sha256: str | None = None
+    discard_approval: ArtifactDiscardApproval | None = None
+    retain_required: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -619,11 +704,35 @@ class ArtifactDisposition:
         if state not in _DISPOSITION_STATES:
             raise ValueError("artifact disposition state is invalid")
         object.__setattr__(self, "status", cast(DispositionState, state))
-        if state in {"omitted", "rejected"}:
+        if state in {"omitted", "rejected", "not-carried-forward"}:
             object.__setattr__(self, "code", _semantic_id(self.code, "disposition code"))
-            object.__setattr__(self, "message", _visible_text(self.message, "disposition message"))
+            object.__setattr__(
+                self,
+                "message",
+                _visible_text(
+                    self.message,
+                    "disposition message",
+                    maximum=1000 if state == "not-carried-forward" else 500,
+                ),
+            )
         elif self.code is not None or self.message is not None:
-            raise ValueError("successful artifact dispositions cannot carry failure details")
+            raise ValueError(
+                "successful artifact dispositions cannot carry failure or decision details"
+            )
+        if (self.effect_receipt_sha256 is not None) != (state == "effect-applied"):
+            raise ValueError("effect-applied disposition requires an exact effect receipt")
+        if self.effect_receipt_sha256 is not None:
+            object.__setattr__(
+                self,
+                "effect_receipt_sha256",
+                _sha256(self.effect_receipt_sha256, "effect receipt"),
+            )
+        if self.discard_approval is not None and state != "not-carried-forward":
+            raise ValueError("discard approval requires intentional non-carry-forward")
+        if type(self.retain_required) is not bool or (
+            self.retain_required and self.discard_approval is not None
+        ):
+            raise ValueError("source retention conflicts with discard approval")
 
     def as_dict(self) -> dict[str, object]:
         payload: dict[str, object] = {
@@ -635,7 +744,16 @@ class ArtifactDisposition:
             "status": self.status,
         }
         if self.code is not None:
-            payload["failure"] = {"code": self.code, "message": self.message}
+            payload["failure" if self.status in {"omitted", "rejected"} else "decision"] = {
+                "code": self.code,
+                "message": self.message,
+            }
+        if self.effect_receipt_sha256 is not None:
+            payload["effect_receipt_sha256"] = self.effect_receipt_sha256
+        if self.discard_approval is not None:
+            payload["discard_approval"] = self.discard_approval.as_dict()
+        if self.retain_required:
+            payload["retain_required"] = True
         return payload
 
     @classmethod
@@ -644,6 +762,10 @@ class ArtifactDisposition:
             "input",
             "status",
             "failure",
+            "decision",
+            "effect_receipt_sha256",
+            "discard_approval",
+            "retain_required",
         }:
             raise ValueError("artifact disposition fields are invalid")
         input_value = value.get("input")
@@ -654,20 +776,41 @@ class ArtifactDisposition:
         }:
             raise ValueError("artifact disposition input fields are invalid")
         failure = value.get("failure")
+        decision = value.get("decision")
+        if failure is not None and decision is not None:
+            raise ValueError("disposition cannot contain failure and decision details")
+        status = str(value.get("status") or "")
+        if (failure is not None) != (status in {"omitted", "rejected"}) or (
+            (decision is not None) != (status == "not-carried-forward")
+        ):
+            raise ValueError("disposition details do not match its processing outcome")
         code: str | None = None
         message: str | None = None
-        if failure is not None:
-            if not isinstance(failure, Mapping) or set(failure) != {"code", "message"}:
-                raise ValueError("artifact disposition failure is invalid")
-            code = str(failure.get("code") or "")
-            message = str(failure.get("message") or "")
+        details = failure if failure is not None else decision
+        if details is not None:
+            if not isinstance(details, Mapping) or set(details) != {"code", "message"}:
+                raise ValueError("artifact disposition details are invalid")
+            code = str(details.get("code") or "")
+            message = str(details.get("message") or "")
+        approval = value.get("discard_approval")
+        if approval is not None and not isinstance(approval, Mapping):
+            raise ValueError("discard approval must be an object")
         return cls(
             input_collection_id=parse_scalar("sequence63", input_value.get("collection_id")),
             input_archive_root_sha256=str(input_value.get("archive_root_sha256") or ""),
             input_path=str(input_value.get("path") or ""),
-            status=cast(DispositionState, str(value.get("status") or "")),
+            status=cast(DispositionState, status),
             code=code,
             message=message,
+            effect_receipt_sha256=(
+                str(value["effect_receipt_sha256"]) if "effect_receipt_sha256" in value else None
+            ),
+            discard_approval=(
+                ArtifactDiscardApproval.from_mapping(approval)
+                if isinstance(approval, Mapping)
+                else None
+            ),
+            retain_required=cast(bool, value.get("retain_required", False)),
         )
 
 
@@ -741,13 +884,15 @@ class ArtifactDispositionSetIdentity:
         object.__setattr__(
             self,
             "output_edge_count",
-            _positive_uint(self.output_edge_count, "output edge count"),
+            _uint(self.output_edge_count, "output edge count"),
         )
         object.__setattr__(
             self,
             "output_artifact_count",
-            _positive_uint(self.output_artifact_count, "output artifact count"),
+            _uint(self.output_artifact_count, "output artifact count"),
         )
+        if (self.output_edge_count == 0) != (self.output_artifact_count == 0):
+            raise ValueError("output artifact and edge counts must both be zero or positive")
         if self.output_artifact_count > self.output_edge_count:
             raise ValueError("output artifact count exceeds output edge count")
         object.__setattr__(self, "sha256", _sha256(self.sha256, "disposition set identity"))
@@ -773,12 +918,8 @@ class ArtifactDispositionSetIdentity:
             disposition_count=_positive_decimal(
                 value.get("disposition_count"), "disposition count"
             ),
-            output_edge_count=_positive_decimal(
-                value.get("output_edge_count"), "output edge count"
-            ),
-            output_artifact_count=_positive_decimal(
-                value.get("output_artifact_count"), "output artifact count"
-            ),
+            output_edge_count=parse_scalar("nonnegative", value.get("output_edge_count")),
+            output_artifact_count=parse_scalar("nonnegative", value.get("output_artifact_count")),
             sha256=str(value.get("sha256") or ""),
         )
 

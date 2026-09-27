@@ -12,6 +12,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
+from riverhog_protocol.collection_workflows import SourceCollectionRetirementPolicy
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_client import ContentObserverClient
 from stove0_observer_protocol import (
@@ -40,6 +41,7 @@ from stove0_protocol import (
     WorkIdentity,
     branch_work,
 )
+from stove0_recipe_config import RecipeNoAction
 from stove0_target_client import TargetClient
 from stove0_target_protocol import (
     AcceptedTargetJob,
@@ -127,7 +129,16 @@ class RiverhogControlPort(Protocol):
         record: WorkRecord,
         operation: OperationContract,
         parent_outcome: ParentOutcomeBinding | None = None,
-    ) -> str: ...
+    ) -> str | None: ...
+
+    def verify_and_settle_no_output(
+        self,
+        record: WorkRecord,
+        no_action: RecipeNoAction,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy,
+        source_collection_retirement_grace_seconds: int,
+        parent_outcome: ParentOutcomeBinding | None = None,
+    ) -> str | None: ...
 
     def settle_outcomes(
         self,
@@ -160,6 +171,10 @@ class PlanningPort(Protocol):
         nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
         | None = None,
     ) -> BranchSetDecision | WorkInapplicable | WorkNoAction: ...
+
+    def no_output_policy(
+        self, work: WorkIdentity
+    ) -> tuple[RecipeNoAction, SourceCollectionRetirementPolicy, int]: ...
 
     def target_preflight_request(
         self,
@@ -385,6 +400,7 @@ class Stove0Coordinator:
             "executing",
             "output_finalizing",
             "coordinating",
+            "no_output_pending",
         }:
             assert record.claim is not None
             renewed = self.riverhog.renew_claim(record.work, record.claim)
@@ -490,12 +506,38 @@ class Stove0Coordinator:
                         outcome=PreviewOutcome(code=decision.code, message=decision.message),
                     )
                 )
+                if record.no_action_preview is not None and record.no_action_preview != preview:
+                    return self.work.fail(
+                        work_id,
+                        WorkFailure(
+                            code="accepted-preview-changed",
+                            message="Current observations changed the accepted no-action decision.",
+                            retryable=True,
+                        ),
+                        expected_revision=record.revision,
+                    )
                 return self.work.mark_no_action(
                     work_id,
                     preview,
+                    source_collection_retirement_policy=self.planning.no_output_policy(record.work)[
+                        1
+                    ],
                     expected_revision=record.revision,
                 )
             acceptance = record.preview_acceptance
+            if record.no_action_preview is not None:
+                return self.work.fail(
+                    work_id,
+                    WorkFailure(
+                        code="accepted-preview-changed",
+                        message=(
+                            "Current observations no longer produce the accepted no-action "
+                            "decision."
+                        ),
+                        retryable=True,
+                    ),
+                    expected_revision=record.revision,
+                )
             if (
                 acceptance is not None
                 and decision.plan.branch_set_sha256 != acceptance.branch_set_sha256
@@ -562,6 +604,8 @@ class Stove0Coordinator:
                     self.planning.operation_contract(record.workflow_plan.operation),
                     self._parent_outcome(record),
                 )
+                if effect_settlement is None:
+                    return record
                 return self.work.verify_effect(
                     work_id, effect_settlement, expected_revision=record.revision
                 )
@@ -579,6 +623,24 @@ class Stove0Coordinator:
             )
         if phase == "settled":
             return self._begin_or_complete_retirement(record)
+        if phase == "no_output_pending":
+            no_action, retirement_policy, grace_seconds = self.planning.no_output_policy(
+                record.work
+            )
+            no_output_sha256 = self.riverhog.verify_and_settle_no_output(
+                record,
+                no_action,
+                retirement_policy,
+                grace_seconds,
+                self._parent_outcome(record),
+            )
+            if no_output_sha256 is None:
+                return record
+            if retirement_policy == "retain":
+                self.riverhog.release_claim(record)
+            return self.work.verify_no_output(
+                work_id, no_output_sha256, expected_revision=record.revision
+            )
         if phase == "source_collection_retirement_pending":
             return self._retire_one(record)
         return record
@@ -865,12 +927,15 @@ class Stove0Coordinator:
         )
 
     def _begin_or_complete_retirement(self, record: WorkRecord) -> WorkRecord:
+        policy: SourceCollectionRetirementPolicy | None
         if record.branch_set_plan is not None:
             policy = record.branch_set_plan.source_collection_retirement_policy
         elif record.workflow_plan is not None:
             policy = record.workflow_plan.source_collection_retirement_policy
+        elif record.no_action_preview is not None:
+            policy = record.no_output_retirement_policy
         else:
-            raise RuntimeError("settled work has no workflow or branch-set plan")
+            raise RuntimeError("settled work has no selected retirement policy")
         if policy == "retain":
             self.riverhog.release_claim(record)
             return self.work.begin_source_collection_retirement(
@@ -879,24 +944,27 @@ class Stove0Coordinator:
                 expected_revision=record.revision,
             )
         if record.branch_set_plan is not None:
-            operations = tuple(
-                self.planning.operation_contract(child.workflow_plan.operation)
-                for child in self._coordination_descendant_leaves(record)
-                if child.workflow_plan is not None
-            )
+            leaves = self._coordination_descendant_leaves(record)
             if not all(
-                operation.source_collection_retirement_permitted for operation in operations
+                self.planning.operation_contract(
+                    child.workflow_plan.operation
+                ).source_collection_retirement_permitted
+                if child.workflow_plan is not None
+                else self.planning.no_output_policy(child.work)[0].source_loss is not None
+                for child in leaves
             ):
                 raise RuntimeError(
                     "every branch operation contract must authorize source collection retirement"
                 )
-        else:
+        elif record.workflow_plan is not None:
             assert record.workflow_plan is not None
             operation = self.planning.operation_contract(record.workflow_plan.operation)
             if not operation.source_collection_retirement_permitted:
                 raise RuntimeError(
                     "operation contract does not authorize source collection retirement"
                 )
+        elif self.planning.no_output_policy(record.work)[0].source_loss is None:
+            raise RuntimeError("no-output decision has no source-loss retirement permission")
         if not self.riverhog.begin_source_collection_retirement(record):
             return record
         return self.work.begin_source_collection_retirement(
@@ -987,7 +1055,7 @@ class Stove0Coordinator:
             child = self.work.store.load(child_id)
             if child is None:
                 raise RuntimeError("successful coordination child is unavailable")
-            if child.phase != "complete":
+            if child.phase not in {"complete", "no_action"}:
                 return False
         return True
 
@@ -1074,7 +1142,7 @@ class Stove0Coordinator:
                 pending.extend(
                     branch_work(branch).work_id for branch in child.branch_set_plan.branches
                 )
-            elif child.workflow_plan is not None:
+            elif child.workflow_plan is not None or child.no_action_preview is not None:
                 leaves.append(child)
         return tuple(sorted(leaves, key=lambda item: item.work_id))
 

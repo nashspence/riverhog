@@ -344,10 +344,19 @@ class TargetExecutionRuntime:
             raise ValueError(f"target output references an unknown input: {missing}")
         return tuple(resolved[item] for item in sorted(resolved))
 
-    def declare_disposition(self, input_id: str, status: InputDisposition) -> None:
+    def declare_disposition(
+        self,
+        input_id: str,
+        status: InputDisposition,
+        *,
+        code: str | None = None,
+        message: str | None = None,
+    ) -> None:
         self._input_client.declare_target_execution_disposition(
             self.job_id,
-            InputDispositionDeclaration(input_id=input_id, status=status),
+            InputDispositionDeclaration(
+                input_id=input_id, status=status, code=code, message=message
+            ),
         )
 
     def prepare_inputs(

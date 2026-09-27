@@ -274,7 +274,7 @@
 <td data-label="Field">
 <a href="#s-ee8d2d04562a882b497ffe49">allowed_dispositions</a></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -544,7 +544,7 @@
 </section>
 <section class="schema-section" id="s-ee8d2d04562a882b497ffe49">
 <h3>Field: allowed_dispositions</h3>
-<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code>
+<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -560,7 +560,7 @@
 <td data-label="Alternative">
 <a href="#s-ba88710e3d12d098495b36c5">1</a></td>
 <td data-label="Schema">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -734,7 +734,7 @@
 <section class="schema-section" id="s-ba88710e3d12d098495b36c5">
 <h3>At least one must match: 1</h3>
 <p class="shape">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -868,7 +868,7 @@
 </th>
 <td>
 <span id="v-0d4eaf7432250ff6db69c4db">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/2">omitted</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/2">not-carried-forward</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -878,7 +878,17 @@
 </th>
 <td>
 <span id="v-c410dc07d4a59170484b15bd">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/3">rejected</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/3">omitted</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f94015b797f5517fcf706905">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/4">rejected</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2529,7 +2539,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

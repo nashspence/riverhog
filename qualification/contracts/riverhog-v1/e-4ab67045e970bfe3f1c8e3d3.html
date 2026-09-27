@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;riverhog-external-effect-settlement/v1&#x27;], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], execution_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, input_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], artifact_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], receipt: dict[str, typing.Any], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], status: Literal[&#x27;succeeded&#x27;]) -&gt; None&quot;</code>
+<code>&#x27;() -&gt; None&#x27;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-c2d8fe5b134b26b25c950737">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;fence&quot;,&quot;execution_id&quot;,&quot;execution_sha256&quot;,&quot;operation&quot;,&quot;input_set_sha256&quot;,&quot;artifact_set_sha256&quot;,&quot;controller_evidence_sha256&quot;,&quot;receipt&quot;,&quot;receipt_sha256&quot;,&quot;status&quot;]</code>
+<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;fence&quot;,&quot;execution_id&quot;,&quot;execution_sha256&quot;,&quot;operation&quot;,&quot;input_set_sha256&quot;,&quot;artifact_set_sha256&quot;,&quot;controller_evidence_sha256&quot;,&quot;receipt&quot;,&quot;receipt_sha256&quot;,&quot;disposition_set&quot;,&quot;status&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -109,6 +109,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>disposition_set</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f6a4625c7e3aff32e3ed9daf">#/$defs/ArtifactDispositionSetIdentityDocument</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -199,6 +208,9 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-f6a4625c7e3aff32e3ed9daf">ArtifactDispositionSetIdentityDocument</a>
+</li>
+<li>
 <a href="#s-f0d4eed4ff0c909b080a8062">NonnegativeDecimal</a>
 </li>
 <li>
@@ -229,6 +241,78 @@
 <code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-effect-receipt&quot;}</code>
 </dd>
 </dl>
+</section>
+<section class="schema-section" id="s-f6a4625c7e3aff32e3ed9daf">
+<h3>Definition: ArtifactDispositionSetIdentityDocument</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;disposition_count&quot;,&quot;output_edge_count&quot;,&quot;output_artifact_count&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>disposition_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f0d4eed4ff0c909b080a8062">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f0d4eed4ff0c909b080a8062">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_edge_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f0d4eed4ff0c909b080a8062">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-f0d4eed4ff0c909b080a8062">
 <h3>Definition: NonnegativeDecimal</h3>
@@ -340,6 +424,216 @@
 <td>
 <table id="v-4071eb6e8d59b9452bbd2062">
 <tbody>
+<tr>
+<th scope="row">
+<code>ArtifactDispositionSetIdentityDocument</code>
+</th>
+<td>
+<table id="v-f6a4625c7e3aff32e3ed9daf">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-c38b363654a85af8a4630e5a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e1b7f688b1bf7491795d3102">
+<tbody>
+<tr>
+<th scope="row">
+<code>disposition_count</code>
+</th>
+<td>
+<table id="v-04fac16f1bdfda4d46e8fcb5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7356b3544be33da0d3809d31">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/disposition_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f0d4eed4ff0c909b080a8062">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-74481c13debd060513d4195f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/disposition_count/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_artifact_count</code>
+</th>
+<td>
+<table id="v-573ef17b35ace1f79c963622">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d6adc001a20f94d0280050a9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_artifact_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f0d4eed4ff0c909b080a8062">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-57dcd1178f70e8699a49be3b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_artifact_count/ge">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_edge_count</code>
+</th>
+<td>
+<table id="v-0ece1146eed674fa63d13250">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e08d105d0ecce976978e9963">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_edge_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f0d4eed4ff0c909b080a8062">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-1d7d8562c53f179da623990d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_edge_count/ge">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-74645593de70da1f991290e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0afb8deb1dbb4ed5c94fde56">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ad5b29e09721240b6b0e357d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-4fae075e152d6a8122aeff26">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3024b21423d3dd251a3e80ff">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/0">disposition_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4030c34b9b6b3752c98386a9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/1">output_edge_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-76c65c3554e46fb154e18765">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/2">output_artifact_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-28d8a840c0b20a2d8f6efed7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/3">sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-241f9aea6a0047a915d81552">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>NonnegativeDecimal</code>
@@ -605,6 +899,26 @@
 <span id="v-c1b181689e0dc5be3e8ce4d2">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/properties/controller_evidence_sha256/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition_set</code>
+</th>
+<td>
+<table id="v-a2afde1472707a65f6637abd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f326ebf1dd9568849b3c0c4f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/properties/disposition_set/$ref">#/$defs/ArtifactDispositionSetIdentityDocument</code>
+<span class="kind">string</span> <a href="e-4ab67045e970bfe3f1c8e3d3.html#v-f6a4625c7e3aff32e3ed9daf">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -1036,7 +1350,17 @@
 </th>
 <td>
 <span id="v-02d49cb28267d20fac1d1ea1">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/required/11">status</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/required/11">disposition_set</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-61c29c727ceff6c9149fd2b8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/schema/required/12">status</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1062,7 +1386,7 @@
 </th>
 <td>
 <span id="v-26b59d68dad6a366c3ae73b7">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-external-effect-settlement/v1&#x27;], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], execution_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, input_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], artifact_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], receipt: dict[str, typing.Any], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], status: Literal[&#x27;succeeded&#x27;]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ExternalEffectSettlementDocument/contract/signature">&#x27;() -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1159,7 +1483,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

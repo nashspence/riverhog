@@ -19,6 +19,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_workflow_transport import (
     DISPOSITION_BATCH_MAX,
+    SHA256,
     WORKFLOW_SET_BATCH_MAX,
     ArtifactDispositionBatchDocument,
     ArtifactDispositionDocument,
@@ -37,6 +38,9 @@ from riverhog_protocol.collection_workflow_transport import (
     CollectionRootBatchDocument,
     CollectionRootIdentityDocument,
     CollectionRootPageDocument,
+    ConsiderationEvidenceOutDocument,
+    ConsiderationEvidencePutDocument,
+    ConsiderationEvidenceReadDocument,
     OperationIdentityDocument,
     ProcessingCapabilityCreateDocument,
     ProcessingCapabilityDocument,
@@ -45,6 +49,7 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimDocument,
     ProcessingClaimEffectSettleDocument,
     ProcessingClaimFenceDocument,
+    ProcessingClaimNoOutputSettleDocument,
     ProcessingClaimOutcomesAppendDocument,
     ProcessingClaimOutcomesSettleDocument,
     ProcessingClaimPageDocument,
@@ -68,6 +73,7 @@ DerivationInput = CollectionDerivationDocument | Mapping[str, Any]
 DispositionInput = ArtifactDispositionDocument | Mapping[str, Any]
 DispositionOutputInput = ArtifactDispositionOutputDocument | Mapping[str, Any]
 _PROCESSING_CLAIM_ID: TypeAdapter[str] = TypeAdapter(ProcessingClaimId)
+_SHA256: TypeAdapter[str] = TypeAdapter(SHA256)
 _CLAIM_SORTS = closed_literal_values(ProcessingClaimSort)
 _CLAIM_STATES = closed_literal_values(ClaimState)
 _SORT_ORDERS = closed_literal_values(SortOrder)
@@ -100,6 +106,13 @@ def _claim_id(value: str) -> str:
         return _PROCESSING_CLAIM_ID.validate_python(value, strict=True)
     except ValidationError as exc:
         raise BadRequest("processing claim id must be a lowercase SHA-256") from exc
+
+
+def _digest(value: str) -> str:
+    try:
+        return _SHA256.validate_python(value, strict=True)
+    except ValidationError as exc:
+        raise BadRequest("consideration evidence identity must be a lowercase SHA-256") from exc
 
 
 def _chunks(values: Iterable[Any], *, maximum: int) -> Iterator[list[Any]]:
@@ -316,7 +329,7 @@ class CollectionWorkflowMethods:
         operation_id: str,
         operation_sha256: str,
         input_artifacts: Iterable[ArtifactInput],
-        result_kind: Literal["collection", "external-effect"] = "collection",
+        result_kind: Literal["collection", "external-effect", "no-output"] = "collection",
         operation_contract: Mapping[str, Any] | None = None,
         output_policy: OutputCollectionPolicy | None = None,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
@@ -547,6 +560,40 @@ class CollectionWorkflowMethods:
         )
         return self._claim_response("settle_processing_claim", claim_id, "settle", request)
 
+    def record_processing_claim_consideration_evidence(
+        self,
+        claim_id: ProcessingClaimId,
+        *,
+        fence: int,
+        document: Mapping[str, Any],
+        sha256: str,
+    ) -> ConsiderationEvidenceOutDocument:
+        request = _exact_request(
+            ConsiderationEvidencePutDocument,
+            fence=fence,
+            document=dict(document),
+            sha256=sha256,
+        )
+        return ConsiderationEvidenceOutDocument.model_validate(
+            self._json(
+                "record_processing_claim_consideration_evidence",
+                "PUT",
+                f"/v1/collection-processing-claims/{_claim_id(claim_id)}/consideration-evidence",
+                json=_dump(request),
+            )
+        )
+
+    def get_processing_claim_consideration_evidence(
+        self, claim_id: ProcessingClaimId, sha256: str
+    ) -> ConsiderationEvidenceReadDocument:
+        return ConsiderationEvidenceReadDocument.model_validate(
+            self._json(
+                "get_processing_claim_consideration_evidence",
+                "GET",
+                f"/v1/collection-processing-claims/{_claim_id(claim_id)}/consideration-evidence/{_digest(sha256)}",
+            )
+        )
+
     def record_processing_claim_dispositions(
         self,
         claim_id: ProcessingClaimId,
@@ -691,6 +738,36 @@ class CollectionWorkflowMethods:
         )
         return self._claim_response(
             "settle_processing_claim_effect", claim_id, "effects/settle", request
+        )
+
+    def settle_processing_claim_no_output(
+        self,
+        claim_id: ProcessingClaimId,
+        *,
+        fence: int,
+        settlement: Mapping[str, Any],
+        outcome_claim_id: ProcessingClaimId | None = None,
+        outcome_fence: int | None = None,
+        outcome_id: str | None = None,
+    ) -> ProcessingClaimDocument:
+        outcome = None
+        if any(item is not None for item in (outcome_claim_id, outcome_fence, outcome_id)):
+            if outcome_claim_id is None or outcome_fence is None or outcome_id is None:
+                raise ValueError("processing outcome binding is incomplete")
+            outcome = _exact_request(
+                ProcessingOutcomeBindingDocument,
+                claim_id=outcome_claim_id,
+                fence=outcome_fence,
+                outcome_id=outcome_id,
+            )
+        request = _exact_request(
+            ProcessingClaimNoOutputSettleDocument,
+            fence=fence,
+            settlement=dict(settlement),
+            outcome=outcome,
+        )
+        return self._claim_response(
+            "settle_processing_claim_no_output", claim_id, "no-output/settle", request
         )
 
     def append_processing_claim_outcomes(

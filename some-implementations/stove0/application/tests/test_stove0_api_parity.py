@@ -224,7 +224,12 @@ class _LifecycleCoordinator:
 
     def create_or_resume(self, identity: WorkIdentity, *, preview: WorkflowPreview) -> WorkRecord:
         self.state.work_record = (
-            WorkRecord(work=identity, phase="no_action", no_action_preview=preview)
+            WorkRecord(
+                work=identity,
+                phase="no_action",
+                no_action_preview=preview,
+                no_output_settlement_sha256="f" * 64,
+            )
             if preview.state == "no_action"
             else WorkRecord(
                 work=identity,
@@ -273,6 +278,7 @@ class _LifecycleCoordinator:
             branch_set_sha256=preview.branch_set_plan.branch_set_sha256,
             succeeded_branches=(),
             succeeded_effects=(),
+            succeeded_no_outputs=(),
             succeeded_coordinations=(),
             unsettled_branch_ids=("archive",),
             failed_branch_ids=(),

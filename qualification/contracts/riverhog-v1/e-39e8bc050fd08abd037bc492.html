@@ -185,6 +185,9 @@
 <a href="#s-056ad80d9310ba1fa2882dd4">JsonValue</a>
 </li>
 <li>
+<a href="#s-866bd2e08dd5f4e8657b16ea">NoOutputBranchPlan</a>
+</li>
+<li>
 <a href="#s-f02657aaca95e6ece8b203c7">NonnegativeDecimal</a>
 </li>
 <li>
@@ -195,6 +198,9 @@
 </li>
 <li>
 <a href="#s-97335c2b405a4b0bd48604f1">OutputCollectionPolicy</a>
+</li>
+<li>
+<a href="#s-454205715221bc0c348ad825">PreviewOutcome</a>
 </li>
 <li>
 <a href="#s-0ad3f0da59dd24b77726297b">RecipeIdentityRef</a>
@@ -517,7 +523,7 @@
 <a href="#s-a237ff4370f561a8b2829e11">branches</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <a href="#s-e304b0906746a8476678fabc">exactly one of 2 alternatives</a>; minItems: <code>1</code></td>
+<code>array</code>; items: <a href="#s-e304b0906746a8476678fabc">exactly one of 3 alternatives</a>; minItems: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1807,6 +1813,106 @@
 <h3>Definition: JsonValue</h3>
 <p class="shape">any JSON value</p>
 </section>
+<section class="schema-section" id="s-866bd2e08dd5f4e8657b16ea">
+<h3>Definition: NoOutputBranchPlan</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;artifact_selection&quot;,&quot;work&quot;,&quot;observations&quot;,&quot;outcome&quot;,&quot;decision_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_selection</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-39e8bc050fd08abd037bc492.html#v-c2afda83a914a22197cfdba9">#/$defs/ArtifactSelectionRef</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>branch_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>decision_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>no-output</code>; default: <code>no-output</code></td>
+<td data-label="Default">
+<code>no-output</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-15968f08a2ad35358f5c84c0">observations</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-39e8bc050fd08abd037bc492.html#v-40989710cd2938a68517ee30">#/$defs/ContentObservationEvidence</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>outcome</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-39e8bc050fd08abd037bc492.html#v-454205715221bc0c348ad825">#/$defs/PreviewOutcome</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>work</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-39e8bc050fd08abd037bc492.html#v-71955789c7a4b949a60dcc1c">#/$defs/WorkIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-f02657aaca95e6ece8b203c7">
 <h3>Definition: NonnegativeDecimal</h3>
 <p class="shape">
@@ -2029,6 +2135,69 @@
 <tr>
 <td data-label="Field">
 <a href="#s-0b42082a586c7fcb3e41b310">use_cache</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-454205715221bc0c348ad825">
+<h3>Definition: PreviewOutcome</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-ddd3e254730696f42610558d">retryable</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
 <td data-label="Default">
@@ -2600,7 +2769,7 @@
 <section class="schema-section" id="s-a237ff4370f561a8b2829e11">
 <h3>Field: branches</h3>
 <p class="shape">
-<code>array</code>; items: <a href="#s-e304b0906746a8476678fabc">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+<code>array</code>; items: <a href="#s-e304b0906746a8476678fabc">exactly one of 3 alternatives</a>; minItems: <code>1</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -2985,6 +3154,18 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-15968f08a2ad35358f5c84c0">
+<h3>Field: observations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-39e8bc050fd08abd037bc492.html#v-40989710cd2938a68517ee30">#/$defs/ContentObservationEvidence</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-6c4251b6518a1052569a03c8">
 <h3>Field: archive_store</h3>
 <p class="shape">default: <code>null</code>; any of: <a href="e-39e8bc050fd08abd037bc492.html#v-6560713399b343eb181ffd66">#/$defs/ArchiveStoreName</a>; <code>null</code>
@@ -3039,6 +3220,34 @@
 </section>
 <section class="schema-section" id="s-0b42082a586c7fcb3e41b310">
 <h3>Field: use_cache</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ddd3e254730696f42610558d">
+<h3>Field: retryable</h3>
 <p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
@@ -3227,12 +3436,12 @@
 </section>
 <section class="schema-section" id="s-e304b0906746a8476678fabc">
 <h3>items schema</h3>
-<p class="shape">exactly one of: <a href="e-39e8bc050fd08abd037bc492.html#v-321c3e01673fa038753d668d">#/$defs/BranchPlan</a>; <a href="e-39e8bc050fd08abd037bc492.html#v-3ba08b84f3955fd99588c7c6">#/$defs/CoordinationBranchPlan</a>
+<p class="shape">exactly one of: <a href="e-39e8bc050fd08abd037bc492.html#v-321c3e01673fa038753d668d">#/$defs/BranchPlan</a>; <a href="e-39e8bc050fd08abd037bc492.html#v-3ba08b84f3955fd99588c7c6">#/$defs/CoordinationBranchPlan</a>; <a href="e-39e8bc050fd08abd037bc492.html#v-866bd2e08dd5f4e8657b16ea">#/$defs/NoOutputBranchPlan</a>
 </p>
 <dl class="facts">
 <dt>discriminator</dt>
 <dd>
-<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;,&quot;no-output&quot;:&quot;#/$defs/NoOutputBranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
@@ -3254,6 +3463,11 @@
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
 <a href="e-39e8bc050fd08abd037bc492.html#v-3ba08b84f3955fd99588c7c6">#/$defs/CoordinationBranchPlan</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">
+<a href="e-39e8bc050fd08abd037bc492.html#v-866bd2e08dd5f4e8657b16ea">#/$defs/NoOutputBranchPlan</a></td>
 </tr>
 </tbody>
 </table>
@@ -4111,6 +4325,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>no-output</code>
+</th>
+<td>
+<span id="v-d04f294aab9366eca4caa65d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/BranchSetPlan/properties/branches/items/discriminator/mapping/no-output">#/$defs/NoOutputBranchPlan</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -4169,6 +4393,26 @@
 <span id="v-5ae8ab0563beb709a38b9ebd">
 <code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/BranchSetPlan/properties/branches/items/oneOf/1/$ref">#/$defs/CoordinationBranchPlan</code>
 <span class="kind">string</span> <a href="e-39e8bc050fd08abd037bc492.html#v-3ba08b84f3955fd99588c7c6">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-3677d1bfd0d5ebe6159e24a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1963c8f5f6bdbcd2e06e1964">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/BranchSetPlan/properties/branches/items/oneOf/2/$ref">#/$defs/NoOutputBranchPlan</code>
+<span class="kind">string</span> <a href="e-39e8bc050fd08abd037bc492.html#v-866bd2e08dd5f4e8657b16ea">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -8661,6 +8905,316 @@
 </tr>
 <tr>
 <th scope="row">
+<code>NoOutputBranchPlan</code>
+</th>
+<td>
+<table id="v-866bd2e08dd5f4e8657b16ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0015fa736f3f9798abbce636">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-9a7fae1ccd9cbc864d8d5410">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_selection</code>
+</th>
+<td>
+<table id="v-f3beee22b7962f37f4de6fdb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-04e441892a935b4393f5be02">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/artifact_selection/$ref">#/$defs/ArtifactSelectionRef</code>
+<span class="kind">string</span> <a href="e-39e8bc050fd08abd037bc492.html#v-c2afda83a914a22197cfdba9">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-a6511921da8418fec2410d22">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-805ba91f5337b575fde7f5d2">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4bda055fb1db8269dea7bec6">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>decision_sha256</code>
+</th>
+<td>
+<table id="v-87dd30c79df0b7b6e7af2fa6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3610bddda28da668acabc3dc">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/decision_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b75d599c939e04d04bca815c">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/decision_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-73c6a08fd7d42cbf0d551cd6">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-8d04a53e473b22b5df29eec4">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/kind/const">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-9a5513aca7a1cb22e68c3008">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/kind/default">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5ff83b94eda3278ae3c7aebe">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observations</code>
+</th>
+<td>
+<table id="v-15968f08a2ad35358f5c84c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-240cb0ca94c8d1727aa918ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8dc0a6ca25c8c5041a9d6b9c">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/observations/items/$ref">#/$defs/ContentObservationEvidence</code>
+<span class="kind">string</span> <a href="e-39e8bc050fd08abd037bc492.html#v-40989710cd2938a68517ee30">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d40bba7e6211f2115ab10781">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/observations/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-0cd637058523f86cb442e67d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-52b04bb378c3f74b96da1c06">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/outcome/$ref">#/$defs/PreviewOutcome</code>
+<span class="kind">string</span> <a href="e-39e8bc050fd08abd037bc492.html#v-454205715221bc0c348ad825">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-c6be1551878abeb5f94781d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-bb4ea6335ace93a328507f46">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/properties/work/$ref">#/$defs/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-39e8bc050fd08abd037bc492.html#v-71955789c7a4b949a60dcc1c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-9559251e73280a15a3386e88">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a631de4caae0f48f5038c138">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/required/0">branch_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ed9ffa47bf8d2f4d89b677c6">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/required/1">artifact_selection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-7e4068f3ff3341aadf5cf5b0">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/required/2">work</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-3efdbec4eeefecd474b63bfb">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/required/3">observations</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-b4f7a230407e5d1c33f8b120">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/required/4">outcome</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-bc0e297823d588f23f18280d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/required/5">decision_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-adb94e4eda2e2438904c1e12">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/NoOutputBranchPlan/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>NonnegativeDecimal</code>
 </th>
 <td>
@@ -9403,6 +9957,216 @@
 <td>
 <span id="v-08fea12a0ba63657263fc755">
 <code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/OutputCollectionPolicy/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>PreviewOutcome</code>
+</th>
+<td>
+<table id="v-454205715221bc0c348ad825">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a464eac5c5622a89b66484b3">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-bcb260c463dbef2462603e3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-16d4088832b5fed77c079fdb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fb421b1afff33c2c53ed2beb">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c614ff0db01b403db0cd354f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-1ea38be68bcf7e5be1b7ee80">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-55c47a0adbaef53f7698dc3d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-c5b90bac13368d6e8ecb94e4">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b0033d700f110f7c46287834">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>retryable</code>
+</th>
+<td>
+<table id="v-ddd3e254730696f42610558d">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-01949f64dbc1d53683cb6875">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-757eefdf2e06ffd33a044617">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3766ff00d6fb771a6ab3f22c">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b9474fc7da2c7274b1cd8ec5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e84a0483adcaaf20286a89d9">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-21cef7d8b188512e22e07aa0">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/properties/retryable/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-7ed294670fa16c2287a4ba71">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-82eb61c0285ed459a425d65a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f6d3eb5789b062998cc22390">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-753609f35d1502662e4803ff">
+<code data-value-pointer="/external_contract/python/stove0_protocol.BranchSetDecision/contract/schema/$defs/PreviewOutcome/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11777,7 +12541,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

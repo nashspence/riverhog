@@ -47,6 +47,9 @@ BRANCH_SETTLEMENT_FORMAT: Literal["stove0-branch-settlement/v1"] = "stove0-branc
 BRANCH_EFFECT_SETTLEMENT_FORMAT: Literal["stove0-branch-effect-settlement/v1"] = (
     "stove0-branch-effect-settlement/v1"
 )
+BRANCH_NO_OUTPUT_SETTLEMENT_FORMAT: Literal["stove0-branch-no-output-settlement/v1"] = (
+    "stove0-branch-no-output-settlement/v1"
+)
 JOIN_SETTLEMENT_FORMAT: Literal["stove0-join-settlement/v1"] = "stove0-join-settlement/v1"
 COORDINATION_SETTLEMENT_FORMAT: Literal["stove0-coordination-settlement/v1"] = (
     "stove0-coordination-settlement/v1"
@@ -380,8 +383,61 @@ class CoordinationBranchPlan(Stove0ProtocolModel):
         )
 
 
+class NoOutputBranchPlan(Stove0ProtocolModel):
+    """A required child whose accepted observation decision produces no target output."""
+
+    kind: Literal["no-output"] = "no-output"
+    branch_id: SemanticId
+    artifact_selection: ArtifactSelectionRef
+    work: WorkIdentity
+    observations: tuple[ContentObservationEvidence, ...]
+    outcome: PreviewOutcome
+    decision_sha256: Sha256
+
+    @model_validator(mode="after")
+    def bind_decision(self) -> Self:
+        binding = self.work.fork_join
+        if not isinstance(binding, BranchWorkBinding):
+            raise ValueError("no-output child requires a branch work binding")
+        if (
+            binding.branch_id != self.branch_id
+            or binding.artifact_selection_sha256 != self.artifact_selection.selection_sha256
+        ):
+            raise ValueError("no-output branch differs from its child work binding")
+        if tuple(item.request.request_id for item in self.observations) != tuple(
+            sorted({item.request.request_id for item in self.observations})
+        ):
+            raise ValueError("no-output observations must be unique and ordered")
+        if self.decision_sha256 != canonical_json_sha256(_without_digest(self, "decision_sha256")):
+            raise ValueError("no-output branch decision differs from its exact evidence")
+        return self
+
+    @classmethod
+    def seal(
+        cls,
+        *,
+        branch_id: str,
+        selection: ArtifactSelection,
+        work: WorkIdentity,
+        observations: Sequence[ContentObservationEvidence],
+        outcome: PreviewOutcome,
+    ) -> NoOutputBranchPlan:
+        payload = {
+            "kind": "no-output",
+            "branch_id": branch_id,
+            "artifact_selection": selection.ref().model_dump(mode="json"),
+            "work": work.model_dump(mode="json", by_alias=True, exclude_none=True),
+            "observations": [
+                item.model_dump(mode="json", by_alias=True, exclude_none=True)
+                for item in sorted(observations, key=lambda item: item.request.request_id)
+            ],
+            "outcome": outcome.model_dump(mode="json", exclude_none=True),
+        }
+        return cls.model_validate({**payload, "decision_sha256": canonical_json_sha256(payload)})
+
+
 BranchDeclaration = Annotated[
-    BranchPlan | CoordinationBranchPlan,
+    BranchPlan | CoordinationBranchPlan | NoOutputBranchPlan,
     Field(discriminator="kind"),
 ]
 
@@ -393,9 +449,11 @@ def branch_work(branch: BranchDeclaration) -> WorkIdentity:
 def branch_result_kind(
     branch: BranchDeclaration,
     branch_sets: Mapping[str, BranchSetPlan],
-) -> Literal["collection", "external-effect", "coordination"]:
+) -> Literal["collection", "external-effect", "no-output", "coordination"]:
     if isinstance(branch, BranchPlan):
         return branch.workflow_plan.result_kind
+    if isinstance(branch, NoOutputBranchPlan):
+        return "no-output"
     child = branch_sets.get(branch.branch_set_sha256)
     if child is None:
         raise ValueError(f"child branch-set document is unavailable: {branch.branch_set_sha256}")
@@ -737,6 +795,42 @@ class BranchEffectSettlement(Stove0ProtocolModel):
         return cls.model_validate({**payload, "settlement_sha256": canonical_json_sha256(payload)})
 
 
+class BranchNoOutputSettlement(Stove0ProtocolModel):
+    """Exact Riverhog-settled success for a required no-output child."""
+
+    format: Literal["stove0-branch-no-output-settlement/v1"] = BRANCH_NO_OUTPUT_SETTLEMENT_FORMAT
+    branch_id: SemanticId
+    work_id: Sha256
+    decision_sha256: Sha256
+    no_output_settlement_sha256: Sha256
+    settlement_sha256: Sha256
+
+    @model_validator(mode="after")
+    def verify_digest(self) -> Self:
+        if (
+            canonical_json_sha256(_without_digest(self, "settlement_sha256"))
+            != self.settlement_sha256
+        ):
+            raise ValueError("branch no-output settlement digest differs from its payload")
+        return self
+
+    @classmethod
+    def seal(
+        cls,
+        *,
+        branch: NoOutputBranchPlan,
+        no_output_settlement_sha256: str,
+    ) -> BranchNoOutputSettlement:
+        payload = {
+            "format": BRANCH_NO_OUTPUT_SETTLEMENT_FORMAT,
+            "branch_id": branch.branch_id,
+            "work_id": branch.work.work_id,
+            "decision_sha256": branch.decision_sha256,
+            "no_output_settlement_sha256": no_output_settlement_sha256,
+        }
+        return cls.model_validate({**payload, "settlement_sha256": canonical_json_sha256(payload)})
+
+
 class BranchOutcome(Stove0ProtocolModel):
     """Current non-success projection for a leaf or coordination branch."""
 
@@ -745,12 +839,23 @@ class BranchOutcome(Stove0ProtocolModel):
     work_id: Sha256
     workflow_plan_sha256: Sha256 | None = None
     branch_set_sha256: Sha256 | None = None
+    no_output_decision_sha256: Sha256 | None = None
     state: BranchOutcomeState
 
     @model_validator(mode="after")
     def exact_declared_plan(self) -> Self:
-        if (self.workflow_plan_sha256 is None) == (self.branch_set_sha256 is None):
-            raise ValueError("branch outcome must bind exactly one leaf or coordination plan")
+        if (
+            sum(
+                value is not None
+                for value in (
+                    self.workflow_plan_sha256,
+                    self.branch_set_sha256,
+                    self.no_output_decision_sha256,
+                )
+            )
+            != 1
+        ):
+            raise ValueError("branch outcome must bind exactly one declared child decision")
         return self
 
 
@@ -894,7 +999,7 @@ class CoordinationChildSettlementRef(Stove0ProtocolModel):
     """Exact direct-child success included in a coordination settlement."""
 
     branch_id: SemanticId
-    kind: Literal["collection", "external-effect", "coordination"]
+    kind: Literal["collection", "external-effect", "no-output", "coordination"]
     settlement_sha256: Sha256
 
 
@@ -957,6 +1062,7 @@ class CoordinationSettlement(Stove0ProtocolModel):
         effect_settlements: Sequence[BranchEffectSettlement],
         coordination_settlements: Sequence[CoordinationSettlement],
         join_settlement: JoinSettlement | None,
+        no_output_settlements: Sequence[BranchNoOutputSettlement] = (),
     ) -> CoordinationSettlement:
         children = [
             CoordinationChildSettlementRef(
@@ -973,6 +1079,14 @@ class CoordinationSettlement(Stove0ProtocolModel):
                 settlement_sha256=item.settlement_sha256,
             )
             for item in effect_settlements
+        )
+        children.extend(
+            CoordinationChildSettlementRef(
+                branch_id=item.branch_id,
+                kind="no-output",
+                settlement_sha256=item.settlement_sha256,
+            )
+            for item in no_output_settlements
         )
         nested_effects = False
         for item in coordination_settlements:
@@ -1034,6 +1148,7 @@ class BranchSetEvaluation(Stove0ProtocolModel):
     branch_set_sha256: Sha256
     succeeded_branches: tuple[BranchSettlement, ...]
     succeeded_effects: tuple[BranchEffectSettlement, ...]
+    succeeded_no_outputs: tuple[BranchNoOutputSettlement, ...]
     succeeded_coordinations: tuple[CoordinationSettlement, ...]
     unsettled_branch_ids: tuple[SemanticId, ...]
     failed_branch_ids: tuple[SemanticId, ...]
@@ -1272,7 +1387,7 @@ def _plan_contains_effects(
             if isinstance(branch, BranchPlan):
                 if branch.workflow_plan.result_kind == "external-effect":
                     return True
-            else:
+            elif isinstance(branch, CoordinationBranchPlan):
                 stack.append(branch_sets[branch.branch_set_sha256])
     return False
 
@@ -1286,17 +1401,20 @@ def _normalize_branch_results(
     selections: SelectionDocuments,
     settlements: Sequence[BranchSettlement],
     effect_settlements: Sequence[BranchEffectSettlement],
+    no_output_settlements: Sequence[BranchNoOutputSettlement],
     coordination_settlements: Sequence[CoordinationSettlement],
     outcomes: Sequence[BranchOutcome],
 ) -> tuple[
     dict[str, BranchSettlement],
     dict[str, BranchEffectSettlement],
+    dict[str, BranchNoOutputSettlement],
     dict[str, CoordinationSettlement],
     dict[str, BranchOutcome],
 ]:
     branches = _branch_plans(plan)
     settlement_map: dict[str, BranchSettlement] = {}
     effect_map: dict[str, BranchEffectSettlement] = {}
+    no_output_map: dict[str, BranchNoOutputSettlement] = {}
     coordination_map: dict[str, CoordinationSettlement] = {}
     outcome_map: dict[str, BranchOutcome] = {}
     roots: set[CollectionRootIdentityRef] = set()
@@ -1350,6 +1468,22 @@ def _normalize_branch_results(
         ):
             raise ValueError("branch effect settlement does not bind the declared workflow plan")
         effect_map[effect_settlement.branch_id] = effect_settlement
+    for no_output_settlement in no_output_settlements:
+        branch = branches.get(no_output_settlement.branch_id)
+        if not isinstance(branch, NoOutputBranchPlan):
+            raise ValueError("a no-output settlement requires a declared no-output branch")
+        if (
+            no_output_settlement.branch_id in no_output_map
+            or no_output_settlement.branch_id in settlement_map
+            or no_output_settlement.branch_id in effect_map
+        ):
+            raise ValueError("duplicate success settlement for no-output branch")
+        if (
+            no_output_settlement.work_id != branch.work.work_id
+            or no_output_settlement.decision_sha256 != branch.decision_sha256
+        ):
+            raise ValueError("no-output settlement differs from the selected child decision")
+        no_output_map[no_output_settlement.branch_id] = no_output_settlement
     for coordination_settlement in coordination_settlements:
         binding = coordination_settlement.work.fork_join
         if not isinstance(binding, BranchWorkBinding):
@@ -1365,6 +1499,7 @@ def _normalize_branch_results(
             binding.branch_id in coordination_map
             or binding.branch_id in settlement_map
             or binding.branch_id in effect_map
+            or binding.branch_id in no_output_map
         ):
             raise ValueError(f"duplicate success settlement for branch: {binding.branch_id}")
         if (
@@ -1390,6 +1525,7 @@ def _normalize_branch_results(
         if (
             outcome.branch_id in settlement_map
             or outcome.branch_id in effect_map
+            or outcome.branch_id in no_output_map
             or outcome.branch_id in coordination_map
         ):
             raise ValueError("a branch cannot have both success settlement and terminal outcome")
@@ -1400,6 +1536,14 @@ def _normalize_branch_results(
                 or outcome.branch_set_sha256 is not None
             ):
                 raise ValueError("branch outcome does not bind the declared workflow plan")
+        elif isinstance(branch, NoOutputBranchPlan):
+            if (
+                outcome.work_id != branch.work.work_id
+                or outcome.workflow_plan_sha256 is not None
+                or outcome.branch_set_sha256 is not None
+                or outcome.no_output_decision_sha256 != branch.decision_sha256
+            ):
+                raise ValueError("no-output outcome differs from its exact decision")
         elif (
             outcome.work_id != branch.work.work_id
             or outcome.branch_set_sha256 != branch.branch_set_sha256
@@ -1407,7 +1551,7 @@ def _normalize_branch_results(
         ):
             raise ValueError("branch outcome does not bind the declared coordination plan")
         outcome_map[outcome.branch_id] = outcome
-    return settlement_map, effect_map, coordination_map, outcome_map
+    return settlement_map, effect_map, no_output_map, coordination_map, outcome_map
 
 
 def _join_member_selection(
@@ -1441,8 +1585,8 @@ def resolve_join_plan(
     validate_branch_set_plan(plan, selections, branch_sets)
     if plan.join is None:
         return None
-    settlement_map, effect_map, coordination_map, _ = _normalize_branch_results(
-        plan, selections, settlements, effect_settlements, coordination_settlements, ()
+    settlement_map, effect_map, _no_outputs, coordination_map, _ = _normalize_branch_results(
+        plan, selections, settlements, effect_settlements, (), coordination_settlements, ()
     )
     effect_members = sorted(
         item.branch_id for item in plan.join.members if item.branch_id in effect_map
@@ -1576,6 +1720,7 @@ def evaluate_branch_set(
     branch_sets: Mapping[str, BranchSetPlan] | None = None,
     branch_settlements: Sequence[BranchSettlement] = (),
     branch_effect_settlements: Sequence[BranchEffectSettlement] = (),
+    branch_no_output_settlements: Sequence[BranchNoOutputSettlement] = (),
     branch_coordination_settlements: Sequence[CoordinationSettlement] = (),
     branch_outcomes: Sequence[BranchOutcome] = (),
     join_settlement: JoinSettlement | None = None,
@@ -1584,11 +1729,12 @@ def evaluate_branch_set(
     """Compute the complete fork/join view without creating mutable graph state."""
 
     validate_branch_set_plan(plan, selections, branch_sets)
-    settlements, effects, coordinations, outcomes = _normalize_branch_results(
+    settlements, effects, no_outputs, coordinations, outcomes = _normalize_branch_results(
         plan,
         selections,
         branch_settlements,
         branch_effect_settlements,
+        branch_no_output_settlements,
         branch_coordination_settlements,
         branch_outcomes,
     )
@@ -1598,6 +1744,7 @@ def evaluate_branch_set(
         for item in branch_ids
         if item not in settlements
         and item not in effects
+        and item not in no_outputs
         and item not in coordinations
         and (item not in outcomes or outcomes[item].state == "interrupted")
     )
@@ -1651,9 +1798,9 @@ def evaluate_branch_set(
             else:
                 join_state = "ready"
 
-    all_branches_succeeded = len(settlements) + len(effects) + len(coordinations) == len(
-        plan.branches
-    )
+    all_branches_succeeded = len(settlements) + len(effects) + len(no_outputs) + len(
+        coordinations
+    ) == len(plan.branches)
     join_succeeded = plan.join is None or join_settlement is not None
     succeeded = all_branches_succeeded and join_succeeded
     unsettled_work_ids = [
@@ -1671,6 +1818,7 @@ def evaluate_branch_set(
             plan=plan,
             collection_settlements=tuple(settlements.values()),
             effect_settlements=tuple(effects.values()),
+            no_output_settlements=tuple(no_outputs.values()),
             coordination_settlements=tuple(coordinations.values()),
             join_settlement=join_settlement,
         )
@@ -1681,6 +1829,7 @@ def evaluate_branch_set(
         branch_set_sha256=plan.branch_set_sha256,
         succeeded_branches=tuple(settlements[item] for item in sorted(settlements)),
         succeeded_effects=tuple(effects[item] for item in sorted(effects)),
+        succeeded_no_outputs=tuple(no_outputs[item] for item in sorted(no_outputs)),
         succeeded_coordinations=tuple(coordinations[item] for item in sorted(coordinations)),
         unsettled_branch_ids=unsettled,
         failed_branch_ids=failed,
@@ -1705,6 +1854,7 @@ __all__ = [
     "ARTIFACT_SELECTION_PAGE_MAX",
     "BRANCH_OUTCOME_FORMAT",
     "BRANCH_EFFECT_SETTLEMENT_FORMAT",
+    "BRANCH_NO_OUTPUT_SETTLEMENT_FORMAT",
     "BRANCH_SET_FORMAT",
     "BRANCH_SETTLEMENT_FORMAT",
     "COORDINATION_SETTLEMENT_FORMAT",
@@ -1717,6 +1867,7 @@ __all__ = [
     "ArtifactSelectionRef",
     "BranchOutcome",
     "BranchEffectSettlement",
+    "BranchNoOutputSettlement",
     "BranchDeclaration",
     "BranchPlan",
     "BranchSetDecision",
@@ -1726,6 +1877,7 @@ __all__ = [
     "BranchTargetPreview",
     "BranchOutcomeState",
     "CoordinationBranchPlan",
+    "NoOutputBranchPlan",
     "CoordinationChildSettlementRef",
     "CoordinationCollectionResult",
     "CoordinationSettlement",

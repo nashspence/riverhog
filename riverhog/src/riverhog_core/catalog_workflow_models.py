@@ -45,6 +45,7 @@ class CollectionProcessingClaimRecord(Base):
     )
     settlement_outcome_binding_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     effect_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    no_output_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     input_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     input_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     input_set_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
@@ -102,7 +103,7 @@ class CollectionProcessingClaimRecord(Base):
         ),
         CheckConstraint("fence >= 1", name="ck_collection_processing_claims_fence"),
         CheckConstraint(
-            "result_kind IS NULL OR result_kind IN ('collection','external-effect')",
+            "result_kind IS NULL OR result_kind IN ('collection','external-effect','no-output')",
             name="ck_processing_claim_result_kind",
         ),
         CheckConstraint(
@@ -250,6 +251,60 @@ class CollectionProcessingClaimArtifactRecord(Base):
     )
 
 
+class CollectionProcessingConsiderationEvidenceRecord(Base):
+    """A claim-scoped observation document retained once for all referencing rows."""
+
+    __tablename__ = "collection_processing_consideration_evidence"
+
+    claim_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("collection_processing_claims.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    sha256: Mapped[str] = mapped_column(String(64), primary_key=True)
+    document_json: Mapped[str] = mapped_column(Text, nullable=False)
+    observer_contract_id: Mapped[str] = mapped_column(String, nullable=False)
+    observer_contract_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    profile_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint("length(sha256) = 64", name="ck_processing_consideration_sha256"),
+        CheckConstraint(
+            "length(observer_contract_sha256) = 64",
+            name="ck_processing_consideration_contract_sha256",
+        ),
+        CheckConstraint(
+            "length(profile_sha256) = 64", name="ck_processing_consideration_profile_sha256"
+        ),
+    )
+
+
+class CollectionProcessingConsiderationSubjectRecord(Base):
+    """Indexed exact membership in a retained observation document."""
+
+    __tablename__ = "collection_processing_consideration_subjects"
+
+    claim_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    evidence_sha256: Mapped[str] = mapped_column(String(64), primary_key=True)
+    collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
+    path: Mapped[str] = mapped_column(String, primary_key=True)
+    bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["claim_id", "evidence_sha256"],
+            [
+                "collection_processing_consideration_evidence.claim_id",
+                "collection_processing_consideration_evidence.sha256",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint("bytes >= 0", name="ck_processing_consideration_subject_bytes"),
+        CheckConstraint("length(sha256) = 64", name="ck_processing_consideration_subject_sha256"),
+    )
+
+
 class CollectionProcessingDispositionSetRecord(Base):
     __tablename__ = "collection_processing_disposition_sets"
 
@@ -262,10 +317,8 @@ class CollectionProcessingDispositionSetRecord(Base):
     disposition_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     output_edge_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     output_artifact_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
-    transformed_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
-    transformed_with_outputs_count: Mapped[int] = mapped_column(
-        BigInteger, nullable=False, default=0
-    )
+    successor_required_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    successor_bound_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     validation_phase: Mapped[str | None] = mapped_column(String, nullable=True)
     validation_collection_id: Mapped[int | None] = mapped_column(_COLLECTION_ID_TYPE, nullable=True)
     validation_input_path: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -295,8 +348,8 @@ class CollectionProcessingDispositionSetRecord(Base):
         ),
         CheckConstraint(
             "disposition_count >= 0 AND output_edge_count >= 0 "
-            "AND output_artifact_count >= 0 AND transformed_count >= 0 "
-            "AND transformed_with_outputs_count >= 0",
+            "AND output_artifact_count >= 0 AND successor_required_count >= 0 "
+            "AND successor_bound_count >= 0",
             name="ck_processing_disposition_sets_counts",
         ),
         CheckConstraint(
@@ -315,8 +368,11 @@ class CollectionProcessingDispositionRecord(Base):
     path: Mapped[str] = mapped_column(String, primary_key=True)
     disposition_order: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False)
-    failure_code: Mapped[str | None] = mapped_column(String, nullable=True)
-    failure_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reason_code: Mapped[str | None] = mapped_column(String, nullable=True)
+    reason_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    effect_receipt_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    discard_approval_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    retain_required: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -329,8 +385,25 @@ class CollectionProcessingDispositionRecord(Base):
             ondelete="CASCADE",
         ),
         CheckConstraint(
-            "status IN ('transformed','preserved','omitted','rejected')",
+            "status IN ('transformed','preserved','effect-applied',"
+            "'not-carried-forward','omitted','rejected')",
             name="ck_processing_dispositions_status",
+        ),
+        CheckConstraint(
+            "status <> 'effect-applied' OR effect_receipt_sha256 IS NOT NULL",
+            name="ck_processing_dispositions_effect_receipt_required",
+        ),
+        CheckConstraint(
+            "status = 'effect-applied' OR effect_receipt_sha256 IS NULL",
+            name="ck_processing_dispositions_effect_receipt_forbidden",
+        ),
+        CheckConstraint(
+            "discard_approval_json IS NULL OR status = 'not-carried-forward'",
+            name="ck_processing_dispositions_discard_approval_status",
+        ),
+        CheckConstraint(
+            "discard_approval_json IS NULL OR NOT retain_required",
+            name="ck_processing_dispositions_discard_approval_retention",
         ),
         Index(
             "ix_processing_dispositions_order",
@@ -478,6 +551,7 @@ class CollectionProcessingOutcomeRecord(Base):
     result_kind: Mapped[str] = mapped_column(String, nullable=False)
     effect_receipt_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     effect_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    no_output_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     collection_id: Mapped[int | None] = mapped_column(_COLLECTION_ID_TYPE, nullable=True)
     archive_root_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     content_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
@@ -491,11 +565,18 @@ class CollectionProcessingOutcomeRecord(Base):
             "result_kind = 'collection' AND collection_id IS NOT NULL "
             "AND archive_root_sha256 IS NOT NULL AND content_identity IS NOT NULL "
             "AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL "
-            "AND effect_settlement_sha256 IS NULL OR "
+            "AND effect_settlement_sha256 IS NULL "
+            "AND no_output_settlement_sha256 IS NULL OR "
             "result_kind = 'external-effect' AND collection_id IS NULL "
             "AND archive_root_sha256 IS NULL AND content_identity IS NULL "
             "AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL "
-            "AND effect_settlement_sha256 IS NOT NULL",
+            "AND effect_settlement_sha256 IS NOT NULL "
+            "AND no_output_settlement_sha256 IS NULL OR "
+            "result_kind = 'no-output' AND collection_id IS NULL "
+            "AND archive_root_sha256 IS NULL AND content_identity IS NULL "
+            "AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NULL "
+            "AND effect_settlement_sha256 IS NULL "
+            "AND no_output_settlement_sha256 IS NOT NULL",
             name="ck_processing_outcome_result",
         ),
         UniqueConstraint(
@@ -550,6 +631,26 @@ class CollectionProcessingEffectSettlementRecord(Base):
     )
 
 
+class CollectionProcessingNoOutputSettlementRecord(Base):
+    """Retained controller decision with no material or external-effect result."""
+
+    __tablename__ = "collection_processing_no_output_settlements"
+    claim_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("collection_processing_claims.id", ondelete="RESTRICT"),
+        primary_key=True,
+    )
+    fence: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    execution_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    document_json: Mapped[str] = mapped_column(Text, nullable=False)
+    document_sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    created_at: Mapped[str] = mapped_column(String, nullable=False)
+    __table_args__ = (
+        CheckConstraint("fence >= 1", name="ck_no_output_settlement_fence"),
+        CheckConstraint("length(document_sha256) = 64", name="ck_no_output_settlement_digest"),
+    )
+
+
 class CollectionDerivationRecord(Base):
     __tablename__ = "collection_derivations"
 
@@ -587,4 +688,5 @@ __all__ = [
     "CollectionProcessingOutcomeRecord",
     "CollectionProcessingCapabilityArtifactRecord",
     "CollectionProcessingCapabilityRecord",
+    "CollectionProcessingNoOutputSettlementRecord",
 ]

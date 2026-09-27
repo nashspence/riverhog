@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_path: &#x27;str&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None) -&gt; None&quot;</code>
+<code>&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_path: &#x27;str&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None, effect_receipt_sha256: &#x27;str | None&#x27; = None, discard_approval: &#x27;ArtifactDiscardApproval | None&#x27; = None, retain_required: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -111,6 +111,30 @@
 <code>&#x27;str | None&#x27;</code></td>
 <td data-label="Default">
 <code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>discard_approval</code></td>
+<td data-label="Type">
+<code>&#x27;ArtifactDiscardApproval | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>retain_required</code></td>
+<td data-label="Type">
+<code>&#x27;bool&#x27;</code></td>
+<td data-label="Default">
+<code>False</code></td>
 </tr>
 </tbody>
 </table>
@@ -378,6 +402,126 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-680c2f6488f5aade73b5f038">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-531b2afdd4100e0af5fa67bc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/6/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-0b436af3288f416a9be01357">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/6/name">effect_receipt_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ef8499f3ce9dad31c3798ee3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/6/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-3b6c4d4dc0d5e3ed6e4ed50e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-44bfacdd05a4d41e9a072ce0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/7/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-761bc88a70bae3ca209de042">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/7/name">discard_approval</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3d2cff3c9195219652984c31">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/7/type">&#x27;ArtifactDiscardApproval | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<table id="v-f85351c1daf9b28895c3f497">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d14ac923bcb81a1d8e2d3d05">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/8/default">False</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-06503ebe948e97bf16462381">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/8/name">retain_required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-53a3471952f3f428a33ee10f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/8/type">&#x27;bool&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -397,7 +541,7 @@
 </th>
 <td>
 <span id="v-cb47d3bccc10782298affbfb">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/signature">&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_path: &#x27;str&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/signature">&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_path: &#x27;str&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None, effect_receipt_sha256: &#x27;str | None&#x27; = None, discard_approval: &#x27;ArtifactDiscardApproval | None&#x27; = None, retain_required: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -491,7 +635,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

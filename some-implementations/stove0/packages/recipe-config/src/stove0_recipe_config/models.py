@@ -186,12 +186,42 @@ class RecipeNoAction(RecipeModel):
     code: SemanticId
     message: str = Field(min_length=1, max_length=1000)
     when: tuple[FactPredicate, ...] = Field(min_length=1)
+    source_loss: RecipeSourceLossRule | None = None
 
     @model_validator(mode="after")
     def global_observation_decision(self) -> Self:
         if any(predicate.artifact_roles for predicate in self.when):
             raise ValueError("no-action predicates must evaluate whole observation facts")
         return self
+
+
+class RecipeSourceLossEvidenceSlot(RecipeModel):
+    """One selected observer fact required for each exact discarded artifact."""
+
+    observation_contract_id: SemanticId
+    observation_contract_sha256: Sha256
+    facts_profile_sha256: Sha256
+    artifact_facts: ArtifactFactBinding
+    verdict_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
+    verdict_value: JsonValue
+
+
+class RecipeSourceLossRule(RecipeModel):
+    """Controller policy for an affirmative per-artifact no-successor decision."""
+
+    id: SemanticId
+    evidence_slots: tuple[RecipeSourceLossEvidenceSlot, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def canonical_slots(self) -> Self:
+        ids = [item.observation_contract_id for item in self.evidence_slots]
+        if ids != sorted(set(ids)):
+            raise ValueError("source-loss evidence slots must be unique and ordered")
+        return self
+
+    @property
+    def sha256(self) -> str:
+        return canonical_json_sha256(self.model_dump(mode="json", exclude_none=True))
 
 
 class RecipeDefinition(RecipeModel):
@@ -249,8 +279,12 @@ class RecipeDefinition(RecipeModel):
             and self.source_collection_retirement_grace_seconds
         ):
             raise ValueError("retain recipes cannot declare a retirement grace period")
-        if self.no_action is not None and self.source_collection_retirement_policy != "retain":
-            raise ValueError("no-action recipes cannot retire their source collection")
+        if (
+            self.no_action is not None
+            and self.source_collection_retirement_policy == "retire-after-settlement"
+            and self.no_action.source_loss is None
+        ):
+            raise ValueError("no-action retirement requires an exact source-loss rule")
         return self
 
     @property
@@ -283,6 +317,18 @@ class RecipeCatalog(RecipeModel):
         operations = {operation.id: operation for operation in self.operations}
         recipes = {(recipe.id, recipe.revision): recipe for recipe in self.recipes}
         for recipe in self.recipes:
+            if recipe.no_action is not None and recipe.no_action.source_loss is not None:
+                observer_contracts = {
+                    item.contract_id: item.contract_sha256 for item in recipe.observers
+                }
+                for slot in recipe.no_action.source_loss.evidence_slots:
+                    if (
+                        observer_contracts.get(slot.observation_contract_id)
+                        != slot.observation_contract_sha256
+                    ):
+                        raise ValueError(
+                            f"recipe {recipe.id} source-loss slot lacks its selected observer"
+                        )
             for route in recipe.routes:
                 if not isinstance(route, RecipeCoordinationRoute):
                     continue
@@ -476,4 +522,6 @@ __all__ = [
     "RecipeJoinMember",
     "RecipeNoAction",
     "RecipeRoute",
+    "RecipeSourceLossEvidenceSlot",
+    "RecipeSourceLossRule",
 ]

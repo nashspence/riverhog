@@ -78,7 +78,7 @@
 <a href="#s-dfc86678811858b30e524490">branches</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <a href="#s-fb885abf4042d1d63e6e3766">exactly one of 2 alternatives</a>; minItems: <code>1</code></td>
+<code>array</code>; items: <a href="#s-fb885abf4042d1d63e6e3766">exactly one of 3 alternatives</a>; minItems: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -155,7 +155,7 @@
 <section class="schema-section" id="s-dfc86678811858b30e524490">
 <h3>Field: branches</h3>
 <p class="shape">
-<code>array</code>; items: <a href="#s-fb885abf4042d1d63e6e3766">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+<code>array</code>; items: <a href="#s-fb885abf4042d1d63e6e3766">exactly one of 3 alternatives</a>; minItems: <code>1</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -221,12 +221,12 @@
 </section>
 <section class="schema-section" id="s-fb885abf4042d1d63e6e3766">
 <h3>items schema</h3>
-<p class="shape">exactly one of: <a href="e-3285e9630309e5bcc3fa0d45.html#v-5396b7fe222eefc5271fc111">#/components/schemas/BranchPlan</a>; <a href="e-aafbfe9f806d4c58cb979dad.html#v-88cc4139d6a81c2e0d45c35f">#/components/schemas/CoordinationBranchPlan</a>
+<p class="shape">exactly one of: <a href="e-3285e9630309e5bcc3fa0d45.html#v-5396b7fe222eefc5271fc111">#/components/schemas/BranchPlan</a>; <a href="e-aafbfe9f806d4c58cb979dad.html#v-88cc4139d6a81c2e0d45c35f">#/components/schemas/CoordinationBranchPlan</a>; <a href="e-fbc66fd5cfbf6d8282af2311.html#v-d947c88fd5c7bdba60509aea">#/components/schemas/NoOutputBranchPlan</a>
 </p>
 <dl class="facts">
 <dt>discriminator</dt>
 <dd>
-<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/components/schemas/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/components/schemas/BranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/components/schemas/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/components/schemas/BranchPlan&quot;,&quot;no-output&quot;:&quot;#/components/schemas/NoOutputBranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
@@ -248,6 +248,11 @@
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
 <a href="e-aafbfe9f806d4c58cb979dad.html#v-88cc4139d6a81c2e0d45c35f">#/components/schemas/CoordinationBranchPlan</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">
+<a href="e-fbc66fd5cfbf6d8282af2311.html#v-d947c88fd5c7bdba60509aea">#/components/schemas/NoOutputBranchPlan</a></td>
 </tr>
 </tbody>
 </table>
@@ -377,6 +382,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>no-output</code>
+</th>
+<td>
+<span id="v-3424a36cf5f29d97cbd09f3d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/discriminator/mapping/no-output">#/components/schemas/NoOutputBranchPlan</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -435,6 +450,26 @@
 <span id="v-d342c4e45ab13f2a3837c51e">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/oneOf/1/$ref">#/components/schemas/CoordinationBranchPlan</code>
 <span class="kind">string</span> <a href="e-aafbfe9f806d4c58cb979dad.html#v-88cc4139d6a81c2e0d45c35f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-fac067ba33f55e214096b801">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-992076e1d0826aee43296ce4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/oneOf/2/$ref">#/components/schemas/NoOutputBranchPlan</code>
+<span class="kind">string</span> <a href="e-fbc66fd5cfbf6d8282af2311.html#v-d947c88fd5c7bdba60509aea">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -1008,7 +1043,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

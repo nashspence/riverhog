@@ -64,7 +64,7 @@ TargetJobState = Literal[
     "failed",
     "canceled",
 ]
-InputDisposition = Literal["transformed", "preserved", "omitted", "rejected"]
+InputDisposition = Literal["transformed", "preserved", "not-carried-forward", "omitted", "rejected"]
 TargetProtocol = Literal["stove0-transform-target/v1", "stove0-effect-target/v1"]
 TargetResultKind = OperationResultKind
 
@@ -370,6 +370,18 @@ class OutputSourceEdge(TargetProtocolModel):
 class InputDispositionDeclaration(TargetProtocolModel):
     input_id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     status: InputDisposition
+    code: SemanticId | None = None
+    message: str | None = Field(default=None, min_length=1, max_length=1000)
+
+    @model_validator(mode="after")
+    def bind_reason(self) -> Self:
+        reasoned = self.status in {"not-carried-forward", "omitted", "rejected"}
+        if (self.code is not None) != reasoned or (self.message is not None) != reasoned:
+            raise ValueError("candidate disposition reason must match its status")
+        if self.status in {"omitted", "rejected"} and self.message is not None:
+            if len(self.message) > 500:
+                raise ValueError("failed candidate disposition reason exceeds its limit")
+        return self
 
 
 class OutputArtifactRoleCount(TargetProtocolModel):

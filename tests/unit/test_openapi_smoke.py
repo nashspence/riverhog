@@ -196,6 +196,7 @@ def test_collection_deletion_plan_types_the_retirement_evidence_reference() -> N
         "execution_id",
         "effect_settlement_sha256",
         "fence",
+        "no_output_settlement_sha256",
         "outcomes",
         "output_collection_id",
         "work_id",

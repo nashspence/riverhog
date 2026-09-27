@@ -78,6 +78,26 @@
 <td data-label="Exact definition">
 <code>status VARCHAR(32) NOT NULL</code></td>
 </tr>
+<tr>
+<td data-label="Column">
+<code>code</code></td>
+<td data-label="Type">
+<code>VARCHAR(160)</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>code VARCHAR(160)</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>message</code></td>
+<td data-label="Type">
+<code>VARCHAR(1000)</code></td>
+<td data-label="Nullable">yes</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>message VARCHAR(1000)</code></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -114,7 +134,7 @@
 <td data-label="Name">
 <code>ck_stove0_target_dispositions_status</code></td>
 <td data-label="Exact definition">
-<code>CONSTRAINT ck_stove0_target_dispositions_status CHECK (status IN (&#x27;omitted&#x27;,&#x27;preserved&#x27;,&#x27;rejected&#x27;,&#x27;transformed&#x27;))</code></td>
+<code>CONSTRAINT ck_stove0_target_dispositions_status CHECK (status IN (&#x27;not-carried-forward&#x27;,&#x27;omitted&#x27;,&#x27;preserved&#x27;,&#x27;rejected&#x27;,&#x27;transformed&#x27;))</code></td>
 </tr>
 <tr>
 <td data-label="Kind">
@@ -359,6 +379,106 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-3fbd51f96ac6472b95e3d190">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-42b3fdc49b39d25a12c57894">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/4/definition">code VARCHAR(160)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-ac311c3741c9b96fa6f99e24">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/4/name">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-dd3c8e2571b20f81e3b47399">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/4/nullable">true</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0035a4296be8e32eda4293ed">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/4/type">VARCHAR(160)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-4be80cbe393f846497e2cd1c">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-fddce55a94d06e059e9ca7eb">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/5/definition">message VARCHAR(1000)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-7cf4b49f18c6a3049587fdbf">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/5/name">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-6d13aa3d97a3b71f98aa6d05">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/5/nullable">true</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e9c6e24f33f91cac2e87706f">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/columns/5/type">VARCHAR(1000)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -502,7 +622,7 @@
 </th>
 <td>
 <span id="v-2ba92766c4770d0ae16cf167">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/constraints/2/definition">CONSTRAINT ck_stove0_target_dispositions_status CHECK (status IN (&#x27;omitted&#x27;,&#x27;preserved&#x27;,&#x27;rejected&#x27;,&#x27;transformed&#x27;))</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/constraints/2/definition">CONSTRAINT ck_stove0_target_dispositions_status CHECK (status IN (&#x27;not-carried-forward&#x27;,&#x27;omitted&#x27;,&#x27;preserved&#x27;,&#x27;rejected&#x27;,&#x27;transformed&#x27;))</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -512,7 +632,7 @@
 </th>
 <td>
 <span id="v-e7d858f6a3feb699b0220a4c">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/constraints/2/expression">(status IN (&#x27;omitted&#x27;,&#x27;preserved&#x27;,&#x27;rejected&#x27;,&#x27;transformed&#x27;))</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/14/constraints/2/expression">(status IN (&#x27;not-carried-forward&#x27;,&#x27;omitted&#x27;,&#x27;preserved&#x27;,&#x27;rejected&#x27;,&#x27;transformed&#x27;))</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -798,7 +918,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

@@ -118,6 +118,9 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-da2bcc8646cee96ae3176d97">ArtifactDispositionSetIdentityDocument</a>
+</li>
+<li>
 <a href="#s-627a93bbd32684c42828f56d">ExternalEffectSettlementDocument</a>
 </li>
 <li>
@@ -159,15 +162,87 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-627a93bbd32684c42828f56d">
-<h3>Definition: ExternalEffectSettlementDocument</h3>
+<section class="schema-section" id="s-da2bcc8646cee96ae3176d97">
+<h3>Definition: ArtifactDispositionSetIdentityDocument</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;fence&quot;,&quot;execution_id&quot;,&quot;execution_sha256&quot;,&quot;operation&quot;,&quot;input_set_sha256&quot;,&quot;artifact_set_sha256&quot;,&quot;controller_evidence_sha256&quot;,&quot;receipt&quot;,&quot;receipt_sha256&quot;,&quot;status&quot;]</code>
+<code>[&quot;disposition_count&quot;,&quot;output_edge_count&quot;,&quot;output_artifact_count&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>disposition_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e60892f7dfc8ba178a8fd421.html#v-7d86ba1190eee561e2b6f937">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e60892f7dfc8ba178a8fd421.html#v-7d86ba1190eee561e2b6f937">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_edge_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e60892f7dfc8ba178a8fd421.html#v-7d86ba1190eee561e2b6f937">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-627a93bbd32684c42828f56d">
+<h3>Definition: ExternalEffectSettlementDocument</h3>
+<p class="shape">
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;fence&quot;,&quot;execution_id&quot;,&quot;execution_sha256&quot;,&quot;operation&quot;,&quot;input_set_sha256&quot;,&quot;artifact_set_sha256&quot;,&quot;controller_evidence_sha256&quot;,&quot;receipt&quot;,&quot;receipt_sha256&quot;,&quot;disposition_set&quot;,&quot;status&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -215,6 +290,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>disposition_set</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e60892f7dfc8ba178a8fd421.html#v-da2bcc8646cee96ae3176d97">#/$defs/ArtifactDispositionSetIdentityDocument</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -502,6 +586,216 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>ArtifactDispositionSetIdentityDocument</code>
+</th>
+<td>
+<table id="v-da2bcc8646cee96ae3176d97">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9768829db95aae4bd80fca19">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-364f637d4256b40a554c4e5f">
+<tbody>
+<tr>
+<th scope="row">
+<code>disposition_count</code>
+</th>
+<td>
+<table id="v-b419e96fc763916f83d413ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c02d707050fb30f8d455ecb2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/disposition_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-e60892f7dfc8ba178a8fd421.html#v-7d86ba1190eee561e2b6f937">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-4713975254778681ee08506b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/disposition_count/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_artifact_count</code>
+</th>
+<td>
+<table id="v-d1056af13007bec070b67859">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8a9ad7263ef527e6bdd26723">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_artifact_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-e60892f7dfc8ba178a8fd421.html#v-7d86ba1190eee561e2b6f937">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-e8731bf2eb90a73d628934db">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_artifact_count/ge">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_edge_count</code>
+</th>
+<td>
+<table id="v-3817829d90313808dbda37d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7a7a8a3a4e83c8d32c3e76f9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_edge_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-e60892f7dfc8ba178a8fd421.html#v-7d86ba1190eee561e2b6f937">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-2902d854a3115fec686875cd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_edge_count/ge">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-b931bd1a0bd2dcb64f9a1e67">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2a705e54015510dcf6eb0f4b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9465101cb3ecd58d245bc9ae">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-649aae4cd277ce5364e259a2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ce248b75ce2adacf419996a1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/0">disposition_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-94e88894dd0860cad5fdebfc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/1">output_edge_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-a675b4ce74118e6c0593681e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/2">output_artifact_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c9b736f3ac6cf3fe928cf9c2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/3">sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b7a4bace400c54f15e955320">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>ExternalEffectSettlementDocument</code>
 </th>
 <td>
@@ -609,6 +903,26 @@
 <span id="v-b81a97562c6fe2d0ce8a0ea6">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ExternalEffectSettlementDocument/properties/controller_evidence_sha256/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition_set</code>
+</th>
+<td>
+<table id="v-1b1d0d8b2076ecd898ddcea9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-bf488da0ef97a72f597a2998">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ExternalEffectSettlementDocument/properties/disposition_set/$ref">#/$defs/ArtifactDispositionSetIdentityDocument</code>
+<span class="kind">string</span> <a href="e-e60892f7dfc8ba178a8fd421.html#v-da2bcc8646cee96ae3176d97">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -1040,7 +1354,17 @@
 </th>
 <td>
 <span id="v-5bc80140f9e274b6e232f6cd">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ExternalEffectSettlementDocument/required/11">status</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ExternalEffectSettlementDocument/required/11">disposition_set</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-16728b6438cda410b0f82ce2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimEffectSettleDocument/contract/schema/$defs/ExternalEffectSettlementDocument/required/12">status</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1679,7 +2003,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

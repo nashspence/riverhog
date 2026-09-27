@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;] = &#x27;collection&#x27;, operation_contract: Optional[Annotated[dict[str, Any], FieldInfo(annotation=NoneType, required=True, json_schema_extra={&#x27;x-riverhog-extent&#x27;: {&#x27;policy&#x27;: &#x27;contract_max&#x27;, &#x27;reason&#x27;: &#x27;bounded-operation-declaration&#x27;}, &#x27;x-riverhog-encoded-bytes-max&#x27;: 4194304})]] = None, output_policy: riverhog_protocol.output_collection_policy.OutputCollectionPolicy = &lt;factory&gt;, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;, &#x27;no-output&#x27;] = &#x27;collection&#x27;, operation_contract: Optional[Annotated[dict[str, Any], FieldInfo(annotation=NoneType, required=True, json_schema_extra={&#x27;x-riverhog-extent&#x27;: {&#x27;policy&#x27;: &#x27;contract_max&#x27;, &#x27;reason&#x27;: &#x27;bounded-operation-declaration&#x27;}, &#x27;x-riverhog-encoded-bytes-max&#x27;: 4194304})]] = None, output_policy: riverhog_protocol.output_collection_policy.OutputCollectionPolicy = &lt;factory&gt;, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-5166053768b765cb855c245b">
@@ -153,7 +153,7 @@
 <code>result_kind</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code></td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;no-output&quot;]</code>; default: <code>collection</code></td>
 <td data-label="Default">
 <code>collection</code></td>
 <td data-label="Description"></td>
@@ -1679,6 +1679,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-208c6bc86681acc97845fd54">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/result_kind/enum/2">no-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1907,7 +1917,7 @@
 </th>
 <td>
 <span id="v-b97d8a7237a1c75e2a4b6a45">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;] = &#x27;collection&#x27;, operation_contract: Optional[Annotated[dict[str, Any], FieldInfo(annotation=NoneType, required=True, json_schema_extra={&#x27;x-riverhog-extent&#x27;: {&#x27;policy&#x27;: &#x27;contract_max&#x27;, &#x27;reason&#x27;: &#x27;bounded-operation-declaration&#x27;}, &#x27;x-riverhog-encoded-bytes-max&#x27;: 4194304})]] = None, output_policy: riverhog_protocol.output_collection_policy.OutputCollectionPolicy = &lt;factory&gt;, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;, &#x27;no-output&#x27;] = &#x27;collection&#x27;, operation_contract: Optional[Annotated[dict[str, Any], FieldInfo(annotation=NoneType, required=True, json_schema_extra={&#x27;x-riverhog-extent&#x27;: {&#x27;policy&#x27;: &#x27;contract_max&#x27;, &#x27;reason&#x27;: &#x27;bounded-operation-declaration&#x27;}, &#x27;x-riverhog-encoded-bytes-max&#x27;: 4194304})]] = None, output_policy: riverhog_protocol.output_collection_policy.OutputCollectionPolicy = &lt;factory&gt;, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2004,7 +2014,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

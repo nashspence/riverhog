@@ -19,12 +19,17 @@ from riverhog_protocol import (
     SourceCollectionRetirementClaimReferenceDocument,
 )
 from riverhog_protocol.collection_workflow_transport import (
+    CONSIDERATION_EVIDENCE_MAX_BYTES,
     CONTROLLER_EVIDENCE_MAX_BYTES,
     DISPOSITION_BATCH_MAX,
     WORK_DOCUMENT_MAX_BYTES,
 )
 from riverhog_protocol.collection_workflows import (
+    DERIVATION_DISPOSITION_EVIDENCE_PREFIX,
     DERIVATION_EVIDENCE_PATH,
+    DERIVATION_OUTPUT_EVIDENCE_PREFIX,
+    PRODUCER_EVIDENCE_PATH,
+    ArtifactDiscardApproval,
     ArtifactDisposition,
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
@@ -42,6 +47,7 @@ from riverhog_protocol.effect_settlement import (
     operation_retirement_permission,
 )
 from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, InvalidState, NotFound
+from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.principal_ids import validate_application_name
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKER_CATEGORY_SAMPLE_MAX
@@ -90,10 +96,13 @@ from riverhog_core.catalog_workflow_models import (
     CollectionProcessingClaimArtifactRecord,
     CollectionProcessingClaimInputRecord,
     CollectionProcessingClaimRecord,
+    CollectionProcessingConsiderationEvidenceRecord,
+    CollectionProcessingConsiderationSubjectRecord,
     CollectionProcessingDispositionOutputRecord,
     CollectionProcessingDispositionRecord,
     CollectionProcessingDispositionSetRecord,
     CollectionProcessingEffectSettlementRecord,
+    CollectionProcessingNoOutputSettlementRecord,
     CollectionProcessingOutcomeRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
@@ -664,8 +673,8 @@ class SqlAlchemyCollectionWorkflowService:
             else None
         )
         policy_document = output_policy or OutputCollectionPolicy()
-        if result_kind == "external-effect" and policy_document != OutputCollectionPolicy():
-            raise BadRequest("external-effect claim cannot publish a collection")
+        if result_kind != "collection" and policy_document != OutputCollectionPolicy():
+            raise BadRequest("noncollection claim cannot publish a collection")
         encoded_output_policy = canonical_json_bytes(
             policy_document.model_dump(mode="json")
         ).decode("utf-8")
@@ -975,6 +984,87 @@ class SqlAlchemyCollectionWorkflowService:
                 artifact_scope_capability_id=(capability.id if "read-inputs" in actions else None),
             )
 
+    def record_consideration_evidence(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+        document: Mapping[str, object],
+        sha256: str,
+        principal: Principal,
+    ) -> dict[str, str]:
+        """Retain a shared observation once, indexed by its exact subjects."""
+
+        encoded = canonical_json_bytes(document)
+        if len(encoded) > CONSIDERATION_EVIDENCE_MAX_BYTES:
+            raise BadRequest("consideration evidence document exceeds its byte limit")
+        if canonical_json_sha256(document) != sha256:
+            raise BadRequest("consideration evidence identity differs from its document")
+        with session_scope(self._session_factory) as session:
+            claim = _owned_claim(session, claim_id, principal, lock=True)
+            _require_fence(claim, fence)
+            existing = session.get(
+                CollectionProcessingConsiderationEvidenceRecord, (claim.id, sha256)
+            )
+            if existing is not None:
+                if existing.document_json != encoded.decode("utf-8"):
+                    raise Conflict("consideration evidence identity already has another document")
+                return {"sha256": sha256}
+            _require_active_generation(claim, fence=fence)
+            _require_sealed_execution_plan(claim)
+            disposition_set = session.get(CollectionProcessingDispositionSetRecord, claim.id)
+            if disposition_set is not None and disposition_set.state != "receiving":
+                raise Conflict("consideration evidence cannot change after disposition sealing")
+            contract_id, contract_sha256, profile_sha256, subjects = (
+                _validated_consideration_document(document, claim)
+            )
+            session.add(
+                CollectionProcessingConsiderationEvidenceRecord(
+                    claim_id=claim.id,
+                    sha256=sha256,
+                    document_json=encoded.decode("utf-8"),
+                    observer_contract_id=contract_id,
+                    observer_contract_sha256=contract_sha256,
+                    profile_sha256=profile_sha256,
+                )
+            )
+            for subject in subjects:
+                root = _claim_input_root(session, claim.id, subject.collection.collection_id)
+                artifact = session.get(
+                    CollectionProcessingClaimArtifactRecord,
+                    (claim.id, subject.collection.collection_id, subject.path),
+                )
+                if (
+                    root != subject.collection
+                    or artifact is None
+                    or artifact.bytes != subject.bytes
+                    or artifact.sha256 != subject.sha256
+                ):
+                    raise Conflict("consideration evidence subject is outside the sealed scope")
+                session.add(
+                    CollectionProcessingConsiderationSubjectRecord(
+                        claim_id=claim.id,
+                        evidence_sha256=sha256,
+                        collection_id=subject.collection.collection_id,
+                        path=subject.path,
+                        bytes=subject.bytes,
+                        sha256=subject.sha256,
+                    )
+                )
+        return {"sha256": sha256}
+
+    def get_consideration_evidence(
+        self, claim_id: str, *, sha256: str, principal: Principal
+    ) -> dict[str, object]:
+        with session_scope(self._session_factory) as session:
+            claim = _owned_claim(session, claim_id, principal)
+            record = session.get(
+                CollectionProcessingConsiderationEvidenceRecord, (claim.id, sha256)
+            )
+            if record is None:
+                raise NotFound("consideration evidence document not found")
+            return {"sha256": record.sha256, "document": json.loads(record.document_json)}
+
     def record_dispositions(
         self,
         claim_id: str,
@@ -1003,9 +1093,10 @@ class SqlAlchemyCollectionWorkflowService:
             )
             disposition_set = _receiving_disposition_set(session, claim)
             additions = 0
-            transformed = 0
+            successor_required = 0
             for item in values:
                 _require_disposition_input(session, claim, item)
+                _require_disposition_authority(session, claim, item, principal)
                 existing = session.get(
                     CollectionProcessingDispositionRecord,
                     (claim.id, item.input_collection_id, item.input_path),
@@ -1022,15 +1113,22 @@ class SqlAlchemyCollectionWorkflowService:
                         collection_id=item.input_collection_id,
                         path=item.input_path,
                         status=item.status,
-                        failure_code=item.code,
-                        failure_message=item.message,
+                        reason_code=item.code,
+                        reason_message=item.message,
+                        effect_receipt_sha256=item.effect_receipt_sha256,
+                        discard_approval_json=(
+                            canonical_json_bytes(item.discard_approval.as_dict()).decode("utf-8")
+                            if item.discard_approval is not None
+                            else None
+                        ),
+                        retain_required=item.retain_required,
                     )
                 )
                 additions += 1
-                transformed += int(item.status == "transformed")
+                successor_required += int(item.status in {"transformed", "preserved"})
             if additions:
                 disposition_set.disposition_count += additions
-                disposition_set.transformed_count += transformed
+                disposition_set.successor_required_count += successor_required
                 disposition_set.updated_at = utc_timestamp_now()
                 claim.updated_at = disposition_set.updated_at
             session.flush()
@@ -1119,7 +1217,7 @@ class SqlAlchemyCollectionWorkflowService:
             if additions:
                 disposition_set.output_edge_count += additions
                 disposition_set.output_artifact_count += new_outputs
-                disposition_set.transformed_with_outputs_count += newly_mapped_inputs
+                disposition_set.successor_bound_count += newly_mapped_inputs
                 disposition_set.updated_at = utc_timestamp_now()
                 claim.updated_at = disposition_set.updated_at
             session.flush()
@@ -1149,13 +1247,16 @@ class SqlAlchemyCollectionWorkflowService:
             expected = int(claim.artifact_count)
             if disposition_set.disposition_count != expected:
                 raise Conflict("disposition set does not account for every claimed artifact")
-            if (
-                disposition_set.output_edge_count < 1
-                or disposition_set.output_artifact_count < 1
-                or disposition_set.transformed_count
-                != disposition_set.transformed_with_outputs_count
+            if disposition_set.successor_required_count != disposition_set.successor_bound_count:
+                raise Conflict("disposition set does not bind every successor-required artifact")
+            if claim.result_kind == "collection" and (
+                disposition_set.output_edge_count < 1 or disposition_set.output_artifact_count < 1
             ):
-                raise Conflict("disposition set does not bind every transformed artifact")
+                raise Conflict("collection disposition set requires material outputs")
+            if claim.result_kind != "collection" and (
+                disposition_set.output_edge_count or disposition_set.output_artifact_count
+            ):
+                raise Conflict("noncollection disposition set cannot bind material outputs")
             now = utc_timestamp_now()
             disposition_set.state = "sealing"
             disposition_set.validation_phase = "dispositions"
@@ -1523,6 +1624,33 @@ class SqlAlchemyCollectionWorkflowService:
             _require_active_generation(claim, fence=fence)
             _require_current_inputs(session, claim)
             _require_no_transform_output(session, claim)
+            disposition_set = _verified_disposition_set(session, claim, document.disposition_set)
+            if disposition_set.disposition_count != claim.artifact_count or (
+                disposition_set.output_edge_count or disposition_set.output_artifact_count
+            ):
+                raise Conflict("effect disposition set does not cover its exact input scope")
+            wrong_effect = session.scalar(
+                select(CollectionProcessingDispositionRecord.path)
+                .where(
+                    CollectionProcessingDispositionRecord.claim_id == claim.id,
+                    CollectionProcessingDispositionRecord.status == "effect-applied",
+                    CollectionProcessingDispositionRecord.effect_receipt_sha256
+                    != document.receipt_sha256,
+                )
+                .limit(1)
+            )
+            if wrong_effect is not None:
+                raise Conflict("effect disposition differs from the verified receipt")
+            applied = session.scalar(
+                select(CollectionProcessingDispositionRecord.path)
+                .where(
+                    CollectionProcessingDispositionRecord.claim_id == claim.id,
+                    CollectionProcessingDispositionRecord.status == "effect-applied",
+                )
+                .limit(1)
+            )
+            if applied is None:
+                raise Conflict("external effect has no covered input artifacts")
             if existing is not None or claim.output_collection_id is not None:
                 raise Conflict("processing execution already has a different settlement")
             now = utc_timestamp_now()
@@ -1563,6 +1691,107 @@ class SqlAlchemyCollectionWorkflowService:
                 )
             claim.state = "settled"
             claim.effect_settlement_sha256 = document.sha256
+            claim.settled_at = now
+            claim.updated_at = now
+            _revoke_capabilities(session, claim.id, now=now)
+            session.flush()
+            return _claim_payload(session, claim)
+
+    def settle_claim_no_output(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+        settlement: Mapping[str, object],
+        principal: Principal,
+        outcome_claim_id: str | None = None,
+        outcome_fence: int | None = None,
+        outcome_id: str | None = None,
+    ) -> dict[str, object]:
+        """Commit one successful controller decision with no target or output."""
+
+        try:
+            document = NoOutputSettlement.from_mapping(settlement)
+        except ValueError as exc:
+            raise BadRequest(str(exc)) from exc
+        encoded = canonical_json_bytes(document.as_dict()).decode("utf-8")
+        with session_scope(self._session_factory) as session:
+            claim = _owned_claim(session, claim_id, principal, lock=True)
+            _require_fence(claim, fence)
+            _require_sealed_execution_plan(claim)
+            if (
+                claim.result_kind != "no-output"
+                or document.claim_id != claim.id
+                or document.fence != claim.fence
+                or document.execution_id != claim.execution_id
+                or document.operation
+                != OperationIdentity(
+                    cast(str, claim.operation_id), cast(str, claim.operation_sha256)
+                )
+                or document.input_set_sha256 != claim.input_set_sha256
+                or document.artifact_set_sha256 != claim.artifact_set_sha256
+                or document.controller_evidence_sha256 != claim.controller_evidence_sha256
+            ):
+                raise Conflict("no-output decision differs from the sealed processing authority")
+            existing = session.get(CollectionProcessingNoOutputSettlementRecord, claim.id)
+            if claim.state in {"settled", "retiring", "released"}:
+                if (
+                    existing is None
+                    or existing.document_json != encoded
+                    or existing.document_sha256 != document.sha256
+                    or claim.no_output_settlement_sha256 != document.sha256
+                ):
+                    raise Conflict("no-output work was already settled with another decision")
+                _require_existing_outcome_binding(
+                    session,
+                    source_claim=claim,
+                    outcome_claim_id=outcome_claim_id,
+                    outcome_fence=outcome_fence,
+                    outcome_id=outcome_id,
+                )
+                return _claim_payload(session, claim)
+            _require_active_generation(claim, fence=fence)
+            _require_current_inputs(session, claim)
+            _require_no_transform_output(session, claim)
+            disposition_set = _verified_disposition_set(session, claim, document.disposition_set)
+            if disposition_set.disposition_count != claim.artifact_count or (
+                disposition_set.output_edge_count or disposition_set.output_artifact_count
+            ):
+                raise Conflict("no-output disposition set does not cover its exact input scope")
+            now = utc_timestamp_now()
+            session.add(
+                CollectionProcessingNoOutputSettlementRecord(
+                    claim_id=claim.id,
+                    fence=claim.fence,
+                    execution_id=document.execution_id,
+                    document_json=encoded,
+                    document_sha256=document.sha256,
+                    created_at=now,
+                )
+            )
+            try:
+                session.flush()
+            except IntegrityError as exc:
+                raise Conflict("no-output execution already belongs to another settlement") from exc
+            binding = _outcome_binding_args(outcome_claim_id, outcome_fence, outcome_id)
+            _record_original_outcome_binding(claim, binding)
+            if binding is not None:
+                parent_id, parent_fence, label = binding
+                parent = _outcome_parent(session, claim, parent_id, parent_fence)
+                _insert_processing_outcome(
+                    session,
+                    parent,
+                    CollectionProcessingOutcomeIdentity(
+                        outcome_id=label,
+                        source_claim_id=claim.id,
+                        source_fence=claim.fence,
+                        execution_id=document.execution_id,
+                        result_kind="no-output",
+                        no_output_settlement_sha256=document.sha256,
+                    ),
+                )
+            claim.state = "settled"
+            claim.no_output_settlement_sha256 = document.sha256
             claim.settled_at = now
             claim.updated_at = now
             _revoke_capabilities(session, claim.id, now=now)
@@ -1792,7 +2021,11 @@ class SqlAlchemyCollectionWorkflowService:
             if claim.execution_id is not None:
                 _require_retirement_permission(claim)
             if claim.effect_settlement_sha256 is not None:
-                _require_direct_effect_retirement(session, claim)
+                _retained_effect(session, claim)
+                _require_retirement_coverage(session, claim, delegated=False)
+            elif claim.no_output_settlement_sha256 is not None:
+                _retained_no_output(session, claim)
+                _require_retirement_coverage(session, claim, delegated=False)
             elif claim.output_collection_id is not None:
                 _require_sealed_execution_plan(claim)
                 derivation_record = session.get(
@@ -1804,44 +2037,9 @@ class SqlAlchemyCollectionWorkflowService:
                 derivation = CollectionDerivation.from_mapping(
                     json.loads(derivation_record.document_json)
                 )
-                expected_artifact_count = int(
-                    session.scalar(
-                        select(func.count())
-                        .select_from(CollectionFileRecord)
-                        .join(
-                            CollectionProcessingClaimInputRecord,
-                            and_(
-                                CollectionProcessingClaimInputRecord.claim_id == claim.id,
-                                CollectionProcessingClaimInputRecord.collection_id
-                                == CollectionFileRecord.collection_id,
-                            ),
-                        )
-                        .where(~CollectionFileRecord.path.startswith("riverhog/"))
-                    )
-                    or 0
-                )
-                if claim.artifact_count != expected_artifact_count:
-                    raise Conflict(
-                        "source collection retirement requires a plan covering every input artifact"
-                    )
                 _verified_disposition_set(session, claim, derivation.disposition_set)
-                unsafe = session.scalar(
-                    select(CollectionProcessingDispositionRecord.path)
-                    .where(
-                        CollectionProcessingDispositionRecord.claim_id == claim.id,
-                        CollectionProcessingDispositionRecord.status.not_in(
-                            ("transformed", "preserved")
-                        ),
-                    )
-                    .order_by(CollectionProcessingDispositionRecord.collection_id)
-                    .limit(1)
-                )
-                if unsafe is not None:
-                    raise Conflict(
-                        "source collection retirement is not authorized for omitted or "
-                        "rejected artifacts"
-                    )
                 _collection_root(session, claim.output_collection_id)
+                _require_retirement_coverage(session, claim, delegated=False)
             else:
                 _require_source_collection_retirement_coverage(session, claim)
             eligible_at = parse_utc_timestamp(claim.settled_at) + (
@@ -2054,6 +2252,16 @@ def _require_same_claim(
 
 def _clear_plan(session: Session, claim: CollectionProcessingClaimRecord) -> None:
     session.execute(
+        delete(CollectionProcessingConsiderationSubjectRecord).where(
+            CollectionProcessingConsiderationSubjectRecord.claim_id == claim.id
+        )
+    )
+    session.execute(
+        delete(CollectionProcessingConsiderationEvidenceRecord).where(
+            CollectionProcessingConsiderationEvidenceRecord.claim_id == claim.id
+        )
+    )
+    session.execute(
         delete(CollectionProcessingDispositionSetRecord).where(
             CollectionProcessingDispositionSetRecord.claim_id == claim.id
         )
@@ -2078,6 +2286,7 @@ def _clear_plan(session: Session, claim: CollectionProcessingClaimRecord) -> Non
     claim.source_collection_retirement_permitted = False
     claim.settlement_outcome_binding_json = None
     claim.effect_settlement_sha256 = None
+    claim.no_output_settlement_sha256 = None
     claim.artifact_count = 0
     claim.artifact_bytes = 0
     claim.artifact_hash_state = None
@@ -2111,6 +2320,7 @@ def _execution_output_exists(
         outcome is not None
         or _transform_output_exists(session, claim)
         or claim.effect_settlement_sha256 is not None
+        or claim.no_output_settlement_sha256 is not None
         or (claim.result_kind == "external-effect" and claim.plan_sealed_at is not None)
     )
 
@@ -2473,11 +2683,11 @@ def _claim_execution_actor(
     fence: int,
     principal: Principal,
 ) -> CollectionProcessingClaimRecord:
-    claim = _claim_actor(session, claim_id, principal, require_write=True)
-    _require_live_claim(claim, fence=fence)
+    # Dispositions are final controller endorsements, including source-loss
+    # decisions. Target capabilities only report candidate facts to the controller.
+    claim = _owned_claim(session, claim_id, principal)
+    _require_active_generation(claim, fence=fence)
     _require_sealed_execution_plan(claim)
-    if claim.result_kind != "collection":
-        raise Forbidden("external effects cannot declare collection production")
     return claim
 
 
@@ -2509,8 +2719,8 @@ def _receiving_disposition_set(
         disposition_count=0,
         output_edge_count=0,
         output_artifact_count=0,
-        transformed_count=0,
-        transformed_with_outputs_count=0,
+        successor_required_count=0,
+        successor_bound_count=0,
         created_at=now,
         updated_at=now,
     )
@@ -2550,6 +2760,170 @@ def _require_disposition_input(
         raise Conflict("disposition references an artifact outside the sealed claim scope")
 
 
+def _validated_consideration_document(
+    document: Mapping[str, object], claim: CollectionProcessingClaimRecord
+) -> tuple[str, str, str, tuple[CollectionArtifactIdentity, ...]]:
+    if set(document) != {"request", "result"}:
+        raise BadRequest("consideration evidence must contain one request and result")
+    request, result = document["request"], document["result"]
+    if not isinstance(request, dict) or not isinstance(result, dict):
+        raise BadRequest("consideration evidence documents are invalid")
+    request_body = {key: value for key, value in request.items() if key != "request_id"}
+    result_body = {key: value for key, value in result.items() if key != "result_sha256"}
+    profile = result.get("facts_schema")
+    facts = result.get("facts")
+    contract_id = request.get("observer_contract_id")
+    contract_sha256 = request.get("observer_contract_sha256")
+    profile_sha256 = profile.get("profile_sha256") if isinstance(profile, dict) else None
+    if (
+        not isinstance(contract_id, str)
+        or not isinstance(contract_sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", contract_sha256) is None
+        or not isinstance(profile_sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", profile_sha256) is None
+        or request.get("request_id") != canonical_json_sha256(request_body)
+        or result.get("result_sha256") != canonical_json_sha256(result_body)
+        or request.get("work_id") != claim.work_id
+        or result.get("observer_contract_id") != contract_id
+        or result.get("observer_contract_sha256") != contract_sha256
+        or not isinstance(facts, dict)
+        or result.get("facts_sha256") != canonical_json_sha256(facts)
+        or result.get("state") != "observed"
+        or result.get("request_id") != request.get("request_id")
+        or request.get("subjects") != result.get("subjects")
+    ):
+        raise Conflict("consideration evidence lacks exact successful observation")
+    values = request.get("subjects")
+    if not isinstance(values, list) or not values:
+        raise BadRequest("consideration evidence has no exact subjects")
+    subjects: list[CollectionArtifactIdentity] = []
+    keys: set[tuple[int, str]] = set()
+    for value in values:
+        if not isinstance(value, dict):
+            raise BadRequest("consideration evidence subject is invalid")
+        try:
+            subject = CollectionArtifactIdentity.from_mapping(
+                {key: value[key] for key in ("collection", "path", "bytes", "sha256")}
+            )
+        except (KeyError, ValueError) as exc:
+            raise BadRequest("consideration evidence subject is invalid") from exc
+        key = (subject.collection.collection_id, subject.path)
+        if key in keys:
+            raise BadRequest("consideration evidence repeats an exact subject")
+        keys.add(key)
+        subjects.append(subject)
+    return contract_id, contract_sha256, profile_sha256, tuple(subjects)
+
+
+def _require_disposition_authority(
+    session: Session,
+    claim: CollectionProcessingClaimRecord,
+    disposition: ArtifactDisposition,
+    principal: Principal,
+) -> None:
+    if disposition.status in {"transformed", "preserved"} and claim.result_kind != "collection":
+        raise Conflict("material disposition requires a collection result")
+    if disposition.status == "effect-applied" and claim.result_kind != "external-effect":
+        raise Conflict("effect disposition requires an external-effect result")
+    if claim.result_kind == "no-output" and disposition.status != "not-carried-forward":
+        raise Conflict("no-output processing cannot claim a material or failed result")
+    approval = disposition.discard_approval
+    if approval is None:
+        return
+    if approval.controller_id != principal.id or principal.id != claim.consumer_app:
+        raise Forbidden("only the authenticated controller can endorse source loss")
+    if claim.operation_contract_json is None:
+        raise Conflict("source loss requires a selected operation declaration")
+    declaration = json.loads(claim.operation_contract_json)
+    source_loss = declaration.get("source_loss")
+    if not isinstance(source_loss, dict) or source_loss.get("rule_sha256") != approval.rule_sha256:
+        raise Conflict("source-loss approval differs from the selected rule")
+    selected_rule = source_loss.get("rule")
+    if (
+        not isinstance(selected_rule, dict)
+        or canonical_json_sha256(selected_rule) != approval.rule_sha256
+    ):
+        raise Conflict("source-loss declaration does not retain its selected rule")
+    required = source_loss.get("evidence_slots")
+    if (
+        not isinstance(required, list)
+        or not required
+        or any(
+            not isinstance(slot, dict)
+            or set(slot) != {"id", "contract_sha256", "profile_sha256"}
+            or not isinstance(slot["id"], str)
+            or not isinstance(slot["contract_sha256"], str)
+            or not isinstance(slot["profile_sha256"], str)
+            for slot in required
+        )
+    ):
+        raise Conflict("source-loss declaration has no exact evidence slots")
+    required_keys = [
+        (slot["id"], slot["contract_sha256"], slot["profile_sha256"]) for slot in required
+    ]
+    if required_keys != sorted(set(required_keys)):
+        raise Conflict("source-loss declaration evidence slots are not canonical")
+    root = _claim_input_root(session, claim.id, disposition.input_collection_id)
+    artifact = session.get(
+        CollectionProcessingClaimArtifactRecord,
+        (claim.id, disposition.input_collection_id, disposition.input_path),
+    )
+    assert artifact is not None
+    subject = CollectionArtifactIdentity(
+        collection=root,
+        path=artifact.path,
+        bytes=artifact.bytes,
+        sha256=artifact.sha256,
+    ).as_dict()
+    evidence = json.loads(approval.evidence_json)
+    if (
+        set(evidence) != {"format", "subject", "slots", "reason"}
+        or evidence["format"] != "riverhog-artifact-consideration/v1"
+        or evidence["subject"] != subject
+        or not isinstance(evidence["slots"], list)
+        or not isinstance(evidence["reason"], str)
+        or not evidence["reason"].strip()
+    ):
+        raise Conflict("source-loss consideration does not bind the exact artifact")
+    actual_keys: list[tuple[str, str, str]] = []
+    for slot in evidence["slots"]:
+        if not isinstance(slot, dict) or set(slot) != {
+            "id",
+            "contract_sha256",
+            "profile_sha256",
+            "document_sha256",
+        }:
+            raise Conflict("source-loss consideration slot is incomplete")
+        if not isinstance(slot["document_sha256"], str):
+            raise Conflict("source-loss consideration has no evidence reference")
+        source = session.get(
+            CollectionProcessingConsiderationEvidenceRecord,
+            (claim.id, slot["document_sha256"]),
+        )
+        member = session.get(
+            CollectionProcessingConsiderationSubjectRecord,
+            (
+                claim.id,
+                slot["document_sha256"],
+                disposition.input_collection_id,
+                disposition.input_path,
+            ),
+        )
+        if (
+            source is None
+            or member is None
+            or source.observer_contract_id != slot["id"]
+            or source.observer_contract_sha256 != slot["contract_sha256"]
+            or source.profile_sha256 != slot["profile_sha256"]
+            or member.bytes != artifact.bytes
+            or member.sha256 != artifact.sha256
+        ):
+            raise Conflict("source-loss consideration lacks exact successful evidence")
+        actual_keys.append((slot["id"], slot["contract_sha256"], slot["profile_sha256"]))
+    if actual_keys != required_keys:
+        raise Conflict("source-loss consideration does not fill every selected evidence slot")
+
+
 def _disposition_record_identity(
     session: Session,
     claim: CollectionProcessingClaimRecord,
@@ -2561,8 +2935,15 @@ def _disposition_record_identity(
         input_archive_root_sha256=root.archive_root_sha256,
         input_path=record.path,
         status=cast(DispositionState, record.status),
-        code=record.failure_code,
-        message=record.failure_message,
+        code=record.reason_code,
+        message=record.reason_message,
+        effect_receipt_sha256=record.effect_receipt_sha256,
+        discard_approval=(
+            ArtifactDiscardApproval.from_mapping(json.loads(record.discard_approval_json))
+            if record.discard_approval_json is not None
+            else None
+        ),
+        retain_required=record.retain_required,
     )
 
 
@@ -2580,8 +2961,8 @@ def _require_disposition_output(
         CollectionProcessingDispositionRecord,
         (claim.id, output.input_collection_id, output.input_path),
     )
-    if disposition is None or disposition.status != "transformed":
-        raise Conflict("output edge requires a transformed input disposition")
+    if disposition is None or disposition.status not in {"transformed", "preserved"}:
+        raise Conflict("output edge requires a successor-producing input disposition")
 
 
 def _disposition_output_record_identity(
@@ -2909,6 +3290,7 @@ def _insert_processing_outcome(
             derivation_sha256=identity.derivation_sha256,
             effect_receipt_sha256=identity.effect_receipt_sha256,
             effect_settlement_sha256=identity.effect_settlement_sha256,
+            no_output_settlement_sha256=identity.no_output_settlement_sha256,
             outcome_order=None,
             created_at=utc_timestamp_now(),
         )
@@ -2981,13 +3363,17 @@ def _verify_processing_outcome(
             or child.output_collection_id != root.collection_id
         ):
             raise Conflict("processing outcome derivation is unavailable")
-    else:
+    elif identity.result_kind == "external-effect":
         effect = _retained_effect(session, child)
         if (
             effect.receipt_sha256 != identity.effect_receipt_sha256
             or effect.sha256 != identity.effect_settlement_sha256
         ):
             raise Conflict("processing outcome has no exact Riverhog effect settlement")
+    else:
+        settlement = _retained_no_output(session, child)
+        if settlement.sha256 != identity.no_output_settlement_sha256:
+            raise Conflict("processing outcome has no exact Riverhog no-output settlement")
     return child
 
 
@@ -3091,6 +3477,7 @@ def _outcome_identity(
         derivation_sha256=record.derivation_sha256,
         effect_receipt_sha256=record.effect_receipt_sha256,
         effect_settlement_sha256=record.effect_settlement_sha256,
+        no_output_settlement_sha256=record.no_output_settlement_sha256,
     )
 
 
@@ -3150,6 +3537,49 @@ def _verify_dispositions(
     # then proves complete output and evidence coverage without loading either set.
     if output.file_count != disposition_set.output_artifact_count + evidence_pages + 2:
         raise Conflict("derivation output paths do not match the derived collection artifacts")
+    source = aliased(CollectionProcessingClaimArtifactRecord)
+    successor = aliased(CollectionFileRecord)
+    changed_preservation = session.scalar(
+        select(CollectionProcessingDispositionRecord.path)
+        .join(
+            CollectionProcessingDispositionOutputRecord,
+            and_(
+                CollectionProcessingDispositionOutputRecord.claim_id
+                == CollectionProcessingDispositionRecord.claim_id,
+                CollectionProcessingDispositionOutputRecord.input_collection_id
+                == CollectionProcessingDispositionRecord.collection_id,
+                CollectionProcessingDispositionOutputRecord.input_path
+                == CollectionProcessingDispositionRecord.path,
+            ),
+        )
+        .join(
+            source,
+            and_(
+                source.claim_id == CollectionProcessingDispositionRecord.claim_id,
+                source.collection_id == CollectionProcessingDispositionRecord.collection_id,
+                source.path == CollectionProcessingDispositionRecord.path,
+            ),
+        )
+        .outerjoin(
+            successor,
+            and_(
+                successor.collection_id == output.id,
+                successor.path == CollectionProcessingDispositionOutputRecord.output_path,
+            ),
+        )
+        .where(
+            CollectionProcessingDispositionRecord.claim_id == claim.id,
+            CollectionProcessingDispositionRecord.status == "preserved",
+            or_(
+                successor.path.is_(None),
+                successor.bytes != source.bytes,
+                successor.sha256 != source.sha256,
+            ),
+        )
+        .limit(1)
+    )
+    if changed_preservation is not None:
+        raise Conflict("preserved source lacks a byte-exact verified successor")
 
 
 def _verified_disposition_set(
@@ -3230,41 +3660,38 @@ def _retained_effect(
         or document.controller_evidence_sha256 != claim.controller_evidence_sha256
     ):
         raise Conflict("effect settlement differs from its retained processing authority")
+    _verified_disposition_set(session, claim, document.disposition_set)
     return document
 
 
-def _require_direct_effect_retirement(
+def _retained_no_output(
     session: Session, claim: CollectionProcessingClaimRecord
-) -> None:
-    _retained_effect(session, claim)
-    selected = (
-        select(CollectionProcessingClaimArtifactRecord.path)
-        .where(
-            CollectionProcessingClaimArtifactRecord.claim_id == claim.id,
-            CollectionProcessingClaimArtifactRecord.collection_id
-            == CollectionFileRecord.collection_id,
-            CollectionProcessingClaimArtifactRecord.path == CollectionFileRecord.path,
-            CollectionProcessingClaimArtifactRecord.bytes == CollectionFileRecord.bytes,
-            CollectionProcessingClaimArtifactRecord.sha256 == CollectionFileRecord.sha256,
-        )
-        .correlate(CollectionFileRecord)
-        .exists()
-    )
-    missing = session.scalar(
-        select(CollectionFileRecord.path)
-        .join(
-            CollectionProcessingClaimInputRecord,
-            and_(
-                CollectionProcessingClaimInputRecord.claim_id == claim.id,
-                CollectionProcessingClaimInputRecord.collection_id
-                == CollectionFileRecord.collection_id,
-            ),
-        )
-        .where(~CollectionFileRecord.path.startswith("riverhog/"), ~selected)
-        .limit(1)
-    )
-    if missing is not None:
-        raise Conflict("source retirement requires effect coverage of every input artifact")
+) -> NoOutputSettlement:
+    record = session.get(CollectionProcessingNoOutputSettlementRecord, claim.id)
+    if record is None:
+        raise Conflict("source retirement requires a durable Riverhog no-output settlement")
+    try:
+        document = NoOutputSettlement.from_mapping(json.loads(record.document_json))
+    except ValueError as exc:
+        raise Conflict("retained no-output settlement is invalid") from exc
+    if (
+        document.sha256 != record.document_sha256
+        or claim.no_output_settlement_sha256 != record.document_sha256
+        or record.fence != claim.fence
+        or document.fence != claim.fence
+        or document.claim_id != claim.id
+        or record.execution_id != claim.execution_id
+        or document.execution_id != claim.execution_id
+        or claim.result_kind != "no-output"
+        or document.operation.id != claim.operation_id
+        or document.operation.sha256 != claim.operation_sha256
+        or document.input_set_sha256 != claim.input_set_sha256
+        or document.artifact_set_sha256 != claim.artifact_set_sha256
+        or document.controller_evidence_sha256 != claim.controller_evidence_sha256
+    ):
+        raise Conflict("no-output settlement differs from its retained processing authority")
+    _verified_disposition_set(session, claim, document.disposition_set)
+    return document
 
 
 def _require_source_collection_retirement_coverage(
@@ -3296,76 +3723,87 @@ def _require_source_collection_retirement_coverage(
         count += 1
     if count != claim.outcome_expected_count or digest.hexdigest() != claim.outcome_expected_sha256:
         raise Conflict("source retirement requires every exact required settlement")
+    _require_retirement_coverage(session, claim, delegated=True)
+
+
+def _require_retirement_coverage(
+    session: Session,
+    claim: CollectionProcessingClaimRecord,
+    *,
+    delegated: bool,
+) -> None:
+    """Apply one source-loss denominator and one basis/veto rule to all results."""
+
     parent_input = aliased(CollectionProcessingClaimInputRecord)
     child_input = aliased(CollectionProcessingClaimInputRecord)
-    safe = (
-        select(CollectionProcessingDispositionRecord.claim_id)
-        .join(
-            CollectionProcessingOutcomeRecord,
-            and_(
-                CollectionProcessingOutcomeRecord.claim_id == claim.id,
-                CollectionProcessingOutcomeRecord.source_claim_id
-                == CollectionProcessingDispositionRecord.claim_id,
-            ),
+    retiring_input = aliased(CollectionProcessingClaimInputRecord)
+    child_claim = aliased(CollectionProcessingClaimRecord)
+    artifact = aliased(CollectionProcessingClaimArtifactRecord)
+    disposition = aliased(CollectionProcessingDispositionRecord)
+    if delegated:
+        required_claims = select(CollectionProcessingOutcomeRecord.source_claim_id).where(
+            CollectionProcessingOutcomeRecord.claim_id == claim.id
         )
+    else:
+        required_claims = select(literal(claim.id))
+    retiring_ids = select(retiring_input.collection_id).where(retiring_input.claim_id == claim.id)
+    matching = (
+        select(disposition.claim_id)
+        .join(child_claim, child_claim.id == disposition.claim_id)
         .join(
             child_input,
             and_(
-                child_input.claim_id == CollectionProcessingDispositionRecord.claim_id,
-                child_input.collection_id == CollectionProcessingDispositionRecord.collection_id,
+                child_input.claim_id == disposition.claim_id,
+                child_input.collection_id == disposition.collection_id,
             ),
         )
         .join(
-            CollectionProcessingDispositionSetRecord,
+            artifact,
             and_(
-                CollectionProcessingDispositionSetRecord.claim_id
-                == CollectionProcessingDispositionRecord.claim_id,
-                CollectionProcessingDispositionSetRecord.state == "sealed",
+                artifact.claim_id == disposition.claim_id,
+                artifact.collection_id == disposition.collection_id,
+                artifact.path == disposition.path,
             ),
         )
         .where(
-            CollectionProcessingDispositionRecord.collection_id
-            == CollectionFileRecord.collection_id,
-            CollectionProcessingDispositionRecord.path == CollectionFileRecord.path,
-            CollectionProcessingDispositionRecord.status.in_(("transformed", "preserved")),
+            disposition.claim_id.in_(required_claims),
+            disposition.collection_id == CollectionFileRecord.collection_id,
+            disposition.path == CollectionFileRecord.path,
+            artifact.bytes == CollectionFileRecord.bytes,
+            artifact.sha256 == CollectionFileRecord.sha256,
             child_input.archive_root_sha256 == parent_input.archive_root_sha256,
             child_input.content_identity == parent_input.content_identity,
+            child_claim.state.in_(("settled", "retiring", "released")),
         )
         .correlate(CollectionFileRecord, parent_input)
-        .exists()
     )
-    effect_input = aliased(CollectionProcessingClaimInputRecord)
-    safe_effect = (
-        select(CollectionProcessingClaimArtifactRecord.claim_id)
-        .join(
-            CollectionProcessingOutcomeRecord,
-            and_(
-                CollectionProcessingOutcomeRecord.claim_id == claim.id,
-                CollectionProcessingOutcomeRecord.result_kind == "external-effect",
-                CollectionProcessingOutcomeRecord.source_claim_id
-                == CollectionProcessingClaimArtifactRecord.claim_id,
-            ),
-        )
-        .join(
-            effect_input,
-            and_(
-                effect_input.claim_id == CollectionProcessingClaimArtifactRecord.claim_id,
-                effect_input.collection_id == CollectionProcessingClaimArtifactRecord.collection_id,
-            ),
-        )
+    receipt = CollectionProcessingEffectSettlementRecord
+    verified_effect = (
+        select(receipt.claim_id)
         .where(
-            CollectionProcessingClaimArtifactRecord.collection_id
-            == CollectionFileRecord.collection_id,
-            CollectionProcessingClaimArtifactRecord.path == CollectionFileRecord.path,
-            CollectionProcessingClaimArtifactRecord.bytes == CollectionFileRecord.bytes,
-            CollectionProcessingClaimArtifactRecord.sha256 == CollectionFileRecord.sha256,
-            effect_input.archive_root_sha256 == parent_input.archive_root_sha256,
-            effect_input.content_identity == parent_input.content_identity,
+            receipt.claim_id == child_claim.id,
+            receipt.receipt_sha256 == disposition.effect_receipt_sha256,
         )
-        .correlate(CollectionFileRecord, parent_input)
+        .correlate(child_claim, disposition)
         .exists()
     )
-    missing = session.execute(
+    material = and_(
+        disposition.status.in_(("transformed", "preserved")),
+        child_claim.output_collection_id.is_not(None),
+        ~child_claim.output_collection_id.in_(retiring_ids),
+    )
+    applied = and_(
+        disposition.status == "effect-applied",
+        child_claim.effect_settlement_sha256.is_not(None),
+        verified_effect,
+    )
+    approved_loss = and_(
+        disposition.status == "not-carried-forward",
+        disposition.discard_approval_json.is_not(None),
+    )
+    retained = matching.where(disposition.retain_required.is_(True)).exists()
+    safe = matching.where(or_(material, applied, approved_loss)).exists()
+    obligations = (
         select(CollectionFileRecord.collection_id, CollectionFileRecord.path)
         .join(
             parent_input,
@@ -3374,13 +3812,16 @@ def _require_source_collection_retirement_coverage(
                 parent_input.collection_id == CollectionFileRecord.collection_id,
             ),
         )
-        .where(
-            ~CollectionFileRecord.path.startswith("riverhog/"),
-            ~or_(safe, safe_effect),
-        )
+        .where(_is_retirement_obligation(CollectionFileRecord))
         .order_by(CollectionFileRecord.collection_id, CollectionFileRecord.path_sort_key)
-        .limit(1)
-    ).first()
+    )
+    veto = session.execute(obligations.where(retained).limit(1)).first()
+    if veto is not None:
+        raise Conflict(
+            "source retirement has a required source-retention constraint for: "
+            f"{veto.collection_id}::{veto.path}"
+        )
+    missing = session.execute(obligations.where(~safe).limit(1)).first()
     if missing is not None:
         raise Conflict(
             "source collection retirement lacks a verified safe disposition for: "
@@ -3469,11 +3910,36 @@ def _collection_payload_paths(session: Session, collection_id: int) -> tuple[str
         path
         for path in session.scalars(
             select(CollectionFileRecord.path)
-            .where(CollectionFileRecord.collection_id == collection_id)
+            .where(
+                CollectionFileRecord.collection_id == collection_id,
+                _is_retirement_obligation(CollectionFileRecord),
+            )
             .order_by(CollectionFileRecord.path_sort_key)
         )
-        if not path.startswith("riverhog/")
     )
+
+
+def _is_retirement_obligation(file: Any) -> ColumnElement[bool]:
+    """Select every logical file except Riverhog's verified control artifacts.
+
+    The exact producer-evidence path is reserved by the upload contract. Derived
+    control files are recognized only for a collection with a verified derivation;
+    their page namespace is checked against the sealed disposition set at upload.
+    An arbitrary file under ``riverhog/`` is still a retirement obligation.
+    """
+
+    derived = (
+        select(CollectionDerivationRecord.collection_id)
+        .where(CollectionDerivationRecord.collection_id == file.collection_id)
+        .correlate(file)
+        .exists()
+    )
+    derived_control = or_(
+        file.path == DERIVATION_EVIDENCE_PATH,
+        file.path.startswith(f"{DERIVATION_DISPOSITION_EVIDENCE_PREFIX}/"),
+        file.path.startswith(f"{DERIVATION_OUTPUT_EVIDENCE_PREFIX}/"),
+    )
+    return ~or_(file.path == PRODUCER_EVIDENCE_PATH, and_(derived, derived_control))
 
 
 def _collection_root(
@@ -3631,6 +4097,7 @@ def _claim_payload(
         "outcomes": _outcome_set_payload(claim),
         "outcome_settlement": outcome_settlement,
         "effect_settlement_sha256": claim.effect_settlement_sha256,
+        "no_output_settlement_sha256": claim.no_output_settlement_sha256,
     }
 
 
@@ -3803,8 +4270,12 @@ def require_source_collection_retirement_exemption(
         and claim.outcome_set_sha256 is not None
     )
     direct_effect_ready = claim.effect_settlement_sha256 is not None
+    direct_no_output_ready = claim.no_output_settlement_sha256 is not None
     if input_row is None or not (
-        direct_output_ready or direct_effect_ready or delegated_output_ready
+        direct_output_ready
+        or direct_effect_ready
+        or direct_no_output_ready
+        or delegated_output_ready
     ):
         raise Forbidden("source collection retirement claim does not authorize this collection")
     outcome_set_sha256 = claim.outcome_set_sha256
@@ -3820,6 +4291,7 @@ def require_source_collection_retirement_exemption(
                 else format_scalar("sequence63", claim.output_collection_id)
             ),
             "effect_settlement_sha256": claim.effect_settlement_sha256,
+            "no_output_settlement_sha256": claim.no_output_settlement_sha256,
             "outcomes": (
                 {
                     "count": format_scalar("nonnegative", claim.outcome_count),

@@ -14,7 +14,7 @@ from riverhog_protocol import (
     ProcessingClaimSort,
     SortOrder,
 )
-from riverhog_protocol.collection_workflow_transport import ClaimState
+from riverhog_protocol.collection_workflow_transport import SHA256, ClaimState
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
     ArtifactDispositionOutput,
@@ -48,12 +48,16 @@ from riverhog_api.schemas.workflows import (
     CollectionDerivationOut,
     CollectionRootBatchIn,
     CollectionRootPageOut,
+    ConsiderationEvidenceOut,
+    ConsiderationEvidencePutIn,
+    ConsiderationEvidenceReadOut,
     ProcessingCapabilityCreateIn,
     ProcessingCapabilityOut,
     ProcessingClaimAbandonIn,
     ProcessingClaimCreateIn,
     ProcessingClaimEffectSettleIn,
     ProcessingClaimFenceIn,
+    ProcessingClaimNoOutputSettleIn,
     ProcessingClaimOut,
     ProcessingClaimOutcomesAppendIn,
     ProcessingClaimOutcomesSettleIn,
@@ -465,6 +469,48 @@ def seal_processing_capability_artifacts(
 
 
 @router.put(
+    "/collection-processing-claims/{claim_id}/consideration-evidence",
+    response_model=ConsiderationEvidenceOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def record_processing_claim_consideration_evidence(
+    claim_id: ProcessingClaimId,
+    request: ConsiderationEvidencePutIn,
+    container: ContainerDep,
+    principal: CollectionProcessingController,
+) -> ConsiderationEvidenceOut:
+    return ConsiderationEvidenceOut.model_validate(
+        container.collection_workflows.record_consideration_evidence(
+            claim_id,
+            fence=request.fence,
+            document=request.document,
+            sha256=request.sha256,
+            principal=principal,
+        )
+    )
+
+
+@router.get(
+    "/collection-processing-claims/{claim_id}/consideration-evidence/{sha256}",
+    response_model=ConsiderationEvidenceReadOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def get_processing_claim_consideration_evidence(
+    claim_id: ProcessingClaimId,
+    sha256: SHA256,
+    container: ContainerDep,
+    principal: CollectionProcessingController,
+) -> ConsiderationEvidenceReadOut:
+    return ConsiderationEvidenceReadOut.model_validate(
+        container.collection_workflows.get_consideration_evidence(
+            claim_id,
+            sha256=sha256,
+            principal=principal,
+        )
+    )
+
+
+@router.put(
     "/collection-processing-claims/{claim_id}/derivation/dispositions",
     response_model=ArtifactDispositionSetOut,
     openapi_extra=operation_interface("client-only-primitive"),
@@ -473,7 +519,7 @@ def record_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     request: ArtifactDispositionBatchIn,
     container: ContainerDep,
-    principal: CollectionProcessingLeaseManager,
+    principal: CollectionProcessingController,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.record_dispositions(
@@ -527,7 +573,7 @@ def record_processing_claim_disposition_outputs(
     claim_id: ProcessingClaimId,
     request: ArtifactDispositionOutputBatchIn,
     container: ContainerDep,
-    principal: CollectionProcessingLeaseManager,
+    principal: CollectionProcessingController,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.record_disposition_outputs(
@@ -581,7 +627,7 @@ def seal_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionProcessingLeaseManager,
+    principal: CollectionProcessingController,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.seal_disposition_set(
@@ -648,6 +694,30 @@ def settle_processing_claim_effect(
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.settle_claim_effect(
+            claim_id,
+            fence=request.fence,
+            settlement=request.settlement.model_dump(mode="json"),
+            principal=principal,
+            outcome_claim_id=request.outcome.claim_id if request.outcome else None,
+            outcome_fence=request.outcome.fence if request.outcome else None,
+            outcome_id=request.outcome.outcome_id if request.outcome else None,
+        )
+    )
+
+
+@router.post(
+    "/collection-processing-claims/{claim_id}/no-output/settle",
+    response_model=ProcessingClaimOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def settle_processing_claim_no_output(
+    claim_id: ProcessingClaimId,
+    request: ProcessingClaimNoOutputSettleIn,
+    container: ContainerDep,
+    principal: CollectionProcessingController,
+) -> ProcessingClaimOut:
+    return ProcessingClaimOut.model_validate(
+        container.collection_workflows.settle_claim_no_output(
             claim_id,
             fence=request.fence,
             settlement=request.settlement.model_dump(mode="json"),

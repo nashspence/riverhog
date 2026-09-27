@@ -206,7 +206,7 @@
 <td data-label="Name">
 <code>ck_stove0_admission_candidate_state</code></td>
 <td data-label="Exact definition">
-<code>CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;,&#x27;work_bound&#x27;,&#x27;resolved_no_action&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;))</code></td>
+<code>CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;,&#x27;work_bound&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;))</code></td>
 </tr>
 <tr>
 <td data-label="Kind">
@@ -238,7 +238,7 @@
 <td data-label="Name">
 <code>ck_stove0_admission_candidate_next_attempt</code></td>
 <td data-label="Exact definition">
-<code>CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state IN (&#x27;work_bound&#x27;,&#x27;resolved_no_action&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;) AND next_attempt_at IS NULL OR state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;) AND next_attempt_at IS NOT NULL)</code></td>
+<code>CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state IN (&#x27;work_bound&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;) AND next_attempt_at IS NULL OR state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;) AND next_attempt_at IS NOT NULL)</code></td>
 </tr>
 <tr>
 <td data-label="Kind">
@@ -1056,7 +1056,7 @@
 </th>
 <td>
 <span id="v-7eb0195340d98a4f8fa4b2a9">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/1/definition">CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;,&#x27;work_bound&#x27;,&#x27;resolved_no_action&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;))</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/1/definition">CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;,&#x27;work_bound&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;))</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1066,7 +1066,7 @@
 </th>
 <td>
 <span id="v-f5661a53f171c7629f9f08c7">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/1/expression">(state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;,&#x27;work_bound&#x27;,&#x27;resolved_no_action&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;))</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/1/expression">(state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;,&#x27;work_bound&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;))</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1256,7 +1256,7 @@
 </th>
 <td>
 <span id="v-aff436f885f57880ce035826">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/5/definition">CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state IN (&#x27;work_bound&#x27;,&#x27;resolved_no_action&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;) AND next_attempt_at IS NULL OR state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;) AND next_attempt_at IS NOT NULL)</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/5/definition">CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state IN (&#x27;work_bound&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;) AND next_attempt_at IS NULL OR state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;) AND next_attempt_at IS NOT NULL)</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1266,7 +1266,7 @@
 </th>
 <td>
 <span id="v-2e3d382213f1c77d67f2b50b">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/5/expression">(state IN (&#x27;work_bound&#x27;,&#x27;resolved_no_action&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;) AND next_attempt_at IS NULL OR state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;) AND next_attempt_at IS NOT NULL)</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/6/constraints/5/expression">(state IN (&#x27;work_bound&#x27;,&#x27;resolved_inapplicable&#x27;,&#x27;resolved_failed&#x27;,&#x27;resolved_canceled&#x27;) AND next_attempt_at IS NULL OR state IN (&#x27;intent&#x27;,&#x27;previewed&#x27;) AND next_attempt_at IS NOT NULL)</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1502,7 +1502,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

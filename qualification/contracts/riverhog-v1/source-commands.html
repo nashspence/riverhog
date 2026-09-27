@@ -34,13 +34,13 @@
 <tr>
 <td data-label="Route">
 <code id="route-d1121e35fa7adab170fe1ee4">make build</code></td>
-<td data-label="Associated elements">3145</td>
+<td data-label="Associated elements">3168</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-413b0b241ba870e262fb82fa">make compose-smoke</code></td>
-<td data-label="Associated elements">728</td>
+<td data-label="Associated elements">742</td>
 <td data-label="Candidate witness groups">13</td>
 </tr>
 <tr>
@@ -52,19 +52,19 @@
 <tr>
 <td data-label="Route">
 <code id="route-27f281b51ec606c43bd87cc5">make database-qualification</code></td>
-<td data-label="Associated elements">152</td>
+<td data-label="Associated elements">155</td>
 <td data-label="Candidate witness groups">2</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-0ba2578a3eb74fda1e38b234">make dist-smoke</code></td>
-<td data-label="Associated elements">3365</td>
+<td data-label="Associated elements">3388</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-dd95e4459fb8ecb561da1c86">make operation-qualification</code></td>
-<td data-label="Associated elements">823</td>
+<td data-label="Associated elements">837</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
@@ -82,7 +82,7 @@
 <tr>
 <td data-label="Route">
 <code id="route-8d8d22d6a6b17edc6babcfab">make release-check</code></td>
-<td data-label="Associated elements">279</td>
+<td data-label="Associated elements">282</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
@@ -414,6 +414,22 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
+<code>PUT /v1/collection-processing-claims/{claim_id}/consideration-evidence</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>GET /v1/collection-processing-claims/{claim_id}/consideration-evidence/{sha256}</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
 <code>GET /v1/collection-processing-claims/{claim_id}/derivation</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
@@ -487,6 +503,14 @@
 <code>riverhog</code></td>
 <td data-label="Operation">
 <code>POST /v1/collection-processing-claims/{claim_id}/inputs/seal</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/collection-processing-claims/{claim_id}/no-output/settle</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -1354,7 +1378,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-69e6f54265d8c97a84d69daa">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 27 fields; additionalProperties: <code>false</code>
+<code>object</code>; 28 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -68,7 +68,7 @@
 <td data-label="Field">
 <a href="#s-c69239134c8fdce690921d79">abandon_outcome</a></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">any of: <code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -174,6 +174,14 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-8027e6112795df562a8993f0">no_output_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-0d80f7addf4684eb489237c1">observation_requests</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -205,7 +213,7 @@
 <code>phase</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;no_output_pending&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -300,7 +308,7 @@
 </section>
 <section class="schema-section" id="s-c69239134c8fdce690921d79">
 <h3>Field: abandon_outcome</h3>
-<p class="shape">any of: <code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
+<p class="shape">any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -321,7 +329,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -614,6 +622,40 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-d775a15d8e82ba93465b5e45.html#v-f0f07e63bd9230ae70464a7a">#/components/schemas/WorkflowPreview</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8027e6112795df562a8993f0">
+<h3>Field: no_output_settlement_sha256</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>No Output Settlement Sha256</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -978,7 +1020,7 @@
 </th>
 <td>
 <span id="v-e50a62c6d0a06a07eb8f84e9">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/0">no_action</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/0">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -988,7 +1030,7 @@
 </th>
 <td>
 <span id="v-18180324bf847f589c0be99a">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/1">inapplicable</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/1">failed</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -998,17 +1040,7 @@
 </th>
 <td>
 <span id="v-40ae97b0f3b6d28d25a74696">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/2">failed</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>3</code>
-</th>
-<td>
-<span id="v-32cf0c1c0a85aca7b44438d2">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/3">canceled</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/2">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1796,6 +1828,86 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_output_settlement_sha256</code>
+</th>
+<td>
+<table id="v-8027e6112795df562a8993f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-aa40613accab55ed4603db2f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b0541f1c8a1258e59b73f86d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e24fcf928479e67a2842e9e6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/no_output_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-47d6fed121f81f08543445b9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/no_output_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-128820e2e3b4d917562977a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-123b8a1d520e26fd97945785">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/no_output_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cc397698b4fa3f4d2a415d86">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/no_output_settlement_sha256/title">No Output Settlement Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>observation_requests</code>
 </th>
 <td>
@@ -2114,7 +2226,7 @@
 </th>
 <td>
 <span id="v-263d2ef1f5139b7d19be9e5a">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/12">abandon_pending</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/12">no_output_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2124,7 +2236,7 @@
 </th>
 <td>
 <span id="v-d99f2a58fa1339ac7597274e">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/13">complete</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/13">abandon_pending</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2134,7 +2246,7 @@
 </th>
 <td>
 <span id="v-9ad15d6e0678f42ae6b1363b">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/14">no_action</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/14">complete</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2144,7 +2256,7 @@
 </th>
 <td>
 <span id="v-a79908f26d682b46ca57c218">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/15">inapplicable</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/15">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2154,7 +2266,7 @@
 </th>
 <td>
 <span id="v-3c7d15f6f76c82d13179dea3">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/16">failed</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/16">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2164,7 +2276,17 @@
 </th>
 <td>
 <span id="v-789f7584d5b6a7125baacdfe">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/17">canceled</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/17">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-243358a98c5ab42c71b10273">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/18">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2950,6 +3072,15 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/no_output_settlement_sha256/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_requests</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -3001,7 +3132,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

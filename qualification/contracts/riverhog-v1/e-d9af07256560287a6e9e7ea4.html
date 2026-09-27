@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, input_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], status: Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;]) -&gt; None&quot;</code>
+<code>&quot;(*, input_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], status: Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;not-carried-forward&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], code: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)]] = None, message: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-f7679a5222273a4f73c65f0e">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -87,6 +87,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-bb2cd74889df8b06a04e6b51">code</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>input_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -96,12 +105,77 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-f6659b6ea3f0872d603de6f7">message</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>status</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;not-carried-forward&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bb2cd74889df8b06a04e6b51">
+<h3>Field: code</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f6659b6ea3f0872d603de6f7">
+<h3>Field: message</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -159,6 +233,86 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-bb2cd74889df8b06a04e6b51">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-3ae26185d9b26a4cf887f3c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-792b8d4a3f29ce7561f84f05">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7380ed42832a35e3ec1178dc">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/code/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f6ad006f5a1926d400353e30">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/code/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a258c56179f9b3e83519f064">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-edebd81ec4f7a28bb221e7cb">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/code/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-da5e97584b497e203efa3997">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/code/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>input_id</code>
 </th>
 <td>
@@ -182,6 +336,96 @@
 <span id="v-a16cb5f7e75d3dc2007e1437">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/input_id/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-f6659b6ea3f0872d603de6f7">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4a3c5552fb963b0415eda7b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-fd44edc0b09774f99b94287c">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-2b36ddbfaf12b40da5877042">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/message/anyOf/0/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-457211edc0a4281ef78b4821">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/message/anyOf/0/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0974a7473cbdff4bece39a86">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/message/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-85019d2285afa8df52d89cc9">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-98d5864375057d6dbc31248d">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/message/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-68dfa5a3a96a86f5ad91db64">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/message/default">null</code>
+<span class="kind">null</span>
 </span></td>
 </tr>
 </tbody>
@@ -227,7 +471,7 @@
 </th>
 <td>
 <span id="v-6ada07eb94ca9768b4f82642">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/status/enum/2">omitted</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/status/enum/2">not-carried-forward</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -237,7 +481,17 @@
 </th>
 <td>
 <span id="v-6106d392149954001e72b98d">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/status/enum/3">rejected</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/status/enum/3">omitted</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-06b27e765d9734bd146f9164">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/schema/properties/status/enum/4">rejected</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -309,7 +563,7 @@
 </th>
 <td>
 <span id="v-0c0a39e708be51a8216b72b4">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/signature">&quot;(*, input_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], status: Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.InputDispositionDeclaration/contract/signature">&quot;(*, input_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], status: Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;not-carried-forward&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], code: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)]] = None, message: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -361,6 +615,14 @@
 </section>
 </details>
 </section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-56e1b1dfa266a44246e9cb70.html">stove0_target_protocol.InputDispositionDeclaration.bind_reason</a>
+</li>
+</ul>
+</section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Governing policies</h3>
@@ -392,7 +654,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>

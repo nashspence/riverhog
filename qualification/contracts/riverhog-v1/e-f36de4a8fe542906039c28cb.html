@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;, &#x27;resolved_no_action&#x27;, &#x27;resolved_inapplicable&#x27;, &#x27;resolved_failed&#x27;, &#x27;resolved_canceled&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
+<code>&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;, &#x27;resolved_inapplicable&#x27;, &#x27;resolved_failed&#x27;, &#x27;resolved_canceled&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-e19189015eda5ecd67188d00">
@@ -150,7 +150,7 @@
 <td data-label="Field">
 <a href="#s-02027fe057bffb5b336c5159">state</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code>; <code>null</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -280,7 +280,7 @@
 </section>
 <section class="schema-section" id="s-02027fe057bffb5b336c5159">
 <h3>Field: state</h3>
-<p class="shape">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code>; <code>null</code>
+<p class="shape">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -295,7 +295,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -542,7 +542,7 @@
 <code>state</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2219,7 +2219,7 @@
 </th>
 <td>
 <span id="v-e0a6e5030a1b3695bec0eda2">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/3">resolved_no_action</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/3">resolved_inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2229,7 +2229,7 @@
 </th>
 <td>
 <span id="v-c7e080605399956c4c745af3">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/4">resolved_inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/4">resolved_failed</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2239,17 +2239,7 @@
 </th>
 <td>
 <span id="v-63f737ccce57550fa4da8ad1">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/5">resolved_failed</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>6</code>
-</th>
-<td>
-<span id="v-43f9a334c1bcd59e488856cc">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/6">resolved_canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/5">resolved_canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4209,7 +4199,7 @@
 </th>
 <td>
 <span id="v-4b1113e8893b80f1cb4e8797">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/3">resolved_no_action</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/3">resolved_inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4219,7 +4209,7 @@
 </th>
 <td>
 <span id="v-c5f9bfb3bd8f49a27072bbed">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/4">resolved_inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/4">resolved_failed</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4229,17 +4219,7 @@
 </th>
 <td>
 <span id="v-fda0336f5c1fcdc3c692eb13">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/5">resolved_failed</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>6</code>
-</th>
-<td>
-<span id="v-adbc72a277310558dd63b1d4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/6">resolved_canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/5">resolved_canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4397,7 +4377,7 @@
 </th>
 <td>
 <span id="v-9a9a9e6761b4de35d4b5121c">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/signature">&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;, &#x27;resolved_no_action&#x27;, &#x27;resolved_inapplicable&#x27;, &#x27;resolved_failed&#x27;, &#x27;resolved_canceled&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/signature">&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;, &#x27;resolved_inapplicable&#x27;, &#x27;resolved_failed&#x27;, &#x27;resolved_canceled&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4480,7 +4460,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
+<p>Closure SHA-256: <code>3c36fea9fb50d1bb12918484cce0eefe565035b20eea8ad69c53229d6d9d2276</code>
 </p>
 </details>
 </footer>
