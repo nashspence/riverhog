@@ -33,8 +33,12 @@ if (( smoke_download_quota_bytes < 16777216 )); then
 fi
 stove0_project="${COMPOSE_PROJECT_NAME}-stove0"
 adapter_project="${COMPOSE_PROJECT_NAME}-ftp-spool"
+minisign_project="${COMPOSE_PROJECT_NAME}-minisign-witness"
+ots_project="${COMPOSE_PROJECT_NAME}-opentimestamps-witness"
 stove0_compose_file="${ROOT_DIR}/some-implementations/stove0/application/compose.yaml"
 adapter_compose_file="${ROOT_DIR}/some-implementations/riverhog/ingress/ftp/compose.yaml"
+minisign_compose_file="${ROOT_DIR}/some-implementations/riverhog/applications/a-riverhog-minisign-witness/compose.yaml"
+ots_compose_file="${ROOT_DIR}/some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/compose.yaml"
 export STOVE0_CONFIG_HOST_PATH="${smoke_root}/stove0.yaml"
 
 stove0_compose() {
@@ -45,9 +49,21 @@ adapter_compose() {
   docker compose --project-name "${adapter_project}" --file "${adapter_compose_file}" "$@"
 }
 
+minisign_compose() {
+  docker compose --project-name "${minisign_project}" --file "${minisign_compose_file}" "$@"
+}
+
+ots_compose() {
+  docker compose --project-name "${ots_project}" --file "${ots_compose_file}" "$@"
+}
+
 cleanup() {
   local status=$?
   if [[ "${status}" -ne 0 ]]; then
+    minisign_compose ps >&2 || true
+    minisign_compose logs --no-color --tail 200 >&2 || true
+    ots_compose ps >&2 || true
+    ots_compose logs --no-color --tail 200 >&2 || true
     adapter_compose ps >&2 || true
     adapter_compose logs --no-color --tail 200 >&2 || true
     stove0_compose ps >&2 || true
@@ -55,6 +71,8 @@ cleanup() {
     compose ps >&2 || true
     compose logs --no-color --tail 200 >&2 || true
   fi
+  minisign_compose down --volumes --remove-orphans || true
+  ots_compose down --volumes --remove-orphans || true
   adapter_compose down --volumes --remove-orphans || true
   stove0_compose down --volumes --remove-orphans || true
   compose down --volumes --remove-orphans
@@ -1227,3 +1245,67 @@ stove0_compose exec -T \
   --env "REVIEW_OUTPUT_COLLECTION_ID=${review_output_collection_id}" \
   --env "REVIEW_SOURCE_COLLECTION_ID=${review_source_collection_id}" \
   api python -c "${review_qualification}" delivery > /dev/null
+
+if [[ "${STOVE0_SMOKE_WITNESS_PROBE:-1}" == "1" ]]; then
+# Qualify both independent witnesses against a real finalized catalog item.
+# The deterministic OTS calendar seam supplies a bounded pending attestation;
+# this smoke does not depend on a public calendar or claim Bitcoin confirmation.
+witness_input_root="${smoke_root}/witness-input"
+install -d -m 0700 "${witness_input_root}"
+printf '%s\n' 'independent witness Compose qualification' > "${witness_input_root}/statement.txt"
+witness_receipt_json="$(
+  compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
+    --volume "${witness_input_root}:/witness-input:ro" \
+    --entrypoint a-riverhog-cli test collection upload start /witness-input \
+    --omit-provenance 'compose qualification fixture' --json
+)"
+witness_collection_id="$(printf '%s' "${witness_receipt_json}" | jq -r '.collection_id')"
+test -n "${witness_collection_id}"
+
+export RIVERHOG_ALLOW_INSECURE_HTTP=true
+export A_RIVERHOG_MINISIGN_WITNESS_RIVERHOG_BASE_URL=http://app:8000
+export A_RIVERHOG_MINISIGN_WITNESS_RIVERHOG_TOKEN_FILE="${secret_root}/stove0-api-riverhog-token"
+export A_RIVERHOG_MINISIGN_WITNESS_SECRET_FILE_GID="$(id -g)"
+export A_RIVERHOG_MINISIGN_WITNESS_POLL_SECONDS=3600
+export A_RIVERHOG_OPENTIMESTAMPS_WITNESS_RIVERHOG_BASE_URL=http://app:8000
+export A_RIVERHOG_OPENTIMESTAMPS_WITNESS_RIVERHOG_TOKEN_FILE="${secret_root}/stove0-api-riverhog-token"
+export A_RIVERHOG_OPENTIMESTAMPS_WITNESS_SECRET_FILE_GID="$(id -g)"
+export A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URLS=https://calendar.example.invalid
+export A_RIVERHOG_OPENTIMESTAMPS_WITNESS_POLL_SECONDS=3600
+witness_key_root="${smoke_root}/witness-key"
+install -d -m 0777 "${witness_key_root}"
+export A_RIVERHOG_MINISIGN_WITNESS_SECRET_KEY_FILE="${witness_key_root}/secret.key"
+export A_RIVERHOG_MINISIGN_WITNESS_PUBLIC_KEY_FILE="${witness_key_root}/public.key"
+minisign_compose build run
+ots_compose build run
+docker run --rm --user 65532:65532 \
+  --volume "${witness_key_root}:/keys" --entrypoint minisign \
+  a-riverhog-minisign-witness:dev -G -W -s /keys/secret.key -p /keys/public.key
+test "$(stat -c '%a:%u' "${A_RIVERHOG_MINISIGN_WITNESS_SECRET_KEY_FILE}")" = 600:65532
+test "$(stat -c '%a:%g' "${secret_root}/stove0-api-riverhog-token")" = "640:$(id -g)"
+minisign_compose up --detach --wait state
+ots_compose up --detach --wait state
+witness_probe="${ROOT_DIR}/tests/harness/witness_compose_probe.py:/qualification.py:ro"
+minisign_result="$(minisign_compose run --rm --no-deps -T \
+  --volume "${witness_probe}" --entrypoint python run \
+  /qualification.py minisign prepare "${witness_collection_id}")"
+ots_result="$(ots_compose run --rm --no-deps -T \
+  --volume "${witness_probe}" --entrypoint python run \
+  /qualification.py opentimestamps prepare "${witness_collection_id}")"
+minisign_compose up --detach --wait run
+ots_compose up --detach --wait run
+minisign_compose restart run
+ots_compose restart run
+minisign_compose up --detach --wait run
+ots_compose up --detach --wait run
+test "$(minisign_compose run --rm --no-deps -T \
+  --volume "${witness_probe}" --entrypoint python run \
+  /qualification.py minisign verify "${witness_collection_id}" \
+  "$(printf '%s' "${minisign_result}" | jq -r '.digest')" \
+  "$(printf '%s' "${minisign_result}" | jq -r '.evidence_sha256')")" = retained
+test "$(ots_compose run --rm --no-deps -T \
+  --volume "${witness_probe}" --entrypoint python run \
+  /qualification.py opentimestamps verify "${witness_collection_id}" \
+  "$(printf '%s' "${ots_result}" | jq -r '.digest')" \
+  "$(printf '%s' "${ots_result}" | jq -r '.evidence_sha256')")" = retained
+fi

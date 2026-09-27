@@ -110,9 +110,6 @@
 <a href="#s-0d836ab3d061c9fd8c07020f">AdmissionPolicy</a>
 </li>
 <li>
-<a href="#s-76fd1c0dbd342e1b105a9de9">AllVisibleAdmissionSelector</a>
-</li>
-<li>
 <a href="#s-faf360b591aa3ef5addd7d8a">CollectionTag</a>
 </li>
 <li>
@@ -122,7 +119,7 @@
 <a href="#s-bb1c00d60acebe6bd392bae9">NonnegativeDecimal</a>
 </li>
 <li>
-<a href="#s-7d6db43e70ab3b25dd511660">TaggedAdmissionSelector</a>
+<a href="#s-1745765baa646c841393783b">TaggedCatalogSelector</a>
 </li>
 </ul>
 </section>
@@ -254,52 +251,11 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-5945709f7a7d9f1e7db46699">selector</a></td>
+<code>selector</code></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">exactly one of: <a href="e-83070b18ccdce958a04242bd.html#v-76fd1c0dbd342e1b105a9de9">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-83070b18ccdce958a04242bd.html#v-7d6db43e70ab3b25dd511660">#/$defs/TaggedAdmissionSelector</a></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-76fd1c0dbd342e1b105a9de9">
-<h3>Definition: AllVisibleAdmissionSelector</h3>
-<p class="shape">
-<code>object</code>; 1 fields; additionalProperties: <code>false</code>
-</p>
-<dl class="facts">
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>false</code>
-</dd>
-</dl>
-<h4>Fields</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Field</th>
-<th scope="col">Required</th>
-<th scope="col">Shape and bounds</th>
-<th scope="col">Default</th>
-<th scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Field">
-<code>kind</code></td>
-<td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; const: <code>all</code>; default: <code>all</code></td>
-<td data-label="Default">
-<code>all</code></td>
+<a href="e-83070b18ccdce958a04242bd.html#v-1745765baa646c841393783b">#/$defs/TaggedCatalogSelector</a></td>
+<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 </tbody>
@@ -357,8 +313,8 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-7d6db43e70ab3b25dd511660">
-<h3>Definition: TaggedAdmissionSelector</h3>
+<section class="schema-section" id="s-1745765baa646c841393783b">
+<h3>Definition: TaggedCatalogSelector</h3>
 <p class="shape">
 <code>object</code>; 2 fields; additionalProperties: <code>false</code>
 </p>
@@ -401,7 +357,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-fac4954d983d7ce28cf66fbd">required</a></td>
+<a href="#s-d238ec10439f54d4f6861282">required</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-83070b18ccdce958a04242bd.html#v-faf360b591aa3ef5addd7d8a">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
@@ -428,41 +384,7 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-5945709f7a7d9f1e7db46699">
-<h3>Field: selector</h3>
-<p class="shape">exactly one of: <a href="e-83070b18ccdce958a04242bd.html#v-76fd1c0dbd342e1b105a9de9">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-83070b18ccdce958a04242bd.html#v-7d6db43e70ab3b25dd511660">#/$defs/TaggedAdmissionSelector</a>
-</p>
-<dl class="facts">
-<dt>discriminator</dt>
-<dd>
-<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleAdmissionSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedAdmissionSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
-</dd>
-</dl>
-<h4>Exactly one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<a href="e-83070b18ccdce958a04242bd.html#v-76fd1c0dbd342e1b105a9de9">#/$defs/AllVisibleAdmissionSelector</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<a href="e-83070b18ccdce958a04242bd.html#v-7d6db43e70ab3b25dd511660">#/$defs/TaggedAdmissionSelector</a></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-fac4954d983d7ce28cf66fbd">
+<section class="schema-section" id="s-d238ec10439f54d4f6861282">
 <h3>Field: required</h3>
 <p class="shape">
 <code>array</code>; items: <a href="e-83070b18ccdce958a04242bd.html#v-faf360b591aa3ef5addd7d8a">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</p>
@@ -838,103 +760,13 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>discriminator</code>
-</th>
-<td>
-<table id="v-141264c6a0d3ed068972b73b">
-<tbody>
-<tr>
-<th scope="row">
-<code>mapping</code>
-</th>
-<td>
-<table id="v-984db52d138a44079c991ac1">
-<tbody>
-<tr>
-<th scope="row">
-<code>all</code>
-</th>
-<td>
-<span id="v-59ea1fbba4e2b1b7b1cf79db">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>tags</code>
-</th>
-<td>
-<span id="v-b8203dab252089f49bb917dd">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>propertyName</code>
-</th>
-<td>
-<span id="v-7a3f31f502029143d76b878a">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/properties/selector/discriminator/propertyName">kind</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>oneOf</code>
-</th>
-<td>
-<table id="v-bb870c68c0d776a7db2cb066">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-73a0a4d7d1b0a494bea9ee49">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-20e9d56ef3a6b7d835c6c932">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-83070b18ccdce958a04242bd.html#v-76fd1c0dbd342e1b105a9de9">Definition</a>
+<span id="v-978491519490b0c1aae297ae">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/properties/selector/$ref">#/$defs/TaggedCatalogSelector</code>
+<span class="kind">string</span> <a href="e-83070b18ccdce958a04242bd.html#v-1745765baa646c841393783b">Definition</a>
 </span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-e45561974a34714fc0a5c149">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-defa75faf2e8b7400e08e22d">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-83070b18ccdce958a04242bd.html#v-7d6db43e70ab3b25dd511660">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -1019,86 +851,6 @@
 <td>
 <span id="v-ffcf16cbe83a7caa02c15cfb">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AdmissionPolicy/type">object</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>AllVisibleAdmissionSelector</code>
-</th>
-<td>
-<table id="v-76fd1c0dbd342e1b105a9de9">
-<tbody>
-<tr>
-<th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<span id="v-cda0e05ade4bc70c6a1ba045">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/additionalProperties">false</code>
-<span class="kind">boolean</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>properties</code>
-</th>
-<td>
-<table id="v-f84ff22d9ef67c74532fbc11">
-<tbody>
-<tr>
-<th scope="row">
-<code>kind</code>
-</th>
-<td>
-<table id="v-9751546d872f0f63d5f6e37f">
-<tbody>
-<tr>
-<th scope="row">
-<code>const</code>
-</th>
-<td>
-<span id="v-93f6e501fe7e6db0534fb386">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/const">all</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-8277312c558157581f79ee66">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/default">all</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-36a0058cf98abc0c67201065">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-05079f321bd99e80be074722">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/AllVisibleAdmissionSelector/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1237,18 +989,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>TaggedAdmissionSelector</code>
+<code>TaggedCatalogSelector</code>
 </th>
 <td>
-<table id="v-7d6db43e70ab3b25dd511660">
+<table id="v-1745765baa646c841393783b">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-d3875d7a7222c1f8c32646d4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/additionalProperties">false</code>
+<span id="v-b319a96bd8ea89d411a5bf8b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -1257,22 +1009,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-6a73df96665c24fe50d29cf8">
+<table id="v-61a67d917c218581fef78a4d">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<table id="v-1ccdd142d51db5be383fc600">
+<table id="v-2ecb744584265bcad37d48b2">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-20b106bedcc24da0ea96d1b9">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/const">tags</code>
+<span id="v-f34b568b087b9b847c15a2d2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/kind/const">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1281,8 +1033,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-27e9de07dc720f6c4267ed9d">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/default">tags</code>
+<span id="v-f8ee878be35a4acdfcf6bb46">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/kind/default">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1291,8 +1043,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-3a5e6c2d6bdd501939e8dcb4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/type">string</code>
+<span id="v-682f2554fd20a3d8e5a217bc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1304,22 +1056,22 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-fac4954d983d7ce28cf66fbd">
+<table id="v-d238ec10439f54d4f6861282">
 <tbody>
 <tr>
 <th scope="row">
 <code>items</code>
 </th>
 <td>
-<table id="v-42846ee6d0790427c8e0bf7d">
+<table id="v-dfa8a0370526cd63feebf239">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-f3b94b27ccb31e86cd681fff">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
+<span id="v-7110f515379c7b969deb775a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
 <span class="kind">string</span> <a href="e-83070b18ccdce958a04242bd.html#v-faf360b591aa3ef5addd7d8a">Definition</a>
 </span></td>
 </tr>
@@ -1331,8 +1083,8 @@
 <code>maxItems</code>
 </th>
 <td>
-<span id="v-a219aec3419257b0cb96481b">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/maxItems">100</code>
+<span id="v-5eeedbd7ac974e60443a8697">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/required/maxItems">100</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1341,8 +1093,8 @@
 <code>minItems</code>
 </th>
 <td>
-<span id="v-e70f8a662ce0fcca0f90fb6b">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/minItems">1</code>
+<span id="v-b33dfea951df892d8324c354">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/required/minItems">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1351,8 +1103,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-af692cc265273692e6f400f3">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/type">array</code>
+<span id="v-49e7f354f3fd2a1b1cc939c1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/required/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1361,15 +1113,15 @@
 <code>x-riverhog-extent</code>
 </th>
 <td>
-<table id="v-b39ee5b9495b27be2e24c9ee">
+<table id="v-12f1f3ff3c7c85787c4e8a1a">
 <tbody>
 <tr>
 <th scope="row">
 <code>policy</code>
 </th>
 <td>
-<span id="v-f3f4850305932632bdb8b160">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
+<span id="v-bd10e469aefc5853c9f2eb98">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1378,8 +1130,8 @@
 <code>reason</code>
 </th>
 <td>
-<span id="v-ae570da3ac44a859bea4336a">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
+<span id="v-c1fd359675ae1534c4d60d06">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1397,15 +1149,15 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-818b3c6d74fa01cc1bdd7522">
+<table id="v-07fff8eeab00a36d47660a13">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-47de811b81edb6fc0acf8720">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/required/0">required</code>
+<span id="v-93f0df7928ab0be4a8cf98e1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/required/0">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1417,8 +1169,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-80e4c8196d301c6b60871ec9">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedAdmissionSelector/type">object</code>
+<span id="v-9f3fbad7eefb05d289cfe0fc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionCatalog/contract/schema/$defs/TaggedCatalogSelector/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1691,7 +1443,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
 </p>
 </details>
 </footer>

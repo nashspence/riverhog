@@ -286,7 +286,7 @@
 <a href="#s-fc8565460bc0bb9905354e76">AdmissionPolicy</a>
 </li>
 <li>
-<a href="#s-1e54b4db1c7a22c19c37af84">AllVisibleAdmissionSelector</a>
+<a href="#s-08da61a327f0b6bcc1791744">AllVisibleDepartureSelector</a>
 </li>
 <li>
 <a href="#s-2df3a67fffd4d3eb8976d7d8">ArchiveStoreName</a>
@@ -370,7 +370,7 @@
 <a href="#s-b24758c7f1e465e1d885a977">SemanticValidationProfile</a>
 </li>
 <li>
-<a href="#s-957d73dee34f51300dba69fd">TaggedAdmissionSelector</a>
+<a href="#s-30f93cf35cc107df29183f53">TaggedCatalogSelector</a>
 </li>
 </ul>
 </section>
@@ -708,9 +708,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-e90f8ffa66a25b7e4982029b">selector</a></td>
+<code>selector</code></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">exactly one of: <a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">#/$defs/TaggedAdmissionSelector</a></td>
+<td data-label="Shape and bounds">
+<a href="e-77627199af34832183c008ea.html#v-30f93cf35cc107df29183f53">#/$defs/TaggedCatalogSelector</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -718,15 +719,15 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-1e54b4db1c7a22c19c37af84">
-<h3>Definition: AllVisibleAdmissionSelector</h3>
+<section class="schema-section" id="s-08da61a327f0b6bcc1791744">
+<h3>Definition: AllVisibleDepartureSelector</h3>
 <p class="shape">
 <code>object</code>; 1 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
-<code>AllVisibleAdmissionSelector</code>
+<code>AllVisibleDepartureSelector</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -1143,7 +1144,7 @@
 <td data-label="Field">
 <a href="#s-76264125d84bcd3b3f4f0e2e">selector</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">exactly one of: <a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">#/$defs/TaggedAdmissionSelector</a></td>
+<td data-label="Shape and bounds">exactly one of: <a href="e-77627199af34832183c008ea.html#v-08da61a327f0b6bcc1791744">#/$defs/AllVisibleDepartureSelector</a>; <a href="e-77627199af34832183c008ea.html#v-30f93cf35cc107df29183f53">#/$defs/TaggedCatalogSelector</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2281,7 +2282,7 @@
 <section class="schema-section" id="s-70d453a919b480e34be3b899">
 <h3>Definition: RecipeDefinition</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -2314,16 +2315,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td data-label="Field">
-<code>allow_derived_inputs</code></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>boolean</code>; default: <code>false</code></td>
-<td data-label="Default">
-<code>false</code></td>
-<td data-label="Description"></td>
-</tr>
 <tr>
 <td data-label="Field">
 <a href="#s-a5bb005adc22302f1f166602">artifact_associations</a></td>
@@ -2918,15 +2909,15 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-957d73dee34f51300dba69fd">
-<h3>Definition: TaggedAdmissionSelector</h3>
+<section class="schema-section" id="s-30f93cf35cc107df29183f53">
+<h3>Definition: TaggedCatalogSelector</h3>
 <p class="shape">
 <code>object</code>; 2 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
-<code>TaggedAdmissionSelector</code>
+<code>TaggedCatalogSelector</code>
 </dd>
 <dt>required</dt>
 <dd>
@@ -2966,7 +2957,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-63f8d2952ca31b4b874f318d">required</a></td>
+<a href="#s-7e9a430f57c941e9a3cf3f1f">required</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-77627199af34832183c008ea.html#v-cc96da46535e3ea19e6d678d">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
@@ -3020,44 +3011,6 @@
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
 </dd>
 </dl>
-</section>
-<section class="schema-section" id="s-e90f8ffa66a25b7e4982029b">
-<h3>Field: selector</h3>
-<p class="shape">exactly one of: <a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">#/$defs/TaggedAdmissionSelector</a>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Selector</code>
-</dd>
-<dt>discriminator</dt>
-<dd>
-<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleAdmissionSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedAdmissionSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
-</dd>
-</dl>
-<h4>Exactly one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">#/$defs/AllVisibleAdmissionSelector</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">#/$defs/TaggedAdmissionSelector</a></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-80c8b174bf0872cfefb2f71d">
 <h3>Field: associated_roles</h3>
@@ -3139,7 +3092,7 @@
 </section>
 <section class="schema-section" id="s-76264125d84bcd3b3f4f0e2e">
 <h3>Field: selector</h3>
-<p class="shape">exactly one of: <a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">#/$defs/TaggedAdmissionSelector</a>
+<p class="shape">exactly one of: <a href="e-77627199af34832183c008ea.html#v-08da61a327f0b6bcc1791744">#/$defs/AllVisibleDepartureSelector</a>; <a href="e-77627199af34832183c008ea.html#v-30f93cf35cc107df29183f53">#/$defs/TaggedCatalogSelector</a>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -3148,7 +3101,7 @@
 </dd>
 <dt>discriminator</dt>
 <dd>
-<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleAdmissionSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedAdmissionSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleDepartureSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedCatalogSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
@@ -3164,12 +3117,12 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">#/$defs/AllVisibleAdmissionSelector</a></td>
+<a href="e-77627199af34832183c008ea.html#v-08da61a327f0b6bcc1791744">#/$defs/AllVisibleDepartureSelector</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
-<a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">#/$defs/TaggedAdmissionSelector</a></td>
+<a href="e-77627199af34832183c008ea.html#v-30f93cf35cc107df29183f53">#/$defs/TaggedCatalogSelector</a></td>
 </tr>
 </tbody>
 </table>
@@ -4195,7 +4148,7 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-63f8d2952ca31b4b874f318d">
+<section class="schema-section" id="s-7e9a430f57c941e9a3cf3f1f">
 <h3>Field: required</h3>
 <p class="shape">
 <code>array</code>; items: <a href="e-77627199af34832183c008ea.html#v-cc96da46535e3ea19e6d678d">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</p>
@@ -4877,112 +4830,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>discriminator</code>
-</th>
-<td>
-<table id="v-86f30f53c2b14fc98563b185">
-<tbody>
-<tr>
-<th scope="row">
-<code>mapping</code>
-</th>
-<td>
-<table id="v-6bf5e71b6ecaf833024db164">
-<tbody>
-<tr>
-<th scope="row">
-<code>all</code>
-</th>
-<td>
-<span id="v-17045660ba50712cf92d1878">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>tags</code>
-</th>
-<td>
-<span id="v-76108084773b1237c6c5c5cb">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>propertyName</code>
-</th>
-<td>
-<span id="v-1404cfde39b0cb97fb6ec881">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/discriminator/propertyName">kind</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>oneOf</code>
-</th>
-<td>
-<table id="v-66207ac3551ae5314f15e711">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-ed05fc44cdab9d034f50b66b">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-9e73b5b65a60478e9bb61abd">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-b75904fbc25e9b32661bd291">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-49eb281ea9589bf75c940b55">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-32085d6cb8ec613acc65b3c9">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/title">Selector</code>
-<span class="kind">string</span>
+<span id="v-88cfef5e585682db462378c6">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AdmissionPolicy/properties/selector/$ref">#/$defs/TaggedCatalogSelector</code>
+<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-30f93cf35cc107df29183f53">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -5086,18 +4939,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>AllVisibleAdmissionSelector</code>
+<code>AllVisibleDepartureSelector</code>
 </th>
 <td>
-<table id="v-1e54b4db1c7a22c19c37af84">
+<table id="v-08da61a327f0b6bcc1791744">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-73206d32ff925e7960665990">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/additionalProperties">false</code>
+<span id="v-b18b763615213d48a1c1de0c">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -5106,22 +4959,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-3f67fc88b7b0d9b43daebef8">
+<table id="v-757228f455d20e4359a11b09">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<table id="v-78f3a37f4ec3534fbd74dfae">
+<table id="v-5000bc1b9466dd90f07f555c">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-5588959513212b31b7cb25e8">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/properties/kind/const">all</code>
+<span id="v-91b0fd563fe8157728fd2073">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/properties/kind/const">all</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5130,8 +4983,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-afc55a44364b4fdf2dae78cb">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/properties/kind/default">all</code>
+<span id="v-ce64b0669df01232d9214296">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/properties/kind/default">all</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5140,8 +4993,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-a32f54757104bae34a23e644">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/properties/kind/title">Kind</code>
+<span id="v-518e693385e3d18e17994089">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/properties/kind/title">Kind</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5150,8 +5003,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-4de5daf8316d98f4656f9c08">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/properties/kind/type">string</code>
+<span id="v-5a3222e09f8f65a5c7ab71c2">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5166,8 +5019,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-5b6d65d258b8ccfe8806c767">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/title">AllVisibleAdmissionSelector</code>
+<span id="v-d70274ac1bae9bb29ac990e7">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/title">AllVisibleDepartureSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5176,8 +5029,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-14d81703fc4dd2e8a37e59be">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleAdmissionSelector/type">object</code>
+<span id="v-053a3ca38d64a5ca0bef9acf">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/AllVisibleDepartureSelector/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6345,7 +6198,7 @@
 </th>
 <td>
 <span id="v-897ca283b6b1ec3f630f9a73">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleDepartureSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6355,7 +6208,7 @@
 </th>
 <td>
 <span id="v-05f09dab04691a3135480969">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedCatalogSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6395,8 +6248,8 @@
 </th>
 <td>
 <span id="v-69bd6319a936aab7c299821b">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-1e54b4db1c7a22c19c37af84">Definition</a>
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleDepartureSelector</code>
+<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-08da61a327f0b6bcc1791744">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -6415,8 +6268,8 @@
 </th>
 <td>
 <span id="v-2423bc361f8df78445dfa48c">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-957d73dee34f51300dba69fd">Definition</a>
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/DeparturePolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedCatalogSelector</code>
+<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-30f93cf35cc107df29183f53">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -11360,46 +11213,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>allow_derived_inputs</code>
-</th>
-<td>
-<table id="v-d0f10b3432c6ba4ce687ce3f">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-70c8b748584ebf4334799ba5">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeDefinition/properties/allow_derived_inputs/default">false</code>
-<span class="kind">boolean</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-799266ba79913a3a90cd8f32">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeDefinition/properties/allow_derived_inputs/title">Allow Derived Inputs</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-a762ffa6054335b1d74306f5">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeDefinition/properties/allow_derived_inputs/type">boolean</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>artifact_associations</code>
 </th>
 <td>
@@ -14206,18 +14019,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>TaggedAdmissionSelector</code>
+<code>TaggedCatalogSelector</code>
 </th>
 <td>
-<table id="v-957d73dee34f51300dba69fd">
+<table id="v-30f93cf35cc107df29183f53">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-a7866b8711db54119508d610">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/additionalProperties">false</code>
+<span id="v-9d490ba430836aca1c105c56">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -14226,22 +14039,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-f5e5d0a1fbd426a2c77c446c">
+<table id="v-9e6def9e28e5a650a226c75e">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<table id="v-7fa970a90deb69bad438be5f">
+<table id="v-8a23ef6c9a3f70fb75560cd7">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-1dc346c35706da1fa7946628">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/kind/const">tags</code>
+<span id="v-bb9ea830d360058738fab1ce">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/kind/const">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14250,8 +14063,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-c1c1ea7321c8095a4c11da88">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/kind/default">tags</code>
+<span id="v-b118606f985476599aa0a979">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/kind/default">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14260,8 +14073,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-eb02502f81d76be42abe78a7">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/kind/title">Kind</code>
+<span id="v-0a0ce7ffceab427b8106014b">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/kind/title">Kind</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14270,8 +14083,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-d544c2fed1cee5666f8e864e">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/kind/type">string</code>
+<span id="v-e8de4d34fa8dc22896ae2996">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14283,22 +14096,22 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-63f8d2952ca31b4b874f318d">
+<table id="v-7e9a430f57c941e9a3cf3f1f">
 <tbody>
 <tr>
 <th scope="row">
 <code>items</code>
 </th>
 <td>
-<table id="v-c2e132ff9a3bfe101698360f">
+<table id="v-a620ebf4e62c7ee6c8f76c90">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-8a3fa8fe5ebd1d7695ba1c31">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
+<span id="v-8310f0bd67204b32f6599f0b">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
 <span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-cc96da46535e3ea19e6d678d">Definition</a>
 </span></td>
 </tr>
@@ -14310,8 +14123,8 @@
 <code>maxItems</code>
 </th>
 <td>
-<span id="v-1889759d282ac90cbab839d6">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/maxItems">100</code>
+<span id="v-2d9dd289205b3787ca75f99c">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/maxItems">100</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -14320,8 +14133,8 @@
 <code>minItems</code>
 </th>
 <td>
-<span id="v-611ac69049ab8d68f1ed1dad">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/minItems">1</code>
+<span id="v-e65d5850533307700442074c">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/minItems">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -14330,8 +14143,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-b7113b08c846056278f469c8">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/title">Required</code>
+<span id="v-50bdec5ee01cc2dd4b46f50f">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/title">Required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14340,8 +14153,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-43f778a74fa3a41e030611ec">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/type">array</code>
+<span id="v-b2e1f826f46ba7f7fae670f8">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14350,15 +14163,15 @@
 <code>x-riverhog-extent</code>
 </th>
 <td>
-<table id="v-36f848d85c16fd77ae594013">
+<table id="v-72a35872c48619ebdc5c516c">
 <tbody>
 <tr>
 <th scope="row">
 <code>policy</code>
 </th>
 <td>
-<span id="v-442de0a2aefbcc86b1c1b9be">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
+<span id="v-281b6028f78794d52f7fba5f">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14367,8 +14180,8 @@
 <code>reason</code>
 </th>
 <td>
-<span id="v-cd60625eb2427570cd404eb9">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
+<span id="v-34e28832db24985d11627eac">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14386,15 +14199,15 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-63d469dfdeb68b65f3e66042">
+<table id="v-93530d4eb96e360a24bd001a">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-e6a8a7f8cd24cb4230cca360">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/required/0">required</code>
+<span id="v-5be48618db5f79cdc0b409d3">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/required/0">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14406,8 +14219,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-b109d3cc4a259cdd75eee946">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/title">TaggedAdmissionSelector</code>
+<span id="v-1e1ffb20be5a5933fe62172d">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/title">TaggedCatalogSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14416,8 +14229,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-06c37c232306029d8ea9c1f2">
-<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/type">object</code>
+<span id="v-c8d7983ebc75559d12956ec2">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -16141,7 +15954,7 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedAdmissionSelector/properties/required</code></td>
+<code>/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/TaggedCatalogSelector/properties/required</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
 <td data-label="Decision">cardinality · items · contract_max</td>
@@ -16192,7 +16005,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
 </p>
 </details>
 </footer>

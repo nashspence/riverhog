@@ -36,6 +36,12 @@ class Progress:
     position: CatalogFollowPosition
 
 
+@dataclass(frozen=True)
+class MatureAttempt:
+    digest: str
+    proof_revision_retained: bool
+
+
 def _connection(path: Path) -> sqlite3.Connection:
     db = sqlite3.connect(path, timeout=30, isolation_level=None)
     db.row_factory = sqlite3.Row
@@ -239,7 +245,9 @@ class WitnessStore:
                 db.rollback()
                 raise
 
-    def mature_once(self, calendar: proof.Calendar, *, now: int | None = None) -> str | None:
+    def mature_once(
+        self, calendar: proof.Calendar, *, now: int | None = None
+    ) -> MatureAttempt | None:
         """Bound one calendar exchange; persist a new proof revision before advancing."""
         if not self.calendars:
             raise ValueError("proof maturation requires at least one calendar")
@@ -290,7 +298,7 @@ class WitnessStore:
             except BaseException:
                 db.rollback()
                 raise
-        return digest
+        return MatureAttempt(digest, new.proof is not None and new.proof != old.proof)
 
     def reschedule(self, digest: str) -> bool:
         """Re-evaluate a named paused job after an explicit calendar allowlist change."""

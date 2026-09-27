@@ -554,6 +554,7 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
         extra_env={
             "FAKE_DOCKER_HAVE_IMAGES": "1",
             "STOVE0_SMOKE_TRANSFER_METRICS": "0",
+            "STOVE0_SMOKE_WITNESS_PROBE": "0",
         },
     )
 
@@ -589,6 +590,10 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
     smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
     assert "review-input.wav" in smoke
     assert "FTP listener did not retain the exact interrupted prefix" in smoke
+    assert "/qualification.py minisign prepare" in smoke
+    assert "/qualification.py opentimestamps prepare" in smoke
+    assert "/qualification.py minisign verify" in smoke
+    assert "/qualification.py opentimestamps verify" in smoke
 
 
 def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
@@ -602,6 +607,7 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
         extra_env={
             "FAKE_DOCKER_HAVE_IMAGES": "1",
             "STOVE0_SMOKE_TRANSFER_METRICS": "0",
+            "STOVE0_SMOKE_WITNESS_PROBE": "0",
         },
     )
 

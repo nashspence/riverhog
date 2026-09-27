@@ -43,7 +43,12 @@ _CLI_RESULT_CONTRACT = result_contract(
                 "progress": PROGRESS,
             }
         ),
-        "sign": object_schema({"signed_statement": OPTIONAL_TEXT}),
+        "sign": object_schema(
+            {
+                "attempted_statement": OPTIONAL_TEXT,
+                "outcome": {"enum": ["idle", "signed", "retry_scheduled", "blocked"]},
+            }
+        ),
         "rebaseline": object_schema({"progress": PROGRESS}),
         "evidence": object_schema(
             {
@@ -102,6 +107,16 @@ def _progress(store: WitnessStore) -> dict[str, object]:
     }
 
 
+def _sign_result(
+    store: WitnessStore, signer: Signer, *, now: int | None = None
+) -> dict[str, object]:
+    attempt = store.sign_once(signer, now=now)
+    return {
+        "attempted_statement": attempt.digest if attempt is not None else None,
+        "outcome": attempt.outcome if attempt is not None else "idle",
+    }
+
+
 def _api_client() -> ApiClient:
     token_file = os.environ.get("RIVERHOG_TOKEN_FILE")
     if token_file is None:
@@ -132,7 +147,8 @@ def _run_once(
             print(f"witness run ingestion failed: {type(exc).__name__}", file=sys.stderr)
     digest: str | None = None
     try:
-        digest = store.sign_once(signer)
+        attempt = store.sign_once(signer)
+        digest = attempt.digest if attempt is not None else None
         if digest is not None:
             evidence = store.evidence(digest)
             assert evidence is not None
@@ -169,7 +185,7 @@ def main(argv: list[str] | None = None) -> int:
                 result = {"catalog_batch": batch.kind, "progress": _progress(store)}
             elif args.command == "sign":
                 signer = MinisignSigner(args.secret_key, args.public_key)
-                result = {"signed_statement": store.sign_once(signer)}
+                result = _sign_result(store, signer)
             elif args.command == "run":
                 if not 1 <= args.poll_seconds <= 3600:
                     raise ValueError("poll interval must be between 1 and 3600 seconds")

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>stove0_operator_contracts.AdmissionSelector · Riverhog Contract Render</title>
+<title>stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags · Riverhog Contract Render</title>
 <link rel="stylesheet" href="style.css">
 <script src="modes.js" defer>
 </script>
@@ -19,9 +19,9 @@
 <label class="mode">
 <input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
-<h1>stove0_operator_contracts.AdmissionSelector</h1>
+<h1>stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
-<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-admissionselector:a9d004403c">
+<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-taggedcatalogse-3ed2051642:4e1a02c55b">
 <h2>Contract</h2>
 <div class="human-contract">
 <h3>Python declaration</h3>
@@ -36,21 +36,25 @@
 </dd>
 <dt>name</dt>
 <dd>
-<code>AdmissionSelector</code>
+<code>canonical_required_tags</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>stove0_operator_contracts.TaggedCatalogSelector</code>
 </dd>
 <dt>unit</dt>
 <dd>
-<code>export</code>
+<code>member</code>
 </dd>
 </dl>
 <dl class="facts">
 <dt>kind</dt>
 <dd>
-<code>object</code>
+<code>classmethod</code>
 </dd>
-<dt>type</dt>
+<dt>signature</dt>
 <dd>
-<code>typing._AnnotatedAlias</code>
+<code>&quot;(cls, value: &#x27;tuple[CollectionTag, ...]&#x27;) -&gt; &#x27;tuple[CollectionTag, ...]&#x27;&quot;</code>
 </dd>
 </dl>
 </div>
@@ -58,34 +62,34 @@
 <summary>Exact machine fields and pointers</summary>
 <section>
 <h4>
-<code>/external_contract/python/stove0_operator_contracts.AdmissionSelector</code>
+<code>/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags</code>
 </h4>
-<table id="v-8e2b9137deab6f0172e0ad3d">
+<table id="v-978cc97033069dbc310fe66d">
 <tbody>
 <tr>
 <th scope="row">
 <code>contract</code>
 </th>
 <td>
-<table id="v-a19c6c3b75a1e2c2151ab665">
+<table id="v-8a4a4458aba470aab0ca620c">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<span id="v-d3d97a5f29fb3dc76fbc392a">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionSelector/contract/kind">object</code>
+<span id="v-86baab30a22b9c7fd5fe681c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/contract/kind">classmethod</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
 <tr>
 <th scope="row">
-<code>type</code>
+<code>signature</code>
 </th>
 <td>
-<span id="v-7180add05b441a1ab1601dfa">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionSelector/contract/type">typing._AnnotatedAlias</code>
+<span id="v-f9b3a91dff25801a166454cb">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/contract/signature">&quot;(cls, value: &#x27;tuple[CollectionTag, ...]&#x27;) -&gt; &#x27;tuple[CollectionTag, ...]&#x27;&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -97,8 +101,8 @@
 <code>distribution</code>
 </th>
 <td>
-<span id="v-2b548e3aba0ebe94165230d5">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionSelector/distribution">stove0-operator-contracts</code>
+<span id="v-6381283f30f2eaabd5f2603b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -107,8 +111,8 @@
 <code>module</code>
 </th>
 <td>
-<span id="v-5c6f43d26c6a7b3884143206">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionSelector/module">stove0_operator_contracts</code>
+<span id="v-415f1c164c237570e0f6324c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -117,8 +121,18 @@
 <code>name</code>
 </th>
 <td>
-<span id="v-377c92e31c8a854a2c3bf5b0">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionSelector/name">AdmissionSelector</code>
+<span id="v-b514b08a5c669c7706f30821">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/name">canonical_required_tags</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-17cdd4c59fc323479d1d9bd0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/owner">stove0_operator_contracts.TaggedCatalogSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -127,8 +141,8 @@
 <code>unit</code>
 </th>
 <td>
-<span id="v-1ad01a3d02c325047aa19efb">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionSelector/unit">export</code>
+<span id="v-8f71257a0ae704b77117a54c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags/unit">member</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -136,6 +150,14 @@
 </table>
 </section>
 </details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-cd6b2ae234b372f01f60d4ab.html">stove0_operator_contracts.TaggedCatalogSelector</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
@@ -168,7 +190,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
 </p>
 </details>
 </footer>

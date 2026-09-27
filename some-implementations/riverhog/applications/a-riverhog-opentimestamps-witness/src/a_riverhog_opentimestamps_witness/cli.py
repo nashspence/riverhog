@@ -65,7 +65,12 @@ _CLI_RESULT_CONTRACT = result_contract(
                 "progress": PROGRESS,
             }
         ),
-        "mature": object_schema({"matured_statement": OPTIONAL_TEXT}),
+        "mature": object_schema(
+            {
+                "attempted_statement": OPTIONAL_TEXT,
+                "outcome": {"enum": ["idle", "proof_retained", "no_new_proof"]},
+            }
+        ),
         "rebaseline": object_schema({"progress": PROGRESS}),
         "reschedule": object_schema({"rescheduled": BOOLEAN}),
         "evidence": object_schema(
@@ -158,6 +163,22 @@ def _progress(store: WitnessStore) -> dict[str, object]:
     }
 
 
+def _mature_result(
+    store: WitnessStore, calendar: proof.Calendar, *, now: int | None = None
+) -> dict[str, object]:
+    attempt = store.mature_once(calendar, now=now)
+    return {
+        "attempted_statement": attempt.digest if attempt is not None else None,
+        "outcome": (
+            "idle"
+            if attempt is None
+            else "proof_retained"
+            if attempt.proof_revision_retained
+            else "no_new_proof"
+        ),
+    }
+
+
 def _api_client() -> ApiClient:
     token_file = os.environ.get("RIVERHOG_TOKEN_FILE")
     if token_file is None:
@@ -188,7 +209,8 @@ def _run_once(
             print(f"witness run ingestion failed: {type(exc).__name__}", file=sys.stderr)
     digest: str | None = None
     try:
-        digest = store.mature_once(calendar)
+        attempt = store.mature_once(calendar)
+        digest = attempt.digest if attempt is not None else None
         if digest is not None:
             evidence = store.evidence(digest)
             assert evidence is not None
@@ -231,7 +253,7 @@ def main(argv: list[str] | None = None) -> int:
                 batch = store.ingest_once(_api_client(), limit=args.limit)
                 result = {"catalog_batch": batch.kind, "progress": _progress(store)}
             elif args.command == "mature":
-                result = {"matured_statement": store.mature_once(HttpCalendar())}
+                result = _mature_result(store, HttpCalendar())
             elif args.command == "run":
                 if not 1 <= args.poll_seconds <= 3600:
                     raise ValueError("poll interval must be between 1 and 3600 seconds")

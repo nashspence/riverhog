@@ -109,7 +109,7 @@
 <td data-label="Exit">
 <code>0</code></td>
 <td data-label="Selection">kind: <code>command-completed</code></td>
-<td data-label="stdout">json: identity: <code>a-riverhog-minisign-witness-cli-sign/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;signed_statement&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]}},&quot;required&quot;:[&quot;signed_statement&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stdout">json: identity: <code>a-riverhog-minisign-witness-cli-sign/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;attempted_statement&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;outcome&quot;:{&quot;enum&quot;:[&quot;idle&quot;,&quot;signed&quot;,&quot;retry_scheduled&quot;,&quot;blocked&quot;]}},&quot;required&quot;:[&quot;attempted_statement&quot;,&quot;outcome&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
 <td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
@@ -737,25 +737,25 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>signed_statement</code>
+<code>attempted_statement</code>
 </th>
 <td>
-<table id="v-9bf6b5ff49286618557c3f33">
+<table id="v-1d2e83a0c2c2fe08310b47fb">
 <tbody>
 <tr>
 <th scope="row">
 <code>type</code>
 </th>
 <td>
-<table id="v-e740b638f2c4069e303344b3">
+<table id="v-ffafef0fd0c58713b42be3c3">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-ee87194c29192a5a8981b3c6">
-<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/signed_statement/type/0">string</code>
+<span id="v-90c87438d49f963a9573cc2c">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/attempted_statement/type/0">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -764,8 +764,68 @@
 <code>1</code>
 </th>
 <td>
-<span id="v-b96e9cf7dd316d1fac6ac857">
-<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/signed_statement/type/1">null</code>
+<span id="v-4bc38c1f78f4a87feba342a1">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/attempted_statement/type/1">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-04a3bcd478469a2942863500">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-49b1597acb6c3e748627bb41">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-430ac9825d5750c805bc7d7a">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/outcome/enum/0">idle</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-b97bf72fe40b84da1f063cda">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/outcome/enum/1">signed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-0b27971ec0b3dac3de5a74d4">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/outcome/enum/2">retry_scheduled</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-9e746eef8edb19707ebb0d00">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/properties/outcome/enum/3">blocked</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -791,7 +851,17 @@
 </th>
 <td>
 <span id="v-88fa21b10024b5f52cb6da5c">
-<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/required/0">signed_statement</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/required/0">attempted_statement</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-3f830c974e863855fe665969">
+<code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/sign/result_contract/success/0/stdout/json/schema/required/1">outcome</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1025,7 +1095,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
 </p>
 </details>
 </footer>

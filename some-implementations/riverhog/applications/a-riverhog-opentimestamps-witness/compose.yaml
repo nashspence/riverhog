@@ -10,6 +10,7 @@ x-runtime: &runtime
   <<: *image
   read_only: true
   user: "65532:65532"
+  group_add: ["${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_SECRET_FILE_GID:-65532}"]
   cap_drop: ["ALL"]
   security_opt: ["no-new-privileges:true"]
   environment:
@@ -51,18 +52,20 @@ services:
       RIVERHOG_BASE_URL: ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_RIVERHOG_BASE_URL:?Riverhog base URL is required}
       RIVERHOG_TOKEN_FILE: /run/secrets/riverhog_token
       RIVERHOG_ALLOW_INSECURE_HTTP: ${RIVERHOG_ALLOW_INSECURE_HTTP:-false}
+      # Exact HTTPS base URLs separated by whitespace; the CLI accepts one or more.
+      A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URLS: ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URLS:?At least one HTTPS calendar is required}
+      A_RIVERHOG_OPENTIMESTAMPS_WITNESS_POLL_SECONDS: ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_POLL_SECONDS:-60}
     secrets: ["riverhog_token"]
     networks: ["riverhog-control"]
+    entrypoint: ["/bin/sh", "-ec"]
     command:
-      - --state
-      - /state/witness.sqlite3
-      - run
-      - --calendar
-      - ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URL_1:?First HTTPS calendar is required}
-      - --calendar
-      - ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URL_2:?Second HTTPS calendar is required}
-      - --poll-seconds
-      - ${A_RIVERHOG_OPENTIMESTAMPS_WITNESS_POLL_SECONDS:-60}
+      - |
+        set -- --state /state/witness.sqlite3 run
+        for calendar in $$A_RIVERHOG_OPENTIMESTAMPS_WITNESS_CALENDAR_URLS; do
+          set -- "$$@" --calendar "$$calendar"
+        done
+        set -- "$$@" --poll-seconds "$$A_RIVERHOG_OPENTIMESTAMPS_WITNESS_POLL_SECONDS"
+        exec a-riverhog-opentimestamps-witness "$$@"
 
 secrets:
   riverhog_token:

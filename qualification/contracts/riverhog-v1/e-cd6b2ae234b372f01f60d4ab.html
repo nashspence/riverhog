@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>stove0_operator_contracts.TaggedAdmissionSelector · Riverhog Contract Render</title>
+<title>stove0_operator_contracts.TaggedCatalogSelector · Riverhog Contract Render</title>
 <link rel="stylesheet" href="style.css">
 <script src="modes.js" defer>
 </script>
@@ -19,9 +19,9 @@
 <label class="mode">
 <input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
-<h1>stove0_operator_contracts.TaggedAdmissionSelector</h1>
+<h1>stove0_operator_contracts.TaggedCatalogSelector</h1>
 <p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
-<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-taggedadmissionselector:9bccec08cb">
+<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-taggedcatalogselector:a4ad5f62b8">
 <h2>Contract</h2>
 <div class="human-contract">
 <h3>Python declaration</h3>
@@ -36,7 +36,7 @@
 </dd>
 <dt>name</dt>
 <dd>
-<code>TaggedAdmissionSelector</code>
+<code>TaggedCatalogSelector</code>
 </dd>
 <dt>unit</dt>
 <dd>
@@ -53,7 +53,7 @@
 <code>&quot;(*, kind: Literal[&#x27;tags&#x27;] = &#x27;tags&#x27;, required: Annotated[tuple[CollectionTag, ...], MinLen(min_length=1), MaxLen(max_length=100)]) -&gt; None&quot;</code>
 </dd>
 </dl>
-<section class="schema-section" id="s-5f9aec055a8b44faf871dd55">
+<section class="schema-section" id="s-743da8c0320ca38d251816b2">
 <h3>Validated model schema</h3>
 <p class="shape">
 <code>object</code>; 2 fields; additionalProperties: <code>false</code>
@@ -97,10 +97,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-7cb7fde989d7b74a3d2c60cb">required</a></td>
+<a href="#s-7e5150ba3c87c8fb33ce07ed">required</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <a href="e-7fd3499468e305c222c81359.html#v-a4f2037d5b741a7ae31f9f8b">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
+<code>array</code>; items: <a href="e-cd6b2ae234b372f01f60d4ab.html#v-3e1aa78e2bb4f817da865e48">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -110,14 +110,14 @@
 <h4>Definitions</h4>
 <ul>
 <li>
-<a href="#s-a4f2037d5b741a7ae31f9f8b">CollectionTag</a>
+<a href="#s-3e1aa78e2bb4f817da865e48">CollectionTag</a>
 </li>
 </ul>
 </section>
-<section class="schema-section" id="s-7cb7fde989d7b74a3d2c60cb">
+<section class="schema-section" id="s-7e5150ba3c87c8fb33ce07ed">
 <h3>Field: required</h3>
 <p class="shape">
-<code>array</code>; items: <a href="e-7fd3499468e305c222c81359.html#v-a4f2037d5b741a7ae31f9f8b">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</p>
+<code>array</code>; items: <a href="e-cd6b2ae234b372f01f60d4ab.html#v-3e1aa78e2bb4f817da865e48">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</p>
 <dl class="facts">
 <dt>type</dt>
 <dd>
@@ -137,7 +137,7 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-a4f2037d5b741a7ae31f9f8b">
+<section class="schema-section" id="s-3e1aa78e2bb4f817da865e48">
 <h3>Definition: CollectionTag</h3>
 <p class="shape">
 <code>string</code>; minLength: <code>1</code>; maxLength: <code>65536</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
@@ -173,24 +173,24 @@
 <summary>Exact machine fields and pointers</summary>
 <section>
 <h4>
-<code>/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector</code>
+<code>/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector</code>
 </h4>
-<table id="v-3ddad52ef22d55adb1a2540d">
+<table id="v-716dc20dd0c5d077f2552ac2">
 <tbody>
 <tr>
 <th scope="row">
 <code>contract</code>
 </th>
 <td>
-<table id="v-380cff159180fa307975d7f9">
+<table id="v-8c282821f551feeefef21593">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<span id="v-6132e0baa4e1f83376111c7f">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/kind">class</code>
+<span id="v-a11e138e039a99b48f3f414f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/kind">class</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -199,29 +199,29 @@
 <code>schema</code>
 </th>
 <td>
-<table id="v-5f9aec055a8b44faf871dd55">
+<table id="v-743da8c0320ca38d251816b2">
 <tbody>
 <tr>
 <th scope="row">
 <code>$defs</code>
 </th>
 <td>
-<table id="v-78473ea85bcec23bd433baed">
+<table id="v-8c35be557761f5e1b0220f89">
 <tbody>
 <tr>
 <th scope="row">
 <code>CollectionTag</code>
 </th>
 <td>
-<table id="v-a4f2037d5b741a7ae31f9f8b">
+<table id="v-3e1aa78e2bb4f817da865e48">
 <tbody>
 <tr>
 <th scope="row">
 <code>maxLength</code>
 </th>
 <td>
-<span id="v-37e19f49824b0580d0b54993">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/maxLength">65536</code>
+<span id="v-119c6f99502e4d6471476149">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/maxLength">65536</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -230,8 +230,8 @@
 <code>minLength</code>
 </th>
 <td>
-<span id="v-6f4ee535ce8014417a2de709">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/minLength">1</code>
+<span id="v-915263990739281fc95e7cf9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/minLength">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -240,8 +240,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-7342f228424190213266f57d">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/type">string</code>
+<span id="v-d7f0227254d13dcddaeff8a5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -250,8 +250,8 @@
 <code>x-riverhog-encoded-bytes-max</code>
 </th>
 <td>
-<span id="v-96220181b86b87f2bf82ed3b">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
+<span id="v-108253099e0a72b86f2d4f7f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -260,15 +260,15 @@
 <code>x-riverhog-extent</code>
 </th>
 <td>
-<table id="v-0a1c55a8fc1f684257c1106d">
+<table id="v-add0b8e0dfca024de58cb148">
 <tbody>
 <tr>
 <th scope="row">
 <code>policy</code>
 </th>
 <td>
-<span id="v-36c5ce665b9aa3f7693043bd">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
+<span id="v-51e39c5befde621b9ac26ba0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -277,8 +277,8 @@
 <code>reason</code>
 </th>
 <td>
-<span id="v-20c5d4c1ce5ba30a217a7d18">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
+<span id="v-69f0b2c87b0752010f3a6882">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -290,8 +290,8 @@
 <code>x-unicode-normalization</code>
 </th>
 <td>
-<span id="v-36c5132e3677d21d82b9eaf0">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
+<span id="v-0875099e0cda865ad0ae9e18">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -306,8 +306,8 @@
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-53c7dab373636fc4b69b8ba4">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/additionalProperties">false</code>
+<span id="v-575beea67bdeddd0eaec109d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -316,22 +316,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-3371c30acddd79f8c9a15a28">
+<table id="v-85985d8e59d8b36b9d2bc735">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<table id="v-c9bb3e77327704634577c22e">
+<table id="v-3ae5f10adbc6ff0db72df6a0">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-4f49993897f533815c47ce14">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/kind/const">tags</code>
+<span id="v-91b3d466dbb6d55d054999cc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/kind/const">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -340,8 +340,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-535c9da3f25088f8417b3b91">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/kind/default">tags</code>
+<span id="v-a384759ad49c9b6a5d2c37fd">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/kind/default">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -350,8 +350,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-2b0fede65fdc58676e964331">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/kind/type">string</code>
+<span id="v-76f5c47eea63a3aeed64fa9c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/kind/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -363,23 +363,23 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-7cb7fde989d7b74a3d2c60cb">
+<table id="v-7e5150ba3c87c8fb33ce07ed">
 <tbody>
 <tr>
 <th scope="row">
 <code>items</code>
 </th>
 <td>
-<table id="v-ab0b063a7767d9496dc462cf">
+<table id="v-32321e35fa2b22ee58980f31">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-41467f935c88d0867825da98">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/required/items/$ref">#/$defs/CollectionTag</code>
-<span class="kind">string</span> <a href="e-7fd3499468e305c222c81359.html#v-a4f2037d5b741a7ae31f9f8b">Definition</a>
+<span id="v-dec28e150f7f7d5f4ac85ea9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/required/items/$ref">#/$defs/CollectionTag</code>
+<span class="kind">string</span> <a href="e-cd6b2ae234b372f01f60d4ab.html#v-3e1aa78e2bb4f817da865e48">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -390,8 +390,8 @@
 <code>maxItems</code>
 </th>
 <td>
-<span id="v-35d17c24701338d8e82d5ddb">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/required/maxItems">100</code>
+<span id="v-4df12493a5f54a14c5065c0b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/required/maxItems">100</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -400,8 +400,8 @@
 <code>minItems</code>
 </th>
 <td>
-<span id="v-24f70f0e669cc75f485f58e3">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/required/minItems">1</code>
+<span id="v-54f466aafd1658a65d8166ef">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/required/minItems">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -410,8 +410,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-29b53b000fd579789c220baf">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/required/type">array</code>
+<span id="v-01db6e0f5dbd751b367c930e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/required/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -420,15 +420,15 @@
 <code>x-riverhog-extent</code>
 </th>
 <td>
-<table id="v-fff9911833eb72703fc7e7e5">
+<table id="v-c387d0d31cd15735c78f7dce">
 <tbody>
 <tr>
 <th scope="row">
 <code>policy</code>
 </th>
 <td>
-<span id="v-4f7d0c3d464bfdc18b020042">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/required/x-riverhog-extent/policy">contract_max</code>
+<span id="v-7a63dd3ba56e9622827fd682">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/required/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -437,8 +437,8 @@
 <code>reason</code>
 </th>
 <td>
-<span id="v-fb65e1d9e3f4fab8c36eefe7">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
+<span id="v-6fc30f238e3e31d8fafc7f64">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -456,15 +456,15 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-42a4a4a5978d2566b4423617">
+<table id="v-80a8a56441bca2b4eac18e8c">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-235b26639dd10b362bbb63c6">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/required/0">required</code>
+<span id="v-4bc7ad8862123298163d2613">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/required/0">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -476,8 +476,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-8664a819171ea11cc3b0e6ae">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/schema/type">object</code>
+<span id="v-7271bac1ea80877a86094e1c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/schema/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -489,8 +489,8 @@
 <code>signature</code>
 </th>
 <td>
-<span id="v-24beca60fc22b8324f116e6c">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/contract/signature">&quot;(*, kind: Literal[&#x27;tags&#x27;] = &#x27;tags&#x27;, required: Annotated[tuple[CollectionTag, ...], MinLen(min_length=1), MaxLen(max_length=100)]) -&gt; None&quot;</code>
+<span id="v-5c56c62085429d545cff4978">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/contract/signature">&quot;(*, kind: Literal[&#x27;tags&#x27;] = &#x27;tags&#x27;, required: Annotated[tuple[CollectionTag, ...], MinLen(min_length=1), MaxLen(max_length=100)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -502,8 +502,8 @@
 <code>distribution</code>
 </th>
 <td>
-<span id="v-1d5cd85895011de01d446b3a">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/distribution">stove0-operator-contracts</code>
+<span id="v-5981dbfbd6467ffd73ac9427">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/distribution">stove0-operator-contracts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -512,8 +512,8 @@
 <code>module</code>
 </th>
 <td>
-<span id="v-e926c0cab3cebe572bba0599">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/module">stove0_operator_contracts</code>
+<span id="v-f4ce04003a86dbe1a7df0649">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/module">stove0_operator_contracts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -522,8 +522,8 @@
 <code>name</code>
 </th>
 <td>
-<span id="v-5a7ecc67e1e718282853881b">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/name">TaggedAdmissionSelector</code>
+<span id="v-92cea21ac71e8169b17ab9ab">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/name">TaggedCatalogSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -532,8 +532,8 @@
 <code>unit</code>
 </th>
 <td>
-<span id="v-3d12f23e600a5bef3a8d4e60">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedAdmissionSelector/unit">export</code>
+<span id="v-bc832d16f5babb3f236ee455">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.TaggedCatalogSelector/unit">export</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -546,7 +546,7 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
-<a href="e-58c40822132d63f039398086.html">stove0_operator_contracts.TaggedAdmissionSelector.canonical_required_tags</a>
+<a href="e-fa38f13715e579d4aaf1001b.html">stove0_operator_contracts.TaggedCatalogSelector.canonical_required_tags</a>
 </li>
 </ul>
 </section>
@@ -581,7 +581,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
 </p>
 </details>
 </footer>

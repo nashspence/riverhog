@@ -286,7 +286,7 @@
 <a href="#s-3c0a20ec2a1fcbfa49adc014">AdmissionPolicy</a>
 </li>
 <li>
-<a href="#s-4f8e6a0ae160d3ad411061e3">AllVisibleAdmissionSelector</a>
+<a href="#s-a978d142ded570b343d0d2e8">AllVisibleDepartureSelector</a>
 </li>
 <li>
 <a href="#s-a1cb03c0786b3b43c9fa7723">ArchiveStoreName</a>
@@ -370,7 +370,7 @@
 <a href="#s-90f15dbfc029eb8e13b72d74">SemanticValidationProfile</a>
 </li>
 <li>
-<a href="#s-72c6e8176d28333647318ce5">TaggedAdmissionSelector</a>
+<a href="#s-e957adc1c4b94c47d444601a">TaggedCatalogSelector</a>
 </li>
 </ul>
 </section>
@@ -708,9 +708,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-8b57c13234b7a35dee4df20d">selector</a></td>
+<code>selector</code></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">exactly one of: <a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">#/$defs/TaggedAdmissionSelector</a></td>
+<td data-label="Shape and bounds">
+<a href="e-f295f1a471545ca1498cc934.html#v-e957adc1c4b94c47d444601a">#/$defs/TaggedCatalogSelector</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -718,15 +719,15 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-4f8e6a0ae160d3ad411061e3">
-<h3>Definition: AllVisibleAdmissionSelector</h3>
+<section class="schema-section" id="s-a978d142ded570b343d0d2e8">
+<h3>Definition: AllVisibleDepartureSelector</h3>
 <p class="shape">
 <code>object</code>; 1 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
-<code>AllVisibleAdmissionSelector</code>
+<code>AllVisibleDepartureSelector</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -1143,7 +1144,7 @@
 <td data-label="Field">
 <a href="#s-64282ec006c22cee785163d1">selector</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">exactly one of: <a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">#/$defs/TaggedAdmissionSelector</a></td>
+<td data-label="Shape and bounds">exactly one of: <a href="e-f295f1a471545ca1498cc934.html#v-a978d142ded570b343d0d2e8">#/$defs/AllVisibleDepartureSelector</a>; <a href="e-f295f1a471545ca1498cc934.html#v-e957adc1c4b94c47d444601a">#/$defs/TaggedCatalogSelector</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2281,7 +2282,7 @@
 <section class="schema-section" id="s-2713b9211b4f110fdf7f4a66">
 <h3>Definition: RecipeDefinition</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -2314,16 +2315,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td data-label="Field">
-<code>allow_derived_inputs</code></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>boolean</code>; default: <code>false</code></td>
-<td data-label="Default">
-<code>false</code></td>
-<td data-label="Description"></td>
-</tr>
 <tr>
 <td data-label="Field">
 <a href="#s-315815ce4cd983ca97a1270f">artifact_associations</a></td>
@@ -2918,15 +2909,15 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-72c6e8176d28333647318ce5">
-<h3>Definition: TaggedAdmissionSelector</h3>
+<section class="schema-section" id="s-e957adc1c4b94c47d444601a">
+<h3>Definition: TaggedCatalogSelector</h3>
 <p class="shape">
 <code>object</code>; 2 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
-<code>TaggedAdmissionSelector</code>
+<code>TaggedCatalogSelector</code>
 </dd>
 <dt>required</dt>
 <dd>
@@ -2966,7 +2957,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-52dacba67d1672961eb73510">required</a></td>
+<a href="#s-390016a1b69dd9c4a88055f2">required</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>array</code>; items: <a href="e-f295f1a471545ca1498cc934.html#v-d51448a8f3aca28718755054">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
@@ -3020,44 +3011,6 @@
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
 </dd>
 </dl>
-</section>
-<section class="schema-section" id="s-8b57c13234b7a35dee4df20d">
-<h3>Field: selector</h3>
-<p class="shape">exactly one of: <a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">#/$defs/TaggedAdmissionSelector</a>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Selector</code>
-</dd>
-<dt>discriminator</dt>
-<dd>
-<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleAdmissionSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedAdmissionSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
-</dd>
-</dl>
-<h4>Exactly one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">#/$defs/AllVisibleAdmissionSelector</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">#/$defs/TaggedAdmissionSelector</a></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-b7e92cb5376cfea34eaf55e1">
 <h3>Field: associated_roles</h3>
@@ -3139,7 +3092,7 @@
 </section>
 <section class="schema-section" id="s-64282ec006c22cee785163d1">
 <h3>Field: selector</h3>
-<p class="shape">exactly one of: <a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">#/$defs/AllVisibleAdmissionSelector</a>; <a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">#/$defs/TaggedAdmissionSelector</a>
+<p class="shape">exactly one of: <a href="e-f295f1a471545ca1498cc934.html#v-a978d142ded570b343d0d2e8">#/$defs/AllVisibleDepartureSelector</a>; <a href="e-f295f1a471545ca1498cc934.html#v-e957adc1c4b94c47d444601a">#/$defs/TaggedCatalogSelector</a>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -3148,7 +3101,7 @@
 </dd>
 <dt>discriminator</dt>
 <dd>
-<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleAdmissionSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedAdmissionSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+<code>{&quot;mapping&quot;:{&quot;all&quot;:&quot;#/$defs/AllVisibleDepartureSelector&quot;,&quot;tags&quot;:&quot;#/$defs/TaggedCatalogSelector&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
 </dd>
 </dl>
 <h4>Exactly one must match</h4>
@@ -3164,12 +3117,12 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">#/$defs/AllVisibleAdmissionSelector</a></td>
+<a href="e-f295f1a471545ca1498cc934.html#v-a978d142ded570b343d0d2e8">#/$defs/AllVisibleDepartureSelector</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
-<a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">#/$defs/TaggedAdmissionSelector</a></td>
+<a href="e-f295f1a471545ca1498cc934.html#v-e957adc1c4b94c47d444601a">#/$defs/TaggedCatalogSelector</a></td>
 </tr>
 </tbody>
 </table>
@@ -4195,7 +4148,7 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-52dacba67d1672961eb73510">
+<section class="schema-section" id="s-390016a1b69dd9c4a88055f2">
 <h3>Field: required</h3>
 <p class="shape">
 <code>array</code>; items: <a href="e-f295f1a471545ca1498cc934.html#v-d51448a8f3aca28718755054">#/$defs/CollectionTag</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</p>
@@ -4877,112 +4830,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>discriminator</code>
-</th>
-<td>
-<table id="v-8e794ac826a655011d54faee">
-<tbody>
-<tr>
-<th scope="row">
-<code>mapping</code>
-</th>
-<td>
-<table id="v-dd6aded161406e36b21b8b3d">
-<tbody>
-<tr>
-<th scope="row">
-<code>all</code>
-</th>
-<td>
-<span id="v-fc28e3c8eb62ca56471398a8">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>tags</code>
-</th>
-<td>
-<span id="v-d4fdd3648efe00ec9abaaf29">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>propertyName</code>
-</th>
-<td>
-<span id="v-2cdeac64d6bad8f457df7777">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/discriminator/propertyName">kind</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>oneOf</code>
-</th>
-<td>
-<table id="v-987a5da188d65f8cd935a37d">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-bdb6fb074d3ce818bd1fc1d1">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-c04e0237115a5c36b4bda86a">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-9cd2002c890e1a1e98810155">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-c6e382a157ee87e084eec14f">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-0f150395505d2b0dc83ae166">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/title">Selector</code>
-<span class="kind">string</span>
+<span id="v-548c3e064a8aed8c40846c84">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AdmissionPolicy/properties/selector/$ref">#/$defs/TaggedCatalogSelector</code>
+<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-e957adc1c4b94c47d444601a">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -5086,18 +4939,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>AllVisibleAdmissionSelector</code>
+<code>AllVisibleDepartureSelector</code>
 </th>
 <td>
-<table id="v-4f8e6a0ae160d3ad411061e3">
+<table id="v-a978d142ded570b343d0d2e8">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-aa1bc1c8b5bdaaf45618dfb4">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/additionalProperties">false</code>
+<span id="v-32f1bee76fbae612534612b2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -5106,22 +4959,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-28235c08d0e2d67afc593e41">
+<table id="v-1d39aae6c550bf34e4202bc5">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<table id="v-bcc458bebeb0cb706133702e">
+<table id="v-c0a6144195e95189cb611c62">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-723e29927c11ae850e87a752">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/properties/kind/const">all</code>
+<span id="v-9a52bbb1a5392cf9a7584b72">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/properties/kind/const">all</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5130,8 +4983,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-abd84aace1bf9edeb31c9247">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/properties/kind/default">all</code>
+<span id="v-6f892a3d45950f010b5f0e46">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/properties/kind/default">all</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5140,8 +4993,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-ea250c4876250181613dfc42">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/properties/kind/title">Kind</code>
+<span id="v-53157af4a770b7df6d9f9bd0">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/properties/kind/title">Kind</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5150,8 +5003,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-1cf884971ebbb8c95fda1193">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/properties/kind/type">string</code>
+<span id="v-ef41769fc824076c30c013f2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5166,8 +5019,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-75b9b45b872121eb3d29928e">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/title">AllVisibleAdmissionSelector</code>
+<span id="v-44488814771efc5ac9ae7c8b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/title">AllVisibleDepartureSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5176,8 +5029,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-c17416ced6e18ebcc09f5996">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleAdmissionSelector/type">object</code>
+<span id="v-afb7d134c1ca1f02f2146890">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/AllVisibleDepartureSelector/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6345,7 +6198,7 @@
 </th>
 <td>
 <span id="v-d6a1077a6bcf46c22042692f">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleDepartureSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6355,7 +6208,7 @@
 </th>
 <td>
 <span id="v-dd7406615afe9304fa7b34cb">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/discriminator/mapping/tags">#/$defs/TaggedCatalogSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6395,8 +6248,8 @@
 </th>
 <td>
 <span id="v-2e7ef5bb39c5df85e588dbda">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-4f8e6a0ae160d3ad411061e3">Definition</a>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleDepartureSelector</code>
+<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-a978d142ded570b343d0d2e8">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -6415,8 +6268,8 @@
 </th>
 <td>
 <span id="v-82f821fc9f441e3ec90569fc">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
-<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-72c6e8176d28333647318ce5">Definition</a>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/DeparturePolicy/properties/selector/oneOf/1/$ref">#/$defs/TaggedCatalogSelector</code>
+<span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-e957adc1c4b94c47d444601a">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -11360,46 +11213,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>allow_derived_inputs</code>
-</th>
-<td>
-<table id="v-2814b0f1d9bb891e7a351d11">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-6af1d401484e936dd9610b33">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/RecipeDefinition/properties/allow_derived_inputs/default">false</code>
-<span class="kind">boolean</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-a450dd63a6cddd80e460cc50">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/RecipeDefinition/properties/allow_derived_inputs/title">Allow Derived Inputs</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-04811a1a51d49677cffac776">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/RecipeDefinition/properties/allow_derived_inputs/type">boolean</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>artifact_associations</code>
 </th>
 <td>
@@ -14206,18 +14019,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>TaggedAdmissionSelector</code>
+<code>TaggedCatalogSelector</code>
 </th>
 <td>
-<table id="v-72c6e8176d28333647318ce5">
+<table id="v-e957adc1c4b94c47d444601a">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-852886567035f204665d8d25">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/additionalProperties">false</code>
+<span id="v-27de94780323becc3757cd97">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -14226,22 +14039,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-cc9909ef8658bb9f4d7a94ab">
+<table id="v-ad123e1511fc725adac36f6b">
 <tbody>
 <tr>
 <th scope="row">
 <code>kind</code>
 </th>
 <td>
-<table id="v-2eaead4e39df8e575b2b00da">
+<table id="v-6ff0c9aabfe3d7e24fa02463">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-51b98efc19238e1188360bba">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/kind/const">tags</code>
+<span id="v-1bce05231cfd87fe4c3d6e0f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/kind/const">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14250,8 +14063,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-4c6f7aa38eaddb288fef466f">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/kind/default">tags</code>
+<span id="v-10576f6b70aeee253ad86fb6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/kind/default">tags</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14260,8 +14073,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-ddebb826493b00260576ead7">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/kind/title">Kind</code>
+<span id="v-fffa6b4422a4518c14c50a5d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/kind/title">Kind</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14270,8 +14083,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-c519b2699801f3a3abd2a57c">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/kind/type">string</code>
+<span id="v-e186384bcaf68748ae84f5de">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/kind/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14283,22 +14096,22 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-52dacba67d1672961eb73510">
+<table id="v-390016a1b69dd9c4a88055f2">
 <tbody>
 <tr>
 <th scope="row">
 <code>items</code>
 </th>
 <td>
-<table id="v-92a628826d3bbcf7f2d0ac1f">
+<table id="v-6c34a8ddb5e1dba4887e2b48">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-9c3d98b9e4b4d0f7bbdbaf09">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
+<span id="v-bca87044bccd1b20345ec72d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
 <span class="kind">string</span> <a href="e-f295f1a471545ca1498cc934.html#v-d51448a8f3aca28718755054">Definition</a>
 </span></td>
 </tr>
@@ -14310,8 +14123,8 @@
 <code>maxItems</code>
 </th>
 <td>
-<span id="v-d8c45a4b677cbcf3b2ff01ff">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/maxItems">100</code>
+<span id="v-80315d1269d5d959a80ece9f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/maxItems">100</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -14320,8 +14133,8 @@
 <code>minItems</code>
 </th>
 <td>
-<span id="v-64b76ca53a4121b7f524b5c2">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/minItems">1</code>
+<span id="v-3e5fc6f03bfdeb6beef4042a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/minItems">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -14330,8 +14143,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-7cb0983a4dd403b11efe0b8f">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/title">Required</code>
+<span id="v-c7645d7630d0f7b05a929eb0">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/title">Required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14340,8 +14153,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-3f9e78e033a3c86d8e3aa619">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/type">array</code>
+<span id="v-493bdbca283b068e41ee8543">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14350,15 +14163,15 @@
 <code>x-riverhog-extent</code>
 </th>
 <td>
-<table id="v-5ef5541e63b9ec0c4b18f785">
+<table id="v-d5c6910e8c41d7cd79e54feb">
 <tbody>
 <tr>
 <th scope="row">
 <code>policy</code>
 </th>
 <td>
-<span id="v-604cb19d9107ebeac31ae9ea">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
+<span id="v-4818c10cca4e0a757d3d82ae">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14367,8 +14180,8 @@
 <code>reason</code>
 </th>
 <td>
-<span id="v-75f66b099ea6aac81711d8f0">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
+<span id="v-429c93567538c4fd1054ad92">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14386,15 +14199,15 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-50c6256b3560dffe46448386">
+<table id="v-99dca9662fef8a2a0b5d0605">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-107a966f33f4ab0ff8444970">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/required/0">required</code>
+<span id="v-013ba54a41c7cd763bf5c51e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/required/0">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14406,8 +14219,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-b1539ef73214f809b2749310">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/title">TaggedAdmissionSelector</code>
+<span id="v-046e3241936bf2f966c5b5de">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/title">TaggedCatalogSelector</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -14416,8 +14229,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-ade79f62e3607207dc09541f">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/type">object</code>
+<span id="v-dd7032dcff2f781cc6ec1961">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -16141,7 +15954,7 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedAdmissionSelector/properties/required</code></td>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1stove0-server.schema.json/$defs/TaggedCatalogSelector/properties/required</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
 <td data-label="Decision">cardinality · items · contract_max</td>
@@ -16192,7 +16005,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
 </p>
 </details>
 </footer>

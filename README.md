@@ -27,7 +27,7 @@ document at `/openapi.json`.
 - [Architecture](docs/architecture.md) explains authority, component boundaries, and the
   repository layout.
 - [V1 contract candidate](https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/)
-  presents the checked Contract Closure with an optional Audit Mode. Its
+  presents the checked Contract Closure with optional Audit and Documentation Modes. Its
   [source files](qualification/contracts/riverhog-v1/index.html) are reviewed on `main`.
 - [Licensing](LICENSE.md) defines the repository's release terms.
 

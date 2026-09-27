@@ -27,7 +27,7 @@ services:
     network_mode: none
     command: ["python", "-m", "a_riverhog_filesystem_store.incarnation", "/var/lib/riverhog-filesystem"]
 
-  store:
+  filesystem-store:
     <<: *runtime
     restart: unless-stopped
     group_add: ["${A_RIVERHOG_FILESYSTEM_STORE_SECRET_FILE_GID:-65532}"]

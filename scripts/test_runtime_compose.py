@@ -38,7 +38,7 @@ def run(*command: str, env: dict[str, str] | None = None) -> str:
     return completed.stdout.strip()
 
 
-def write(path: Path, value: str, *, mode: int = 0o644) -> Path:
+def write(path: Path, value: str, *, mode: int = 0o640) -> Path:
     path.write_text(value, encoding="utf-8")
     path.chmod(mode)
     return path
@@ -46,8 +46,9 @@ def write(path: Path, value: str, *, mode: int = 0o644) -> Path:
 
 def configure(target: str, scratch: Path, env: dict[str, str]) -> None:
     token = write(scratch / "token", "compose-smoke-token\n")
+    prefix = target.upper().replace("-", "_")
+    env[f"{prefix}_SECRET_FILE_GID"] = str(os.getgid())
     if "witness" in target:
-        prefix = target.upper().replace("-", "_")
         env[f"{prefix}_RIVERHOG_BASE_URL"] = "http://storage-peer:8081"
         env[f"{prefix}_RIVERHOG_TOKEN_FILE"] = str(token)
         env["RIVERHOG_ALLOW_INSECURE_HTTP"] = "true"
@@ -75,8 +76,9 @@ def configure(target: str, scratch: Path, env: dict[str, str]) -> None:
             env[f"{prefix}_SECRET_KEY_FILE"] = str(scratch / "secret.key")
             env[f"{prefix}_PUBLIC_KEY_FILE"] = str(scratch / "public.key")
         else:
-            env[f"{prefix}_CALENDAR_URL_1"] = "https://calendar1.example.invalid"
-            env[f"{prefix}_CALENDAR_URL_2"] = "https://calendar2.example.invalid"
+            env[f"{prefix}_CALENDAR_URLS"] = (
+                "https://calendar1.example.invalid https://calendar2.example.invalid"
+            )
         return
     if target == "a-riverhog-event-relay":
         env.update(
@@ -97,7 +99,6 @@ def configure(target: str, scratch: Path, env: dict[str, str]) -> None:
             ),
         )
         return
-    prefix = target.upper().replace("-", "_")
     env[f"{prefix}_TOKEN_FILE"] = str(token)
     if target == "a-riverhog-filesystem-store":
         return
@@ -167,7 +168,11 @@ def smoke(target: str) -> None:
                     "a-riverhog-opentimestamps-witness",
                     "a-riverhog-event-relay",
                 }
-                else "store"
+                else {
+                    "a-riverhog-aws-store": "aws-store",
+                    "a-riverhog-b2-store": "b2-store",
+                    "a-riverhog-filesystem-store": "filesystem-store",
+                }[target]
             )
             run(*compose, "up", "--detach", "--wait", "--no-build", service, env=env)
             run(

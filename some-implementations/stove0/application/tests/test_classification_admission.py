@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 import pytest
 from riverhog_client import ApiClient
@@ -13,7 +13,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
-from riverhog_protocol.errors import CatalogSyncViewChanged, NotFound
+from riverhog_protocol.errors import CatalogSyncViewChanged
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_core import ClassificationAdmissionService, SqlAlchemyStateStore
@@ -60,22 +60,13 @@ def _descriptor(
 
 
 class _CatalogApi:
-    def __init__(
-        self, descriptor: CatalogSyncDescriptor, tags: set[str], *, derived: bool = False
-    ) -> None:
+    def __init__(self, descriptor: CatalogSyncDescriptor, tags: set[str]) -> None:
         self.descriptor = descriptor
-        self.derived = derived
         self.tags_by_identity = {descriptor.tag_set_identity: tags}
         self.change: CatalogSyncUpsert | None = None
         self.source_identity = "4" * 64
         self.view_identity = "5" * 64
         self.membership_calls: list[tuple[int, str, int, str]] = []
-
-    def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
-        assert collection_id > 0
-        if not self.derived:
-            raise NotFound("collection has no derivation")
-        return {"execution_id": "a" * 64}
 
     def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint:
         return CatalogSyncCheckpoint(
@@ -127,17 +118,13 @@ class _CatalogApi:
 
 
 class _Planner:
-    def __init__(self, policy: AdmissionPolicy, *, allow_derived_inputs: bool = False) -> None:
+    def __init__(self, policy: AdmissionPolicy) -> None:
         self.policy = policy
-        self.allow_derived_inputs = allow_derived_inputs
         self.catalog = SimpleNamespace(recipe=self._recipe)
 
     def _recipe(self, recipe_id: str, revision: int) -> SimpleNamespace:
         assert (recipe_id, revision) == (self.policy.recipe_id, self.policy.recipe_revision)
-        return SimpleNamespace(
-            sha256=self.policy.recipe_sha256,
-            allow_derived_inputs=self.allow_derived_inputs,
-        )
+        return SimpleNamespace(sha256=self.policy.recipe_sha256)
 
     def create_work(
         self,
@@ -172,63 +159,21 @@ def _policy(*, policy_id: str = "camera-archive") -> AdmissionPolicy:
     )
 
 
-@pytest.mark.parametrize("mode,expected_baseline", [("observe", 0), ("backfill", 1)])
-def test_all_visible_selector_uses_the_bound_view_without_tag_queries(
-    mode: Literal["observe", "backfill"], expected_baseline: int
-) -> None:
-    state = _state()
-    first = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
-    api = _CatalogApi(first, set())
-    policy = AdmissionPolicy.model_validate(
-        {**_policy().model_dump(mode="json"), "selector": {"kind": "all"}}
-    )
-    service = _service(state=state, api=api, policy=policy)
-    service.rebaseline(policy.id, mode=mode)
-    service.advance(limit=5)
-
-    def admissions() -> tuple[object, ...]:
-        return cast(
-            tuple[object, ...],
-            service.list_admissions(
-                page_size=25,
-                position=None,
-                policy_id=None,
-                state=None,
-                query=None,
-                sort="admission_id",
-                order="asc",
-            )["admissions"],
-        )
-
-    assert len(admissions()) == expected_baseline
-    assert api.membership_calls == []
-
-    next_collection = _descriptor(
-        tag_revision=1, tag_identity="7" * 64, revision="2", collection_id=8
-    )
-    api.change = CatalogSyncUpsert(**next_collection.model_dump())
-    service.advance(limit=5)
-    assert len(admissions()) == expected_baseline + 1
-    assert api.membership_calls == []
-    service.advance(limit=5)
-    assert len(admissions()) == expected_baseline + 1
-
-
-def test_derived_collection_requires_an_opted_in_recipe_for_classification_admission() -> None:
+def test_tagged_collection_admits_without_derivation_lookup() -> None:
     descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
-    api = _CatalogApi(descriptor, {"camera", "workflow/archive"}, derived=True)
+    api = _CatalogApi(descriptor, {"camera", "workflow/archive"})
     policy = _policy()
-    ordinary = _service(state=_state(), api=api, policy=policy)
-    opted_in = _service(state=_state(), api=api, policy=policy, allow_derived_inputs=True)
-
-    assert not ordinary._matches(policy, descriptor)
-    assert opted_in._matches(policy, descriptor)
+    service = _service(state=_state(), api=api, policy=policy)
+    assert service._matches(policy, descriptor)
+    assert len(api.membership_calls) == 2
 
 
 def test_admission_selector_shape_is_explicit_and_exact() -> None:
     policy = _policy().model_dump(mode="json")
     with pytest.raises(ValueError):
         AdmissionPolicy.model_validate({**policy, "selector": {"kind": "tags", "required": []}})
+    with pytest.raises(ValueError):
+        AdmissionPolicy.model_validate({**policy, "selector": {"kind": "all"}})
     with pytest.raises(ValueError):
         AdmissionPolicy.model_validate({**policy, "selector": {"kind": "all", "required": []}})
     with pytest.raises(ValueError):
@@ -258,13 +203,12 @@ def _service(
     policy: AdmissionPolicy,
     preview: object | None = None,
     coordinator: object | None = None,
-    allow_derived_inputs: bool = False,
 ) -> ClassificationAdmissionService:
     return ClassificationAdmissionService(
         catalog=AdmissionCatalog(policies=(policy,)),
         riverhog=cast(ApiClient, api),
         state=state,
-        planner=cast(Any, _Planner(policy, allow_derived_inputs=allow_derived_inputs)),
+        planner=cast(Any, _Planner(policy)),
         preview=cast(Any, preview if preview is not None else object()),
         coordinator=cast(Any, coordinator if coordinator is not None else object()),
     )

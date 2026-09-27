@@ -993,11 +993,10 @@ def test_supplied_recipes_embed_exact_maintained_contracts_and_explicit_cost_pol
     assert policies == {"allow", "available-only"}
 
 
-def test_manual_planning_rejects_derived_input_unless_recipe_opts_in() -> None:
+def test_manual_planning_does_not_consult_derivation() -> None:
     class DerivedCatalogApi(CatalogApi):
         def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
-            assert collection_id == 11
-            return {"execution_id": _sha("a")}
+            raise AssertionError("derivation is evidence, not planning authority")
 
     recipe = RecipeDefinition(
         id="fixture.derived-admission/v1",
@@ -1016,18 +1015,13 @@ def test_manual_planning_rejects_derived_input_unless_recipe_opts_in() -> None:
         collection_id="11", archive_root_sha256=_sha("1"), content_identity=_sha("2")
     )
 
-    def planner(allow_derived_inputs: bool) -> RecipePlanner:
-        selected = recipe.model_copy(update={"allow_derived_inputs": allow_derived_inputs})
-        return RecipePlanner(
-            catalog=RecipeCatalog(operations=(AUDIO_ARCHIVE_OPERATION,), recipes=(selected,)),
-            riverhog=cast(ApiClient, DerivedCatalogApi()),
-            observers=cast(ObserverPort, object()),
-            targets=cast(TargetPort, object()),
-        )
-
-    with pytest.raises(ValueError, match="does not admit derived collection"):
-        planner(False).create_work(recipe.id, (root,))
-    assert planner(True).create_work(recipe.id, (root,)).inputs == (root,)
+    planner = RecipePlanner(
+        catalog=RecipeCatalog(operations=(AUDIO_ARCHIVE_OPERATION,), recipes=(recipe,)),
+        riverhog=cast(ApiClient, DerivedCatalogApi()),
+        observers=cast(ObserverPort, object()),
+        targets=cast(TargetPort, object()),
+    )
+    assert planner.create_work(recipe.id, (root,)).inputs == (root,)
 
 
 def test_production_planner_resolves_overlapping_branches_into_one_exact_join() -> None:

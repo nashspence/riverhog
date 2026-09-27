@@ -109,7 +109,8 @@ def test_schema_and_independent_evidence_survive_departure_and_view_reset(tmp_pa
     with sqlite3.connect(path) as db:
         digest = db.execute("SELECT digest FROM statements").fetchone()[0]
         assert db.execute("SELECT COUNT(*) FROM observations").fetchone()[0] == 1
-    assert store.sign_once(Signer(), now=100) == digest
+    attempt = store.sign_once(Signer(), now=100)
+    assert attempt is not None and (attempt.digest, attempt.outcome) == (digest, "signed")
     assert store.evidence(digest)["signature"] == b"signed"
     assert store.ingest_once(api, now=100).kind == "changes"
     with sqlite3.connect(path) as db:
@@ -237,6 +238,40 @@ def test_run_reports_signing_attempt_without_claiming_a_retained_signature(
     diagnostics = capsys.readouterr().err
     assert ("retry scheduled" if retryable else "signing blocked") in diagnostics
     assert "retained signature" not in diagnostics
+
+
+@pytest.mark.parametrize(
+    "failure,expected", [(None, "signed"), (True, "retry_scheduled"), (False, "blocked")]
+)
+def test_one_shot_sign_result_reports_durable_outcome(
+    tmp_path: Path, failure: bool | None, expected: str
+) -> None:
+    path = tmp_path / "minisign.db"
+    upgrade_state(path)
+    store = WitnessStore(path)
+    assert witness_cli._sign_result(store, Signer(), now=100) == {
+        "attempted_statement": None,
+        "outcome": "idle",
+    }
+    api = Api()
+    store.ingest_once(api, now=100)
+    store.ingest_once(api, now=100)
+
+    class FailingSigner:
+        def sign(self, statement: bytes) -> Signature:
+            assert statement
+            assert failure is not None
+            raise SignerError("unavailable", retryable=failure)
+
+    result = witness_cli._sign_result(
+        store, Signer() if failure is None else FailingSigner(), now=100
+    )
+    assert result["outcome"] == expected
+    digest = result["attempted_statement"]
+    assert isinstance(digest, str)
+    assert store.evidence(digest)["state"] == (
+        "signed" if failure is None else "pending" if failure else "blocked"
+    )
 
 
 def test_real_minisign_key_signs_exact_statement(tmp_path: Path) -> None:

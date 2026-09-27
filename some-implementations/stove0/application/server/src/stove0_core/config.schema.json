@@ -75,22 +75,7 @@
           "type": "integer"
         },
         "selector": {
-          "discriminator": {
-            "mapping": {
-              "all": "#/$defs/AllVisibleAdmissionSelector",
-              "tags": "#/$defs/TaggedAdmissionSelector"
-            },
-            "propertyName": "kind"
-          },
-          "oneOf": [
-            {
-              "$ref": "#/$defs/AllVisibleAdmissionSelector"
-            },
-            {
-              "$ref": "#/$defs/TaggedAdmissionSelector"
-            }
-          ],
-          "title": "Selector"
+          "$ref": "#/$defs/TaggedCatalogSelector"
         }
       },
       "required": [
@@ -104,7 +89,7 @@
       "title": "AdmissionPolicy",
       "type": "object"
     },
-    "AllVisibleAdmissionSelector": {
+    "AllVisibleDepartureSelector": {
       "additionalProperties": false,
       "properties": {
         "kind": {
@@ -114,7 +99,7 @@
           "type": "string"
         }
       },
-      "title": "AllVisibleAdmissionSelector",
+      "title": "AllVisibleDepartureSelector",
       "type": "object"
     },
     "ArchiveStoreName": {
@@ -266,17 +251,17 @@
         "selector": {
           "discriminator": {
             "mapping": {
-              "all": "#/$defs/AllVisibleAdmissionSelector",
-              "tags": "#/$defs/TaggedAdmissionSelector"
+              "all": "#/$defs/AllVisibleDepartureSelector",
+              "tags": "#/$defs/TaggedCatalogSelector"
             },
             "propertyName": "kind"
           },
           "oneOf": [
             {
-              "$ref": "#/$defs/AllVisibleAdmissionSelector"
+              "$ref": "#/$defs/AllVisibleDepartureSelector"
             },
             {
-              "$ref": "#/$defs/TaggedAdmissionSelector"
+              "$ref": "#/$defs/TaggedCatalogSelector"
             }
           ],
           "title": "Selector"
@@ -939,11 +924,6 @@
     "RecipeDefinition": {
       "additionalProperties": false,
       "properties": {
-        "allow_derived_inputs": {
-          "default": false,
-          "title": "Allow Derived Inputs",
-          "type": "boolean"
-        },
         "artifact_associations": {
           "default": [],
           "items": {
@@ -1318,7 +1298,7 @@
       "title": "SemanticValidationProfile",
       "type": "object"
     },
-    "TaggedAdmissionSelector": {
+    "TaggedCatalogSelector": {
       "additionalProperties": false,
       "properties": {
         "kind": {
@@ -1344,7 +1324,7 @@
       "required": [
         "required"
       ],
-      "title": "TaggedAdmissionSelector",
+      "title": "TaggedCatalogSelector",
       "type": "object"
     }
   },

@@ -10,7 +10,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Literal, Protocol
 
 from a_riverhog_witness_contract_lib import CollectionWitnessStatement
 from riverhog_client.following import (
@@ -54,6 +54,12 @@ class Progress:
     generation: int
     serial: int
     position: CatalogFollowPosition
+
+
+@dataclass(frozen=True)
+class SignAttempt:
+    digest: str
+    outcome: Literal["signed", "retry_scheduled", "blocked"]
 
 
 def _connection(path: Path) -> sqlite3.Connection:
@@ -249,7 +255,7 @@ class WitnessStore:
                 db.rollback()
                 raise
 
-    def sign_once(self, signer: Signer, *, now: int | None = None) -> str | None:
+    def sign_once(self, signer: Signer, *, now: int | None = None) -> SignAttempt | None:
         """Bound one signing attempt; a crash before commit leaves a retryable job."""
         tick = int(time.time()) if now is None else now
         with _db(self.database) as db:
@@ -295,7 +301,14 @@ class WitnessStore:
                 raise
         if changed != 1:
             raise StaleProposal("another signer accepted the work first")
-        return digest
+        outcome: Literal["signed", "retry_scheduled", "blocked"] = (
+            "signed"
+            if state == "signed"
+            else "retry_scheduled"
+            if state == "pending"
+            else "blocked"
+        )
+        return SignAttempt(digest, outcome)
 
     def evidence(self, digest: str) -> dict[str, object] | None:
         with _db(self.database) as db:
