@@ -11,7 +11,10 @@ from typing import cast
 
 from pydantic import JsonValue
 from riverhog_client import ApiClient
-from riverhog_protocol.collection_workflows import canonical_json_sha256
+from riverhog_protocol.collection_workflows import (
+    SourceCollectionRetirementPolicy,
+    canonical_json_sha256,
+)
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationRequest,
@@ -30,7 +33,9 @@ from stove0_protocol import (
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinWorkBinding,
+    NoOutputBranchPlan,
     OperationIdentityRef,
+    PreviewOutcome,
     WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
@@ -50,6 +55,7 @@ from stove0_recipe_config import (
     RecipeDefinition,
     RecipeJoin,
     RecipeJoinMember,
+    RecipeNoAction,
     RecipeRoute,
 )
 from stove0_target_protocol import (
@@ -197,20 +203,19 @@ class RecipePlanner:
                     recipe=route.recipe,
                     effective_intent={**route.intent, **compiled_intent},
                 )
-                child = self._planning_frame(
-                    child_work,
-                    nested_observer(child_work),
-                    root=False,
-                )
+                child_evidence = nested_observer(child_work)
+                child = self._planning_frame(child_work, child_evidence, root=False)
                 if isinstance(child, WorkNoAction):
-                    # A selected coordination branch requires an exact child
-                    # plan; a successful empty child cannot satisfy that route.
-                    return WorkInapplicable(
-                        code="subrecipe-no-action",
-                        message=(
-                            f"Subrecipe branch {route.id} completed without output: {child.message}"
-                        )[:1000],
+                    frame.branches.append(
+                        NoOutputBranchPlan.seal(
+                            branch_id=route.id,
+                            selection=selection,
+                            work=child_work,
+                            observations=child_evidence,
+                            outcome=PreviewOutcome(code=child.code, message=child.message),
+                        )
                     )
+                    continue
                 if isinstance(child, WorkInapplicable):
                     return WorkInapplicable(
                         code=child.code,
@@ -550,6 +555,20 @@ class RecipePlanner:
             raise RuntimeError("configured recipe differs from the immutable work identity")
         return recipe
 
+    def no_output_policy(
+        self, work: WorkIdentity
+    ) -> tuple[RecipeNoAction, SourceCollectionRetirementPolicy, int]:
+        recipe = self._recipe(work)
+        if recipe.no_action is None:
+            raise ValueError("recipe has no selected no-output decision")
+        if isinstance(work.fork_join, BranchWorkBinding):
+            return recipe.no_action, "retain", 0
+        return (
+            recipe.no_action,
+            recipe.source_collection_retirement_policy,
+            recipe.source_collection_retirement_grace_seconds,
+        )
+
     def _inventory(self, work: WorkIdentity) -> tuple[dict[str, object], ...]:
         rows: list[dict[str, object]] = []
         for root in work.inputs:
@@ -574,8 +593,6 @@ class RecipePlanner:
                     raise RuntimeError("collection inventory identity changed")
                 for artifact in page.files:
                     path = artifact.path
-                    if path.startswith("riverhog/"):
-                        continue
                     rows.append(
                         {
                             "collection": root,

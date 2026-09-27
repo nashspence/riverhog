@@ -387,6 +387,7 @@
                 "enum": [
                   "transformed",
                   "preserved",
+                  "not-carried-forward",
                   "omitted",
                   "rejected"
                 ],
@@ -1169,6 +1170,17 @@
           "title": "Message",
           "type": "string"
         },
+        "source_loss": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RecipeSourceLossRule"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "when": {
           "items": {
             "$ref": "#/$defs/FactPredicate"
@@ -1295,6 +1307,73 @@
         "target_registration_id"
       ],
       "title": "RecipeRoute",
+      "type": "object"
+    },
+    "RecipeSourceLossEvidenceSlot": {
+      "additionalProperties": false,
+      "description": "One selected observer fact required for each exact discarded artifact.",
+      "properties": {
+        "artifact_facts": {
+          "$ref": "#/$defs/ArtifactFactBinding"
+        },
+        "facts_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Facts Profile Sha256",
+          "type": "string"
+        },
+        "observation_contract_id": {
+          "pattern": "^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Observation Contract Id",
+          "type": "string"
+        },
+        "observation_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observation Contract Sha256",
+          "type": "string"
+        },
+        "verdict_pointer": {
+          "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+          "title": "Verdict Pointer",
+          "type": "string"
+        },
+        "verdict_value": {
+          "$ref": "#/$defs/JsonValue"
+        }
+      },
+      "required": [
+        "observation_contract_id",
+        "observation_contract_sha256",
+        "facts_profile_sha256",
+        "artifact_facts",
+        "verdict_pointer",
+        "verdict_value"
+      ],
+      "title": "RecipeSourceLossEvidenceSlot",
+      "type": "object"
+    },
+    "RecipeSourceLossRule": {
+      "additionalProperties": false,
+      "description": "Controller policy for an affirmative per-artifact no-successor decision.",
+      "properties": {
+        "evidence_slots": {
+          "items": {
+            "$ref": "#/$defs/RecipeSourceLossEvidenceSlot"
+          },
+          "minItems": 1,
+          "title": "Evidence Slots",
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "evidence_slots"
+      ],
+      "title": "RecipeSourceLossRule",
       "type": "object"
     },
     "SemanticValidationProfile": {

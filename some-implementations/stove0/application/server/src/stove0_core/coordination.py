@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from stove0_protocol import (
     ArtifactSelection,
     BranchEffectSettlement,
+    BranchNoOutputSettlement,
     BranchOutcome,
     BranchOutcomeState,
     BranchPlan,
@@ -20,6 +21,7 @@ from stove0_protocol import (
     JoinOutcomeState,
     JoinPlan,
     JoinSettlement,
+    NoOutputBranchPlan,
     WorkArtifactSubject,
     branch_work,
     evaluate_branch_set,
@@ -50,6 +52,7 @@ def project_coordination(parent: WorkRecord, store: WorkStore) -> CoordinationPr
     selections = _declared_selections(parent, store)
     settlements: list[BranchSettlement] = []
     effect_settlements: list[BranchEffectSettlement] = []
+    no_output_settlements: list[BranchNoOutputSettlement] = []
     coordination_settlements: list[CoordinationSettlement] = []
     outcomes: list[BranchOutcome] = []
     branch_sets = _branch_set_documents(parent, store)
@@ -91,6 +94,29 @@ def project_coordination(parent: WorkRecord, store: WorkStore) -> CoordinationPr
             if child.phase == "complete":
                 raise RuntimeError("completed coordination child has no exact settlement")
             outcome = _coordination_outcome(branch, child)
+            if outcome is not None:
+                outcomes.append(outcome)
+            continue
+        if isinstance(branch, NoOutputBranchPlan):
+            preview = child.no_action_preview
+            if (
+                preview is None
+                or preview.work != branch.work
+                or preview.observations != branch.observations
+                or preview.outcome != branch.outcome
+            ):
+                raise RuntimeError("durable no-output child differs from its selected decision")
+            if child.phase == "no_action":
+                if child.no_output_settlement_sha256 is None:
+                    raise RuntimeError("successful no-output child has no Riverhog settlement")
+                no_output_settlements.append(
+                    BranchNoOutputSettlement.seal(
+                        branch=branch,
+                        no_output_settlement_sha256=child.no_output_settlement_sha256,
+                    )
+                )
+                continue
+            outcome = _branch_outcome(branch, child)
             if outcome is not None:
                 outcomes.append(outcome)
             continue
@@ -155,6 +181,7 @@ def project_coordination(parent: WorkRecord, store: WorkStore) -> CoordinationPr
         selections,
         branch_settlements=settlements,
         branch_effect_settlements=effect_settlements,
+        branch_no_output_settlements=no_output_settlements,
         branch_coordination_settlements=coordination_settlements,
         branch_outcomes=outcomes,
         branch_sets=branch_sets,
@@ -248,7 +275,9 @@ def _branch_effect_settlement(
     )
 
 
-def _branch_outcome(branch: BranchPlan, record: WorkRecord) -> BranchOutcome | None:
+def _branch_outcome(
+    branch: BranchPlan | NoOutputBranchPlan, record: WorkRecord
+) -> BranchOutcome | None:
     state: BranchOutcomeState | None = None
     if record.phase == "failed":
         state = "failed"
@@ -262,8 +291,13 @@ def _branch_outcome(branch: BranchPlan, record: WorkRecord) -> BranchOutcome | N
         return None
     return BranchOutcome(
         branch_id=branch.branch_id,
-        work_id=branch.workflow_plan.work.work_id,
-        workflow_plan_sha256=branch.workflow_plan.workflow_plan_sha256,
+        work_id=branch_work(branch).work_id,
+        workflow_plan_sha256=(
+            branch.workflow_plan.workflow_plan_sha256 if isinstance(branch, BranchPlan) else None
+        ),
+        no_output_decision_sha256=(
+            branch.decision_sha256 if isinstance(branch, NoOutputBranchPlan) else None
+        ),
         state=state,
     )
 

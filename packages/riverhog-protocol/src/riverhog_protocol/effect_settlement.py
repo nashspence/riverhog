@@ -14,6 +14,7 @@ from typing import Literal, cast
 from riverhog_canonical_json import canonical_json_bytes, canonical_json_sha256, format_scalar
 
 from riverhog_protocol.collection_workflows import (
+    ArtifactDispositionSetIdentity,
     OperationIdentity,
     _positive_decimal,
     _positive_uint,
@@ -36,11 +37,11 @@ def operation_retirement_permission(
     Remaining operation semantics are deliberately opaque to Riverhog. Absence
     of a declaration cannot authorize retirement or an external effect.
     """
-    if result_kind not in {"collection", "external-effect"}:
+    if result_kind not in {"collection", "external-effect", "no-output"}:
         raise ValueError("unknown processing result kind")
     if declaration is None:
-        if result_kind == "external-effect":
-            raise ValueError("external effects require an exact operation declaration")
+        if result_kind != "collection":
+            raise ValueError("noncollection processing requires an exact operation declaration")
         return False
     if len(canonical_json_bytes(declaration)) > OPERATION_CONTRACT_MAX_BYTES:
         raise ValueError("operation declaration exceeds its canonical byte limit")
@@ -68,6 +69,7 @@ class ExternalEffectSettlement:
     controller_evidence_sha256: str
     receipt: Mapping[str, object]
     receipt_sha256: str
+    disposition_set: ArtifactDispositionSetIdentity
     status: Literal["succeeded"] = "succeeded"
 
     def __post_init__(self) -> None:
@@ -104,6 +106,7 @@ class ExternalEffectSettlement:
             "controller_evidence_sha256": self.controller_evidence_sha256,
             "receipt": dict(self.receipt),
             "receipt_sha256": self.receipt_sha256,
+            "disposition_set": self.disposition_set.as_dict(),
             "status": self.status,
         }
 
@@ -125,13 +128,19 @@ class ExternalEffectSettlement:
             "controller_evidence_sha256",
             "receipt",
             "receipt_sha256",
+            "disposition_set",
             "status",
         }
         if set(value) != keys or value.get("format") != EFFECT_SETTLEMENT_FORMAT:
             raise ValueError("external effect settlement fields are invalid")
         operation, receipt = value.get("operation"), value.get("receipt")
-        if not isinstance(operation, Mapping) or not isinstance(receipt, Mapping):
-            raise ValueError("operation and receipt must be objects")
+        disposition_set = value.get("disposition_set")
+        if (
+            not isinstance(operation, Mapping)
+            or not isinstance(receipt, Mapping)
+            or not isinstance(disposition_set, Mapping)
+        ):
+            raise ValueError("operation, receipt and disposition set must be objects")
         return cls(
             claim_id=str(value["claim_id"]),
             fence=_positive_decimal(value["fence"], "fence"),
@@ -143,5 +152,6 @@ class ExternalEffectSettlement:
             controller_evidence_sha256=str(value["controller_evidence_sha256"]),
             receipt=dict(receipt),
             receipt_sha256=str(value["receipt_sha256"]),
+            disposition_set=ArtifactDispositionSetIdentity.from_mapping(disposition_set),
             status=cast(Literal["succeeded"], value["status"]),
         )

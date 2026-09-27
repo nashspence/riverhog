@@ -690,6 +690,7 @@ CREATE TABLE collection_processing_claims (
 	source_collection_retirement_permitted BOOLEAN NOT NULL,
 	settlement_outcome_binding_json TEXT,
 	effect_settlement_sha256 VARCHAR(64),
+	no_output_settlement_sha256 VARCHAR(64),
 	input_count BIGINT NOT NULL,
 	input_hash_state TEXT,
 	input_set_sha256 VARCHAR(64),
@@ -727,7 +728,7 @@ CREATE TABLE collection_processing_claims (
 	CONSTRAINT ck_collection_processing_claims_state CHECK (state IN ('active','settled','retiring','abandoned','released')),
 	CONSTRAINT ck_collection_processing_claims_outcome_state CHECK (outcome_state IN ('receiving','sealing','sealed','failed')),
 	CONSTRAINT ck_collection_processing_claims_fence CHECK (fence >= 1),
-	CONSTRAINT ck_processing_claim_result_kind CHECK (result_kind IS NULL OR result_kind IN ('collection','external-effect')),
+	CONSTRAINT ck_processing_claim_result_kind CHECK (result_kind IS NULL OR result_kind IN ('collection','external-effect','no-output')),
 	CONSTRAINT ck_processing_claim_expected_outcomes CHECK (outcome_expected_count IS NULL OR outcome_expected_count >= 1),
 	CONSTRAINT ck_collection_processing_claims_grace CHECK (source_collection_retirement_grace_seconds >= 0),
 	CONSTRAINT ck_collection_processing_claims_artifact_count CHECK (input_count >= 0 AND artifact_count >= 0 AND artifact_bytes >= 0 AND outcome_count >= 0 AND outcome_validation_count >= 0),
@@ -743,6 +744,7 @@ CREATE TABLE collection_processing_claims (
 	CONSTRAINT ck_sha256_c09acb3cbfceaefd CHECK (controller_evidence_sha256 IS NULL OR length(controller_evidence_sha256) = 64 AND lower(controller_evidence_sha256) = controller_evidence_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(controller_evidence_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_claims_operation_sha256_hex CHECK (operation_sha256 IS NULL OR length(operation_sha256) = 64 AND lower(operation_sha256) = operation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(operation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_claims_effect_settlement_sha256_hex CHECK (effect_settlement_sha256 IS NULL OR length(effect_settlement_sha256) = 64 AND lower(effect_settlement_sha256) = effect_settlement_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(effect_settlement_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_3cc415e3f015ee6e CHECK (no_output_settlement_sha256 IS NULL OR length(no_output_settlement_sha256) = 64 AND lower(no_output_settlement_sha256) = no_output_settlement_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(no_output_settlement_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_claims_input_set_sha256_hex CHECK (input_set_sha256 IS NULL OR length(input_set_sha256) = 64 AND lower(input_set_sha256) = input_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(input_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_claims_artifact_set_sha256_hex CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_claims_outcome_set_sha256_hex CHECK (outcome_set_sha256 IS NULL OR length(outcome_set_sha256) = 64 AND lower(outcome_set_sha256) = outcome_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(outcome_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -768,6 +770,24 @@ CREATE TABLE collection_processing_effect_settlements (
 	CONSTRAINT ck_collection_processing_effect_settlements_execution_id_hex CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_b8d7c869121aa1db CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_a5db6e9ad22a9196 CHECK (length(receipt_sha256) = 64 AND lower(receipt_sha256) = receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_processing_no_output_settlements (
+	claim_id VARCHAR(64) NOT NULL,
+	fence BIGINT NOT NULL,
+	execution_id VARCHAR(64) NOT NULL,
+	document_json TEXT NOT NULL,
+	document_sha256 VARCHAR(64) NOT NULL,
+	created_at VARCHAR NOT NULL,
+	PRIMARY KEY (claim_id),
+	CONSTRAINT ck_no_output_settlement_fence CHECK (fence >= 1),
+	CONSTRAINT ck_no_output_settlement_digest CHECK (length(document_sha256) = 64),
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT,
+	UNIQUE (execution_id),
+	UNIQUE (document_sha256),
+	CONSTRAINT ck_collection_processing_no_output_settlements_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_cae379d62e6b6234 CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_a0b49cc18366ecca CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_collection_processing_claims_expiry ON collection_processing_claims (state, expires_at);
@@ -1336,8 +1356,8 @@ CREATE TABLE collection_processing_disposition_sets (
 	disposition_count BIGINT NOT NULL,
 	output_edge_count BIGINT NOT NULL,
 	output_artifact_count BIGINT NOT NULL,
-	transformed_count BIGINT NOT NULL,
-	transformed_with_outputs_count BIGINT NOT NULL,
+	successor_required_count BIGINT NOT NULL,
+	successor_bound_count BIGINT NOT NULL,
 	validation_phase VARCHAR,
 	validation_collection_id BIGINT,
 	validation_input_path VARCHAR,
@@ -1356,7 +1376,7 @@ CREATE TABLE collection_processing_disposition_sets (
 	PRIMARY KEY (claim_id),
 	CONSTRAINT ck_processing_disposition_sets_state CHECK (state IN ('receiving','sealing','sealed','failed')),
 	CONSTRAINT ck_processing_disposition_sets_phase CHECK (validation_phase IS NULL OR validation_phase IN ('dispositions','outputs')),
-	CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count >= 0 AND output_edge_count >= 0 AND output_artifact_count >= 0 AND transformed_count >= 0 AND transformed_with_outputs_count >= 0),
+	CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count >= 0 AND output_edge_count >= 0 AND output_artifact_count >= 0 AND successor_required_count >= 0 AND successor_bound_count >= 0),
 	CONSTRAINT ck_processing_disposition_sets_output_counts CHECK (output_artifact_count <= output_edge_count),
 	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_processing_disposition_sets_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -1376,6 +1396,7 @@ CREATE TABLE collection_processing_outcomes (
 	result_kind VARCHAR NOT NULL,
 	effect_receipt_sha256 VARCHAR(64),
 	effect_settlement_sha256 VARCHAR(64),
+	no_output_settlement_sha256 VARCHAR(64),
 	collection_id BIGINT,
 	archive_root_sha256 VARCHAR(64),
 	content_identity VARCHAR(64),
@@ -1384,7 +1405,7 @@ CREATE TABLE collection_processing_outcomes (
 	created_at VARCHAR NOT NULL,
 	PRIMARY KEY (claim_id, outcome_id),
 	CONSTRAINT ck_processing_outcome_fence CHECK (source_fence >= 1),
-	CONSTRAINT ck_processing_outcome_result CHECK (result_kind = 'collection' AND collection_id IS NOT NULL AND archive_root_sha256 IS NOT NULL AND content_identity IS NOT NULL AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL OR result_kind = 'external-effect' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND content_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL AND effect_settlement_sha256 IS NOT NULL),
+	CONSTRAINT ck_processing_outcome_result CHECK (result_kind = 'collection' AND collection_id IS NOT NULL AND archive_root_sha256 IS NOT NULL AND content_identity IS NOT NULL AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL AND no_output_settlement_sha256 IS NULL OR result_kind = 'external-effect' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND content_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL AND effect_settlement_sha256 IS NOT NULL AND no_output_settlement_sha256 IS NULL OR result_kind = 'no-output' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND content_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL AND no_output_settlement_sha256 IS NOT NULL),
 	CONSTRAINT uq_collection_processing_outcomes_source_claim UNIQUE (claim_id, source_claim_id),
 	CONSTRAINT uq_collection_processing_outcomes_output UNIQUE (claim_id, collection_id),
 	CONSTRAINT ck_collection_processing_outcomes_order CHECK (outcome_order IS NULL OR outcome_order >= 0),
@@ -1395,6 +1416,7 @@ CREATE TABLE collection_processing_outcomes (
 	CONSTRAINT ck_collection_processing_outcomes_execution_id_hex CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_outcomes_effect_receipt_sha256_hex CHECK (effect_receipt_sha256 IS NULL OR length(effect_receipt_sha256) = 64 AND lower(effect_receipt_sha256) = effect_receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(effect_receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_96479c182bf1b6f0 CHECK (effect_settlement_sha256 IS NULL OR length(effect_settlement_sha256) = 64 AND lower(effect_settlement_sha256) = effect_settlement_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(effect_settlement_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_2568db5df24dffd6 CHECK (no_output_settlement_sha256 IS NULL OR length(no_output_settlement_sha256) = 64 AND lower(no_output_settlement_sha256) = no_output_settlement_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(no_output_settlement_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_outcomes_archive_root_sha256_hex CHECK (archive_root_sha256 IS NULL OR length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_outcomes_content_identity_hex CHECK (content_identity IS NULL OR length(content_identity) = 64 AND lower(content_identity) = content_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(content_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_outcomes_derivation_sha256_hex CHECK (derivation_sha256 IS NULL OR length(derivation_sha256) = 64 AND lower(derivation_sha256) = derivation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(derivation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
@@ -1945,13 +1967,21 @@ CREATE TABLE collection_processing_dispositions (
 	path VARCHAR NOT NULL,
 	disposition_order BIGINT,
 	status VARCHAR NOT NULL,
-	failure_code VARCHAR,
-	failure_message TEXT,
+	reason_code VARCHAR,
+	reason_message TEXT,
+	effect_receipt_sha256 VARCHAR(64),
+	discard_approval_json TEXT,
+	retain_required BOOLEAN NOT NULL,
 	PRIMARY KEY (claim_id, collection_id, path),
 	FOREIGN KEY(claim_id, collection_id, path) REFERENCES collection_processing_claim_artifacts (claim_id, collection_id, path) ON DELETE CASCADE,
-	CONSTRAINT ck_processing_dispositions_status CHECK (status IN ('transformed','preserved','omitted','rejected')),
+	CONSTRAINT ck_processing_dispositions_status CHECK (status IN ('transformed','preserved','effect-applied','not-carried-forward','omitted','rejected')),
+	CONSTRAINT ck_processing_dispositions_effect_receipt_required CHECK (status <> 'effect-applied' OR effect_receipt_sha256 IS NOT NULL),
+	CONSTRAINT ck_processing_dispositions_effect_receipt_forbidden CHECK (status = 'effect-applied' OR effect_receipt_sha256 IS NULL),
+	CONSTRAINT ck_processing_dispositions_discard_approval_status CHECK (discard_approval_json IS NULL OR status = 'not-carried-forward'),
+	CONSTRAINT ck_processing_dispositions_discard_approval_retention CHECK (discard_approval_json IS NULL OR NOT retain_required),
 	CONSTRAINT ck_processing_dispositions_order_nonnegative CHECK (disposition_order IS NULL OR disposition_order >= 0),
-	CONSTRAINT ck_collection_processing_dispositions_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_processing_dispositions_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_0361d4857d1ebd6b CHECK (effect_receipt_sha256 IS NULL OR length(effect_receipt_sha256) = 64 AND lower(effect_receipt_sha256) = effect_receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(effect_receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE UNIQUE INDEX ix_processing_dispositions_order ON collection_processing_dispositions (claim_id, disposition_order);
@@ -2022,5 +2052,39 @@ CREATE TABLE collection_processing_disposition_outputs (
 CREATE UNIQUE INDEX ix_processing_disposition_outputs_order ON collection_processing_disposition_outputs (claim_id, output_order);
 
 CREATE INDEX ix_processing_disposition_outputs_source ON collection_processing_disposition_outputs (claim_id, input_collection_id, input_path, output_path);
+
+CREATE TABLE collection_processing_consideration_evidence (
+	claim_id VARCHAR(64) NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	document_json TEXT NOT NULL,
+	observer_contract_id VARCHAR NOT NULL,
+	observer_contract_sha256 VARCHAR(64) NOT NULL,
+	profile_sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (claim_id, sha256),
+	CONSTRAINT ck_processing_consideration_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT ck_processing_consideration_contract_sha256 CHECK (length(observer_contract_sha256) = 64),
+	CONSTRAINT ck_processing_consideration_profile_sha256 CHECK (length(profile_sha256) = 64),
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_processing_consideration_evidence_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_consideration_evidence_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_eaf7b3cb4b95f7e0 CHECK (length(observer_contract_sha256) = 64 AND lower(observer_contract_sha256) = observer_contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(observer_contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_304ec13c78be9105 CHECK (length(profile_sha256) = 64 AND lower(profile_sha256) = profile_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(profile_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_processing_consideration_subjects (
+	claim_id VARCHAR(64) NOT NULL,
+	evidence_sha256 VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	path VARCHAR NOT NULL,
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (claim_id, evidence_sha256, collection_id, path),
+	FOREIGN KEY(claim_id, evidence_sha256) REFERENCES collection_processing_consideration_evidence (claim_id, sha256) ON DELETE CASCADE,
+	CONSTRAINT ck_processing_consideration_subject_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_processing_consideration_subject_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT ck_collection_processing_consideration_subjects_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_d466a5fbcfa1bb32 CHECK (length(evidence_sha256) = 64 AND lower(evidence_sha256) = evidence_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(evidence_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_consideration_subjects_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

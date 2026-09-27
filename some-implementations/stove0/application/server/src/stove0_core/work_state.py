@@ -32,11 +32,15 @@ from stove0_protocol import (
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
     JoinPlan,
+    NoOutputBranchPlan,
     Sha256,
     TargetPlanBinding,
     WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPreview,
+    WorkflowPreviewPayload,
+    WorkflowPreviewRequest,
+    WorkflowPreviewRequestPayload,
     WorkIdentity,
     canonical_json_bytes,
 )
@@ -70,6 +74,7 @@ WorkPhase = Literal[
     "settled",
     "source_collection_retirement_pending",
     "coordinating",
+    "no_output_pending",
     "abandon_pending",
     "complete",
     "no_action",
@@ -78,7 +83,7 @@ WorkPhase = Literal[
     "canceled",
 ]
 TerminalPhase = Literal["complete", "no_action", "inapplicable", "failed", "canceled"]
-AbandonOutcome = Literal["no_action", "inapplicable", "failed", "canceled"]
+AbandonOutcome = Literal["inapplicable", "failed", "canceled"]
 
 
 def _selection_continuation(selection_sha256: str, artifact: WorkArtifactSubject) -> str:
@@ -189,7 +194,7 @@ class TargetProductionSealCheckpoint(Stove0StateModel):
     disposition_cursor: str | None = None
     disposition_hash_state: str
     disposition_count: int = Field(default=0, ge=0)
-    transformed_count: int = Field(default=0, ge=0)
+    successor_count: int = Field(default=0, ge=0)
     source_edge_output_cursor: str | None = None
     source_edge_input_cursor: str | None = None
     source_edge_hash_state: str
@@ -294,6 +299,7 @@ class WorkRecord(Stove0StateModel):
     claim: ClaimBinding | None = None
     preview_acceptance: PreviewAcceptance | None = None
     no_action_preview: WorkflowPreview | None = None
+    no_output_retirement_policy: Literal["retain", "retire-after-settlement"] | None = None
     expected_target_plan_sha256: Sha256 | None = None
     observation_requests: tuple[ContentObservationRequest, ...] = ()
     observation_results: tuple[ContentObservationResult, ...] = ()
@@ -309,6 +315,7 @@ class WorkRecord(Stove0StateModel):
     output: OutputCollectionRef | None = None
     target_settlement: TargetSettlementAuthority | None = None
     effect_settlement_sha256: Sha256 | None = None
+    no_output_settlement_sha256: Sha256 | None = None
     source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailure | None = None
     inapplicable: WorkInapplicable | None = None
@@ -343,6 +350,15 @@ class WorkRecord(Stove0StateModel):
             and self.effect_settlement_sha256 is None
         ):
             raise ValueError("settled effect work requires durable Riverhog acknowledgment")
+        no_output_settled = (
+            self.phase
+            in {"no_action", "settled", "source_collection_retirement_pending", "complete"}
+            and self.no_action_preview is not None
+        )
+        if no_output_settled != (self.no_output_settlement_sha256 is not None):
+            raise ValueError("successful no-action work requires Riverhog settlement")
+        if self.no_output_retirement_policy is not None and self.no_action_preview is None:
+            raise ValueError("no-output retirement policy requires an exact no-action decision")
         validate_work_state_shape(
             work=self.work,
             phase=self.phase,
@@ -362,6 +378,7 @@ class WorkRecord(Stove0StateModel):
             output=self.output,
             target_settlement=self.target_settlement,
             effect_settlement_sha256=self.effect_settlement_sha256,
+            no_output_settlement_sha256=self.no_output_settlement_sha256,
             source_collection_retirement_remaining=self.source_collection_retirement_remaining,
             failure=self.failure,
             inapplicable=self.inapplicable,
@@ -551,6 +568,21 @@ def _admitted_child_records(
                     )
                 )
                 continue
+            if isinstance(branch, NoOutputBranchPlan):
+                request = WorkflowPreviewRequest.seal(
+                    WorkflowPreviewRequestPayload(work=branch.work)
+                )
+                preview = WorkflowPreview.seal(
+                    WorkflowPreviewPayload(
+                        preview_id=request.preview_id,
+                        state="no_action",
+                        work=branch.work,
+                        observations=branch.observations,
+                        outcome=branch.outcome,
+                    )
+                )
+                records.append(WorkRecord(work=branch.work, no_action_preview=preview))
+                continue
             child_plan = plans[branch.branch_set_sha256]
             records.append(
                 WorkRecord(
@@ -660,6 +692,7 @@ class InMemoryWorkStore:
                     existing_child.work != child.work
                     or existing_child.workflow_plan != child.workflow_plan
                     or existing_child.branch_set_plan != child.branch_set_plan
+                    or existing_child.no_action_preview != child.no_action_preview
                     or existing_child.expected_target_plan_sha256
                     != child.expected_target_plan_sha256
                 ):
@@ -1126,9 +1159,7 @@ class Stove0WorkService:
         if preview is not None and preview.work != work:
             raise ValueError("accepted workflow preview differs from the initiated work")
         if preview is not None and preview.state == "no_action":
-            return self.store.create(
-                WorkRecord(work=work, phase="no_action", no_action_preview=preview)
-            )
+            return self.store.create(WorkRecord(work=work, no_action_preview=preview))
         acceptance = PreviewAcceptance.from_preview(preview) if preview is not None else None
         return self.store.create(WorkRecord(work=work, preview_acceptance=acceptance))
 
@@ -1622,7 +1653,7 @@ class Stove0WorkService:
             if record.branch_set_plan is not None
             else record.workflow_plan.source_collection_retirement_policy
             if record.workflow_plan is not None
-            else None
+            else record.no_output_retirement_policy
         )
         if policy is None:
             raise Stove0StateError("source collection retirement work has no sealed policy")
@@ -1778,6 +1809,9 @@ class Stove0WorkService:
         work_id: str,
         preview: WorkflowPreview,
         *,
+        source_collection_retirement_policy: Literal[
+            "retain", "retire-after-settlement"
+        ] = "retain",
         expected_revision: int,
     ) -> WorkRecord:
         record = self._load(work_id, expected_revision)
@@ -1793,11 +1827,33 @@ class Stove0WorkService:
         )
         if preview.observations != evidence:
             raise ValueError("no-action preview differs from the recorded observations")
+        if record.no_action_preview is not None and record.no_action_preview != preview:
+            raise ValueError("accepted no-action preview changed before execution")
         return self._replace(
             record,
-            phase="abandon_pending",
+            phase="no_output_pending",
             no_action_preview=preview,
-            abandon_outcome="no_action",
+            no_output_retirement_policy=source_collection_retirement_policy,
+        )
+
+    def verify_no_output(
+        self,
+        work_id: str,
+        settlement_sha256: str,
+        *,
+        expected_revision: int,
+    ) -> WorkRecord:
+        record = self._load(work_id, expected_revision)
+        if record.phase != "no_output_pending" or record.no_action_preview is None:
+            raise Stove0StateError("no-output settlement requires a planned no-action decision")
+        return self._replace(
+            record,
+            phase=(
+                "settled"
+                if record.no_output_retirement_policy == "retire-after-settlement"
+                else "no_action"
+            ),
+            no_output_settlement_sha256=settlement_sha256,
         )
 
     def fail(

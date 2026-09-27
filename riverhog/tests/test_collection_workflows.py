@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 from typing import Any, cast
 
@@ -25,6 +26,8 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.catalog_workflow_models import (
     CollectionProcessingClaimRecord,
+    CollectionProcessingConsiderationEvidenceRecord,
+    CollectionProcessingConsiderationSubjectRecord,
     CollectionProcessingDispositionSetRecord,
     CollectionProcessingEffectSettlementRecord,
 )
@@ -37,6 +40,7 @@ from riverhog_protocol.collection_tags import COLLECTION_TAG_REQUEST_MEMBERS_MAX
 from riverhog_protocol.collection_workflows import (
     DERIVATION_EVIDENCE_PATH,
     PRODUCER_EVIDENCE_PATH,
+    ArtifactDiscardApproval,
     ArtifactDisposition,
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
@@ -53,8 +57,9 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
 from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, NotFound
+from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
-from sqlalchemy import create_engine, delete
+from sqlalchemy import create_engine, delete, select
 from sqlalchemy.orm import sessionmaker
 from time_formats import parse_utc_timestamp
 
@@ -438,8 +443,8 @@ def test_disposition_batch_counts_shared_sources_once(
     assert state["output_artifact_count"] == "2"
     with factory() as session:
         counters = session.get_one(CollectionProcessingDispositionSetRecord, claim_id)
-        assert counters.transformed_count == 1
-        assert counters.transformed_with_outputs_count == 1
+        assert counters.successor_required_count == 1
+        assert counters.successor_bound_count == 1
     sealed = service.seal_disposition_set(claim_id, fence=1, principal=_principal())
     while sealed["state"] == "sealing":
         assert service.process_due_disposition_sets() == 1
@@ -1312,6 +1317,30 @@ def _effect_claim(
         "job": execution_id,
         "result": {"verified": True, "opaque_destination": "fixture"},
     }
+    service.record_dispositions(
+        str(claim["id"]),
+        fence=1,
+        dispositions=(
+            ArtifactDisposition(
+                input_collection_id=root.collection_id,
+                input_archive_root_sha256=root.archive_root_sha256,
+                input_path="camera/input.mov",
+                status="effect-applied",
+                effect_receipt_sha256=canonical_json_sha256(receipt),
+            ),
+        ),
+        principal=_principal(),
+    )
+    disposition_state = service.seal_disposition_set(
+        str(claim["id"]), fence=1, principal=_principal()
+    )
+    while disposition_state["state"] == "sealing":
+        service.process_due_disposition_sets(limit=10)
+        disposition_state = service.get_disposition_set(str(claim["id"]), principal=_principal())
+    assert disposition_state["state"] == "sealed"
+    disposition_set = ArtifactDispositionSetIdentity.from_mapping(
+        cast(dict[str, object], disposition_state["identity"])
+    )
     document = ExternalEffectSettlement(
         claim_id=str(claim["id"]),
         fence=1,
@@ -1323,6 +1352,7 @@ def _effect_claim(
         controller_evidence_sha256=str(plan["controller_evidence_sha256"]),
         receipt=receipt,
         receipt_sha256=canonical_json_sha256(receipt),
+        disposition_set=disposition_set,
     )
     return cast(dict[str, Any], sealed), document
 
@@ -1351,6 +1381,243 @@ def _effect_outcome(
         effect_receipt_sha256=document.receipt_sha256,
         effect_settlement_sha256=document.sha256,
     )
+
+
+def _no_output_claim(
+    service: SqlAlchemyCollectionWorkflowService,
+    root: CollectionRootIdentity,
+    *,
+    approved_loss: bool,
+    artifact: CollectionArtifactIdentity | None = None,
+    retire: bool = True,
+    upload_evidence: bool = True,
+) -> NoOutputSettlement:
+    selected = artifact or _artifact(root)
+    work = {"format": "fixture-work/v1", "marker": "no-output", "inputs": [root.as_dict()]}
+    claim = _create_claim(
+        service,
+        work_id=canonical_json_sha256(work),
+        work_document=work,
+        root=root,
+        artifact=selected,
+    )
+    rule = {"id": "fixture.discard/v1", "verdict": "considered"}
+    rule_sha256 = canonical_json_sha256(rule)
+    operation: dict[str, object] = {
+        "id": "fixture.no-output/v1",
+        "result_kind": "no-output",
+        "source_collection_retirement_permitted": True,
+    }
+    if approved_loss:
+        operation["source_loss"] = {
+            "rule_sha256": rule_sha256,
+            "rule": rule,
+            "evidence_slots": [
+                {
+                    "id": "fixture.observation/v1",
+                    "contract_sha256": "6" * 64,
+                    "profile_sha256": "5" * 64,
+                }
+            ],
+        }
+    execution_id = canonical_json_sha256({"claim": claim["id"], "kind": "no-output"})
+    controller_evidence = {"format": "fixture-controller-evidence/v1", "execution": execution_id}
+    sealed = service.seal_claim_plan(
+        str(claim["id"]),
+        fence=1,
+        execution_id=execution_id,
+        controller_evidence=controller_evidence,
+        controller_evidence_sha256=canonical_json_sha256(controller_evidence),
+        operation_id=str(operation["id"]),
+        operation_sha256=canonical_json_sha256(operation),
+        operation_contract=operation,
+        result_kind="no-output",
+        source_collection_retirement_policy="retire-after-settlement" if retire else "retain",
+        source_collection_retirement_grace_seconds=0,
+        principal=_principal(),
+    )
+    approval = None
+    if approved_loss:
+        subject = selected.as_dict()
+        request_body = {
+            "work_id": canonical_json_sha256(work),
+            "observer_contract_id": "fixture.observation/v1",
+            "observer_contract_sha256": "6" * 64,
+            "subjects": [subject],
+        }
+        request = {**request_body, "request_id": canonical_json_sha256(request_body)}
+        result_body = {
+            "request_id": request["request_id"],
+            "observer_contract_id": "fixture.observation/v1",
+            "observer_contract_sha256": "6" * 64,
+            "subjects": [subject],
+            "facts_schema": {"profile_sha256": "5" * 64},
+            "facts": {"considered": True},
+            "facts_sha256": canonical_json_sha256({"considered": True}),
+            "state": "observed",
+        }
+        result = {**result_body, "result_sha256": canonical_json_sha256(result_body)}
+        observation = {"request": request, "result": result}
+        observation_sha256 = canonical_json_sha256(observation)
+        if upload_evidence:
+            service.record_consideration_evidence(
+                str(claim["id"]),
+                fence=1,
+                document=observation,
+                sha256=observation_sha256,
+                principal=_principal(),
+            )
+        evidence = {
+            "format": "riverhog-artifact-consideration/v1",
+            "subject": subject,
+            "slots": [
+                {
+                    "id": "fixture.observation/v1",
+                    "contract_sha256": "6" * 64,
+                    "profile_sha256": "5" * 64,
+                    "document_sha256": observation_sha256,
+                }
+            ],
+            "reason": "The selected rule found no successor necessary.",
+        }
+        approval = ArtifactDiscardApproval(
+            controller_id="stove0",
+            rule_sha256=rule_sha256,
+            evidence_json=canonical_json_bytes(evidence).decode("utf-8"),
+            evidence_sha256=canonical_json_sha256(evidence),
+        )
+    service.record_dispositions(
+        str(claim["id"]),
+        fence=1,
+        dispositions=(
+            ArtifactDisposition(
+                input_collection_id=root.collection_id,
+                input_archive_root_sha256=root.archive_root_sha256,
+                input_path=selected.path,
+                status="not-carried-forward",
+                code="fixture.no-successor/v1",
+                message="The decision produced no material output.",
+                discard_approval=approval,
+            ),
+        ),
+        principal=_principal(),
+    )
+    state = service.seal_disposition_set(str(claim["id"]), fence=1, principal=_principal())
+    while state["state"] == "sealing":
+        service.process_due_disposition_sets(limit=10)
+        state = service.get_disposition_set(str(claim["id"]), principal=_principal())
+    assert state["state"] == "sealed"
+    plan = cast(dict[str, Any], sealed["plan"])
+    decision = {"format": "fixture-no-output-decision/v1", "applies": True}
+    return NoOutputSettlement(
+        claim_id=str(claim["id"]),
+        fence=1,
+        execution_id=execution_id,
+        operation=OperationIdentity(str(operation["id"]), canonical_json_sha256(operation)),
+        input_set_sha256=str(plan["inputs"]["sha256"]),
+        artifact_set_sha256=str(plan["artifacts"]["sha256"]),
+        controller_evidence_sha256=str(plan["controller_evidence_sha256"]),
+        decision=decision,
+        decision_sha256=canonical_json_sha256(decision),
+        disposition_set=ArtifactDispositionSetIdentity.from_mapping(
+            cast(dict[str, object], state["identity"])
+        ),
+    )
+
+
+def test_source_loss_approval_requires_retained_exact_observation(
+    tmp_path: Path, request: FixtureRequest
+) -> None:
+    factory = _session_factory(tmp_path, request)
+    root = _setup(factory)
+    service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
+    with pytest.raises(Conflict, match="lacks exact successful evidence"):
+        _no_output_claim(service, root, approved_loss=True, upload_evidence=False)
+
+
+@pytest.mark.parametrize("approved_loss", [False, True])
+def test_no_output_settlement_uses_shared_retirement_coverage(
+    tmp_path: Path, request: FixtureRequest, approved_loss: bool
+) -> None:
+    factory = _session_factory(tmp_path, request)
+    root = _setup(factory)
+    service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
+    document = _no_output_claim(service, root, approved_loss=approved_loss)
+    settled = service.settle_claim_no_output(
+        document.claim_id, fence=1, settlement=document.as_dict(), principal=_principal()
+    )
+    assert settled["state"] == "settled"
+    assert settled["no_output_settlement_sha256"] == document.sha256
+    assert (
+        service.settle_claim_no_output(
+            document.claim_id, fence=1, settlement=document.as_dict(), principal=_principal()
+        )["settled_at"]
+        == settled["settled_at"]
+    )
+    if approved_loss:
+        assert (
+            service.begin_source_collection_retirement(
+                document.claim_id, fence=1, principal=_principal()
+            )["state"]
+            == "retiring"
+        )
+        with factory() as session:
+            retained = session.scalar(
+                select(CollectionProcessingConsiderationEvidenceRecord).where(
+                    CollectionProcessingConsiderationEvidenceRecord.claim_id == document.claim_id
+                )
+            )
+            assert retained is not None
+            evidence_sha256 = retained.sha256
+            evidence_document = json.loads(retained.document_json)
+        assert service.record_consideration_evidence(
+            document.claim_id,
+            fence=1,
+            document=evidence_document,
+            sha256=evidence_sha256,
+            principal=_principal(),
+        ) == {"sha256": evidence_sha256}
+        with factory() as session, session.begin():
+            session.execute(
+                delete(CollectionArchiveObjectRecord).where(
+                    CollectionArchiveObjectRecord.collection_id == 1
+                )
+            )
+            session.execute(
+                delete(CollectionArchiveCopyRecord).where(
+                    CollectionArchiveCopyRecord.collection_id == 1
+                )
+            )
+            session.execute(
+                delete(CollectionFileRecord).where(CollectionFileRecord.collection_id == 1)
+            )
+            session.execute(delete(CollectionRecord).where(CollectionRecord.id == 1))
+        with factory() as session:
+            assert (
+                session.get(
+                    CollectionProcessingConsiderationEvidenceRecord,
+                    (document.claim_id, evidence_sha256),
+                )
+                is not None
+            )
+            assert (
+                session.scalar(
+                    select(CollectionProcessingConsiderationSubjectRecord).where(
+                        CollectionProcessingConsiderationSubjectRecord.claim_id == document.claim_id
+                    )
+                )
+                is not None
+            )
+        assert service.get_consideration_evidence(
+            document.claim_id,
+            sha256=evidence_sha256,
+            principal=_principal(),
+        ) == {"sha256": evidence_sha256, "document": evidence_document}
+    else:
+        with pytest.raises(Conflict, match="lacks a verified safe disposition"):
+            service.begin_source_collection_retirement(
+                document.claim_id, fence=1, principal=_principal()
+            )
 
 
 def _close_outcomes(
@@ -1520,7 +1787,7 @@ def test_effect_receipt_identity_cannot_be_rebound_and_replay_cannot_change_outc
         "receipt": first.as_dict()["receipt"],
         "receipt_sha256": first.receipt_sha256,
     }
-    with pytest.raises(Conflict, match="receipt or execution"):
+    with pytest.raises(Conflict, match="receipt"):
         service.settle_claim_effect(
             second.claim_id, fence=1, settlement=rebound, principal=_principal()
         )
@@ -1593,15 +1860,23 @@ def test_effect_retirement_requires_complete_inventory_and_grace(
     factory = _session_factory(tmp_path, request)
     root = _setup(factory)
     with factory() as session, session.begin():
-        session.add(
-            CollectionFileRecord(
-                collection_id=1, path="camera/not-selected.mov", bytes=3, sha256="7" * 64
-            )
+        session.add_all(
+            [
+                CollectionFileRecord(
+                    collection_id=1, path="camera/not-selected.mov", bytes=3, sha256="7" * 64
+                ),
+                CollectionFileRecord(
+                    collection_id=1,
+                    path="riverhog/not-control.json",
+                    bytes=3,
+                    sha256="6" * 64,
+                ),
+            ]
         )
     service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
     _, document = _effect_claim(service, root, retire=True, grace=60)
     settled = _settle_effect(service, document)
-    with pytest.raises(Conflict, match="every input artifact"):
+    with pytest.raises(Conflict, match="lacks a verified safe disposition"):
         service.begin_source_collection_retirement(
             document.claim_id, fence=1, principal=_principal()
         )
@@ -1611,6 +1886,16 @@ def test_effect_retirement_requires_complete_inventory_and_grace(
         session.execute(
             delete(CollectionFileRecord).where(
                 CollectionFileRecord.path == "camera/not-selected.mov"
+            )
+        )
+    with pytest.raises(Conflict, match="lacks a verified safe disposition"):
+        service.begin_source_collection_retirement(
+            document.claim_id, fence=1, principal=_principal()
+        )
+    with factory() as session, session.begin():
+        session.execute(
+            delete(CollectionFileRecord).where(
+                CollectionFileRecord.path == "riverhog/not-control.json"
             )
         )
     t0 = parse_utc_timestamp(str(settled["settled_at"]))
@@ -1816,6 +2101,74 @@ def test_effect_only_and_mixed_exact_sets_authorize_retirement_after_all_settlem
         # Parent authorization is a retirement exemption, never blanket deletion permission.
         assert processing_claim_blockers(session, 1)
         assert not processing_claim_blockers(session, 1, exempt_claim_id=parent_id)
+
+
+@pytest.mark.parametrize("material_kind", ["collection", "external-effect"])
+@pytest.mark.parametrize("approved_loss", [False, True])
+def test_mixed_result_retirement_uses_one_exact_disposition_denominator(
+    tmp_path: Path,
+    request: FixtureRequest,
+    material_kind: str,
+    approved_loss: bool,
+) -> None:
+    factory = _session_factory(tmp_path, request)
+    root = _setup(factory)
+    sidecar = CollectionArtifactIdentity(
+        collection=root,
+        path="camera/sidecar.json",
+        bytes=2,
+        sha256="9" * 64,
+    )
+    with factory() as session, session.begin():
+        session.add(
+            CollectionFileRecord(
+                collection_id=1,
+                path=sidecar.path,
+                bytes=sidecar.bytes,
+                sha256=sidecar.sha256,
+            )
+        )
+    service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
+    parent = _create_claim(service, work_id=WORK_ID, work_document=_work_document(root), root=root)
+    parent_id = str(parent["id"])
+    if material_kind == "collection":
+        material = _settled_collection_child(service, factory, root)
+    else:
+        _, effect = _effect_claim(service, root)
+        _settle_effect(service, effect)
+        service.release_claim(effect.claim_id, fence=1, principal=_principal())
+        material = _effect_outcome("branch/effect", effect)
+    no_output = _no_output_claim(
+        service, root, approved_loss=approved_loss, artifact=sidecar, retire=False
+    )
+    service.settle_claim_no_output(
+        no_output.claim_id,
+        fence=1,
+        settlement=no_output.as_dict(),
+        principal=_principal(),
+    )
+    service.release_claim(no_output.claim_id, fence=1, principal=_principal())
+    empty = CollectionProcessingOutcomeIdentity(
+        outcome_id="branch/no-output",
+        source_claim_id=no_output.claim_id,
+        source_fence=1,
+        execution_id=no_output.execution_id,
+        result_kind="no-output",
+        no_output_settlement_sha256=no_output.sha256,
+    )
+    outcomes = (material, empty)
+    service.append_claim_outcomes(parent_id, fence=1, outcomes=outcomes, principal=_principal())
+    _close_outcomes(service, parent_id, outcomes)
+    if approved_loss:
+        assert (
+            service.begin_source_collection_retirement(parent_id, fence=1, principal=_principal())[
+                "state"
+            ]
+            == "retiring"
+        )
+    else:
+        with pytest.raises(Conflict, match="lacks a verified safe disposition"):
+            service.begin_source_collection_retirement(parent_id, fence=1, principal=_principal())
 
 
 def test_wrong_exact_set_digest_fails_closed_in_background_seal(

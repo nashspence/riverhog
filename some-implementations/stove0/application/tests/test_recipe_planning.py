@@ -64,12 +64,16 @@ from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
+    BranchNoOutputSettlement,
     BranchSetDecision,
     BranchSettlement,
     CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JsonSchemaValidationProfile,
+    NoOutputBranchPlan,
     WorkArtifactSubject,
+    WorkIdentity,
+    evaluate_branch_set,
     resolve_join_plan,
 )
 from stove0_target_protocol import TargetInputRoleCount
@@ -590,6 +594,92 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
     ]
     with pytest.raises(RuntimeError, match="observation authority"):
         planner.workflow_plan(work, ())
+
+
+def test_nested_no_output_is_a_required_success_without_material_output() -> None:
+    fixture = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
+    catalog = RecipeCatalog.load(fixture)
+    child_document = catalog.recipe("stove0.conformance-media/v1").model_dump(
+        mode="json", exclude_none=True
+    )
+    child_document["id"] = "fixture.a-no-output/v1"
+    child_document["no_action"] = {
+        "code": "fixture.no-output/v1",
+        "message": "No material output is needed.",
+        "when": [
+            {
+                "observation_contract_id": MEDIA_METADATA_OBSERVER_CONTRACT.id,
+                "pointer": "/artifacts",
+                "operator": "exists",
+                "value": True,
+            }
+        ],
+    }
+    child = RecipeDefinition.model_validate(child_document)
+    parent = RecipeDefinition(
+        id="fixture.b-parent/v1",
+        revision="1",
+        unmatched_artifact_disposition="retain-in-source",
+        routes=(
+            RecipeCoordinationRoute(
+                id="no-output",
+                recipe=child.ref,
+                artifact_rules=(ArtifactRule(role="stove0.media.source/v1"),),
+            ),
+        ),
+    )
+    observer = BatchMediaObservers(100)
+    planner = RecipePlanner(
+        catalog=RecipeCatalog(operations=catalog.operations, recipes=(child, parent)),
+        riverhog=cast(ApiClient, ConformanceCatalogApi()),
+        observers=cast(ObserverPort, observer),
+        targets=cast(TargetPort, object()),
+    )
+    work = planner.create_work(
+        parent.id,
+        (
+            CollectionRootIdentityRef(
+                collection_id=str(11),
+                archive_root_sha256=_sha("1"),
+                content_identity=_sha("2"),
+            ),
+        ),
+    )
+
+    def observe(child_work: WorkIdentity) -> tuple[ContentObservationEvidence, ...]:
+        return tuple(
+            ContentObservationEvidence(
+                request=request,
+                result=ContentObservationResultBuilder(observer.value, request).observed(
+                    MediaMetadataFacts(
+                        artifacts=tuple(
+                            MediaArtifactFacts(artifact_id=subject.id, state="observed")
+                            for subject in request.subjects
+                        )
+                    ).model_dump(mode="json")
+                ),
+            )
+            for request in planner.observation_requests(child_work)
+        )
+
+    decision = planner.workflow_plan(work, (), nested_observer=observe)
+    assert isinstance(decision, BranchSetDecision)
+    branch = decision.plan.branches[0]
+    assert isinstance(branch, NoOutputBranchPlan)
+    assert branch.work.recipe == child.ref
+    assert decision.leaf_branches() == ()
+    settlement = BranchNoOutputSettlement.seal(branch=branch, no_output_settlement_sha256=_sha("f"))
+    evaluation = evaluate_branch_set(
+        decision.plan,
+        decision.selection_documents,
+        branch_sets=decision.branch_set_documents,
+        branch_no_output_settlements=(settlement,),
+    )
+    assert evaluation.branch_set_succeeded
+    assert evaluation.succeeded_no_outputs == (settlement,)
+    assert evaluation.coordination_settlement is not None
+    assert evaluation.coordination_settlement.children[0].kind == "no-output"
+    assert evaluation.coordination_settlement.collection_result is None
 
 
 def test_recipe_explicitly_rejects_unmatched_primary_and_sidecar_artifacts() -> None:

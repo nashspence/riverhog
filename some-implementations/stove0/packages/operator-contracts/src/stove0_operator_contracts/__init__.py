@@ -66,6 +66,7 @@ WorkPhase = Literal[
     "settled",
     "source_collection_retirement_pending",
     "coordinating",
+    "no_output_pending",
     "abandon_pending",
     "complete",
     "no_action",
@@ -99,7 +100,6 @@ AdmissionState = Literal[
     "intent",
     "previewed",
     "work_bound",
-    "resolved_no_action",
     "resolved_inapplicable",
     "resolved_failed",
     "resolved_canceled",
@@ -311,7 +311,6 @@ class AdmissionView(OperatorModel):
     @model_validator(mode="after")
     def exact_stage(self) -> Self:
         resolved = {
-            "resolved_no_action",
             "resolved_inapplicable",
             "resolved_failed",
             "resolved_canceled",
@@ -324,8 +323,6 @@ class AdmissionView(OperatorModel):
             raise ValueError("work-bound admission requires preview and work identities")
         if self.state in resolved and self.preview_sha256 is None:
             raise ValueError("resolved admission requires an exact preview identity")
-        if self.state == "resolved_no_action" and self.work_id is None:
-            raise ValueError("resolved no-action admission requires its terminal work identity")
         if (
             self.state in {"resolved_inapplicable", "resolved_failed", "resolved_canceled"}
             and self.work_id is not None
@@ -474,10 +471,11 @@ def validate_work_state_shape(
     output: OutputCollectionRef | None,
     target_settlement: object | None,
     effect_settlement_sha256: str | None,
+    no_output_settlement_sha256: str | None,
     source_collection_retirement_remaining: Sequence[int],
     failure: object | None,
     inapplicable: object | None,
-    abandon_outcome: Literal["no_action", "inapplicable", "failed", "canceled"] | None,
+    abandon_outcome: Literal["inapplicable", "failed", "canceled"] | None,
 ) -> None:
     """Validate the one work-state relationship shared by storage and projection."""
 
@@ -496,10 +494,24 @@ def validate_work_state_shape(
         raise ValueError("output identity appears before verification")
     if phase in {"abandon_pending", "failed", "canceled", "inapplicable"} and output is not None:
         raise ValueError("non-success terminal work cannot contain an output")
-    no_action_phases = {"no_action"}
-    if phase == "abandon_pending" and abandon_outcome == "no_action":
-        no_action_phases.add("abandon_pending")
-    if (phase in no_action_phases) != (no_action_preview is not None):
+    no_action_phases = {
+        "eligible",
+        "claimed",
+        "observing",
+        "planning",
+        "no_output_pending",
+        "no_action",
+        "settled",
+        "source_collection_retirement_pending",
+        "complete",
+        "abandon_pending",
+        "failed",
+        "inapplicable",
+        "canceled",
+    }
+    if no_action_preview is not None and phase not in no_action_phases:
+        raise ValueError("no-action preview appears in an unrelated work phase")
+    if phase in {"no_output_pending", "no_action"} and no_action_preview is None:
         raise ValueError("no-action work requires exactly one sealed no-action preview")
     if no_action_preview is not None and (
         no_action_preview.state != "no_action"
@@ -516,6 +528,14 @@ def validate_work_state_shape(
         or effect_settlement_sha256 is not None
     ):
         raise ValueError("no-action preview cannot carry executable work authority")
+    no_output_settled = no_action_preview is not None and phase in {
+        "no_action",
+        "settled",
+        "source_collection_retirement_pending",
+        "complete",
+    }
+    if no_output_settled != (no_output_settlement_sha256 is not None):
+        raise ValueError("no-action completion requires a Riverhog no-output settlement")
     failure_phases = {"failed"}
     if phase == "abandon_pending" and abandon_outcome == "failed":
         failure_phases.add("abandon_pending")
@@ -898,10 +918,11 @@ class WorkView(OperatorModel):
     output: OutputCollectionRef | None = None
     target_settlement: TargetSettlementAuthority | None = None
     effect_settlement_sha256: Sha256 | None = None
+    no_output_settlement_sha256: Sha256 | None = None
     source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailureView | None = None
     inapplicable: WorkInapplicableView | None = None
-    abandon_outcome: Literal["no_action", "inapplicable", "failed", "canceled"] | None = None
+    abandon_outcome: Literal["inapplicable", "failed", "canceled"] | None = None
 
     @model_validator(mode="after")
     def exact_identity(self) -> Self:
@@ -926,6 +947,7 @@ class WorkView(OperatorModel):
             output=self.output,
             target_settlement=self.target_settlement,
             effect_settlement_sha256=self.effect_settlement_sha256,
+            no_output_settlement_sha256=self.no_output_settlement_sha256,
             source_collection_retirement_remaining=self.source_collection_retirement_remaining,
             failure=self.failure,
             inapplicable=self.inapplicable,

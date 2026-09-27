@@ -37,6 +37,10 @@ from riverhog_protocol.effect_settlement import (
 )
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.list_controls import ClaimState, ProcessingClaimSort, SortOrder
+from riverhog_protocol.no_output_settlement import (
+    NO_OUTPUT_DECISION_MAX_BYTES,
+    NoOutputSettlement,
+)
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.paths import CanonicalRelPath, CollectionId
 from riverhog_protocol.principal_ids import ApplicationName, PrincipalId
@@ -52,6 +56,7 @@ CapabilityAction = Literal["read-inputs", "write-output"]
 WORK_DOCUMENT_MAX_BYTES = 4 * 1024 * 1024
 CONTROLLER_EVIDENCE_MAX_BYTES = 16 * 1024 * 1024
 DISPOSITION_BATCH_MAX = 128
+CONSIDERATION_EVIDENCE_MAX_BYTES = 16 * 1024 * 1024
 WORKFLOW_SET_BATCH_MAX = 128
 ControllerEvidenceDocument = Annotated[
     dict[str, Any],
@@ -323,6 +328,7 @@ class ProcessingOutcomeIdentityDocument(RiverhogWorkflowDocument):
                         "derivation_sha256": {"type": "string"},
                         "effect_receipt_sha256": {"type": "null"},
                         "effect_settlement_sha256": {"type": "null"},
+                        "no_output_settlement_sha256": {"type": "null"},
                     },
                     "required": ["output_collection", "derivation_sha256"],
                 },
@@ -333,8 +339,20 @@ class ProcessingOutcomeIdentityDocument(RiverhogWorkflowDocument):
                         "derivation_sha256": {"type": "null"},
                         "effect_receipt_sha256": {"type": "string"},
                         "effect_settlement_sha256": {"type": "string"},
+                        "no_output_settlement_sha256": {"type": "null"},
                     },
                     "required": ["effect_receipt_sha256", "effect_settlement_sha256"],
+                },
+                {
+                    "properties": {
+                        "result_kind": {"const": "no-output"},
+                        "output_collection": {"type": "null"},
+                        "derivation_sha256": {"type": "null"},
+                        "effect_receipt_sha256": {"type": "null"},
+                        "effect_settlement_sha256": {"type": "null"},
+                        "no_output_settlement_sha256": {"type": "string"},
+                    },
+                    "required": ["no_output_settlement_sha256"],
                 },
             ]
         }
@@ -343,11 +361,12 @@ class ProcessingOutcomeIdentityDocument(RiverhogWorkflowDocument):
     source_claim_id: ProcessingClaimId
     source_fence: NonnegativeDecimal = Field(ge=1)
     execution_id: SHA256
-    result_kind: Literal["collection", "external-effect"]
+    result_kind: Literal["collection", "external-effect", "no-output"]
     output_collection: CollectionRootIdentityDocument | None = None
     derivation_sha256: SHA256 | None = None
     effect_receipt_sha256: SHA256 | None = None
     effect_settlement_sha256: SHA256 | None = None
+    no_output_settlement_sha256: SHA256 | None = None
 
     @model_validator(mode="after")
     def validate_identity(self) -> Self:
@@ -369,6 +388,7 @@ class ExternalEffectSettlementDocument(RiverhogWorkflowDocument):
     controller_evidence_sha256: SHA256
     receipt: EffectReceiptDocument
     receipt_sha256: SHA256
+    disposition_set: ArtifactDispositionSetIdentityDocument
     status: Literal["succeeded"]
 
     @model_validator(mode="after")
@@ -388,6 +408,56 @@ class ArtifactDispositionFailureDocument(RiverhogWorkflowDocument):
     message: str = Field(min_length=1, max_length=500)
 
 
+class ArtifactDispositionDecisionDocument(RiverhogWorkflowDocument):
+    code: SemanticId
+    message: str = Field(min_length=1, max_length=1000)
+
+
+class ArtifactDiscardApprovalDocument(RiverhogWorkflowDocument):
+    controller_id: ApplicationName
+    rule_sha256: SHA256
+    evidence: dict[str, Any]
+    evidence_sha256: SHA256
+
+
+class ConsiderationEvidencePutDocument(RiverhogWorkflowDocument):
+    fence: NonnegativeDecimal = Field(ge=1)
+    sha256: SHA256
+    document: dict[str, Any] = Field(
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-observation-evidence-document",
+            },
+            "x-riverhog-encoded-bytes-max": CONSIDERATION_EVIDENCE_MAX_BYTES,
+        }
+    )
+
+    @model_validator(mode="after")
+    def exact_document(self) -> Self:
+        encoded = canonical_json_bytes(self.document)
+        if len(encoded) > CONSIDERATION_EVIDENCE_MAX_BYTES:
+            raise ValueError("consideration evidence document exceeds its byte limit")
+        if canonical_json_sha256(self.document) != self.sha256:
+            raise ValueError("consideration evidence identity differs from its document")
+        return self
+
+
+class ConsiderationEvidenceOutDocument(RiverhogWorkflowDocument):
+    sha256: SHA256
+
+
+class ConsiderationEvidenceReadDocument(RiverhogWorkflowDocument):
+    sha256: SHA256
+    document: dict[str, Any]
+
+    @model_validator(mode="after")
+    def exact_document(self) -> Self:
+        if canonical_json_sha256(self.document) != self.sha256:
+            raise ValueError("retained consideration evidence differs from its identity")
+        return self
+
+
 class ArtifactDispositionDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
@@ -396,12 +466,34 @@ class ArtifactDispositionDocument(RiverhogWorkflowDocument):
                     "properties": {
                         "status": {"enum": ["transformed", "preserved"]},
                         "failure": {"type": "null"},
+                        "decision": {"type": "null"},
+                        "effect_receipt_sha256": {"type": "null"},
                     }
+                },
+                {
+                    "properties": {
+                        "status": {"const": "effect-applied"},
+                        "failure": {"type": "null"},
+                        "decision": {"type": "null"},
+                        "effect_receipt_sha256": {"type": "string"},
+                    },
+                    "required": ["effect_receipt_sha256"],
+                },
+                {
+                    "properties": {
+                        "status": {"const": "not-carried-forward"},
+                        "failure": {"type": "null"},
+                        "decision": {"type": "object"},
+                        "effect_receipt_sha256": {"type": "null"},
+                    },
+                    "required": ["decision"],
                 },
                 {
                     "properties": {
                         "status": {"enum": ["omitted", "rejected"]},
                         "failure": {"type": "object"},
+                        "decision": {"type": "null"},
+                        "effect_receipt_sha256": {"type": "null"},
                     },
                     "required": ["failure"],
                 },
@@ -410,8 +502,14 @@ class ArtifactDispositionDocument(RiverhogWorkflowDocument):
     )
 
     input: ArtifactDispositionInputDocument
-    status: Literal["transformed", "preserved", "omitted", "rejected"]
+    status: Literal[
+        "transformed", "preserved", "effect-applied", "not-carried-forward", "omitted", "rejected"
+    ]
     failure: ArtifactDispositionFailureDocument | None = None
+    decision: ArtifactDispositionDecisionDocument | None = None
+    effect_receipt_sha256: SHA256 | None = None
+    discard_approval: ArtifactDiscardApprovalDocument | None = None
+    retain_required: bool | None = None
 
     @model_validator(mode="after")
     def validate_disposition(self) -> Self:
@@ -463,13 +561,41 @@ class ArtifactDispositionOutputBatchDocument(RiverhogWorkflowDocument):
 
 class ArtifactDispositionSetIdentityDocument(RiverhogWorkflowDocument):
     disposition_count: NonnegativeDecimal = Field(ge=1)
-    output_edge_count: NonnegativeDecimal = Field(ge=1)
-    output_artifact_count: NonnegativeDecimal = Field(ge=1)
+    output_edge_count: NonnegativeDecimal = Field(ge=0)
+    output_artifact_count: NonnegativeDecimal = Field(ge=0)
     sha256: SHA256
 
     @model_validator(mode="after")
     def validate_identity(self) -> Self:
         ArtifactDispositionSetIdentity.from_mapping(self.model_dump(mode="json"))
+        return self
+
+
+class NoOutputSettlementDocument(RiverhogWorkflowDocument):
+    format: Literal["riverhog-no-output-settlement/v1"]
+    claim_id: ProcessingClaimId
+    fence: NonnegativeDecimal = Field(ge=1)
+    execution_id: SHA256
+    operation: OperationIdentityDocument
+    input_set_sha256: SHA256
+    artifact_set_sha256: SHA256
+    controller_evidence_sha256: SHA256
+    decision: dict[str, Any] = Field(
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-no-output-controller-decision",
+            },
+            "x-riverhog-encoded-bytes-max": NO_OUTPUT_DECISION_MAX_BYTES,
+        }
+    )
+    decision_sha256: SHA256
+    disposition_set: ArtifactDispositionSetIdentityDocument
+    status: Literal["succeeded"]
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> Self:
+        NoOutputSettlement.from_mapping(self.model_dump(mode="json"))
         return self
 
 
@@ -600,7 +726,7 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
-    result_kind: Literal["collection", "external-effect"] = "collection"
+    result_kind: Literal["collection", "external-effect", "no-output"] = "collection"
     operation_contract: OperationContractDocument | None = None
     output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
@@ -634,8 +760,8 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
         )
         if self.source_collection_retirement_policy == "retire-after-settlement" and not permitted:
             raise ValueError("recipe retirement requires an exact permitting operation declaration")
-        if self.result_kind == "external-effect" and self.output_policy != OutputCollectionPolicy():
-            raise ValueError("external-effect claim cannot publish a collection")
+        if self.result_kind != "collection" and self.output_policy != OutputCollectionPolicy():
+            raise ValueError("noncollection claim cannot publish a collection")
         return self
 
 
@@ -691,6 +817,18 @@ class ProcessingClaimEffectSettleDocument(RiverhogWorkflowDocument):
     def validate_fence(self) -> Self:
         if self.fence != self.settlement.fence:
             raise ValueError("effect settlement differs from the requested fence")
+        return self
+
+
+class ProcessingClaimNoOutputSettleDocument(RiverhogWorkflowDocument):
+    fence: NonnegativeDecimal = Field(ge=1)
+    settlement: NoOutputSettlementDocument
+    outcome: ProcessingOutcomeBindingDocument | None = None
+
+    @model_validator(mode="after")
+    def validate_fence(self) -> Self:
+        if self.fence != self.settlement.fence:
+            raise ValueError("no-output settlement differs from the requested fence")
         return self
 
 
@@ -765,7 +903,7 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
-    result_kind: Literal["collection", "external-effect"] = "collection"
+    result_kind: Literal["collection", "external-effect", "no-output"] = "collection"
     operation_contract: OperationContractDocument | None = None
     output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
     inputs: ExactSetIdentityDocument
@@ -828,6 +966,7 @@ class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument)
                         "execution_id": {"type": "string"},
                         "output_collection_id": cast(Any, scalar_schema("sequence63")),
                         "effect_settlement_sha256": {"type": "null"},
+                        "no_output_settlement_sha256": {"type": "null"},
                         "outcomes": {"type": "null"},
                     },
                     "required": ["execution_id", "output_collection_id"],
@@ -837,15 +976,27 @@ class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument)
                         "execution_id": {"type": "string"},
                         "output_collection_id": {"type": "null"},
                         "effect_settlement_sha256": {"type": "string"},
+                        "no_output_settlement_sha256": {"type": "null"},
                         "outcomes": {"type": "null"},
                     },
                     "required": ["execution_id", "effect_settlement_sha256"],
                 },
                 {
                     "properties": {
+                        "execution_id": {"type": "string"},
+                        "output_collection_id": {"type": "null"},
+                        "effect_settlement_sha256": {"type": "null"},
+                        "no_output_settlement_sha256": {"type": "string"},
+                        "outcomes": {"type": "null"},
+                    },
+                    "required": ["execution_id", "no_output_settlement_sha256"],
+                },
+                {
+                    "properties": {
                         "execution_id": {"type": "null"},
                         "output_collection_id": {"type": "null"},
                         "effect_settlement_sha256": {"type": "null"},
+                        "no_output_settlement_sha256": {"type": "null"},
                         "outcomes": {"type": "object"},
                     },
                     "required": ["outcomes"],
@@ -859,16 +1010,18 @@ class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument)
     execution_id: SHA256 | None = None
     output_collection_id: CollectionId | None = None
     effect_settlement_sha256: SHA256 | None = None
+    no_output_settlement_sha256: SHA256 | None = None
     outcomes: ExactSetIdentityDocument | None = None
 
     @model_validator(mode="after")
     def validate_settlement_form(self) -> Self:
         collection = self.output_collection_id is not None
         effect = self.effect_settlement_sha256 is not None
+        no_output = self.no_output_settlement_sha256 is not None
         delegated = self.outcomes is not None
-        if sum((collection, effect, delegated)) != 1:
+        if sum((collection, effect, no_output, delegated)) != 1:
             raise ValueError("retirement requires exactly one direct or delegated settlement")
-        if (collection or effect) != (self.execution_id is not None):
+        if (collection or effect or no_output) != (self.execution_id is not None):
             raise ValueError("retirement execution differs from its settlement form")
         return self
 
@@ -929,6 +1082,7 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
     released_at: CanonicalUtcTimestamp | None = None
     output_collection_id: CollectionId | None = None
     effect_settlement_sha256: SHA256 | None = None
+    no_output_settlement_sha256: SHA256 | None = None
     work_document: WorkDocument
     work_document_sha256: SHA256
     inputs: ReceivingSetDocument
@@ -974,13 +1128,26 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
                     if (
                         self.effect_settlement_sha256 is None
                         or self.output_collection_id is not None
+                        or self.no_output_settlement_sha256 is not None
                     ):
                         raise ValueError("direct effect settlement evidence is incomplete")
-                elif self.output_collection_id is None or self.effect_settlement_sha256 is not None:
+                elif self.plan.result_kind == "no-output":
+                    if (
+                        self.no_output_settlement_sha256 is None
+                        or self.output_collection_id is not None
+                        or self.effect_settlement_sha256 is not None
+                    ):
+                        raise ValueError("direct no-output settlement evidence is incomplete")
+                elif (
+                    self.output_collection_id is None
+                    or self.effect_settlement_sha256 is not None
+                    or self.no_output_settlement_sha256 is not None
+                ):
                     raise ValueError("direct collection settlement evidence is incomplete")
             elif (
                 self.output_collection_id is not None
                 or self.effect_settlement_sha256 is not None
+                or self.no_output_settlement_sha256 is not None
                 or self.outcomes.identity is None
                 or self.outcome_settlement is None
             ):
@@ -989,6 +1156,7 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
             self.output_collection_id is not None
             or self.outcome_settlement is not None
             or self.effect_settlement_sha256 is not None
+            or self.no_output_settlement_sha256 is not None
         ):
             raise ValueError("unsettled claim cannot publish settlement evidence")
         return self
@@ -1056,10 +1224,16 @@ class CollectionDerivationResponseDocument(RiverhogWorkflowDocument):
 __all__ = [
     "ProcessingClaimOutcomesAppendDocument",
     "ProcessingClaimEffectSettleDocument",
+    "ProcessingClaimNoOutputSettleDocument",
     "ExternalEffectSettlementDocument",
+    "NoOutputSettlementDocument",
     "CONTROLLER_EVIDENCE_MAX_BYTES",
+    "CONSIDERATION_EVIDENCE_MAX_BYTES",
     "DISPOSITION_BATCH_MAX",
     "ArtifactDispositionBatchDocument",
+    "ConsiderationEvidencePutDocument",
+    "ConsiderationEvidenceOutDocument",
+    "ConsiderationEvidenceReadDocument",
     "CapabilityAction",
     "ClaimState",
     "ArtifactDispositionDocument",

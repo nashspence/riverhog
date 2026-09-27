@@ -40,6 +40,15 @@ from riverhog_protocol.collection_workflow_transport import (
     CollectionRootPageDocument as CollectionRootPageOut,
 )
 from riverhog_protocol.collection_workflow_transport import (
+    ConsiderationEvidenceOutDocument as ConsiderationEvidenceOut,
+)
+from riverhog_protocol.collection_workflow_transport import (
+    ConsiderationEvidencePutDocument as ConsiderationEvidencePutIn,
+)
+from riverhog_protocol.collection_workflow_transport import (
+    ConsiderationEvidenceReadDocument as ConsiderationEvidenceReadOut,
+)
+from riverhog_protocol.collection_workflow_transport import (
     OperationIdentityDocument as OperationIdentityIn,
 )
 from riverhog_protocol.collection_workflow_transport import (
@@ -62,6 +71,9 @@ from riverhog_protocol.collection_workflow_transport import (
 )
 from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimFenceDocument as ProcessingClaimFenceIn,
+)
+from riverhog_protocol.collection_workflow_transport import (
+    ProcessingClaimNoOutputSettleDocument as ProcessingClaimNoOutputSettleIn,
 )
 from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimOutcomesAppendDocument as ProcessingClaimOutcomesAppendIn,
@@ -94,6 +106,7 @@ from riverhog_protocol.collection_workflow_transport import (
 __all__ = [
     "ProcessingClaimOutcomesAppendIn",
     "ProcessingClaimEffectSettleIn",
+    "ProcessingClaimNoOutputSettleIn",
     "ArtifactDispositionBatchIn",
     "ArtifactDispositionOutputBatchIn",
     "ArtifactDispositionOutputPageOut",
@@ -101,6 +114,9 @@ __all__ = [
     "ArtifactDispositionSetOut",
     "ArtifactReceivingSetOut",
     "CollectionArtifactBatchIn",
+    "ConsiderationEvidencePutIn",
+    "ConsiderationEvidenceOut",
+    "ConsiderationEvidenceReadOut",
     "CollectionArtifactPageOut",
     "CollectionRootBatchIn",
     "CollectionRootPageOut",

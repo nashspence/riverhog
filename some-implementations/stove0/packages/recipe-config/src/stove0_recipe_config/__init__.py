@@ -13,6 +13,8 @@ from stove0_recipe_config.models import (
     RecipeJoinMember,
     RecipeNoAction,
     RecipeRoute,
+    RecipeSourceLossEvidenceSlot,
+    RecipeSourceLossRule,
 )
 
 __all__ = [
@@ -30,4 +32,6 @@ __all__ = [
     "RecipeJoinMember",
     "RecipeNoAction",
     "RecipeRoute",
+    "RecipeSourceLossEvidenceSlot",
+    "RecipeSourceLossRule",
 ]

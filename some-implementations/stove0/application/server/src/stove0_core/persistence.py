@@ -122,7 +122,8 @@ class _WorkRow(_Base):
         CheckConstraint(
             "phase IN ('eligible','claimed','observing','planning','target_preflight',"
             "'queued','executing','output_finalizing','verifying','settled',"
-            "'source_collection_retirement_pending','coordinating','abandon_pending','complete',"
+            "'source_collection_retirement_pending','coordinating','no_output_pending',"
+            "'abandon_pending','complete',"
             "'no_action','inapplicable','failed','canceled')",
             name="ck_stove0_work_records_phase",
         ),
@@ -290,11 +291,13 @@ class _TargetDispositionRow(_Base):
     job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     input_id: Mapped[str] = mapped_column(String(160), primary_key=True)
     status: Mapped[str] = mapped_column(String(32), nullable=False)
+    code: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    message: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 
     __table_args__ = (
         CheckConstraint("length(input_id) >= 1", name="ck_stove0_target_dispositions_id"),
         CheckConstraint(
-            "status IN ('omitted','preserved','rejected','transformed')",
+            "status IN ('not-carried-forward','omitted','preserved','rejected','transformed')",
             name="ck_stove0_target_dispositions_status",
         ),
     )
@@ -657,7 +660,7 @@ class _AdmissionCandidateRow(_Base):
 
     __table_args__ = (
         CheckConstraint(
-            "state IN ('intent','previewed','work_bound','resolved_no_action',"
+            "state IN ('intent','previewed','work_bound',"
             "'resolved_inapplicable','resolved_failed','resolved_canceled')",
             name="ck_stove0_admission_candidate_state",
         ),
@@ -668,7 +671,7 @@ class _AdmissionCandidateRow(_Base):
         ),
         CheckConstraint("attempt_count >= 0", name="ck_stove0_admission_candidate_attempt_count"),
         CheckConstraint(
-            "state IN ('work_bound','resolved_no_action','resolved_inapplicable',"
+            "state IN ('work_bound','resolved_inapplicable',"
             "'resolved_failed','resolved_canceled') AND next_attempt_at IS NULL OR "
             "state IN ('intent','previewed') AND next_attempt_at IS NOT NULL",
             name="ck_stove0_admission_candidate_next_attempt",
@@ -927,6 +930,7 @@ class SqlAlchemyStateStore:
                     existing.work != child.work
                     or existing.workflow_plan != child.workflow_plan
                     or existing.branch_set_plan != child.branch_set_plan
+                    or existing.no_action_preview != child.no_action_preview
                     or existing.expected_target_plan_sha256 != child.expected_target_plan_sha256
                 ):
                     raise ConcurrentWorkUpdate("branch child identity was reused")
@@ -1120,9 +1124,15 @@ class SqlAlchemyStateStore:
                         job_id=job_id,
                         input_id=disposition.input_id,
                         status=disposition.status,
+                        code=disposition.code,
+                        message=disposition.message,
                     )
                 )
-            elif existing.status != disposition.status:
+            elif (
+                existing.status != disposition.status
+                or existing.code != disposition.code
+                or existing.message != disposition.message
+            ):
                 raise ConcurrentWorkUpdate("target input disposition changed")
 
     def record_target_source_edge(self, work_id: str, job_id: str, edge: OutputSourceEdge) -> None:
@@ -1354,7 +1364,10 @@ class SqlAlchemyStateStore:
                 None
                 if row is None
                 else InputDispositionDeclaration(
-                    input_id=row.input_id, status=cast(Any, row.status)
+                    input_id=row.input_id,
+                    status=cast(Any, row.status),
+                    code=row.code,
+                    message=row.message,
                 )
             )
 
@@ -1397,7 +1410,10 @@ class SqlAlchemyStateStore:
         with read_snapshot(self.sessions) as session:
             for row in session.scalars(statement):
                 yield InputDispositionDeclaration(
-                    input_id=row.input_id, status=cast(Any, row.status)
+                    input_id=row.input_id,
+                    status=cast(Any, row.status),
+                    code=row.code,
+                    message=row.message,
                 )
 
     def iter_target_source_edges(self, work_id: str, job_id: str) -> Iterator[OutputSourceEdge]:
@@ -1492,6 +1508,8 @@ class SqlAlchemyStateStore:
                 InputDispositionDeclaration(
                     input_id=row.input_id,
                     status=cast(Any, row.status),
+                    code=row.code,
+                    message=row.message,
                 )
                 for row in session.scalars(statement)
             )

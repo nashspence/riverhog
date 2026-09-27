@@ -59,6 +59,7 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
 from riverhog_protocol.errors import Forbidden
+from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_provenance import (
     ArchiveFileProvenanceRecord,
     create_derivative_journal_from_identity,
@@ -831,6 +832,46 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     assert sealed["plan"]["execution_id"] == execution_id
     sealed_plan = sealed["plan"]
+    observation_request_body = {
+        "work_id": work_id,
+        "observer_contract_id": "qualification.consideration/v1",
+        "observer_contract_sha256": "6" * 64,
+        "subjects": [source_artifact],
+    }
+    observation_request = {
+        **observation_request_body,
+        "request_id": canonical_json_sha256(observation_request_body),
+    }
+    observation_facts = {"considered": True}
+    observation_result_body = {
+        "request_id": observation_request["request_id"],
+        "observer_contract_id": observation_request_body["observer_contract_id"],
+        "observer_contract_sha256": observation_request_body["observer_contract_sha256"],
+        "subjects": [source_artifact],
+        "facts_schema": {"profile_sha256": "5" * 64},
+        "facts": observation_facts,
+        "facts_sha256": canonical_json_sha256(observation_facts),
+        "state": "observed",
+    }
+    observation_document = {
+        "request": observation_request,
+        "result": {
+            **observation_result_body,
+            "result_sha256": canonical_json_sha256(observation_result_body),
+        },
+    }
+    observation_sha256 = canonical_json_sha256(observation_document)
+    retained_observation = operator.record_processing_claim_consideration_evidence(
+        claim_id,
+        fence=claim_fence,
+        document=observation_document,
+        sha256=observation_sha256,
+    )
+    assert retained_observation.sha256 == observation_sha256
+    assert (
+        operator.get_processing_claim_consideration_evidence(claim_id, observation_sha256).document
+        == observation_document
+    )
     assert (
         operator.list_processing_claim_inputs(
             claim_id,
@@ -1202,6 +1243,26 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         "execution": effect_execution,
         "succeeded": True,
     }
+    operator.record_processing_claim_dispositions(
+        effect_claim.id,
+        fence=effect_claim.fence,
+        dispositions=[
+            ArtifactDisposition(
+                input_collection_id=source_identity.collection_id,
+                input_archive_root_sha256=source_identity.archive_root_sha256,
+                input_path=source_artifact["path"],
+                status="effect-applied",
+                effect_receipt_sha256=canonical_json_sha256(opaque_receipt),
+            ).as_dict()
+        ],
+    )
+    effect_dispositions = operator.seal_processing_claim_dispositions(
+        effect_claim.id, fence=effect_claim.fence
+    )
+    while effect_dispositions.state == "sealing":
+        assert container.collection_workflows.process_due_disposition_sets() == 1
+        effect_dispositions = operator.get_processing_claim_dispositions(effect_claim.id)
+    assert effect_dispositions.state == "sealed" and effect_dispositions.identity is not None
     effect_document = ExternalEffectSettlement(
         claim_id=effect_claim.id,
         fence=effect_claim.fence,
@@ -1215,6 +1276,9 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         controller_evidence_sha256=canonical_json_sha256(effect_evidence),
         receipt=opaque_receipt,
         receipt_sha256=canonical_json_sha256(opaque_receipt),
+        disposition_set=ArtifactDispositionSetIdentity.from_mapping(
+            effect_dispositions.identity.model_dump(mode="json")
+        ),
     )
     effect_settled = operator.settle_processing_claim_effect(
         effect_claim.id, fence=effect_claim.fence, settlement=effect_document.as_dict()
@@ -1227,6 +1291,81 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         == "settled"
     )
     operator.release_processing_claim(effect_claim.id, fence=effect_claim.fence)
+    no_output_work = {
+        "format": "qualification-no-output-work/v1",
+        "inputs": [source_identity.as_dict()],
+    }
+    no_output_work_id = canonical_json_sha256(no_output_work)
+    no_output_claim = operator.create_or_resume_processing_claim(
+        work_id=no_output_work_id,
+        work_document=no_output_work,
+        work_document_sha256=no_output_work_id,
+        inputs=[source_identity.as_dict()],
+    )
+    no_output_execution = hashlib.sha256(b"qualification-no-output-execution").hexdigest()
+    no_output_operation = {
+        "id": "qualification.no-output/v1",
+        "result_kind": "no-output",
+        "source_collection_retirement_permitted": False,
+    }
+    no_output_evidence = {"format": "qualification-no-output-controller/v1"}
+    no_output_claim = operator.seal_processing_claim_plan(
+        no_output_claim.id,
+        fence=no_output_claim.fence,
+        execution_id=no_output_execution,
+        controller_evidence=no_output_evidence,
+        controller_evidence_sha256=canonical_json_sha256(no_output_evidence),
+        operation_id=str(no_output_operation["id"]),
+        operation_sha256=canonical_json_sha256(no_output_operation),
+        operation_contract=no_output_operation,
+        result_kind="no-output",
+        input_artifacts=(source_artifact,),
+    )
+    operator.record_processing_claim_dispositions(
+        no_output_claim.id,
+        fence=no_output_claim.fence,
+        dispositions=[
+            ArtifactDisposition(
+                input_collection_id=source_identity.collection_id,
+                input_archive_root_sha256=source_identity.archive_root_sha256,
+                input_path=str(source_artifact["path"]),
+                status="not-carried-forward",
+                code="qualification.no-action/v1",
+                message="No target output is needed.",
+            ).as_dict()
+        ],
+    )
+    no_output_dispositions = operator.seal_processing_claim_dispositions(
+        no_output_claim.id, fence=no_output_claim.fence
+    )
+    while no_output_dispositions.state == "sealing":
+        assert container.collection_workflows.process_due_disposition_sets() == 1
+        no_output_dispositions = operator.get_processing_claim_dispositions(no_output_claim.id)
+    assert no_output_claim.plan is not None and no_output_dispositions.identity is not None
+    no_output_decision = {"format": "qualification-no-output-decision/v1", "result": "done"}
+    no_output_document = NoOutputSettlement(
+        claim_id=no_output_claim.id,
+        fence=no_output_claim.fence,
+        execution_id=no_output_execution,
+        operation=OperationIdentity(
+            str(no_output_operation["id"]), canonical_json_sha256(no_output_operation)
+        ),
+        input_set_sha256=no_output_claim.plan.inputs.sha256,
+        artifact_set_sha256=no_output_claim.plan.artifacts.sha256,
+        controller_evidence_sha256=canonical_json_sha256(no_output_evidence),
+        decision=no_output_decision,
+        decision_sha256=canonical_json_sha256(no_output_decision),
+        disposition_set=ArtifactDispositionSetIdentity.from_mapping(
+            no_output_dispositions.identity.model_dump(mode="json")
+        ),
+    )
+    no_output_settled = operator.settle_processing_claim_no_output(
+        no_output_claim.id,
+        fence=no_output_claim.fence,
+        settlement=no_output_document.as_dict(),
+    )
+    assert no_output_settled.no_output_settlement_sha256 == no_output_document.sha256
+    operator.release_processing_claim(no_output_claim.id, fence=no_output_claim.fence)
     effect_outcome = CollectionProcessingOutcomeIdentity(
         outcome_id="qualification-effect",
         source_claim_id=effect_claim.id,

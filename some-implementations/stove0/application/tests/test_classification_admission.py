@@ -363,7 +363,7 @@ def test_terminal_preview_resolves_admission_without_retry(
     assert service.get_admission(intent.admission_id) == view
 
 
-def test_no_action_admission_retains_terminal_work_across_restart() -> None:
+def test_no_action_admission_binds_work_pending_settlement_across_restart() -> None:
     state = _state()
     descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
     policy = _policy()
@@ -382,16 +382,16 @@ def test_no_action_admission_retains_terminal_work_across_restart() -> None:
     assert service.get_admission(intent.admission_id).state == "previewed"
     service._advance_candidate(intent.admission_id)
     view = service.get_admission(intent.admission_id)
-    assert view.state == "resolved_no_action"
+    assert view.state == "work_bound"
     assert view.work_id is not None
-    assert view.outcome is not None and view.outcome.code == "fixture.outcome/v1"
+    assert view.outcome is None
     assert view.next_attempt_at is None
     record = state.load(view.work_id)
-    assert record is not None and record.phase == "no_action"
+    assert record is not None and record.phase == "eligible"
     assert record.no_action_preview is not None
     assert record.no_action_preview.preview_sha256 == view.preview_sha256
     assert record.branch_set_plan is None and record.target_request is None
-    assert WorkView.from_record(record).phase == "no_action"
+    assert WorkView.from_record(record).phase == "eligible"
     restarted = _service(**kwargs)
     restarted._advance_candidate(intent.admission_id)
     assert restarted.get_admission(intent.admission_id) == view
@@ -431,11 +431,11 @@ def test_no_action_admission_recovers_work_saved_before_resolution() -> None:
         effective_intent=policy.effective_intent,
     )
     saved = Stove0WorkService(state).create_or_resume(work, preview=preview)
-    assert saved.phase == "no_action"
+    assert saved.phase == "eligible"
     restarted = _service(**kwargs)
     restarted._advance_candidate(intent.admission_id)
     view = restarted.get_admission(intent.admission_id)
-    assert view.state == "resolved_no_action"
+    assert view.state == "work_bound"
     assert view.work_id == saved.work_id
     assert view.preview_sha256 == preview.preview_sha256
     assert restarted._pending_candidates(limit=10) == ()

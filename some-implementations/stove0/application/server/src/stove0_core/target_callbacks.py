@@ -416,7 +416,7 @@ class TargetCallbackAuthority:
         contracts = {item.role: item for item in operation.inputs}
         digest = CheckpointSHA256.from_state(checkpoint.disposition_hash_state)
         count = checkpoint.disposition_count
-        transformed = checkpoint.transformed_count
+        successor_count = checkpoint.successor_count
         for declaration in page:
             subject = self.store.load_selection_artifact(
                 record.target_plan.inputs.selection.selection_sha256,
@@ -435,13 +435,13 @@ class TargetCallbackAuthority:
                 disposition=declaration,
             )
             count += 1
-            transformed += int(declaration.status == "transformed")
+            successor_count += int(declaration.status in {"transformed", "preserved"})
         return checkpoint.model_copy(
             update={
                 "disposition_cursor": page[-1].input_id,
                 "disposition_hash_state": digest.export_state(),
                 "disposition_count": count,
-                "transformed_count": transformed,
+                "successor_count": successor_count,
             }
         )
 
@@ -483,8 +483,8 @@ class TargetCallbackAuthority:
             contract = output_contracts.get(output.role) if output is not None else None
             if output is None or source is None or disposition is None or contract is None:
                 raise ValueError("target source edge references an undeclared authority member")
-            if disposition.status != "transformed":
-                raise ValueError("only transformed inputs may produce source edges")
+            if disposition.status not in {"transformed", "preserved"}:
+                raise ValueError("only successor-producing inputs may have source edges")
             if source.role not in contract.derived_from_roles:
                 raise ValueError("target source edge violates the output role contract")
             update_output_source_edge_commitment(digest, ordinal=count, edge=edge)
@@ -517,8 +517,8 @@ class TargetCallbackAuthority:
             limit=self.seal_batch_size,
         )
         if not page:
-            if checkpoint.source_input_count != checkpoint.transformed_count:
-                raise ValueError("every transformed input must have source-edge evidence")
+            if checkpoint.source_input_count != checkpoint.successor_count:
+                raise ValueError("every successor-producing input needs source-edge evidence")
             return checkpoint.model_copy(update={"phase": "project-dispositions"})
         input_count = checkpoint.source_input_count
         last_input = checkpoint.last_source_input_id
@@ -561,6 +561,8 @@ class TargetCallbackAuthority:
                     input_archive_root_sha256=subject.collection.archive_root_sha256,
                     input_path=subject.path,
                     status=declaration.status,
+                    code=declaration.code,
+                    message=declaration.message,
                 )
             )
         self.projector.project_target_dispositions(record, projected)

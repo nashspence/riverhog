@@ -33,6 +33,8 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.catalog_workflow_models import (
     CollectionDerivationRecord,
+    CollectionProcessingConsiderationEvidenceRecord,
+    CollectionProcessingConsiderationSubjectRecord,
     CollectionProcessingDispositionSetRecord,
     CollectionProcessingEffectSettlementRecord,
 )
@@ -1224,6 +1226,77 @@ def test_postgres_exact_output_intent_creation_resumes_one_upload(
         assert rows[0].initiated_by_principal_id == f"processing:{EXECUTION_ID}"
 
 
+def test_postgres_concurrent_consideration_evidence_replays_one_document(
+    database_url: str,
+) -> None:
+    _seed(database_url)
+    services = tuple(
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url))
+        for _ in range(2)
+    )
+    root, claim = _workflow_claim(services[0])
+    claim_id = str(claim["id"])
+    _seal_workflow_claim(services[0], claim_id)
+    subject = _workflow_artifact(root).as_dict()
+    request_body = {
+        "work_id": WORK_ID,
+        "observer_contract_id": "fixture.consideration/v1",
+        "observer_contract_sha256": "6" * 64,
+        "subjects": [subject],
+    }
+    observation_request = {
+        **request_body,
+        "request_id": canonical_json_sha256(request_body),
+    }
+    facts = {"considered": True}
+    result_body = {
+        "request_id": observation_request["request_id"],
+        "observer_contract_id": request_body["observer_contract_id"],
+        "observer_contract_sha256": request_body["observer_contract_sha256"],
+        "subjects": [subject],
+        "facts_schema": {"profile_sha256": "5" * 64},
+        "facts": facts,
+        "facts_sha256": canonical_json_sha256(facts),
+        "state": "observed",
+    }
+    result = {**result_body, "result_sha256": canonical_json_sha256(result_body)}
+    document = {"request": observation_request, "result": result}
+    sha256 = canonical_json_sha256(document)
+    barrier = threading.Barrier(2)
+    failures: list[BaseException] = []
+    results: list[dict[str, str]] = []
+
+    def record(service: SqlAlchemyCollectionWorkflowService) -> None:
+        try:
+            barrier.wait(5)
+            results.append(
+                service.record_consideration_evidence(
+                    claim_id,
+                    fence=1,
+                    document=document,
+                    sha256=sha256,
+                    principal=WORKFLOW_PRINCIPAL,
+                )
+            )
+        except BaseException as exc:  # pragma: no cover - asserted by parent thread
+            failures.append(exc)
+
+    threads = [threading.Thread(target=record, args=(service,)) for service in services]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(15)
+    assert not failures and len(results) == 2
+    assert results == [{"sha256": sha256}] * 2
+    with session_scope(make_session_factory(database_url)) as session:
+        assert (
+            len(list(session.scalars(select(CollectionProcessingConsiderationEvidenceRecord)))) == 1
+        )
+        assert (
+            len(list(session.scalars(select(CollectionProcessingConsiderationSubjectRecord)))) == 1
+        )
+
+
 def test_postgres_concurrent_first_disposition_and_output_create_one_set(
     database_url: str,
 ) -> None:
@@ -1288,8 +1361,8 @@ def test_postgres_concurrent_first_disposition_and_output_create_one_set(
         assert disposition_sets[0].disposition_count == 1
         assert disposition_sets[0].output_edge_count == 1
         assert disposition_sets[0].output_artifact_count == 1
-        assert disposition_sets[0].transformed_count == 1
-        assert disposition_sets[0].transformed_with_outputs_count == 1
+        assert disposition_sets[0].successor_required_count == 1
+        assert disposition_sets[0].successor_bound_count == 1
 
 
 def test_postgres_settlement_replay_converges_on_one_derivation_record(
@@ -1822,6 +1895,25 @@ def _sealed_effect(
     )
     plan = cast(dict[str, Any], sealed["plan"])
     receipt = {"execution": execution, "verified": True, "destination_evidence": "fixture"}
+    service.record_dispositions(
+        claim_id,
+        fence=1,
+        dispositions=(
+            ArtifactDisposition(
+                input_collection_id=root.collection_id,
+                input_archive_root_sha256=root.archive_root_sha256,
+                input_path=_workflow_artifact(root).path,
+                status="effect-applied",
+                effect_receipt_sha256=canonical_json_sha256(receipt),
+            ),
+        ),
+        principal=WORKFLOW_PRINCIPAL,
+    )
+    state = service.seal_disposition_set(claim_id, fence=1, principal=WORKFLOW_PRINCIPAL)
+    while state["state"] == "sealing":
+        service.process_due_disposition_sets(limit=10)
+        state = service.get_disposition_set(claim_id, principal=WORKFLOW_PRINCIPAL)
+    assert state["state"] == "sealed"
     return ExternalEffectSettlement(
         claim_id=claim_id,
         fence=1,
@@ -1833,6 +1925,9 @@ def _sealed_effect(
         controller_evidence_sha256=canonical_json_sha256(evidence),
         receipt=receipt,
         receipt_sha256=canonical_json_sha256(receipt),
+        disposition_set=ArtifactDispositionSetIdentity.from_mapping(
+            cast(dict[str, object], state["identity"])
+        ),
     )
 
 
