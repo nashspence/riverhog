@@ -25,6 +25,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
+from riverhog_protocol.errors import NotFound
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 from stove0_core import (
@@ -943,6 +944,10 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
     )
 
     class CatalogApi:
+        def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
+            assert collection_id == int(descriptor.collection_id)
+            raise NotFound("collection has no derivation")
+
         def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint:
             return CatalogSyncCheckpoint(
                 source_identity="6" * 64,
@@ -985,7 +990,9 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
 
     class Planner:
         catalog = SimpleNamespace(
-            recipe=lambda recipe_id, revision: SimpleNamespace(sha256=policy.recipe_sha256)
+            recipe=lambda recipe_id, revision: SimpleNamespace(
+                sha256=policy.recipe_sha256, allow_derived_inputs=False
+            )
         )
 
     api = cast(ApiClient, CatalogApi())
@@ -1039,7 +1046,10 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
         thread.join(timeout=10)
 
     assert len(runs) == 2
-    assert all(not run.failures for run in runs)  # type: ignore[attr-defined]
+    assert all(not run.failures for run in runs), [  # type: ignore[attr-defined]
+        run.failures
+        for run in runs  # type: ignore[attr-defined]
+    ]
     admissions = first_service.list_admissions(
         page_size=25,
         position=None,
@@ -1481,8 +1491,9 @@ def test_postgres_effect_completion_is_one_fenced_immutable_receipt(
             operation=operation,
             expected_revision=current.revision,
         )
-    assert current.phase == "settled"
+    assert current.phase == "verifying"
     assert current.output is None
+    assert current.effect_settlement_sha256 is None
     assert current.target_status == succeeded
     assert current.target_status.effect_receipt == succeeded.effect_receipt
     assert second.load(record.work_id) == current
