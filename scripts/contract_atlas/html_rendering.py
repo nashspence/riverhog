@@ -498,11 +498,14 @@ def _documentation(
 
 
 def _cli_documentation(item: Mapping[str, object]) -> str:
-    lines = ['<aside class="documentation" id="documentation"><h2>CLI help · noncontractual</h2>']
+    lines = ["<h2>CLI help · noncontractual</h2>"]
     lines.append(f"<p><strong>Synopsis:</strong> <code>{_esc(item['synopsis'])}</code></p>")
+    seen_prose: set[str] = set()
     for key in ("summary", "description", "epilog"):
-        if item[key]:
-            lines.append(f"<p>{_esc(item[key])}</p>")
+        prose = str(item[key])
+        if prose and prose not in seen_prose:
+            lines.append(f"<p>{_esc(prose)}</p>")
+            seen_prose.add(prose)
     parameters = cast(Sequence[Mapping[str, str]], item["parameters"])
     if parameters:
         lines.append('<h3>Options and arguments</h3><dl class="facts">')
@@ -521,7 +524,7 @@ def _cli_documentation(item: Mapping[str, object]) -> str:
                 f"<dd>{_esc(subcommand['summary'])}</dd>"
             )
         lines.append("</dl>")
-    return "".join(lines) + "</aside>"
+    return "".join(lines)
 
 
 def _source_html(source: Mapping[str, object], source_revision: str | None) -> str:
@@ -1937,16 +1940,22 @@ def render_contract(
                     + "</td></tr>"
                 )
                 list_rows.append(f'<li data-element="{_esc(identity)}">{name}</li>')
-                doc_body = ""
+                doc_parts: list[str] = []
                 if identity in explanations:
-                    doc_body = (
-                        '<aside class="documentation" id="documentation">'
+                    doc_parts.append(
                         "<h2>Documentation · noncontractual</h2><p>"
                         + _esc(explanations[identity])
-                        + "</p></aside>"
+                        + "</p>"
                     )
                 if identity in cli_commands:
-                    doc_body += _cli_documentation(cli_commands[identity])
+                    doc_parts.append(_cli_documentation(cli_commands[identity]))
+                doc_body = (
+                    '<aside class="documentation" id="documentation">'
+                    + "".join(doc_parts)
+                    + "</aside>"
+                    if doc_parts
+                    else ""
+                )
                 breadcrumbs = (
                     "<p>"
                     + _link("index.html", "All authorities")

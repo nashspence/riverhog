@@ -104,3 +104,20 @@ def test_cli_help_is_only_shown_in_documentation_mode_and_subjects_are_exact(
     stale["cli_commands"].pop()
     with pytest.raises(ContractAtlasError, match="every command"):
         render_contract(closure, documentation=stale)
+
+
+def test_element_documentation_has_one_anchor_and_no_repeated_cli_prose(
+    cli_documentation: tuple[dict[str, object], dict[str, object]],
+) -> None:
+    closure, original = cli_documentation
+    document = copy.deepcopy(original)
+    command = document["cli_commands"][0]
+    command["description"] = command["summary"] = "One parser explanation."
+    document["explanations"] = [
+        {"element_id": command["element_id"], "text": "One authored explanation."}
+    ]
+    files = render_contract(closure, documentation=document)
+    page = files["riverhog-v1/" + _element_file(command["element_id"])].decode()
+    assert page.count('id="documentation"') == 1
+    assert page.count("One parser explanation.") == 1
+    assert page.count("One authored explanation.") == 1

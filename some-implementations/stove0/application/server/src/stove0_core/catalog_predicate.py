@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from riverhog_client import ApiClient
 from riverhog_protocol import CatalogSyncDescriptor
-from stove0_operator_contracts import AdmissionSelector, TaggedAdmissionSelector
+from stove0_operator_contracts import DepartureSelector, TaggedCatalogSelector
 
 
 def catalog_selector_matches(
     riverhog: ApiClient,
-    selector: AdmissionSelector,
+    selector: DepartureSelector,
     descriptor: CatalogSyncDescriptor,
 ) -> bool:
-    if not isinstance(selector, TaggedAdmissionSelector):
+    if not isinstance(selector, TaggedCatalogSelector):
         return True
     for tag in selector.required:
         response = riverhog.collection_contains_tag(

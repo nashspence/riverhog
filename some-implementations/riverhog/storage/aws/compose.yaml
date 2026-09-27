@@ -1,5 +1,5 @@
 services:
-  store:
+  aws-store:
     image: ${A_RIVERHOG_AWS_STORE_IMAGE_REF:-a-riverhog-aws-store:dev}
     build:
       context: ../../../..

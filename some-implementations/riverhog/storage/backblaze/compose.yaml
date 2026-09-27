@@ -1,5 +1,5 @@
 services:
-  store:
+  b2-store:
     image: ${A_RIVERHOG_B2_STORE_IMAGE_REF:-a-riverhog-b2-store:dev}
     build:
       context: ../../../..

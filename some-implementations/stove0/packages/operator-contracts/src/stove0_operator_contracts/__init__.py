@@ -100,11 +100,11 @@ class OperatorModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
-class AllVisibleAdmissionSelector(OperatorModel):
+class AllVisibleDepartureSelector(OperatorModel):
     kind: Literal["all"] = "all"
 
 
-class TaggedAdmissionSelector(OperatorModel):
+class TaggedCatalogSelector(OperatorModel):
     kind: Literal["tags"] = "tags"
     required: tuple[CollectionTag, ...] = Field(
         min_length=1,
@@ -126,8 +126,8 @@ class TaggedAdmissionSelector(OperatorModel):
         return value
 
 
-AdmissionSelector = Annotated[
-    AllVisibleAdmissionSelector | TaggedAdmissionSelector,
+DepartureSelector = Annotated[
+    AllVisibleDepartureSelector | TaggedCatalogSelector,
     Field(discriminator="kind"),
 ]
 
@@ -138,7 +138,7 @@ class AdmissionPolicy(OperatorModel):
     format: Literal["stove0-admission-policy/v1"] = "stove0-admission-policy/v1"
     id: str = Field(pattern=r"^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$")
     revision: int = Field(ge=1)
-    selector: AdmissionSelector
+    selector: TaggedCatalogSelector
     recipe_id: str = Field(min_length=1, max_length=160)
     recipe_revision: NonnegativeDecimal = Field(ge=1)
     recipe_sha256: Sha256
@@ -205,7 +205,7 @@ class AdmissionIntent(OperatorModel):
     policy_id: str = Field(min_length=1, max_length=160)
     policy_revision: int = Field(ge=1)
     policy_sha256: Sha256
-    selector: AdmissionSelector
+    selector: TaggedCatalogSelector
     collection: CatalogSyncDescriptor
     recipe_id: str = Field(min_length=1, max_length=160)
     recipe_revision: NonnegativeDecimal = Field(ge=1)
@@ -329,7 +329,7 @@ class DeparturePolicy(OperatorModel):
     format: Literal["stove0-departure-policy/v1"] = "stove0-departure-policy/v1"
     id: str = Field(pattern=r"^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$")
     revision: int = Field(ge=1)
-    selector: AdmissionSelector
+    selector: DepartureSelector
     target_registration_id: str = Field(min_length=1, max_length=160)
     target_identity: Sha256
 
@@ -1043,7 +1043,7 @@ def _payload(value: BaseModel | Mapping[str, Any]) -> dict[str, Any]:
 
 
 __all__ = [
-    "AllVisibleAdmissionSelector",
+    "AllVisibleDepartureSelector",
     "ADMISSION_POLICY_COUNT_MAX",
     "AdmissionCatalog",
     "AdmissionIntent",
@@ -1052,7 +1052,6 @@ __all__ = [
     "AdmissionPolicy",
     "AdmissionPolicyCatalogView",
     "AdmissionPolicyStatus",
-    "AdmissionSelector",
     "AdmissionRun",
     "AdmissionSort",
     "AdmissionState",
@@ -1066,6 +1065,7 @@ __all__ = [
     "DeparturePolicyCatalogView",
     "DeparturePolicyStatus",
     "DepartureRun",
+    "DepartureSelector",
     "ArtifactSelectionPage",
     "BRANCH_SET_ADMITTED",
     "BranchSetAdmittedEvent",
@@ -1103,7 +1103,7 @@ __all__ = [
     "Stove0EventPage",
     "Stove0EventType",
     "Stove0LifecycleEvent",
-    "TaggedAdmissionSelector",
+    "TaggedCatalogSelector",
     "WORK_CREATED",
     "WORK_UPDATED",
     "WorkClaimView",

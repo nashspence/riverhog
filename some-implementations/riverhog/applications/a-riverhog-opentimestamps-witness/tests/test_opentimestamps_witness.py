@@ -122,7 +122,11 @@ def test_proof_work_is_durable_before_network_and_survives_departure(tmp_path: P
         == hashlib.sha256(bytes.fromhex(digest) + initial.nonce).digest()
     )
     calendar = Calendar()
-    assert store.mature_once(calendar, now=100) == digest
+    attempt = store.mature_once(calendar, now=100)
+    assert attempt is not None and (attempt.digest, attempt.proof_revision_retained) == (
+        digest,
+        True,
+    )
     assert calendar.calls == 1
     evidence = store.evidence(digest)
     assert isinstance(evidence["proof"], bytes)
@@ -206,5 +210,39 @@ def test_run_advances_catalog_when_calendar_is_unavailable(
     assert "0 proof revisions retained; retry scheduled" in diagnostics
     due = store.evidence(digest)["due"]
     assert isinstance(due, int)
-    assert store.mature_once(Calendar(), now=due) == digest
+    attempt = store.mature_once(Calendar(), now=due)
+    assert attempt is not None and (attempt.digest, attempt.proof_revision_retained) == (
+        digest,
+        True,
+    )
     assert isinstance(store.evidence(digest)["proof"], bytes)
+
+
+@pytest.mark.parametrize("calendar_fails", [False, True])
+def test_one_shot_mature_result_reports_retained_proof_or_attempt_only(
+    tmp_path: Path, calendar_fails: bool
+) -> None:
+    path = tmp_path / "ots.db"
+    upgrade_state(path)
+    store = WitnessStore(path, (URL,))
+    assert witness_cli._mature_result(store, Calendar(), now=100) == {
+        "attempted_statement": None,
+        "outcome": "idle",
+    }
+    api = Api()
+    store.ingest_once(api, now=100)
+    store.ingest_once(api, now=100)
+
+    class UnavailableCalendar:
+        def request(self, kind: str, url: str, commitment: bytes, max_bytes: int) -> bytes:
+            raise proof.CalendarError("unavailable", retryable=True)
+
+    result = witness_cli._mature_result(
+        store, UnavailableCalendar() if calendar_fails else Calendar(), now=100
+    )
+    assert result["outcome"] == ("no_new_proof" if calendar_fails else "proof_retained")
+    digest = result["attempted_statement"]
+    assert isinstance(digest, str)
+    evidence = store.evidence(digest)
+    assert evidence is not None
+    assert len(evidence["proof_revisions"]) == (0 if calendar_fails else 1)

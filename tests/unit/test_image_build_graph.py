@@ -62,14 +62,14 @@ IMAGE_CONTRACTS = {
         "tag": "a-riverhog-aws-store:dev",
         "title": "Riverhog AWS store",
         "license": "CAL-1.0",
-        "compose": (("some-implementations/riverhog/storage/aws/compose.yaml", "store"),),
+        "compose": (("some-implementations/riverhog/storage/aws/compose.yaml", "aws-store"),),
     },
     "a-riverhog-b2-store": {
         "dockerfile": "some-implementations/riverhog/storage/backblaze/Dockerfile",
         "tag": "a-riverhog-b2-store:dev",
         "title": "Riverhog B2 store",
         "license": "CAL-1.0",
-        "compose": (("some-implementations/riverhog/storage/backblaze/compose.yaml", "store"),),
+        "compose": (("some-implementations/riverhog/storage/backblaze/compose.yaml", "b2-store"),),
     },
     "a-riverhog-filesystem-store": {
         "dockerfile": "some-implementations/riverhog/storage/filesystem/Dockerfile",
@@ -79,7 +79,7 @@ IMAGE_CONTRACTS = {
         "compose": (
             ("riverhog/compose.yaml", "filesystem-cache-adapter"),
             ("some-implementations/riverhog/storage/filesystem/compose.yaml", "state-init"),
-            ("some-implementations/riverhog/storage/filesystem/compose.yaml", "store"),
+            ("some-implementations/riverhog/storage/filesystem/compose.yaml", "filesystem-store"),
         ),
     },
     "stove0": {
@@ -586,7 +586,7 @@ def test_every_runtime_image_has_a_hardened_supported_compose_attachment() -> No
                 continue
             supported.append((compose_name, service_name))
             assert service["read_only"] is True
-            assert service.get("user", "65532:65532") == "65532:65532"
+            assert service["user"] == "65532:65532"
             assert service["cap_drop"] == ["ALL"]
             assert "no-new-privileges:true" in service["security_opt"]
             assert any("size=" in entry for entry in service["tmpfs"])
@@ -618,6 +618,22 @@ def test_companion_compose_state_and_secrets_remain_independent() -> None:
             "name": "${RIVERHOG_CONTROL_NETWORK:-riverhog_default}",
         }
         assert compose["services"]["run"]["secrets"]
+        assert compose["services"]["run"]["group_add"] == [
+            "${" + name.upper().replace("-", "_") + "_SECRET_FILE_GID:-65532}"
+        ]
+
+
+def test_external_storage_adapters_have_distinct_control_network_names() -> None:
+    names = []
+    for component in ("aws", "backblaze", "filesystem"):
+        compose_path = REPO_ROOT / f"some-implementations/riverhog/storage/{component}/compose.yaml"
+        services = yaml.safe_load(compose_path.read_text(encoding="utf-8"))["services"]
+        names.extend(
+            name
+            for name, service in services.items()
+            if service.get("networks") == ["riverhog-control"]
+        )
+    assert names == ["aws-store", "b2-store", "filesystem-store"]
 
 
 def test_runtime_compose_examples_match_parser_schemas_and_mounted_secrets() -> None:

@@ -12,7 +12,6 @@ from typing import cast
 from pydantic import JsonValue
 from riverhog_client import ApiClient
 from riverhog_protocol.collection_workflows import canonical_json_sha256
-from riverhog_protocol.errors import RiverhogError
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationRequest,
@@ -107,17 +106,6 @@ class RecipePlanner:
         effective_intent: Mapping[str, JsonValue] | None = None,
     ) -> WorkIdentity:
         recipe = self.catalog.recipe(recipe_id, revision)
-        if not recipe.allow_derived_inputs:
-            for root in roots:
-                try:
-                    self.riverhog.get_collection_derivation(root.collection_id)
-                except RiverhogError as exc:
-                    if exc.code != "not_found":
-                        raise
-                else:
-                    raise ValueError(
-                        f"recipe {recipe.id} does not admit derived collection {root.collection_id}"
-                    )
         return WorkIdentity.seal(
             WorkPayload(
                 recipe=recipe.ref,

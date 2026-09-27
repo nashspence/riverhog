@@ -188,7 +188,6 @@ class RecipeDefinition(RecipeModel):
     observers: tuple[ObserverUse, ...] = ()
     routes: tuple[RecipeBranch, ...] = Field(min_length=1)
     unmatched_artifact_disposition: Literal["retain-in-source", "reject-work"]
-    allow_derived_inputs: bool = False
     source_collection_retirement_policy: Literal["retain", "retire-after-settlement"] = Field(
         default="retain",
         description=(

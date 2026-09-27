@@ -25,7 +25,6 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
-from riverhog_protocol.errors import NotFound
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 from stove0_core import (
@@ -944,10 +943,6 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
     )
 
     class CatalogApi:
-        def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
-            assert collection_id == int(descriptor.collection_id)
-            raise NotFound("collection has no derivation")
-
         def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint:
             return CatalogSyncCheckpoint(
                 source_identity="6" * 64,
@@ -990,9 +985,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
 
     class Planner:
         catalog = SimpleNamespace(
-            recipe=lambda recipe_id, revision: SimpleNamespace(
-                sha256=policy.recipe_sha256, allow_derived_inputs=False
-            )
+            recipe=lambda recipe_id, revision: SimpleNamespace(sha256=policy.recipe_sha256)
         )
 
     api = cast(ApiClient, CatalogApi())
