@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     CheckConstraint,
     ForeignKey,
     ForeignKeyConstraint,
@@ -36,6 +37,14 @@ class CollectionProcessingClaimRecord(Base):
     controller_evidence_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     operation_id: Mapped[str | None] = mapped_column(String, nullable=True)
     operation_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    result_kind: Mapped[str | None] = mapped_column(String, nullable=True)
+    operation_contract_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    output_policy_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_collection_retirement_permitted: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+    settlement_outcome_binding_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    effect_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     input_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     input_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     input_set_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
@@ -51,6 +60,8 @@ class CollectionProcessingClaimRecord(Base):
     outcome_validation_cursor: Mapped[str | None] = mapped_column(String, nullable=True)
     outcome_validation_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     outcome_set_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    outcome_expected_count: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    outcome_expected_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     outcome_failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     outcomes_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
     source_collection_retirement_policy: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -90,6 +101,14 @@ class CollectionProcessingClaimRecord(Base):
             name="ck_collection_processing_claims_outcome_state",
         ),
         CheckConstraint("fence >= 1", name="ck_collection_processing_claims_fence"),
+        CheckConstraint(
+            "result_kind IS NULL OR result_kind IN ('collection','external-effect')",
+            name="ck_processing_claim_result_kind",
+        ),
+        CheckConstraint(
+            "outcome_expected_count IS NULL OR outcome_expected_count >= 1",
+            name="ck_processing_claim_expected_outcomes",
+        ),
         CheckConstraint(
             "source_collection_retirement_grace_seconds >= 0",
             name="ck_collection_processing_claims_grace",
@@ -454,14 +473,31 @@ class CollectionProcessingOutcomeRecord(Base):
         ForeignKey("collection_processing_claims.id", ondelete="RESTRICT"),
         nullable=False,
     )
-    collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, nullable=False)
-    archive_root_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
-    content_identity: Mapped[str] = mapped_column(String(64), nullable=False)
-    derivation_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    source_fence: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    execution_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    result_kind: Mapped[str] = mapped_column(String, nullable=False)
+    effect_receipt_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    effect_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    collection_id: Mapped[int | None] = mapped_column(_COLLECTION_ID_TYPE, nullable=True)
+    archive_root_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    content_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    derivation_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     outcome_order: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     created_at: Mapped[str] = mapped_column(String, nullable=False)
 
     __table_args__ = (
+        CheckConstraint("source_fence >= 1", name="ck_processing_outcome_fence"),
+        CheckConstraint(
+            "result_kind = 'collection' AND collection_id IS NOT NULL "
+            "AND archive_root_sha256 IS NOT NULL AND content_identity IS NOT NULL "
+            "AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL "
+            "AND effect_settlement_sha256 IS NULL OR "
+            "result_kind = 'external-effect' AND collection_id IS NULL "
+            "AND archive_root_sha256 IS NULL AND content_identity IS NULL "
+            "AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL "
+            "AND effect_settlement_sha256 IS NOT NULL",
+            name="ck_processing_outcome_result",
+        ),
         UniqueConstraint(
             "claim_id",
             "source_claim_id",
@@ -486,6 +522,30 @@ class CollectionProcessingOutcomeRecord(Base):
         CheckConstraint(
             "outcome_order IS NULL OR outcome_order >= 0",
             name="ck_collection_processing_outcomes_order",
+        ),
+    )
+
+
+class CollectionProcessingEffectSettlementRecord(Base):
+    """Retained independently of source deletion; one immutable fenced execution."""
+
+    __tablename__ = "collection_processing_effect_settlements"
+    claim_id: Mapped[str] = mapped_column(
+        String(64),
+        ForeignKey("collection_processing_claims.id", ondelete="RESTRICT"),
+        primary_key=True,
+    )
+    fence: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    execution_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    document_json: Mapped[str] = mapped_column(Text, nullable=False)
+    document_sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    receipt_sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    created_at: Mapped[str] = mapped_column(String, nullable=False)
+    __table_args__ = (
+        CheckConstraint("fence >= 1", name="ck_effect_settlement_fence"),
+        CheckConstraint(
+            "length(document_sha256) = 64 AND length(receipt_sha256) = 64",
+            name="ck_effect_settlement_digest",
         ),
     )
 

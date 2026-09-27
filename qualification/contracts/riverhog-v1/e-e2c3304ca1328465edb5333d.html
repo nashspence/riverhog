@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-6b1eb6853785cde5332aec51">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -107,6 +107,33 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-ace49256c85adf4c64c1722c">operation_contract</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-282bcd42801bb5cb92f45438.html#v-2b3a9ea85247b1ca7c41b261">#/components/schemas/OutputCollectionPolicy</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code></td>
+<td data-label="Default">
+<code>collection</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>source_collection_retirement_grace_seconds</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -119,10 +146,10 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
-<td data-label="Description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</td>
+<td data-label="Description">Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.</td>
 </tr>
 </tbody>
 </table>
@@ -161,6 +188,41 @@
 <code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-controller-evidence-envelope&quot;}</code>
 </dd>
 </dl>
+</section>
+<section class="schema-section" id="s-ace49256c85adf4c64c1722c">
+<h3>Field: operation_contract</h3>
+<p class="shape">any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Operation Contract</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-70466b2d5b9899c8aff50bff">1</a></td>
+<td data-label="Schema">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-f21f1cdca7593e0069cd1871">
 <h3>if schema</h3>
@@ -217,6 +279,30 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-70466b2d5b9899c8aff50bff">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>4194304</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-operation-declaration&quot;}</code>
+</dd>
+</dl>
 </section>
 </div>
 <details class="exact">
@@ -496,6 +582,216 @@
 </tr>
 <tr>
 <th scope="row">
+<code>operation_contract</code>
+</th>
+<td>
+<table id="v-ace49256c85adf4c64c1722c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-336270cdacde637eba9ae027">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-70466b2d5b9899c8aff50bff">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-1b73aaf4525327c71923a8ec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0/additionalProperties">true</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f4619aa3ba60ba1ca7a63207">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-cb8a6e4ba4cead073d8f01c2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0/x-riverhog-encoded-bytes-max">4194304</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-719b4543d8c93916b5e1995c">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-00b7bf90339d17cf8c9170e2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a420a605f0824962760b4ca7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0/x-riverhog-extent/reason">bounded-operation-declaration</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-761ff39e4c6c21238c76a61c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-47512836fcce290c11dee905">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f6e56c99bec36e083e4cd215">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/title">Operation Contract</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_policy</code>
+</th>
+<td>
+<table id="v-57d7708b6d996e62c2f5e827">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4b8c0500e75a203983c9ae8d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/output_policy/$ref">#/components/schemas/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-282bcd42801bb5cb92f45438.html#v-2b3a9ea85247b1ca7c41b261">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_kind</code>
+</th>
+<td>
+<table id="v-e7ef200de957b8284fa7beaa">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-aa6122f25d53a0064c2a1190">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/result_kind/default">collection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-ec1fa37db28da80bf55e0316">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3817a9c298fa216f9e9eff6b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/result_kind/enum/0">collection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-3a1ec54fae71defb146aedc5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/result_kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-3f887fb57b3a6265948d7bbb">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/result_kind/title">Result Kind</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2fed3f8ebeec97cb4d3691bc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/result_kind/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>source_collection_retirement_grace_seconds</code>
 </th>
 <td>
@@ -547,7 +843,7 @@
 </th>
 <td>
 <span id="v-67a9650dc1f56b9df307eae1">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -574,7 +870,7 @@
 </th>
 <td>
 <span id="v-cce256c92fd67e2ef20e91e9">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -806,6 +1102,24 @@
 <td data-label="Bounds or reason">
 <code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">encoded-size · bytes · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4194304,&quot;reason&quot;:&quot;bounded-operation-declaration&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;x-riverhog-encoded-bytes-max&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument/properties/operation_contract/anyOf/0</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -814,7 +1128,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

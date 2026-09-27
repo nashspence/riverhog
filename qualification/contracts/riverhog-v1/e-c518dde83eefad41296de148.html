@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>review0_contracts.ReviewSampleWindow · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-c8c1cfb00ecc1f2c3ca9e53b.html">review0-contracts</a> / <a href="i-651a23895230df430567a15e.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>review0_contracts.ReviewSampleWindow</h1>
+<p class="context">Review0 materialization semantics and artifact roles. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:review0-contracts:review0-contracts-reviewsamplewindow:bfc244acbf">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>review0-contracts</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>review0_contracts</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ReviewSampleWindow</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-739e72aaf27eaa9df24e65d8">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;start_ms&quot;,&quot;duration_ms&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>duration_ms</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>start_ms</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/review0_contracts.ReviewSampleWindow</code>
+</h4>
+<table id="v-fa0d179273646ae7cbeb9c2d">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-7f20a7528da062bf3105e652">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-6dc987eb085374d7ecb4ae27">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-739e72aaf27eaa9df24e65d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-12022ee15ebc36b354fc7083">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-3c994572ed9d2036cc09d957">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-94c4145286eda28d00eac912">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-9d95a98577c0d75a8ea30596">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/artifact_id/maxLength">160</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-e2517e48703bbb8e8021420e">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/artifact_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-586588a44a54f68741f35ac1">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>duration_ms</code>
+</th>
+<td>
+<table id="v-d1de8ed1ece7059a1283c410">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-71d1096988f049e0d0a1908a">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/duration_ms/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-618f26a942ea9f3103f97e07">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/duration_ms/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>start_ms</code>
+</th>
+<td>
+<table id="v-253aa0d72e1ed28b09e1e86d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-cf24558c879d228343553645">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/start_ms/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8c921a20af4c69244cd4934a">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/properties/start_ms/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-503a2f6fb19495b104ea6953">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5ee78a1877c9cef6bbf2872d">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/required/0">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7b8fa75644a145819289f1dd">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/required/1">start_ms</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-21c599a4048c04173a6f5c06">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/required/2">duration_ms</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-61be840a6c0d25c04f3e07cf">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-0fab0b6fbad096d27ba7adcc">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/contract/signature">&#x27;(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-5198abb35b873b5f00ff870a">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/distribution">review0-contracts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-7194d10cb3867eaba65e5093">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/module">review0_contracts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-0eb21abff3d9ce8a3950f889">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/name">ReviewSampleWindow</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-bbba43e1ba8557c522c2831f">
+<code data-value-pointer="/external_contract/python/review0_contracts.ReviewSampleWindow/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-9a2633c13de6e35cda675f28">python:review0-contracts:review0_contracts</a> — <code data-source-path="some-implementations/stove0/review0/contracts/src/review0_contracts/__init__.py">some-implementations/stove0/review0/contracts/src/review0_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

@@ -273,9 +273,9 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "stove0-observer-schemas",
         "a-review0-opus-sampler",
         "a-stove0-opus-target",
-        "a-review0-materializer",
+        "review0",
         "review0-planner",
-        "a-review0-rclone-target",
+        "a-stove0-rclone-target",
         "review0-sampler-conformance",
         "review0-sampler-schemas",
         "stove0-server",
@@ -420,7 +420,6 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "durable-state",
         "gogurt-core:configuration:gogurt-routes-schema",
         "stove0-recipe-config:configuration:recipe-catalog",
-        "review0-target-lib:configuration:review-target-config",
     } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root

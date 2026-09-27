@@ -536,11 +536,6 @@ class BranchSetPlan(Stove0ProtocolModel):
                     "external-effect branches cannot be declared as join members: "
                     + ", ".join(effects)
                 )
-        if self.source_collection_retirement_policy != "retain" and any(
-            isinstance(branch, BranchPlan) and branch.workflow_plan.result_kind == "external-effect"
-            for branch in self.branches
-        ):
-            raise ValueError("branch sets containing external effects must retain their sources")
         if (
             self.parent_work.evaluation is not None
             and self.source_collection_retirement_policy != "retain"
@@ -711,6 +706,7 @@ class BranchEffectSettlement(Stove0ProtocolModel):
     work_id: Sha256
     workflow_plan_sha256: Sha256
     effect_receipt_sha256: Sha256
+    effect_settlement_sha256: Sha256
     settlement_sha256: Sha256
 
     @model_validator(mode="after")
@@ -726,6 +722,7 @@ class BranchEffectSettlement(Stove0ProtocolModel):
         *,
         branch: BranchPlan,
         effect_receipt_sha256: str,
+        effect_settlement_sha256: str,
     ) -> BranchEffectSettlement:
         if branch.workflow_plan.result_kind != "external-effect":
             raise ValueError("an effect settlement requires an effect-producing branch")
@@ -735,6 +732,7 @@ class BranchEffectSettlement(Stove0ProtocolModel):
             "work_id": branch.workflow_plan.work.work_id,
             "workflow_plan_sha256": branch.workflow_plan.workflow_plan_sha256,
             "effect_receipt_sha256": effect_receipt_sha256,
+            "effect_settlement_sha256": effect_settlement_sha256,
         }
         return cls.model_validate({**payload, "settlement_sha256": canonical_json_sha256(payload)})
 
@@ -1221,15 +1219,6 @@ def validate_branch_set_plan(
             raise ValueError(
                 "join members require an exact collection result: " + ", ".join(invalid)
             )
-    if plan.source_collection_retirement_policy != "retain":
-        for branch in plan.branches:
-            if isinstance(branch, BranchPlan):
-                if branch.workflow_plan.result_kind == "external-effect":
-                    raise ValueError("branch sets containing external effects must retain sources")
-                continue
-            child = branch_sets[branch.branch_set_sha256]
-            if _plan_contains_effects(child, branch_sets):
-                raise ValueError("branch sets containing nested effects must retain sources")
 
 
 def _validate_branch_set_tree(
@@ -1704,12 +1693,8 @@ def evaluate_branch_set(
         branch_set_succeeded=succeeded,
         coordination_settlement=coordination_settlement,
         source_collection_retirement_requested=plan.source_collection_retirement_policy
-        == "retire-after-verified-output",
-        coordination_complete_for_retirement=(
-            succeeded
-            and not effects
-            and not any(item.contains_external_effects for item in coordinations.values())
-        ),
+        == "retire-after-settlement",
+        coordination_complete_for_retirement=succeeded,
     )
 
 

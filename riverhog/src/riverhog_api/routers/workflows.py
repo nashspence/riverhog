@@ -19,6 +19,7 @@ from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
     ArtifactDispositionOutput,
     CollectionArtifactIdentity,
+    CollectionProcessingOutcomeIdentity,
     CollectionRootIdentity,
 )
 
@@ -51,8 +52,10 @@ from riverhog_api.schemas.workflows import (
     ProcessingCapabilityOut,
     ProcessingClaimAbandonIn,
     ProcessingClaimCreateIn,
+    ProcessingClaimEffectSettleIn,
     ProcessingClaimFenceIn,
     ProcessingClaimOut,
+    ProcessingClaimOutcomesAppendIn,
     ProcessingClaimOutcomesSettleIn,
     ProcessingClaimPageOut,
     ProcessingClaimPlanSealIn,
@@ -377,6 +380,9 @@ def seal_processing_claim_plan(
             execution_id=request.execution_id,
             controller_evidence=request.controller_evidence,
             controller_evidence_sha256=request.controller_evidence_sha256,
+            result_kind=request.result_kind,
+            operation_contract=request.operation_contract,
+            output_policy=request.output_policy,
             operation_id=request.operation.id,
             operation_sha256=request.operation.sha256,
             source_collection_retirement_policy=request.source_collection_retirement_policy,
@@ -630,6 +636,56 @@ def settle_processing_claim(
 
 
 @router.post(
+    "/collection-processing-claims/{claim_id}/effects/settle",
+    response_model=ProcessingClaimOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def settle_processing_claim_effect(
+    claim_id: ProcessingClaimId,
+    request: ProcessingClaimEffectSettleIn,
+    container: ContainerDep,
+    principal: CollectionProcessingController,
+) -> ProcessingClaimOut:
+    return ProcessingClaimOut.model_validate(
+        container.collection_workflows.settle_claim_effect(
+            claim_id,
+            fence=request.fence,
+            settlement=request.settlement.model_dump(mode="json"),
+            principal=principal,
+            outcome_claim_id=request.outcome.claim_id if request.outcome else None,
+            outcome_fence=request.outcome.fence if request.outcome else None,
+            outcome_id=request.outcome.outcome_id if request.outcome else None,
+        )
+    )
+
+
+@router.post(
+    "/collection-processing-claims/{claim_id}/outcomes/append",
+    response_model=ProcessingClaimOut,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def append_processing_claim_outcomes(
+    claim_id: ProcessingClaimId,
+    request: ProcessingClaimOutcomesAppendIn,
+    container: ContainerDep,
+    principal: CollectionProcessingController,
+) -> ProcessingClaimOut:
+    return ProcessingClaimOut.model_validate(
+        container.collection_workflows.append_claim_outcomes(
+            claim_id,
+            fence=request.fence,
+            outcomes=tuple(
+                CollectionProcessingOutcomeIdentity.from_mapping(
+                    item.model_dump(mode="json", exclude_none=True)
+                )
+                for item in request.outcomes
+            ),
+            principal=principal,
+        )
+    )
+
+
+@router.post(
     "/collection-processing-claims/{claim_id}/outcomes/settle",
     response_model=ProcessingClaimOut,
     openapi_extra=operation_interface("client-only-primitive"),
@@ -644,6 +700,8 @@ def settle_processing_claim_outcomes(
         container.collection_workflows.settle_claim_outcomes(
             claim_id,
             fence=request.fence,
+            outcomes_count=request.outcomes.count,
+            outcomes_sha256=request.outcomes.sha256,
             source_collection_retirement_policy=request.source_collection_retirement_policy,
             source_collection_retirement_grace_seconds=request.source_collection_retirement_grace_seconds,
             principal=principal,

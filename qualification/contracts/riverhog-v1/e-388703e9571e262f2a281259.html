@@ -101,10 +101,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-bf4f29710f282024a6cc8cb6">output_policy</a></td>
+<code>output_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<a href="e-7912f9cf5220e30d1cb70ba2.html#v-3dc78988727833d484ecdbb8">#/components/schemas/OutputCollectionPolicy</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -142,10 +142,10 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
-<td data-label="Description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</td>
+<td data-label="Description">Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.</td>
 </tr>
 <tr>
 <td data-label="Field">
@@ -200,26 +200,6 @@
 <dt>type</dt>
 <dd>
 <code>array</code>
-</dd>
-</dl>
-</section>
-<section class="schema-section" id="s-bf4f29710f282024a6cc8cb6">
-<h3>Field: output_policy</h3>
-<p class="shape">
-<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Output Policy</code>
-</dd>
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>{&quot;$ref&quot;:&quot;#/components/schemas/JsonValue&quot;}</code>
 </dd>
 </dl>
 </section>
@@ -478,42 +458,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<table id="v-0897ceb699111b57a6525b96">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-7f6769fd40a1e77f4d68819f">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/output_policy/additionalProperties/$ref">#/components/schemas/JsonValue</code>
-<span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-3b7044f614a1a5684ff173e7">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/output_policy/title">Output Policy</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-af9dc1bbbe6aa4bb857da72b">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/output_policy/type">object</code>
-<span class="kind">string</span>
+<span id="v-4b2e5d4aef000851c73173ca">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/output_policy/$ref">#/components/schemas/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-7912f9cf5220e30d1cb70ba2.html#v-3dc78988727833d484ecdbb8">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -712,7 +662,7 @@
 </th>
 <td>
 <span id="v-766b2dafa1ed755608aa327c">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -739,7 +689,7 @@
 </th>
 <td>
 <span id="v-edcc10c09f9d3673f19d7e5a">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1046,15 +996,6 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/output_policy</code></td>
-<td data-label="Governing rule">
-<code>no-semantic-maximum/v1</code></td>
-<td data-label="Decision">cardinality · entries · operational_policy</td>
-<td data-label="Bounds or reason">
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
-</tr>
-<tr>
-<td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/requested_target_options</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -1088,7 +1029,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

@@ -32,6 +32,7 @@ from riverhog_protocol import (
     CollectionUploadUnitWorkDocument,
     CollectionUploadWorkBatchDocument,
     ImmutableFileIdentityDocument,
+    OutputCollectionPolicy,
     PortableCollectionHeader,
     PortableCollectionInventoryAuthority,
     PortableCollectionInventoryPage,
@@ -124,6 +125,7 @@ def _processing_claim() -> SimpleNamespace:
     return SimpleNamespace(
         plan=SimpleNamespace(
             execution_id=EXECUTION_ID,
+            output_policy=OutputCollectionPolicy(),
             inputs=SimpleNamespace(sha256="7" * 64),
             artifacts=SimpleNamespace(sha256="8" * 64),
         )
@@ -1868,3 +1870,54 @@ def test_api_client_stream_requires_complete_consumption() -> None:
                 next(chunks)
     finally:
         api.close()
+
+
+def test_plan_seal_replays_submitted_artifact_prefix_and_checks_sealed_scope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from riverhog_canonical_json import canonical_json_bytes
+    from riverhog_client.workflows import CollectionWorkflowMethods
+
+    root = {"collection_id": "1", "archive_root_sha256": "a" * 64, "content_identity": "b" * 64}
+    artifacts = [
+        {"collection": root, "path": f"part/{i:03d}", "bytes": "1", "sha256": "c" * 64}
+        for i in range(129)
+    ]
+    digest = hashlib.sha256(b"riverhog-claim-artifacts/v1\0")
+    for artifact in artifacts:
+        encoded = canonical_json_bytes(artifact)
+        digest.update(len(encoded).to_bytes(8, "big"))
+        digest.update(encoded)
+    identity = SimpleNamespace(count=129, total_bytes=129, sha256=digest.hexdigest())
+    claim = SimpleNamespace(plan=None, artifacts=SimpleNamespace(count=128))
+    client = CollectionWorkflowMethods()
+    offsets = []
+    monkeypatch.setattr(client, "get_processing_claim", lambda *_: claim)
+    monkeypatch.setattr(
+        client,
+        "append_processing_claim_artifacts",
+        lambda *_, **kw: offsets.append((kw["start_ordinal"], len(kw["artifacts"]))),
+    )
+    monkeypatch.setattr(
+        client,
+        "seal_processing_claim_artifacts",
+        lambda *_, **kw: SimpleNamespace(identity=identity),
+    )
+    monkeypatch.setattr(client, "_claim_response", lambda *_, **kw: claim, raising=False)
+    kwargs = dict(
+        fence=1,
+        execution_id=EXECUTION_ID,
+        controller_evidence=CONTROLLER_EVIDENCE,
+        controller_evidence_sha256=CONTROLLER_EVIDENCE_SHA256,
+        operation_id="fixture.operation/v1",
+        operation_sha256="d" * 64,
+    )
+    client.seal_processing_claim_plan("e" * 64, input_artifacts=iter(artifacts), **kwargs)
+    assert offsets == [(0, 128), (128, 1)]
+    # A sealed plan is an immutable authority, not a reason to skip scope verification.
+    claim.plan = SimpleNamespace(artifacts=identity)
+    offsets.clear()
+    client.seal_processing_claim_plan("e" * 64, input_artifacts=iter(artifacts), **kwargs)
+    assert offsets == []
+    with pytest.raises(ValueError, match="exact requested input scope"):
+        client.seal_processing_claim_plan("e" * 64, input_artifacts=iter(artifacts[:-1]), **kwargs)

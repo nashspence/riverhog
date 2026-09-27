@@ -194,6 +194,7 @@ def test_collection_deletion_plan_types_the_retirement_evidence_reference() -> N
     assert set(reference["properties"]) == {
         "claim_id",
         "execution_id",
+        "effect_settlement_sha256",
         "fence",
         "outcomes",
         "output_collection_id",

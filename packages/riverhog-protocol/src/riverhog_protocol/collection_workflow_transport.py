@@ -29,8 +29,15 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_bytes,
     canonical_json_sha256,
 )
+from riverhog_protocol.effect_settlement import (
+    EFFECT_RECEIPT_MAX_BYTES,
+    OPERATION_CONTRACT_MAX_BYTES,
+    ExternalEffectSettlement,
+    operation_retirement_permission,
+)
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.list_controls import ClaimState, ProcessingClaimSort, SortOrder
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.paths import CanonicalRelPath, CollectionId
 from riverhog_protocol.principal_ids import ApplicationName, PrincipalId
 
@@ -67,6 +74,28 @@ WorkDocument = Annotated[
                 "reason": "bounded-work-document-envelope",
             },
             "x-riverhog-encoded-bytes-max": WORK_DOCUMENT_MAX_BYTES,
+        }
+    ),
+]
+
+EffectReceiptDocument = Annotated[
+    dict[str, Any],
+    Field(
+        json_schema_extra={
+            "x-riverhog-extent": {"policy": "contract_max", "reason": "bounded-effect-receipt"},
+            "x-riverhog-encoded-bytes-max": EFFECT_RECEIPT_MAX_BYTES,
+        }
+    ),
+]
+OperationContractDocument = Annotated[
+    dict[str, Any],
+    Field(
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-operation-declaration",
+            },
+            "x-riverhog-encoded-bytes-max": OPERATION_CONTRACT_MAX_BYTES,
         }
     ),
 ]
@@ -284,14 +313,67 @@ class RecipeIdentityDocument(RiverhogWorkflowDocument):
 
 
 class ProcessingOutcomeIdentityDocument(RiverhogWorkflowDocument):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "oneOf": [
+                {
+                    "properties": {
+                        "result_kind": {"const": "collection"},
+                        "output_collection": {"type": "object"},
+                        "derivation_sha256": {"type": "string"},
+                        "effect_receipt_sha256": {"type": "null"},
+                        "effect_settlement_sha256": {"type": "null"},
+                    },
+                    "required": ["output_collection", "derivation_sha256"],
+                },
+                {
+                    "properties": {
+                        "result_kind": {"const": "external-effect"},
+                        "output_collection": {"type": "null"},
+                        "derivation_sha256": {"type": "null"},
+                        "effect_receipt_sha256": {"type": "string"},
+                        "effect_settlement_sha256": {"type": "string"},
+                    },
+                    "required": ["effect_receipt_sha256", "effect_settlement_sha256"],
+                },
+            ]
+        }
+    )
     outcome_id: SemanticId
     source_claim_id: ProcessingClaimId
-    output_collection: CollectionRootIdentityDocument
-    derivation_sha256: SHA256
+    source_fence: NonnegativeDecimal = Field(ge=1)
+    execution_id: SHA256
+    result_kind: Literal["collection", "external-effect"]
+    output_collection: CollectionRootIdentityDocument | None = None
+    derivation_sha256: SHA256 | None = None
+    effect_receipt_sha256: SHA256 | None = None
+    effect_settlement_sha256: SHA256 | None = None
 
     @model_validator(mode="after")
     def validate_identity(self) -> Self:
-        CollectionProcessingOutcomeIdentity.from_mapping(self.model_dump(mode="json"))
+        CollectionProcessingOutcomeIdentity.from_mapping(
+            self.model_dump(mode="json", exclude_none=True)
+        )
+        return self
+
+
+class ExternalEffectSettlementDocument(RiverhogWorkflowDocument):
+    format: Literal["riverhog-external-effect-settlement/v1"]
+    claim_id: ProcessingClaimId
+    fence: NonnegativeDecimal = Field(ge=1)
+    execution_id: SHA256
+    execution_sha256: SHA256
+    operation: OperationIdentityDocument
+    input_set_sha256: SHA256
+    artifact_set_sha256: SHA256
+    controller_evidence_sha256: SHA256
+    receipt: EffectReceiptDocument
+    receipt_sha256: SHA256
+    status: Literal["succeeded"]
+
+    @model_validator(mode="after")
+    def validate_identity(self) -> Self:
+        ExternalEffectSettlement.from_mapping(self.model_dump(mode="json"))
         return self
 
 
@@ -518,11 +600,14 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
+    result_kind: Literal["collection", "external-effect"] = "collection"
+    operation_contract: OperationContractDocument | None = None
+    output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
         default="retain",
         description=(
-            "Retain source collections, or permit their permanent deletion after verified "
-            "output, the grace period, and collection deletion checks."
+            "Retain source collections, or permit their permanent deletion after exact "
+            "settlement, the grace period, and collection deletion checks."
         ),
     )
     source_collection_retirement_grace_seconds: NonnegativeDecimal = Field(
@@ -542,6 +627,15 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
             and self.source_collection_retirement_grace_seconds
         ):
             raise ValueError("retained source collections cannot declare retirement grace")
+        permitted = operation_retirement_permission(
+            OperationIdentity.from_mapping(self.operation.model_dump(mode="json")),
+            self.result_kind,
+            self.operation_contract,
+        )
+        if self.source_collection_retirement_policy == "retire-after-settlement" and not permitted:
+            raise ValueError("recipe retirement requires an exact permitting operation declaration")
+        if self.result_kind == "external-effect" and self.output_policy != OutputCollectionPolicy():
+            raise ValueError("external-effect claim cannot publish a collection")
         return self
 
 
@@ -588,6 +682,33 @@ class ProcessingClaimSettleDocument(RiverhogWorkflowDocument):
     outcome: ProcessingOutcomeBindingDocument | None = None
 
 
+class ProcessingClaimEffectSettleDocument(RiverhogWorkflowDocument):
+    fence: NonnegativeDecimal = Field(ge=1)
+    settlement: ExternalEffectSettlementDocument
+    outcome: ProcessingOutcomeBindingDocument | None = None
+
+    @model_validator(mode="after")
+    def validate_fence(self) -> Self:
+        if self.fence != self.settlement.fence:
+            raise ValueError("effect settlement differs from the requested fence")
+        return self
+
+
+class ProcessingClaimOutcomesAppendDocument(RiverhogWorkflowDocument):
+    fence: NonnegativeDecimal = Field(ge=1)
+    outcomes: list[ProcessingOutcomeIdentityDocument] = Field(
+        min_length=1,
+        max_length=WORKFLOW_SET_BATCH_MAX,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-outcome-append",
+                "progression": "immutable-outcome-label",
+            }
+        },
+    )
+
+
 class ProcessingClaimOutcomesSettleDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
@@ -597,11 +718,12 @@ class ProcessingClaimOutcomesSettleDocument(RiverhogWorkflowDocument):
     )
 
     fence: NonnegativeDecimal = Field(ge=1)
+    outcomes: ExactSetIdentityDocument
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
         default="retain",
         description=(
-            "Retain source collections, or permit their permanent deletion after verified "
-            "output, the grace period, and collection deletion checks."
+            "Retain source collections, or permit their permanent deletion after exact "
+            "settlement, the grace period, and collection deletion checks."
         ),
     )
     source_collection_retirement_grace_seconds: NonnegativeDecimal = Field(
@@ -643,6 +765,9 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
+    result_kind: Literal["collection", "external-effect"] = "collection"
+    operation_contract: OperationContractDocument | None = None
+    output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
     inputs: ExactSetIdentityDocument
     artifacts: ArtifactSetIdentityDocument
     source_collection_retirement_policy: SourceCollectionRetirementPolicy
@@ -658,6 +783,9 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
                 "controller_evidence": self.controller_evidence,
                 "controller_evidence_sha256": self.controller_evidence_sha256,
                 "operation": self.operation.model_dump(mode="json"),
+                "result_kind": self.result_kind,
+                "operation_contract": self.operation_contract,
+                "output_policy": self.output_policy,
                 "source_collection_retirement_policy": self.source_collection_retirement_policy,
                 "source_collection_retirement_grace_seconds": format_scalar(
                     "nonnegative", self.source_collection_retirement_grace_seconds
@@ -690,7 +818,7 @@ class ProcessingClaimOutcomeSettlementDocument(RiverhogWorkflowDocument):
 
 
 class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument):
-    """Exact claim evidence authorizing one source collection deletion plan."""
+    """Exact Riverhog settlement authorizing one source deletion plan."""
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -699,14 +827,25 @@ class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument)
                     "properties": {
                         "execution_id": {"type": "string"},
                         "output_collection_id": cast(Any, scalar_schema("sequence63")),
+                        "effect_settlement_sha256": {"type": "null"},
                         "outcomes": {"type": "null"},
                     },
                     "required": ["execution_id", "output_collection_id"],
                 },
                 {
                     "properties": {
+                        "execution_id": {"type": "string"},
+                        "output_collection_id": {"type": "null"},
+                        "effect_settlement_sha256": {"type": "string"},
+                        "outcomes": {"type": "null"},
+                    },
+                    "required": ["execution_id", "effect_settlement_sha256"],
+                },
+                {
+                    "properties": {
                         "execution_id": {"type": "null"},
                         "output_collection_id": {"type": "null"},
+                        "effect_settlement_sha256": {"type": "null"},
                         "outcomes": {"type": "object"},
                     },
                     "required": ["outcomes"],
@@ -714,31 +853,23 @@ class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument)
             ]
         }
     )
-
     claim_id: ProcessingClaimId
     fence: NonnegativeDecimal = Field(ge=1)
     work_id: SHA256
     execution_id: SHA256 | None = None
     output_collection_id: CollectionId | None = None
+    effect_settlement_sha256: SHA256 | None = None
     outcomes: ExactSetIdentityDocument | None = None
 
     @model_validator(mode="after")
     def validate_settlement_form(self) -> Self:
-        direct = self.execution_id is not None and self.output_collection_id is not None
+        collection = self.output_collection_id is not None
+        effect = self.effect_settlement_sha256 is not None
         delegated = self.outcomes is not None
-        if direct == delegated:
-            raise ValueError(
-                "source collection retirement claim must identify one direct or "
-                "delegated settlement"
-            )
-        if direct and self.outcomes is not None:
-            raise ValueError(
-                "direct source collection retirement claims cannot identify delegated outcomes"
-            )
-        if delegated and (self.execution_id is not None or self.output_collection_id is not None):
-            raise ValueError(
-                "delegated source collection retirement claims cannot identify a direct output"
-            )
+        if sum((collection, effect, delegated)) != 1:
+            raise ValueError("retirement requires exactly one direct or delegated settlement")
+        if (collection or effect) != (self.execution_id is not None):
+            raise ValueError("retirement execution differs from its settlement form")
         return self
 
 
@@ -797,6 +928,7 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
     abandonment_reason: str | None = Field(default=None, min_length=1, max_length=1000)
     released_at: CanonicalUtcTimestamp | None = None
     output_collection_id: CollectionId | None = None
+    effect_settlement_sha256: SHA256 | None = None
     work_document: WorkDocument
     work_document_sha256: SHA256
     inputs: ReceivingSetDocument
@@ -836,15 +968,28 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
             raise ValueError("direct collection work cannot retain delegated outcomes")
         if settled:
             if self.plan is not None:
-                if self.output_collection_id is None or self.outcome_settlement is not None:
-                    raise ValueError("direct claim settlement evidence is incomplete")
+                if self.outcome_settlement is not None:
+                    raise ValueError("direct claim cannot contain delegated settlement")
+                if self.plan.result_kind == "external-effect":
+                    if (
+                        self.effect_settlement_sha256 is None
+                        or self.output_collection_id is not None
+                    ):
+                        raise ValueError("direct effect settlement evidence is incomplete")
+                elif self.output_collection_id is None or self.effect_settlement_sha256 is not None:
+                    raise ValueError("direct collection settlement evidence is incomplete")
             elif (
                 self.output_collection_id is not None
+                or self.effect_settlement_sha256 is not None
                 or self.outcomes.identity is None
                 or self.outcome_settlement is None
             ):
                 raise ValueError("delegated claim settlement evidence is incomplete")
-        elif self.output_collection_id is not None or self.outcome_settlement is not None:
+        elif (
+            self.output_collection_id is not None
+            or self.outcome_settlement is not None
+            or self.effect_settlement_sha256 is not None
+        ):
             raise ValueError("unsettled claim cannot publish settlement evidence")
         return self
 
@@ -909,6 +1054,9 @@ class CollectionDerivationResponseDocument(RiverhogWorkflowDocument):
 
 
 __all__ = [
+    "ProcessingClaimOutcomesAppendDocument",
+    "ProcessingClaimEffectSettleDocument",
+    "ExternalEffectSettlementDocument",
     "CONTROLLER_EVIDENCE_MAX_BYTES",
     "DISPOSITION_BATCH_MAX",
     "ArtifactDispositionBatchDocument",

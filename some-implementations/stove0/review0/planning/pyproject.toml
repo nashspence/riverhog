@@ -22,7 +22,7 @@ dependencies = [
   "pydantic>=2.7,<3.0",
   "a-stove0-media-sampling-contract-lib>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
-  "review0-target-contracts>=0.1,<0.2",
+  "review0-contracts>=0.1,<0.2",
 ]
 
 [project.scripts]
@@ -31,7 +31,7 @@ review0-planner = "review0_planner.conformance:main"
 [tool.uv.sources]
 a-stove0-media-sampling-contract-lib = { workspace = true }
 stove0-protocol = { workspace = true }
-review0-target-contracts = { workspace = true }
+review0-contracts = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/review0_planner"]

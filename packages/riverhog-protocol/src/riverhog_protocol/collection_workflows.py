@@ -44,11 +44,11 @@ DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH = 64
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _SEMANTIC_ID_RE = re.compile(r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$", re.ASCII)
-_SOURCE_COLLECTION_RETIREMENT_POLICIES = {"retain", "retire-after-verified-output"}
+_SOURCE_COLLECTION_RETIREMENT_POLICIES = {"retain", "retire-after-settlement"}
 _DISPOSITION_STATES = {"transformed", "preserved", "omitted", "rejected"}
 
 JsonValue = None | bool | int | float | str | list["JsonValue"] | dict[str, "JsonValue"]
-SourceCollectionRetirementPolicy = Literal["retain", "retire-after-verified-output"]
+SourceCollectionRetirementPolicy = Literal["retain", "retire-after-settlement"]
 DispositionState = Literal["transformed", "preserved", "omitted", "rejected"]
 
 
@@ -206,61 +206,113 @@ class CollectionArtifactIdentity:
         )
 
 
-@dataclass(frozen=True, order=True, slots=True)
+@dataclass(frozen=True, slots=True)
 class CollectionProcessingOutcomeIdentity:
-    """One verified output retained as an outcome of collection processing."""
+    """One exact Riverhog-settled result of collection processing.
+
+    Collection and effect identities are disjoint. The source generation is
+    explicit so a result cannot be substituted across a claim restart.
+    """
 
     outcome_id: str
     source_claim_id: str
-    output_collection: CollectionRootIdentity
-    derivation_sha256: str
+    source_fence: int
+    execution_id: str
+    result_kind: Literal["collection", "external-effect"]
+    output_collection: CollectionRootIdentity | None = None
+    derivation_sha256: str | None = None
+    effect_receipt_sha256: str | None = None
+    effect_settlement_sha256: str | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(
-            self,
-            "outcome_id",
-            _semantic_id(self.outcome_id, "outcome id"),
-        )
-        object.__setattr__(
-            self,
-            "source_claim_id",
-            _sha256(self.source_claim_id, "source claim identity"),
-        )
-        object.__setattr__(
-            self,
-            "derivation_sha256",
-            _sha256(self.derivation_sha256, "derivation identity"),
-        )
+        _semantic_id(self.outcome_id, "outcome id")
+        _sha256(self.source_claim_id, "source claim identity")
+        _positive_uint(self.source_fence, "source claim fence")
+        _sha256(self.execution_id, "execution identity")
+        if self.result_kind == "collection":
+            if self.output_collection is None or self.derivation_sha256 is None:
+                raise ValueError("collection outcome requires a root and derivation")
+            _sha256(self.derivation_sha256, "derivation identity")
+            if self.effect_receipt_sha256 is not None or self.effect_settlement_sha256 is not None:
+                raise ValueError("collection outcome cannot contain an effect")
+        elif self.result_kind == "external-effect":
+            if self.effect_receipt_sha256 is None or self.effect_settlement_sha256 is None:
+                raise ValueError(
+                    "effect outcome requires receipt and Riverhog settlement identities"
+                )
+            _sha256(self.effect_receipt_sha256, "effect receipt identity")
+            _sha256(self.effect_settlement_sha256, "effect settlement identity")
+            if self.output_collection is not None or self.derivation_sha256 is not None:
+                raise ValueError("effect outcome cannot contain a collection result")
+        else:
+            raise ValueError("unknown processing outcome result kind")
 
     def as_dict(self) -> dict[str, object]:
-        return {
+        result: dict[str, object] = {
             "outcome_id": self.outcome_id,
             "source_claim_id": self.source_claim_id,
-            "output_collection": self.output_collection.as_dict(),
-            "derivation_sha256": self.derivation_sha256,
+            "source_fence": format_scalar("nonnegative", self.source_fence),
+            "execution_id": self.execution_id,
+            "result_kind": self.result_kind,
         }
+        if self.result_kind == "collection":
+            assert self.output_collection is not None
+            result.update(
+                output_collection=self.output_collection.as_dict(),
+                derivation_sha256=self.derivation_sha256,
+            )
+        else:
+            result.update(
+                effect_receipt_sha256=self.effect_receipt_sha256,
+                effect_settlement_sha256=self.effect_settlement_sha256,
+            )
+        return result
 
     @classmethod
-    def from_mapping(
-        cls,
-        value: Mapping[str, object],
-    ) -> CollectionProcessingOutcomeIdentity:
-        if set(value) != {
-            "outcome_id",
-            "source_claim_id",
-            "output_collection",
-            "derivation_sha256",
-        }:
-            raise ValueError("collection processing outcome fields are invalid")
+    def from_mapping(cls, value: Mapping[str, object]) -> CollectionProcessingOutcomeIdentity:
+        common = {"outcome_id", "source_claim_id", "source_fence", "execution_id", "result_kind"}
+        kind = value.get("result_kind")
+        specific = (
+            {"output_collection", "derivation_sha256"}
+            if kind == "collection"
+            else {"effect_receipt_sha256", "effect_settlement_sha256"}
+        )
+        if set(value) != common | specific:
+            raise ValueError("processing outcome fields are invalid")
         output = value.get("output_collection")
-        if not isinstance(output, Mapping):
+        if kind == "collection" and not isinstance(output, Mapping):
             raise ValueError("outcome collection must be an object")
         return cls(
-            outcome_id=str(value.get("outcome_id") or ""),
-            source_claim_id=str(value.get("source_claim_id") or ""),
-            output_collection=CollectionRootIdentity.from_mapping(output),
-            derivation_sha256=str(value.get("derivation_sha256") or ""),
+            outcome_id=str(value["outcome_id"]),
+            source_claim_id=str(value["source_claim_id"]),
+            source_fence=_positive_decimal(value["source_fence"], "source claim fence"),
+            execution_id=str(value["execution_id"]),
+            result_kind=cast(Literal["collection", "external-effect"], kind),
+            output_collection=(
+                CollectionRootIdentity.from_mapping(output) if isinstance(output, Mapping) else None
+            ),
+            derivation_sha256=cast(str | None, value.get("derivation_sha256")),
+            effect_receipt_sha256=cast(str | None, value.get("effect_receipt_sha256")),
+            effect_settlement_sha256=cast(str | None, value.get("effect_settlement_sha256")),
         )
+
+
+def processing_outcome_set_identity(
+    outcomes: Sequence[CollectionProcessingOutcomeIdentity],
+) -> dict[str, object]:
+    """Commit to every required outcome in canonical label order, not a subset."""
+
+    ordered = sorted(outcomes, key=lambda item: item.outcome_id)
+    if not ordered or len({item.outcome_id for item in ordered}) != len(ordered):
+        raise ValueError("processing outcomes must be nonempty with unique labels")
+    if len({item.source_claim_id for item in ordered}) != len(ordered):
+        raise ValueError("processing outcomes must not reuse a source claim")
+    digest = hashlib.sha256(b"riverhog-claim-outcomes/v1\0")
+    for outcome in ordered:
+        encoded = canonical_json_bytes(outcome.as_dict())
+        digest.update(len(encoded).to_bytes(8, "big"))
+        digest.update(encoded)
+    return {"count": format_scalar("nonnegative", len(ordered)), "sha256": digest.hexdigest()}
 
 
 @dataclass(frozen=True, slots=True)

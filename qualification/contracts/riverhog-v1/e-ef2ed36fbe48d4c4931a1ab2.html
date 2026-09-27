@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>review0:configuration:review0-config configuration · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-d474005de567226fba283b47.html">review0</a> / <a href="i-c040fbfb8dc01342c4acccb8.html">Configuration Documents</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>review0:configuration:review0-config configuration</h1>
+<p class="context">Review0 collection materialization application for Stove0. Configuration Documents contract owned by review0.</p>
+<section id="contract" data-contract="configuration:review0:review0-configuration-review0-config-configuration:444204550c">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-94f8811f501dec598c705018">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/review0.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>Review0Config</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;token_file&quot;,&quot;samplers&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-a31ebef703791c6549bb0fde">samplers</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-ef2ed36fbe48d4c4931a1ab2.html#v-8189d7216f4be2228245f589">#/$defs/SamplerConfig</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-8189d7216f4be2228245f589">SamplerConfig</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-a31ebef703791c6549bb0fde">
+<h3>Field: samplers</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-ef2ed36fbe48d4c4931a1ab2.html#v-8189d7216f4be2228245f589">#/$defs/SamplerConfig</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Samplers</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-8189d7216f4be2228245f589">
+<h3>Definition: SamplerConfig</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;base_url&quot;,&quot;token_file&quot;,&quot;descriptor_sha256&quot;,&quot;image_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>allow_insecure_http</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>base_url</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>image_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/configuration_documents/review0:configuration:review0-config</code>
+</h4>
+<table id="v-94f8811f501dec598c705018">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-77bc21235a5ef0ceda586237">
+<tbody>
+<tr>
+<th scope="row">
+<code>SamplerConfig</code>
+</th>
+<td>
+<table id="v-8189d7216f4be2228245f589">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2369876a0eaa55e001a336af">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f6b2da4b13c77132ff67f9ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>allow_insecure_http</code>
+</th>
+<td>
+<table id="v-1d19f7045880cfe0d126f927">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-ae0480d074719440a3cf9b7f">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/allow_insecure_http/default">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-139d783754f9c0828a5ca958">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/allow_insecure_http/title">Allow Insecure Http</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3ae37fd30172e842ada782b0">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/allow_insecure_http/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>base_url</code>
+</th>
+<td>
+<table id="v-0ddafe557d02d5cfaf90f1e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-5a2085559596d16bdd324e4d">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/base_url/maxLength">2048</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-d2d6ed7f103fe1ced1ab6978">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/base_url/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f4f6d789b4e6a38568c69b42">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/base_url/title">Base Url</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f8de0041dce48f67d9abfbf5">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/base_url/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>descriptor_sha256</code>
+</th>
+<td>
+<table id="v-8f120fe2fc62fb13320e234f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9e0760490f40b655d2c8e5a2">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a0c677ca6c5a96eb44485360">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/descriptor_sha256/title">Descriptor Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a89fbd3c20e94ed839679601">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/descriptor_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-00dd156c1753ded6373730f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7533770918ddf35cd5c35c04">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-06a7d8e37b7081b762e168b1">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/id/title">Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-42384f1028896a550ecb7f00">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>image_id</code>
+</th>
+<td>
+<table id="v-76e2cd91c3c6b2a3c4d2db67">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b031dc642e46f50d6147a22b">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/image_id/pattern">^sha256:[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d1aa67d97d8bd52ef4d83a74">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/image_id/title">Image Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8f1b9aa72d730e1aea06ab5f">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/image_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>token_file</code>
+</th>
+<td>
+<table id="v-7b15013eeb88424b9f7f5a7e">
+<tbody>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<span id="v-755e4ad35b191727ecf40c26">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/token_file/format">path</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-3096fea541c951e9a238796a">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/token_file/title">Token File</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e11af5ce5fcbbfae6c46ad13">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/token_file/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-31df5c31000415f3c07b7f7c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7ebb1077e7723c926fad2877">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/required/0">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-5e351f0b9e01d7c748b9f441">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/required/1">base_url</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-7a1d58a5de04fb8f225c5658">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/required/2">token_file</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4bef3e952a3be8c44afd2d98">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/required/3">descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-3279e557593db07bd83120a2">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/required/4">image_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-385f57ca8f26222c19dba1f6">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/title">SamplerConfig</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2803b501906247e3dd9ae7a9">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>$id</code>
+</th>
+<td>
+<span id="v-ba5260e7a5922cd52f366db0">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$id">https://nashspence.github.io/riverhog/v1/config/review0.schema.json</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>$schema</code>
+</th>
+<td>
+<span id="v-7fc94ed598689590c396e220">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/$schema">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-57d5057977e9c0776772e5a2">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-3ad62ad9880610d52913cba5">
+<tbody>
+<tr>
+<th scope="row">
+<code>samplers</code>
+</th>
+<td>
+<table id="v-a31ebef703791c6549bb0fde">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-9c7249cf3906afe30282d545">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9393ed3d796842ef1bf9a4ab">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/samplers/items/$ref">#/$defs/SamplerConfig</code>
+<span class="kind">string</span> <a href="e-ef2ed36fbe48d4c4931a1ab2.html#v-8189d7216f4be2228245f589">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-2e174c65b2603fdeb70da108">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/samplers/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9a06919de8c7fd78169409c1">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/samplers/title">Samplers</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-38f9662c5c5253cc1ec3b5eb">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/samplers/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>token_file</code>
+</th>
+<td>
+<table id="v-e52b0b01c0a1196aa46ac618">
+<tbody>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<span id="v-e29dac4cfe56d31709bb6e9c">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/token_file/format">path</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b3e61da8eee0a8102a088b64">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/token_file/title">Token File</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-38e84b36d7fa017bd4e520f4">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/properties/token_file/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-462096c05ba3cf90d8542120">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9e6d1a685be49163aeff27c9">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/required/0">token_file</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0e50fe7916bfb297762c65a3">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/required/1">samplers</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2c6af372810b9656b8c44f25">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/title">Review0Config</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7b72188ab4c8fc64ee5305aa">
+<code data-value-pointer="/external_contract/configuration_documents/review0:configuration:review0-config/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-15e2e266f753cb544237d6f8.html">compatibility/configuration/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-f69e372a13f0dc61752c646f">configuration:review0:configuration:review0-config</a> — <code data-source-path="some-implementations/stove0/review0/application/src/review0/http.py">some-implementations/stove0/review0/application/src/review0/http.py::Review0Config</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/base_url</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:2048,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/review0:configuration:review0-config/$defs/SamplerConfig/properties/descriptor_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/review0:configuration:review0-config/properties/samplers</code></td>
+<td data-label="Governing rule">
+<code>configuration-composition/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0:configuration:review0-config&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;validated-deployment-composition&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

@@ -19,10 +19,9 @@ members = [
   "some-implementations/stove0/observers/contracts/*",
   "some-implementations/stove0/targets/media-archive/*",
   "some-implementations/stove0/review0/contracts",
-  "some-implementations/stove0/review0/materialize-target",
+  "some-implementations/stove0/review0/application",
   "some-implementations/stove0/review0/planning",
-  "some-implementations/stove0/review0/rclone-effect-target",
-  "some-implementations/stove0/review0/support",
+  "some-implementations/stove0/targets/rclone",
   "some-implementations/stove0/review0/sampler/*",
   "some-implementations/stove0/review0/samplers/*",
   "some-implementations/stove0/targets/*/target",
@@ -69,10 +68,9 @@ stove0-observer-protocol = { workspace = true }
 stove0-observer-support = { workspace = true }
 stove0-operator-contracts = { workspace = true }
 review0-planner = { workspace = true }
-a-review0-materializer = { workspace = true }
-a-review0-rclone-target = { workspace = true }
-review0-target-contracts = { workspace = true }
-review0-target-lib = { workspace = true }
+review0 = { workspace = true }
+a-stove0-rclone-target = { workspace = true }
+review0-contracts = { workspace = true }
 review0-sampler-client = { workspace = true }
 review0-sampler-protocol = { workspace = true }
 review0-sampler-lib = { workspace = true }

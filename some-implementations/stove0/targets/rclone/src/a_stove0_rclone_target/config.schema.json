@@ -1,0 +1,48 @@
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/config/a-stove0-rclone-target.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "destination_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Destination Identity",
+      "type": "string"
+    },
+    "rclone_config_file": {
+      "anyOf": [
+        {
+          "format": "path",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rclone Config File"
+    },
+    "rclone_remote": {
+      "minLength": 1,
+      "title": "Rclone Remote",
+      "type": "string"
+    },
+    "rclone_timeout_seconds": {
+      "default": 86400,
+      "minimum": 1,
+      "title": "Rclone Timeout Seconds",
+      "type": "integer"
+    },
+    "token_file": {
+      "format": "path",
+      "title": "Token File",
+      "type": "string"
+    }
+  },
+  "required": [
+    "token_file",
+    "destination_identity",
+    "rclone_remote"
+  ],
+  "title": "RcloneTargetConfig",
+  "type": "object"
+}

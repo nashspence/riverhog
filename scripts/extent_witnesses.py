@@ -118,6 +118,19 @@ WITNESSES = (
         gates=("make unit", "make postgres-concurrency", "make compose-smoke"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-processing-outcome-append/v1",
+        owner="riverhog",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "ProcessingClaimOutcomesAppendDocument", "outcomes"),
+        ),
+        test_node_ids=(
+            "riverhog/tests/test_collection_workflows.py::"
+            "test_outcome_append_crosses_transport_boundary_and_replays_after_restart",
+        ),
+        gates=("make unit",),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-work-disposition-append/v1",
         owner="riverhog",
         rule_id="bounded-segment/v1",

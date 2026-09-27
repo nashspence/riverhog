@@ -27,12 +27,12 @@ targets:
     token_file: /run/secrets/a_stove0_opus_target_token
     allow_insecure_http: true
   review:
-    base_url: http://a-review0-materializer:8080
-    token_file: /run/secrets/a_review0_materializer_token
+    base_url: http://review0:8080
+    token_file: /run/secrets/review0_token
     allow_insecure_http: true
-  review-effect:
-    base_url: http://a-review0-rclone-target:8080
-    token_file: /run/secrets/a_review0_rclone_target_token
+  rclone:
+    base_url: http://a-stove0-rclone-target:8080
+    token_file: /run/secrets/a_stove0_rclone_target_token
     allow_insecure_http: true
 target_callback_base_url: http://api:8080
 target_callback_allow_insecure_http: true

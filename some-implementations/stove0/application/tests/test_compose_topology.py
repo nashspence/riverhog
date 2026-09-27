@@ -22,8 +22,8 @@ def test_supplied_topology_uses_one_postgres_authority_and_distinct_roles() -> N
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
         "a-stove0-opus-target",
-        "a-review0-rclone-target",
-        "a-review0-materializer",
+        "a-stove0-rclone-target",
+        "review0",
         "state",
         "worker",
     }
@@ -66,8 +66,8 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
         "a-stove0-opus-target",
-        "a-review0-rclone-target",
-        "a-review0-materializer",
+        "a-stove0-rclone-target",
+        "review0",
     ):
         assert services[name]["read_only"] is True
         assert services[name]["user"] == "65532:65532"
@@ -80,8 +80,8 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
         "a-stove0-opus-target",
-        "a-review0-rclone-target",
-        "a-review0-materializer",
+        "a-stove0-rclone-target",
+        "review0",
     ):
         assert "ports" not in services[name]
     assert services["a-stove0-nvenc-av1-opus-target"]["profiles"] == ["nvenc"]
@@ -92,8 +92,8 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
     assert services["a-stove0-exiftool-observer"]["command"][0] == "a-stove0-exiftool-observer"
     assert services["a-stove0-opus-target"]["command"][0] == "a-stove0-opus-target"
     assert services["a-review0-opus-sampler"]["command"][0] == "a-review0-opus-sampler"
-    assert services["a-review0-materializer"]["command"][0] == "a-review0-materializer"
-    assert services["a-review0-rclone-target"]["command"][0] == "a-review0-rclone-target"
+    assert services["review0"]["command"][0] == "review0"
+    assert services["a-stove0-rclone-target"]["command"][0] == "a-stove0-rclone-target"
     assert (
         services["a-stove0-nvenc-av1-opus-target"]["command"][0] == "a-stove0-nvenc-av1-opus-target"
     )
@@ -106,10 +106,11 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
     assert set(payload["volumes"]) == {
         "a-stove0-nvenc-av1-opus-target-state",
         "a-stove0-opus-target-state",
-        "a-review0-materializer-state",
-        "a-review0-rclone-target-state",
-        "review0-effect-delivery",
+        "review0-state",
+        "a-stove0-rclone-target-state",
+        "a-stove0-rclone-delivery",
         "review0-workspace",
+        "a-stove0-rclone-target-workspace",
     }
 
 
@@ -123,12 +124,15 @@ def test_sampler_containers_share_only_ephemeral_workspace_and_no_authority() ->
         assert all("riverhog" not in item for item in service["secrets"])
         assert all("target_token" not in item for item in service["secrets"])
         assert "STOVE0_DATABASE_URL_FILE" not in service["environment"]
-    for name in ("a-review0-materializer", "a-review0-rclone-target"):
-        assert set(services[name]["networks"]) == {
-            "review-sampler",
-            "riverhog-control",
-            "stove0-internal",
-        }
+    assert set(services["review0"]["networks"]) == {
+        "review-sampler",
+        "riverhog-control",
+        "stove0-internal",
+    }
+    assert set(services["a-stove0-rclone-target"]["networks"]) == {
+        "riverhog-control",
+        "stove0-internal",
+    }
     workspace = payload["volumes"]["review0-workspace"]
     assert workspace["driver_opts"]["type"] == "tmpfs"
 
@@ -163,14 +167,12 @@ def test_paired_target_and_sampler_roles_bind_the_same_manifest_and_image_id() -
         services["a-stove0-opus-target"]["image"]
         != services["a-stove0-nvenc-av1-opus-target"]["image"]
     )
-    assert (
-        services["a-review0-materializer"]["image"] != services["a-review0-rclone-target"]["image"]
+    assert services["review0"]["image"] != services["a-stove0-rclone-target"]["image"]
+    assert services["review0"]["build"]["dockerfile"] == (
+        "some-implementations/stove0/review0/application/Dockerfile"
     )
-    assert services["a-review0-materializer"]["build"]["dockerfile"] == (
-        "some-implementations/stove0/review0/materialize-target/Dockerfile"
-    )
-    assert services["a-review0-rclone-target"]["build"]["dockerfile"] == (
-        "some-implementations/stove0/review0/rclone-effect-target/Dockerfile"
+    assert services["a-stove0-rclone-target"]["build"]["dockerfile"] == (
+        "some-implementations/stove0/targets/rclone/Dockerfile"
     )
     assert services["a-stove0-opus-target"]["build"]["dockerfile"] == (
         "some-implementations/stove0/targets/opus/Dockerfile"
@@ -237,24 +239,24 @@ def test_supplied_observer_registrations_connect_exact_one_role_services() -> No
             assert secret in service["secrets"]
 
 
-def test_supplied_target_registrations_bind_fixed_review_result_modes() -> None:
+def test_supplied_target_registrations_separate_review_and_generic_effect() -> None:
     payload = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
     services = payload["services"]
     registrations = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))["targets"]
     assert registrations["review"] == {
-        "base_url": "http://a-review0-materializer:8080",
-        "token_file": "/run/secrets/a_review0_materializer_token",
+        "base_url": "http://review0:8080",
+        "token_file": "/run/secrets/review0_token",
         "allow_insecure_http": True,
     }
-    assert registrations["review-effect"] == {
-        "base_url": "http://a-review0-rclone-target:8080",
-        "token_file": "/run/secrets/a_review0_rclone_target_token",
+    assert registrations["rclone"] == {
+        "base_url": "http://a-stove0-rclone-target:8080",
+        "token_file": "/run/secrets/a_stove0_rclone_target_token",
         "allow_insecure_http": True,
     }
     for role in ("api", "controller", "worker"):
         service = services[role]
-        assert "a_review0_materializer_token" in service["secrets"]
-        assert "a_review0_rclone_target_token" in service["secrets"]
+        assert "review0_token" in service["secrets"]
+        assert "a_stove0_rclone_target_token" in service["secrets"]
 
 
 def test_supplied_topology_connects_bounded_operational_state_retention() -> None:
@@ -266,8 +268,8 @@ def test_supplied_topology_connects_bounded_operational_state_retention() -> Non
     for name in (
         "a-stove0-opus-target",
         "a-stove0-nvenc-av1-opus-target",
-        "a-review0-materializer",
-        "a-review0-rclone-target",
+        "review0",
+        "a-stove0-rclone-target",
     ):
         assert (
             services[name]["environment"]["STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"]

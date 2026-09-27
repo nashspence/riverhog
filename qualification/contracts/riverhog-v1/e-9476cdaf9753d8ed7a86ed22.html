@@ -300,10 +300,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>role</code></td>
+<a href="#s-41c442ba7fb4d3ebad147ae1">role</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>string</code>; const: <code>*</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -595,6 +594,34 @@
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
 <code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-41c442ba7fb4d3ebad147ae1">
+<h3>Field: role</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>string</code>; const: <code>*</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>string</code>; const: <code>*</code></td>
 </tr>
 </tbody>
 </table>
@@ -1049,11 +1076,25 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-a26335cfd2128d514ef3704c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-da15105d261fb0f25353d54a">
+<tbody>
+<tr>
+<th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-aa05a97bba1cf69860de77cd">
-<code data-value-pointer="/external_contract/python/stove0_target_support.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span id="v-847b6db454c308829fe291c9">
+<code data-value-pointer="/external_contract/python/stove0_target_support.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1062,10 +1103,46 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-7e51c7ebe2f48f370a4023fa">
-<code data-value-pointer="/external_contract/python/stove0_target_support.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/role/type">string</code>
+<span id="v-84b7738bfb9ecdbd02fbccf0">
+<code data-value-pointer="/external_contract/python/stove0_target_support.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/0/type">string</code>
 <span class="kind">string</span>
 </span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-db0dbd6dea0dfe1c8572507a">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-b5886c362d53e5d08b931df7">
+<code data-value-pointer="/external_contract/python/stove0_target_support.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/1/const">*</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-01188c21fd3514b9a016be51">
+<code data-value-pointer="/external_contract/python/stove0_target_support.OperationContractPayload/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/1/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -2452,7 +2529,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

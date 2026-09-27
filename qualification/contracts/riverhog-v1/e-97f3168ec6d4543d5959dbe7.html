@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(inputs: &#x27;tuple[CollectionRootIdentity, ...]&#x27;, recipe: &#x27;RecipeIdentity&#x27;, operation: &#x27;OperationIdentity&#x27;) -&gt; None&quot;</code>
+<code>&quot;(inputs: &#x27;tuple[CollectionRootIdentity, ...]&#x27;, recipe: &#x27;RecipeIdentity&#x27;, operation: &#x27;OperationIdentity&#x27;, output_policy: &#x27;OutputCollectionPolicy&#x27; = OutputCollectionPolicy(format=&#x27;riverhog-output-collection-policy/v1&#x27;, archive_store=None, use_cache=None, copy_to=(), tags=())) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -87,6 +87,14 @@
 <code>&#x27;OperationIdentity&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_policy</code></td>
+<td data-label="Type">
+<code>&#x27;OutputCollectionPolicy&#x27;</code></td>
+<td data-label="Default">
+<code>OutputCollectionPolicy(format=&#x27;riverhog-output-collection-policy/v1&#x27;, archive_store=None, use_cache=None, copy_to=(), tags=())</code></td>
 </tr>
 </tbody>
 </table>
@@ -234,6 +242,46 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-9297f4472cd9515ecf763d36">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4c37da62f4ca7d6ed5cacd72">
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.DerivedCollectionSpec/contract/fields/3/default">OutputCollectionPolicy(format=&#x27;riverhog-output-collection-policy/v1&#x27;, archive_store=None, use_cache=None, copy_to=(), tags=())</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-b9bfcc27d43d45e63e3bf071">
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.DerivedCollectionSpec/contract/fields/3/name">output_policy</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-59c6d34f36f63d936829b5f9">
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.DerivedCollectionSpec/contract/fields/3/type">&#x27;OutputCollectionPolicy&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -253,7 +301,7 @@
 </th>
 <td>
 <span id="v-a501591ee4bfcf640fc8c090">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.DerivedCollectionSpec/contract/signature">&quot;(inputs: &#x27;tuple[CollectionRootIdentity, ...]&#x27;, recipe: &#x27;RecipeIdentity&#x27;, operation: &#x27;OperationIdentity&#x27;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.DerivedCollectionSpec/contract/signature">&quot;(inputs: &#x27;tuple[CollectionRootIdentity, ...]&#x27;, recipe: &#x27;RecipeIdentity&#x27;, operation: &#x27;OperationIdentity&#x27;, output_policy: &#x27;OutputCollectionPolicy&#x27; = OutputCollectionPolicy(format=&#x27;riverhog-output-collection-policy/v1&#x27;, archive_store=None, use_cache=None, copy_to=(), tags=())) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -336,7 +384,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

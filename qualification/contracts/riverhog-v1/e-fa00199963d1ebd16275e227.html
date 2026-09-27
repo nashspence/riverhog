@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-d77634b583c2254d17af0ab6">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 24 fields; additionalProperties: <code>false</code>
+<code>object</code>; 25 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -136,6 +136,15 @@
 <a href="#s-ff706747eb0750be75bb772a">coordination_settlement</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-e5b78b901357dcc871ab6e27">#/$defs/CoordinationSettlement</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-05004095e2e00b2dbde361b2">effect_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -317,6 +326,9 @@
 <a href="#s-d21b80fda0a2a51e9451a276">AcceptedTargetJob</a>
 </li>
 <li>
+<a href="#s-7f5acaf739da566ea34485e4">ArchiveStoreName</a>
+</li>
+<li>
 <a href="#s-61c024bd2c33315126f9a1d1">ArtifactDispositionSetIdentity</a>
 </li>
 <li>
@@ -339,6 +351,9 @@
 </li>
 <li>
 <a href="#s-517670cbed5caa3201ff5835">CollectionRootIdentityRef</a>
+</li>
+<li>
+<a href="#s-67fe4fbfd0d3646beb280895">CollectionTag</a>
 </li>
 <li>
 <a href="#s-bcb2a93794c5afdffee65db5">ContentObservationEvidence</a>
@@ -423,6 +438,9 @@
 </li>
 <li>
 <a href="#s-894cf9eb242fa802e7186923">OutputArtifactSetIdentity</a>
+</li>
+<li>
+<a href="#s-57619095dc09a053eac55fbf">OutputCollectionPolicy</a>
 </li>
 <li>
 <a href="#s-9ec3e43bb561585b0abe7b56">OutputCollectionRef</a>
@@ -625,6 +643,34 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-fa00199963d1ebd16275e227.html#v-e5b78b901357dcc871ab6e27">#/$defs/CoordinationSettlement</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-05004095e2e00b2dbde361b2">
+<h3>Field: effect_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1033,6 +1079,22 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-7f5acaf739da566ea34485e4">
+<h3>Definition: ArchiveStoreName</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-61c024bd2c33315126f9a1d1">
 <h3>Definition: ArtifactDispositionSetIdentity</h3>
 <p class="shape">
@@ -1348,7 +1410,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -1581,6 +1643,37 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-67fe4fbfd0d3646beb280895">
+<h3>Definition: CollectionTag</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>65536</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-unicode-normalization</dt>
+<dd>
+<code>NFC</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-collection-tag&quot;}</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-bcb2a93794c5afdffee65db5">
 <h3>Definition: ContentObservationEvidence</h3>
@@ -3742,6 +3835,86 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-57619095dc09a053eac55fbf">
+<h3>Definition: OutputCollectionPolicy</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-4d5295e69825aa5172b6a35c">archive_store</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">#/$defs/ArchiveStoreName</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f0dccc1fcd6a7e8ced01f1f0">copy_to</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">#/$defs/ArchiveStoreName</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-output-collection-policy/v1</code>; default: <code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Default">
+<code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-3fe24a39a0b8614c3c383ac4">tags</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-67fe4fbfd0d3646beb280895">#/$defs/CollectionTag</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-0fd86d8e86b3af2deba7220f">use_cache</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-9ec3e43bb561585b0abe7b56">
 <h3>Definition: OutputCollectionRef</h3>
 <p class="shape">
@@ -5538,10 +5711,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-e05d8d0bdf8ab81e26910d96">output_policy</a></td>
+<code>output_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>object</code>; additionalProperties: <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">#/$defs/JsonValue</a></td>
+<a href="e-fa00199963d1ebd16275e227.html#v-57619095dc09a053eac55fbf">#/$defs/OutputCollectionPolicy</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -5579,7 +5752,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -5677,10 +5850,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-4e934b0d252d7e7cf406fef9">output_policy</a></td>
+<code>output_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>object</code>; additionalProperties: <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">#/$defs/JsonValue</a></td>
+<a href="e-fa00199963d1ebd16275e227.html#v-57619095dc09a053eac55fbf">#/$defs/OutputCollectionPolicy</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -5718,7 +5891,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -6363,6 +6536,86 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-4d5295e69825aa5172b6a35c">
+<h3>Field: archive_store</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">#/$defs/ArchiveStoreName</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">#/$defs/ArchiveStoreName</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f0dccc1fcd6a7e8ced01f1f0">
+<h3>Field: copy_to</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">#/$defs/ArchiveStoreName</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3fe24a39a0b8614c3c383ac4">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-67fe4fbfd0d3646beb280895">#/$defs/CollectionTag</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-0fd86d8e86b3af2deba7220f">
+<h3>Field: use_cache</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-4da005001acd207f9345b9bc">
 <h3>Field: target_plans</h3>
 <p class="shape">
@@ -6895,40 +7148,8 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-e05d8d0bdf8ab81e26910d96">
-<h3>Field: output_policy</h3>
-<p class="shape">
-<code>object</code>; additionalProperties: <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">#/$defs/JsonValue</a>
-</p>
-<dl class="facts">
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
-</dd>
-</dl>
-</section>
 <section class="schema-section" id="s-6426c60f1bea0c88ff19dd6d">
 <h3>Field: requested_target_options</h3>
-<p class="shape">
-<code>object</code>; additionalProperties: <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">#/$defs/JsonValue</a>
-</p>
-<dl class="facts">
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
-</dd>
-</dl>
-</section>
-<section class="schema-section" id="s-4e934b0d252d7e7cf406fef9">
-<h3>Field: output_policy</h3>
 <p class="shape">
 <code>object</code>; additionalProperties: <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">#/$defs/JsonValue</a>
 </p>
@@ -7305,6 +7526,36 @@
 <td>
 <span id="v-2ada92d142bd5cbc2b9f5fd5">
 <code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/AcceptedTargetJob/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ArchiveStoreName</code>
+</th>
+<td>
+<table id="v-7f5acaf739da566ea34485e4">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d1acc13e8bb157d316013739">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArchiveStoreName/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-358c9fd734e2578a28df98d0">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArchiveStoreName/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8325,7 +8576,7 @@
 </th>
 <td>
 <span id="v-8bfb6832b3443fb3414b8b29">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchSetPlan/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchSetPlan/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9035,6 +9286,96 @@
 <td>
 <span id="v-93825bc12509e81137b402e2">
 <code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionRootIdentityRef/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionTag</code>
+</th>
+<td>
+<table id="v-67fe4fbfd0d3646beb280895">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-3edc72f613737a805978b0d2">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/maxLength">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-785cf943113a03f26ab35905">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b1f94e526ae72b5fd41a1303">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-1d74fd24836d1ab878721c57">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-cc2247360fdd348f59ad5bbc">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-cde6d9dacf8525553b2c839d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-797686a84e141c6bfaaa4547">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-d3e45bdf558aa8cfd8c4be00">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -16273,6 +16614,326 @@
 </tr>
 <tr>
 <th scope="row">
+<code>OutputCollectionPolicy</code>
+</th>
+<td>
+<table id="v-57619095dc09a053eac55fbf">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0cbfff31903d744e2898860d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-373487bbdead2e14b1a311ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_store</code>
+</th>
+<td>
+<table id="v-4d5295e69825aa5172b6a35c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-2d2e5c9532ec9cc2c9bf293d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-699106a1d4deda265c3e1b73">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4d34baf17e109d6c32ce478f">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/0/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-bbfac2ff32a4f0b04f010801">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f4660f132f7661206edf6f04">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-79a041851b3a11989ba3f3fc">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>copy_to</code>
+</th>
+<td>
+<table id="v-f0dccc1fcd6a7e8ced01f1f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5f7d6250ddcf3e32de714bb2">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-7693d3b5aad67f4597998d22">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-21d9d768f2e04381052890db">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/items/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-7f5acaf739da566ea34485e4">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-62758232761482b73a2a0f53">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-979de98faec6bda36ec08996">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-05bdf9f889eab567d306f438">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/format/const">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-2ac5989f6789848743e19404">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/format/default">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cb609cd237ee1435b2797e32">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-3fe24a39a0b8614c3c383ac4">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-61adeeac57473dc6b6facbdf">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/tags/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-de305f6ef7be11d16bf6d0bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0654db4f647c64f9c7082e9d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/tags/items/$ref">#/$defs/CollectionTag</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-67fe4fbfd0d3646beb280895">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6e4ba2a1bcadd133a1a16285">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/tags/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>use_cache</code>
+</th>
+<td>
+<table id="v-0fd86d8e86b3af2deba7220f">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-fb119fdaf9fa58edfb84e607">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-1bb8f61c0ce9ecf6ac8f7f4c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-afc5f62991010332d76d5631">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f1c84049b09d62e04bd65edc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0d8338afb15598bfa0bf607c">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5cb7d41f3c46b349f73dc771">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4d440834d1476e8559f636c1">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/OutputCollectionPolicy/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>OutputCollectionRef</code>
 </th>
 <td>
@@ -22624,32 +23285,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<table id="v-91680bce86cb7351b1d674bc">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-dd10c1ee545ef0a6ec5a2f48">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlan/properties/output_policy/additionalProperties/$ref">#/$defs/JsonValue</code>
-<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-b598671103ea029b58c379d6">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlan/properties/output_policy/type">object</code>
-<span class="kind">string</span>
+<span id="v-eaaf8ab5e772e1623f78d38a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlan/properties/output_policy/$ref">#/$defs/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-57619095dc09a053eac55fbf">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -22835,7 +23476,7 @@
 </th>
 <td>
 <span id="v-eacc2e0a8952a41d0bd56147">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlan/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlan/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -23154,32 +23795,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<table id="v-b2c10ac700dfb6102f97b48e">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-b8b57ff97749aa9e65494821">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlanIntent/properties/output_policy/additionalProperties/$ref">#/$defs/JsonValue</code>
-<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-c77b395b7f2a2663a7fe3a92">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-a30abd7832b6db057615fada">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlanIntent/properties/output_policy/type">object</code>
-<span class="kind">string</span>
+<span id="v-92966ccca6546c04942dd6a3">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlanIntent/properties/output_policy/$ref">#/$defs/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-57619095dc09a053eac55fbf">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -23365,7 +23986,7 @@
 </th>
 <td>
 <span id="v-c7efb3e0097a456eae82f382">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlanIntent/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPlanIntent/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -23935,6 +24556,86 @@
 <td>
 <span id="v-5ec7e6b76b87655a4743810f">
 <code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/coordination_settlement/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-05004095e2e00b2dbde361b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-ee6df920238eb5e2020e4621">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-218ac79aeb4685c7c0f622f6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a307564a9576c64c19c5df85">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/effect_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2cacd87d5eb8b57bda8ffa83">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/effect_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-bace96432b020a6bc58449d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-861ed9966625c4c3002958d1">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/effect_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fea83277786291c5bfa0f86c">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/effect_settlement_sha256/default">null</code>
 <span class="kind">null</span>
 </span></td>
 </tr>
@@ -25313,7 +26014,7 @@
 </th>
 <td>
 <span id="v-c7a88eb901a3e2c5cbbae569">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/signature">&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/signature">&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25407,7 +26108,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

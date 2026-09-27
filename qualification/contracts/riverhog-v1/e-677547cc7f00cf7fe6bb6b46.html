@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a-stove0-rclone-target:configuration:rclone-target-config configuration · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-ca7d593a8e0c88caaf9ac09b.html">a-stove0-rclone-target</a> / <a href="i-167acba914c3a72ce2c6ff28.html">Configuration Documents</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a-stove0-rclone-target:configuration:rclone-target-config configuration</h1>
+<p class="context">Generic rclone collection delivery target for Stove0. Configuration Documents contract owned by a-stove0-rclone-target.</p>
+<section id="contract" data-contract="configuration:a-stove0-rclone-target:a-stove0-rclone-target-configuration-rclo-7c38c60c2a:70718a08b0">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-c46cd23d9998f289c2c20c4b">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/a-stove0-rclone-target.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>RcloneTargetConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;token_file&quot;,&quot;destination_identity&quot;,&quot;rclone_remote&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>destination_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-1bf19eb6db1300652a2ed927">rclone_config_file</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>rclone_remote</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>rclone_timeout_seconds</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; default: <code>86400</code></td>
+<td data-label="Default">
+<code>86400</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>token_file</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; format: <code>path</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1bf19eb6db1300652a2ed927">
+<h3>Field: rclone_config_file</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Rclone Config File</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; format: <code>path</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config</code>
+</h4>
+<table id="v-c46cd23d9998f289c2c20c4b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$id</code>
+</th>
+<td>
+<span id="v-39a93345eb8a0958c1b00148">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$id">https://nashspence.github.io/riverhog/v1/config/a-stove0-rclone-target.schema.json</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>$schema</code>
+</th>
+<td>
+<span id="v-9887754a0042d98a67402a08">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$schema">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-5e0dda4ed4f07204bef11f3f">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-fbd4e54d69147da26efbed1b">
+<tbody>
+<tr>
+<th scope="row">
+<code>destination_identity</code>
+</th>
+<td>
+<table id="v-4dc4e758e44c5618308cee98">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8abd7dcb2f4344d60eef227d">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/destination_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8b590260131d3faed5b3b7e7">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/destination_identity/title">Destination Identity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-36f2bd3be8201b1f47deb9ff">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/destination_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>rclone_config_file</code>
+</th>
+<td>
+<table id="v-1bf19eb6db1300652a2ed927">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-58179f2121e57e3693b03fa6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-26b6b082b0c1d04331a44533">
+<tbody>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<span id="v-182232356268564cb2cb4bfc">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_config_file/anyOf/0/format">path</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-19da9ae6a85462955c779d35">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_config_file/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-d94c09cf9996fef2745a3cc8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7c3c3710f5eb3ae0a7cd2625">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_config_file/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-099c5febe5401e1f22f4490c">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_config_file/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cebea51d1ce7e59de5e8b074">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_config_file/title">Rclone Config File</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>rclone_remote</code>
+</th>
+<td>
+<table id="v-e881b8699bb4b4952f19d18b">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-1ba53ef7d4000a427df6a24c">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_remote/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-3575986ae6aabe54fdbf2c4d">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_remote/title">Rclone Remote</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-443400b00954611c59ae4a5b">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_remote/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>rclone_timeout_seconds</code>
+</th>
+<td>
+<table id="v-03e2ed39c474c6e3778a40c6">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8bbfc20097ce558b7697d0cb">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_timeout_seconds/default">86400</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-bb327f9aaf324916c7c95272">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_timeout_seconds/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-dca92afd58756bed6b3dac8f">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_timeout_seconds/title">Rclone Timeout Seconds</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9209ea00bb4bf64805123fa6">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/rclone_timeout_seconds/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>token_file</code>
+</th>
+<td>
+<table id="v-f84efc235180ee67e106ea41">
+<tbody>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<span id="v-9dd05c091f7126788a34e202">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/token_file/format">path</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-68380ed46f03173c4f105b47">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/token_file/title">Token File</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-55decf1460dee9e69bed501f">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/token_file/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-d4a525e4509ec929499b5ba1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f0ec106c0c13b9f4e05b6084">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/required/0">token_file</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-5efca141c554f7656fd87780">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/required/1">destination_identity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-12aff5dc99d35a8eff002bee">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/required/2">rclone_remote</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f12cd7c634d1d8144cc326b8">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/title">RcloneTargetConfig</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9424875e4d22e980311b37cc">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-15e2e266f753cb544237d6f8.html">compatibility/configuration/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-4cc94e77f45a20373ec06771">configuration:a-stove0-rclone-target:configuration:rclone-target-config</a> — <code data-source-path="some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/app.py">some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/app.py::RcloneTargetConfig</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/destination_identity</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

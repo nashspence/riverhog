@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 from a_stove0_media_sampling_contract_lib import MediaSamplingFacts
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
-from review0_target_contracts import (
+from review0_contracts import (
     ReviewSamplePlan,
     ReviewSamplePlanPayload,
     ReviewSampleWindow,

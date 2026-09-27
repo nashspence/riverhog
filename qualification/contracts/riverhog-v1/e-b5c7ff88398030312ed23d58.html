@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(outcome_id: &#x27;str&#x27;, source_claim_id: &#x27;str&#x27;, output_collection: &#x27;CollectionRootIdentity&#x27;, derivation_sha256: &#x27;str&#x27;) -&gt; None&quot;</code>
+<code>&#x27;(outcome_id: \&#x27;str\&#x27;, source_claim_id: \&#x27;str\&#x27;, source_fence: \&#x27;int\&#x27;, execution_id: \&#x27;str\&#x27;, result_kind: &quot;Literal[\&#x27;collection\&#x27;, \&#x27;external-effect\&#x27;]&quot;, output_collection: \&#x27;CollectionRootIdentity | None\&#x27; = None, derivation_sha256: \&#x27;str | None\&#x27; = None, effect_receipt_sha256: \&#x27;str | None\&#x27; = None, effect_settlement_sha256: \&#x27;str | None\&#x27; = None) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -82,19 +82,59 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>output_collection</code></td>
+<code>source_fence</code></td>
 <td data-label="Type">
-<code>&#x27;CollectionRootIdentity&#x27;</code></td>
+<code>&#x27;int&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>derivation_sha256</code></td>
+<code>execution_id</code></td>
 <td data-label="Type">
 <code>&#x27;str&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_kind</code></td>
+<td data-label="Type">
+<code>&quot;Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;]&quot;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_collection</code></td>
+<td data-label="Type">
+<code>&#x27;CollectionRootIdentity | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>derivation_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_receipt_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_settlement_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
 </tr>
 </tbody>
 </table>
@@ -225,7 +265,7 @@
 </th>
 <td>
 <span id="v-dff6279554a9eaef69bf7ee3">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/2/name">output_collection</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/2/name">source_fence</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -235,7 +275,7 @@
 </th>
 <td>
 <span id="v-61d46658c44a13cc729b49e2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/2/type">&#x27;CollectionRootIdentity&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/2/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -265,7 +305,7 @@
 </th>
 <td>
 <span id="v-734b9cd3fdf78c05ae14ba45">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/3/name">derivation_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/3/name">execution_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -276,6 +316,206 @@
 <td>
 <span id="v-7a88c7a1a04a0e3353f5ea19">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/3/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-c1d50ad88a2f414b6fd542d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d1fce95222988cbfd9362a08">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/4/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a3d937539dc0ad8772bade3b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/4/name">result_kind</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e3726bd26c3ec7720546acbe">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/4/type">&quot;Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;]&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-aeb3088bdbb7d591c20ac5e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-909a99e37f5d3a8fc25e6f77">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/5/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-870d77cd85e7693c6e053e7a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/5/name">output_collection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6beca61337da517301532c50">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/5/type">&#x27;CollectionRootIdentity | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-e028dba814ecc10c3f9b7825">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0bc72dcf6e6d2fd995995ed5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/6/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-ce3e418d645f55e5a56cfc90">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/6/name">derivation_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bbfd6095b1489e470bd424ce">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/6/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-ae624cabb6236bc1e6c0d600">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-628387db0c03dd3a89c928be">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/7/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-7ed4f94d6ecef212d817fd96">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/7/name">effect_receipt_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c2ecb28089ac2d2ded53658">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/7/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<table id="v-21b4dc8b978746ecc6e8b759">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-c06156ea66f1176243939291">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/8/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-0240152180b45ff0cd64d854">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/8/name">effect_settlement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-abf771b03b14f616417250ae">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/fields/8/type">&#x27;str | None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -301,7 +541,7 @@
 </th>
 <td>
 <span id="v-7245814fd1ceac3760fbe9a8">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/signature">&quot;(outcome_id: &#x27;str&#x27;, source_claim_id: &#x27;str&#x27;, output_collection: &#x27;CollectionRootIdentity&#x27;, derivation_sha256: &#x27;str&#x27;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionProcessingOutcomeIdentity/contract/signature">&#x27;(outcome_id: \&#x27;str\&#x27;, source_claim_id: \&#x27;str\&#x27;, source_fence: \&#x27;int\&#x27;, execution_id: \&#x27;str\&#x27;, result_kind: &quot;Literal[\&#x27;collection\&#x27;, \&#x27;external-effect\&#x27;]&quot;, output_collection: \&#x27;CollectionRootIdentity | None\&#x27; = None, derivation_sha256: \&#x27;str | None\&#x27; = None, effect_receipt_sha256: \&#x27;str | None\&#x27; = None, effect_settlement_sha256: \&#x27;str | None\&#x27; = None) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -395,7 +635,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

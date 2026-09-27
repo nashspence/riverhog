@@ -47,6 +47,7 @@ from riverhog_protocol.collection_workflows import (
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
     CollectionDerivation,
+    CollectionProcessingOutcomeIdentity,
     CollectionRootIdentity,
     OperationIdentity,
     ProducerEvidence,
@@ -54,7 +55,9 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_bytes,
     canonical_json_sha256,
     derivation_evidence_page_path,
+    processing_outcome_set_identity,
 )
+from riverhog_protocol.effect_settlement import ExternalEffectSettlement
 from riverhog_protocol.errors import Forbidden
 from riverhog_provenance import (
     ArchiveFileProvenanceRecord,
@@ -754,9 +757,13 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         == "abandoned"
     )
 
+    operation_contract = {
+        "id": "qualification-transform/v1",
+        "result_kind": "collection",
+        "source_collection_retirement_permitted": True,
+    }
     operation_identity = OperationIdentity(
-        "qualification-transform/v1",
-        hashlib.sha256(b"qualification-operation-contract").hexdigest(),
+        "qualification-transform/v1", canonical_json_sha256(operation_contract)
     )
     recipe_identity = RecipeIdentity(
         "qualification-recipe/v1",
@@ -818,6 +825,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         controller_evidence_sha256=controller_evidence_sha256,
         operation_id=operation_identity.id,
         operation_sha256=operation_identity.sha256,
+        operation_contract=operation_contract,
         input_artifacts=(source_artifact,),
         source_collection_retirement_policy="retain",
     )
@@ -1160,17 +1168,107 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     outcomes = operator.get_processing_claim(outcome_claim_id)["outcomes"]
     assert outcomes["count"] == "1"
     assert outcomes["identity"] is None
+    # A real typed-client/API round trip for a generic opaque external effect.
+    effect_work = {"format": "qualification-effect-work/v1", "inputs": [source_identity.as_dict()]}
+    effect_claim = operator.create_or_resume_processing_claim(
+        work_id=canonical_json_sha256(effect_work),
+        work_document=effect_work,
+        work_document_sha256=canonical_json_sha256(effect_work),
+        inputs=[source_identity.as_dict()],
+    )
+    effect_execution = hashlib.sha256(b"qualification-effect-execution").hexdigest()
+    effect_contract = {
+        "id": "qualification-effect/v1",
+        "result_kind": "external-effect",
+        "source_collection_retirement_permitted": True,
+    }
+    effect_evidence = {"execution": effect_execution, "controller": "qualification"}
+    effect_claim = operator.seal_processing_claim_plan(
+        effect_claim.id,
+        fence=effect_claim.fence,
+        execution_id=effect_execution,
+        controller_evidence=effect_evidence,
+        controller_evidence_sha256=canonical_json_sha256(effect_evidence),
+        operation_id=str(effect_contract["id"]),
+        operation_sha256=canonical_json_sha256(effect_contract),
+        operation_contract=effect_contract,
+        result_kind="external-effect",
+        input_artifacts=(source_artifact,),
+    )
+    effect_plan = effect_claim.plan
+    assert effect_plan is not None
+    opaque_receipt = {
+        "format": "qualification-effect-receipt/v1",
+        "execution": effect_execution,
+        "succeeded": True,
+    }
+    effect_document = ExternalEffectSettlement(
+        claim_id=effect_claim.id,
+        fence=effect_claim.fence,
+        execution_id=effect_execution,
+        execution_sha256=hashlib.sha256(b"qualification-effect-attempt").hexdigest(),
+        operation=OperationIdentity(
+            str(effect_contract["id"]), canonical_json_sha256(effect_contract)
+        ),
+        input_set_sha256=effect_plan.inputs.sha256,
+        artifact_set_sha256=effect_plan.artifacts.sha256,
+        controller_evidence_sha256=canonical_json_sha256(effect_evidence),
+        receipt=opaque_receipt,
+        receipt_sha256=canonical_json_sha256(opaque_receipt),
+    )
+    effect_settled = operator.settle_processing_claim_effect(
+        effect_claim.id, fence=effect_claim.fence, settlement=effect_document.as_dict()
+    )
+    assert effect_settled.effect_settlement_sha256 == effect_document.sha256
+    assert (
+        operator.settle_processing_claim_effect(
+            effect_claim.id, fence=effect_claim.fence, settlement=effect_document.as_dict()
+        ).state
+        == "settled"
+    )
+    operator.release_processing_claim(effect_claim.id, fence=effect_claim.fence)
+    effect_outcome = CollectionProcessingOutcomeIdentity(
+        outcome_id="qualification-effect",
+        source_claim_id=effect_claim.id,
+        source_fence=effect_claim.fence,
+        execution_id=effect_execution,
+        result_kind="external-effect",
+        effect_receipt_sha256=effect_document.receipt_sha256,
+        effect_settlement_sha256=effect_document.sha256,
+    )
+    operator.append_processing_claim_outcomes(
+        outcome_claim_id, fence=outcome_fence, outcomes=(effect_outcome.as_dict(),)
+    )
+    output_root_identity = operator.get_collection(output_collection_id)
+    collection_outcome = CollectionProcessingOutcomeIdentity(
+        outcome_id="qualification-output",
+        source_claim_id=claim_id,
+        source_fence=claim_fence,
+        execution_id=execution_id,
+        result_kind="collection",
+        derivation_sha256=derivation.sha256,
+        output_collection=CollectionRootIdentity(
+            output_collection_id,
+            str(output_root_identity["archive_root_sha256"]),
+            str(output_root_identity["content_identity"]),
+        ),
+    )
+    required_outcomes = processing_outcome_set_identity((effect_outcome, collection_outcome))
     settled_outcomes = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
-        source_collection_retirement_policy="retire-after-verified-output",
+        outcomes_count=2,
+        outcomes_sha256=str(required_outcomes["sha256"]),
+        source_collection_retirement_policy="retire-after-settlement",
     )
     while settled_outcomes["state"] == "active":
         assert container.collection_workflows.process_due_outcome_sets() == 1
         settled_outcomes = operator.settle_processing_claim_outcomes(
             outcome_claim_id,
             fence=outcome_fence,
-            source_collection_retirement_policy="retire-after-verified-output",
+            outcomes_count=2,
+            outcomes_sha256=str(required_outcomes["sha256"]),
+            source_collection_retirement_policy="retire-after-settlement",
         )
     assert settled_outcomes["state"] == "settled"
     assert settled_outcomes["outcomes"]["identity"] is not None
@@ -1182,7 +1280,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         )
         .outcomes[0]
         .outcome_id
-        == "qualification-output"
+        == "qualification-effect"
     )
     retiring = operator.begin_source_collection_retirement(
         outcome_claim_id,
@@ -1192,7 +1290,9 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     replayed_outcomes = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
-        source_collection_retirement_policy="retire-after-verified-output",
+        outcomes_count=2,
+        outcomes_sha256=str(required_outcomes["sha256"]),
+        source_collection_retirement_policy="retire-after-settlement",
     )
     assert replayed_outcomes["state"] == "retiring"
     retirement = operator.plan_collection_deletion(
@@ -1232,7 +1332,9 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     replayed_released_settlement = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
-        source_collection_retirement_policy="retire-after-verified-output",
+        outcomes_count=2,
+        outcomes_sha256=str(required_outcomes["sha256"]),
+        source_collection_retirement_policy="retire-after-settlement",
     )
     assert replayed_released_settlement["state"] == "released"
 

@@ -9,6 +9,7 @@ from config_validation import load_yaml_config
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
 from riverhog_protocol.collection_workflows import RecipeIdentity
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from stove0_protocol import RecipeIdentityRef, SemanticId, Sha256, canonical_json_sha256
 from stove0_target_protocol import OperationContract
 
@@ -129,6 +130,7 @@ class RecipeRoute(_RecipeRouteBase):
     target_registration_id: str
     target_options: dict[str, JsonValue] = Field(default_factory=dict)
     input_retrieval_policy: Literal["available-only", "allow"] = "available-only"
+    output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
 
 
 class RecipeCoordinationRoute(_RecipeRouteBase):
@@ -170,6 +172,7 @@ class RecipeJoin(RecipeModel):
     target_options: dict[str, JsonValue] = Field(default_factory=dict)
     projections: tuple[OperationProjection, ...] = ()
     input_retrieval_policy: Literal["available-only", "allow"] = "available-only"
+    output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
 
     @model_validator(mode="after")
     def canonical_projections(self) -> Self:
@@ -186,11 +189,11 @@ class RecipeDefinition(RecipeModel):
     routes: tuple[RecipeBranch, ...] = Field(min_length=1)
     unmatched_artifact_disposition: Literal["retain-in-source", "reject-work"]
     allow_derived_inputs: bool = False
-    source_collection_retirement_policy: Literal["retain", "retire-after-verified-output"] = Field(
+    source_collection_retirement_policy: Literal["retain", "retire-after-settlement"] = Field(
         default="retain",
         description=(
-            "Retain source collections, or permit their permanent deletion after verified "
-            "output, the grace period, and collection deletion checks."
+            "Retain source collections, or permit their permanent deletion after exact "
+            "settlement, the grace period, and collection deletion checks."
         ),
     )
     source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
@@ -288,6 +291,13 @@ class RecipeCatalog(RecipeModel):
             for route in recipe.routes:
                 if isinstance(route, RecipeCoordinationRoute):
                     continue
+                if (
+                    operations[route.operation_id].result_kind == "external-effect"
+                    and route.output_policy != OutputCollectionPolicy()
+                ):
+                    raise ValueError(
+                        f"effect route {route.id} cannot declare output collection policy"
+                    )
             if recipe.join is not None:
                 join_operation = operations[recipe.join.operation_id]
                 if join_operation.result_kind != "collection":
@@ -311,7 +321,7 @@ class RecipeCatalog(RecipeModel):
                         f"recipe {recipe.id} join cannot consume non-collection branch(es): "
                         + ", ".join(effect_members)
                     )
-            if recipe.source_collection_retirement_policy == "retire-after-verified-output":
+            if recipe.source_collection_retirement_policy == "retire-after-settlement":
                 unsafe: list[str] = []
                 for route in recipe.routes:
                     if isinstance(route, RecipeRoute):

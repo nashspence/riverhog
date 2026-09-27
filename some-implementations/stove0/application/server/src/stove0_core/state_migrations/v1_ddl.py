@@ -292,7 +292,7 @@ CREATE INDEX ix_stove0_lifecycle_events_created_at ON stove0_lifecycle_events (c
 CREATE TABLE stove0_work_records (
 	work_id VARCHAR(64) NOT NULL,
 	revision INTEGER NOT NULL,
-	phase VARCHAR(32) NOT NULL,
+	phase VARCHAR(48) NOT NULL,
 	updated_at VARCHAR(40) NOT NULL,
 	document_bytes BIGINT NOT NULL,
 	document_json TEXT NOT NULL,
@@ -553,7 +553,7 @@ CREATE INDEX ix_stove0_lifecycle_events_created_at ON stove0_lifecycle_events (c
 CREATE TABLE stove0_work_records (
 	work_id VARCHAR(64) NOT NULL,
 	revision INTEGER NOT NULL,
-	phase VARCHAR(32) NOT NULL,
+	phase VARCHAR(48) NOT NULL,
 	updated_at VARCHAR(40) NOT NULL,
 	document_bytes BIGINT NOT NULL,
 	document_json TEXT NOT NULL,

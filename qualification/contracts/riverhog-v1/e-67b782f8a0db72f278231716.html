@@ -119,6 +119,9 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-a8d1de9f9cd83a89f3ff7ac8">ArchiveStoreName</a>
+</li>
+<li>
 <a href="#s-11e18814aa6122d3752000d4">BranchWorkBinding</a>
 </li>
 <li>
@@ -126,6 +129,9 @@
 </li>
 <li>
 <a href="#s-d50e18671ef2e36e176b5380">CollectionRootIdentityRef</a>
+</li>
+<li>
+<a href="#s-a0f7511b9ba5f1d0cb848fb0">CollectionTag</a>
 </li>
 <li>
 <a href="#s-03fe19943986296d5be76f00">ContentObservationEvidence</a>
@@ -170,6 +176,9 @@
 <a href="#s-39e51ff509deb43e40798e51">OperationIdentityRef</a>
 </li>
 <li>
+<a href="#s-c394a275defa1ab496eed921">OutputCollectionPolicy</a>
+</li>
+<li>
 <a href="#s-991e325033d9022fae2a2974">RecipeIdentityRef</a>
 </li>
 <li>
@@ -185,6 +194,22 @@
 <a href="#s-1b718a16dbf8436a0167b14d">WorkflowPlan</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-a8d1de9f9cd83a89f3ff7ac8">
+<h3>Definition: ArchiveStoreName</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-11e18814aa6122d3752000d4">
 <h3>Definition: BranchWorkBinding</h3>
@@ -356,6 +381,37 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-a0f7511b9ba5f1d0cb848fb0">
+<h3>Definition: CollectionTag</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>65536</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-unicode-normalization</dt>
+<dd>
+<code>NFC</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-collection-tag&quot;}</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-03fe19943986296d5be76f00">
 <h3>Definition: ContentObservationEvidence</h3>
@@ -1386,6 +1442,86 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-c394a275defa1ab496eed921">
+<h3>Definition: OutputCollectionPolicy</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-b73d1e7c57260269b6272e49">archive_store</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">#/$defs/ArchiveStoreName</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f5570fa5f61e6a1957920c69">copy_to</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">#/$defs/ArchiveStoreName</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-output-collection-policy/v1</code>; default: <code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Default">
+<code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-7ad35f6acbcf65a91e5c6eba">tags</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-67b782f8a0db72f278231716.html#v-a0f7511b9ba5f1d0cb848fb0">#/$defs/CollectionTag</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f32fd4b72ff3848460f69f67">use_cache</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-991e325033d9022fae2a2974">
 <h3>Definition: RecipeIdentityRef</h3>
 <p class="shape">
@@ -1811,10 +1947,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-68d4cf33ad496ec0ef375821">output_policy</a></td>
+<code>output_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>object</code>; additionalProperties: <a href="e-67b782f8a0db72f278231716.html#v-712fb83f77e7bb4c736924be">#/$defs/JsonValue</a></td>
+<a href="e-67b782f8a0db72f278231716.html#v-c394a275defa1ab496eed921">#/$defs/OutputCollectionPolicy</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1852,7 +1988,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -2178,6 +2314,86 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-b73d1e7c57260269b6272e49">
+<h3>Field: archive_store</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">#/$defs/ArchiveStoreName</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">#/$defs/ArchiveStoreName</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f5570fa5f61e6a1957920c69">
+<h3>Field: copy_to</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">#/$defs/ArchiveStoreName</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-7ad35f6acbcf65a91e5c6eba">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-67b782f8a0db72f278231716.html#v-a0f7511b9ba5f1d0cb848fb0">#/$defs/CollectionTag</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f32fd4b72ff3848460f69f67">
+<h3>Field: use_cache</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-e2ebb69c13a4960f34cdc421">
 <h3>Field: plan</h3>
 <p class="shape">
@@ -2322,22 +2538,6 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-68d4cf33ad496ec0ef375821">
-<h3>Field: output_policy</h3>
-<p class="shape">
-<code>object</code>; additionalProperties: <a href="e-67b782f8a0db72f278231716.html#v-712fb83f77e7bb4c736924be">#/$defs/JsonValue</a>
-</p>
-<dl class="facts">
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
-</dd>
-</dl>
-</section>
 <section class="schema-section" id="s-f405495ef86f954c29977b07">
 <h3>Field: requested_target_options</h3>
 <p class="shape">
@@ -2444,6 +2644,36 @@
 <td>
 <table id="v-640fab71ecb95127f4b7c2ee">
 <tbody>
+<tr>
+<th scope="row">
+<code>ArchiveStoreName</code>
+</th>
+<td>
+<table id="v-a8d1de9f9cd83a89f3ff7ac8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-35fbf4f73eca1086b5c74d2e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/ArchiveStoreName/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc05cf8fe487fbba6620d23e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/ArchiveStoreName/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>BranchWorkBinding</code>
@@ -2928,6 +3158,96 @@
 <td>
 <span id="v-63fc6a1fe4aae7e45860af3e">
 <code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionRootIdentityRef/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionTag</code>
+</th>
+<td>
+<table id="v-a0f7511b9ba5f1d0cb848fb0">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-3fcc629a6af03a185b59b07d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/maxLength">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-b923251c0e01bf125bc16e0e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c052273d71cc0b8a18c8f546">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-4c26d0fa4d25e80c0820e91a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-c4356cc186ca3dc4c741dc27">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-4be2781d4e52a14dc15ef6cc">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c3e55b5453eae5e46cebada4">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-cf0f538bd76f5bb20b978a1c">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6456,6 +6776,326 @@
 </tr>
 <tr>
 <th scope="row">
+<code>OutputCollectionPolicy</code>
+</th>
+<td>
+<table id="v-c394a275defa1ab496eed921">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-98864499d384f5772bd08e1a">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-218f809eb734018ec70f9b0a">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_store</code>
+</th>
+<td>
+<table id="v-b73d1e7c57260269b6272e49">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-96d7c7445fa584fe1037887a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-97cc741d1181f9620d236d38">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e0b1b63fb8399efe6d480e07">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/0/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-bac601368b092ad8b6248d69">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8401b9fdabb795543792db5f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3fd2b2b2afabd6f3dc4c60a9">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>copy_to</code>
+</th>
+<td>
+<table id="v-f5570fa5f61e6a1957920c69">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e5babf2e535f9440493652e3">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-bece59f38e631e264f411010">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-80411fa75e337ceed225f002">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/items/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-67b782f8a0db72f278231716.html#v-a8d1de9f9cd83a89f3ff7ac8">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a6e5e2d1f24ef603e93596f2">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-448f53d58547eae9ed2ec436">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-668a58387ae1af3c9c80e5aa">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/format/const">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e8f3aed7c7f77257d93f7a58">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/format/default">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fb1cc3234208abde39addb01">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-7ad35f6acbcf65a91e5c6eba">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-12b0a3f1297a174db8f03db2">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/tags/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-a1aba1ee4ff9641002baeae7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-59a60cda8387e2964890c570">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/tags/items/$ref">#/$defs/CollectionTag</code>
+<span class="kind">string</span> <a href="e-67b782f8a0db72f278231716.html#v-a0f7511b9ba5f1d0cb848fb0">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-63a3fb4498d85184631f88e3">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/tags/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>use_cache</code>
+</th>
+<td>
+<table id="v-f32fd4b72ff3848460f69f67">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c5ea4b2f13ec741a7fd79507">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-46cc8d16f3502471c715750a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-60ff850ab14f55d19d0dbf7f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-ee7701f36f5e59042cfb0ec3">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0173c467fa935d4ffa6865a2">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e60deacb17b10cf29a813b04">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-185ebb771ebb43fd3e9417dc">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/OutputCollectionPolicy/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>RecipeIdentityRef</code>
 </th>
 <td>
@@ -7997,32 +8637,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<table id="v-ccbc203a973774f99e4972f0">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-eaec83a1bde6542c1193f758">
-<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/WorkflowPlan/properties/output_policy/additionalProperties/$ref">#/$defs/JsonValue</code>
-<span class="kind">string</span> <a href="e-67b782f8a0db72f278231716.html#v-712fb83f77e7bb4c736924be">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-8c4dd5c82405fd16ba43fefe">
-<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/WorkflowPlan/properties/output_policy/type">object</code>
-<span class="kind">string</span>
+<span id="v-3efb8ce7f9fd189a43f58b96">
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/WorkflowPlan/properties/output_policy/$ref">#/$defs/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-67b782f8a0db72f278231716.html#v-c394a275defa1ab496eed921">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -8208,7 +8828,7 @@
 </th>
 <td>
 <span id="v-6e08457a5337f8f14916ad9b">
-<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/WorkflowPlan/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/stove0_protocol.ControllerEvidence/contract/schema/$defs/WorkflowPlan/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8670,7 +9290,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

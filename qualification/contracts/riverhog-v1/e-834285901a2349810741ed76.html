@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None, output_collection_id: CollectionId | None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument | None = None) -&gt; None&quot;</code>
+<code>&quot;(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None, output_collection_id: CollectionId | None = None, effect_settlement_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument | None = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-261a9e5bdb7e4e4dce6498de">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>; exactly one of: 3 fields; 3 fields</p>
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>; exactly one of: 4 fields; 4 fields; 4 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -91,6 +91,15 @@
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-b2eb1512e4fa2266f41625d0">effect_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -154,12 +163,17 @@
 <tr>
 <td data-label="Alternative">
 <a href="#s-ad4e2371a7a094cb3dbb6aec">1</a></td>
-<td data-label="Schema">3 fields</td>
+<td data-label="Schema">4 fields</td>
 </tr>
 <tr>
 <td data-label="Alternative">
 <a href="#s-1ef14420ca21d3c1495d4a78">2</a></td>
-<td data-label="Schema">3 fields</td>
+<td data-label="Schema">4 fields</td>
+</tr>
+<tr>
+<td data-label="Alternative">
+<a href="#s-e160c1615dd11de00f286a34">3</a></td>
+<td data-label="Schema">4 fields</td>
 </tr>
 </tbody>
 </table>
@@ -176,6 +190,34 @@
 <a href="#s-fabdd0a7e394d9c0ed5c1ff7">NonnegativeDecimal</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-b2eb1512e4fa2266f41625d0">
+<h3>Field: effect_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-94b1d3ca7a9dc541faa03a5b">
 <h3>Field: execution_id</h3>
@@ -263,7 +305,7 @@
 </section>
 <section class="schema-section" id="s-ad4e2371a7a094cb3dbb6aec">
 <h3>Exactly one must match: 1</h3>
-<p class="shape">3 fields</p>
+<p class="shape">4 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -283,6 +325,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>effect_settlement_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>execution_id</code></td>
@@ -316,7 +367,69 @@
 </section>
 <section class="schema-section" id="s-1ef14420ca21d3c1495d4a78">
 <h3>Exactly one must match: 2</h3>
-<p class="shape">3 fields</p>
+<p class="shape">4 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;execution_id&quot;,&quot;effect_settlement_sha256&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>effect_settlement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>execution_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>outcomes</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_collection_id</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e160c1615dd11de00f286a34">
+<h3>Exactly one must match: 3</h3>
+<p class="shape">4 fields</p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
@@ -336,6 +449,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>effect_settlement_sha256</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>execution_id</code></td>
@@ -779,6 +901,26 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-753abba9db8bea45a2eb641a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a49e6132c1d092048f8003cd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/0/properties/effect_settlement_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>execution_id</code>
 </th>
 <td>
@@ -899,6 +1041,26 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-7bd55402b021a00063fd0062">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f53ca0ebebd96f9f5620bb19">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/properties/effect_settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>execution_id</code>
 </th>
 <td>
@@ -910,7 +1072,7 @@
 </th>
 <td>
 <span id="v-3a71df69eb17b0737ad6f55d">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/properties/execution_id/type">null</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/properties/execution_id/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -930,7 +1092,7 @@
 </th>
 <td>
 <span id="v-87dde821a677f2cdaddf8cab">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/properties/outcomes/type">object</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/properties/outcomes/type">null</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -973,7 +1135,137 @@
 </th>
 <td>
 <span id="v-c7ebf613aa484447c0819302">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/required/0">outcomes</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/required/0">execution_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e0de6cd1e8f11e0fc67122be">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/1/required/1">effect_settlement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-e160c1615dd11de00f286a34">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c79a4e0bb1afb554d2947bf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-47fc7baa26c63dc38f7d67d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9d553e21c546a97bdbb512ca">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/2/properties/effect_settlement_sha256/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_id</code>
+</th>
+<td>
+<table id="v-b00ab9fea22e0a6c960e11f5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-46c52280b9d7464143698f15">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/2/properties/execution_id/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcomes</code>
+</th>
+<td>
+<table id="v-cab159e8c18c62b11d87b576">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d2e61ccc7d363c3b16304e63">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/2/properties/outcomes/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_collection_id</code>
+</th>
+<td>
+<table id="v-7ed10a73acb027cce263cea6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3090a35f92069b9d4df450df">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/2/properties/output_collection_id/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-347138118d0955e22d133f05">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-969839ce9837631436eb3ece">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/oneOf/2/required/0">outcomes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1018,6 +1310,86 @@
 <span id="v-0a1c9b5b444bbc7e299125fb">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/properties/claim_id/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-b2eb1512e4fa2266f41625d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-1d180d02550b2ad80973d3c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-32398efcbdf3131a8112ddca">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-18792d67478d05d106226497">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/properties/effect_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-351f0b2fc7d790c85a4630a4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/properties/effect_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-573195f80e852a89821195de">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e100c9ed3e35d522c496d238">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/properties/effect_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1b363d10356545b323466b66">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/schema/properties/effect_settlement_sha256/default">null</code>
+<span class="kind">null</span>
 </span></td>
 </tr>
 </tbody>
@@ -1365,7 +1737,7 @@
 </th>
 <td>
 <span id="v-5b729b30ad13ae9fe0b35fa6">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/signature">&quot;(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None, output_collection_id: CollectionId | None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument | None = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument/contract/signature">&quot;(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None, output_collection_id: CollectionId | None = None, effect_settlement_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument | None = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1462,7 +1834,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

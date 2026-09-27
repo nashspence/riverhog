@@ -238,11 +238,13 @@ def _branch_effect_settlement(
         or status.state != "succeeded"
         or status.effect_receipt is None
         or record.output is not None
+        or record.effect_settlement_sha256 is None
     ):
         raise RuntimeError("successful branch work has neither collection nor effect evidence")
     return BranchEffectSettlement.seal(
         branch=branch,
         effect_receipt_sha256=status.effect_receipt.receipt_sha256,
+        effect_settlement_sha256=record.effect_settlement_sha256,
     )
 
 

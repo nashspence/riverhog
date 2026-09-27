@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ExternalEffectSettlementDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: ExternalEffectSettlementDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-externaleffectsettlementdocument:30a9bea831">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-e1b626623a47c2a759abc201">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ExternalEffectSettlementDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;fence&quot;,&quot;execution_id&quot;,&quot;execution_sha256&quot;,&quot;operation&quot;,&quot;input_set_sha256&quot;,&quot;artifact_set_sha256&quot;,&quot;controller_evidence_sha256&quot;,&quot;receipt&quot;,&quot;receipt_sha256&quot;,&quot;status&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_set_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>claim_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>controller_evidence_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>execution_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>execution_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>fence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-external-effect-settlement/v1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>input_set_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>operation</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-50045aad659d722823778a54.html#v-c2a1c670379a5ff0337d0592">#/components/schemas/OperationIdentityDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-954d55284eae1a25acf46890">receipt</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>receipt_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>succeeded</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-954d55284eae1a25acf46890">
+<h3>Field: receipt</h3>
+<p class="shape">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Receipt</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>4194304</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-effect-receipt&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument</code>
+</h4>
+<table id="v-e1b626623a47c2a759abc201">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-86420ebbe1f2baa5373ecfa5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e03813a0e1e85e7cc203f5ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_set_sha256</code>
+</th>
+<td>
+<table id="v-468446ddc1a5506d8489ad0a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-48f4163fd5d872d088bd9460">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/artifact_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cfe7635383feb4c17524a900">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/artifact_set_sha256/title">Artifact Set Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-251898af618df25275e253b5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/artifact_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>claim_id</code>
+</th>
+<td>
+<table id="v-723bde64f1291ce61b6e4426">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-91b86d48851c61998a571490">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/claim_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-56a55d01b41fbc1fc78934c1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/claim_id/title">Claim Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f0a2914ed097ddc5956ff05f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/claim_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>controller_evidence_sha256</code>
+</th>
+<td>
+<table id="v-be14795ef85e414b48d99737">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-507f519aeaeb59dd811fe312">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/controller_evidence_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-050d5bd578c072072e0c6105">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/controller_evidence_sha256/title">Controller Evidence Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4d7c6e4641a65915819c2f8f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/controller_evidence_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_id</code>
+</th>
+<td>
+<table id="v-102265c29e198d89936ab969">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a9a055161341d45170d9b6f5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9e766ff992645b18cd023fad">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_id/title">Execution Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-54aaac118686e11146ef9c07">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_sha256</code>
+</th>
+<td>
+<table id="v-71171b579e9f8f691b7268ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b8a7177fb51a42577d57df2a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a0ffb3568a201b464683e8ed">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_sha256/title">Execution Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5d53c1e1c7c0cba328f61f66">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-1c84ec8ff3418e5220ecd4fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-dbc2035cbd696c6c4ba99e83">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/fence/$ref">#/components/schemas/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-4024d77ec3c514c9ab373ab1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-3e3a6f906391369b2f4a19f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-48f7592d16d7f4a5ff5c05d1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/format/const">riverhog-external-effect-settlement/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d2047bd5eca8b2b2258cef48">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/format/title">Format</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e5aae046de9b9ba4add7c96b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_set_sha256</code>
+</th>
+<td>
+<table id="v-588181995aaca486ccc48d6a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-307b993404ee205bd14336b3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/input_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-60af568a2926fffc053455c9">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/input_set_sha256/title">Input Set Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-33df32b63a6913b35558b799">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/input_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation</code>
+</th>
+<td>
+<table id="v-37fb9e0c8d1012d052afa038">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d922d970b4174aa7560bc49e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/operation/$ref">#/components/schemas/OperationIdentityDocument</code>
+<span class="kind">string</span> <a href="e-50045aad659d722823778a54.html#v-c2a1c670379a5ff0337d0592">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>receipt</code>
+</th>
+<td>
+<table id="v-954d55284eae1a25acf46890">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-02aaa023654b195cb45b927f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt/additionalProperties">true</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6c081e09e9a5ea48cc7a1cf3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt/title">Receipt</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-54fff9439f74783b90dde12c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-d7d600a3facda239ee8343b2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt/x-riverhog-encoded-bytes-max">4194304</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-7de603e4bda728227af75428">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-5f8de1791136f5f7636ed934">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-122890a2cefca7395644b8b1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt/x-riverhog-extent/reason">bounded-effect-receipt</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>receipt_sha256</code>
+</th>
+<td>
+<table id="v-cad893a19244312e2bd683ba">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-66f30dd428eb9b731f221ced">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d55fdc9d4ecce860dced98a5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt_sha256/title">Receipt Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fda31cde60aab8a2a1cae500">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<table id="v-421eaf78a74d52aa91b849a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-f908f730cf69190b75a464ba">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/status/const">succeeded</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-4a16ad0b41b2c36de87bdbd0">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/status/title">Status</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2702ad1a4ff94a0c8de01e92">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/status/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-b45f2e1c0bfcedc4df1875db">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b3515065b95c3df4835395bc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/0">format</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-bc85149205ed090911b1a0b0">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/1">claim_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-0a76a999355ee4787120c426">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/2">fence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-60e879a9d4d31651d49e188c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/3">execution_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-2ee91f75337d7d6d71aa5a2b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/4">execution_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-a4992d0d63ecc10d91b78c68">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/5">operation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-55d11c6b45c37f80a8e2a8ec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/6">input_set_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-06e9272539edd42d6e027537">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/7">artifact_set_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-ba8a7a8850431c9198aa34ad">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/8">controller_evidence_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-f6772c3e1976c08cf4a8f19f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/9">receipt</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-0dd6cf9c121a909360f6a99c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/10">receipt_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-8ccd7224753445de20f6c1f3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/required/11">status</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-956b0f8b16fd7682c16eca53">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/title">ExternalEffectSettlementDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ef8c937aa28c901f3e37f7fd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/artifact_set_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/claim_id</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/controller_evidence_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_id</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/execution_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/input_set_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">encoded-size · bytes · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4194304,&quot;reason&quot;:&quot;bounded-effect-receipt&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;x-riverhog-encoded-bytes-max&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExternalEffectSettlementDocument/properties/receipt_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

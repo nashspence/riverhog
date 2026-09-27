@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ProcessingClaimEffectSettleDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: ProcessingClaimEffectSettleDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-processingclaimeffectsettledocument:87cb052f03">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-41f413b888f1ceeb1f047059">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ProcessingClaimEffectSettleDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;fence&quot;,&quot;settlement&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>fence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-ca7efd56fc078a86727027a9">outcome</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>settlement</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-4909bcc5f66b852c8746afe2.html#v-e1b626623a47c2a759abc201">#/components/schemas/ExternalEffectSettlementDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ca7efd56fc078a86727027a9">
+<h3>Field: outcome</h3>
+<p class="shape">any of: <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">#/components/schemas/ProcessingOutcomeBindingDocument</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument</code>
+</h4>
+<table id="v-41f413b888f1ceeb1f047059">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-47db2e992574022cccf9c99f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1cc1ed90c9391badcee5d270">
+<tbody>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-67297a0f343badd7b8d8d876">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-820267e490e61a4a11750ed8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/properties/fence/$ref">#/components/schemas/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-c10cf5f443b5940e78d19707">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-ca7efd56fc078a86727027a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-6143bee81465275a5d6cf378">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f458750c1081549028b74a5e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1c50acb9d77253a718292750">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/properties/outcome/anyOf/0/$ref">#/components/schemas/ProcessingOutcomeBindingDocument</code>
+<span class="kind">string</span> <a href="e-9bfffe70938c57f7311193e1.html#v-76ce77bed40f1e8936ab255e">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-517f3d62c61829b13889ddf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f5c49f93df711da760aa829e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/properties/outcome/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>settlement</code>
+</th>
+<td>
+<table id="v-4c1ce4755e5e796b77376436">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-269c5b0e22b1559a6b7abc8c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/properties/settlement/$ref">#/components/schemas/ExternalEffectSettlementDocument</code>
+<span class="kind">string</span> <a href="e-4909bcc5f66b852c8746afe2.html#v-e1b626623a47c2a759abc201">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-d6b1118d46b97bec6ed7744f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-78a8bf65781168877ccacc7f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/required/0">fence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-3509517df585fd27fac9896f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/required/1">settlement</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-34aa2d947ba754ab31b5e3d7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/title">ProcessingClaimEffectSettleDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d9a1c2948a9734d086bf0c35">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimEffectSettleDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

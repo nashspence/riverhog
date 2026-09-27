@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-1deff4c44c8bb8845dbe6c86">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;fence&quot;]</code>
+<code>[&quot;fence&quot;,&quot;outcomes&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -96,6 +96,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>outcomes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-045e0dbebe0cf0524452c741.html#v-6d333e09803c4757b84120bf">#/$defs/ExactSetIdentityDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>source_collection_retirement_grace_seconds</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -108,7 +117,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -124,6 +133,9 @@
 </p>
 <h4>Definitions</h4>
 <ul>
+<li>
+<a href="#s-6d333e09803c4757b84120bf">ExactSetIdentityDocument</a>
+</li>
 <li>
 <a href="#s-888b24baa5c07521e9d0e135">NonnegativeDecimal</a>
 </li>
@@ -178,6 +190,60 @@
 <code>source_collection_retirement_grace_seconds</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">const: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6d333e09803c4757b84120bf">
+<h3>Definition: ExactSetIdentityDocument</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;count&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -241,6 +307,136 @@
 <td>
 <table id="v-45ed9d1c403e9a64c874ca8f">
 <tbody>
+<tr>
+<th scope="row">
+<code>ExactSetIdentityDocument</code>
+</th>
+<td>
+<table id="v-6d333e09803c4757b84120bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8a81109f301c8d030f11b7bf">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-d3cafa330cf11de6d7c026ab">
+<tbody>
+<tr>
+<th scope="row">
+<code>count</code>
+</th>
+<td>
+<table id="v-c917be915973b985b9d07985">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1d187d17d02b565665581c50">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/properties/count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-045e0dbebe0cf0524452c741.html#v-888b24baa5c07521e9d0e135">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-11f841585048214f975525d1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/properties/count/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-afdbbf30dc73a1dc6aa0c019">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-75abde6ad47ad9f3f99fa54c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4377a40495e68d20924a4958">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e5aa8e5a8151bda01ef4b0e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-48e2189a4bf29f6909f19339">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/required/0">count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a6d80a1f8a3f85175d354704">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/required/1">sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ff742fb27caf4770a1095383">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/$defs/ExactSetIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>NonnegativeDecimal</code>
@@ -363,6 +559,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>outcomes</code>
+</th>
+<td>
+<table id="v-80a4da062b0e6fd5cb1a4460">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cb3b035b368922be676a8e15">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/outcomes/$ref">#/$defs/ExactSetIdentityDocument</code>
+<span class="kind">string</span> <a href="e-045e0dbebe0cf0524452c741.html#v-6d333e09803c4757b84120bf">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>source_collection_retirement_grace_seconds</code>
 </th>
 <td>
@@ -431,7 +647,7 @@
 </th>
 <td>
 <span id="v-494403b5c705b9677a8fcadc">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -468,6 +684,16 @@
 <td>
 <span id="v-7f978b78bb816a9f4f55e45b">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/required/0">fence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c43966c7183c7bba761060bd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/schema/required/1">outcomes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -533,7 +759,7 @@
 </th>
 <td>
 <span id="v-fe913c20e8a3b100dec44ea9">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimOutcomesSettleDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -630,7 +856,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

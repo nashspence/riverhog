@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-69e6f54265d8c97a84d69daa">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 25 fields; additionalProperties: <code>false</code>
+<code>object</code>; 26 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -111,6 +111,14 @@
 <a href="#s-f050d1c3645e3f8209f7f726">coordination_settlement</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">any of: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-fe84b56a63e632ca9132225b">effect_settlement_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -418,6 +426,40 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fe84b56a63e632ca9132225b">
+<h3>Field: effect_settlement_sha256</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Effect Settlement Sha256</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1252,6 +1294,86 @@
 </tr>
 </tbody>
 </table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-fe84b56a63e632ca9132225b">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-9f4455d5b47bdae57658c1d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c735dfc609ec09441cb32889">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4ca29d9e23f5d352493476d0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/effect_settlement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1013e64bc04f6a2941176b2e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/effect_settlement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-5498ece2fe7d641bfbe554a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6c0dd229c6d7d23ff551b21c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/effect_settlement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6ceae3ca0fdb8e5435478b72">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/effect_settlement_sha256/title">Effect Settlement Sha256</code>
+<span class="kind">string</span>
+</span></td>
 </tr>
 </tbody>
 </table></td>
@@ -2694,6 +2816,15 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/effect_settlement_sha256/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/0</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
@@ -2754,7 +2885,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

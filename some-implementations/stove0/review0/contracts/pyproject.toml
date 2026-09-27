@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "review0-target-contracts"
+name = "review0-contracts"
 version = "0.1.0"
-description = "Review0 target execution and artifact contracts."
+description = "Review0 materialization semantics and artifact roles."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Review0 target execution and artifact contracts.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Review0 materialization semantics and artifact roles.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [
@@ -29,4 +29,4 @@ stove0-protocol = { workspace = true }
 stove0-target-protocol = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/review0_target_contracts"]
+packages = ["src/review0_contracts"]

@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;] = &#x27;collection&#x27;, operation_contract: Optional[Annotated[dict[str, Any], FieldInfo(annotation=NoneType, required=True, json_schema_extra={&#x27;x-riverhog-extent&#x27;: {&#x27;policy&#x27;: &#x27;contract_max&#x27;, &#x27;reason&#x27;: &#x27;bounded-operation-declaration&#x27;}, &#x27;x-riverhog-encoded-bytes-max&#x27;: 4194304})]] = None, output_policy: riverhog_protocol.output_collection_policy.OutputCollectionPolicy = &lt;factory&gt;, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-5166053768b765cb855c245b">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -132,6 +132,34 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-9286b21ea699a1bbe5a0a666">operation_contract</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-9f2670a99d8cbdbe2079ebf1.html#v-511d5395154e2c015b527d13">#/$defs/OutputCollectionPolicy</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_kind</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code></td>
+<td data-label="Default">
+<code>collection</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>source_collection_retirement_grace_seconds</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -144,7 +172,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -161,10 +189,19 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-85eb271145acb863ff22c825">ArchiveStoreName</a>
+</li>
+<li>
+<a href="#s-48a017135ac6c27c1a70deb0">CollectionTag</a>
+</li>
+<li>
 <a href="#s-6d9026fe450fb8bb5e50ae3f">NonnegativeDecimal</a>
 </li>
 <li>
 <a href="#s-fa7d9bfff2902fbecc35c727">OperationIdentityDocument</a>
+</li>
+<li>
+<a href="#s-511d5395154e2c015b527d13">OutputCollectionPolicy</a>
 </li>
 </ul>
 </section>
@@ -191,6 +228,35 @@
 <code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-controller-evidence-envelope&quot;}</code>
 </dd>
 </dl>
+</section>
+<section class="schema-section" id="s-9286b21ea699a1bbe5a0a666">
+<h3>Field: operation_contract</h3>
+<p class="shape">default: <code>null</code>; any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-74419da4164e5322a97adea2">1</a></td>
+<td data-label="Schema">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-1c58018aaa2549ae78ec81b4">
 <h3>if schema</h3>
@@ -247,6 +313,53 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-85eb271145acb863ff22c825">
+<h3>Definition: ArchiveStoreName</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-48a017135ac6c27c1a70deb0">
+<h3>Definition: CollectionTag</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>65536</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-unicode-normalization</dt>
+<dd>
+<code>NFC</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-collection-tag&quot;}</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-6d9026fe450fb8bb5e50ae3f">
 <h3>Definition: NonnegativeDecimal</h3>
@@ -318,6 +431,190 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-511d5395154e2c015b527d13">
+<h3>Definition: OutputCollectionPolicy</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-f6baf74c64dfe27373cb772e">archive_store</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">#/$defs/ArchiveStoreName</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-8e8f980f94a93a7feca59e75">copy_to</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">#/$defs/ArchiveStoreName</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-output-collection-policy/v1</code>; default: <code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Default">
+<code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-ea3cb563d3afcd3884ff149a">tags</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-48a017135ac6c27c1a70deb0">#/$defs/CollectionTag</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-dddc6d9efb72a9d7750ffac0">use_cache</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-74419da4164e5322a97adea2">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>4194304</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-operation-declaration&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f6baf74c64dfe27373cb772e">
+<h3>Field: archive_store</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">#/$defs/ArchiveStoreName</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">#/$defs/ArchiveStoreName</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8e8f980f94a93a7feca59e75">
+<h3>Field: copy_to</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">#/$defs/ArchiveStoreName</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ea3cb563d3afcd3884ff149a">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-48a017135ac6c27c1a70deb0">#/$defs/CollectionTag</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-dddc6d9efb72a9d7750ffac0">
+<h3>Field: use_cache</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </div>
 <details class="exact">
 <summary>Exact machine fields and pointers</summary>
@@ -358,6 +655,126 @@
 <td>
 <table id="v-9bf5a26264db78ddde6c88de">
 <tbody>
+<tr>
+<th scope="row">
+<code>ArchiveStoreName</code>
+</th>
+<td>
+<table id="v-85eb271145acb863ff22c825">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ecf9ab9f47349f108126575d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/ArchiveStoreName/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4dc87dc7ad96fe41f174f1ca">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/ArchiveStoreName/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionTag</code>
+</th>
+<td>
+<table id="v-48a017135ac6c27c1a70deb0">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-4883235d74add41f794e9ca6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/maxLength">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-d9ef24f67c055776f40095f0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0f9299f8495b36cb586c8951">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-751aa8d4e5c8d561fe34ee1b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-75b4863baaf085b9a215ad90">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d4bdaa211a73117f8306ccce">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-91dc676c61b2ab14e38f12d3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-7b789bc84cdec169ea85a77a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>NonnegativeDecimal</code>
@@ -512,6 +929,326 @@
 <td>
 <span id="v-71e0f2bcc107e868a746a201">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>OutputCollectionPolicy</code>
+</th>
+<td>
+<table id="v-511d5395154e2c015b527d13">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-4b6050aac18976d2e0c3842a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-432e357443dee5e1afc216e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_store</code>
+</th>
+<td>
+<table id="v-f6baf74c64dfe27373cb772e">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-876bc2cbd56d54dfd69fc349">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b7cdcc27d2617f4ca84780c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cb955038c2aadb94830aaf11">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/0/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-50f09065f1417bcbeb4d4ac9">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2930cb051e7080e4e4e9f1a5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a84f2d375a10259cebabb277">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>copy_to</code>
+</th>
+<td>
+<table id="v-8e8f980f94a93a7feca59e75">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-668f4d0972d1411cd160cd4a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-137f8739d6e656acd4d195fb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8f5ed922bb3672c18d7368a6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/items/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-85eb271145acb863ff22c825">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f3879ff0512820baf410e0bb">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-feb5d60ad79753b14bd07384">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-460d393ff4e540aa909236f1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/format/const">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-38f9fe8ec8bb95c1e8916863">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/format/default">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3dc72b4f21509ebafefe61d2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-ea3cb563d3afcd3884ff149a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5343ec4cf8d7942772c53cc8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/tags/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-3d1b6ff01644018e6adf2b3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7ce39c748f938354ddb572e3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/tags/items/$ref">#/$defs/CollectionTag</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-48a017135ac6c27c1a70deb0">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ad05c1fd3439fa27e0c87853">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/tags/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>use_cache</code>
+</th>
+<td>
+<table id="v-dddc6d9efb72a9d7750ffac0">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-599ef934304739cf4d37afc6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-fc4b6617611e6d436ce15f2f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f9e86c53bca96c53b27353ec">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-732faeed138551e6d30c579a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b13c3325a89f0948bdc8ddad">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-50244bfbde7369ad7b295555">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9e688da903d13ec00dde458e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OutputCollectionPolicy/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -760,6 +1497,206 @@
 </tr>
 <tr>
 <th scope="row">
+<code>operation_contract</code>
+</th>
+<td>
+<table id="v-9286b21ea699a1bbe5a0a666">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-0d9b7f9689d4625dd7f161cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-74419da4164e5322a97adea2">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8e56e2ca12e51627fc7dd9c1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/anyOf/0/additionalProperties">true</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cfe2003b30c97cc8f4ccf0cf">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/anyOf/0/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-76b086e99a60b47e56d3df8a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/anyOf/0/x-riverhog-encoded-bytes-max">4194304</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-98724ee5f2216017e60f7ea3">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-30e686e01aa3d0e7bf4f2cbe">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/anyOf/0/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-58a5ef6eca86639545d854a5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/anyOf/0/x-riverhog-extent/reason">bounded-operation-declaration</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c739ea51f36107e08fcb9522">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1c1d3bd9344c4f6a0ea0e206">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a257d3b360736be8fdaf7f5e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation_contract/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_policy</code>
+</th>
+<td>
+<table id="v-4981fc70564e1054c91b40d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2ba578a887a488e324940a78">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/output_policy/$ref">#/$defs/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-511d5395154e2c015b527d13">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_kind</code>
+</th>
+<td>
+<table id="v-32341419eef084f9b2671c57">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-c81bc9f5afe52365828ba2bb">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/result_kind/default">collection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-cd07341ea23043187af85370">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fb28786f448ab249dbc59a04">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/result_kind/enum/0">collection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c96375549c46b382c5ca0bca">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/result_kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-724b2eb7f9403d6a210fc4bd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/result_kind/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>source_collection_retirement_grace_seconds</code>
 </th>
 <td>
@@ -828,7 +1765,7 @@
 </th>
 <td>
 <span id="v-4a30a13f6a1c292e1d97cb90">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -970,7 +1907,7 @@
 </th>
 <td>
 <span id="v-b97d8a7237a1c75e2a4b6a45">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;] = &#x27;collection&#x27;, operation_contract: Optional[Annotated[dict[str, Any], FieldInfo(annotation=NoneType, required=True, json_schema_extra={&#x27;x-riverhog-extent&#x27;: {&#x27;policy&#x27;: &#x27;contract_max&#x27;, &#x27;reason&#x27;: &#x27;bounded-operation-declaration&#x27;}, &#x27;x-riverhog-encoded-bytes-max&#x27;: 4194304})]] = None, output_policy: riverhog_protocol.output_collection_policy.OutputCollectionPolicy = &lt;factory&gt;, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-settlement&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1067,7 +2004,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

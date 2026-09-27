@@ -30,8 +30,8 @@ MISE_CONTAINER_TOOLS = {
     "a-stove0-ffprobe-sampling-observer": {"uv"},
     "a-stove0-nvenc-av1-opus-target": {"uv"},
     "a-stove0-opus-target": {"uv"},
-    "a-review0-materializer": {"uv"},
-    "a-review0-rclone-target": {"rclone", "uv"},
+    "review0": {"uv"},
+    "a-stove0-rclone-target": {"rclone", "uv"},
     "a-riverhog-event-relay": {"uv"},
     "a-riverhog-minisign-witness": {"minisign", "uv"},
     "a-riverhog-opentimestamps-witness": {"uv"},
@@ -142,22 +142,20 @@ IMAGE_CONTRACTS = {
             ("some-implementations/stove0/application/compose.yaml", "a-review0-opus-sampler"),
         ),
     },
-    "a-review0-materializer": {
-        "dockerfile": "some-implementations/stove0/review0/materialize-target/Dockerfile",
-        "tag": "a-review0-materializer:dev",
-        "title": "Review0 materializer",
+    "review0": {
+        "dockerfile": "some-implementations/stove0/review0/application/Dockerfile",
+        "tag": "review0:dev",
+        "title": "Review0",
         "license": "CAL-1.0",
-        "compose": (
-            ("some-implementations/stove0/application/compose.yaml", "a-review0-materializer"),
-        ),
+        "compose": (("some-implementations/stove0/application/compose.yaml", "review0"),),
     },
-    "a-review0-rclone-target": {
-        "dockerfile": "some-implementations/stove0/review0/rclone-effect-target/Dockerfile",
-        "tag": "a-review0-rclone-target:dev",
-        "title": "Review0 rclone target",
+    "a-stove0-rclone-target": {
+        "dockerfile": "some-implementations/stove0/targets/rclone/Dockerfile",
+        "tag": "a-stove0-rclone-target:dev",
+        "title": "Stove0 rclone target",
         "license": "CAL-1.0",
         "compose": (
-            ("some-implementations/stove0/application/compose.yaml", "a-review0-rclone-target"),
+            ("some-implementations/stove0/application/compose.yaml", "a-stove0-rclone-target"),
         ),
     },
     "a-riverhog-event-relay": {

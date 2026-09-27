@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import secrets
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
-from riverhog_protocol import Conflict, NotFound
+from riverhog_protocol import Conflict, NotFound, OutputCollectionPolicy
 from riverhog_protocol.collection_workflow_transport import (
     DISPOSITION_BATCH_MAX,
     ArtifactDispositionOutputPageDocument,
@@ -31,11 +31,14 @@ from riverhog_protocol.collection_workflows import (
     CollectionDerivation,
     CollectionProcessingOutcomeIdentity,
     CollectionRootIdentity,
+    OperationIdentity,
     SourceCollectionRetirementPolicy,
+    processing_outcome_set_identity,
 )
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
+from riverhog_protocol.effect_settlement import ExternalEffectSettlement
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import ContentObservationRequest, ObserverRuntimeAuthority
@@ -50,6 +53,7 @@ from stove0_protocol import (
 )
 from stove0_target_protocol import (
     InputArtifact,
+    OperationContract,
     OutputCollectionRef,
     TargetOutputBinding,
     TargetOutputBindingSetIdentity,
@@ -58,6 +62,7 @@ from stove0_target_protocol import (
     TargetSettlementAuthority,
     TargetSettlementAuthorityPayload,
     update_target_output_binding_commitment,
+    validate_status_against_request,
 )
 
 from stove0_core._checkpoint_sha256 import CheckpointSHA256
@@ -122,6 +127,9 @@ class RiverhogApi(Protocol):
         operation_id: str,
         operation_sha256: str,
         input_artifacts: Iterable[Mapping[str, Any]],
+        result_kind: Literal["collection", "external-effect"] = "collection",
+        operation_contract: Mapping[str, Any] | None = None,
+        output_policy: OutputCollectionPolicy | None = None,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
         source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument: ...
@@ -138,11 +146,32 @@ class RiverhogApi(Protocol):
         outcome_id: str | None = None,
     ) -> ProcessingClaimDocument: ...
 
+    def settle_processing_claim_effect(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+        settlement: Mapping[str, Any],
+        outcome_claim_id: str | None = None,
+        outcome_fence: int | None = None,
+        outcome_id: str | None = None,
+    ) -> ProcessingClaimDocument: ...
+
+    def append_processing_claim_outcomes(
+        self,
+        claim_id: str,
+        *,
+        fence: int,
+        outcomes: Sequence[Mapping[str, Any]],
+    ) -> ProcessingClaimDocument: ...
+
     def settle_processing_claim_outcomes(
         self,
         claim_id: str,
         *,
         fence: int,
+        outcomes_count: int,
+        outcomes_sha256: str,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
         source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument: ...
@@ -374,6 +403,16 @@ class Stove0RiverhogClient:
                 lease_seconds=self.claim_lease_seconds,
             )
         except Conflict as exc:
+            current = self.api.get_processing_claim(claim.claim_id)
+            if _claim_binding(current) == claim and current.state in {
+                "settled",
+                "retiring",
+                "released",
+            }:
+                # A prior step may have settled the claim remotely before its
+                # local work phase advanced. Let that step replay its exact
+                # settlement instead of trying to reacquire a terminal claim.
+                return claim
             recovered = self.acquire_claim(work)
             if recovered.claim_id != claim.claim_id or recovered.fence <= claim.fence:
                 raise RuntimeError(
@@ -444,6 +483,7 @@ class Stove0RiverhogClient:
         plan: WorkflowPlan,
         target_plan: TargetPlan,
         inputs: Iterable[WorkArtifactSubject],
+        operation: OperationContract,
     ) -> None:
         envelope = evidence.execution_envelope
         if envelope.workflow_plan != plan:
@@ -452,8 +492,12 @@ class Stove0RiverhogClient:
             raise ValueError("controller evidence differs from the current Riverhog claim")
         if _target_binding(target_plan) != envelope.target_plan:
             raise ValueError("controller evidence differs from the exact target plan")
-        if plan.result_kind == "external-effect":
-            return
+        if (
+            operation.id != plan.operation.id
+            or operation.contract_sha256 != plan.operation.sha256
+            or operation.result_kind != plan.result_kind
+        ):
+            raise ValueError("selected operation declaration differs from the sealed workflow")
         document = evidence.model_dump(mode="json", by_alias=True, exclude_none=True)
         payload = self.api.seal_processing_claim_plan(
             claim.claim_id,
@@ -461,6 +505,11 @@ class Stove0RiverhogClient:
             execution_id=envelope.execution_envelope_sha256,
             controller_evidence=document,
             controller_evidence_sha256=riverhog_canonical_json_sha256(document),
+            result_kind=plan.result_kind,
+            operation_contract=operation.model_dump(
+                mode="json", by_alias=True, exclude_none=True, exclude={"contract_sha256"}
+            ),
+            output_policy=plan.output_policy,
             operation_id=plan.operation.id,
             operation_sha256=plan.operation.sha256,
             input_artifacts=(_artifact_identity(item).as_dict() for item in inputs),
@@ -721,6 +770,72 @@ class Stove0RiverhogClient:
             sealed = concurrent
         return sealed.settlement
 
+    def verify_and_settle_effect(
+        self,
+        record: WorkRecord,
+        operation: OperationContract,
+        parent_outcome: ParentOutcomeBinding | None = None,
+    ) -> str:
+        if (
+            record.phase != "verifying"
+            or record.claim is None
+            or record.workflow_plan is None
+            or record.controller_evidence is None
+            or record.target_request is None
+            or record.target_status is None
+            or record.target_status.state != "succeeded"
+            or record.target_status.effect_receipt is None
+            or record.workflow_plan.result_kind != "external-effect"
+        ):
+            raise ValueError("effect settlement requires exact successful target evidence")
+        validate_status_against_request(record.target_status, record.target_request, operation)
+        claim = self.api.get_processing_claim(record.claim.claim_id)
+        plan = claim.plan
+        evidence = record.controller_evidence.model_dump(
+            mode="json", by_alias=True, exclude_none=True
+        )
+        if (
+            plan is None
+            or _claim_binding(claim) != record.claim
+            or plan.result_kind != "external-effect"
+            or plan.execution_id
+            != record.controller_evidence.execution_envelope.execution_envelope_sha256
+            or plan.operation.id != operation.id
+            or plan.operation.sha256 != operation.contract_sha256
+            or plan.controller_evidence_sha256 != riverhog_canonical_json_sha256(evidence)
+        ):
+            raise RuntimeError("Riverhog effect execution differs from controller authority")
+        receipt = record.target_status.effect_receipt
+        document = ExternalEffectSettlement(
+            claim_id=record.claim.claim_id,
+            fence=record.claim.fence,
+            execution_id=plan.execution_id,
+            execution_sha256=receipt.execution_sha256,
+            operation=OperationIdentity(operation.id, operation.contract_sha256),
+            input_set_sha256=plan.inputs.sha256,
+            artifact_set_sha256=plan.artifacts.sha256,
+            controller_evidence_sha256=plan.controller_evidence_sha256,
+            receipt=receipt.model_dump(
+                mode="json", by_alias=True, exclude_none=True, exclude={"receipt_sha256"}
+            ),
+            receipt_sha256=receipt.receipt_sha256,
+        )
+        settled = self.api.settle_processing_claim_effect(
+            record.claim.claim_id,
+            fence=record.claim.fence,
+            settlement=document.as_dict(),
+            outcome_claim_id=parent_outcome.claim.claim_id if parent_outcome else None,
+            outcome_fence=parent_outcome.claim.fence if parent_outcome else None,
+            outcome_id=parent_outcome.outcome_id if parent_outcome else None,
+        )
+        if (
+            _claim_binding(settled) != record.claim
+            or settled.state not in {"settled", "retiring", "released"}
+            or settled.effect_settlement_sha256 != document.sha256
+        ):
+            raise RuntimeError("Riverhog did not durably settle the exact external effect")
+        return document.sha256
+
     def settle_outcomes(
         self,
         record: WorkRecord,
@@ -731,62 +846,184 @@ class Stove0RiverhogClient:
             or record.branch_set_plan is None
             or not evaluation.branch_set_succeeded
             or evaluation.branch_set_sha256 != record.branch_set_plan.branch_set_sha256
+            or self.state is None
         ):
-            raise ValueError("stove0 coordination is not ready for Riverhog settlement")
+            raise ValueError(
+                "exact outcome settlement requires successful coordination and durable child state"
+            )
+        expected: list[CollectionProcessingOutcomeIdentity] = []
+        for item in evaluation.succeeded_branches:
+            child = self._settled_child(item.work_id)
+            if (
+                child.output is None
+                or child.target_settlement is None
+                or child.target_settlement.settlement_sha256 != item.producer_settlement_sha256
+                or child.output.derivation_sha256 != item.derivation_sha256
+                or child.output.collection_id != item.output_collection.collection_id
+                or child.output.archive_root_sha256 != item.output_collection.archive_root_sha256
+                or child.output.content_identity != item.output_collection.content_identity
+            ):
+                raise RuntimeError(
+                    "collection branch result differs from its durable settled child"
+                )
+            expected.append(self._child_outcome(f"branch/{item.branch_id}", child))
+        for effect_result in evaluation.succeeded_effects:
+            child = self._settled_child(effect_result.work_id)
+            if (
+                child.effect_settlement_sha256 != effect_result.effect_settlement_sha256
+                or child.target_status is None
+                or child.target_status.effect_receipt is None
+                or child.target_status.effect_receipt.receipt_sha256
+                != effect_result.effect_receipt_sha256
+            ):
+                raise RuntimeError("effect branch result differs from its Riverhog settlement")
+            expected.append(self._child_outcome(f"branch/{effect_result.branch_id}", child))
+        for nested_result in evaluation.succeeded_coordinations:
+            nested_child = self.state.load(nested_result.work.work_id)
+            if (
+                nested_child is None
+                or nested_child.phase != "complete"
+                or nested_child.coordination_settlement != nested_result
+                or nested_child.claim is None
+            ):
+                raise RuntimeError(
+                    "nested coordination differs from its complete durable nested_child"
+                )
+            remote = self.api.get_processing_claim(nested_child.claim.claim_id)
+            if (
+                _claim_binding(remote) != nested_child.claim
+                or remote.outcomes.identity is None
+                or remote.state not in {"settled", "retiring", "released"}
+            ):
+                raise RuntimeError("nested coordination has no exact Riverhog outcome settlement")
+            for outcome in self._outcomes(
+                nested_child.claim.claim_id, remote.outcomes.identity.sha256
+            ):
+                label = "nested/" + riverhog_canonical_json_sha256(
+                    {
+                        "work_id": nested_result.work.work_id,
+                        "outcome_id": outcome.outcome_id,
+                    }
+                )
+                expected.append(
+                    CollectionProcessingOutcomeIdentity.from_mapping(
+                        {**outcome.as_dict(), "outcome_id": label}
+                    )
+                )
+        if evaluation.join_settlement is not None:
+            join = evaluation.join_settlement
+            child = self._settled_child(join.work_id)
+            if (
+                child.target_settlement is None
+                or child.target_settlement.settlement_sha256 != join.producer_settlement_sha256
+            ):
+                raise RuntimeError("join result differs from its durable settlement")
+            expected.append(self._child_outcome("join", child))
+        # Never replace an exact closed set with a locally inferred successful subset.
+        required = processing_outcome_set_identity(expected)
+        ordered = sorted(expected, key=lambda item: item.outcome_id)
+        for start in range(0, len(ordered), DISPOSITION_BATCH_MAX):
+            self.api.append_processing_claim_outcomes(
+                record.claim.claim_id,
+                fence=record.claim.fence,
+                outcomes=[
+                    item.as_dict() for item in ordered[start : start + DISPOSITION_BATCH_MAX]
+                ],
+            )
         payload = self.api.settle_processing_claim_outcomes(
             record.claim.claim_id,
             fence=record.claim.fence,
+            outcomes_count=len(ordered),
+            outcomes_sha256=str(required["sha256"]),
             source_collection_retirement_policy=record.branch_set_plan.source_collection_retirement_policy,
             source_collection_retirement_grace_seconds=record.branch_set_plan.source_collection_retirement_grace_seconds,
         )
+        if _claim_binding(payload) != record.claim:
+            raise RuntimeError("Riverhog settled another claim generation")
         if payload.state == "active":
             return False
-        if payload.state != "settled" or payload.outcomes.identity is None:
-            raise RuntimeError("Riverhog did not seal the processing outcome identity")
+        if (
+            payload.state not in {"settled", "retiring", "released"}
+            or payload.outcomes.identity is None
+            or payload.outcomes.identity.model_dump(mode="json") != required
+        ):
+            raise RuntimeError("Riverhog did not seal the exact required processing outcomes")
+        if self._outcomes(record.claim.claim_id, str(required["sha256"])) != ordered:
+            raise RuntimeError("Riverhog processing outcomes differ from Stove0 truth")
+        return True
+
+    def _settled_child(self, work_id: str) -> WorkRecord:
+        if self.state is None:
+            raise RuntimeError("outcome verification requires durable child state")
+        child = self.state.load(work_id)
+        if (
+            child is None
+            or child.phase != "complete"
+            or child.claim is None
+            or child.controller_evidence is None
+            or child.workflow_plan is None
+        ):
+            raise RuntimeError("outcome child has not completed exact durable settlement")
+        return child
+
+    @staticmethod
+    def _child_outcome(label: str, child: WorkRecord) -> CollectionProcessingOutcomeIdentity:
+        assert (
+            child.claim is not None
+            and child.controller_evidence is not None
+            and child.workflow_plan is not None
+        )
+        execution_id = child.controller_evidence.execution_envelope.execution_envelope_sha256
+        if child.workflow_plan.result_kind == "external-effect":
+            assert (
+                child.target_status is not None and child.target_status.effect_receipt is not None
+            )
+            return CollectionProcessingOutcomeIdentity(
+                outcome_id=label,
+                source_claim_id=child.claim.claim_id,
+                source_fence=child.claim.fence,
+                execution_id=execution_id,
+                result_kind="external-effect",
+                effect_receipt_sha256=child.target_status.effect_receipt.receipt_sha256,
+                effect_settlement_sha256=child.effect_settlement_sha256,
+            )
+        assert child.output is not None
+        return CollectionProcessingOutcomeIdentity(
+            outcome_id=label,
+            source_claim_id=child.claim.claim_id,
+            source_fence=child.claim.fence,
+            execution_id=execution_id,
+            result_kind="collection",
+            output_collection=CollectionRootIdentity(
+                child.output.collection_id,
+                child.output.archive_root_sha256,
+                child.output.content_identity,
+            ),
+            derivation_sha256=child.output.derivation_sha256,
+        )
+
+    def _outcomes(self, claim_id: str, identity: str) -> list[CollectionProcessingOutcomeIdentity]:
         outcomes: list[CollectionProcessingOutcomeIdentity] = []
         ordinal = 0
         while True:
             page = self.api.list_processing_claim_outcomes(
-                record.claim.claim_id,
-                identity_sha256=payload.outcomes.identity.sha256,
-                start_ordinal=ordinal,
+                claim_id, identity_sha256=identity, start_ordinal=ordinal
             )
+            if page.start_ordinal != ordinal or page.identity.sha256 != identity:
+                raise RuntimeError("Riverhog outcome page changed identity or position")
             outcomes.extend(
-                CollectionProcessingOutcomeIdentity.from_mapping(item.model_dump(mode="json"))
+                CollectionProcessingOutcomeIdentity.from_mapping(
+                    item.model_dump(mode="json", exclude_none=True)
+                )
                 for item in page.outcomes
             )
             if page.next_ordinal is None:
-                break
+                if len(outcomes) != page.identity.count:
+                    raise RuntimeError("Riverhog outcome page omitted required results")
+                return outcomes
+            if page.next_ordinal <= ordinal:
+                raise RuntimeError("Riverhog outcome paging did not advance")
             ordinal = page.next_ordinal
-        expected: dict[str, tuple[CollectionRootIdentity, str]] = {
-            f"branch/{item.branch_id}": (
-                CollectionRootIdentity(
-                    collection_id=item.output_collection.collection_id,
-                    archive_root_sha256=item.output_collection.archive_root_sha256,
-                    content_identity=item.output_collection.content_identity,
-                ),
-                item.derivation_sha256,
-            )
-            for item in evaluation.succeeded_branches
-        }
-        if evaluation.join_settlement is not None:
-            join = evaluation.join_settlement
-            expected["join"] = (
-                CollectionRootIdentity(
-                    collection_id=join.output_collection.collection_id,
-                    archive_root_sha256=join.output_collection.archive_root_sha256,
-                    content_identity=join.output_collection.content_identity,
-                ),
-                join.derivation_sha256,
-            )
-        actual = {
-            item.outcome_id: (item.output_collection, item.derivation_sha256) for item in outcomes
-        }
-        if actual != expected:
-            raise RuntimeError("Riverhog processing outcomes differ from Stove0 truth")
-        if _claim_binding(payload) != record.claim:
-            raise RuntimeError("Riverhog did not settle the expected processing outcomes")
-        return True
 
     def abandon_preview_claim(
         self,

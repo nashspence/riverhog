@@ -8,13 +8,14 @@ from pathlib import Path
 
 import pytest
 import yaml
-from a_review0_materializer.app import load_config as load_materializer_config
-from a_review0_rclone_target.app import load_config as load_rclone_config
 from a_riverhog_aws_store.app import load_config as load_aws_config
 from a_riverhog_b2_store.app import load_config as load_b2_config
 from a_riverhog_event_relay.relay import load_config as load_event_relay_config
 from a_riverhog_ftp_spool.config import load_config as load_adapter_config
+from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
+from a_stove0_rclone_target.app import load_config as load_rclone_config
 from gogurt_core.core import execute_gogurt_action, load_gogurt_actions, plan_gogurt_action
+from review0.app import load_config as load_materializer_config
 from riverhog_core.runtime_document import load_runtime_document
 from stove0_core import RecipeCatalog
 from stove0_core.runtime_config import load_stove0_config
@@ -33,8 +34,8 @@ QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/fixtures/a-riverhog-aws-store/config.yaml",
     REPO_ROOT / "qualification/fixtures/a-riverhog-b2-store/config.yaml",
     REPO_ROOT / "qualification/fixtures/a-riverhog-event-relay/config.yaml",
-    REPO_ROOT / "qualification/fixtures/a-review0-materializer/config.yaml",
-    REPO_ROOT / "qualification/fixtures/a-review0-rclone-target/config.yaml",
+    REPO_ROOT / "qualification/fixtures/review0/config.yaml",
+    REPO_ROOT / "qualification/fixtures/a-stove0-rclone-target/config.yaml",
     REPO_ROOT / "qualification/fixtures/riverhog/config.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/config.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml",
@@ -181,6 +182,13 @@ def test_qualification_owner_witness_rejects_test_module_reuse(other_import: str
         )
 
 
+def test_review_qualification_observation_fits_the_declared_observer_result_limit() -> None:
+    recipes = RecipeCatalog.load(REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml")
+    observer = recipes.recipe("stove0.review/v1", 1).observers[0]
+    assert observer.contract_id == MEDIA_SAMPLING_OBSERVER_CONTRACT.id
+    assert observer.maximum_result_bytes <= MEDIA_SAMPLING_OBSERVER_CONTRACT.maximum_result_bytes
+
+
 def test_every_checked_qualification_input_runs_through_its_real_consumer(
     tmp_path: Path,
     checked_contract_closure,
@@ -216,17 +224,24 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     assert {recipe.id for recipe in recipes.recipes} == {
         "stove0.audio-archive/v1",
         "stove0.conformance-media/v1",
-        "stove0.review-effect/v1",
+        "stove0.rclone-delivery/v1",
         "stove0.review/v1",
         "stove0.video-archive/v1",
     }
     admissions = AdmissionCatalog.model_validate_json(
         (REPO_ROOT / "qualification/fixtures/stove0/admissions.json").read_text(encoding="utf-8")
     )
-    assert [policy.id for policy in admissions.policies] == ["conformance-media"]
+    assert [policy.id for policy in admissions.policies] == [
+        "conformance-media",
+        "review0-output-delivery",
+    ]
     assert (
         admissions.policies[0].recipe_sha256
         == recipes.recipe("stove0.conformance-media/v1", 1).sha256
+    )
+    assert (
+        admissions.policies[1].recipe_sha256
+        == recipes.recipe("stove0.rclone-delivery/v1", 1).sha256
     )
 
     def materialize_config(name: str) -> Path:
@@ -267,12 +282,9 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
         load_b2_config(materialize_config("a-riverhog-b2-store")).client_config().region
         == "us-west-004"
     )
+    assert load_materializer_config(materialize_config("review0")).samplers[0].id == "fake-sampler"
     assert (
-        load_materializer_config(materialize_config("a-review0-materializer")).samplers[0].id
-        == "fake-sampler"
-    )
-    assert (
-        load_rclone_config(materialize_config("a-review0-rclone-target")).rclone_remote
+        load_rclone_config(materialize_config("a-stove0-rclone-target")).rclone_remote
         == "fake-remote:"
     )
     assert (

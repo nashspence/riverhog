@@ -1,4 +1,4 @@
-"""Strict sampler view over a review-target-owned shared workspace."""
+"""Strict sampler view over Review0's shared workspace."""
 
 from __future__ import annotations
 

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-7ba16e93012882c21df1e851">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -36,7 +36,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;fence&quot;]</code>
+<code>[&quot;fence&quot;,&quot;outcomes&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -71,6 +71,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>outcomes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-13db67b9d8a1d40d0c621350.html#v-07dc0242842fa81a6deb3fde">#/components/schemas/ExactSetIdentityDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>source_collection_retirement_grace_seconds</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -83,10 +92,10 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
-<td data-label="Description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</td>
+<td data-label="Description">Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.</td>
 </tr>
 </tbody>
 </table>
@@ -252,6 +261,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>outcomes</code>
+</th>
+<td>
+<table id="v-40f293356f4e43186a6f9412">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2c9b0e19fbaef8fdd5ce3241">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/outcomes/$ref">#/components/schemas/ExactSetIdentityDocument</code>
+<span class="kind">string</span> <a href="e-13db67b9d8a1d40d0c621350.html#v-07dc0242842fa81a6deb3fde">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>source_collection_retirement_grace_seconds</code>
 </th>
 <td>
@@ -303,7 +332,7 @@
 </th>
 <td>
 <span id="v-04c8d4144bdbe8dcb208e8d4">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -330,7 +359,7 @@
 </th>
 <td>
 <span id="v-d7d0bad6f05df90d10aadf85">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -377,6 +406,16 @@
 <td>
 <span id="v-7aa574d6f4ff60da82072e05">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/required/0">fence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-13519de696046e4db1831c6c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/required/1">outcomes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -479,7 +518,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

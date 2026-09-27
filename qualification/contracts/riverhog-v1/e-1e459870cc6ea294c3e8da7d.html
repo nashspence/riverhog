@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
+<code>&quot;(*, role: Union[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], Literal[&#x27;*&#x27;]], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-ab73500dd1c6f4e6c0315ac1">
@@ -115,10 +115,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>role</code></td>
+<a href="#s-a22afa292f36b570819f2b12">role</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>string</code>; const: <code>*</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -178,6 +177,34 @@
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
 <code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a22afa292f36b570819f2b12">
+<h3>Field: role</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>string</code>; const: <code>*</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>string</code>; const: <code>*</code></td>
 </tr>
 </tbody>
 </table>
@@ -514,11 +541,25 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-028d22921bd5b50ac9a04a3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a5ec456548a4f74aeec8ba31">
+<tbody>
+<tr>
+<th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-d228da381c14340ed1cc3430">
-<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/schema/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span id="v-784692451862aaa6556f0cd3">
+<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/schema/properties/role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -527,10 +568,46 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-b63687b112f027b794cd5b6f">
-<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/schema/properties/role/type">string</code>
+<span id="v-0cc8d47f11d7abad68c120b3">
+<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/schema/properties/role/anyOf/0/type">string</code>
 <span class="kind">string</span>
 </span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e83cf2eed2463b395d8e2a39">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-df87449c00eea480e291bbcd">
+<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/schema/properties/role/anyOf/1/const">*</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ac46de292ef5e8fc49845af8">
+<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/schema/properties/role/anyOf/1/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -577,7 +654,7 @@
 </th>
 <td>
 <span id="v-21f7326394c2294be8dc7d35">
-<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/signature">&quot;(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.InputArtifactContract/contract/signature">&quot;(*, role: Union[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], Literal[&#x27;*&#x27;]], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal[&#x27;transformed&#x27;, &#x27;preserved&#x27;, &#x27;omitted&#x27;, &#x27;rejected&#x27;], ...] | None = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -671,7 +748,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

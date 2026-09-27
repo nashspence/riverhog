@@ -1,0 +1,4 @@
+token_file: /run/secrets/rclone-target-token
+destination_identity: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+rclone_remote: "fake-remote:"
+rclone_config_file: /run/secrets/rclone-config

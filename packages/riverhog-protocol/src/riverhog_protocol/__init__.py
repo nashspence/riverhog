@@ -142,14 +142,17 @@ from riverhog_protocol.collection_workflow_transport import (
     CollectionDerivationDocument,
     CollectionDerivationResponseDocument,
     CollectionRootIdentityDocument,
+    ExternalEffectSettlementDocument,
     OperationIdentityDocument,
     ProcessingCapabilityCreateDocument,
     ProcessingCapabilityDocument,
     ProcessingClaimAbandonDocument,
     ProcessingClaimCreateDocument,
     ProcessingClaimDocument,
+    ProcessingClaimEffectSettleDocument,
     ProcessingClaimFenceDocument,
     ProcessingClaimId,
+    ProcessingClaimOutcomesAppendDocument,
     ProcessingClaimOutcomesSettleDocument,
     ProcessingClaimPageDocument,
     ProcessingClaimPlanSealDocument,
@@ -215,6 +218,7 @@ from riverhog_protocol.list_controls import (
     SearchSort,
     SortOrder,
 )
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.paths import CollectionId, CollectionIdParameter, validate_collection_id
 from riverhog_protocol.portable_collection import (
     PORTABLE_COLLECTION_FORMAT,
@@ -347,6 +351,7 @@ __all__ += [
     "RetrievalFileReferenceSetDocument",
     "TransformIntent",
     "ArchiveStoreName",
+    "OutputCollectionPolicy",
     "RetrievalCacheStoreName",
     "ArchiveCopyStoreSelectionDocument",
     "collection_upload_raw_digest_summary",
@@ -385,6 +390,9 @@ __all__ += [
     "ProcessingClaimDocument",
     "ProcessingClaimFenceDocument",
     "ProcessingClaimId",
+    "ExternalEffectSettlementDocument",
+    "ProcessingClaimEffectSettleDocument",
+    "ProcessingClaimOutcomesAppendDocument",
     "ProcessingClaimOutcomesSettleDocument",
     "ProcessingClaimPageDocument",
     "ProcessingClaimPlanSealDocument",

@@ -5,10 +5,14 @@ archive_passphrase_files:
   compose-smoke-key-v1: /run/secrets/riverhog-archive-passphrase
 archive_active_passphrase_id: compose-smoke-key-v1
 archive_write_store: archive
-archive_read_order: [archive]
+archive_read_order: [archive, review-local]
 archive_stores:
   archive:
     base_url: http://archive-adapter:8080
+    token_file: /run/secrets/riverhog-storage-adapter.token
+    allow_insecure_http: true
+  review-local:
+    base_url: http://filesystem-cache-adapter:8080
     token_file: /run/secrets/riverhog-storage-adapter.token
     allow_insecure_http: true
 retrieval_cache_stores:

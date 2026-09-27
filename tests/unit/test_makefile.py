@@ -89,6 +89,15 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     'if [[ "$*" == *"RIVERHOG_SMOKE_SETTLEMENT_OUTPUT=1"* ]]; then',
                     "  printf '2\\n'",
                     "fi",
+                    'if [[ "${@: -1}" == "review" ]]; then',
+                    "  printf '%s\\n' '{\"collection_id\":4,\"source_collection_id\":3}'",
+                    "fi",
+                    'if [[ "${@: -1}" == "delivery" ]]; then',
+                    (
+                        '  printf \'%s\\n\' \'{"delivery_id":"fixture-delivery",'
+                        '"manifest_sha256":"' + "a" * 64 + "\"}'"
+                    ),
+                    "fi",
                 ]
             )
             + "\n"
@@ -566,15 +575,19 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
     assert "RIVERHOG_SMOKE_SCHEDULER_STEP=intent" in docker_log
     assert "RIVERHOG_SMOKE_SCHEDULER_STEP=previewed" in docker_log
     assert "RIVERHOG_SMOKE_SCHEDULER_STEP=work_bound" in docker_log
-    assert docker_log.count(" restart api") == 3
+    assert docker_log.count(" restart api") == 5
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=ftp" in docker_log
     assert "RIVERHOG_SMOKE_CLIENT_RECEIPT_OUTPUT=1" in docker_log
     assert "collection upload start /cli-input" in docker_log
     assert "--tag stove0/conformance" in docker_log
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=client" in docker_log
     assert "EXPECTED_WORK_ID=" in docker_log
+    assert "REVIEW_INPUT_RECEIPT=" in docker_log
+    assert "REVIEW_OUTPUT_COLLECTION_ID=4" in docker_log
+    assert "RCLONE_DELIVERY_ID=fixture-delivery" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
     smoke = (REPO_ROOT / "scripts" / "test_compose_smoke.sh").read_text(encoding="utf-8")
+    assert "review-input.wav" in smoke
     assert "FTP listener did not retain the exact interrupted prefix" in smoke
 
 
@@ -755,8 +768,8 @@ def test_deployed_application_dockerfiles_use_locked_workspace_dependencies() ->
         REPO_ROOT / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/targets/opus/Dockerfile",
-        REPO_ROOT / "some-implementations/stove0/review0/materialize-target/Dockerfile",
-        REPO_ROOT / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/review0/application/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/targets/rclone/Dockerfile",
         REPO_ROOT / "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile",
     ]
 

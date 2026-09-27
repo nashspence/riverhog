@@ -100,6 +100,7 @@ class RiverhogControlPort(Protocol):
         plan: WorkflowPlan,
         target_plan: TargetPlan,
         inputs: Iterable[WorkArtifactSubject],
+        operation: OperationContract,
     ) -> None: ...
 
     def target_authority(
@@ -115,6 +116,13 @@ class RiverhogControlPort(Protocol):
         record: WorkRecord,
         parent_outcome: ParentOutcomeBinding | None = None,
     ) -> tuple[OutputCollectionRef, TargetSettlementAuthority | None]: ...
+
+    def verify_and_settle_effect(
+        self,
+        record: WorkRecord,
+        operation: OperationContract,
+        parent_outcome: ParentOutcomeBinding | None = None,
+    ) -> str: ...
 
     def settle_outcomes(
         self,
@@ -499,12 +507,8 @@ class Stove0Coordinator:
                     raise RuntimeError("durable coordination settlement changed")
                 if not self._successful_children_complete(record):
                     return record
-                if (
-                    projection.evaluation.succeeded_branches
-                    or projection.evaluation.join_settlement is not None
-                ):
-                    if not self.riverhog.settle_outcomes(record, projection.evaluation):
-                        return record
+                if not self.riverhog.settle_outcomes(record, projection.evaluation):
+                    return record
                 return self._begin_or_complete_retirement(record)
             return self._converge_coordination_outcome(record, projection.evaluation)
         if phase == "target_preflight":
@@ -514,6 +518,18 @@ class Stove0Coordinator:
         if phase in {"executing", "output_finalizing"}:
             return self._poll_target(record)
         if phase == "verifying":
+            if (
+                record.workflow_plan is not None
+                and record.workflow_plan.result_kind == "external-effect"
+            ):
+                effect_settlement = self.riverhog.verify_and_settle_effect(
+                    record,
+                    self.planning.operation_contract(record.workflow_plan.operation),
+                    self._parent_outcome(record),
+                )
+                return self.work.verify_effect(
+                    work_id, effect_settlement, expected_revision=record.revision
+                )
             output, target_settlement = self.riverhog.verify_and_settle(
                 record,
                 self._parent_outcome(record),
@@ -733,6 +749,7 @@ class Stove0Coordinator:
             self.work.store.iter_selection_artifacts(
                 record.target_plan.inputs.selection.selection_sha256
             ),
+            self.planning.operation_contract(record.workflow_plan.operation),
         )
         authority = self.riverhog.target_authority(
             record.claim,

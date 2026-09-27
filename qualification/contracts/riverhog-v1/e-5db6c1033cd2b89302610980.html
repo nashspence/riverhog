@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-8c1e5f0939632a7ed9ab5569">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -40,7 +40,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;branch_id&quot;,&quot;work_id&quot;,&quot;workflow_plan_sha256&quot;,&quot;effect_receipt_sha256&quot;,&quot;settlement_sha256&quot;]</code>
+<code>[&quot;branch_id&quot;,&quot;work_id&quot;,&quot;workflow_plan_sha256&quot;,&quot;effect_receipt_sha256&quot;,&quot;effect_settlement_sha256&quot;,&quot;settlement_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -76,6 +76,15 @@
 <tr>
 <td data-label="Field">
 <code>effect_receipt_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>effect_settlement_sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
@@ -233,6 +242,46 @@
 <td>
 <span id="v-c30a4f7a41707cbf3b82b3d7">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_receipt_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_settlement_sha256</code>
+</th>
+<td>
+<table id="v-f397b75538ad0ae611415ae4">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c512f5004ad94df2f513ceec">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b4b4f5f06f0982c5d22bb59f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_settlement_sha256/title">Effect Settlement Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bfce7bc1bcee637688d4d829">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_settlement_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -465,7 +514,17 @@
 </th>
 <td>
 <span id="v-d2d9a8f9e3c7704e1e984e6f">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/4">settlement_sha256</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/4">effect_settlement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-26abec87809db79956dfe6a3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/5">settlement_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -546,6 +605,15 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_settlement_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/settlement_sha256</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
@@ -579,7 +647,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>

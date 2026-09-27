@@ -13,7 +13,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
-from riverhog_protocol.errors import CatalogSyncViewChanged
+from riverhog_protocol.errors import CatalogSyncViewChanged, NotFound
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_core import ClassificationAdmissionService, SqlAlchemyStateStore
@@ -60,13 +60,22 @@ def _descriptor(
 
 
 class _CatalogApi:
-    def __init__(self, descriptor: CatalogSyncDescriptor, tags: set[str]) -> None:
+    def __init__(
+        self, descriptor: CatalogSyncDescriptor, tags: set[str], *, derived: bool = False
+    ) -> None:
         self.descriptor = descriptor
+        self.derived = derived
         self.tags_by_identity = {descriptor.tag_set_identity: tags}
         self.change: CatalogSyncUpsert | None = None
         self.source_identity = "4" * 64
         self.view_identity = "5" * 64
         self.membership_calls: list[tuple[int, str, int, str]] = []
+
+    def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
+        assert collection_id > 0
+        if not self.derived:
+            raise NotFound("collection has no derivation")
+        return {"execution_id": "a" * 64}
 
     def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint:
         return CatalogSyncCheckpoint(
@@ -118,13 +127,17 @@ class _CatalogApi:
 
 
 class _Planner:
-    def __init__(self, policy: AdmissionPolicy) -> None:
+    def __init__(self, policy: AdmissionPolicy, *, allow_derived_inputs: bool = False) -> None:
         self.policy = policy
+        self.allow_derived_inputs = allow_derived_inputs
         self.catalog = SimpleNamespace(recipe=self._recipe)
 
     def _recipe(self, recipe_id: str, revision: int) -> SimpleNamespace:
         assert (recipe_id, revision) == (self.policy.recipe_id, self.policy.recipe_revision)
-        return SimpleNamespace(sha256=self.policy.recipe_sha256)
+        return SimpleNamespace(
+            sha256=self.policy.recipe_sha256,
+            allow_derived_inputs=self.allow_derived_inputs,
+        )
 
     def create_work(
         self,
@@ -201,6 +214,17 @@ def test_all_visible_selector_uses_the_bound_view_without_tag_queries(
     assert len(admissions()) == expected_baseline + 1
 
 
+def test_derived_collection_requires_an_opted_in_recipe_for_classification_admission() -> None:
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(descriptor, {"camera", "workflow/archive"}, derived=True)
+    policy = _policy()
+    ordinary = _service(state=_state(), api=api, policy=policy)
+    opted_in = _service(state=_state(), api=api, policy=policy, allow_derived_inputs=True)
+
+    assert not ordinary._matches(policy, descriptor)
+    assert opted_in._matches(policy, descriptor)
+
+
 def test_admission_selector_shape_is_explicit_and_exact() -> None:
     policy = _policy().model_dump(mode="json")
     with pytest.raises(ValueError):
@@ -234,12 +258,13 @@ def _service(
     policy: AdmissionPolicy,
     preview: object | None = None,
     coordinator: object | None = None,
+    allow_derived_inputs: bool = False,
 ) -> ClassificationAdmissionService:
     return ClassificationAdmissionService(
         catalog=AdmissionCatalog(policies=(policy,)),
         riverhog=cast(ApiClient, api),
         state=state,
-        planner=cast(Any, _Planner(policy)),
+        planner=cast(Any, _Planner(policy, allow_derived_inputs=allow_derived_inputs)),
         preview=cast(Any, preview if preview is not None else object()),
         coordinator=cast(Any, coordinator if coordinator is not None else object()),
     )

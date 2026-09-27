@@ -119,6 +119,9 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-9bfea52d8aa2496f0c9c442c">ArchiveStoreName</a>
+</li>
+<li>
 <a href="#s-9152ec7164c9a7eabd65b277">ArtifactAssociation</a>
 </li>
 <li>
@@ -126,6 +129,9 @@
 </li>
 <li>
 <a href="#s-38adfedc0e34fbd00a553a36">ArtifactRule</a>
+</li>
+<li>
+<a href="#s-1c467494e96656b08cab9c43">CollectionTag</a>
 </li>
 <li>
 <a href="#s-7a777308f14a2c19c3cbd54e">FactPredicate</a>
@@ -153,6 +159,9 @@
 </li>
 <li>
 <a href="#s-bb6addf750631f0b83cd911c">OutputArtifactContract</a>
+</li>
+<li>
+<a href="#s-3c4d42401e5c7050afde651b">OutputCollectionPolicy</a>
 </li>
 <li>
 <a href="#s-7fffe998a8c1c90e4414d934">RecipeCoordinationRoute</a>
@@ -198,6 +207,22 @@
 <dt>type</dt>
 <dd>
 <code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9bfea52d8aa2496f0c9c442c">
+<h3>Definition: ArchiveStoreName</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
 </dd>
 </dl>
 </section>
@@ -381,6 +406,37 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-1c467494e96656b08cab9c43">
+<h3>Definition: CollectionTag</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>65536</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-unicode-normalization</dt>
+<dd>
+<code>NFC</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-collection-tag&quot;}</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-7a777308f14a2c19c3cbd54e">
 <h3>Definition: FactPredicate</h3>
 <p class="shape">
@@ -536,10 +592,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>role</code></td>
+<a href="#s-c0293264d6d10dfd1df6d177">role</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>string</code>; const: <code>*</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1027,6 +1082,86 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-3c4d42401e5c7050afde651b">
+<h3>Definition: OutputCollectionPolicy</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-8a913c357ffeb0a5be1d5a2a">archive_store</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">#/$defs/ArchiveStoreName</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-4550d9256c03856b97a3d972">copy_to</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">#/$defs/ArchiveStoreName</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>riverhog-output-collection-policy/v1</code>; default: <code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Default">
+<code>riverhog-output-collection-policy/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-6efee3117909814c08d5787b">tags</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-36b60cc1e0646c47dffa2579.html#v-1c467494e96656b08cab9c43">#/$defs/CollectionTag</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-777350ce5d981ba78cdba4e1">use_cache</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-7fffe998a8c1c90e4414d934">
 <h3>Definition: RecipeCoordinationRoute</h3>
 <p class="shape">
@@ -1272,7 +1407,7 @@
 <code>source_collection_retirement_policy</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code></td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
 <td data-label="Description"></td>
@@ -1356,7 +1491,7 @@
 <section class="schema-section" id="s-f90bdb9aff54c0bdc5dac898">
 <h3>Definition: RecipeJoin</h3>
 <p class="shape">
-<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -1428,6 +1563,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-36b60cc1e0646c47dffa2579.html#v-3c4d42401e5c7050afde651b">#/$defs/OutputCollectionPolicy</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1520,7 +1664,7 @@
 <section class="schema-section" id="s-bd46a2e35f5fbc7049f9faec">
 <h3>Definition: RecipeRoute</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -1613,6 +1757,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-36b60cc1e0646c47dffa2579.html#v-3c4d42401e5c7050afde651b">#/$defs/OutputCollectionPolicy</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1880,6 +2033,34 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-c0293264d6d10dfd1df6d177">
+<h3>Field: role</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>string</code>; const: <code>*</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>string</code>; const: <code>*</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-059602f41204f9866c622507">
 <h3>Field: schema</h3>
 <p class="shape">
@@ -2014,6 +2195,86 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <code>integer</code>; minimum: <code>1</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8a913c357ffeb0a5be1d5a2a">
+<h3>Field: archive_store</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">#/$defs/ArchiveStoreName</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">#/$defs/ArchiveStoreName</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4550d9256c03856b97a3d972">
+<h3>Field: copy_to</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">#/$defs/ArchiveStoreName</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-6efee3117909814c08d5787b">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-36b60cc1e0646c47dffa2579.html#v-1c467494e96656b08cab9c43">#/$defs/CollectionTag</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-777350ce5d981ba78cdba4e1">
+<h3>Field: use_cache</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -2501,6 +2762,36 @@
 <td>
 <table id="v-4c21f7df080d6ee2244e680e">
 <tbody>
+<tr>
+<th scope="row">
+<code>ArchiveStoreName</code>
+</th>
+<td>
+<table id="v-9bfea52d8aa2496f0c9c442c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7339e356a59c9f4cb308a4bf">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/ArchiveStoreName/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2f9d6567b766d55a62885a44">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/ArchiveStoreName/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>ArtifactAssociation</code>
@@ -3005,6 +3296,96 @@
 <td>
 <span id="v-d50864bfcb98545993a315bb">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/ArtifactRule/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionTag</code>
+</th>
+<td>
+<table id="v-1c467494e96656b08cab9c43">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-d85ce0b00722a80532dd9275">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/maxLength">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-bfd38cd1233cc031b84b2067">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d8d938dd1bf7a9feba23700e">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-88643afd570c06dfacb0302d">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-1fe76a4addbd67c68d167875">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-76e2312b521f786f0dbce885">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d6bbe34de535b3744fab7315">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-edf78fd677cbad66ef299d53">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3674,11 +4055,25 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-af6549942c8c59aa785f88ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-98d9978f2ac72e337640cacd">
+<tbody>
+<tr>
+<th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-c9cb064e8f611e6644db5a5d">
-<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span id="v-b8f0e7a0a8f4c74ce4945a89">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3687,10 +4082,46 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-0bc99da4ed69773a3684ba4a">
-<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/type">string</code>
+<span id="v-5cd4f3f02d9bb36546f1f951">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/0/type">string</code>
 <span class="kind">string</span>
 </span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c31e940f30f9f0ae27f71efb">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-2a59de4b480aa565d55ce6b3">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/1/const">*</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6646c1ede32d323a5f678793">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/anyOf/1/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -5473,6 +5904,326 @@
 </tr>
 <tr>
 <th scope="row">
+<code>OutputCollectionPolicy</code>
+</th>
+<td>
+<table id="v-3c4d42401e5c7050afde651b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-d20653b2c78889d4f8e7811c">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a2c4386c53e1195d807188d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_store</code>
+</th>
+<td>
+<table id="v-8a913c357ffeb0a5be1d5a2a">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-3dd3529c0fdd710be89afcd6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0bf9a7cdab44adbe06ba1117">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4b7ad5ae248a025d41112537">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/0/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-1c563f06c13167d749c0f608">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-67ceb0f40685ce4a2a2b11d1">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0cd2ed03fec6610a94c55912">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/archive_store/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>copy_to</code>
+</th>
+<td>
+<table id="v-4550d9256c03856b97a3d972">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-9ba94df7ba1217a9512ff4a1">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-a3fde3cc4f5bc2fa66cedd4c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a99c8c168b8f96c535b110f7">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/items/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-36b60cc1e0646c47dffa2579.html#v-9bfea52d8aa2496f0c9c442c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-069d908299e504da3c7c883f">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/copy_to/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-e8cf519d95cf69b4633f8bb7">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-d40de48a0b0cd98583c6e68e">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/format/const">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a90628d1c5518449c752d804">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/format/default">riverhog-output-collection-policy/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-14132b32d697c0dd22513874">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-6efee3117909814c08d5787b">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-379979255678a86f6309614b">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/tags/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-82cd197d51efe495b6fa5cef">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ce800038c7e9fdea63da5024">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/tags/items/$ref">#/$defs/CollectionTag</code>
+<span class="kind">string</span> <a href="e-36b60cc1e0646c47dffa2579.html#v-1c467494e96656b08cab9c43">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9f8c9f21723ef648e7e29fd0">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/tags/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>use_cache</code>
+</th>
+<td>
+<table id="v-777350ce5d981ba78cdba4e1">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-53490e08e29eec3e636cab58">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e68fb6ed64b744a9105f32fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-629a5be6792f4de1986639d5">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-2fe52f8df4db247a3e7cc229">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-741dec187b38c5b4201fb8bb">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8e1f23b792fc11a9a2f63cea">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/properties/use_cache/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-913837d1969338424ebdff2c">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/OutputCollectionPolicy/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>RecipeCoordinationRoute</code>
 </th>
 <td>
@@ -6545,7 +7296,7 @@
 </th>
 <td>
 <span id="v-7d4e14ddb6e7bb85dc523abf">
-<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_policy/enum/1">retire-after-settlement</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7080,6 +7831,26 @@
 <span id="v-f2776bd928b8ddcf3845551a">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/operation_id/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_policy</code>
+</th>
+<td>
+<table id="v-2dfdd06897e7e647bc57a108">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-514952a353fe3c6dbaff3d3e">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/output_policy/$ref">#/$defs/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-36b60cc1e0646c47dffa2579.html#v-3c4d42401e5c7050afde651b">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -7790,6 +8561,26 @@
 <span id="v-c28d770317827fc5bbb0ca47">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/operation_id/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_policy</code>
+</th>
+<td>
+<table id="v-0b170543216d7160d885f9c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a3239ab3ff01ef554e2857c7">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/output_policy/$ref">#/$defs/OutputCollectionPolicy</code>
+<span class="kind">string</span> <a href="e-36b60cc1e0646c47dffa2579.html#v-3c4d42401e5c7050afde651b">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -8669,7 +9460,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+<p>Closure SHA-256: <code>b3d535e3b38af3af63b9399420a340ec9615dd09a1f17b4f9759b18d535ea9d9</code>
 </p>
 </details>
 </footer>
