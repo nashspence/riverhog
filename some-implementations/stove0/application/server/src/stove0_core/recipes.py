@@ -12,6 +12,7 @@ from typing import cast
 from pydantic import JsonValue
 from riverhog_client import ApiClient
 from riverhog_protocol.collection_workflows import canonical_json_sha256
+from riverhog_protocol.errors import RiverhogError
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationRequest,
@@ -106,6 +107,17 @@ class RecipePlanner:
         effective_intent: Mapping[str, JsonValue] | None = None,
     ) -> WorkIdentity:
         recipe = self.catalog.recipe(recipe_id, revision)
+        if not recipe.allow_derived_inputs:
+            for root in roots:
+                try:
+                    self.riverhog.get_collection_derivation(root.collection_id)
+                except RiverhogError as exc:
+                    if exc.code != "not_found":
+                        raise
+                else:
+                    raise ValueError(
+                        f"recipe {recipe.id} does not admit derived collection {root.collection_id}"
+                    )
         return WorkIdentity.seal(
             WorkPayload(
                 recipe=recipe.ref,
@@ -262,7 +274,7 @@ class RecipePlanner:
 
         if completed is None:
             raise RuntimeError("workflow planning produced no branch-set decision")
-        if completed.plan.source_collection_retirement_policy == "retire-after-verified-output":
+        if completed.plan.source_collection_retirement_policy == "retire-after-settlement":
             for branch in completed.leaf_branches():
                 selection = completed.selection_documents[
                     branch.artifact_selection.selection_sha256
@@ -334,7 +346,7 @@ class RecipePlanner:
                 ),
             )
 
-        if root and recipe.source_collection_retirement_policy == "retire-after-verified-output":
+        if root and recipe.source_collection_retirement_policy == "retire-after-settlement":
             if uncovered:
                 return WorkInapplicable(
                     code="unsafe-retirement-coverage",
@@ -409,11 +421,7 @@ class RecipePlanner:
                 requested_target_options={**route.target_options, **compiled_options},
                 input_retrieval_policy=route.input_retrieval_policy,
                 source_collection_retirement_policy="retain",
-                output_policy={
-                    "route_id": route.id,
-                    "branch_id": route.id,
-                    "artifact_selection_sha256": selection.selection_sha256,
-                },
+                output_policy=route.output_policy,
             ),
             observations=observations,
         )
@@ -449,7 +457,7 @@ class RecipePlanner:
                 requested_target_options={**join.target_options, **compiled_options},
                 input_retrieval_policy=join.input_retrieval_policy,
                 source_collection_retirement_policy="retain",
-                output_policy={"route_id": join.id, "join_id": join.id},
+                output_policy=join.output_policy,
             ),
         )
 
@@ -749,11 +757,11 @@ def _operation_input_problem(
     for artifact in selection.artifacts:
         counts[artifact.role] = counts.get(artifact.role, 0) + 1
     contracts = {item.role: item for item in operation.inputs}
-    unsupported = sorted(set(counts) - set(contracts))
+    unsupported = sorted(set(counts) - set(contracts)) if "*" not in contracts else []
     if unsupported:
         return "unsupported role(s): " + ", ".join(unsupported)
     for role, contract in contracts.items():
-        count = counts.get(role, 0)
+        count = sum(counts.values()) if role == "*" else counts.get(role, 0)
         if count < contract.minimum or (contract.maximum is not None and count > contract.maximum):
             return f"input role cardinality is invalid: {role}"
     return None

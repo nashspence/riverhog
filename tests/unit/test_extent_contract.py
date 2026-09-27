@@ -13,6 +13,7 @@ from typing import Any, cast
 import pytest
 from jsonschema import Draft202012Validator
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from typer._click.core import Context
 from typer._click.exceptions import UsageError
 from typer.core import TyperArgument, TyperCommand, TyperOption
@@ -66,6 +67,31 @@ def _resolve_pointer(document: object, pointer: str) -> object:
 
 def _canonical_sha256(value: object) -> str:
     return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+
+
+def test_transform_output_policy_does_not_import_upload_batch_or_store_count_limits() -> None:
+    schema = OutputCollectionPolicy.model_json_schema()
+    assert "maxItems" not in schema["properties"]["tags"]
+    assert "maxItems" not in schema["properties"]["copy_to"]
+    policy = OutputCollectionPolicy(
+        tags=tuple(f"classification/{index:04d}" for index in range(205)),
+        copy_to=tuple(f"store-{index:03d}" for index in range(33)),
+    )
+    assert len(policy.tags) == 205
+    assert len(policy.copy_to) == 33
+    decisions = _checked_projection()["external_contract"]["extents"]["decisions"]
+    relevant = [
+        decision
+        for decision in decisions
+        if "/OutputCollectionPolicy/properties/" in decision["source_pointer"]
+        and decision["dimension"] == "cardinality"
+        and decision["source_pointer"].endswith(("/tags", "/copy_to"))
+    ]
+    assert len(relevant) >= 4
+    assert all(
+        decision["policy"] == "operational_policy" and decision["maximum"] is None
+        for decision in relevant
+    )
 
 
 def test_extent_projection_is_exhaustive_source_linked_and_self_identifying() -> None:

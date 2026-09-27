@@ -7,11 +7,29 @@
       "revision": 1,
       "selector": {
         "kind": "tags",
-        "required": ["stove0/conformance"]
+        "required": [
+          "stove0/conformance"
+        ]
       },
       "recipe_id": "stove0.conformance-media/v1",
       "recipe_revision": "1",
-      "recipe_sha256": "2229b4f736a85e6373efe69c3370b32471287f691a7228508e44af3938802c02",
+      "recipe_sha256": "25581315161b19756d62794e83714e5d45c4002e355ca99302af7c0cbddb64f4",
+      "effective_intent": {},
+      "automatic_preview": "accept-ready"
+    },
+    {
+      "format": "stove0-admission-policy/v1",
+      "id": "review0-output-delivery",
+      "revision": 1,
+      "selector": {
+        "kind": "tags",
+        "required": [
+          "review0/output"
+        ]
+      },
+      "recipe_id": "stove0.rclone-delivery/v1",
+      "recipe_revision": "1",
+      "recipe_sha256": "a685a7391841d6038e70651d706e7bffc5a50ba04f35cee1512b678385485faf",
       "effective_intent": {},
       "automatic_preview": "accept-ready"
     }

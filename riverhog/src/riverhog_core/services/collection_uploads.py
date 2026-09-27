@@ -62,6 +62,7 @@ from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
 )
 from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, NotFound
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.paths import (
     normalize_collection_id,
@@ -385,6 +386,10 @@ class SqlAlchemyCollectionUploadService:
                 idempotency_key=key,
                 ingest_source=ingest_source,
                 archive_store=archive_store,
+                use_cache=use_cache,
+                copy_to=copy_to,
+                tags=canonical_tags,
+                initial_tag_set_identity=initial_tag_set_identity,
             )
             collection = session.scalar(
                 select(CollectionRecord)
@@ -512,7 +517,7 @@ class SqlAlchemyCollectionUploadService:
                     retrieval_cache=self._retrieval_cache,
                 )
 
-            if destinations:
+            if destinations and not initiator.id.startswith("processing:"):
                 if initiator.key_id is None:
                     raise BadRequest("copy_to requires an attributable application key")
                 key_record = session.get(AppKeyRecord, initiator.key_id, with_for_update=True)
@@ -4394,6 +4399,10 @@ def _require_transform_output_intent(
     idempotency_key: str,
     ingest_source: str | None,
     archive_store: str | None,
+    use_cache: bool | None,
+    copy_to: Sequence[str] | None,
+    tags: Sequence[CollectionTag],
+    initial_tag_set_identity: str,
 ) -> None:
     # The transform namespace is reserved for claim-scoped capability principals.
     prefix = "processing:"
@@ -4413,12 +4422,21 @@ def _require_transform_output_intent(
         or claim.plan_sealed_at is None
         or parse_utc_timestamp(claim.expires_at) <= utc_epoch_ns_now()
         or initiator.key_id != claim.consumer_key_id
+        or claim.output_policy_json is None
     ):
         raise Forbidden("transform output intent is not active")
+    policy = OutputCollectionPolicy.model_validate_json(claim.output_policy_json)
+    tag_set = CollectionTagSet(MemoryCollectionTagNodeStore())
+    for tag in policy.tags:
+        tag_set = tag_set.insert(tag)
     if (
         idempotency_key != execution_id
         or ingest_source != f"processing:{execution_id}"
-        or archive_store is not None
+        or archive_store != policy.archive_store
+        or use_cache != policy.use_cache
+        or tuple(copy_to or ()) != policy.copy_to
+        or tuple(tags) != policy.tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX]
+        or initial_tag_set_identity != tag_set.identity
     ):
         raise Forbidden("collection upload differs from the sealed transform output intent")
 

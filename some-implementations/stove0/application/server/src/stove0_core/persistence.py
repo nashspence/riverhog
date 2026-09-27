@@ -140,7 +140,7 @@ class _WorkRow(_Base):
 
     work_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     revision: Mapped[int] = mapped_column(Integer, nullable=False)
-    phase: Mapped[str] = mapped_column(String(32), nullable=False)
+    phase: Mapped[str] = mapped_column(String(48), nullable=False)
     updated_at: Mapped[str] = mapped_column(String(40), nullable=False)
     document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     document_json: Mapped[str] = mapped_column(Text, nullable=False)

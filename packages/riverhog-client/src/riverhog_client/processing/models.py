@@ -11,6 +11,7 @@ from riverhog_protocol.collection_workflows import (
     OperationIdentity,
     RecipeIdentity,
 )
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.paths import (
     CollectionId,
     validate_canonical_relpath,
@@ -37,6 +38,7 @@ class DerivedCollectionSpec:
     inputs: tuple[CollectionRootIdentity, ...]
     recipe: RecipeIdentity
     operation: OperationIdentity
+    output_policy: OutputCollectionPolicy = OutputCollectionPolicy()
 
     def __post_init__(self) -> None:
         normalized_inputs = tuple(sorted(self.inputs))

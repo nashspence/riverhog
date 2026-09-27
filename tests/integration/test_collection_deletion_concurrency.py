@@ -5,7 +5,7 @@ import os
 import threading
 from collections.abc import Iterator, Sequence
 from dataclasses import replace
-from typing import cast
+from typing import Any, cast
 
 import pytest
 from pydantic import JsonValue
@@ -34,6 +34,7 @@ from riverhog_core.catalog_models import (
 from riverhog_core.catalog_workflow_models import (
     CollectionDerivationRecord,
     CollectionProcessingDispositionSetRecord,
+    CollectionProcessingEffectSettlementRecord,
 )
 from riverhog_core.ports.archive_store import (
     ArchiveObjectIdentity,
@@ -63,7 +64,9 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_bytes,
     canonical_json_sha256,
     derivation_evidence_page_path,
+    processing_outcome_set_identity,
 )
+from riverhog_protocol.effect_settlement import ExternalEffectSettlement
 from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session
@@ -91,7 +94,12 @@ WORKFLOW_PRINCIPAL = Principal(
 )
 WORK_ID = "8" * 64
 EXECUTION_ID = "9" * 64
-OPERATION = OperationIdentity("fixture.transform/v1", "7" * 64)
+OPERATION_DECLARATION = {
+    "id": "fixture.transform/v1",
+    "result_kind": "collection",
+    "source_collection_retirement_permitted": True,
+}
+OPERATION = OperationIdentity("fixture.transform/v1", canonical_json_sha256(OPERATION_DECLARATION))
 
 
 def _workflow_artifact(root: CollectionRootIdentity) -> CollectionArtifactIdentity:
@@ -505,6 +513,7 @@ def _seal_workflow_claim(
         controller_evidence_sha256=canonical_json_sha256(controller_evidence),
         operation_id=OPERATION.id,
         operation_sha256=OPERATION.sha256,
+        operation_contract=OPERATION_DECLARATION,
         source_collection_retirement_policy=source_collection_retirement_policy,
         source_collection_retirement_grace_seconds=0,
         principal=WORKFLOW_PRINCIPAL,
@@ -559,10 +568,14 @@ def _seal_disposition_set(
 def _settle_outcomes(
     service: SqlAlchemyCollectionWorkflowService,
     claim_id: str,
+    expected: Sequence[CollectionProcessingOutcomeIdentity],
 ) -> dict[str, object]:
+    identity = processing_outcome_set_identity(expected)
     settled = service.settle_claim_outcomes(
         claim_id,
         fence=1,
+        outcomes_count=len(expected),
+        outcomes_sha256=str(identity["sha256"]),
         source_collection_retirement_policy="retain",
         source_collection_retirement_grace_seconds=0,
         principal=WORKFLOW_PRINCIPAL,
@@ -572,6 +585,8 @@ def _settle_outcomes(
         settled = service.settle_claim_outcomes(
             claim_id,
             fence=1,
+            outcomes_count=len(expected),
+            outcomes_sha256=str(identity["sha256"]),
             source_collection_retirement_policy="retain",
             source_collection_retirement_grace_seconds=0,
             principal=WORKFLOW_PRINCIPAL,
@@ -1399,7 +1414,8 @@ def test_postgres_concurrent_outcome_attachments_are_complete_and_exact(
 
     assert failures == []
     assert len(settlements) == 2
-    settled = _settle_outcomes(services[1], parent_id)
+    expected = _collection_outcomes(children)
+    settled = _settle_outcomes(services[1], parent_id, expected)
     authority = cast(dict[str, object], cast(dict[str, object], settled["outcomes"])["identity"])
     page = services[0].list_claim_outcomes(
         parent_id,
@@ -1413,6 +1429,32 @@ def test_postgres_concurrent_outcome_attachments_are_complete_and_exact(
     )
     assert [item.outcome_id for item in outcomes] == ["first-output", "second-output"]
     assert settled["state"] == "settled"
+
+
+def _collection_outcomes(
+    children: Sequence[tuple[str, int, CollectionDerivation, str]],
+) -> tuple[CollectionProcessingOutcomeIdentity, ...]:
+    return tuple(
+        sorted(
+            (
+                CollectionProcessingOutcomeIdentity(
+                    outcome_id=outcome_id,
+                    source_claim_id=child_id,
+                    source_fence=1,
+                    execution_id=derivation.execution_id,
+                    result_kind="collection",
+                    output_collection=CollectionRootIdentity(
+                        collection_id=output_id,
+                        archive_root_sha256="1" * 64,
+                        content_identity=("4" if output_id == 2 else "5") * 64,
+                    ),
+                    derivation_sha256=derivation.sha256,
+                )
+                for child_id, output_id, derivation, outcome_id in children
+            ),
+            key=lambda item: item.outcome_id,
+        )
+    )
 
 
 def test_postgres_last_outcome_attachment_and_claim_closure_converge(
@@ -1471,21 +1513,7 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
         outcome_id=first_outcome,
         principal=WORKFLOW_PRINCIPAL,
     )
-    expected = tuple(
-        sorted(
-            CollectionProcessingOutcomeIdentity(
-                outcome_id=outcome_id,
-                source_claim_id=child_id,
-                output_collection=CollectionRootIdentity(
-                    collection_id=output_id,
-                    archive_root_sha256="1" * 64,
-                    content_identity=("4" if output_id == 2 else "5") * 64,
-                ),
-                derivation_sha256=derivation.sha256,
-            )
-            for child_id, output_id, derivation, outcome_id in children
-        )
-    )
+    expected = _collection_outcomes(children)
     barrier = threading.Barrier(2)
     attachment_failures: list[BaseException] = []
     closure_results: list[dict[str, object]] = []
@@ -1515,6 +1543,8 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
                 services[1].settle_claim_outcomes(
                     parent_id,
                     fence=1,
+                    outcomes_count=len(expected),
+                    outcomes_sha256=str(processing_outcome_set_identity(expected)["sha256"]),
                     source_collection_retirement_policy="retain",
                     source_collection_retirement_grace_seconds=0,
                     principal=WORKFLOW_PRINCIPAL,
@@ -1530,10 +1560,9 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
         thread.join(10)
 
     assert len(closure_results) + len(closure_conflicts) == 1
-    assert len(attachment_failures) <= 1
-    if attachment_failures:
-        assert isinstance(attachment_failures[0], Conflict)
-    settled = _settle_outcomes(services[1], parent_id)
+    # Closure may run first, but a mandatory result cannot be excluded by that race.
+    assert attachment_failures == []
+    settled = _settle_outcomes(services[1], parent_id, expected)
     authority = cast(dict[str, object], cast(dict[str, object], settled["outcomes"])["identity"])
     page = services[0].list_claim_outcomes(
         parent_id,
@@ -1546,10 +1575,7 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
         CollectionProcessingOutcomeIdentity.from_mapping(item)
         for item in cast(list[dict[str, object]], page["outcomes"])
     )
-    if attachment_failures:
-        assert actual == expected[:1]
-    else:
-        assert actual == expected
+    assert actual == expected
 
 
 def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
@@ -1574,7 +1600,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     _seal_workflow_claim(
         workflows,
         claim_id,
-        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-settlement",
         input_artifacts=(
             _workflow_artifact(first_root),
             CollectionArtifactIdentity(
@@ -1757,3 +1783,154 @@ def test_retirement_marker_forces_retrieval_to_replan_onto_a_retained_copy(
     assert not thread.is_alive()
     assert failures == []
     assert deep.deleted_tags == [(COLLECTION_ID, "archives/opaque-docs")]
+
+
+def _sealed_effect(
+    service: SqlAlchemyCollectionWorkflowService,
+    marker: str,
+) -> ExternalEffectSettlement:
+    root, claim = _workflow_claim(service, work_id=canonical_json_sha256({"effect": marker}))
+    claim_id = str(claim["id"])
+    execution = canonical_json_sha256({"execution": marker})
+    operation = {
+        "id": "fixture.effect/v1",
+        "result_kind": "external-effect",
+        "source_collection_retirement_permitted": True,
+    }
+    evidence = {"execution": execution}
+    service.append_claim_artifacts(
+        claim_id,
+        fence=1,
+        start_ordinal=0,
+        artifacts=(_workflow_artifact(root),),
+        principal=WORKFLOW_PRINCIPAL,
+    )
+    service.seal_claim_artifacts(claim_id, fence=1, principal=WORKFLOW_PRINCIPAL)
+    sealed = service.seal_claim_plan(
+        claim_id,
+        fence=1,
+        execution_id=execution,
+        controller_evidence=evidence,
+        controller_evidence_sha256=canonical_json_sha256(evidence),
+        operation_id=str(operation["id"]),
+        operation_sha256=canonical_json_sha256(operation),
+        operation_contract=operation,
+        result_kind="external-effect",
+        source_collection_retirement_policy="retire-after-settlement",
+        source_collection_retirement_grace_seconds=0,
+        principal=WORKFLOW_PRINCIPAL,
+    )
+    plan = cast(dict[str, Any], sealed["plan"])
+    receipt = {"execution": execution, "verified": True, "destination_evidence": "fixture"}
+    return ExternalEffectSettlement(
+        claim_id=claim_id,
+        fence=1,
+        execution_id=execution,
+        execution_sha256=canonical_json_sha256({"attempt": marker}),
+        operation=OperationIdentity(str(operation["id"]), canonical_json_sha256(operation)),
+        input_set_sha256=str(plan["inputs"]["sha256"]),
+        artifact_set_sha256=str(plan["artifacts"]["sha256"]),
+        controller_evidence_sha256=canonical_json_sha256(evidence),
+        receipt=receipt,
+        receipt_sha256=canonical_json_sha256(receipt),
+    )
+
+
+def test_postgres_effect_settlement_concurrent_replay_keeps_one_durable_identity(
+    database_url: str,
+) -> None:
+    _seed(database_url)
+    services = tuple(
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url))
+        for _ in range(2)
+    )
+    effect = _sealed_effect(services[0], "same-effect")
+    barrier = threading.Barrier(2)
+    results: list[dict[str, object]] = []
+    failures: list[BaseException] = []
+
+    def settle(service: SqlAlchemyCollectionWorkflowService) -> None:
+        try:
+            barrier.wait(5)
+            results.append(
+                service.settle_claim_effect(
+                    effect.claim_id,
+                    fence=1,
+                    settlement=effect.as_dict(),
+                    principal=WORKFLOW_PRINCIPAL,
+                )
+            )
+        except BaseException as exc:
+            failures.append(exc)
+
+    threads = [threading.Thread(target=settle, args=(service,)) for service in services]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(15)
+    assert not failures and len(results) == 2
+    assert {item["effect_settlement_sha256"] for item in results} == {effect.sha256}
+    assert results[0]["settled_at"] == results[1]["settled_at"]
+    with session_scope(make_session_factory(database_url)) as session:
+        rows = list(session.scalars(select(CollectionProcessingEffectSettlementRecord)))
+        assert len(rows) == 1 and rows[0].document_sha256 == effect.sha256
+    restarted = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
+    assert (
+        restarted.begin_source_collection_retirement(
+            effect.claim_id, fence=1, principal=WORKFLOW_PRINCIPAL
+        )["state"]
+        == "retiring"
+    )
+    assert (
+        restarted.settle_claim_effect(
+            effect.claim_id, fence=1, settlement=effect.as_dict(), principal=WORKFLOW_PRINCIPAL
+        )["effect_settlement_sha256"]
+        == effect.sha256
+    )
+
+
+def test_postgres_one_receipt_cannot_commit_for_two_effect_executions(database_url: str) -> None:
+    _seed(database_url)
+    services = tuple(
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url))
+        for _ in range(2)
+    )
+    first = _sealed_effect(services[0], "first")
+    second = _sealed_effect(services[0], "second")
+    second = replace(second, receipt=first.receipt, receipt_sha256=first.receipt_sha256)
+    barrier = threading.Barrier(2)
+    committed: list[str] = []
+    conflicts: list[Conflict] = []
+    unexpected: list[BaseException] = []
+
+    def settle(
+        service: SqlAlchemyCollectionWorkflowService, effect: ExternalEffectSettlement
+    ) -> None:
+        try:
+            barrier.wait(5)
+            service.settle_claim_effect(
+                effect.claim_id, fence=1, settlement=effect.as_dict(), principal=WORKFLOW_PRINCIPAL
+            )
+            committed.append(effect.claim_id)
+        except Conflict as exc:
+            conflicts.append(exc)
+        except BaseException as exc:
+            unexpected.append(exc)
+
+    threads = [
+        threading.Thread(target=settle, args=(service, effect))
+        for service, effect in zip(services, (first, second), strict=True)
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(15)
+    assert not unexpected and len(committed) == 1 and len(conflicts) == 1
+    loser = second if committed[0] == first.claim_id else first
+    assert services[0].get_claim(loser.claim_id, principal=WORKFLOW_PRINCIPAL)["state"] == "active"
+    with pytest.raises(Conflict):
+        services[0].begin_source_collection_retirement(
+            loser.claim_id, fence=1, principal=WORKFLOW_PRINCIPAL
+        )

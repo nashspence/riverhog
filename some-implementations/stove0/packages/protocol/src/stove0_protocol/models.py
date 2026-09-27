@@ -29,6 +29,7 @@ from riverhog_protocol.collection_workflows import (
     RecipeIdentity,
 )
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
@@ -75,7 +76,7 @@ OciImageId = Annotated[str, StringConstraints(pattern=OCI_IMAGE_ID_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=SEMANTIC_ID_PATTERN)]
 RegistrationId = Annotated[str, StringConstraints(pattern=REGISTRATION_ID_PATTERN)]
 ContentObservationState = Literal["observed", "inapplicable", "failed", "canceled"]
-SourceCollectionRetirementPolicy = Literal["retain", "retire-after-verified-output"]
+SourceCollectionRetirementPolicy = Literal["retain", "retire-after-settlement"]
 RetrievalPolicy = Literal["available-only", "allow"]
 OperationResultKind = Literal["collection", "external-effect"]
 
@@ -656,12 +657,12 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
         default="retain",
         description=(
-            "Retain source collections, or permit their permanent deletion after verified "
-            "output, the grace period, and collection deletion checks."
+            "Retain source collections, or permit their permanent deletion after exact "
+            "settlement, the grace period, and collection deletion checks."
         ),
     )
     source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
-    output_policy: dict[str, JsonValue] = Field(default_factory=dict)
+    output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
 
     @field_validator("observations")
     @classmethod
@@ -676,11 +677,6 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     @model_validator(mode="after")
     def protect_evaluation_sources(self) -> Self:
         if (
-            self.result_kind == "external-effect"
-            and self.source_collection_retirement_policy != "retain"
-        ):
-            raise ValueError("external-effect workflow must retain source collections")
-        if (
             self.source_collection_retirement_policy == "retain"
             and self.source_collection_retirement_grace_seconds
         ):
@@ -690,6 +686,8 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
             and self.source_collection_retirement_policy != "retain"
         ):
             raise ValueError("evaluation and trial work must retain every source collection")
+        if self.result_kind == "external-effect" and self.output_policy != OutputCollectionPolicy():
+            raise ValueError("effect workflows cannot declare an output collection policy")
         return self
 
 
@@ -721,25 +719,22 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
         default="retain",
         description=(
-            "Retain source collections, or permit their permanent deletion after verified "
-            "output, the grace period, and collection deletion checks."
+            "Retain source collections, or permit their permanent deletion after exact "
+            "settlement, the grace period, and collection deletion checks."
         ),
     )
     source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
-    output_policy: dict[str, JsonValue] = Field(default_factory=dict)
+    output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
 
     @model_validator(mode="after")
     def validate_retirement(self) -> Self:
-        if (
-            self.result_kind == "external-effect"
-            and self.source_collection_retirement_policy != "retain"
-        ):
-            raise ValueError("external-effect workflow intent must retain source collections")
         if (
             self.source_collection_retirement_policy == "retain"
             and self.source_collection_retirement_grace_seconds
         ):
             raise ValueError("retained workflow intent cannot declare a retirement grace period")
+        if self.result_kind == "external-effect" and self.output_policy != OutputCollectionPolicy():
+            raise ValueError("effect workflow intent cannot declare an output collection policy")
         return self
 
     @classmethod

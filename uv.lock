@@ -16,10 +16,8 @@ members = [
     "a-gogurt-path-volume-lib",
     "a-gogurt-windows-listener",
     "a-gogurt-windows-volume",
-    "a-review0-materializer",
     "a-review0-nvenc-av1-opus-sampler",
     "a-review0-opus-sampler",
-    "a-review0-rclone-target",
     "a-riverhog-aws-store",
     "a-riverhog-b2-store",
     "a-riverhog-cli",
@@ -47,18 +45,19 @@ members = [
     "a-stove0-media-sampling-contract-lib",
     "a-stove0-nvenc-av1-opus-target",
     "a-stove0-opus-target",
+    "a-stove0-rclone-target",
     "config-validation",
     "gogurt",
     "gogurt-core",
     "gogurt-listener-runtime",
     "http-api-contracts",
     "lifecycle-events",
+    "review0",
+    "review0-contracts",
     "review0-planner",
     "review0-sampler-client",
     "review0-sampler-lib",
     "review0-sampler-protocol",
-    "review0-target-contracts",
-    "review0-target-lib",
     "riverhog-age",
     "riverhog-application-access",
     "riverhog-archive-contracts",
@@ -200,33 +199,6 @@ requires-dist = [
 ]
 
 [[package]]
-name = "a-review0-materializer"
-version = "0.1.0"
-source = { editable = "some-implementations/stove0/review0/materialize-target" }
-dependencies = [
-    { name = "config-validation" },
-    { name = "fastapi" },
-    { name = "pydantic" },
-    { name = "review0-target-contracts" },
-    { name = "review0-target-lib" },
-    { name = "riverhog-client" },
-    { name = "stove0-target-support" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "config-validation", editable = "packages/config-validation" },
-    { name = "fastapi", specifier = ">=0.111,<1.0" },
-    { name = "pydantic", specifier = ">=2.7,<3.0" },
-    { name = "review0-target-contracts", editable = "some-implementations/stove0/review0/contracts" },
-    { name = "review0-target-lib", editable = "some-implementations/stove0/review0/support" },
-    { name = "riverhog-client", editable = "packages/riverhog-client" },
-    { name = "stove0-target-support", editable = "some-implementations/stove0/packages/target-support" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
-]
-
-[[package]]
 name = "a-review0-nvenc-av1-opus-sampler"
 version = "0.1.0"
 source = { editable = "some-implementations/stove0/review0/samplers/nvenc-av1-opus" }
@@ -234,9 +206,9 @@ dependencies = [
     { name = "a-stove0-media-archive-contract-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "review0-contracts" },
     { name = "review0-sampler-lib" },
     { name = "review0-sampler-protocol" },
-    { name = "review0-target-contracts" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -245,9 +217,9 @@ requires-dist = [
     { name = "a-stove0-media-archive-contract-lib", editable = "some-implementations/stove0/targets/media-archive/contracts" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "review0-sampler-lib", editable = "some-implementations/stove0/review0/sampler/support" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
-    { name = "review0-target-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
 ]
 
@@ -259,9 +231,9 @@ dependencies = [
     { name = "a-stove0-media-archive-contract-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "review0-contracts" },
     { name = "review0-sampler-lib" },
     { name = "review0-sampler-protocol" },
-    { name = "review0-target-contracts" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -270,38 +242,9 @@ requires-dist = [
     { name = "a-stove0-media-archive-contract-lib", editable = "some-implementations/stove0/targets/media-archive/contracts" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "review0-sampler-lib", editable = "some-implementations/stove0/review0/sampler/support" },
     { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
-    { name = "review0-target-contracts", editable = "some-implementations/stove0/review0/contracts" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
-]
-
-[[package]]
-name = "a-review0-rclone-target"
-version = "0.1.0"
-source = { editable = "some-implementations/stove0/review0/rclone-effect-target" }
-dependencies = [
-    { name = "config-validation" },
-    { name = "fastapi" },
-    { name = "pydantic" },
-    { name = "review0-target-contracts" },
-    { name = "review0-target-lib" },
-    { name = "riverhog-client" },
-    { name = "riverhog-protocol" },
-    { name = "stove0-target-support" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "config-validation", editable = "packages/config-validation" },
-    { name = "fastapi", specifier = ">=0.111,<1.0" },
-    { name = "pydantic", specifier = ">=2.7,<3.0" },
-    { name = "review0-target-contracts", editable = "some-implementations/stove0/review0/contracts" },
-    { name = "review0-target-lib", editable = "some-implementations/stove0/review0/support" },
-    { name = "riverhog-client", editable = "packages/riverhog-client" },
-    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
-    { name = "stove0-target-support", editable = "some-implementations/stove0/packages/target-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
 ]
 
@@ -882,6 +825,35 @@ requires-dist = [
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
+    { name = "stove0-target-support", editable = "some-implementations/stove0/packages/target-support" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
+]
+
+[[package]]
+name = "a-stove0-rclone-target"
+version = "0.1.0"
+source = { editable = "some-implementations/stove0/targets/rclone" }
+dependencies = [
+    { name = "config-validation" },
+    { name = "fastapi" },
+    { name = "http-api-contracts" },
+    { name = "pydantic" },
+    { name = "riverhog-protocol" },
+    { name = "stove0-protocol" },
+    { name = "stove0-target-protocol" },
+    { name = "stove0-target-support" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "config-validation", editable = "packages/config-validation" },
+    { name = "fastapi", specifier = ">=0.111,<1.0" },
+    { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
+    { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
+    { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
     { name = "stove0-target-support", editable = "some-implementations/stove0/packages/target-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
 ]
@@ -2364,13 +2336,67 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/05/35/298d9410b3635107ce586725cdfbca4c219c08d77a3511551f5e479a78db/reuse-6.2.0.tar.gz", hash = "sha256:4feae057a2334c9a513e6933cdb9be819d8b822f3b5b435a36138bd218897d23", size = 1615611, upload-time = "2025-10-27T15:25:46.336Z" }
 
 [[package]]
+name = "review0"
+version = "0.1.0"
+source = { editable = "some-implementations/stove0/review0/application" }
+dependencies = [
+    { name = "config-validation" },
+    { name = "fastapi" },
+    { name = "http-api-contracts" },
+    { name = "jsonschema" },
+    { name = "pydantic" },
+    { name = "review0-contracts" },
+    { name = "review0-sampler-client" },
+    { name = "review0-sampler-protocol" },
+    { name = "riverhog-client" },
+    { name = "riverhog-protocol" },
+    { name = "stove0-protocol" },
+    { name = "stove0-target-support" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "config-validation", editable = "packages/config-validation" },
+    { name = "fastapi", specifier = ">=0.111,<1.0" },
+    { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "jsonschema", specifier = ">=4.25,<5.0" },
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
+    { name = "review0-sampler-client", editable = "some-implementations/stove0/review0/sampler/client" },
+    { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
+    { name = "riverhog-client", editable = "packages/riverhog-client" },
+    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
+    { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
+    { name = "stove0-target-support", editable = "some-implementations/stove0/packages/target-support" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
+]
+
+[[package]]
+name = "review0-contracts"
+version = "0.1.0"
+source = { editable = "some-implementations/stove0/review0/contracts" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "stove0-protocol" },
+    { name = "stove0-target-protocol" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
+    { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
+]
+
+[[package]]
 name = "review0-planner"
 version = "0.1.0"
 source = { editable = "some-implementations/stove0/review0/planning" }
 dependencies = [
     { name = "a-stove0-media-sampling-contract-lib" },
     { name = "pydantic" },
-    { name = "review0-target-contracts" },
+    { name = "review0-contracts" },
     { name = "stove0-protocol" },
 ]
 
@@ -2378,7 +2404,7 @@ dependencies = [
 requires-dist = [
     { name = "a-stove0-media-sampling-contract-lib", editable = "some-implementations/stove0/observers/contracts/media-sampling" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
-    { name = "review0-target-contracts", editable = "some-implementations/stove0/review0/contracts" },
+    { name = "review0-contracts", editable = "some-implementations/stove0/review0/contracts" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
 ]
 
@@ -2437,58 +2463,6 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
-]
-
-[[package]]
-name = "review0-target-contracts"
-version = "0.1.0"
-source = { editable = "some-implementations/stove0/review0/contracts" }
-dependencies = [
-    { name = "pydantic" },
-    { name = "stove0-protocol" },
-    { name = "stove0-target-protocol" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "pydantic", specifier = ">=2.7,<3.0" },
-    { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
-    { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
-]
-
-[[package]]
-name = "review0-target-lib"
-version = "0.1.0"
-source = { editable = "some-implementations/stove0/review0/support" }
-dependencies = [
-    { name = "config-validation" },
-    { name = "fastapi" },
-    { name = "http-api-contracts" },
-    { name = "jsonschema" },
-    { name = "pydantic" },
-    { name = "review0-sampler-client" },
-    { name = "review0-sampler-protocol" },
-    { name = "review0-target-contracts" },
-    { name = "riverhog-client" },
-    { name = "riverhog-protocol" },
-    { name = "stove0-protocol" },
-    { name = "stove0-target-support" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "config-validation", editable = "packages/config-validation" },
-    { name = "fastapi", specifier = ">=0.111,<1.0" },
-    { name = "http-api-contracts", editable = "packages/http-api-contracts" },
-    { name = "jsonschema", specifier = ">=4.25,<5.0" },
-    { name = "pydantic", specifier = ">=2.7,<3.0" },
-    { name = "review0-sampler-client", editable = "some-implementations/stove0/review0/sampler/client" },
-    { name = "review0-sampler-protocol", editable = "some-implementations/stove0/review0/sampler/protocol" },
-    { name = "review0-target-contracts", editable = "some-implementations/stove0/review0/contracts" },
-    { name = "riverhog-client", editable = "packages/riverhog-client" },
-    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
-    { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
-    { name = "stove0-target-support", editable = "some-implementations/stove0/packages/target-support" },
 ]
 
 [[package]]

@@ -10,8 +10,8 @@ group "default" {
     "a-stove0-ffprobe-sampling-observer",
     "a-stove0-nvenc-av1-opus-target",
     "a-stove0-opus-target",
-    "a-review0-materializer",
-    "a-review0-rclone-target",
+    "review0",
+    "a-stove0-rclone-target",
     "a-riverhog-event-relay",
     "a-riverhog-minisign-witness",
     "a-riverhog-opentimestamps-witness",
@@ -111,19 +111,19 @@ target "a-stove0-opus-target" {
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "a-review0-materializer" {
+target "review0" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "some-implementations/stove0/review0/materialize-target/Dockerfile"
-  tags       = ["a-review0-materializer:dev"]
+  dockerfile = "some-implementations/stove0/review0/application/Dockerfile"
+  tags       = ["review0:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
-target "a-review0-rclone-target" {
+target "a-stove0-rclone-target" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "some-implementations/stove0/review0/rclone-effect-target/Dockerfile"
-  tags       = ["a-review0-rclone-target:dev"]
+  dockerfile = "some-implementations/stove0/targets/rclone/Dockerfile"
+  tags       = ["a-stove0-rclone-target:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 

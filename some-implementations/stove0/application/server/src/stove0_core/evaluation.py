@@ -1,9 +1,9 @@
 """Generic materialized trial and bounded evaluation-run aggregation.
 
 An evaluation is not another transformation ontology. It expands one immutable
-matrix into ordinary stove0 child work records. Each child retains the normal
-one-work/one-finalized-collection invariant and is independently fenced,
-verified, retryable, and recoverable.
+matrix into ordinary stove0 work records. A completed variant exposes one
+settled collection, produced directly or by its exact branch or join plan.
+Each work remains independently fenced, verified, retryable, and recoverable.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from stove0_operator_contracts import (
     validate_evaluation_review_shape,
     validate_evaluation_state_shape,
 )
-from stove0_protocol import EvaluationDefinition
+from stove0_protocol import BranchPlan, EvaluationDefinition
 from stove0_target_protocol import OutputCollectionRef
 from time_formats import CanonicalUtcTimestamp
 
@@ -268,8 +268,52 @@ class EvaluationService:
             variant_id=child.variant_id,
             work_id=child.work_id,
             state=state,
-            output=record.output if state == "complete" else None,
+            output=self._completed_output(record) if state == "complete" else None,
         )
+
+    def _completed_output(self, record: WorkRecord) -> OutputCollectionRef:
+        if record.output is not None:
+            return record.output
+        plan = record.branch_set_plan
+        settlement = record.coordination_settlement
+        if plan is None or settlement is None:
+            raise RuntimeError("completed evaluation work has no collection result")
+        if plan.join is not None:
+            result = settlement.collection_result
+            if result is None:
+                raise RuntimeError("completed evaluation join has no collection result")
+            producer_work_id = result.producer_work_id
+        else:
+            collections = tuple(item for item in settlement.children if item.kind == "collection")
+            if len(collections) != 1:
+                raise RuntimeError("completed evaluation requires exactly one collection result")
+            branch = next(
+                (item for item in plan.branches if item.branch_id == collections[0].branch_id),
+                None,
+            )
+            if not isinstance(branch, BranchPlan):
+                raise RuntimeError("evaluation collection result has no declared leaf")
+            producer_work_id = branch.workflow_plan.work.work_id
+        producer = self.work.store.load(producer_work_id)
+        if (
+            producer is None
+            or producer.phase not in {"settled", "source_collection_retirement_pending", "complete"}
+            or producer.output is None
+            or producer.target_settlement is None
+        ):
+            raise RuntimeError("evaluation collection producer is not settled")
+        if plan.join is not None:
+            assert settlement.collection_result is not None
+            result = settlement.collection_result
+            output = producer.output
+            if (
+                output.collection_id != result.output_collection.collection_id
+                or output.archive_root_sha256 != result.output_collection.archive_root_sha256
+                or output.content_identity != result.output_collection.content_identity
+                or output.derivation_sha256 != result.derivation_sha256
+            ):
+                raise RuntimeError("evaluation join output differs from exact settlement")
+        return producer.output
 
     def _load(self, evaluation_id: str) -> EvaluationRecord:
         record = self.store.load(evaluation_id)

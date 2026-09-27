@@ -47,6 +47,7 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
         "some-implementations/stove0/observers/ffprobe-sampling/**",
         "some-implementations/stove0/targets/nvenc-av1-opus/**",
         "some-implementations/stove0/targets/opus/**",
+        "some-implementations/stove0/targets/rclone/**",
         "some-implementations/stove0/review0/**",
     ]
     assert annotations[1]["SPDX-License-Identifier"] == "CAL-1.0"
@@ -182,9 +183,9 @@ def test_standalone_runtime_tools_preserve_their_exact_attribution_text() -> Non
     exiftool = (REPO_ROOT / "some-implementations/stove0/observers/exiftool/Dockerfile").read_text(
         encoding="utf-8"
     )
-    review = (
-        REPO_ROOT / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile"
-    ).read_text(encoding="utf-8")
+    review = (REPO_ROOT / "some-implementations/stove0/targets/rclone/Dockerfile").read_text(
+        encoding="utf-8"
+    )
     av1 = (REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile").read_text(
         encoding="utf-8"
     )

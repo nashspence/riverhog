@@ -1112,7 +1112,9 @@ class FixtureRiverhog:
         _plan: WorkflowPlan,
         target_plan: TransformPlan,
         _artifacts: object,
+        operation: OperationContract,
     ) -> None:
+        assert operation.contract_sha256 == _plan.operation.sha256
         assert target_plan.inputs
         self.sealed = True
 
@@ -1521,7 +1523,7 @@ def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> N
             operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            source_collection_retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-settlement",
         )
     )
     store = InMemoryWorkStore()

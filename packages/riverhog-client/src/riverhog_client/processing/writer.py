@@ -115,6 +115,10 @@ class DerivedCollectionWriter:
         plan = claim.plan
         if plan is None or plan.execution_id != self.execution_id:
             raise ValueError("derived collection writer requires the sealed claim plan")
+        if plan.output_policy != spec.output_policy:
+            raise ValueError(
+                "derived collection writer output policy differs from the sealed claim"
+            )
         self.input_set_sha256 = plan.inputs.sha256
         self.artifact_set_sha256 = plan.artifacts.sha256
 
@@ -180,6 +184,10 @@ class DerivedCollectionWriter:
                 "execution_sha256": derivation.execution_sha256,
             },
             idempotency_key=self.execution_id,
+            archive_store=self.spec.output_policy.archive_store,
+            use_cache=self.spec.output_policy.use_cache,
+            copy_to=self.spec.output_policy.copy_to,
+            tags=self.spec.output_policy.tags,
             event_context={
                 "initiator": {
                     "app": self.producer_app,
@@ -249,6 +257,8 @@ class IncrementalDerivedCollectionWriter:
         plan = claim.plan
         if plan is None or plan.execution_id != self.execution_id:
             raise ValueError("incremental writer requires the sealed claim plan")
+        if plan.output_policy != spec.output_policy:
+            raise ValueError("incremental writer output policy differs from the sealed claim")
         self.input_set_sha256 = plan.inputs.sha256
         self.artifact_set_sha256 = plan.artifacts.sha256
         self.producer = IncrementalCollectionProducer(
@@ -267,6 +277,10 @@ class IncrementalDerivedCollectionWriter:
                 "execution_envelope_sha256": self.execution_envelope_sha256,
             },
             idempotency_key=self.execution_id,
+            archive_store=spec.output_policy.archive_store,
+            use_cache=spec.output_policy.use_cache,
+            copy_to=spec.output_policy.copy_to,
+            tags=spec.output_policy.tags,
             event_context={
                 "initiator": {
                     "app": producer_app,

@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 from riverhog_protocol import CollectionArtifactIdentity, CollectionRootIdentity
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from stove0_protocol import (
     ArtifactSelection,
     ArtifactSelectionRef,
@@ -125,7 +126,11 @@ def workflow_intent(
         requested_target_options={"option": option},
         input_retrieval_policy="available-only",
         source_collection_retirement_policy=retirement,
-        output_policy={"kind": label},
+        output_policy=(
+            OutputCollectionPolicy(tags=(f"fixture/{label}",))
+            if result_kind == "collection"
+            else OutputCollectionPolicy()
+        ),
     )
 
 
@@ -241,9 +246,7 @@ def branch_set_fixture(
         evidence_sha256s=(digest("observation"), digest("review")),
         branches=tuple(reversed(tuple(plans.values()))),
         join=join,
-        source_collection_retirement_policy="retain"
-        if evaluation
-        else "retire-after-verified-output",
+        source_collection_retirement_policy="retain" if evaluation else "retire-after-settlement",
         selections=selections,
     )
     return plan, selections, plans
@@ -305,7 +308,7 @@ def test_one_branch_and_many_branches_use_the_same_contract() -> None:
     assert len(plan.branches) == 3
 
 
-def test_required_effect_branch_gates_completion_without_collection_or_retirement_credit() -> None:
+def test_effect_completion_needs_riverhog_settlement_but_does_not_request_retirement() -> None:
     plan, selections, branches = branch_set_fixture(with_join=False)
     effect = BranchPlan.build(
         parent_work=plan.parent_work,
@@ -338,6 +341,7 @@ def test_required_effect_branch_gates_completion_without_collection_or_retiremen
     receipt = BranchEffectSettlement.seal(
         branch=effect,
         effect_receipt_sha256=digest("effect-receipt"),
+        effect_settlement_sha256=digest("riverhog-effect-settlement"),
     )
     complete = evaluate_branch_set(
         effect_plan,
@@ -347,10 +351,11 @@ def test_required_effect_branch_gates_completion_without_collection_or_retiremen
     )
     assert complete.succeeded_effects == (receipt,)
     assert complete.branch_set_succeeded is True
-    assert complete.coordination_complete_for_retirement is False
+    assert complete.coordination_complete_for_retirement is True
+    assert effect_plan.source_collection_retirement_policy == "retain"
 
 
-def test_effect_branches_cannot_join_or_enable_source_retirement() -> None:
+def test_effect_branches_may_request_retirement_but_cannot_supply_join_collections() -> None:
     plan, selections, branches = branch_set_fixture(with_join=False)
     effect = BranchPlan.build(
         parent_work=plan.parent_work,
@@ -378,14 +383,15 @@ def test_effect_branches_cannot_join_or_enable_source_retirement() -> None:
             join=join,
             selections=selections,
         )
-    with pytest.raises(ValidationError, match="must retain"):
-        BranchSetPlan.seal(
-            parent_work=plan.parent_work,
-            decision_sha256=plan.decision_sha256,
-            branches=(branches["audio"], effect),
-            source_collection_retirement_policy="retire-after-verified-output",
-            selections=selections,
-        )
+    retiring = BranchSetPlan.seal(
+        parent_work=plan.parent_work,
+        decision_sha256=plan.decision_sha256,
+        branches=(branches["audio"], effect),
+        source_collection_retirement_policy="retire-after-settlement",
+        selections=selections,
+    )
+    assert retiring.source_collection_retirement_policy == "retire-after-settlement"
+    assert effect.workflow_plan.source_collection_retirement_policy == "retain"
 
 
 def test_branch_settlements_cannot_switch_the_declared_result_kind() -> None:
@@ -405,6 +411,7 @@ def test_branch_settlements_cannot_switch_the_declared_result_kind() -> None:
         BranchEffectSettlement.seal(
             branch=branches["audio"],
             effect_receipt_sha256=digest("invalid-collection-receipt"),
+            effect_settlement_sha256=digest("riverhog-effect-settlement"),
         )
 
 
@@ -481,7 +488,7 @@ def test_branch_bound_coordination_cannot_request_source_retirement() -> None:
             parent_work=nested_parent,
             decision_sha256=digest("nested-decision"),
             branches=(nested_branch,),
-            source_collection_retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-settlement",
             selections=selections,
         )
 
@@ -1093,7 +1100,7 @@ def test_branch_set_retirement_grace_is_identity_bearing_and_policy_bound() -> N
         decision_sha256=plan.decision_sha256,
         evidence_sha256s=plan.evidence_sha256s,
         branches=plan.branches,
-        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-settlement",
         source_collection_retirement_grace_seconds=3600,
         selections=selections,
     )
@@ -1368,7 +1375,7 @@ def test_evaluation_bound_parent_forces_retain() -> None:
             parent_work=plan.parent_work,
             decision_sha256=plan.decision_sha256,
             branches=plan.branches,
-            source_collection_retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-settlement",
             selections=selections,
         )
 

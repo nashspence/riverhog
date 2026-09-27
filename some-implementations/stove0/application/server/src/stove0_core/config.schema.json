@@ -117,6 +117,10 @@
       "title": "AllVisibleAdmissionSelector",
       "type": "object"
     },
+    "ArchiveStoreName": {
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
     "ArtifactAssociation": {
       "additionalProperties": false,
       "description": "Associate classified artifacts without assigning device meaning to Stove0.",
@@ -432,9 +436,17 @@
           "type": "integer"
         },
         "role": {
-          "pattern": "^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
-          "type": "string"
+          "anyOf": [
+            {
+              "pattern": "^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "const": "*",
+              "type": "string"
+            }
+          ],
+          "title": "Role"
         }
       },
       "required": [
@@ -755,6 +767,59 @@
       "title": "OutputArtifactContract",
       "type": "object"
     },
+    "OutputCollectionPolicy": {
+      "additionalProperties": false,
+      "description": "Deployment-owned names only; no storage credentials or target configuration.",
+      "properties": {
+        "archive_store": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArchiveStoreName"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "copy_to": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ArchiveStoreName"
+          },
+          "title": "Copy To",
+          "type": "array"
+        },
+        "format": {
+          "const": "riverhog-output-collection-policy/v1",
+          "default": "riverhog-output-collection-policy/v1",
+          "title": "Format",
+          "type": "string"
+        },
+        "tags": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CollectionTag"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "use_cache": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Use Cache"
+        }
+      },
+      "title": "OutputCollectionPolicy",
+      "type": "object"
+    },
     "RecipeCatalog": {
       "additionalProperties": false,
       "properties": {
@@ -951,10 +1016,10 @@
         },
         "source_collection_retirement_policy": {
           "default": "retain",
-          "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
+          "description": "Retain source collections, or permit their permanent deletion after exact settlement, the grace period, and collection deletion checks.",
           "enum": [
             "retain",
-            "retire-after-verified-output"
+            "retire-after-settlement"
           ],
           "title": "Source Collection Retirement Policy",
           "type": "string"
@@ -1040,6 +1105,9 @@
           "pattern": "^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
           "title": "Operation Id",
           "type": "string"
+        },
+        "output_policy": {
+          "$ref": "#/$defs/OutputCollectionPolicy"
         },
         "projections": {
           "default": [],
@@ -1153,6 +1221,9 @@
           "pattern": "^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
           "title": "Operation Id",
           "type": "string"
+        },
+        "output_policy": {
+          "$ref": "#/$defs/OutputCollectionPolicy"
         },
         "primary_role": {
           "anyOf": [

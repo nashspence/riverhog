@@ -298,6 +298,7 @@ class WorkRecord(Stove0StateModel):
     target_status: TargetJobStatus | None = None
     output: OutputCollectionRef | None = None
     target_settlement: TargetSettlementAuthority | None = None
+    effect_settlement_sha256: Sha256 | None = None
     source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailure | None = None
     inapplicable: WorkInapplicable | None = None
@@ -315,6 +316,23 @@ class WorkRecord(Stove0StateModel):
             and self.target_settlement is None
         ):
             raise ValueError("settled collection work requires post-root target settlement")
+        effect = (
+            self.workflow_plan is not None and self.workflow_plan.result_kind == "external-effect"
+        )
+        if self.effect_settlement_sha256 is not None and (
+            not effect
+            or self.target_status is None
+            or self.target_status.state != "succeeded"
+            or self.target_status.effect_receipt is None
+            or self.phase not in {"settled", "source_collection_retirement_pending", "complete"}
+        ):
+            raise ValueError("Riverhog effect settlement is inconsistent with work state")
+        if (
+            effect
+            and self.phase in {"settled", "source_collection_retirement_pending", "complete"}
+            and self.effect_settlement_sha256 is None
+        ):
+            raise ValueError("settled effect work requires durable Riverhog acknowledgment")
         validate_work_state_shape(
             work=self.work,
             phase=self.phase,
@@ -1477,10 +1495,8 @@ class Stove0WorkService:
         elif status.state in {"running", "canceling"}:
             phase = "executing"
         elif status.state == "succeeded":
-            if operation.result_kind == "external-effect":
-                phase = "settled"
-            else:
-                phase = "verifying"
+            phase = "verifying"
+            if operation.result_kind == "collection":
                 output = status.output_collection
         elif status.state == "inapplicable":
             assert status.inapplicable is not None
@@ -1541,6 +1557,27 @@ class Stove0WorkService:
             output=output,
             target_settlement=settlement,
         )
+
+    def verify_effect(
+        self,
+        work_id: str,
+        settlement_sha256: str,
+        *,
+        expected_revision: int,
+    ) -> WorkRecord:
+        record = self._load(work_id, expected_revision)
+        if (
+            record.phase != "verifying"
+            or record.workflow_plan is None
+            or record.workflow_plan.result_kind != "external-effect"
+            or record.target_status is None
+            or record.target_status.state != "succeeded"
+            or record.target_status.effect_receipt is None
+        ):
+            raise Stove0StateError(
+                "only successful verifying effects can accept Riverhog settlement"
+            )
+        return self._replace(record, phase="settled", effect_settlement_sha256=settlement_sha256)
 
     def begin_source_collection_retirement(
         self,

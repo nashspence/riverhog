@@ -78,7 +78,7 @@ class TargetProtocolModel(BaseModel):
 
 
 class InputArtifactContract(TargetProtocolModel):
-    role: SemanticId
+    role: SemanticId | Literal["*"]
     minimum: int = Field(default=1, ge=0)
     maximum: int | None = Field(default=None, ge=1)
     allowed_dispositions: tuple[InputDisposition, ...] | None = None
@@ -147,6 +147,10 @@ class OperationContractPayload(TargetProtocolModel):
         output_roles = [item.role for item in self.outputs]
         if input_roles != sorted(input_roles) or len(input_roles) != len(set(input_roles)):
             raise ValueError("operation input roles must be unique and ordered")
+        if "*" in input_roles and (len(input_roles) != 1 or self.result_kind != "external-effect"):
+            raise ValueError(
+                "all-role input selection is exclusive to an external-effect operation"
+            )
         if output_roles != sorted(output_roles) or len(output_roles) != len(set(output_roles)):
             raise ValueError("operation output roles must be unique and ordered")
         unknown = sorted(
@@ -175,10 +179,6 @@ class OperationContractPayload(TargetProtocolModel):
                 raise ValueError("effect-producing operation cannot declare output artifacts")
             if self.effect_receipt_schema is None:
                 raise ValueError("effect-producing operation requires a receipt schema")
-            if self.source_collection_retirement_permitted:
-                raise ValueError(
-                    "effect-producing operation cannot permit source collection retirement"
-                )
             if any(item.allowed_dispositions is not None for item in self.inputs):
                 raise ValueError("effect-producing operation cannot declare input dispositions")
         return self
@@ -1046,10 +1046,10 @@ def validate_declaration_against_operation(
         raise ValueError("target declaration does not bind the operation contract")
     counts = {item.role: item.count for item in declaration.inputs.roles}
     expected_roles = {item.role for item in operation.inputs}
-    if set(counts) - expected_roles:
+    if "*" not in expected_roles and set(counts) - expected_roles:
         raise ValueError("target declaration includes an unsupported input role")
     for contract in operation.inputs:
-        count = counts.get(contract.role, 0)
+        count = sum(counts.values()) if contract.role == "*" else counts.get(contract.role, 0)
         if count < contract.minimum or (contract.maximum is not None and count > contract.maximum):
             raise ValueError(f"input role cardinality is invalid: {contract.role}")
 

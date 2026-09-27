@@ -362,10 +362,6 @@ smoke_workspace_distribution \
   'import importlib.metadata as m; import a_review0_opus_sampler.app; m.version("a-review0-opus-sampler")' \
   a-review0-opus-sampler
 smoke_workspace_distribution \
-  review0-target-lib \
-  'review0_target_lib-*.whl' \
-  'import importlib.metadata as m; import review0_target_lib; m.version("review0-target-lib")'
-smoke_workspace_distribution \
   review0-planner \
   'review0_planner-*.whl' \
   'import importlib.metadata as m; import review0_planner; m.version("review0-planner")' \
@@ -374,15 +370,15 @@ env -u PYTHONPATH "${SCRATCH}/review0-planner/bin/review0-planner" \
   | "${SCRATCH}/review0-planner/bin/python" -I -c \
     'import json, sys; assert json.load(sys.stdin)["format"] == "review0-contract-report/v1"'
 smoke_workspace_distribution \
-  a-review0-materializer \
-  'a_review0_materializer-*.whl' \
-  'import importlib.metadata as m; import a_review0_materializer.app; m.version("a-review0-materializer")' \
-  a-review0-materializer
+  review0 \
+  'review0-*.whl' \
+  'import importlib.metadata as m; import review0.app; m.version("review0")' \
+  review0
 smoke_workspace_distribution \
-  a-review0-rclone-target \
-  'a_review0_rclone_target-*.whl' \
-  'import importlib.metadata as m; import a_review0_rclone_target.app; m.version("a-review0-rclone-target")' \
-  a-review0-rclone-target
+  a-stove0-rclone-target \
+  'a_stove0_rclone_target-*.whl' \
+  'import importlib.metadata as m; import a_stove0_rclone_target.app; m.version("a-stove0-rclone-target")' \
+  a-stove0-rclone-target
 smoke_workspace_distribution \
   stove0-observer-support \
   'stove0_observer_support-*.whl' \

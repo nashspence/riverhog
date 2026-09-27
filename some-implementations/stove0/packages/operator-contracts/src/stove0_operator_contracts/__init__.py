@@ -839,6 +839,7 @@ class WorkView(OperatorModel):
     target_status: TargetJobStatus | None = None
     output: OutputCollectionRef | None = None
     target_settlement: TargetSettlementAuthority | None = None
+    effect_settlement_sha256: Sha256 | None = None
     source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailureView | None = None
     inapplicable: WorkInapplicableView | None = None

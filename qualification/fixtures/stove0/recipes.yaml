@@ -320,6 +320,69 @@ operations:
     - stove0.media.xmp-source/v1
   source_collection_retirement_permitted: true
   contract_sha256: 0cb8d721c13a6d0ba154f2310ab67103ac20eb584823e9f4db771b467e44f43f
+- id: stove0.rclone.deliver/v1
+  result_kind: external-effect
+  intent_schema:
+    id: stove0.rclone.deliver-intent/v1
+    profile_sha256: 2d64ed2a8b11d599883eff1a16d0a55af42abd4347c3ef4d591ab91bb039a04c
+    dialect: https://json-schema.org/draft/2020-12/schema
+    format_policy: annotation-only
+    schema:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      type: object
+      additionalProperties: false
+  intent_semantics:
+    id: stove0.semantic.json-schema-only/v1
+    rules:
+    - stove0.semantic.json-schema-draft-2020-12/v1
+    profile_sha256: ad1ffe4d406c76fab0c25c8fc7cf79c0d9b5b7abaf207c84047150a4565af51b
+  inputs:
+  - role: '*'
+    minimum: 1
+  outputs: []
+  effect_receipt_schema:
+    id: stove0.rclone.delivery-receipt/v1
+    profile_sha256: 4030b471046390e739e2a9ac73c60ec6f06dca8bd15d86e921542214b00a9b41
+    dialect: https://json-schema.org/draft/2020-12/schema
+    format_policy: annotation-only
+    schema:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      type: object
+      required:
+      - format
+      - destination_identity
+      - delivery_id
+      - source_selection_sha256
+      - manifest_sha256
+      - artifact_count
+      - total_bytes
+      - verification
+      properties:
+        format:
+          const: stove0-rclone-delivery-receipt/v1
+        destination_identity:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        delivery_id:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        source_selection_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        manifest_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        artifact_count:
+          type: integer
+          minimum: 1
+        total_bytes:
+          type: integer
+          minimum: 0
+        verification:
+          const: rclone-download-check-and-manifest-readback/v1
+      additionalProperties: false
+  source_collection_retirement_permitted: true
+  contract_sha256: b6bf35d59d00318966db215bbb41bdf6f623220facae2eb5f78a8388eea2c921
 - id: stove0.review.materialize/v1
   result_kind: collection
   intent_schema:
@@ -448,155 +511,9 @@ operations:
     - stove0.review.source/v1
   source_collection_retirement_permitted: false
   contract_sha256: 7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb
-- id: stove0.review.rclone-deliver/v1
-  result_kind: external-effect
-  intent_schema:
-    id: stove0.review.materialize-intent/v1
-    profile_sha256: eb997cd9a6f54adf0036ea548eca97df7ad335a8618d1af0c7ef65c190a80eaf
-    dialect: https://json-schema.org/draft/2020-12/schema
-    format_policy: annotation-only
-    schema:
-      $defs:
-        JsonValue: {}
-        ReviewSamplePlan:
-          additionalProperties: false
-          properties:
-            format:
-              const: review0-sample-plan/v1
-              default: review0-sample-plan/v1
-              title: Format
-              type: string
-            selection_method:
-              const: evenly-spaced/v1
-              default: evenly-spaced/v1
-              title: Selection Method
-              type: string
-            samples_per_artifact:
-              minimum: 1
-              title: Samples Per Artifact
-              type: integer
-            window_duration_ms:
-              minimum: 1
-              title: Window Duration Ms
-              type: integer
-            windows:
-              items:
-                $ref: '#/$defs/ReviewSampleWindow'
-              minItems: 1
-              title: Windows
-              type: array
-            sample_plan_sha256:
-              pattern: ^[0-9a-f]{64}$
-              title: Sample Plan Sha256
-              type: string
-          required:
-          - samples_per_artifact
-          - window_duration_ms
-          - windows
-          - sample_plan_sha256
-          title: ReviewSamplePlan
-          type: object
-        ReviewSampleWindow:
-          additionalProperties: false
-          properties:
-            artifact_id:
-              maxLength: 160
-              minLength: 1
-              title: Artifact Id
-              type: string
-            start_ms:
-              minimum: 0
-              title: Start Ms
-              type: integer
-            duration_ms:
-              minimum: 1
-              title: Duration Ms
-              type: integer
-          required:
-          - artifact_id
-          - start_ms
-          - duration_ms
-          title: ReviewSampleWindow
-          type: object
-        ReviewVariantIntent:
-          additionalProperties: false
-          properties:
-            id:
-              pattern: ^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$
-              title: Id
-              type: string
-            portable_intent:
-              additionalProperties:
-                $ref: '#/$defs/JsonValue'
-              title: Portable Intent
-              type: object
-          required:
-          - id
-          - portable_intent
-          title: ReviewVariantIntent
-          type: object
-      additionalProperties: false
-      properties:
-        sample_plan:
-          $ref: '#/$defs/ReviewSamplePlan'
-        variant:
-          $ref: '#/$defs/ReviewVariantIntent'
-      required:
-      - sample_plan
-      - variant
-      title: ReviewMaterializeIntent
-      type: object
-      $schema: https://json-schema.org/draft/2020-12/schema
-  intent_semantics:
-    id: stove0.review.materialize-intent-semantics/v1
-    rules:
-    - stove0.review.sample-plan.exact-declared-shape/v1
-    - stove0.review.sample-plan.identity-verification/v1
-    conformance_vectors_sha256: 87c848c1e820178e863cf589b987cb392e4f3f85be1881e5dc3ce7e6de7f51ac
-    profile_sha256: 0af5db45b2087ad40168ff5a95da2c41657e42c83b0c055c976181ecb773c373
-  inputs:
-  - role: stove0.review.source/v1
-    minimum: 1
-  outputs: []
-  effect_receipt_schema:
-    id: stove0.review.rclone-receipt/v1
-    profile_sha256: 34ba5fe26798a3074c995286e7ed3ff1a8907c73d6a286f3557c7b1a0e5e8472
-    dialect: https://json-schema.org/draft/2020-12/schema
-    format_policy: annotation-only
-    schema:
-      $schema: https://json-schema.org/draft/2020-12/schema
-      type: object
-      required:
-      - format
-      - destination_identity
-      - delivery_id
-      - artifact_archive_root_sha256
-      - artifact_count
-      - total_bytes
-      properties:
-        format:
-          const: review0-rclone-receipt/v1
-        destination_identity:
-          type: string
-          pattern: ^[0-9a-f]{64}$
-        delivery_id:
-          type: string
-          pattern: ^[0-9a-f]{64}$
-        artifact_archive_root_sha256:
-          type: string
-          pattern: ^[0-9a-f]{64}$
-        artifact_count:
-          type: integer
-          minimum: 1
-        total_bytes:
-          type: integer
-          minimum: 0
-      additionalProperties: false
-  source_collection_retirement_permitted: false
-  contract_sha256: fc5f7d11db12afb9c81935f3bc05035ba97beaf10dc59fedf6879ca4ece7ad66
 recipes:
 - id: stove0.audio-archive/v1
-  revision: "1"
+  revision: '1'
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
   source_collection_retirement_policy: retain
@@ -635,7 +552,7 @@ recipes:
       container: opus
     input_retrieval_policy: allow
 - id: stove0.conformance-media/v1
-  revision: "1"
+  revision: '1'
   event_input_closure: single-finalized-collection
   artifact_associations:
   - primary_role: stove0.media.source/v1
@@ -793,50 +710,27 @@ recipes:
     target_options:
       preset: p4
     input_retrieval_policy: available-only
-- id: stove0.review-effect/v1
-  revision: "1"
+- id: stove0.rclone-delivery/v1
+  revision: '1'
   event_input_closure: single-finalized-collection
-  allow_derived_inputs: false
-  source_collection_retirement_policy: retain
+  allow_derived_inputs: true
+  source_collection_retirement_policy: retire-after-settlement
   unmatched_artifact_disposition: retain-in-source
-  observers:
-  - registration_id: ffprobe-sampling
-    contract_id: stove0.review.media-sampling/v1
-    contract_sha256: 406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a
-    artifact_rules:
-    - glob: '*'
-      role: stove0.review.source/v1
-    retrieval_policy: available-only
+  observers: []
   routes:
-  - id: review-effect
+  - id: deliver
     kind: operation
-    operation_id: stove0.review.rclone-deliver/v1
-    target_registration_id: review-effect
+    operation_id: stove0.rclone.deliver/v1
+    target_registration_id: rclone
     artifact_rules:
     - glob: '*'
-      role: stove0.review.source/v1
+      role: stove0.rclone.source/v1
+    intent: {}
     target_options:
-      sampler_registration_id: opus
-    projections:
-    - source: work-effective-intent
-      source_pointer: /review_sample_plan
-      destination: intent
-      destination_pointer: /sample_plan
-    - source: work-evaluation
-      source_pointer: /variant_id
-      destination: intent
-      destination_pointer: /variant/id
-    - source: work-evaluation
-      source_pointer: /parameters/review_variant/portable_intent
-      destination: intent
-      destination_pointer: /variant/portable_intent
-    - source: work-evaluation
-      source_pointer: /parameters/review_variant/target_options
-      destination: target-options
-      destination_pointer: ''
+      destination_identity: bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1
     input_retrieval_policy: available-only
 - id: stove0.review/v1
-  revision: "1"
+  revision: '1'
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
   source_collection_retirement_policy: retain
@@ -845,6 +739,7 @@ recipes:
   - registration_id: ffprobe-sampling
     contract_id: stove0.review.media-sampling/v1
     contract_sha256: 406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a
+    maximum_result_bytes: 262144
     artifact_rules:
     - glob: '*'
       role: stove0.review.source/v1
@@ -877,11 +772,18 @@ recipes:
       destination: target-options
       destination_pointer: ''
     input_retrieval_policy: available-only
+    output_policy:
+      format: riverhog-output-collection-policy/v1
+      archive_store: review-local
+      use_cache: false
+      copy_to: []
+      tags:
+      - review0/output
 - id: stove0.video-archive/v1
-  revision: "1"
+  revision: '1'
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
-  source_collection_retirement_policy: retire-after-verified-output
+  source_collection_retirement_policy: retire-after-settlement
   unmatched_artifact_disposition: retain-in-source
   source_collection_retirement_grace_seconds: 86400
   observers:

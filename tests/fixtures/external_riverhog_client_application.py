@@ -43,6 +43,7 @@ from riverhog_protocol.collection_workflows import (  # noqa: E402
     OperationIdentity,
     RecipeIdentity,
 )
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy  # noqa: E402
 
 WORK_ID = "1" * 64
 EXECUTION_ID = "2" * 64
@@ -165,6 +166,7 @@ class UploadApi:
                 execution_id=EXECUTION_ID,
                 inputs=SimpleNamespace(sha256="9" * 64),
                 artifacts=SimpleNamespace(sha256="a" * 64),
+                output_policy=OutputCollectionPolicy(),
             )
         )
 

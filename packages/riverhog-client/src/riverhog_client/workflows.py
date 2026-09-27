@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from http_api_contracts import closed_literal_values
 from pydantic import BaseModel, TypeAdapter, ValidationError
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol import (
     ClaimState,
     CollectionId,
+    OutputCollectionPolicy,
     ProcessingClaimId,
     ProcessingClaimSort,
     SortOrder,
@@ -40,7 +43,9 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimAbandonDocument,
     ProcessingClaimCreateDocument,
     ProcessingClaimDocument,
+    ProcessingClaimEffectSettleDocument,
     ProcessingClaimFenceDocument,
+    ProcessingClaimOutcomesAppendDocument,
     ProcessingClaimOutcomesSettleDocument,
     ProcessingClaimPageDocument,
     ProcessingClaimPlanSealDocument,
@@ -311,26 +316,55 @@ class CollectionWorkflowMethods:
         operation_id: str,
         operation_sha256: str,
         input_artifacts: Iterable[ArtifactInput],
+        result_kind: Literal["collection", "external-effect"] = "collection",
+        operation_contract: Mapping[str, Any] | None = None,
+        output_policy: OutputCollectionPolicy | None = None,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
         source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument:
         claim = self.get_processing_claim(claim_id)
-        artifact_ordinal = claim.plan.artifacts.count if claim.plan is not None else 0
+        artifact_ordinal = 0
+        artifact_bytes = 0
+        digest = hashlib.sha256(b"riverhog-claim-artifacts/v1\0")
         for chunk in _chunks(input_artifacts, maximum=WORKFLOW_SET_BATCH_MAX):
-            staged_artifacts = self.append_processing_claim_artifacts(
-                claim_id,
-                fence=fence,
-                start_ordinal=artifact_ordinal,
-                artifacts=chunk,
+            for value in chunk:
+                artifact = CollectionArtifactIdentityDocument.model_validate(value)
+                encoded = canonical_json_bytes(artifact.model_dump(mode="json"))
+                digest.update(len(encoded).to_bytes(8, "big"))
+                digest.update(encoded)
+                artifact_bytes += artifact.bytes
+            if claim.plan is None:
+                self.append_processing_claim_artifacts(
+                    claim_id,
+                    fence=fence,
+                    start_ordinal=artifact_ordinal,
+                    artifacts=chunk,
+                )
+            # Replay starts from the submitted prefix, not the total staged count.
+            artifact_ordinal += len(chunk)
+        identity = (
+            claim.plan.artifacts
+            if claim.plan is not None
+            else self.seal_processing_claim_artifacts(claim_id, fence=fence).identity
+        )
+        if (
+            identity is None
+            or identity.count != artifact_ordinal
+            or identity.total_bytes != artifact_bytes
+            or identity.sha256 != digest.hexdigest()
+        ):
+            raise ValueError(
+                "sealed execution artifacts differ from the exact requested input scope"
             )
-            artifact_ordinal = staged_artifacts.count
-        self.seal_processing_claim_artifacts(claim_id, fence=fence)
         request = _exact_request(
             ProcessingClaimPlanSealDocument,
             fence=fence,
             execution_id=execution_id,
             controller_evidence=dict(controller_evidence),
             controller_evidence_sha256=controller_evidence_sha256,
+            result_kind=result_kind,
+            operation_contract=operation_contract,
+            output_policy=output_policy or OutputCollectionPolicy(),
             operation=OperationIdentityDocument(id=operation_id, sha256=operation_sha256),
             source_collection_retirement_policy=source_collection_retirement_policy,
             source_collection_retirement_grace_seconds=source_collection_retirement_grace_seconds,
@@ -629,17 +663,66 @@ class CollectionWorkflowMethods:
             )
         )
 
+    def settle_processing_claim_effect(
+        self,
+        claim_id: ProcessingClaimId,
+        *,
+        fence: int,
+        settlement: Mapping[str, Any],
+        outcome_claim_id: ProcessingClaimId | None = None,
+        outcome_fence: int | None = None,
+        outcome_id: str | None = None,
+    ) -> ProcessingClaimDocument:
+        outcome = None
+        if any(item is not None for item in (outcome_claim_id, outcome_fence, outcome_id)):
+            if outcome_claim_id is None or outcome_fence is None or outcome_id is None:
+                raise ValueError("processing outcome binding is incomplete")
+            outcome = _exact_request(
+                ProcessingOutcomeBindingDocument,
+                claim_id=outcome_claim_id,
+                fence=outcome_fence,
+                outcome_id=outcome_id,
+            )
+        request = _exact_request(
+            ProcessingClaimEffectSettleDocument,
+            fence=fence,
+            settlement=dict(settlement),
+            outcome=outcome,
+        )
+        return self._claim_response(
+            "settle_processing_claim_effect", claim_id, "effects/settle", request
+        )
+
+    def append_processing_claim_outcomes(
+        self,
+        claim_id: ProcessingClaimId,
+        *,
+        fence: int,
+        outcomes: Sequence[OutcomeInput],
+    ) -> ProcessingClaimDocument:
+        request = _exact_request(
+            ProcessingClaimOutcomesAppendDocument,
+            fence=fence,
+            outcomes=[ProcessingOutcomeIdentityDocument.model_validate(item) for item in outcomes],
+        )
+        return self._claim_response(
+            "append_processing_claim_outcomes", claim_id, "outcomes/append", request
+        )
+
     def settle_processing_claim_outcomes(
         self,
         claim_id: ProcessingClaimId,
         *,
         fence: int,
+        outcomes_count: int,
+        outcomes_sha256: str,
         source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
         source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument:
         request = _exact_request(
             ProcessingClaimOutcomesSettleDocument,
             fence=fence,
+            outcomes={"count": str(outcomes_count), "sha256": outcomes_sha256},
             source_collection_retirement_policy=source_collection_retirement_policy,
             source_collection_retirement_grace_seconds=source_collection_retirement_grace_seconds,
         )

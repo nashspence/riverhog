@@ -38,8 +38,10 @@ from stove0_protocol import (
     BranchPlan,
     BranchSetDecision,
     BranchSetPlan,
+    BranchSettlement,
     CollectionRootIdentityRef,
     CoordinationBranchPlan,
+    CoordinationSettlement,
     EvaluationDefinition,
     EvaluationDefinitionPayload,
     EvaluationMatrix,
@@ -674,6 +676,131 @@ def test_evaluation_aggregates_ordinary_child_work_and_partial_success() -> None
     record = service.step(record.evaluation_id, controller=controller)
     assert record.phase == "complete"
     assert all(item.output is not None for item in record.children)
+
+
+def test_evaluation_projects_single_settled_collection_branch() -> None:
+    work = Stove0WorkService(InMemoryWorkStore())
+    service = EvaluationService(InMemoryEvaluationStore(), work=work)
+    evaluation = service.create_or_resume(_evaluation())
+    parent_work_id = evaluation.children[0].work_id
+    parent = work.store.load(parent_work_id)
+    assert parent is not None
+
+    input_selection = ArtifactSelection.seal(
+        (
+            WorkArtifactSubject(
+                id="source",
+                role="fixture.source/v1",
+                collection=_root(),
+                path="source/input.bin",
+                bytes="12",
+                sha256=_sha("4"),
+            ),
+        )
+    )
+    operation = _operation()
+    target = _target(operation)
+    branch = BranchPlan.build(
+        parent_work=parent.work,
+        branch_id="review-output",
+        decision_sha256=_sha("d"),
+        selection=input_selection,
+        recipe=parent.work.recipe,
+        effective_intent={},
+        workflow_intent=WorkflowPlanIntent(
+            operation=OperationIdentityRef(
+                id=operation.id,
+                sha256=operation.contract_sha256,
+            ),
+            target_registration_id="fixture-target",
+            target_descriptor_sha256=target.descriptor_sha256,
+            source_collection_retirement_policy="retain",
+        ),
+    )
+    plan = BranchSetPlan.seal(
+        parent_work=parent.work,
+        decision_sha256=_sha("d"),
+        branches=(branch,),
+        selections={input_selection.selection_sha256: input_selection},
+    )
+    output = OutputCollectionRef(
+        collection_id="101",
+        archive_root_sha256=_sha("a"),
+        content_identity=_sha("b"),
+        derivation_sha256=_sha("c"),
+    )
+    output_selection = ArtifactSelection.seal(
+        (
+            WorkArtifactSubject(
+                id="review",
+                role="fixture.review/v1",
+                collection=CollectionRootIdentityRef(
+                    collection_id=str(output.collection_id),
+                    archive_root_sha256=output.archive_root_sha256,
+                    content_identity=output.content_identity,
+                ),
+                path="review/output.bin",
+                bytes="1",
+                sha256=_sha("e"),
+            ),
+        )
+    )
+    target_settlement = TargetSettlementAuthority.seal(
+        TargetSettlementAuthorityPayload(
+            job_id=branch.workflow_plan.work.work_id,
+            production_sha256=_sha("f"),
+            output_collection=output,
+            output_bindings=TargetOutputBindingSetIdentity(
+                artifact_count=1,
+                total_bytes="1",
+                sha256=_sha("e"),
+            ),
+        )
+    )
+    branch_settlement = BranchSettlement.seal(
+        branch=branch,
+        derivation_sha256=output.derivation_sha256,
+        producer_settlement_sha256=target_settlement.settlement_sha256,
+        output_collection=output_selection.roots()[0],
+        output_selection=output_selection,
+    )
+    coordination_settlement = CoordinationSettlement.seal(
+        plan=plan,
+        collection_settlements=(branch_settlement,),
+        effect_settlements=(),
+        coordination_settlements=(),
+        join_settlement=None,
+    )
+    child = work.create_or_resume(branch.workflow_plan.work)
+    work.store.compare_and_swap(
+        child.work_id,
+        expected_revision=child.revision,
+        replacement=WorkRecord(
+            work=child.work,
+            phase="settled",
+            revision=child.revision + 1,
+            claim=ClaimBinding(claim_id=child.work_id, fence=1),
+            workflow_plan=branch.workflow_plan,
+            output=output,
+            target_settlement=target_settlement,
+        ),
+    )
+    work.store.compare_and_swap(
+        parent.work_id,
+        expected_revision=parent.revision,
+        replacement=WorkRecord(
+            work=parent.work,
+            phase="complete",
+            revision=parent.revision + 1,
+            claim=ClaimBinding(claim_id=parent.work_id, fence=1),
+            branch_set_plan=plan,
+            coordination_settlement=coordination_settlement,
+        ),
+    )
+
+    refreshed = service.refresh(evaluation.evaluation_id)
+    assert refreshed.children[0].state == "complete"
+    assert refreshed.children[0].output == output
 
 
 def test_unified_evaluation_store_is_restart_safe(tmp_path: Path) -> None:

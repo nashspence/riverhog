@@ -55,8 +55,8 @@ services:
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
       - a_stove0_opus_target_token
-      - a_review0_materializer_token
-      - a_review0_rclone_target_token
+      - review0_token
+      - a_stove0_rclone_target_token
       - stove0_api_token
       - source: stove0_api_riverhog_token
         target: stove0_riverhog_token
@@ -92,8 +92,8 @@ services:
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
       - a_stove0_opus_target_token
-      - a_review0_materializer_token
-      - a_review0_rclone_target_token
+      - review0_token
+      - a_stove0_rclone_target_token
       - source: stove0_controller_riverhog_token
         target: stove0_riverhog_token
 
@@ -113,8 +113,8 @@ services:
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
       - a_stove0_opus_target_token
-      - a_review0_materializer_token
-      - a_review0_rclone_target_token
+      - review0_token
+      - a_stove0_rclone_target_token
       - source: stove0_worker_riverhog_token
         target: stove0_riverhog_token
 
@@ -219,73 +219,68 @@ services:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
 
-  a-review0-materializer:
+  review0:
     <<: *hardening
-    image: ${A_REVIEW0_MATERIALIZER_IMAGE_REF:-a-review0-materializer:dev}
+    image: ${REVIEW0_IMAGE_REF:-review0:dev}
     build:
       context: ../../..
-      dockerfile: some-implementations/stove0/review0/materialize-target/Dockerfile
+      dockerfile: some-implementations/stove0/review0/application/Dockerfile
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-    command: ["a-review0-materializer", "--host", "0.0.0.0", "--port", "8080"]
+    command: ["review0", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       TZ: ${TZ:-UTC}
-      A_REVIEW0_MATERIALIZER_CONFIG: /etc/review0/materializer.yaml
-      A_REVIEW0_MATERIALIZER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_REVIEW0_MATERIALIZER_IMAGE_ID: ${A_REVIEW0_MATERIALIZER_IMAGE_ID:?A_REVIEW0_MATERIALIZER_IMAGE_ID is required}
-      A_REVIEW0_MATERIALIZER_STATE_ROOT: /var/lib/a-review0-materializer
-      A_REVIEW0_MATERIALIZER_WORKSPACE: /run/review0
+      REVIEW0_CONFIG: /etc/review0/review0.yaml
+      REVIEW0_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+      REVIEW0_IMAGE_ID: ${REVIEW0_IMAGE_ID:?REVIEW0_IMAGE_ID is required}
+      REVIEW0_STATE_ROOT: /var/lib/review0
+      REVIEW0_WORKSPACE: /run/review0
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
     depends_on:
       a-review0-opus-sampler:
         condition: service_healthy
     secrets:
-      - a_review0_materializer_token
+      - review0_token
       - a_review0_opus_sampler_token
     networks: ["stove0-internal", "riverhog-control", "review-sampler"]
     volumes:
       - type: bind
-        source: ${A_REVIEW0_MATERIALIZER_CONFIG_HOST_PATH:?A_REVIEW0_MATERIALIZER_CONFIG_HOST_PATH is required}
-        target: /etc/review0/materializer.yaml
+        source: ${REVIEW0_CONFIG_HOST_PATH:?REVIEW0_CONFIG_HOST_PATH is required}
+        target: /etc/review0/review0.yaml
         read_only: true
-      - a-review0-materializer-state:/var/lib/a-review0-materializer
+      - review0-state:/var/lib/review0
       - review0-workspace:/run/review0
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
 
-  a-review0-rclone-target:
+  a-stove0-rclone-target:
     <<: *hardening
-    image: ${A_REVIEW0_RCLONE_TARGET_IMAGE_REF:-a-review0-rclone-target:dev}
+    image: ${A_STOVE0_RCLONE_TARGET_IMAGE_REF:-a-stove0-rclone-target:dev}
     build:
       context: ../../..
-      dockerfile: some-implementations/stove0/review0/rclone-effect-target/Dockerfile
+      dockerfile: some-implementations/stove0/targets/rclone/Dockerfile
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-    command: ["a-review0-rclone-target", "--host", "0.0.0.0", "--port", "8080"]
+    command: ["a-stove0-rclone-target", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       TZ: ${TZ:-UTC}
-      A_REVIEW0_RCLONE_TARGET_CONFIG: /etc/review0/rclone-target.yaml
-      A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_REVIEW0_RCLONE_TARGET_IMAGE_ID: ${A_REVIEW0_RCLONE_TARGET_IMAGE_ID:?A_REVIEW0_RCLONE_TARGET_IMAGE_ID is required}
-      A_REVIEW0_RCLONE_TARGET_STATE_ROOT: /var/lib/a-review0-rclone-target
-      A_REVIEW0_RCLONE_TARGET_WORKSPACE: /run/review0
+      A_STOVE0_RCLONE_TARGET_CONFIG: /etc/stove0/rclone.yaml
+      A_STOVE0_RCLONE_TARGET_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+      A_STOVE0_RCLONE_TARGET_IMAGE_ID: ${A_STOVE0_RCLONE_TARGET_IMAGE_ID:?A_STOVE0_RCLONE_TARGET_IMAGE_ID is required}
+      A_STOVE0_RCLONE_TARGET_STATE_ROOT: /var/lib/a-stove0-rclone-target
+      A_STOVE0_RCLONE_TARGET_WORKSPACE: /run/stove0-rclone
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
-    depends_on:
-      a-review0-opus-sampler:
-        condition: service_healthy
-    secrets:
-      - a_review0_rclone_target_token
-      - a_review0_opus_sampler_token
-    networks: ["stove0-internal", "riverhog-control", "review-sampler"]
+    secrets: ["a_stove0_rclone_target_token"]
+    networks: ["stove0-internal", "riverhog-control"]
     volumes:
       - type: bind
-        source: ${A_REVIEW0_RCLONE_TARGET_CONFIG_HOST_PATH:?A_REVIEW0_RCLONE_TARGET_CONFIG_HOST_PATH is required}
-        target: /etc/review0/rclone-target.yaml
+        source: ${A_STOVE0_RCLONE_TARGET_CONFIG_HOST_PATH:?A_STOVE0_RCLONE_TARGET_CONFIG_HOST_PATH is required}
+        target: /etc/stove0/rclone.yaml
         read_only: true
-      - a-review0-rclone-target-state:/var/lib/a-review0-rclone-target
-      - review0-workspace:/run/review0
-      - review0-effect-delivery:/var/lib/review0-delivery
+      - a-stove0-rclone-target-state:/var/lib/a-stove0-rclone-target
+      - a-stove0-rclone-target-workspace:/run/stove0-rclone
+      - a-stove0-rclone-delivery:/var/lib/stove0-rclone-delivery
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
@@ -342,9 +337,15 @@ services:
 volumes:
   a-stove0-nvenc-av1-opus-target-state:
   a-stove0-opus-target-state:
-  a-review0-materializer-state:
-  a-review0-rclone-target-state:
-  review0-effect-delivery:
+  review0-state:
+  a-stove0-rclone-target-state:
+  a-stove0-rclone-delivery:
+  a-stove0-rclone-target-workspace:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=${RCLONE_TMPFS_SIZE:-32g},uid=65532,gid=65532,mode=0700
   review0-workspace:
     driver: local
     driver_opts:
@@ -379,10 +380,10 @@ secrets:
     file: ${A_STOVE0_OPUS_TARGET_TOKEN_FILE:?A_STOVE0_OPUS_TARGET_TOKEN_FILE is required}
   a_review0_opus_sampler_token:
     file: ${A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE:?A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE is required}
-  a_review0_materializer_token:
-    file: ${A_REVIEW0_MATERIALIZER_TOKEN_FILE:?A_REVIEW0_MATERIALIZER_TOKEN_FILE is required}
-  a_review0_rclone_target_token:
-    file: ${A_REVIEW0_RCLONE_TARGET_TOKEN_FILE:?A_REVIEW0_RCLONE_TARGET_TOKEN_FILE is required}
+  review0_token:
+    file: ${REVIEW0_TOKEN_FILE:?REVIEW0_TOKEN_FILE is required}
+  a_stove0_rclone_target_token:
+    file: ${A_STOVE0_RCLONE_TARGET_TOKEN_FILE:?A_STOVE0_RCLONE_TARGET_TOKEN_FILE is required}
 
 networks:
   stove0-internal:

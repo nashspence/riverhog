@@ -6,6 +6,7 @@ import sqlite3
 import tomllib
 from contextlib import closing
 from pathlib import Path
+from typing import get_args
 
 import pytest
 from a_riverhog_cli.local_state import state_schema as local_state_schema
@@ -304,6 +305,22 @@ def test_postgresql_state_nullability_and_generation_match_runtime_models(owner:
                 assert column["generated"] == compiler.visit_computed_column(source.computed)
             else:
                 assert "generated" not in column, identity
+
+
+def test_stove0_work_phases_fit_the_postgresql_v1_column() -> None:
+    from stove0_core.persistence import _Base as Stove0Base
+    from stove0_core.work_state import WorkPhase
+
+    column = Stove0Base.metadata.tables["stove0_work_records"].c.phase
+    declared_phases = get_args(WorkPhase)
+    assert column.type.length is not None
+    assert max(map(len, declared_phases)) <= column.type.length
+    projected = state_contract.relational_schema(STOVE0_POSTGRESQL_DDL, dialect="postgresql")
+    work_table = next(
+        table for table in projected["tables"] if table["name"] == "stove0_work_records"
+    )
+    phase = next(item for item in work_table["columns"] if item["name"] == "phase")
+    assert phase["type"] == f"VARCHAR({column.type.length})"
 
 
 @pytest.mark.parametrize("mode", ["BY DEFAULT", "ALWAYS"])

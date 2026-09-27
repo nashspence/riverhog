@@ -58,7 +58,13 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimDocument as ProcessingClaimOut,
 )
 from riverhog_protocol.collection_workflow_transport import (
+    ProcessingClaimEffectSettleDocument as ProcessingClaimEffectSettleIn,
+)
+from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimFenceDocument as ProcessingClaimFenceIn,
+)
+from riverhog_protocol.collection_workflow_transport import (
+    ProcessingClaimOutcomesAppendDocument as ProcessingClaimOutcomesAppendIn,
 )
 from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimOutcomesSettleDocument as ProcessingClaimOutcomesSettleIn,
@@ -86,6 +92,8 @@ from riverhog_protocol.collection_workflow_transport import (
 )
 
 __all__ = [
+    "ProcessingClaimOutcomesAppendIn",
+    "ProcessingClaimEffectSettleIn",
     "ArtifactDispositionBatchIn",
     "ArtifactDispositionOutputBatchIn",
     "ArtifactDispositionOutputPageOut",

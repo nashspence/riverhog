@@ -88,13 +88,13 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/stove0/targets/opus/target/src",
         {"a_stove0_opus_target"},
     ),
-    "a-review0-materializer": (
-        REPO / "some-implementations/stove0/review0/materialize-target/src",
-        {"a_review0_materializer"},
+    "review0": (
+        REPO / "some-implementations/stove0/review0/application/src",
+        {"review0"},
     ),
-    "a-review0-rclone-target": (
-        REPO / "some-implementations/stove0/review0/rclone-effect-target/src",
-        {"a_review0_rclone_target"},
+    "a-stove0-rclone-target": (
+        REPO / "some-implementations/stove0/targets/rclone/src",
+        {"a_stove0_rclone_target"},
     ),
     "review0-planner": (
         REPO / "some-implementations/stove0/review0/planning/src",
@@ -831,19 +831,14 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "some-implementations/stove0/review0/sampler/protocol",
             "some-implementations/stove0/review0/sampler/support",
         ),
-        REPO / "some-implementations/stove0/review0/materialize-target/Dockerfile": (
+        REPO / "some-implementations/stove0/review0/application/Dockerfile": (
             "some-implementations/stove0/review0/contracts",
-            "some-implementations/stove0/review0/materialize-target",
+            "some-implementations/stove0/review0/application",
             "some-implementations/stove0/review0/sampler/client",
             "some-implementations/stove0/review0/sampler/protocol",
-            "some-implementations/stove0/review0/support",
         ),
-        REPO / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": (
-            "some-implementations/stove0/review0/contracts",
-            "some-implementations/stove0/review0/rclone-effect-target",
-            "some-implementations/stove0/review0/sampler/client",
-            "some-implementations/stove0/review0/sampler/protocol",
-            "some-implementations/stove0/review0/support",
+        REPO / "some-implementations/stove0/targets/rclone/Dockerfile": (
+            "some-implementations/stove0/targets/rclone",
         ),
         REPO / "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile": (
             "some-implementations/riverhog/applications/a-riverhog-event-relay"
@@ -888,7 +883,7 @@ def test_stove0_server_has_only_protocol_and_caller_side_extension_dependencies(
         "a-stove0-media-sampling-contract-lib",
         "stove0-observer-support",
         "review0-planner",
-        "review0-target-contracts",
+        "review0-contracts",
         "review0-sampler-lib",
         "stove0-target-support",
     }
@@ -917,7 +912,7 @@ def test_maintained_observer_distributions_do_not_pull_target_authority() -> Non
         "a-stove0-media-archive-contract-lib",
         "a-stove0-media-archive-lib",
         "review0-planner",
-        "review0-target-contracts",
+        "review0-contracts",
         "stove0-target-client",
         "stove0-target-protocol",
         "stove0-target-support",
@@ -940,7 +935,7 @@ def test_semantic_contract_distributions_do_not_pull_runtime_support() -> None:
         "a-stove0-media-metadata-contract-lib",
         "a-stove0-media-sampling-contract-lib",
         "a-stove0-media-archive-contract-lib",
-        "review0-target-contracts",
+        "review0-contracts",
         "a-stove0-media-archive-lib",
         "review0-planner",
     ):
@@ -1033,12 +1028,8 @@ def test_images_copy_their_complete_internal_dependency_closure() -> None:
             "a-stove0-opus-target",
             "a-review0-opus-sampler",
         ),
-        REPO / "some-implementations/stove0/review0/materialize-target/Dockerfile": (
-            "a-review0-materializer"
-        ),
-        REPO / "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": (
-            "a-review0-rclone-target"
-        ),
+        REPO / "some-implementations/stove0/review0/application/Dockerfile": ("review0"),
+        REPO / "some-implementations/stove0/targets/rclone/Dockerfile": ("a-stove0-rclone-target"),
         REPO
         / (
             "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"

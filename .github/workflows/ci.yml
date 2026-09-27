@@ -138,8 +138,8 @@ jobs:
           - a-stove0-ffprobe-sampling-observer
           - a-stove0-nvenc-av1-opus-target
           - a-stove0-opus-target
-          - a-review0-materializer
-          - a-review0-rclone-target
+          - review0
+          - a-stove0-rclone-target
           - a-riverhog-event-relay
           - a-riverhog-minisign-witness
           - a-riverhog-opentimestamps-witness

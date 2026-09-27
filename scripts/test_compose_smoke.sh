@@ -211,8 +211,8 @@ printf '%s\n' 'stove0-compose-nvenc-target-token' > "${secret_root}/a-stove0-nve
 printf '%s\n' 'stove0-compose-nvenc-sampler-token' > "${secret_root}/a-review0-nvenc-av1-opus-sampler-token"
 printf '%s\n' 'stove0-compose-opus-target-token' > "${secret_root}/a-stove0-opus-target-token"
 printf '%s\n' 'stove0-compose-opus-review-sampler-token' > "${secret_root}/a-review0-opus-sampler-token"
-printf '%s\n' 'stove0-compose-review-materialize-target-token' > "${secret_root}/a-review0-materializer-token"
-printf '%s\n' 'stove0-compose-review-rclone-effect-target-token' > "${secret_root}/a-review0-rclone-target-token"
+printf '%s\n' 'stove0-compose-review0-token' > "${secret_root}/review0-token"
+printf '%s\n' 'stove0-compose-rclone-target-token' > "${secret_root}/a-stove0-rclone-target-token"
 printf '%s\n' "${smoke_token}" > "${secret_root}/adapter-riverhog-token"
 printf '%s\n' 'a-riverhog-ftp-spool-compose-smoke-token' > "${secret_root}/ftp-spool-api-token"
 printf '%s\n' 'a-riverhog-ftp-spool-compose-smoke-password' > "${secret_root}/ftp-spool-password"
@@ -222,7 +222,9 @@ sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "
 printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
 sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
 printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
-sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" >> "${STOVE0_CONFIG_HOST_PATH}"
+jq '{format, policies: [.policies[] | select(.id == "conformance-media")]}' \
+  "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" | \
+  sed 's/^/  /' >> "${STOVE0_CONFIG_HOST_PATH}"
 chmod 0640 "${STOVE0_CONFIG_HOST_PATH}"
 
 adapter_config="${smoke_root}/ftp-spool.yaml"
@@ -271,25 +273,25 @@ export A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE="${secret_root}/a-stove0-nvenc-
 export A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE="${secret_root}/a-review0-nvenc-av1-opus-sampler-token"
 export A_STOVE0_OPUS_TARGET_TOKEN_FILE="${secret_root}/a-stove0-opus-target-token"
 export A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE="${secret_root}/a-review0-opus-sampler-token"
-export A_REVIEW0_MATERIALIZER_TOKEN_FILE="${secret_root}/a-review0-materializer-token"
-export A_REVIEW0_RCLONE_TARGET_TOKEN_FILE="${secret_root}/a-review0-rclone-target-token"
+export REVIEW0_TOKEN_FILE="${secret_root}/review0-token"
+export A_STOVE0_RCLONE_TARGET_TOKEN_FILE="${secret_root}/a-stove0-rclone-target-token"
 export A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID="sha256:$(printf '1%.0s' {1..64})"
 export A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID="sha256:$(printf '6%.0s' {1..64})"
 export A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID="sha256:$(printf '2%.0s' {1..64})"
 export A_STOVE0_OPUS_TARGET_IMAGE_ID="sha256:$(printf '3%.0s' {1..64})"
-export A_REVIEW0_MATERIALIZER_IMAGE_ID="sha256:$(printf '4%.0s' {1..64})"
-export A_REVIEW0_RCLONE_TARGET_IMAGE_ID="sha256:$(printf '7%.0s' {1..64})"
+export REVIEW0_IMAGE_ID="sha256:$(printf '4%.0s' {1..64})"
+export A_STOVE0_RCLONE_TARGET_IMAGE_ID="sha256:$(printf '7%.0s' {1..64})"
 # Compose interpolates the complete model before it selects services.  The
-# review targets are created only after this bootstrap value is replaced with
+# review0 is created only after this bootstrap value is replaced with
 # the running sampler's exact descriptor identity below.
 export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(printf '5%.0s' {1..64})"
 materializer_config="${smoke_root}/review-materializer.yaml"
-rclone_target_config="${smoke_root}/review-rclone-target.yaml"
-export A_REVIEW0_MATERIALIZER_CONFIG_HOST_PATH="${materializer_config}"
-export A_REVIEW0_RCLONE_TARGET_CONFIG_HOST_PATH="${rclone_target_config}"
+rclone_target_config="${smoke_root}/rclone-target.yaml"
+export REVIEW0_CONFIG_HOST_PATH="${materializer_config}"
+export A_STOVE0_RCLONE_TARGET_CONFIG_HOST_PATH="${rclone_target_config}"
 write_review_configs() {
   cat > "${materializer_config}" <<EOF
-token_file: /run/secrets/a_review0_materializer_token
+token_file: /run/secrets/review0_token
 samplers:
   - id: opus
     base_url: http://a-review0-opus-sampler:8080
@@ -299,16 +301,9 @@ samplers:
     image_id: ${A_STOVE0_OPUS_TARGET_IMAGE_ID}
 EOF
   cat > "${rclone_target_config}" <<EOF
-token_file: /run/secrets/a_review0_rclone_target_token
-destination_identity: ${REVIEW0_RCLONE_EFFECT_DESTINATION_IDENTITY:-bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1}
-rclone_remote: /var/lib/review0-delivery
-samplers:
-  - id: opus
-    base_url: http://a-review0-opus-sampler:8080
-    token_file: /run/secrets/a_review0_opus_sampler_token
-    allow_insecure_http: true
-    descriptor_sha256: ${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}
-    image_id: ${A_STOVE0_OPUS_TARGET_IMAGE_ID}
+token_file: /run/secrets/a_stove0_rclone_target_token
+destination_identity: bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1
+rclone_remote: /var/lib/stove0-rclone-delivery
 EOF
   chmod 0644 "${materializer_config}" "${rclone_target_config}"
 }
@@ -343,10 +338,10 @@ export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(
   stove0_compose exec -T a-review0-opus-sampler python -c "${sampler_descriptor_code}"
 )"
 write_review_configs
-stove0_compose up --detach --build --wait a-review0-materializer a-review0-rclone-target
-stove0_compose exec -T a-review0-materializer python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review-materialize-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
-stove0_compose exec -T a-review0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review-rclone-effect-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
-stove0_compose exec -T a-review0-rclone-target python -c "from pathlib import Path; import subprocess; source = Path('/tmp/rclone-probe'); source.write_bytes(b'riverhog-review-effect-probe'); destination = Path('/var/lib/review0-delivery/qualification/probe'); subprocess.run(['rclone', 'copyto', str(source), str(destination)], check=True); assert destination.read_bytes() == source.read_bytes(); source.unlink(); destination.unlink()"
+stove0_compose up --detach --build --wait review0 a-stove0-rclone-target
+stove0_compose exec -T review0 python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review0-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
+stove0_compose exec -T a-stove0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-rclone-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
+stove0_compose exec -T a-stove0-rclone-target python -c "from pathlib import Path; import subprocess; source = Path('/tmp/rclone-probe'); source.write_bytes(b'riverhog-rclone-effect-probe'); destination = Path('/var/lib/stove0-rclone-delivery/qualification/probe'); subprocess.run(['rclone', 'copyto', str(source), str(destination)], check=True); assert destination.read_bytes() == source.read_bytes(); source.unlink(); destination.unlink()"
 
 admission_baseline_code="import json, time, urllib.request
 deadline = time.monotonic() + 60
@@ -987,6 +982,7 @@ else:
         )
     )"
 stove0_compose exec -T api python -c "${wait_code}"
+
 scale_elapsed_ns=$(( $(date +%s%N) - scale_started_ns ))
 
 output_code="import json, os, urllib.request
@@ -1164,8 +1160,70 @@ fi
 
 stove0_compose restart \
   api controller worker a-stove0-ffprobe-sampling-observer a-stove0-exiftool-observer \
-  a-stove0-opus-target a-review0-opus-sampler a-review0-materializer a-review0-rclone-target
+  a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose up --detach --wait \
   api controller worker a-stove0-ffprobe-sampling-observer a-stove0-exiftool-observer \
-  a-stove0-opus-target a-review0-opus-sampler a-review0-materializer a-review0-rclone-target
+  a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose exec -T api python -c "${wait_code}"
+
+# Review0's ordinary finalized collection is inspected before introducing the
+# independent delivery admission policy. This makes the collection boundary
+# observable instead of relying on a race with fast local rclone delivery.
+review_input_root="${smoke_root}/review-input"
+install -d -m 0700 "${review_input_root}"
+python3 -c "import sys, wave
+with wave.open(sys.argv[1], 'wb') as audio:
+    audio.setnchannels(1)
+    audio.setsampwidth(2)
+    audio.setframerate(8000)
+    audio.writeframes(b'\\x00\\x00' * 16000)" \
+  "${review_input_root}/review-input.wav"
+review_input_receipt_json="$(
+  compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
+    --volume "${review_input_root}:/review-input:ro" \
+    --entrypoint a-riverhog-cli test collection upload start /review-input \
+    --omit-provenance 'compose qualification fixture' --json
+)"
+review_qualification="$(cat "${ROOT_DIR}/scripts/qualify_review0_delivery.py")"
+review_result_json="$(stove0_compose exec -T \
+  --env "REVIEW_INPUT_RECEIPT=${review_input_receipt_json}" \
+  api python -c "${review_qualification}" review)"
+review_output_collection_id="$(printf '%s' "${review_result_json}" | jq -r '.collection_id')"
+review_source_collection_id="$(printf '%s' "${review_result_json}" | jq -r '.source_collection_id')"
+test -n "${review_output_collection_id}"
+
+full_admission_config="${smoke_root}/stove0.full-admissions.yaml"
+sed '/^admissions:/,$d' "${STOVE0_CONFIG_HOST_PATH}" > "${full_admission_config}"
+printf '%s\n' 'admissions:' >> "${full_admission_config}"
+sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" >> "${full_admission_config}"
+cat "${full_admission_config}" > "${STOVE0_CONFIG_HOST_PATH}"
+stove0_compose restart api controller worker
+stove0_compose up --detach --wait api controller worker
+
+delivery_result_json="$(stove0_compose exec -T \
+  --env "REVIEW_OUTPUT_COLLECTION_ID=${review_output_collection_id}" \
+  --env "REVIEW_SOURCE_COLLECTION_ID=${review_source_collection_id}" \
+  api python -c "${review_qualification}" delivery)"
+delivery_id="$(printf '%s' "${delivery_result_json}" | jq -r '.delivery_id')"
+manifest_sha256="$(printf '%s' "${delivery_result_json}" | jq -r '.manifest_sha256')"
+stove0_compose exec -T \
+  --env "RCLONE_DELIVERY_ID=${delivery_id}" \
+  --env "RCLONE_MANIFEST_SHA256=${manifest_sha256}" \
+  a-stove0-rclone-target python -c "import hashlib, json, os
+from pathlib import Path
+root = Path('/var/lib/stove0-rclone-delivery') / os.environ['RCLONE_DELIVERY_ID']
+marker = (root / 'manifest.json').read_bytes()
+assert hashlib.sha256(marker).hexdigest() == os.environ['RCLONE_MANIFEST_SHA256']
+manifest = json.loads(marker)
+assert manifest['delivery_id'] == os.environ['RCLONE_DELIVERY_ID']
+assert manifest['artifacts']
+for artifact in manifest['artifacts']:
+    delivered = (root / 'objects' / artifact['delivered_path']).read_bytes()
+    assert len(delivered) == int(artifact['bytes'])
+    assert hashlib.sha256(delivered).hexdigest() == artifact['sha256']"
+stove0_compose restart api controller worker a-stove0-rclone-target
+stove0_compose up --detach --wait api controller worker a-stove0-rclone-target
+stove0_compose exec -T \
+  --env "REVIEW_OUTPUT_COLLECTION_ID=${review_output_collection_id}" \
+  --env "REVIEW_SOURCE_COLLECTION_ID=${review_source_collection_id}" \
+  api python -c "${review_qualification}" delivery > /dev/null

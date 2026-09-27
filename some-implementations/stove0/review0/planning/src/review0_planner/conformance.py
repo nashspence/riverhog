@@ -8,7 +8,7 @@ import json
 from collections.abc import Sequence
 
 from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
-from review0_target_contracts import REVIEW_MATERIALIZE_OPERATION
+from review0_contracts import REVIEW_MATERIALIZE_OPERATION
 
 _REVIEW_CONTRACT_REPORT = {
     "format": "review0-contract-report/v1",

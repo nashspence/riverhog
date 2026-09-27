@@ -579,7 +579,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
             operation=operation,
             target_registration_id="fixture-target",
             target_descriptor_sha256=_sha("f"),
-            source_collection_retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-settlement",
         )
 
 

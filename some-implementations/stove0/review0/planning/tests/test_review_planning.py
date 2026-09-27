@@ -8,13 +8,13 @@ from a_stove0_media_sampling_contract_lib import (
     SampleableRange,
 )
 from pydantic import ValidationError
+from review0_contracts import REVIEW_MATERIALIZE_OPERATION
 from review0_planner import (
     ReviewVariant,
     contract_report,
     evenly_spaced_sample_plan,
     review_evaluation_definition,
 )
-from review0_target_contracts import REVIEW_MATERIALIZE_OPERATION
 from stove0_protocol import CollectionRootIdentityRef, RecipeIdentityRef
 
 

@@ -17,15 +17,15 @@ from a_stove0_media_metadata_contract_lib import (
     MediaMetadataFact,
     MediaMetadataFacts,
 )
-from review0_planner import ReviewVariant, review_evaluation_definition
-from review0_target_contracts import (
+from a_stove0_rclone_target.contracts import RCLONE_DELIVER_OPERATION
+from review0_contracts import (
     REVIEW_MATERIALIZE_OPERATION,
-    REVIEW_RCLONE_DELIVER_OPERATION,
     REVIEW_SOURCE_ROLE,
     ReviewSamplePlan,
     ReviewSamplePlanPayload,
     ReviewSampleWindow,
 )
+from review0_planner import ReviewVariant, review_evaluation_definition
 from riverhog_client import ApiClient
 from riverhog_protocol import (
     ImmutableFileIdentityDocument,
@@ -34,6 +34,7 @@ from riverhog_protocol import (
     PortableCollectionInventoryPage,
 )
 from riverhog_protocol.collection_workflows import canonical_json_sha256
+from riverhog_protocol.errors import NotFound
 from stove0_core import (
     ObserverPort,
     RecipeCatalog,
@@ -87,6 +88,10 @@ def _sha(character: str) -> str:
 
 
 class CatalogApi:
+    def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
+        assert collection_id == 11
+        raise NotFound("collection has no derivation")
+
     def get_collection(self, collection_id: int) -> dict[str, object]:
         assert collection_id == 11
         return {
@@ -974,7 +979,7 @@ def test_supplied_recipes_embed_exact_maintained_contracts_and_explicit_cost_pol
                 AUDIO_ARCHIVE_OPERATION,
                 AV1_OPUS_ARCHIVE_OPERATION,
                 REVIEW_MATERIALIZE_OPERATION,
-                REVIEW_RCLONE_DELIVER_OPERATION,
+                RCLONE_DELIVER_OPERATION,
             ),
             key=lambda operation: operation.id,
         )
@@ -986,6 +991,43 @@ def test_supplied_recipes_embed_exact_maintained_contracts_and_explicit_cost_pol
         route.input_retrieval_policy for recipe in catalog.recipes for route in recipe.routes
     }
     assert policies == {"allow", "available-only"}
+
+
+def test_manual_planning_rejects_derived_input_unless_recipe_opts_in() -> None:
+    class DerivedCatalogApi(CatalogApi):
+        def get_collection_derivation(self, collection_id: int) -> dict[str, object]:
+            assert collection_id == 11
+            return {"execution_id": _sha("a")}
+
+    recipe = RecipeDefinition(
+        id="fixture.derived-admission/v1",
+        revision="1",
+        unmatched_artifact_disposition="retain-in-source",
+        routes=(
+            RecipeRoute(
+                id="archive",
+                operation_id=AUDIO_ARCHIVE_OPERATION.id,
+                target_registration_id="opus",
+                artifact_rules=(ArtifactRule(role=SOURCE_ROLE),),
+            ),
+        ),
+    )
+    root = CollectionRootIdentityRef(
+        collection_id="11", archive_root_sha256=_sha("1"), content_identity=_sha("2")
+    )
+
+    def planner(allow_derived_inputs: bool) -> RecipePlanner:
+        selected = recipe.model_copy(update={"allow_derived_inputs": allow_derived_inputs})
+        return RecipePlanner(
+            catalog=RecipeCatalog(operations=(AUDIO_ARCHIVE_OPERATION,), recipes=(selected,)),
+            riverhog=cast(ApiClient, DerivedCatalogApi()),
+            observers=cast(ObserverPort, object()),
+            targets=cast(TargetPort, object()),
+        )
+
+    with pytest.raises(ValueError, match="does not admit derived collection"):
+        planner(False).create_work(recipe.id, (root,))
+    assert planner(True).create_work(recipe.id, (root,)).inputs == (root,)
 
 
 def test_production_planner_resolves_overlapping_branches_into_one_exact_join() -> None:
@@ -1219,7 +1261,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
         id="fixture.retirement/v1",
         revision="1",
         unmatched_artifact_disposition="retain-in-source",
-        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-settlement",
         routes=(
             RecipeRoute(
                 id="all",
@@ -1245,7 +1287,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
     decision = planner.workflow_plan(planner.create_work(recipe.id, (root,)), ())
 
     assert isinstance(decision, BranchSetDecision)
-    assert decision.plan.source_collection_retirement_policy == "retire-after-verified-output"
+    assert decision.plan.source_collection_retirement_policy == "retire-after-settlement"
     selections = {
         branch.branch_id: decision.selection_documents[branch.artifact_selection.selection_sha256]
         for branch in decision.plan.branches
@@ -1259,7 +1301,7 @@ def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() 
         id="fixture.retirement/v1",
         revision="1",
         unmatched_artifact_disposition="retain-in-source",
-        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-settlement",
         routes=(
             RecipeRoute(
                 id="video-only",
@@ -1288,7 +1330,7 @@ def test_catalog_rejects_retirement_recipe_using_audio_only_operation() -> None:
         id="fixture.unsafe-audio-retirement/v1",
         revision="1",
         unmatched_artifact_disposition="retain-in-source",
-        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-settlement",
         routes=(
             RecipeRoute(
                 id="audio",

@@ -395,7 +395,18 @@ class ClassificationAdmissionService:
         raise RuntimeError("admission policy phase is invalid")
 
     def _matches(self, policy: AdmissionPolicy, descriptor: CatalogSyncDescriptor) -> bool:
-        return catalog_selector_matches(self.riverhog, policy.selector, descriptor)
+        if not catalog_selector_matches(self.riverhog, policy.selector, descriptor):
+            return False
+        recipe = self.planner.catalog.recipe(policy.recipe_id, policy.recipe_revision)
+        if recipe.allow_derived_inputs:
+            return True
+        try:
+            self.riverhog.get_collection_derivation(descriptor.collection_id)
+        except RiverhogError as exc:
+            if exc.code == "not_found":
+                return True
+            raise
+        return False
 
     def _commit_baseline_page(
         self,
