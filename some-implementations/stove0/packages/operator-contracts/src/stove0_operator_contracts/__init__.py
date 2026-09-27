@@ -32,8 +32,10 @@ from stove0_protocol import (
     EvaluationDefinition,
     JoinPlan,
     JoinWorkBinding,
+    PreviewOutcome,
     Sha256,
     WorkflowPlan,
+    WorkflowPreview,
     WorkIdentity,
     canonical_json_sha256,
 )
@@ -66,6 +68,7 @@ WorkPhase = Literal[
     "coordinating",
     "abandon_pending",
     "complete",
+    "no_action",
     "inapplicable",
     "failed",
     "canceled",
@@ -82,6 +85,7 @@ EvaluationChildState = Literal[
     "pending",
     "active",
     "complete",
+    "no_action",
     "inapplicable",
     "failed",
     "canceled",
@@ -91,7 +95,15 @@ WorkSort = Literal["updated_at", "phase", "work_id"]
 EvaluationSort = Literal["updated_at", "phase", "evaluation_id"]
 SchedulerRole = Literal["controller", "worker", "combined"]
 AdmissionPhase = Literal["new", "baseline", "following", "reset_required"]
-AdmissionState = Literal["intent", "previewed", "work_bound"]
+AdmissionState = Literal[
+    "intent",
+    "previewed",
+    "work_bound",
+    "resolved_no_action",
+    "resolved_inapplicable",
+    "resolved_failed",
+    "resolved_canceled",
+]
 AdmissionSort = Literal["created_at", "updated_at", "state", "admission_id"]
 ADMISSION_POLICY_COUNT_MAX = 100
 
@@ -289,6 +301,7 @@ class AdmissionView(OperatorModel):
     state: AdmissionState
     preview_sha256: Sha256 | None = None
     work_id: Sha256 | None = None
+    outcome: PreviewOutcome | None = None
     attempt_count: int = Field(ge=0)
     next_attempt_at: CanonicalUtcTimestamp | None = None
     failure: str | None = Field(default=None, min_length=1, max_length=1000)
@@ -297,13 +310,30 @@ class AdmissionView(OperatorModel):
 
     @model_validator(mode="after")
     def exact_stage(self) -> Self:
+        resolved = {
+            "resolved_no_action",
+            "resolved_inapplicable",
+            "resolved_failed",
+            "resolved_canceled",
+        }
         if self.state == "intent" and (self.preview_sha256 is not None or self.work_id is not None):
             raise ValueError("unpreviewed admission cannot contain later-stage identities")
         if self.state == "previewed" and (self.preview_sha256 is None or self.work_id is not None):
             raise ValueError("previewed admission has invalid stage identities")
         if self.state == "work_bound" and (self.preview_sha256 is None or self.work_id is None):
             raise ValueError("work-bound admission requires preview and work identities")
-        if (self.state == "work_bound") != (self.next_attempt_at is None):
+        if self.state in resolved and self.preview_sha256 is None:
+            raise ValueError("resolved admission requires an exact preview identity")
+        if self.state == "resolved_no_action" and self.work_id is None:
+            raise ValueError("resolved no-action admission requires its terminal work identity")
+        if (
+            self.state in {"resolved_inapplicable", "resolved_failed", "resolved_canceled"}
+            and self.work_id is not None
+        ):
+            raise ValueError("non-work admission resolution cannot bind work")
+        if (self.state in resolved) != (self.outcome is not None):
+            raise ValueError("resolved admission requires exactly one preview outcome")
+        if (self.state in resolved | {"work_bound"}) != (self.next_attempt_at is None):
             raise ValueError("admission retry scheduling differs from its stage")
         return self
 
@@ -430,23 +460,30 @@ def validate_work_state_shape(
     phase: WorkPhase,
     claim: object | None,
     preview_acceptance: object | None,
+    no_action_preview: WorkflowPreview | None,
     expected_target_plan_sha256: str | None,
     branch_set_plan: BranchSetPlan | None,
     coordination_settlement: CoordinationSettlement | None,
     join_plan: JoinPlan | None,
     coordination_cancel_requested: bool,
     workflow_plan: WorkflowPlan | None,
+    target_plan: object | None,
+    controller_evidence: object | None,
+    target_request: object | None,
+    target_status: object | None,
     output: OutputCollectionRef | None,
+    target_settlement: object | None,
+    effect_settlement_sha256: str | None,
     source_collection_retirement_remaining: Sequence[int],
     failure: object | None,
     inapplicable: object | None,
-    abandon_outcome: Literal["inapplicable", "failed", "canceled"] | None,
+    abandon_outcome: Literal["no_action", "inapplicable", "failed", "canceled"] | None,
 ) -> None:
     """Validate the one work-state relationship shared by storage and projection."""
 
     if phase == "eligible" and claim is not None:
         raise ValueError("eligible work cannot already hold a claim")
-    inactive_without_claim = {"eligible", "failed", "canceled", "inapplicable"}
+    inactive_without_claim = {"eligible", "failed", "canceled", "inapplicable", "no_action"}
     if phase not in inactive_without_claim and claim is None:
         raise ValueError("active work phases require a claim")
     if output is not None and phase not in {
@@ -459,6 +496,26 @@ def validate_work_state_shape(
         raise ValueError("output identity appears before verification")
     if phase in {"abandon_pending", "failed", "canceled", "inapplicable"} and output is not None:
         raise ValueError("non-success terminal work cannot contain an output")
+    no_action_phases = {"no_action"}
+    if phase == "abandon_pending" and abandon_outcome == "no_action":
+        no_action_phases.add("abandon_pending")
+    if (phase in no_action_phases) != (no_action_preview is not None):
+        raise ValueError("no-action work requires exactly one sealed no-action preview")
+    if no_action_preview is not None and (
+        no_action_preview.state != "no_action"
+        or no_action_preview.work != work
+        or branch_set_plan is not None
+        or workflow_plan is not None
+        or preview_acceptance is not None
+        or target_plan is not None
+        or controller_evidence is not None
+        or target_request is not None
+        or target_status is not None
+        or output is not None
+        or target_settlement is not None
+        or effect_settlement_sha256 is not None
+    ):
+        raise ValueError("no-action preview cannot carry executable work authority")
     failure_phases = {"failed"}
     if phase == "abandon_pending" and abandon_outcome == "failed":
         failure_phases.add("abandon_pending")
@@ -825,6 +882,7 @@ class WorkView(OperatorModel):
     revision: int = Field(ge=1)
     claim: WorkClaimView | None = None
     preview_acceptance: PreviewAcceptanceView | None = None
+    no_action_preview: WorkflowPreview | None = None
     expected_target_plan_sha256: Sha256 | None = None
     observation_requests: tuple[ContentObservationRequest, ...] = ()
     observation_results: tuple[ContentObservationResult, ...] = ()
@@ -843,7 +901,7 @@ class WorkView(OperatorModel):
     source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailureView | None = None
     inapplicable: WorkInapplicableView | None = None
-    abandon_outcome: Literal["inapplicable", "failed", "canceled"] | None = None
+    abandon_outcome: Literal["no_action", "inapplicable", "failed", "canceled"] | None = None
 
     @model_validator(mode="after")
     def exact_identity(self) -> Self:
@@ -854,13 +912,20 @@ class WorkView(OperatorModel):
             phase=self.phase,
             claim=self.claim,
             preview_acceptance=self.preview_acceptance,
+            no_action_preview=self.no_action_preview,
             expected_target_plan_sha256=self.expected_target_plan_sha256,
             branch_set_plan=self.branch_set_plan,
             coordination_settlement=self.coordination_settlement,
             join_plan=self.join_plan,
             coordination_cancel_requested=self.coordination_cancel_requested,
             workflow_plan=self.workflow_plan,
+            target_plan=self.target_plan,
+            controller_evidence=self.controller_evidence,
+            target_request=self.target_request,
+            target_status=self.target_status,
             output=self.output,
+            target_settlement=self.target_settlement,
+            effect_settlement_sha256=self.effect_settlement_sha256,
             source_collection_retirement_remaining=self.source_collection_retirement_remaining,
             failure=self.failure,
             inapplicable=self.inapplicable,

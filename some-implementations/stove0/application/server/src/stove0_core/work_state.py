@@ -14,6 +14,7 @@ from typing import Any, Literal, Protocol, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_protocol import (
+    ContentObservationEvidence,
     ContentObservationRequest,
     ContentObservationResult,
 )
@@ -71,12 +72,13 @@ WorkPhase = Literal[
     "coordinating",
     "abandon_pending",
     "complete",
+    "no_action",
     "inapplicable",
     "failed",
     "canceled",
 ]
-TerminalPhase = Literal["complete", "inapplicable", "failed", "canceled"]
-AbandonOutcome = Literal["inapplicable", "failed", "canceled"]
+TerminalPhase = Literal["complete", "no_action", "inapplicable", "failed", "canceled"]
+AbandonOutcome = Literal["no_action", "inapplicable", "failed", "canceled"]
 
 
 def _selection_continuation(selection_sha256: str, artifact: WorkArtifactSubject) -> str:
@@ -112,6 +114,13 @@ class WorkFailure(Stove0StateModel):
 
 
 class WorkInapplicable(Stove0StateModel):
+    code: str = Field(min_length=1, max_length=160)
+    message: str = Field(min_length=1, max_length=1000)
+
+
+class WorkNoAction(Stove0StateModel):
+    """A recipe-authorized successful decision without target execution."""
+
     code: str = Field(min_length=1, max_length=160)
     message: str = Field(min_length=1, max_length=1000)
 
@@ -284,6 +293,7 @@ class WorkRecord(Stove0StateModel):
     revision: int = Field(default=1, ge=1)
     claim: ClaimBinding | None = None
     preview_acceptance: PreviewAcceptance | None = None
+    no_action_preview: WorkflowPreview | None = None
     expected_target_plan_sha256: Sha256 | None = None
     observation_requests: tuple[ContentObservationRequest, ...] = ()
     observation_results: tuple[ContentObservationResult, ...] = ()
@@ -338,13 +348,20 @@ class WorkRecord(Stove0StateModel):
             phase=self.phase,
             claim=self.claim,
             preview_acceptance=self.preview_acceptance,
+            no_action_preview=self.no_action_preview,
             expected_target_plan_sha256=self.expected_target_plan_sha256,
             branch_set_plan=self.branch_set_plan,
             coordination_settlement=self.coordination_settlement,
             join_plan=self.join_plan,
             coordination_cancel_requested=self.coordination_cancel_requested,
             workflow_plan=self.workflow_plan,
+            target_plan=self.target_plan,
+            controller_evidence=self.controller_evidence,
+            target_request=self.target_request,
+            target_status=self.target_status,
             output=self.output,
+            target_settlement=self.target_settlement,
+            effect_settlement_sha256=self.effect_settlement_sha256,
             source_collection_retirement_remaining=self.source_collection_retirement_remaining,
             failure=self.failure,
             inapplicable=self.inapplicable,
@@ -572,6 +589,10 @@ class InMemoryWorkStore:
                     or (
                         record.preview_acceptance is not None
                         and existing.preview_acceptance != record.preview_acceptance
+                    )
+                    or (
+                        record.no_action_preview is not None
+                        and existing.no_action_preview != record.no_action_preview
                     )
                     or (
                         record.expected_target_plan_sha256 is not None
@@ -1102,9 +1123,13 @@ class Stove0WorkService:
         *,
         preview: WorkflowPreview | None = None,
     ) -> WorkRecord:
-        acceptance = PreviewAcceptance.from_preview(preview) if preview is not None else None
         if preview is not None and preview.work != work:
             raise ValueError("accepted workflow preview differs from the initiated work")
+        if preview is not None and preview.state == "no_action":
+            return self.store.create(
+                WorkRecord(work=work, phase="no_action", no_action_preview=preview)
+            )
+        acceptance = PreviewAcceptance.from_preview(preview) if preview is not None else None
         return self.store.create(WorkRecord(work=work, preview_acceptance=acceptance))
 
     def admit_branch_set(
@@ -1227,6 +1252,7 @@ class Stove0WorkService:
             "source_collection_retirement_pending",
             "abandon_pending",
             "complete",
+            "no_action",
             "inapplicable",
             "failed",
             "canceled",
@@ -1747,6 +1773,33 @@ class Stove0WorkService:
             abandon_outcome="inapplicable",
         )
 
+    def mark_no_action(
+        self,
+        work_id: str,
+        preview: WorkflowPreview,
+        *,
+        expected_revision: int,
+    ) -> WorkRecord:
+        record = self._load(work_id, expected_revision)
+        if record.phase != "planning":
+            raise Stove0StateError(f"work cannot resolve no action from {record.phase}")
+        if preview.state != "no_action" or preview.work != record.work:
+            raise ValueError("no-action preview differs from the planned work")
+        evidence = tuple(
+            ContentObservationEvidence(request=request, result=result)
+            for request, result in zip(
+                record.observation_requests, record.observation_results, strict=True
+            )
+        )
+        if preview.observations != evidence:
+            raise ValueError("no-action preview differs from the recorded observations")
+        return self._replace(
+            record,
+            phase="abandon_pending",
+            no_action_preview=preview,
+            abandon_outcome="no_action",
+        )
+
     def fail(
         self,
         work_id: str,
@@ -1757,7 +1810,14 @@ class Stove0WorkService:
         record = self._load(work_id, expected_revision)
         if record.phase == "abandon_pending":
             return record
-        if record.phase in {"complete", "inapplicable", "failed", "canceled", "settled"}:
+        if record.phase in {
+            "complete",
+            "no_action",
+            "inapplicable",
+            "failed",
+            "canceled",
+            "settled",
+        }:
             raise Stove0StateError(f"work cannot fail from {record.phase}")
         return self._replace(
             record,
@@ -1786,7 +1846,7 @@ class Stove0WorkService:
                 failure=None,
                 abandon_outcome="canceled",
             )
-        if record.phase in {"complete", "inapplicable", "canceled", "settled"}:
+        if record.phase in {"complete", "no_action", "inapplicable", "canceled", "settled"}:
             raise Stove0StateError(f"work cannot cancel from {record.phase}")
         return self._replace(
             record,
@@ -1854,6 +1914,7 @@ __all__ = [
     "TerminalPhase",
     "WorkFailure",
     "WorkInapplicable",
+    "WorkNoAction",
     "WorkPhase",
     "WorkRecord",
     "WorkStore",

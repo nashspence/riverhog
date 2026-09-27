@@ -364,6 +364,9 @@
 <a href="#s-01f994f78f55ca4f4fc19f7b">RecipeJoinMember</a>
 </li>
 <li>
+<a href="#s-24b5f706e9f238de0d095c24">RecipeNoAction</a>
+</li>
+<li>
 <a href="#s-26cbee273669f21ea03253f2">RecipeRoute</a>
 </li>
 <li>
@@ -2282,7 +2285,7 @@
 <section class="schema-section" id="s-70d453a919b480e34be3b899">
 <h3>Definition: RecipeDefinition</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -2349,6 +2352,15 @@
 <a href="#s-6a0ae1038f8e61e806c544c4">join</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-77627199af34832183c008ea.html#v-47fdf0fc29778fad1068681e">#/$defs/RecipeJoin</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-ee236eb32538c5bae5cf3766">no_action</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-77627199af34832183c008ea.html#v-24b5f706e9f238de0d095c24">#/$defs/RecipeNoAction</a>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -2659,6 +2671,77 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-24b5f706e9f238de0d095c24">
+<h3>Definition: RecipeNoAction</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>RecipeNoAction</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>Explicit observation decision that succeeds without executing a target.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;,&quot;when&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-8a4ae6a8cc83c37382d60e4f">when</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-77627199af34832183c008ea.html#v-b1f87a02d61e6c564c1b113d">#/$defs/FactPredicate</a>; minItems: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -3821,6 +3904,34 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-ee236eb32538c5bae5cf3766">
+<h3>Field: no_action</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-77627199af34832183c008ea.html#v-24b5f706e9f238de0d095c24">#/$defs/RecipeNoAction</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-77627199af34832183c008ea.html#v-24b5f706e9f238de0d095c24">#/$defs/RecipeNoAction</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-0acf934c9ea55085fcf77a14">
 <h3>Field: observers</h3>
 <p class="shape">
@@ -3945,6 +4056,26 @@
 <dt>title</dt>
 <dd>
 <code>Output Roles</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-8a4ae6a8cc83c37382d60e4f">
+<h3>Field: when</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-77627199af34832183c008ea.html#v-b1f87a02d61e6c564c1b113d">#/$defs/FactPredicate</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>When</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -11433,6 +11564,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_action</code>
+</th>
+<td>
+<table id="v-ee236eb32538c5bae5cf3766">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-7c3a016570d538949b978c55">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9cae50816a6078c64fb31a3b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-79c14c9acbc09b1c9dce74ca">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeDefinition/properties/no_action/anyOf/0/$ref">#/$defs/RecipeNoAction</code>
+<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-24b5f706e9f238de0d095c24">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e291e120d1197e83c48e15ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b6667f4021d7b30d88ef1a9e">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeDefinition/properties/no_action/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3ebe9b2485412fc5347413dc">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeDefinition/properties/no_action/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>observers</code>
 </th>
 <td>
@@ -12851,6 +13052,256 @@
 <td>
 <span id="v-cf7a24cd263a856577594ada">
 <code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeJoinMember/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeNoAction</code>
+</th>
+<td>
+<table id="v-24b5f706e9f238de0d095c24">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a75a85613718008c76dd9341">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-0be17f4ab3ab8ae22a28e945">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/description">Explicit observation decision that succeeds without executing a target.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1ab4435bdb14e9d0c1142604">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-613a4709dd57db1c2a9d98d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-71a350e0e72dc552f5413f82">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-76b127e30d22229939daf650">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/code/title">Code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1a7197dd8d0e6f548281b80a">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-640b25d1223dfe29c0a6772d">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-2737d94cbd7321908a6812d5">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-cc0961f9d58577f58c6bf1a5">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a4ea12d3842fde8927a0ae3a">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/message/title">Message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f1ac2d4f280a757e1cebedaf">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>when</code>
+</th>
+<td>
+<table id="v-8a4ae6a8cc83c37382d60e4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-33d3462b72f17e43ccbc5cd7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0a8adb9bc6b737c01d4a869e">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/when/items/$ref">#/$defs/FactPredicate</code>
+<span class="kind">string</span> <a href="e-77627199af34832183c008ea.html#v-b1f87a02d61e6c564c1b113d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-873806f95b3e877ad3c8a897">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/when/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bb54f66bbf7b4f8f79fc05cb">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/when/title">When</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ea105c8e22bdfb5bd66b5336">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/when/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f1dab873a9559e2137491e54">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-1247ed19e42fcf4968f7c083">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ca1d7a63330f29eb4dac3eb5">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-674ee0d62f15399a9741b52e">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/required/2">when</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a45724ce1c6c0b4e2007ec01">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/title">RecipeNoAction</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-de0a837255b830903aab170c">
+<code data-value-pointer="/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -15873,6 +16324,24 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/message</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeNoAction/properties/when</code></td>
+<td data-label="Governing rule">
+<code>configuration-composition/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-server:configuration:stove0-document&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;validated-deployment-composition&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/configuration_documents/stove0-server:configuration:stove0-document/$defs/RecipeRoute/properties/artifact_rules</code></td>
 <td data-label="Governing rule">
 <code>configuration-composition/v1</code></td>
@@ -16005,7 +16474,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

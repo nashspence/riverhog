@@ -35,7 +35,7 @@ from stove0_core.coordinator import (
     PlanningPort,
     TargetPort,
 )
-from stove0_core.work_state import ClaimBinding, WorkInapplicable
+from stove0_core.work_state import ClaimBinding, WorkInapplicable, WorkNoAction
 
 
 class PreviewRiverhogPort(Protocol):
@@ -86,11 +86,13 @@ class WorkflowPreviewService:
                 evidence,
                 nested_observer=lambda child: self._observe_work(child, claim, observations),
             )
-            if isinstance(decision, WorkInapplicable):
+            if isinstance(decision, (WorkInapplicable, WorkNoAction)):
                 return WorkflowPreview.seal(
                     WorkflowPreviewPayload(
                         preview_id=request.preview_id,
-                        state="inapplicable",
+                        state=(
+                            "no_action" if isinstance(decision, WorkNoAction) else "inapplicable"
+                        ),
                         work=identity,
                         observations=tuple(
                             sorted(observations, key=lambda item: item.request.request_id)

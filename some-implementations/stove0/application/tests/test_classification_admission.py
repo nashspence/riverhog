@@ -16,9 +16,13 @@ from riverhog_protocol import (
 from riverhog_protocol.errors import CatalogSyncViewChanged
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
-from stove0_core import ClassificationAdmissionService, SqlAlchemyStateStore
+from stove0_core import (
+    ClassificationAdmissionService,
+    SqlAlchemyStateStore,
+    Stove0WorkService,
+)
 from stove0_core.persistence import _AdmissionCandidateRow, _AdmissionPolicyRow
-from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy
+from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy, WorkView
 from stove0_protocol import (
     ArtifactSelection,
     BranchPlan,
@@ -26,6 +30,7 @@ from stove0_protocol import (
     BranchTargetPreview,
     CollectionRootIdentityRef,
     OperationIdentityRef,
+    PreviewOutcome,
     RecipeIdentityRef,
     TargetPlanBinding,
     WorkArtifactSubject,
@@ -282,6 +287,27 @@ class _Preview:
         return _ready_preview(work)
 
 
+class _TerminalPreview:
+    def __init__(self, state: str, *, retryable: bool | None = None) -> None:
+        self.state = state
+        self.retryable = retryable
+
+    def preview(self, work: WorkIdentity) -> WorkflowPreview:
+        request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
+        return WorkflowPreview.seal(
+            WorkflowPreviewPayload(
+                preview_id=request.preview_id,
+                state=cast(Any, self.state),
+                work=work,
+                outcome=PreviewOutcome(
+                    code="fixture.outcome/v1",
+                    message="The exact observation resolved this intent.",
+                    retryable=self.retryable,
+                ),
+            )
+        )
+
+
 class _SelectivePreview:
     def __init__(self, failing_collection_id: int) -> None:
         self.failing_collection_id = failing_collection_id
@@ -299,6 +325,141 @@ class _Coordinator:
     def create_or_resume(self, work: WorkIdentity, *, preview: WorkflowPreview) -> SimpleNamespace:
         self.calls.append((work, preview))
         return SimpleNamespace(work=work)
+
+
+@pytest.mark.parametrize(
+    ("preview_state", "admission_state"),
+    [
+        ("inapplicable", "resolved_inapplicable"),
+        ("failed", "resolved_failed"),
+        ("canceled", "resolved_canceled"),
+    ],
+)
+def test_terminal_preview_resolves_admission_without_retry(
+    preview_state: str, admission_state: str
+) -> None:
+    state = _state()
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    policy = _policy()
+    service = _service(
+        state=state,
+        api=_CatalogApi(descriptor, {"camera", "workflow/archive"}),
+        policy=policy,
+        preview=_TerminalPreview(preview_state),
+        coordinator=Stove0WorkService(state),
+    )
+    intent = AdmissionIntent.seal(policy=policy, collection=descriptor)
+    with state.sessions() as session, session.begin():
+        service._record_intent(session, policy, descriptor)
+    service._advance_candidate(intent.admission_id)
+    view = service.get_admission(intent.admission_id)
+    assert view.state == admission_state
+    assert view.preview_sha256 is not None
+    assert view.outcome is not None and view.outcome.code == "fixture.outcome/v1"
+    assert view.next_attempt_at is None
+    assert view.work_id is None
+    assert service._pending_candidates(limit=10) == ()
+    service._advance_candidate(intent.admission_id)
+    assert service.get_admission(intent.admission_id) == view
+
+
+def test_no_action_admission_retains_terminal_work_across_restart() -> None:
+    state = _state()
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    policy = _policy()
+    kwargs = dict(
+        state=state,
+        api=_CatalogApi(descriptor, {"camera", "workflow/archive"}),
+        policy=policy,
+        preview=_TerminalPreview("no_action"),
+        coordinator=Stove0WorkService(state),
+    )
+    service = _service(**kwargs)
+    intent = AdmissionIntent.seal(policy=policy, collection=descriptor)
+    with state.sessions() as session, session.begin():
+        service._record_intent(session, policy, descriptor)
+    service._advance_candidate(intent.admission_id)
+    assert service.get_admission(intent.admission_id).state == "previewed"
+    service._advance_candidate(intent.admission_id)
+    view = service.get_admission(intent.admission_id)
+    assert view.state == "resolved_no_action"
+    assert view.work_id is not None
+    assert view.outcome is not None and view.outcome.code == "fixture.outcome/v1"
+    assert view.next_attempt_at is None
+    record = state.load(view.work_id)
+    assert record is not None and record.phase == "no_action"
+    assert record.no_action_preview is not None
+    assert record.no_action_preview.preview_sha256 == view.preview_sha256
+    assert record.branch_set_plan is None and record.target_request is None
+    assert WorkView.from_record(record).phase == "no_action"
+    restarted = _service(**kwargs)
+    restarted._advance_candidate(intent.admission_id)
+    assert restarted.get_admission(intent.admission_id) == view
+    assert restarted._pending_candidates(limit=10) == ()
+
+
+def test_no_action_admission_recovers_work_saved_before_resolution() -> None:
+    state = _state()
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    policy = _policy()
+    kwargs = dict(
+        state=state,
+        api=_CatalogApi(descriptor, {"camera", "workflow/archive"}),
+        policy=policy,
+        preview=_TerminalPreview("no_action"),
+        coordinator=Stove0WorkService(state),
+    )
+    service = _service(**kwargs)
+    intent = AdmissionIntent.seal(policy=policy, collection=descriptor)
+    with state.sessions() as session, session.begin():
+        service._record_intent(session, policy, descriptor)
+    service._advance_candidate(intent.admission_id)
+    with state.sessions() as session:
+        row = session.get(_AdmissionCandidateRow, intent.admission_id)
+        assert row is not None and row.preview_json is not None
+        preview = WorkflowPreview.model_validate_json(row.preview_json)
+    work = _Planner(policy).create_work(
+        policy.recipe_id,
+        (
+            CollectionRootIdentityRef(
+                collection_id=str(descriptor.collection_id),
+                archive_root_sha256=descriptor.archive_root_sha256,
+                content_identity=descriptor.content_identity,
+            ),
+        ),
+        revision=policy.recipe_revision,
+        effective_intent=policy.effective_intent,
+    )
+    saved = Stove0WorkService(state).create_or_resume(work, preview=preview)
+    assert saved.phase == "no_action"
+    restarted = _service(**kwargs)
+    restarted._advance_candidate(intent.admission_id)
+    view = restarted.get_admission(intent.admission_id)
+    assert view.state == "resolved_no_action"
+    assert view.work_id == saved.work_id
+    assert view.preview_sha256 == preview.preview_sha256
+    assert restarted._pending_candidates(limit=10) == ()
+
+
+def test_only_retryable_preview_failure_remains_pending() -> None:
+    state = _state()
+    descriptor = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    policy = _policy()
+    service = _service(
+        state=state,
+        api=_CatalogApi(descriptor, {"camera", "workflow/archive"}),
+        policy=policy,
+        preview=_TerminalPreview("failed", retryable=True),
+    )
+    intent = AdmissionIntent.seal(policy=policy, collection=descriptor)
+    with state.sessions() as session, session.begin():
+        service._record_intent(session, policy, descriptor)
+    with pytest.raises(RuntimeError, match="retryable automatic preview failure") as exc:
+        service._advance_candidate(intent.admission_id)
+    service._record_candidate_failure(intent.admission_id, exc.value)
+    view = service.get_admission(intent.admission_id)
+    assert view.state == "intent" and view.attempt_count == 1
+    assert view.next_attempt_at is not None
 
 
 def test_admission_baseline_is_non_triggering_and_false_to_true_is_exactly_once() -> None:

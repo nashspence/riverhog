@@ -204,7 +204,7 @@
 <code>phase</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -769,7 +769,7 @@
 </th>
 <td>
 <span id="v-b1e8f9bb3ef4fb39f95d2389">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/14">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/14">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -779,7 +779,7 @@
 </th>
 <td>
 <span id="v-54170cb0a39090518043fa42">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/15">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/15">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -789,7 +789,17 @@
 </th>
 <td>
 <span id="v-b4d274f74a9e4a5fb666ee9b">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/16">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/16">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>17</code>
+</th>
+<td>
+<span id="v-ae67c75fe34b8ec634dedd3c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/17">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1238,7 +1248,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

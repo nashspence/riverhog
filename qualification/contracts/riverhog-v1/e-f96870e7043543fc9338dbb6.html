@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-4c588910d987459da943c939">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -105,6 +105,14 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-9c65ef329b20441fe51dcd32">outcome</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-efbc6c3c30bada7ebc582a84.html#v-0e24eaf1b1fc15085a582a5e">#/components/schemas/PreviewOutcome</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-c05701d9fd74e1ef48bdfae0">preview_sha256</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
@@ -116,7 +124,7 @@
 <code>state</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -199,6 +207,34 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9c65ef329b20441fe51dcd32">
+<h3>Field: outcome</h3>
+<p class="shape">any of: <a href="e-efbc6c3c30bada7ebc582a84.html#v-0e24eaf1b1fc15085a582a5e">#/components/schemas/PreviewOutcome</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-efbc6c3c30bada7ebc582a84.html#v-0e24eaf1b1fc15085a582a5e">#/components/schemas/PreviewOutcome</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -615,6 +651,66 @@
 </tr>
 <tr>
 <th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-9c65ef329b20441fe51dcd32">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-a27f78be6ca839cff31424c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-90aa2a065c9f02b12ca7eb2e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-62d4ecfa0aed49661b9a0407">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/outcome/anyOf/0/$ref">#/components/schemas/PreviewOutcome</code>
+<span class="kind">string</span> <a href="e-efbc6c3c30bada7ebc582a84.html#v-0e24eaf1b1fc15085a582a5e">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c12529344bb9162b53e5a2d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-57c9a542796e7b0efdd415a0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/outcome/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>preview_sha256</code>
 </th>
 <td>
@@ -734,6 +830,46 @@
 <td>
 <span id="v-e17c45a345a0c56af91598bc">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/state/enum/2">work_bound</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-d92e70b0ce8dc64e3a29af62">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/state/enum/3">resolved_no_action</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-b28290cfafec705c59f0ef5f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/state/enum/4">resolved_inapplicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-a51d23e027b19506d66a1c48">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/state/enum/5">resolved_failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-04aedf68384c923d8e7b0ee7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionView/properties/state/enum/6">resolved_canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1091,7 +1227,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

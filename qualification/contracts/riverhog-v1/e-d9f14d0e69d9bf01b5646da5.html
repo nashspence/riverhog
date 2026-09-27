@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], state: Literal[&#x27;pending&#x27;, &#x27;active&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], output: stove0_target_protocol.protocol.OutputCollectionRef | None = None) -&gt; None&quot;</code>
+<code>&quot;(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], state: Literal[&#x27;pending&#x27;, &#x27;active&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], output: stove0_target_protocol.protocol.OutputCollectionRef | None = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-ad894bceda1dc06d0a2fd88a">
@@ -99,7 +99,7 @@
 <code>state</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;active&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;active&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -720,7 +720,7 @@
 </th>
 <td>
 <span id="v-21f8a0697f23f637757c6e69">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/3">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/3">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -730,7 +730,7 @@
 </th>
 <td>
 <span id="v-e13ba735ce59df655d4771a7">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/4">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/4">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -740,7 +740,17 @@
 </th>
 <td>
 <span id="v-d5bb32f93c4f0413ce862438">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/5">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/5">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-e97869cff608d32c972bdd45">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/schema/properties/state/enum/6">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -892,7 +902,7 @@
 </th>
 <td>
 <span id="v-f50d26ee629e3fef78dec45b">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/signature">&quot;(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], state: Literal[&#x27;pending&#x27;, &#x27;active&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], output: stove0_target_protocol.protocol.OutputCollectionRef | None = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.EvaluationChildView/contract/signature">&quot;(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], state: Literal[&#x27;pending&#x27;, &#x27;active&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], output: stove0_target_protocol.protocol.OutputCollectionRef | None = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -983,7 +993,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

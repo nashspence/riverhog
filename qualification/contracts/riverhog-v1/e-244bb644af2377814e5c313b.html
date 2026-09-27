@@ -134,7 +134,7 @@
 <td data-label="Name">
 <code>ck_stove0_work_records_phase</code></td>
 <td data-label="Exact definition">
-<code>CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN (&#x27;eligible&#x27;,&#x27;claimed&#x27;,&#x27;observing&#x27;,&#x27;planning&#x27;,&#x27;target_preflight&#x27;,&#x27;queued&#x27;,&#x27;executing&#x27;,&#x27;output_finalizing&#x27;,&#x27;verifying&#x27;,&#x27;settled&#x27;,&#x27;source_collection_retirement_pending&#x27;,&#x27;coordinating&#x27;,&#x27;abandon_pending&#x27;,&#x27;complete&#x27;,&#x27;inapplicable&#x27;,&#x27;failed&#x27;,&#x27;canceled&#x27;))</code></td>
+<code>CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN (&#x27;eligible&#x27;,&#x27;claimed&#x27;,&#x27;observing&#x27;,&#x27;planning&#x27;,&#x27;target_preflight&#x27;,&#x27;queued&#x27;,&#x27;executing&#x27;,&#x27;output_finalizing&#x27;,&#x27;verifying&#x27;,&#x27;settled&#x27;,&#x27;source_collection_retirement_pending&#x27;,&#x27;coordinating&#x27;,&#x27;abandon_pending&#x27;,&#x27;complete&#x27;,&#x27;no_action&#x27;,&#x27;inapplicable&#x27;,&#x27;failed&#x27;,&#x27;canceled&#x27;))</code></td>
 </tr>
 <tr>
 <td data-label="Kind">
@@ -602,7 +602,7 @@
 </th>
 <td>
 <span id="v-4cc535bade4ed4ef9a822ddd">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/11/constraints/2/definition">CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN (&#x27;eligible&#x27;,&#x27;claimed&#x27;,&#x27;observing&#x27;,&#x27;planning&#x27;,&#x27;target_preflight&#x27;,&#x27;queued&#x27;,&#x27;executing&#x27;,&#x27;output_finalizing&#x27;,&#x27;verifying&#x27;,&#x27;settled&#x27;,&#x27;source_collection_retirement_pending&#x27;,&#x27;coordinating&#x27;,&#x27;abandon_pending&#x27;,&#x27;complete&#x27;,&#x27;inapplicable&#x27;,&#x27;failed&#x27;,&#x27;canceled&#x27;))</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/11/constraints/2/definition">CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN (&#x27;eligible&#x27;,&#x27;claimed&#x27;,&#x27;observing&#x27;,&#x27;planning&#x27;,&#x27;target_preflight&#x27;,&#x27;queued&#x27;,&#x27;executing&#x27;,&#x27;output_finalizing&#x27;,&#x27;verifying&#x27;,&#x27;settled&#x27;,&#x27;source_collection_retirement_pending&#x27;,&#x27;coordinating&#x27;,&#x27;abandon_pending&#x27;,&#x27;complete&#x27;,&#x27;no_action&#x27;,&#x27;inapplicable&#x27;,&#x27;failed&#x27;,&#x27;canceled&#x27;))</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -612,7 +612,7 @@
 </th>
 <td>
 <span id="v-bf10e66afa566e9f7485616e">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/11/constraints/2/expression">(phase IN (&#x27;eligible&#x27;,&#x27;claimed&#x27;,&#x27;observing&#x27;,&#x27;planning&#x27;,&#x27;target_preflight&#x27;,&#x27;queued&#x27;,&#x27;executing&#x27;,&#x27;output_finalizing&#x27;,&#x27;verifying&#x27;,&#x27;settled&#x27;,&#x27;source_collection_retirement_pending&#x27;,&#x27;coordinating&#x27;,&#x27;abandon_pending&#x27;,&#x27;complete&#x27;,&#x27;inapplicable&#x27;,&#x27;failed&#x27;,&#x27;canceled&#x27;))</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/11/constraints/2/expression">(phase IN (&#x27;eligible&#x27;,&#x27;claimed&#x27;,&#x27;observing&#x27;,&#x27;planning&#x27;,&#x27;target_preflight&#x27;,&#x27;queued&#x27;,&#x27;executing&#x27;,&#x27;output_finalizing&#x27;,&#x27;verifying&#x27;,&#x27;settled&#x27;,&#x27;source_collection_retirement_pending&#x27;,&#x27;coordinating&#x27;,&#x27;abandon_pending&#x27;,&#x27;complete&#x27;,&#x27;no_action&#x27;,&#x27;inapplicable&#x27;,&#x27;failed&#x27;,&#x27;canceled&#x27;))</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -848,7 +848,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

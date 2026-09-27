@@ -123,7 +123,7 @@ class _WorkRow(_Base):
             "phase IN ('eligible','claimed','observing','planning','target_preflight',"
             "'queued','executing','output_finalizing','verifying','settled',"
             "'source_collection_retirement_pending','coordinating','abandon_pending','complete',"
-            "'inapplicable','failed','canceled')",
+            "'no_action','inapplicable','failed','canceled')",
             name="ck_stove0_work_records_phase",
         ),
         CheckConstraint("length(work_id) = 64", name="ck_stove0_work_records_id"),
@@ -642,7 +642,7 @@ class _AdmissionCandidateRow(_Base):
 
     admission_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     policy_id: Mapped[str] = mapped_column(String(160), nullable=False)
-    state: Mapped[str] = mapped_column(String(16), nullable=False)
+    state: Mapped[str] = mapped_column(String(32), nullable=False)
     preview_sha256: Mapped[str | None] = mapped_column(String(64))
     work_id: Mapped[str | None] = mapped_column(String(64))
     document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
@@ -657,7 +657,8 @@ class _AdmissionCandidateRow(_Base):
 
     __table_args__ = (
         CheckConstraint(
-            "state IN ('intent','previewed','work_bound')",
+            "state IN ('intent','previewed','work_bound','resolved_no_action',"
+            "'resolved_inapplicable','resolved_failed','resolved_canceled')",
             name="ck_stove0_admission_candidate_state",
         ),
         CheckConstraint("document_bytes >= 0", name="ck_stove0_admission_candidate_bytes"),
@@ -667,8 +668,9 @@ class _AdmissionCandidateRow(_Base):
         ),
         CheckConstraint("attempt_count >= 0", name="ck_stove0_admission_candidate_attempt_count"),
         CheckConstraint(
-            "state = 'work_bound' AND next_attempt_at IS NULL OR "
-            "state != 'work_bound' AND next_attempt_at IS NOT NULL",
+            "state IN ('work_bound','resolved_no_action','resolved_inapplicable',"
+            "'resolved_failed','resolved_canceled') AND next_attempt_at IS NULL OR "
+            "state IN ('intent','previewed') AND next_attempt_at IS NOT NULL",
             name="ck_stove0_admission_candidate_next_attempt",
         ),
         Index(
@@ -809,6 +811,10 @@ class SqlAlchemyStateStore:
                 or (
                     record.preview_acceptance is not None
                     and existing.preview_acceptance != record.preview_acceptance
+                )
+                or (
+                    record.no_action_preview is not None
+                    and existing.no_action_preview != record.no_action_preview
                 )
                 or (
                     record.expected_target_plan_sha256 is not None
@@ -2003,7 +2009,7 @@ class _EvaluationStoreView:
 def _prune_root_page(session: Session, *, cutoff: str) -> tuple[str, ...]:
     """Return one bounded rotating page of terminal retention roots."""
 
-    terminal = ("complete", "inapplicable", "failed", "canceled")
+    terminal = ("complete", "no_action", "inapplicable", "failed", "canceled")
     cursor = session.get(_CursorRow, _PRUNE_CURSOR_STREAM)
     after = cursor.cursor if cursor is not None else ""
 
@@ -2112,7 +2118,9 @@ def _prune_work_component(
         .where(
             _WorkRow.work_id.in_(select(work_ids.c.work_id)),
             or_(
-                _WorkRow.phase.not_in(("complete", "inapplicable", "failed", "canceled")),
+                _WorkRow.phase.not_in(
+                    ("complete", "no_action", "inapplicable", "failed", "canceled")
+                ),
                 _WorkRow.updated_at > cutoff,
             ),
         )

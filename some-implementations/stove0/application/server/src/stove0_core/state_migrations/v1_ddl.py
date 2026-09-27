@@ -156,7 +156,7 @@ CREATE INDEX ix_stove0_admission_observed_revisions_collection ON stove0_admissi
 CREATE TABLE stove0_admission_candidates (
 	admission_id VARCHAR(64) NOT NULL,
 	policy_id VARCHAR(160) NOT NULL,
-	state VARCHAR(16) NOT NULL,
+	state VARCHAR(32) NOT NULL,
 	preview_sha256 VARCHAR(64),
 	work_id VARCHAR(64),
 	document_bytes BIGINT NOT NULL,
@@ -169,11 +169,11 @@ CREATE TABLE stove0_admission_candidates (
 	created_at VARCHAR(40) NOT NULL,
 	updated_at VARCHAR(40) NOT NULL,
 	PRIMARY KEY (admission_id),
-	CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN ('intent','previewed','work_bound')),
+	CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN ('intent','previewed','work_bound','resolved_no_action','resolved_inapplicable','resolved_failed','resolved_canceled')),
 	CONSTRAINT ck_stove0_admission_candidate_bytes CHECK (document_bytes >= 0),
 	CONSTRAINT ck_stove0_admission_candidate_preview_bytes CHECK (preview_bytes IS NULL OR preview_bytes >= 0),
 	CONSTRAINT ck_stove0_admission_candidate_attempt_count CHECK (attempt_count >= 0),
-	CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state = 'work_bound' AND next_attempt_at IS NULL OR state != 'work_bound' AND next_attempt_at IS NOT NULL),
+	CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state IN ('work_bound','resolved_no_action','resolved_inapplicable','resolved_failed','resolved_canceled') AND next_attempt_at IS NULL OR state IN ('intent','previewed') AND next_attempt_at IS NOT NULL),
 	CONSTRAINT ck_stove0_admission_candidates_admission_id_hex CHECK (length(admission_id) = 64 AND lower(admission_id) = admission_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(admission_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_stove0_admission_candidates_preview_sha256_hex CHECK (preview_sha256 IS NULL OR length(preview_sha256) = 64 AND lower(preview_sha256) = preview_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(preview_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_stove0_admission_candidates_work_id_hex CHECK (work_id IS NULL OR length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
@@ -298,7 +298,7 @@ CREATE TABLE stove0_work_records (
 	document_json TEXT NOT NULL,
 	PRIMARY KEY (work_id),
 	CONSTRAINT ck_stove0_work_records_revision CHECK (revision >= 1),
-	CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled')),
+	CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','no_action','inapplicable','failed','canceled')),
 	CONSTRAINT ck_stove0_work_records_id CHECK (length(work_id) = 64),
 	CONSTRAINT ck_stove0_work_records_document_bytes CHECK (document_bytes >= 0),
 	CONSTRAINT ck_stove0_work_records_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
@@ -559,7 +559,7 @@ CREATE TABLE stove0_work_records (
 	document_json TEXT NOT NULL,
 	PRIMARY KEY (work_id),
 	CONSTRAINT ck_stove0_work_records_revision CHECK (revision >= 1),
-	CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled')),
+	CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','no_action','inapplicable','failed','canceled')),
 	CONSTRAINT ck_stove0_work_records_id CHECK (length(work_id) = 64),
 	CONSTRAINT ck_stove0_work_records_document_bytes CHECK (document_bytes >= 0),
 	CONSTRAINT ck_stove0_work_records_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')

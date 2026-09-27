@@ -342,7 +342,7 @@
 <code>state</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;active&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; default: <code>pending</code></td>
+<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;active&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; default: <code>pending</code></td>
 <td data-label="Default">
 <code>pending</code></td>
 <td data-label="Description"></td>
@@ -1406,7 +1406,7 @@
 </th>
 <td>
 <span id="v-be112c20af57e5199b523c99">
-<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/3">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/3">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1416,7 +1416,7 @@
 </th>
 <td>
 <span id="v-1785a244c11fd04af2863f82">
-<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/4">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/4">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1426,7 +1426,17 @@
 </th>
 <td>
 <span id="v-9b2ae2f66fc34a9593e285c8">
-<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/5">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/5">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-8698a492b7cff33d027d1512">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationRecord/contract/schema/$defs/EvaluationChild/properties/state/enum/6">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3478,7 +3488,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

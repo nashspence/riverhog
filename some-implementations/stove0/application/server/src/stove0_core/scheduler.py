@@ -14,7 +14,7 @@ from stove0_core.coordinator import Stove0Coordinator
 from stove0_core.persistence import SqlAlchemyStateStore
 from stove0_core.work_state import ConcurrentWorkUpdate
 
-_TERMINAL_PHASES = frozenset({"complete", "inapplicable", "failed", "canceled"})
+_TERMINAL_PHASES = frozenset({"complete", "no_action", "inapplicable", "failed", "canceled"})
 _PRUNE_INTERVAL_SECONDS = 60 * 60
 SchedulerRole = Literal["controller", "worker", "combined"]
 

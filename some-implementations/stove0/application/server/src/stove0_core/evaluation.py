@@ -35,6 +35,7 @@ EvaluationChildState = Literal[
     "pending",
     "active",
     "complete",
+    "no_action",
     "inapplicable",
     "failed",
     "canceled",
@@ -254,6 +255,8 @@ class EvaluationService:
         state: EvaluationChildState
         if record.phase == "complete":
             state = "complete"
+        elif record.phase == "no_action":
+            state = "no_action"
         elif record.phase == "inapplicable":
             state = "inapplicable"
         elif record.phase == "failed":
@@ -335,10 +338,10 @@ def _evaluation_phase(children: tuple[EvaluationChild, ...]) -> EvaluationPhase:
     states = {item.state for item in children}
     if states & {"pending", "active"}:
         return "running"
-    completed = sum(item.state == "complete" for item in children)
-    if completed == len(children):
+    succeeded = sum(item.state in {"complete", "no_action"} for item in children)
+    if succeeded == len(children):
         return "complete"
-    if completed:
+    if succeeded:
         return "partially_complete"
     if states == {"canceled"}:
         return "canceled"

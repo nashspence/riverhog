@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
+<code>&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;, &#x27;resolved_no_action&#x27;, &#x27;resolved_inapplicable&#x27;, &#x27;resolved_failed&#x27;, &#x27;resolved_canceled&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-e19189015eda5ecd67188d00">
@@ -150,7 +150,7 @@
 <td data-label="Field">
 <a href="#s-02027fe057bffb5b336c5159">state</a></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code>; <code>null</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -185,6 +185,9 @@
 </li>
 <li>
 <a href="#s-1041b08a94c5bfc078575878">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-ebbb659789b46c9a088ebcfb">PreviewOutcome</a>
 </li>
 <li>
 <a href="#s-c2186f60db83ef9218468527">TaggedCatalogSelector</a>
@@ -277,7 +280,7 @@
 </section>
 <section class="schema-section" id="s-02027fe057bffb5b336c5159">
 <h3>Field: state</h3>
-<p class="shape">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;]</code>; <code>null</code>
+<p class="shape">any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -292,7 +295,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -442,7 +445,7 @@
 <section class="schema-section" id="s-fc72800bc8399fe9daf5388d">
 <h3>Definition: AdmissionView</h3>
 <p class="shape">
-<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -518,6 +521,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-e9bc589400f21c2440daa769">outcome</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-f36de4a8fe542906039c28cb.html#v-ebbb659789b46c9a088ebcfb">#/$defs/PreviewOutcome</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-12e9d8c69232d6f44435365f">preview_sha256</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
@@ -530,7 +542,7 @@
 <code>state</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;,&quot;resolved_no_action&quot;,&quot;resolved_inapplicable&quot;,&quot;resolved_failed&quot;,&quot;resolved_canceled&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -800,6 +812,69 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-ebbb659789b46c9a088ebcfb">
+<h3>Definition: PreviewOutcome</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-41b24fb9fe4b9e701d6d0da6">retryable</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-c2186f60db83ef9218468527">
 <h3>Definition: TaggedCatalogSelector</h3>
 <p class="shape">
@@ -927,6 +1002,34 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-e9bc589400f21c2440daa769">
+<h3>Field: outcome</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-f36de4a8fe542906039c28cb.html#v-ebbb659789b46c9a088ebcfb">#/$defs/PreviewOutcome</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-f36de4a8fe542906039c28cb.html#v-ebbb659789b46c9a088ebcfb">#/$defs/PreviewOutcome</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-12e9d8c69232d6f44435365f">
 <h3>Field: preview_sha256</h3>
 <p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
@@ -1001,6 +1104,34 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-f36de4a8fe542906039c28cb.html#v-fd5c292b931d3611c14119a8">#/$defs/CollectionDescription</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-41b24fb9fe4b9e701d6d0da6">
+<h3>Field: retryable</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1890,6 +2021,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-e9bc589400f21c2440daa769">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-15a314a59554e4cae8b09fec">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b6ce077ef4808104b613cc71">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b7348f94ee0232cf8ceb14dc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/outcome/anyOf/0/$ref">#/$defs/PreviewOutcome</code>
+<span class="kind">string</span> <a href="e-f36de4a8fe542906039c28cb.html#v-ebbb659789b46c9a088ebcfb">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-dc32056747a3397c4816795b">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-71589f4393fcc7aa5c737d21">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/outcome/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-eeb9ecf75f98eaf6c74f90f5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/outcome/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>preview_sha256</code>
 </th>
 <td>
@@ -2009,6 +2210,46 @@
 <td>
 <span id="v-890fa074d81ac610d80e954e">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/2">work_bound</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-e0a6e5030a1b3695bec0eda2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/3">resolved_no_action</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-c7e080605399956c4c745af3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/4">resolved_inapplicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-63f737ccce57550fa4da8ad1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/5">resolved_failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-43f9a334c1bcd59e488856cc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/AdmissionView/properties/state/enum/6">resolved_canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3126,6 +3367,216 @@
 </tr>
 <tr>
 <th scope="row">
+<code>PreviewOutcome</code>
+</th>
+<td>
+<table id="v-ebbb659789b46c9a088ebcfb">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7dcdbc14bafe877ec42c5d48">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-b845bc3ad3f54925f27ad882">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-fe97a6ce47b97fe14fbca26d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-1623c6ab5cf9454147ff0f25">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e89445c870c4090b9a66c5ad">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-d5d9e240b82bf57fd23a74c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-1c096a39b21799938b2b4b0b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-4f273e4163615363171f6a88">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-84a0ede03ffed9dcc3a60401">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>retryable</code>
+</th>
+<td>
+<table id="v-41b24fb9fe4b9e701d6d0da6">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-ec2b533f2005d6ae759254f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f3500068db06df0195acb5e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-68fc95c8a5d8b088f84f27e4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-89d3716c431ed014df46acdd">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0cbc54215d52d1907e102dd8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-ca82a13b9f88fd0f38344f0d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/properties/retryable/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-48b206923e621b8ab007ccce">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-87072e0eeab86a6f455bed2a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-16c40447c81a3ba15bd63bc5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2adc064e9e3509fb0274a8ac">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/PreviewOutcome/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>TaggedCatalogSelector</code>
 </th>
 <td>
@@ -3752,6 +4203,46 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4b1113e8893b80f1cb4e8797">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/3">resolved_no_action</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-c5f9bfb3bd8f49a27072bbed">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/4">resolved_inapplicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-fda0336f5c1fcdc3c692eb13">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/5">resolved_failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-adbc72a277310558dd63b1d4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/properties/state/anyOf/0/enum/6">resolved_canceled</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -3906,7 +4397,7 @@
 </th>
 <td>
 <span id="v-9a9a9e6761b4de35d4b5121c">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/signature">&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/signature">&quot;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: Literal[&#x27;created_at&#x27;, &#x27;updated_at&#x27;, &#x27;state&#x27;, &#x27;admission_id&#x27;], order: Literal[&#x27;asc&#x27;, &#x27;desc&#x27;], filters: dict[str, JsonValue], policy_id: str | None, state: Optional[Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;, &#x27;resolved_no_action&#x27;, &#x27;resolved_inapplicable&#x27;, &#x27;resolved_failed&#x27;, &#x27;resolved_canceled&#x27;]], admissions: tuple[stove0_operator_contracts.AdmissionView, ...]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3989,7 +4480,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

@@ -60,7 +60,7 @@ from stove0_target_protocol import (
 )
 
 from stove0_core.coordinator import ObserverPort, TargetPort
-from stove0_core.work_state import WorkInapplicable
+from stove0_core.work_state import WorkInapplicable, WorkNoAction
 
 NestedObservation = Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
 
@@ -157,11 +157,11 @@ class RecipePlanner:
         observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: NestedObservation | None = None,
-    ) -> BranchSetDecision | WorkInapplicable:
+    ) -> BranchSetDecision | WorkInapplicable | WorkNoAction:
         if isinstance(work.fork_join, JoinWorkBinding):
             raise RuntimeError("join work cannot become a coordination parent")
         prepared = self._planning_frame(work, observations, root=True)
-        if isinstance(prepared, WorkInapplicable):
+        if isinstance(prepared, (WorkInapplicable, WorkNoAction)):
             return prepared
 
         stack = [prepared]
@@ -202,6 +202,15 @@ class RecipePlanner:
                     nested_observer(child_work),
                     root=False,
                 )
+                if isinstance(child, WorkNoAction):
+                    # A selected coordination branch requires an exact child
+                    # plan; a successful empty child cannot satisfy that route.
+                    return WorkInapplicable(
+                        code="subrecipe-no-action",
+                        message=(
+                            f"Subrecipe branch {route.id} completed without output: {child.message}"
+                        )[:1000],
+                    )
                 if isinstance(child, WorkInapplicable):
                     return WorkInapplicable(
                         code=child.code,
@@ -286,10 +295,15 @@ class RecipePlanner:
         observations: tuple[ContentObservationEvidence, ...],
         *,
         root: bool,
-    ) -> _PlanningFrame | WorkInapplicable:
+    ) -> _PlanningFrame | WorkInapplicable | WorkNoAction:
         recipe = self._recipe(work)
-        inventory = self._inventory(work)
         evidence = tuple(sorted(observations, key=lambda item: item.request.request_id))
+        if recipe.no_action is not None and all(
+            _predicate_matches(predicate, evidence, candidate=())
+            for predicate in recipe.no_action.when
+        ):
+            return WorkNoAction(code=recipe.no_action.code, message=recipe.no_action.message)
+        inventory = self._inventory(work)
         selected: list[tuple[RecipeBranch, ArtifactSelection]] = []
         for route in recipe.routes:
             artifacts = _route_artifacts(

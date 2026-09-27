@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, no_action_preview: stove0_protocol.fork_join.WorkflowPreview | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-d77634b583c2254d17af0ab6">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 25 fields; additionalProperties: <code>false</code>
+<code>object</code>; 26 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -89,7 +89,7 @@
 <td data-label="Field">
 <a href="#s-7be2e0e961ba6b87162abda4">abandon_outcome</a></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code></td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -197,6 +197,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-42d4a03ab42dcb28921eb512">no_action_preview</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-3c9b16c02fd5a703043db78a">#/$defs/WorkflowPreview</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-90932f158b00f9aeb59a07b6">observation_requests</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -229,7 +238,7 @@
 <code>phase</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; default: <code>eligible</code></td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; default: <code>eligible</code></td>
 <td data-label="Default">
 <code>eligible</code></td>
 <td data-label="Description"></td>
@@ -332,6 +341,9 @@
 <a href="#s-61c024bd2c33315126f9a1d1">ArtifactDispositionSetIdentity</a>
 </li>
 <li>
+<a href="#s-156367fa9752225d13a264c5">ArtifactSelection</a>
+</li>
+<li>
 <a href="#s-65aa7e12867bd2f74cb387c6">ArtifactSelectionRef</a>
 </li>
 <li>
@@ -339,6 +351,9 @@
 </li>
 <li>
 <a href="#s-267b351e3e01ea012b6b35af">BranchSetPlan</a>
+</li>
+<li>
+<a href="#s-ab7513a36772d5d509599b34">BranchTargetPreview</a>
 </li>
 <li>
 <a href="#s-c4ede85f6bbcdc05f96727d4">BranchWorkBinding</a>
@@ -449,6 +464,9 @@
 <a href="#s-576b85d1350e2087ac61623b">PreviewAcceptance</a>
 </li>
 <li>
+<a href="#s-9d1a86620acdaa167901d7e0">PreviewOutcome</a>
+</li>
+<li>
 <a href="#s-7f5f6486221eec6c1a82e673">PreviewTargetExpectation</a>
 </li>
 <li>
@@ -511,11 +529,14 @@
 <li>
 <a href="#s-0a412d9082f39e6471ae6af6">WorkflowPlanIntent</a>
 </li>
+<li>
+<a href="#s-3c9b16c02fd5a703043db78a">WorkflowPreview</a>
+</li>
 </ul>
 </section>
 <section class="schema-section" id="s-7be2e0e961ba6b87162abda4">
 <h3>Field: abandon_outcome</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -530,7 +551,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<code>string</code>; enum: <code>[&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -783,6 +804,34 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-fa00199963d1ebd16275e227.html#v-5fcc715ea08e4bfc3ee81dd6">#/$defs/JoinPlan</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-42d4a03ab42dcb28921eb512">
+<h3>Field: no_action_preview</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-3c9b16c02fd5a703043db78a">#/$defs/WorkflowPreview</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-fa00199963d1ebd16275e227.html#v-3c9b16c02fd5a703043db78a">#/$defs/WorkflowPreview</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1162,6 +1211,88 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-156367fa9752225d13a264c5">
+<h3>Definition: ArtifactSelection</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifacts&quot;,&quot;artifact_count&quot;,&quot;total_bytes&quot;,&quot;selection_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-c1393dfdf8356d35f42cc806">artifacts</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-f67bf0ed87136bd2ffbb5341">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-artifact-selection/v1</code>; default: <code>stove0-artifact-selection/v1</code></td>
+<td data-label="Default">
+<code>stove0-artifact-selection/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>selection_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>total_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-fa00199963d1ebd16275e227.html#v-83ffa451737f40a831604aa1">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-65aa7e12867bd2f74cb387c6">
 <h3>Definition: ArtifactSelectionRef</h3>
 <p class="shape">
@@ -1413,6 +1544,78 @@
 <code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-settlement&quot;]</code>; default: <code>retain</code></td>
 <td data-label="Default">
 <code>retain</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ab7513a36772d5d509599b34">
+<h3>Definition: BranchTargetPreview</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;work_id&quot;,&quot;workflow_plan_sha256&quot;,&quot;target_plan&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>branch_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>target_plan</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-fa00199963d1ebd16275e227.html#v-4065e53771e29d895d2ad1ac">#/$defs/TargetPlanBinding</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>work_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>workflow_plan_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 </tbody>
@@ -4050,6 +4253,69 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-9d1a86620acdaa167901d7e0">
+<h3>Definition: PreviewOutcome</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-1830f97b811fb50ab2a4144d">retryable</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-7f5f6486221eec6c1a82e673">
 <h3>Definition: PreviewTargetExpectation</h3>
 <p class="shape">
@@ -5918,6 +6184,156 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-3c9b16c02fd5a703043db78a">
+<h3>Definition: WorkflowPreview</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;preview_id&quot;,&quot;state&quot;,&quot;work&quot;,&quot;preview_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-6519b34f14af3d70ad764b80">branch_set_plan</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">#/$defs/BranchSetPlan</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-c8339160bbe6258b330f95dc">branch_sets</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">#/$defs/BranchSetPlan</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-workflow-preview/v1</code>; default: <code>stove0-workflow-preview/v1</code></td>
+<td data-label="Default">
+<code>stove0-workflow-preview/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-57dc8f8a895acb04db80d3dc">observations</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-bcb2a93794c5afdffee65db5">#/$defs/ContentObservationEvidence</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-b49ae636777d3afa23337972">outcome</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-9d1a86620acdaa167901d7e0">#/$defs/PreviewOutcome</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>preview_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>preview_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-d8a26c7f4b06fb36fcbb8bfa">selections</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-156367fa9752225d13a264c5">#/$defs/ArtifactSelection</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;ready&quot;,&quot;no_action&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-e3e2893fd44a45f5ecfe9493">target_plans</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-ab7513a36772d5d509599b34">#/$defs/BranchTargetPreview</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-9e046eae9914b84db768e1ec">warnings</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>work</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-fa00199963d1ebd16275e227.html#v-0d1c76ace2da8ff92ba7bb6a">#/$defs/WorkIdentity</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-bdd90bc2de9df25ba01fdf3c">
 <h3>At least one must match: 1</h3>
 <p class="shape">exactly one of: <a href="e-fa00199963d1ebd16275e227.html#v-a231d93eaa6d197729622976">#/$defs/TransformPlan</a>; <a href="e-fa00199963d1ebd16275e227.html#v-4d12c94e218704f85de16659">#/$defs/EffectPlan</a>
@@ -5951,6 +6367,22 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-c1393dfdf8356d35f42cc806">
+<h3>Field: artifacts</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-f67bf0ed87136bd2ffbb5341">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-81478dfc9655bd756dd72061">
 <h3>Field: branches</h3>
@@ -6628,6 +7060,34 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-1830f97b811fb50ab2a4144d">
+<h3>Field: retryable</h3>
+<p class="shape">default: <code>null</code>; any of: <code>boolean</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-0b231df174c46907eb7a62d5">
 <h3>Field: runtime</h3>
 <p class="shape">
@@ -7180,6 +7640,122 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-6519b34f14af3d70ad764b80">
+<h3>Field: branch_set_plan</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">#/$defs/BranchSetPlan</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">#/$defs/BranchSetPlan</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c8339160bbe6258b330f95dc">
+<h3>Field: branch_sets</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">#/$defs/BranchSetPlan</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-57dc8f8a895acb04db80d3dc">
+<h3>Field: observations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-bcb2a93794c5afdffee65db5">#/$defs/ContentObservationEvidence</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-b49ae636777d3afa23337972">
+<h3>Field: outcome</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-fa00199963d1ebd16275e227.html#v-9d1a86620acdaa167901d7e0">#/$defs/PreviewOutcome</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-fa00199963d1ebd16275e227.html#v-9d1a86620acdaa167901d7e0">#/$defs/PreviewOutcome</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d8a26c7f4b06fb36fcbb8bfa">
+<h3>Field: selections</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-156367fa9752225d13a264c5">#/$defs/ArtifactSelection</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-e3e2893fd44a45f5ecfe9493">
+<h3>Field: target_plans</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-fa00199963d1ebd16275e227.html#v-ab7513a36772d5d509599b34">#/$defs/BranchTargetPreview</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9e046eae9914b84db768e1ec">
+<h3>Field: warnings</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-0a944265a52f5e34dfe8b8ac">
 <h3>items schema</h3>
 <p class="shape">exactly one of: <a href="e-fa00199963d1ebd16275e227.html#v-c67174ab76f19bcbbfffa95b">#/$defs/BranchPlan</a>; <a href="e-fa00199963d1ebd16275e227.html#v-bcd3578233f5414c57bd9122">#/$defs/CoordinationBranchPlan</a>
@@ -7716,6 +8292,276 @@
 <td>
 <span id="v-0d2cb9f8fab0d16d583c9d22">
 <code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactDispositionSetIdentity/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ArtifactSelection</code>
+</th>
+<td>
+<table id="v-156367fa9752225d13a264c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b15daa7b011a918408ff5ce9">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e8471b7c6ce304a67b549493">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_count</code>
+</th>
+<td>
+<table id="v-c85edb646ce64fe1b154caff">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-ff4ed1726ad255712553c940">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/artifact_count/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66964855d5cbc3b1c01d98b8">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/artifact_count/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>artifacts</code>
+</th>
+<td>
+<table id="v-c1393dfdf8356d35f42cc806">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-0b0ee2e9856cc03eec8d619c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d305c4ceabe7ed5113712320">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/artifacts/items/$ref">#/$defs/WorkArtifactSubject</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-f67bf0ed87136bd2ffbb5341">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-e08249fbc6d4d164ba479295">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/artifacts/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-32ed4f0d9c4ab22f5d5e226a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/artifacts/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-7c2ba72d119246acd99bdd23">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-3d1095b0ee5680cd82dc9cde">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/format/const">stove0-artifact-selection/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4b5cf8637294fab432a9eb56">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/format/default">stove0-artifact-selection/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cbc03344e12b00aa3de9e3e7">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>selection_sha256</code>
+</th>
+<td>
+<table id="v-daf4b85dbaa30b1bf69d8e4d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3f91b45caa6edca11a514aca">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/selection_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-296bc6c50bac0a47a12de634">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/selection_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>total_bytes</code>
+</th>
+<td>
+<table id="v-22a464b44bce10c169e368e5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-afbb8966227146e3e5276e3a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/total_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-83ffa451737f40a831604aa1">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-867bc8ded5a3c5e26c42d861">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/properties/total_bytes/ge">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2a41f154be21c12acce6476b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f32f20ee2fc3a63192a8a798">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/required/0">artifacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-66a3e59723f0c1fbc204e9cf">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/required/1">artifact_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-de7cc8afc03c55652ec98d32">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/required/2">total_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-a21d7e87fb1f206f28147807">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/required/3">selection_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ec87ac37a4e94a0b033ef175">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/ArtifactSelection/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8656,6 +9502,206 @@
 <td>
 <span id="v-e03158fe9895117e810c91bb">
 <code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchSetPlan/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>BranchTargetPreview</code>
+</th>
+<td>
+<table id="v-ab7513a36772d5d509599b34">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7ceaf8ea283e05fee7d732a7">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-15472f4deb8c0fe4f8ede2c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-705b89a69e9fa40eed4ea73e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4df083c01e0d2a94e21f9562">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b613a9feb7e8b0f58fe6fc2d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_plan</code>
+</th>
+<td>
+<table id="v-b985a5bde6f9be8a123239fe">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cb6e12228e9f5e2f9275d96a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/target_plan/$ref">#/$defs/TargetPlanBinding</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-4065e53771e29d895d2ad1ac">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-a7b4ddca0043e60d7ad74aa5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a6082dfe3c671b314461cf1f">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d32b6fdf965b64fa9588e4a7">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>workflow_plan_sha256</code>
+</th>
+<td>
+<table id="v-a41840b0f3266d4766b79a6c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-bce0eebe550f89f4d07f7735">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/workflow_plan_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7bc3c0e6ee3adf878e5d4fe4">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/properties/workflow_plan_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a455e8cec3b0162abccdad9e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5bb7ab0ee64bcc5ad4d6368c">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/required/0">branch_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-57bbfa2e3fb70cc7e8dcbdca">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/required/1">work_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-3f1c8517ea00281d1cbaed74">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/required/2">workflow_plan_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-a4e58c4caaa05e782ff35d04">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/required/3">target_plan</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-412481623a749939893369fe">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/BranchTargetPreview/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -17314,6 +18360,216 @@
 </tr>
 <tr>
 <th scope="row">
+<code>PreviewOutcome</code>
+</th>
+<td>
+<table id="v-9d1a86620acdaa167901d7e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8bf15f5bee471619768c4c52">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-8316a89b854f35af5eb3d81a">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-c0152ed6f7ac6715f16834c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-176ec2649a1ed08bb8859090">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6db0a41cd41121459802e643">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-e555ab53bf0473d78405ed33">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-510427ca3338c0bf3859c516">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-fd13e4d47e670cd6a95219a4">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-84b8c99f18a6992ce4462da9">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>retryable</code>
+</th>
+<td>
+<table id="v-1830f97b811fb50ab2a4144d">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-ed100dc25ebec027ec7b66c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3e2872752210ebe8e7f5b643">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9270ff465bdc7ddd9c738d59">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/0/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-47e28fcb55d8bcb0b552ce93">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9d2c971d6cbc6faa8118f92d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/retryable/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3cf50fe45eeec47a3a314b57">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/properties/retryable/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f9dafe4b8ca862f3a67b3b4d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-29a59bf75f03afadfd6a3ad5">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-58d2ea99b8486f46c0f74935">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-822928d1b87efd4af60c148f">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/PreviewOutcome/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>PreviewTargetExpectation</code>
 </th>
 <td>
@@ -24122,6 +25378,686 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>WorkflowPreview</code>
+</th>
+<td>
+<table id="v-3c9b16c02fd5a703043db78a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ec50b3dd68acf40a9e9c83f4">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-55913a421a8f3f0423308171">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_set_plan</code>
+</th>
+<td>
+<table id="v-6519b34f14af3d70ad764b80">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-170c3e5f1e098b5632ccabf1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-164dc035167933b78de4a69f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b1b59aec4f8488375dd62258">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/branch_set_plan/anyOf/0/$ref">#/$defs/BranchSetPlan</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-4df8de77643f4c317aff5b17">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e63d313fda6afdb3389d5dce">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/branch_set_plan/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-94049892ea66a8742d053961">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/branch_set_plan/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_sets</code>
+</th>
+<td>
+<table id="v-c8339160bbe6258b330f95dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a52e4b6c4c163b8829e058d6">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/branch_sets/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-86ba1483ce0df67fae3df56a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-998ad4c7007ee064b1fa009d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/branch_sets/items/$ref">#/$defs/BranchSetPlan</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-267b351e3e01ea012b6b35af">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-da2223ab41f6cc76460491cb">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/branch_sets/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-cc54d2b34763029fa4bfd671">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-f5ab23acb2ea9ba5d235307c">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/format/const">stove0-workflow-preview/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3b61e996a10e75112ae9cefd">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/format/default">stove0-workflow-preview/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9a164f68971486996e5c4402">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observations</code>
+</th>
+<td>
+<table id="v-57dc8f8a895acb04db80d3dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1421e4d491b822541d934142">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/observations/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b2f4c4438c068deb281f1207">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5ace6b496c12d21d4ab78d67">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/observations/items/$ref">#/$defs/ContentObservationEvidence</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-bcb2a93794c5afdffee65db5">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d374e14c96e1100cd6c7fc73">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/observations/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-b49ae636777d3afa23337972">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-6678592ca4e0c6ef5c7a700e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f9afa1823bb2efe72b41bdc1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-faf4a289c454228df042d75d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/outcome/anyOf/0/$ref">#/$defs/PreviewOutcome</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-9d1a86620acdaa167901d7e0">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b709422625f0276c9db20ba7">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-292358f0e2ef7d8d552da120">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/outcome/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4ee71ee445e13c0d8e917b69">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/outcome/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>preview_id</code>
+</th>
+<td>
+<table id="v-d823b8558eae667676ff915f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2b1bd6505245e318baa2de52">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/preview_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e36d16cd61309d7d3a544363">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/preview_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>preview_sha256</code>
+</th>
+<td>
+<table id="v-f3839e892dce1e375648ce91">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2f0716cb8756616068f57b55">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/preview_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4cf204ce3a9e3076b9ec86c">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/preview_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>selections</code>
+</th>
+<td>
+<table id="v-d8a26c7f4b06fb36fcbb8bfa">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-398fc7b3d2c245a0e180dd75">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/selections/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-58b74be12efead2b3307cf0e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e423baee24cfebd5e9fb8f39">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/selections/items/$ref">#/$defs/ArtifactSelection</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-156367fa9752225d13a264c5">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-95e7be040671d4c185f4e9b4">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/selections/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>state</code>
+</th>
+<td>
+<table id="v-c5b63dd7de24948c8c1f65a0">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-986d514db1a748fc4cd3faa2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0af485b81d7706d997351b3f">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/state/enum/0">ready</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-09226f2c98636aa31bce2a38">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/state/enum/1">no_action</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-03079835e2c1860524924c0e">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/state/enum/2">inapplicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-e7d7fa93604f61101356dea9">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/state/enum/3">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f86391794b94350463678157">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/state/enum/4">canceled</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d21014c80a7313e51d11734a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/state/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_plans</code>
+</th>
+<td>
+<table id="v-e3e2893fd44a45f5ecfe9493">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-bdb2f8a02a311ff85902252f">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/target_plans/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-d5871f30b7e5c5268cfc7e42">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3a4d9ad6dd115bd812d11825">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/target_plans/items/$ref">#/$defs/BranchTargetPreview</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-ab7513a36772d5d509599b34">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d8061ca5c90e5280406cfccd">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/target_plans/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>warnings</code>
+</th>
+<td>
+<table id="v-9e046eae9914b84db768e1ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-69eedd8e7f9c87548eff1756">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/warnings/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-57c5e32b597dd60b12727068">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4e7b9b036b46016a1817121f">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/warnings/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e60734e3befe889a87db4158">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/warnings/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-ea15cb7d82514487beb9437d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5ee692b414b2993b755bcab9">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/properties/work/$ref">#/$defs/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-0d1c76ace2da8ff92ba7bb6a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5205e3be8aeb451d83ad398d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ffc1142c1646b8c50bc3390a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/required/0">preview_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-cac0d6a7c6674afc08ed1c8a">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/required/1">state</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-090a40d3d5b7c9d80fbce8c3">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/required/2">work</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-fc6debbf224e53ecf51bec84">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/required/3">preview_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0a1a1b5607fae453a62946bd">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/$defs/WorkflowPreview/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -24176,7 +26112,7 @@
 </th>
 <td>
 <span id="v-cb4d360b17ccf124818ea175">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/0">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/0">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -24186,7 +26122,7 @@
 </th>
 <td>
 <span id="v-31909169a092163cd70e12a8">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/1">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/1">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -24196,7 +26132,17 @@
 </th>
 <td>
 <span id="v-74197af2bb09b68f7f8ee52b">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/2">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/2">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-67cb7204a03af1870e111b99">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/abandon_outcome/anyOf/0/enum/3">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -24974,6 +26920,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>no_action_preview</code>
+</th>
+<td>
+<table id="v-42d4a03ab42dcb28921eb512">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-0aeded97815796254fa040c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3c22bb059ea00ae266965f27">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3bf9a2dbdc77c6b4ede3985d">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/no_action_preview/anyOf/0/$ref">#/$defs/WorkflowPreview</code>
+<span class="kind">string</span> <a href="e-fa00199963d1ebd16275e227.html#v-3c9b16c02fd5a703043db78a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-5084451a46efea064974413c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b04f7918e05334f9d3690430">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/no_action_preview/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3078d552e326736476e3e62c">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/no_action_preview/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>observation_requests</code>
 </th>
 <td>
@@ -25312,7 +27328,7 @@
 </th>
 <td>
 <span id="v-bbd0a5161c19a1b16a87bfe8">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/14">inapplicable</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/14">no_action</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25322,7 +27338,7 @@
 </th>
 <td>
 <span id="v-439881d078c7652034111008">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/15">failed</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/15">inapplicable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25332,7 +27348,17 @@
 </th>
 <td>
 <span id="v-1c3d0a9b974abf9cd1bdc13f">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/16">canceled</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/16">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>17</code>
+</th>
+<td>
+<span id="v-fa810b0059384d85cef15dc7">
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/schema/properties/phase/enum/17">canceled</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -26014,7 +28040,7 @@
 </th>
 <td>
 <span id="v-c7a88eb901a3e2c5cbbae569">
-<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/signature">&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_core.WorkRecord/contract/signature">&quot;(*, format: Literal[&#x27;stove0-work-record/v1&#x27;] = &#x27;stove0-work-record/v1&#x27;, work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;eligible&#x27;, revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, no_action_preview: stove0_protocol.fork_join.WorkflowPreview | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, effect_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal[&#x27;no_action&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -26108,7 +28134,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>

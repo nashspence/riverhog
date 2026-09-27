@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-5d4f1f1b92366a9938e26ccf">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -94,6 +94,14 @@
 <a href="#s-2211dbf2b8a3a28df2de8a63">join</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">any of: <a href="e-7fe2641a77541b9e35b3290d.html#v-62829ebffc7e08ed21110d4e">#/components/schemas/RecipeJoin</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-e0d7bc2c80c47a04ffa0f59c">no_action</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-c2a2ed5c86057bb7ffed9623.html#v-aaf6c52d44f3930e7641272c">#/components/schemas/RecipeNoAction</a>; <code>null</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -192,6 +200,34 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-7fe2641a77541b9e35b3290d.html#v-62829ebffc7e08ed21110d4e">#/components/schemas/RecipeJoin</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e0d7bc2c80c47a04ffa0f59c">
+<h3>Field: no_action</h3>
+<p class="shape">any of: <a href="e-c2a2ed5c86057bb7ffed9623.html#v-aaf6c52d44f3930e7641272c">#/components/schemas/RecipeNoAction</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-c2a2ed5c86057bb7ffed9623.html#v-aaf6c52d44f3930e7641272c">#/components/schemas/RecipeNoAction</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -499,6 +535,66 @@
 <td>
 <span id="v-11f56a3d51cfdc76e844341c">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/join/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>no_action</code>
+</th>
+<td>
+<table id="v-e0d7bc2c80c47a04ffa0f59c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-570bb2106ae369218fe6b440">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-96f871d534294c1cb60d2387">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f856ae66690ee161620607db">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/no_action/anyOf/0/$ref">#/components/schemas/RecipeNoAction</code>
+<span class="kind">string</span> <a href="e-c2a2ed5c86057bb7ffed9623.html#v-aaf6c52d44f3930e7641272c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-7e53f5bc190809a35e20cce8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e3f5a216cccea953425e5e41">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/no_action/anyOf/1/type">null</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1092,7 +1188,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>6110a98c68a02654d04f608d4fc5e3c5bf0a6df6fad74a6289a922b21aef8f36</code>
+<p>Closure SHA-256: <code>43e18bef07a8677b419f01f06d3b0adbf3a60dca9235570c8da4d8a374b920d3</code>
 </p>
 </details>
 </footer>
