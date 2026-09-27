@@ -800,14 +800,24 @@ def create_app(
         existing = composition.state.load(identity.work_id)
         if existing is not None:
             acceptance = existing.preview_acceptance
-            if acceptance is None or acceptance.preview_sha256 != request.preview_sha256:
+            accepted_sha256 = (
+                existing.no_action_preview.preview_sha256
+                if existing.no_action_preview is not None
+                else acceptance.preview_sha256
+                if acceptance is not None
+                else None
+            )
+            if accepted_sha256 != request.preview_sha256:
                 raise HTTPException(
                     status_code=409,
                     detail="existing work was not initiated from the accepted preview",
                 )
             return WorkView.from_record(existing)
         preview = composition.preview.preview(identity)
-        if preview.state != "ready" or preview.preview_sha256 != request.preview_sha256:
+        if (
+            preview.state not in {"ready", "no_action"}
+            or preview.preview_sha256 != request.preview_sha256
+        ):
             raise HTTPException(
                 status_code=409,
                 detail="current workflow preview differs from the accepted preview",

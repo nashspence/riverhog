@@ -65,6 +65,7 @@ from stove0_protocol import (
     EvaluationMatrixPayload,
     EvaluationVariant,
     OperationIdentityRef,
+    PreviewOutcome,
     RecipeIdentityRef,
     TargetPlanBinding,
     WorkArtifactSubject,
@@ -222,14 +223,20 @@ class _LifecycleCoordinator:
         self.state = state
 
     def create_or_resume(self, identity: WorkIdentity, *, preview: WorkflowPreview) -> WorkRecord:
-        self.state.work_record = WorkRecord(
-            work=identity,
-            preview_acceptance=PreviewAcceptance.from_preview(preview),
+        self.state.work_record = (
+            WorkRecord(work=identity, phase="no_action", no_action_preview=preview)
+            if preview.state == "no_action"
+            else WorkRecord(
+                work=identity,
+                preview_acceptance=PreviewAcceptance.from_preview(preview),
+            )
         )
         return self.state.work_record
 
     def step(self, work_id: str) -> WorkRecord:
         current = self._load(work_id)
+        if current.phase == "no_action":
+            return current
         self.state.work_record = WorkRecord(
             work=current.work,
             phase="claimed",
@@ -293,6 +300,23 @@ class _LifecycleCoordinator:
 class _LifecyclePreview:
     def preview(self, identity: object) -> WorkflowPreview:
         return _ready_preview(WorkIdentity.model_validate(identity))
+
+
+class _NoActionPreview:
+    def preview(self, identity: object) -> WorkflowPreview:
+        work = WorkIdentity.model_validate(identity)
+        request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
+        return WorkflowPreview.seal(
+            WorkflowPreviewPayload(
+                preview_id=request.preview_id,
+                state="no_action",
+                work=work,
+                outcome=PreviewOutcome(
+                    code="fixture.already-complete/v1",
+                    message="The observations require no target execution.",
+                ),
+            )
+        )
 
 
 class _LifecycleEvaluations:
@@ -938,6 +962,38 @@ def test_stove0_official_client_positive_disposable_lifecycle() -> None:
         client._client = None
 
     observer.require(_operator_operations())
+
+
+def test_direct_no_action_work_creation_is_terminal_and_idempotent() -> None:
+    composition = replace(
+        _lifecycle_composition(),
+        preview=cast(WorkflowPreviewService, _NoActionPreview()),
+    )
+    request = OperatorWorkflowPreviewRequest(
+        recipe_id="stove0.conformance-media/v1",
+        inputs=(_collection_root(),),
+    ).model_dump(mode="json")
+    headers = {"Authorization": "Bearer stove0-test-token"}
+    with TestClient(create_app(composition)) as client:
+        preview_response = client.post("/v1/workflow-previews", json=request, headers=headers)
+        assert preview_response.status_code == 200
+        preview = WorkflowPreview.model_validate(preview_response.json())
+        assert preview.state == "no_action"
+        assert preview.branch_set_plan is None and preview.target_plans == ()
+        body = {**request, "preview_sha256": preview.preview_sha256}
+        first = client.post("/v1/work", json=body, headers=headers)
+        repeated = client.post("/v1/work", json=body, headers=headers)
+        assert first.status_code == repeated.status_code == 201
+        assert repeated.json() == first.json()
+        assert first.json()["phase"] == "no_action"
+        assert first.json()["no_action_preview"]["preview_sha256"] == preview.preview_sha256
+        work_id = first.json()["work_id"]
+        fetched = client.get(f"/v1/work/{work_id}", headers=headers)
+        assert fetched.json() == first.json()
+        stepped = client.post(f"/v1/work/{work_id}/step", headers=headers)
+        assert stepped.json() == first.json()
+        assert first.json()["branch_set_plan"] is None
+        assert first.json()["target_request"] is None
 
 
 def test_every_stove0_api_operation_has_one_current_official_client_method() -> None:

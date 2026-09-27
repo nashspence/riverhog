@@ -643,7 +643,7 @@ class ClassificationAdmissionService:
     def _advance_candidate(self, admission_id: str) -> None:
         with self.state.sessions() as session:
             row = session.get(_AdmissionCandidateRow, admission_id)
-            if row is None or row.state == "work_bound":
+            if row is None or row.state not in {"intent", "previewed"}:
                 return
             state = row.state
             intent = AdmissionIntent.model_validate_json(row.document_json)
@@ -666,6 +666,15 @@ class ClassificationAdmissionService:
             raise RuntimeError("admission intent recipe is no longer available exactly")
         existing = self.state.load(work.work_id)
         if existing is not None:
+            if existing.no_action_preview is not None:
+                self._resolve_candidate(
+                    admission_id,
+                    expected_state=cast(AdmissionState, state),
+                    resolution="resolved_no_action",
+                    preview=existing.no_action_preview,
+                    work_id=work.work_id,
+                )
+                return
             acceptance = existing.preview_acceptance
             if acceptance is None:
                 raise RuntimeError("existing semantic work has no accepted preview")
@@ -678,13 +687,39 @@ class ClassificationAdmissionService:
             return
         if state == "intent":
             preview = self.preview.preview(work)
-            if preview.state != "ready":
-                detail = (
-                    f" ({preview.outcome.code}: {preview.outcome.message})"
-                    if preview.outcome is not None
-                    else ""
+            if preview.work != work:
+                raise RuntimeError("automatic preview differs from the admission work intent")
+            if preview.state == "inapplicable":
+                self._resolve_candidate(
+                    admission_id,
+                    expected_state="intent",
+                    resolution="resolved_inapplicable",
+                    preview=preview,
                 )
-                raise RuntimeError(f"automatic preview is not acceptable: {preview.state}{detail}")
+                return
+            if preview.state == "canceled":
+                self._resolve_candidate(
+                    admission_id,
+                    expected_state="intent",
+                    resolution="resolved_canceled",
+                    preview=preview,
+                )
+                return
+            if preview.state == "failed":
+                if preview.outcome is not None and preview.outcome.retryable is True:
+                    raise RuntimeError(
+                        "retryable automatic preview failure: "
+                        f"{preview.outcome.code}: {preview.outcome.message}"
+                    )
+                self._resolve_candidate(
+                    admission_id,
+                    expected_state="intent",
+                    resolution="resolved_failed",
+                    preview=preview,
+                )
+                return
+            if preview.state not in {"ready", "no_action"}:
+                raise RuntimeError("automatic preview returned an unsupported state")
             encoded = json.dumps(
                 preview.model_dump(mode="json", exclude_none=True),
                 sort_keys=True,
@@ -706,8 +741,20 @@ class ClassificationAdmissionService:
         if state != "previewed" or preview_json is None:
             raise RuntimeError("admission candidate stage is invalid")
         preview = WorkflowPreview.model_validate_json(preview_json)
-        if preview.state != "ready" or preview.work != work:
+        if preview.work != work:
             raise RuntimeError("accepted admission preview differs from semantic work")
+        if preview.state == "no_action":
+            record = self.coordinator.create_or_resume(work, preview=preview)
+            self._resolve_candidate(
+                admission_id,
+                expected_state="previewed",
+                resolution="resolved_no_action",
+                preview=preview,
+                work_id=record.work.work_id,
+            )
+            return
+        if preview.state != "ready":
+            raise RuntimeError("accepted admission preview is not executable")
         record = self.coordinator.create_or_resume(work, preview=preview)
         self._bind_candidate(
             admission_id,
@@ -715,6 +762,57 @@ class ClassificationAdmissionService:
             preview_sha256=preview.preview_sha256,
             work_id=record.work.work_id,
         )
+
+    def _resolve_candidate(
+        self,
+        admission_id: str,
+        *,
+        expected_state: AdmissionState,
+        resolution: Literal[
+            "resolved_no_action",
+            "resolved_inapplicable",
+            "resolved_failed",
+            "resolved_canceled",
+        ],
+        preview: WorkflowPreview,
+        work_id: str | None = None,
+    ) -> None:
+        expected_preview_state = {
+            "resolved_no_action": "no_action",
+            "resolved_inapplicable": "inapplicable",
+            "resolved_failed": "failed",
+            "resolved_canceled": "canceled",
+        }[resolution]
+        if preview.state != expected_preview_state or (
+            (resolution == "resolved_no_action") != (work_id is not None)
+        ):
+            raise ValueError("admission resolution differs from its preview")
+        encoded = json.dumps(
+            preview.model_dump(mode="json", exclude_none=True),
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        with self.state.sessions() as session, session.begin():
+            row = session.get(_AdmissionCandidateRow, admission_id, with_for_update=True)
+            if row is None:
+                raise RuntimeError("admission candidate disappeared")
+            if row.state == resolution:
+                if row.preview_sha256 != preview.preview_sha256 or row.work_id != work_id:
+                    raise RuntimeError("admission resolution identity changed")
+                return
+            if row.state != expected_state:
+                raise RuntimeError("admission candidate advanced concurrently")
+            if row.preview_sha256 is not None and row.preview_sha256 != preview.preview_sha256:
+                raise RuntimeError("accepted admission preview changed")
+            row.state = resolution
+            row.preview_sha256 = preview.preview_sha256
+            row.preview_bytes = len(encoded.encode("utf-8"))
+            row.preview_json = encoded
+            row.work_id = work_id
+            row.attempt_count = 0
+            row.next_attempt_at = None
+            row.failure = None
+            row.updated_at = utc_timestamp_now()
 
     def _bind_candidate(
         self,
@@ -734,6 +832,8 @@ class ClassificationAdmissionService:
                 return
             if row.state != expected_state:
                 raise RuntimeError("admission candidate advanced concurrently")
+            if row.preview_sha256 is not None and row.preview_sha256 != preview_sha256:
+                raise RuntimeError("accepted admission preview changed")
             row.state = "work_bound"
             row.preview_sha256 = preview_sha256
             row.work_id = work_id
@@ -745,7 +845,7 @@ class ClassificationAdmissionService:
     def _record_candidate_failure(self, admission_id: str, exc: Exception) -> None:
         with self.state.sessions() as session, session.begin():
             row = session.get(_AdmissionCandidateRow, admission_id, with_for_update=True)
-            if row is None or row.state == "work_bound":
+            if row is None or row.state not in {"intent", "previewed"}:
                 return
             row.attempt_count += 1
             delay = min(3600, 2 ** min(row.attempt_count, 10))
@@ -827,11 +927,19 @@ def _policy_status(policy: AdmissionPolicy, row: _AdmissionPolicyRow) -> Admissi
 
 
 def _admission_view(row: _AdmissionCandidateRow) -> AdmissionView:
+    preview = (
+        WorkflowPreview.model_validate_json(row.preview_json)
+        if row.preview_json is not None
+        else None
+    )
     return AdmissionView(
         intent=AdmissionIntent.model_validate_json(row.document_json),
         state=cast(Any, row.state),
         preview_sha256=row.preview_sha256,
         work_id=row.work_id,
+        outcome=(
+            preview.outcome if preview is not None and row.state.startswith("resolved_") else None
+        ),
         attempt_count=row.attempt_count,
         next_attempt_at=row.next_attempt_at,
         failure=row.failure,

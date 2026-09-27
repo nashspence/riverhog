@@ -42,6 +42,7 @@ from stove0_core import (
     RecipePlanner,
     TargetPort,
     WorkInapplicable,
+    WorkNoAction,
 )
 from stove0_core.recipes import (
     ArtifactRule,
@@ -346,6 +347,66 @@ def _selection_paths(decision: BranchSetDecision) -> dict[str, tuple[str, ...]]:
         )
         for branch in decision.plan.branches
     }
+
+
+def test_explicit_observation_rule_resolves_no_action_before_target_planning() -> None:
+    fixture = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
+    catalog = RecipeCatalog.load(fixture)
+    original = catalog.recipe("stove0.conformance-media/v1")
+    recipe_document = original.model_dump(mode="json", exclude_none=True)
+    recipe_document["no_action"] = {
+        "code": "fixture.already-complete/v1",
+        "message": "The observed collection requires no transformation.",
+        "when": [
+            {
+                "observation_contract_id": MEDIA_METADATA_OBSERVER_CONTRACT.id,
+                "pointer": "/artifacts",
+                "operator": "exists",
+                "value": True,
+            }
+        ],
+    }
+    recipe = RecipeDefinition.model_validate(recipe_document)
+    planner = RecipePlanner(
+        catalog=RecipeCatalog(operations=catalog.operations, recipes=(recipe,)),
+        riverhog=cast(ApiClient, ConformanceCatalogApi()),
+        observers=cast(ObserverPort, BatchMediaObservers(100)),
+        targets=cast(TargetPort, object()),
+    )
+    work = planner.create_work(
+        recipe.id,
+        (
+            CollectionRootIdentityRef(
+                collection_id=str(11),
+                archive_root_sha256=_sha("1"),
+                content_identity=_sha("2"),
+            ),
+        ),
+    )
+    observer = BatchMediaObservers(100)
+    evidence = tuple(
+        ContentObservationEvidence(
+            request=request,
+            result=ContentObservationResultBuilder(observer.value, request).observed(
+                MediaMetadataFacts(
+                    artifacts=tuple(
+                        MediaArtifactFacts(artifact_id=subject.id, state="observed")
+                        for subject in request.subjects
+                    )
+                ).model_dump(mode="json")
+            ),
+        )
+        for request in planner.observation_requests(work)
+    )
+    decision = planner.workflow_plan(work, evidence)
+    assert decision == WorkNoAction(
+        code="fixture.already-complete/v1",
+        message="The observed collection requires no transformation.",
+    )
+    assert planner.workflow_plan(work, ()) == WorkInapplicable(
+        code="no-matching-route",
+        message="No configured recipe branch accepted the immutable inputs.",
+    )
 
 
 def test_deployment_owned_conformance_catalog_routes_exact_artifacts_independent_of_batching() -> (

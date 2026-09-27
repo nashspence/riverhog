@@ -30,9 +30,13 @@ from stove0_protocol import (
     ControllerEvidence,
     JoinWorkBinding,
     OperationIdentityRef,
+    PreviewOutcome,
     WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPreview,
+    WorkflowPreviewPayload,
+    WorkflowPreviewRequest,
+    WorkflowPreviewRequestPayload,
     WorkIdentity,
     branch_work,
 )
@@ -60,6 +64,7 @@ from stove0_core.work_state import (
     Stove0WorkService,
     WorkFailure,
     WorkInapplicable,
+    WorkNoAction,
     WorkRecord,
 )
 
@@ -154,7 +159,7 @@ class PlanningPort(Protocol):
         *,
         nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
         | None = None,
-    ) -> BranchSetDecision | WorkInapplicable: ...
+    ) -> BranchSetDecision | WorkInapplicable | WorkNoAction: ...
 
     def target_preflight_request(
         self,
@@ -460,6 +465,36 @@ class Stove0Coordinator:
                     decision,
                     expected_revision=record.revision,
                 )
+            if isinstance(decision, WorkNoAction):
+                if record.preview_acceptance is not None:
+                    return self.work.fail(
+                        work_id,
+                        WorkFailure(
+                            code="accepted-preview-changed",
+                            message=(
+                                "Current observations no longer produce the accepted branch plan."
+                            ),
+                            retryable=True,
+                        ),
+                        expected_revision=record.revision,
+                    )
+                request = WorkflowPreviewRequest.seal(
+                    WorkflowPreviewRequestPayload(work=record.work)
+                )
+                preview = WorkflowPreview.seal(
+                    WorkflowPreviewPayload(
+                        preview_id=request.preview_id,
+                        state="no_action",
+                        work=record.work,
+                        observations=evidence,
+                        outcome=PreviewOutcome(code=decision.code, message=decision.message),
+                    )
+                )
+                return self.work.mark_no_action(
+                    work_id,
+                    preview,
+                    expected_revision=record.revision,
+                )
             acceptance = record.preview_acceptance
             if (
                 acceptance is not None
@@ -581,7 +616,7 @@ class Stove0Coordinator:
         record = self.work.store.load(work_id)
         if record is None:
             raise KeyError(work_id)
-        if record.phase in {"complete", "inapplicable", "canceled"}:
+        if record.phase in {"complete", "no_action", "inapplicable", "canceled"}:
             return record
         if record.phase == "failed":
             if record.failure is None or not record.failure.retryable:
@@ -935,7 +970,7 @@ class Stove0Coordinator:
     def _advance_coordination_cancel(self, record: WorkRecord) -> WorkRecord:
         if record.branch_set_plan is None:
             raise RuntimeError("coordination cancellation has no branch-set plan")
-        terminal = {"complete", "inapplicable", "failed", "canceled"}
+        terminal = {"complete", "no_action", "inapplicable", "failed", "canceled"}
         for child_id in self._coordination_child_ids(record):
             child = self.work.store.load(child_id)
             if child is None:
@@ -962,7 +997,7 @@ class Stove0Coordinator:
         evaluation: BranchSetEvaluation,
     ) -> WorkRecord:
         children = self._coordination_children(record)
-        terminal = {"complete", "inapplicable", "failed", "canceled"}
+        terminal = {"complete", "no_action", "inapplicable", "failed", "canceled"}
         if any(child.phase not in terminal for child in children):
             return record
         failed = tuple(child for child in children if child.phase == "failed")

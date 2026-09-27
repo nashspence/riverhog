@@ -1065,7 +1065,7 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
 
     format: Literal["stove0-workflow-preview/v1"] = WORKFLOW_PREVIEW_FORMAT
     preview_id: Sha256
-    state: Literal["ready", "inapplicable", "failed", "canceled"]
+    state: Literal["ready", "no_action", "inapplicable", "failed", "canceled"]
     work: WorkIdentity
     observations: tuple[ContentObservationEvidence, ...] = ()
     branch_set_plan: BranchSetPlan | None = None
@@ -1158,6 +1158,8 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
                 raise ValueError("non-ready preview cannot contain executable plans")
             if self.outcome is None:
                 raise ValueError("non-ready preview requires an outcome")
+            if self.state == "no_action" and self.outcome.retryable is not None:
+                raise ValueError("successful no-action preview cannot be retryable")
         return self
 
 

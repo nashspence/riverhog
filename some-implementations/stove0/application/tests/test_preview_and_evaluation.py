@@ -2,19 +2,24 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
 import pytest
 from stove0_core import (
     ClaimBinding,
+    EvaluationChild,
     EvaluationService,
     InMemoryEvaluationStore,
     InMemoryWorkStore,
+    PlanningPort,
     SqlAlchemyStateStore,
     Stove0WorkService,
     WorkFailure,
     WorkflowPreviewService,
+    WorkNoAction,
     WorkRecord,
 )
+from stove0_core.evaluation import _evaluation_phase
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationFailure,
@@ -49,10 +54,15 @@ from stove0_protocol import (
     EvaluationVariant,
     JsonSchemaValidationProfile,
     OperationIdentityRef,
+    PreviewOutcome,
     RecipeIdentityRef,
     WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
+    WorkflowPreview,
+    WorkflowPreviewPayload,
+    WorkflowPreviewRequest,
+    WorkflowPreviewRequestPayload,
     WorkIdentity,
     WorkPayload,
     canonical_json_sha256,
@@ -498,6 +508,86 @@ def test_workflow_preview_is_deterministic_across_claim_generations() -> None:
     assert len(riverhog.abandoned) == 2
     assert "write-output" not in riverhog.actions
     assert target_port.preflights == 2
+
+
+def test_no_action_preview_retains_observations_without_target_preflight() -> None:
+    operation = _operation()
+    target = _target(operation)
+    observer_value = _observer()
+    riverhog = PreviewRiverhog()
+    observer = PreviewObserver(observer_value)
+    target_port = PreviewTarget(operation, target)
+    delegate = PreviewPlanning(operation, target, observer_value)
+
+    class NoActionPlanning:
+        def observation_requests(self, work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
+            return delegate.observation_requests(work)
+
+        def workflow_plan(
+            self,
+            work: WorkIdentity,
+            observations: tuple[ContentObservationEvidence, ...],
+            *,
+            nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+            | None = None,
+        ) -> WorkNoAction:
+            assert work == _work() and len(observations) == 1
+            assert observations[0].result.state == "observed"
+            return WorkNoAction(
+                code="fixture.already-complete/v1",
+                message="The exact observation requires no target execution.",
+            )
+
+    service = WorkflowPreviewService(
+        riverhog=riverhog,
+        planning=cast(PlanningPort, NoActionPlanning()),
+        observers=observer,
+        targets=target_port,
+    )
+    preview = service.preview(_work())
+    assert preview.state == "no_action"
+    assert preview.outcome is not None and preview.outcome.code == "fixture.already-complete/v1"
+    assert len(preview.observations) == 1
+    assert preview.branch_set_plan is None and preview.target_plans == ()
+    assert target_port.preflights == 0
+    assert len(riverhog.abandoned) == 1
+
+
+def test_no_action_evaluation_child_is_successful_without_output() -> None:
+    child = EvaluationChild(variant_id="fixture", work_id=_sha("a"), state="no_action")
+    assert child.output is None
+    assert _evaluation_phase((child,)) == "complete"
+
+
+def test_planned_no_action_abandons_its_claim_before_terminal_success() -> None:
+    work = _work()
+    store = InMemoryWorkStore()
+    service = Stove0WorkService(store)
+    record = store.create(
+        WorkRecord(
+            work=work,
+            phase="planning",
+            claim=ClaimBinding(claim_id="fixture-claim", fence=1),
+        )
+    )
+    request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
+    preview = WorkflowPreview.seal(
+        WorkflowPreviewPayload(
+            preview_id=request.preview_id,
+            state="no_action",
+            work=work,
+            outcome=PreviewOutcome(
+                code="fixture.already-complete/v1",
+                message="The exact observation requires no target execution.",
+            ),
+        )
+    )
+    pending = service.mark_no_action(work.work_id, preview, expected_revision=record.revision)
+    assert pending.phase == "abandon_pending" and pending.abandon_outcome == "no_action"
+    finished = service.complete_abandon(work.work_id, expected_revision=pending.revision)
+    assert finished.phase == "no_action"
+    assert finished.no_action_preview == preview
+    assert finished.target_request is None and finished.output is None
 
 
 def test_workflow_preview_recursively_binds_nested_observation_and_leaf_preflight() -> None:

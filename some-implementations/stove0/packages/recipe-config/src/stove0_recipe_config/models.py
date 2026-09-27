@@ -180,6 +180,20 @@ class RecipeJoin(RecipeModel):
         return self
 
 
+class RecipeNoAction(RecipeModel):
+    """Explicit observation decision that succeeds without executing a target."""
+
+    code: SemanticId
+    message: str = Field(min_length=1, max_length=1000)
+    when: tuple[FactPredicate, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def global_observation_decision(self) -> Self:
+        if any(predicate.artifact_roles for predicate in self.when):
+            raise ValueError("no-action predicates must evaluate whole observation facts")
+        return self
+
+
 class RecipeDefinition(RecipeModel):
     id: SemanticId
     revision: NonnegativeDecimal = Field(ge=1)
@@ -187,6 +201,7 @@ class RecipeDefinition(RecipeModel):
     artifact_associations: tuple[ArtifactAssociation, ...] = ()
     observers: tuple[ObserverUse, ...] = ()
     routes: tuple[RecipeBranch, ...] = Field(min_length=1)
+    no_action: RecipeNoAction | None = None
     unmatched_artifact_disposition: Literal["retain-in-source", "reject-work"]
     source_collection_retirement_policy: Literal["retain", "retire-after-settlement"] = Field(
         default="retain",
@@ -234,6 +249,8 @@ class RecipeDefinition(RecipeModel):
             and self.source_collection_retirement_grace_seconds
         ):
             raise ValueError("retain recipes cannot declare a retirement grace period")
+        if self.no_action is not None and self.source_collection_retirement_policy != "retain":
+            raise ValueError("no-action recipes cannot retire their source collection")
         return self
 
     @property
@@ -457,5 +474,6 @@ __all__ = [
     "RecipeDefinition",
     "RecipeJoin",
     "RecipeJoinMember",
+    "RecipeNoAction",
     "RecipeRoute",
 ]

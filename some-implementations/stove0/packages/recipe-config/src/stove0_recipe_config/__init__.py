@@ -11,6 +11,7 @@ from stove0_recipe_config.models import (
     RecipeDefinition,
     RecipeJoin,
     RecipeJoinMember,
+    RecipeNoAction,
     RecipeRoute,
 )
 
@@ -27,5 +28,6 @@ __all__ = [
     "RecipeDefinition",
     "RecipeJoin",
     "RecipeJoinMember",
+    "RecipeNoAction",
     "RecipeRoute",
 ]

@@ -1194,6 +1194,10 @@ def _record_claim(record: WorkRecord) -> ClaimBinding:
 
 def _abandonment_reason(record: WorkRecord) -> str:
     outcome = record.abandon_outcome
+    if outcome == "no_action" and record.no_action_preview is not None:
+        reason = record.no_action_preview.outcome
+        assert reason is not None
+        return f"no_action:{reason.code}: {reason.message}"
     if outcome == "inapplicable" and record.inapplicable is not None:
         return f"inapplicable:{record.inapplicable.code}: {record.inapplicable.message}"
     if outcome == "failed" and record.failure is not None:
