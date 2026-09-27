@@ -1317,7 +1317,21 @@ def test_failed_or_uncertain_effect_work_cannot_request_source_retirement(outcom
         )
 
 
-def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict() -> None:
+@pytest.mark.parametrize(
+    ("observed_verdict", "required_verdict", "approved"),
+    [
+        pytest.param(True, True, True, id="matching-boolean"),
+        pytest.param({"safe": [True, 2]}, {"safe": [True, 2]}, True, id="matching-nested"),
+        pytest.param(1, True, False, id="number-for-true"),
+        pytest.param(0, False, False, id="number-for-false"),
+        pytest.param(True, 1, False, id="true-for-number"),
+        pytest.param({"safe": True}, {"safe": 1}, False, id="object-mismatch"),
+        pytest.param([{"safe": False}], [{"safe": 0}], False, id="array-mismatch"),
+    ],
+)
+def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict(
+    observed_verdict: Any, required_verdict: Any, approved: bool
+) -> None:
     work, _workflow, _plan, _evidence = _authorities()
     source = _input_selection(work).artifacts[0]
     schema = JsonSchemaValidationProfile.from_schema("fixture.consideration/v1", {"type": "object"})
@@ -1332,7 +1346,7 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict() ->
         )
     )
     facts = {
-        "records": [{"artifact_id": source.id, "discard": True}],
+        "records": [{"artifact_id": source.id, "discard": observed_verdict}],
         "unrelated_blob": "x" * 10_000,
     }
     result = ContentObservationResult.seal(
@@ -1369,7 +1383,7 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict() ->
         facts_profile_sha256=schema.profile_sha256,
         artifact_facts=ArtifactFactBinding(records_pointer="/records"),
         verdict_pointer="/discard",
-        verdict_value=True,
+        verdict_value=required_verdict,
     )
     rule = RecipeSourceLossRule(id="fixture.discard/v1", evidence_slots=(slot,))
     identity = CollectionArtifactIdentity(
@@ -1385,6 +1399,9 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict() ->
     approval = _no_output_discard_approval(
         identity, rule, preview, controller_id="stove0", reason="Discard selected bytes."
     )
+    if not approved:
+        assert approval is None
+        return
     assert approval is not None and approval.rule_sha256 == rule.sha256
     assert len(approval.evidence_json) < 1000
     assert (
@@ -1414,14 +1431,27 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict() ->
     )
 
 
-@pytest.mark.parametrize("approve_loss", [False, True])
+@pytest.mark.parametrize(
+    ("source_loss_enabled", "observed_verdict", "required_verdict", "approval_expected"),
+    [
+        pytest.param(False, None, None, False, id="no-source-loss-rule"),
+        pytest.param(True, True, True, True, id="matching-verdict"),
+        pytest.param(True, 1, True, False, id="boolean-number-mismatch"),
+        pytest.param(
+            True, {"safe": [1]}, {"safe": [True]}, False, id="nested-boolean-number-mismatch"
+        ),
+    ],
+)
 def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
-    approve_loss: bool,
+    source_loss_enabled: bool,
+    observed_verdict: Any,
+    required_verdict: Any,
+    approval_expected: bool,
 ) -> None:
     work, _workflow, _plan, _evidence = _authorities()
     observations: tuple[ContentObservationEvidence, ...] = ()
     source_loss: RecipeSourceLossRule | None = None
-    if approve_loss:
+    if source_loss_enabled:
         source = _input_selection(work).artifacts[0]
         schema = JsonSchemaValidationProfile.from_schema(
             "fixture.consideration/v1", {"type": "object"}
@@ -1436,7 +1466,10 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
                 subjects=(source,),
             )
         )
-        facts = {"done": True, "records": [{"artifact_id": source.id, "discard": True}]}
+        facts = {
+            "done": True,
+            "records": [{"artifact_id": source.id, "discard": observed_verdict}],
+        }
         result = ContentObservationResult.seal(
             ContentObservationResultPayload(
                 request_id=request.request_id,
@@ -1465,7 +1498,7 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
                     facts_profile_sha256=schema.profile_sha256,
                     artifact_facts=ArtifactFactBinding(records_pointer="/records"),
                     verdict_pointer="/discard",
-                    verdict_value=True,
+                    verdict_value=required_verdict,
                 ),
             ),
         )
@@ -1485,7 +1518,7 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
         when=(
             FactPredicate(
                 observation_contract_id=(
-                    "fixture.consideration/v1" if approve_loss else "fixture.observation/v1"
+                    "fixture.consideration/v1" if source_loss_enabled else "fixture.observation/v1"
                 ),
                 pointer="/done",
                 value=True,
@@ -1498,7 +1531,9 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
         phase="no_output_pending",
         claim=ClaimBinding(claim_id=_claim_id(), fence=1),
         no_action_preview=preview,
-        no_output_retirement_policy=("retire-after-settlement" if approve_loss else "retain"),
+        no_output_retirement_policy=(
+            "retire-after-settlement" if source_loss_enabled else "retain"
+        ),
     )
 
     class NoOutputApi(FixtureApi):
@@ -1612,14 +1647,14 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
 
     api = NoOutputApi()
     client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
-    policy = "retire-after-settlement" if approve_loss else "retain"
+    policy = "retire-after-settlement" if source_loss_enabled else "retain"
     first = client.verify_and_settle_no_output(record, no_action, policy, 0)
     assert first == api.no_output_sha256
     assert len(api.dispositions) == 1
     assert api.dispositions[0]["status"] == "not-carried-forward"
-    assert ("discard_approval" in api.dispositions[0]) is approve_loss
+    assert ("discard_approval" in api.dispositions[0]) is approval_expected
     assert len([name for name, _ in api.calls if name == "consideration_evidence"]) == int(
-        approve_loss
+        source_loss_enabled
     )
     assert client.verify_and_settle_no_output(record, no_action, policy, 0) == first
     assert len(api.dispositions) == 1

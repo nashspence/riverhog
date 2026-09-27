@@ -1582,7 +1582,9 @@ def _no_output_discard_approval(
         if len(matching_records) != 1:
             return None
         present, verdict = _consideration_pointer(matching_records[0], required.verdict_pointer)
-        if not present or verdict != required.verdict_value:
+        if not present or riverhog_canonical_json_bytes(verdict) != riverhog_canonical_json_bytes(
+            required.verdict_value
+        ):
             return None
         slots.append(
             {
