@@ -181,7 +181,7 @@ class CollectionRootIdentityRef(Stove0ProtocolModel):
 
     collection_id: CollectionId
     archive_root_sha256: Sha256
-    content_identity: Sha256
+    artifact_set_identity: Sha256
 
     @classmethod
     def from_identity(cls, value: CollectionRootIdentity) -> CollectionRootIdentityRef:

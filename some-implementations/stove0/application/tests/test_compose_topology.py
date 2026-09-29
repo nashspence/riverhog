@@ -86,9 +86,7 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         assert "ports" not in services[name]
     assert services["a-stove0-nvenc-av1-opus-target"]["profiles"] == ["nvenc"]
     assert services["a-review0-nvenc-av1-opus-sampler"]["profiles"] == ["nvenc"]
-    assert services["a-stove0-ffprobe-observer"]["command"][0] == (
-        "a-stove0-ffprobe-observer"
-    )
+    assert services["a-stove0-ffprobe-observer"]["command"][0] == ("a-stove0-ffprobe-observer")
     assert services["a-stove0-exiftool-observer"]["command"][0] == "a-stove0-exiftool-observer"
     assert services["a-stove0-opus-target"]["command"][0] == "a-stove0-opus-target"
     assert services["a-review0-opus-sampler"]["command"][0] == "a-review0-opus-sampler"

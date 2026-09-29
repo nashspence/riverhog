@@ -646,7 +646,9 @@ class Stove0RiverhogClient:
                     collection.get("archive_root_sha256"),
                     "archive-root identity",
                 ),
-                "content_identity": _text(collection.get("content_identity"), "content identity"),
+                "artifact_set_identity": _text(
+                    collection.get("artifact_set_identity"), "artifact set identity"
+                ),
                 "derivation_sha256": derivation.sha256,
             }
         )
@@ -693,7 +695,7 @@ class Stove0RiverhogClient:
         if (
             authority.inventory_identity != inventory_identity
             or authority.header.collection != output.collection_id
-            or authority.header.content_identity != output.content_identity
+            or authority.header.artifact_set_identity != output.artifact_set_identity
         ):
             raise RuntimeError("Riverhog output inventory changed during settlement")
         files = tuple(file for file in page.files if not file.path.startswith("riverhog/"))
@@ -1035,7 +1037,7 @@ class Stove0RiverhogClient:
                         collection=CollectionRootIdentity(
                             item.collection.collection_id,
                             item.collection.archive_root_sha256,
-                            item.collection.content_identity,
+                            item.collection.artifact_set_identity,
                         ),
                         path=item.path,
                         bytes=item.bytes,
@@ -1119,7 +1121,7 @@ class Stove0RiverhogClient:
             current = self.api.get_collection(root.collection_id)
             if (
                 current.get("archive_root_sha256") != root.archive_root_sha256
-                or current.get("content_identity") != root.content_identity
+                or current.get("artifact_set_identity") != root.artifact_set_identity
             ):
                 raise RuntimeError("no-output source collection root changed")
             identity: str | None = None
@@ -1140,7 +1142,7 @@ class Stove0RiverhogClient:
                         collection=CollectionRootIdentity(
                             root.collection_id,
                             root.archive_root_sha256,
-                            root.content_identity,
+                            root.artifact_set_identity,
                         ),
                         path=item.path,
                         bytes=item.bytes,
@@ -1177,7 +1179,8 @@ class Stove0RiverhogClient:
                 or child.output.derivation_sha256 != item.derivation_sha256
                 or child.output.collection_id != item.output_collection.collection_id
                 or child.output.archive_root_sha256 != item.output_collection.archive_root_sha256
-                or child.output.content_identity != item.output_collection.content_identity
+                or child.output.artifact_set_identity
+                != item.output_collection.artifact_set_identity
             ):
                 raise RuntimeError(
                     "collection branch result differs from its durable settled child"
@@ -1339,7 +1342,7 @@ class Stove0RiverhogClient:
             output_collection=CollectionRootIdentity(
                 child.output.collection_id,
                 child.output.archive_root_sha256,
-                child.output.content_identity,
+                child.output.artifact_set_identity,
             ),
             derivation_sha256=child.output.derivation_sha256,
         )
@@ -1509,7 +1512,7 @@ def _artifact_identity(
         collection=CollectionRootIdentity(
             collection_id=value.collection.collection_id,
             archive_root_sha256=value.collection.archive_root_sha256,
-            content_identity=value.collection.content_identity,
+            artifact_set_identity=value.collection.artifact_set_identity,
         ),
         path=value.path,
         bytes=value.bytes,

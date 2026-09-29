@@ -110,7 +110,7 @@ class _LifecycleCatalogApi(CatalogApi):
         return {
             "id": collection_id,
             "archive_root_sha256": "1" * 64,
-            "content_identity": "2" * 64,
+            "artifact_set_identity": "2" * 64,
         }
 
 
@@ -405,7 +405,7 @@ class _LifecycleAdmission:
             collection=CatalogSyncDescriptor(
                 collection_id="1",
                 archive_root_sha256="1" * 64,
-                content_identity="2" * 64,
+                artifact_set_identity="2" * 64,
                 description=None,
                 description_revision=0,
                 description_identity="4" * 64,
@@ -482,7 +482,7 @@ class _LifecycleDeparture:
                 last_collection=CatalogSyncDescriptor(
                     collection_id="1",
                     archive_root_sha256="1" * 64,
-                    content_identity="2" * 64,
+                    artifact_set_identity="2" * 64,
                     description=None,
                     description_revision=0,
                     description_identity="4" * 64,
@@ -583,13 +583,13 @@ def _collection_root(collection_id: int = 1) -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(collection_id),
         archive_root_sha256="1" * 64,
-        content_identity="2" * 64,
+        artifact_set_identity="2" * 64,
     )
 
 
 def _collection_root_argument(collection_id: int = 1) -> str:
     root = _collection_root(collection_id)
-    return f"{root.collection_id}:{root.archive_root_sha256}:{root.content_identity}"
+    return f"{root.collection_id}:{root.archive_root_sha256}:{root.artifact_set_identity}"
 
 
 def _evaluation_definition() -> EvaluationDefinition:
@@ -604,7 +604,7 @@ def _evaluation_definition() -> EvaluationDefinition:
                 CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256="1" * 64,
-                    content_identity="2" * 64,
+                    artifact_set_identity="2" * 64,
                 ),
             ),
             matrix=matrix,
@@ -639,7 +639,7 @@ def _fixture_work(recipe_id: str = "stove0.conformance-media/v1") -> WorkIdentit
                 CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256="1" * 64,
-                    content_identity="2" * 64,
+                    artifact_set_identity="2" * 64,
                 ),
             ),
         )
@@ -792,7 +792,7 @@ class _LifecycleTargetCallbacks:
             collection=CollectionRootIdentityRef(
                 collection_id=str(1),
                 archive_root_sha256="1" * 64,
-                content_identity="2" * 64,
+                artifact_set_identity="2" * 64,
             ),
             path="source/input.bin",
             bytes=str(12),

@@ -44,7 +44,7 @@ def _work() -> WorkIdentity:
                 CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256="2" * 64,
-                    content_identity="3" * 64,
+                    artifact_set_identity="3" * 64,
                 ),
             ),
         )
@@ -155,12 +155,12 @@ def test_operator_requests_share_one_exact_canonical_collection_contract() -> No
         CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256="1" * 64,
-            content_identity="2" * 64,
+            artifact_set_identity="2" * 64,
         ),
         CollectionRootIdentityRef(
             collection_id=str(2),
             archive_root_sha256="3" * 64,
-            content_identity="4" * 64,
+            artifact_set_identity="4" * 64,
         ),
     )
     preview = OperatorWorkflowPreviewRequest(

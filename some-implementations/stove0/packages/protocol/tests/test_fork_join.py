@@ -47,7 +47,7 @@ def root(number: int, label: str | None = None) -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(number),
         archive_root_sha256=digest(f"manifest:{suffix}"),
-        content_identity=digest(f"content:{suffix}"),
+        artifact_set_identity=digest(f"content:{suffix}"),
     )
 
 
@@ -85,7 +85,7 @@ def test_selection_order_projects_directly_to_riverhog_artifact_order() -> None:
             collection=CollectionRootIdentity(
                 collection_id=item.collection.collection_id,
                 archive_root_sha256=item.collection.archive_root_sha256,
-                content_identity=item.collection.content_identity,
+                artifact_set_identity=item.collection.artifact_set_identity,
             ),
             path=item.path,
             bytes=item.bytes,

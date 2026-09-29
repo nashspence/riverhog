@@ -200,7 +200,7 @@ def _authorities(
                 CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256=_sha("2"),
-                    content_identity=_sha("3"),
+                    artifact_set_identity=_sha("3"),
                 ),
             ),
         )
@@ -490,7 +490,7 @@ class FixtureApi:
         return {
             "id": str(collection_id),
             "archive_root_sha256": _sha("7"),
-            "content_identity": _sha("8"),
+            "artifact_set_identity": _sha("8"),
         }
 
     def get_processing_claim_dispositions(self, claim_id: str) -> ArtifactDispositionSetDocument:
@@ -519,7 +519,7 @@ class FixtureApi:
                     collection=SimpleNamespace(
                         collection_id=1,
                         archive_root_sha256=_sha("2"),
-                        content_identity=_sha("3"),
+                        artifact_set_identity=_sha("3"),
                     ),
                     path="source/input.bin",
                     bytes=12,
@@ -552,7 +552,7 @@ class FixtureApi:
             authority=PortableCollectionInventoryAuthority(
                 header=PortableCollectionHeader(
                     collection=str(collection_id),
-                    content_identity=_sha("8"),
+                    artifact_set_identity=_sha("8"),
                     encryption_format="age/v1",
                     passphrase_id="fixture-passphrase",
                     provenance_mode="omitted",
@@ -616,7 +616,7 @@ class PagedInventoryFixtureApi(FixtureApi):
         authority = PortableCollectionInventoryAuthority(
             header=PortableCollectionHeader(
                 collection=str(collection_id),
-                content_identity=_sha("8"),
+                artifact_set_identity=_sha("8"),
                 encryption_format="age/v1",
                 passphrase_id="fixture-passphrase",
                 provenance_mode="omitted",
@@ -680,7 +680,7 @@ def _verifying_record(
     output_ref = OutputCollectionRef(
         collection_id=str(7),
         archive_root_sha256=_sha("7"),
-        content_identity=_sha("8"),
+        artifact_set_identity=_sha("8"),
         derivation_sha256=derivation.sha256,
     )
     production = TargetProductionAuthority.seal(
@@ -932,7 +932,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
     output_root = CollectionRootIdentityRef(
         collection_id=str(7),
         archive_root_sha256=_sha("7"),
-        content_identity=_sha("8"),
+        artifact_set_identity=_sha("8"),
     )
     output_selection = ArtifactSelection.seal(
         (
@@ -1000,7 +1000,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
         execution_id=child_envelope.execution_envelope_sha256,
         result_kind="collection",
         output_collection=CollectionRootIdentity(
-            collection_id=7, archive_root_sha256=_sha("7"), content_identity=_sha("8")
+            collection_id=7, archive_root_sha256=_sha("7"), artifact_set_identity=_sha("8")
         ),
         derivation_sha256=child.output.derivation_sha256,
     )
@@ -1390,7 +1390,7 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict(
         collection=CollectionRootIdentity(
             source.collection.collection_id,
             source.collection.archive_root_sha256,
-            source.collection.content_identity,
+            source.collection.artifact_set_identity,
         ),
         path=source.path,
         bytes=source.bytes,
@@ -1562,7 +1562,7 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
             return {
                 "id": str(collection_id),
                 "archive_root_sha256": _sha("2"),
-                "content_identity": _sha("3"),
+                "artifact_set_identity": _sha("3"),
             }
 
         def get_portable_collection_inventory(
@@ -1578,7 +1578,7 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
                 authority=PortableCollectionInventoryAuthority(
                     header=PortableCollectionHeader(
                         collection=str(collection_id),
-                        content_identity=_sha("3"),
+                        artifact_set_identity=_sha("3"),
                         encryption_format="age/v1",
                         passphrase_id="fixture-passphrase",
                         provenance_mode="omitted",
@@ -1605,7 +1605,7 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
                         collection=SimpleNamespace(
                             collection_id=1,
                             archive_root_sha256=_sha("2"),
-                            content_identity=_sha("3"),
+                            artifact_set_identity=_sha("3"),
                         ),
                         path="source/input.bin",
                         bytes=12,

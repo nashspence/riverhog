@@ -133,7 +133,7 @@ def test_review_evaluation_expands_one_normal_work_per_variant() -> None:
             CollectionRootIdentityRef(
                 collection_id=str(1),
                 archive_root_sha256=_sha("b"),
-                content_identity=_sha("c"),
+                artifact_set_identity=_sha("c"),
             ),
         ),
         sample_plan=sample_plan,
@@ -174,7 +174,7 @@ def test_materialized_trial_requires_exactly_one_variant() -> None:
                 CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256=_sha("b"),
-                    content_identity=_sha("c"),
+                    artifact_set_identity=_sha("c"),
                 ),
             ),
             sample_plan=sample_plan,

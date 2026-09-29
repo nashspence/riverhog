@@ -102,7 +102,7 @@ class CatalogApi:
         return {
             "id": 11,
             "archive_root_sha256": _sha("1"),
-            "content_identity": _sha("2"),
+            "artifact_set_identity": _sha("2"),
         }
 
     def search(self, **_kwargs: object) -> dict[str, object]:
@@ -131,7 +131,7 @@ class CatalogApi:
             authority=PortableCollectionInventoryAuthority(
                 header=PortableCollectionHeader(
                     collection="11",
-                    content_identity=_sha("2"),
+                    artifact_set_identity=_sha("2"),
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
                     provenance_mode="omitted",
@@ -314,7 +314,7 @@ def _conformance_plan(
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
     work = planner.create_work("stove0.conformance-media/v1", (root,))
     requests = planner.observation_requests(work)
@@ -383,7 +383,7 @@ def test_explicit_observation_rule_resolves_no_action_before_target_planning() -
             CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
-                content_identity=_sha("2"),
+                artifact_set_identity=_sha("2"),
             ),
         ),
     )
@@ -474,7 +474,7 @@ def test_installed_catalog_rejects_stale_observer_contract_before_observation() 
             CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
-                content_identity=_sha("2"),
+                artifact_set_identity=_sha("2"),
             ),
         ),
     )
@@ -519,7 +519,7 @@ def test_planning_rejects_stale_target_operation_contract_before_preflight() -> 
             CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
-                content_identity=_sha("2"),
+                artifact_set_identity=_sha("2"),
             ),
         ),
     )
@@ -570,7 +570,7 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
             CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
-                content_identity=_sha("2"),
+                artifact_set_identity=_sha("2"),
             ),
         ),
     )
@@ -641,7 +641,7 @@ def test_nested_no_output_is_a_required_success_without_material_output() -> Non
             CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
-                content_identity=_sha("2"),
+                artifact_set_identity=_sha("2"),
             ),
         ),
     )
@@ -714,7 +714,7 @@ def test_recipe_explicitly_rejects_unmatched_primary_and_sidecar_artifacts() -> 
             CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
-                content_identity=_sha("2"),
+                artifact_set_identity=_sha("2"),
             ),
         ),
     )
@@ -811,7 +811,7 @@ def test_observer_preference_batches_unbounded_collection_work_without_omission(
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
     work = planner.create_work(recipe.id, (root,))
 
@@ -903,7 +903,7 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
     work = planner.create_work(recipe.id, (root,))
     request = planner.observation_requests(work)[0]
@@ -1062,7 +1062,7 @@ def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
     artifact_id = (
         "a-" + canonical_json_sha256({"collection_id": 11, "path": "camera/source.mp4"})[:32]
@@ -1163,7 +1163,7 @@ def test_manual_planning_does_not_consult_derivation() -> None:
         ),
     )
     root = CollectionRootIdentityRef(
-        collection_id="11", archive_root_sha256=_sha("1"), content_identity=_sha("2")
+        collection_id="11", archive_root_sha256=_sha("1"), artifact_set_identity=_sha("2")
     )
 
     planner = RecipePlanner(
@@ -1279,7 +1279,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
     work = planner.create_work(recipe.id, (root,))
     decision = planner.workflow_plan(work, ())
@@ -1297,7 +1297,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
         output_root = CollectionRootIdentityRef(
             collection_id=str(collection_id),
             archive_root_sha256=f"{collection_id % 16:x}" * 64,
-            content_identity=f"{(collection_id + 1) % 16:x}" * 64,
+            artifact_set_identity=f"{(collection_id + 1) % 16:x}" * 64,
         )
         output = ArtifactSelection.seal(
             (
@@ -1426,7 +1426,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
 
     decision = planner.workflow_plan(planner.create_work(recipe.id, (root,)), ())
@@ -1460,7 +1460,7 @@ def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() 
     root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
 
     decision = planner.workflow_plan(planner.create_work(recipe.id, (root,)), ())

@@ -108,13 +108,9 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
         ObserverContractPayload(**shared, read_actions=("read-provenance",))
     )
     assert payload.contract_sha256 != provenance.contract_sha256
-    assert ObserverContractSupport.from_contract(provenance).read_actions == (
-        "read-provenance",
-    )
+    assert ObserverContractSupport.from_contract(provenance).read_actions == ("read-provenance",)
     with pytest.raises(ValueError):
-        ObserverContractPayload(
-            **shared, read_actions=("read-inputs", "read-provenance")
-        )
+        ObserverContractPayload(**shared, read_actions=("read-inputs", "read-provenance"))
     descriptor = ObserverDescriptor.seal(
         ObserverDescriptorPayload(
             implementation_id="fixture-observer/v1",
@@ -130,11 +126,15 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
         collection=CollectionRootIdentityRef(
             collection_id="1",
             archive_root_sha256="c" * 64,
-            content_identity="d" * 64,
+            artifact_set_identity="d" * 64,
         ),
         artifact_id="e" * 64,
         bytes="1",
         sha256="f" * 64,
+    )
+    assert subject.collection.to_identity().artifact_set_identity == "d" * 64
+    assert CollectionRootIdentityRef.from_identity(subject.collection.to_identity()) == (
+        subject.collection
     )
     correct = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
@@ -147,9 +147,7 @@ def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
             subjects=(subject,),
         )
     )
-    assert validate_observation_request(correct, descriptor).read_actions == (
-        "read-provenance",
-    )
+    assert validate_observation_request(correct, descriptor).read_actions == ("read-provenance",)
     forged = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
             work_id=correct.work_id,

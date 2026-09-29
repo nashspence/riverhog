@@ -193,12 +193,13 @@ def _select(
         )
     if conflict:
         return SourceStatus(subject_id, "ambiguous", support), None
-    scoped = [item for item in parsed if item.view_id is not None]
-    choices = scoped or parsed
-    if not choices:
+    if not parsed:
         return SourceStatus(subject_id, "unsupported", support), None
     if unsupported:
         return SourceStatus(subject_id, "unsupported", support), None
+    if {item.view_id is None for item in parsed} == {True, False}:
+        return SourceStatus(subject_id, "insufficient", support), None
+    scoped = parsed[0].view_id is not None
     keys = {
         (
             item.view_id if scoped else item.context_identity,
@@ -207,18 +208,18 @@ def _select(
             item.name.parent,
             item.name.leaf,
         )
-        for item in choices
+        for item in parsed
     }
     if len(keys) != 1:
         return SourceStatus(subject_id, "ambiguous", support), None
-    selected = choices[0]
+    selected = parsed[0]
     return (
         SourceStatus(subject_id, "usable" if scoped else "insufficient", support),
         _Selected(
             selected.view_id,
             selected.context_identity,
             selected.name,
-            _unique_support(tuple(item for row in choices for item in row.support)),
+            _unique_support(tuple(item for row in parsed for item in row.support)),
         ),
     )
 
@@ -234,6 +235,8 @@ def _comparable(left: _Selected, right: _Selected) -> bool:
     if left.name.syntax != right.name.syntax:
         return False
     if left.name.root != right.name.root or left.name.parent != right.name.parent:
+        return False
+    if left.view_id is not None and right.view_id is not None and left.view_id != right.view_id:
         return False
     if left.context_identity == right.context_identity:
         return True

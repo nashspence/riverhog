@@ -146,7 +146,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
                     collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("1"),
-                        content_identity=_sha("2"),
+                        artifact_set_identity=_sha("2"),
                     ),
                     path="camera/source.wav",
                     bytes=str(12),

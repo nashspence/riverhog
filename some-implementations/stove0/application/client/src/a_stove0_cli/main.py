@@ -571,14 +571,14 @@ def _collection_roots(values: list[str]) -> tuple[CollectionRootIdentityRef, ...
             raise typer.BadParameter(
                 "collection receipt must be ID:ARCHIVE_ROOT_SHA256:CONTENT_IDENTITY"
             )
-        collection_id, archive_root_sha256, content_identity = fields
+        collection_id, archive_root_sha256, artifact_set_identity = fields
         try:
             roots.append(
                 CollectionRootIdentityRef.model_validate(
                     {
                         "collection_id": collection_id,
                         "archive_root_sha256": archive_root_sha256,
-                        "content_identity": content_identity,
+                        "artifact_set_identity": artifact_set_identity,
                     }
                 )
             )
@@ -675,7 +675,7 @@ def _table_value(item: dict[str, Any], column: str) -> str:
                 return str(receipt.get("receipt_sha256", ""))
             output = status.get("output_collection")
             if isinstance(output, dict):
-                return str(output.get("content_identity", ""))
+                return str(output.get("artifact_set_identity", ""))
     return ""
 
 

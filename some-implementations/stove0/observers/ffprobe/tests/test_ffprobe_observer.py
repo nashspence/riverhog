@@ -89,7 +89,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
                     collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("2"),
-                        content_identity=_sha("3"),
+                        artifact_set_identity=_sha("3"),
                     ),
                     artifact_id=_sha("5"),
                     bytes=str(15),
@@ -189,7 +189,7 @@ def test_stream_registration_reports_exact_subject_bound_container_and_streams(
                     collection=CollectionRootIdentityRef(
                         collection_id="1",
                         archive_root_sha256=_sha("2"),
-                        content_identity=_sha("3"),
+                        artifact_set_identity=_sha("3"),
                     ),
                     artifact_id=_sha("5"),
                     bytes="15",

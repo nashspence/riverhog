@@ -406,7 +406,7 @@ def _collection_root(output: OutputCollectionRef) -> CollectionRootIdentityRef:
         {
             "collection_id": str(output.collection_id),
             "archive_root_sha256": output.archive_root_sha256,
-            "content_identity": output.content_identity,
+            "artifact_set_identity": output.artifact_set_identity,
         }
     )
 

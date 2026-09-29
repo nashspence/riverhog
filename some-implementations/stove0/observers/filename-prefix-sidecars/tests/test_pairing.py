@@ -100,6 +100,20 @@ def test_missing_or_conflicting_view_is_explicitly_incomplete() -> None:
     assert candidates == ()
 
 
+def test_mixed_scoped_and_unscoped_locators_cannot_silently_select_one() -> None:
+    first = _locator("primary", b"/camera/clip.mp4", context_id="context-a", view_ids=(VIEW_A,))
+    scoped = _locator("sidecar", b"/camera/clip.xmp", context_id="context-b", view_ids=(VIEW_A,))
+    unscoped = _locator("sidecar", b"/camera/clip.xmp", context_id="context-c")
+    statuses, candidates = compare_filenames(
+        {"primary": (first,), "sidecar": (scoped, unscoped)},
+        primary_ids=("primary",),
+        sidecar_ids=("sidecar",),
+        sidecar_suffix=".xmp",
+    )
+    assert statuses[1].status == "insufficient"
+    assert candidates == ()
+
+
 def test_exact_shared_context_can_support_pair_without_a_view_identifier() -> None:
     first = _locator("primary", b"/camera/clip.mp4", context_id="shared")
     second = _locator("sidecar", b"/camera/clip.mp4.xmp", context_id="shared")

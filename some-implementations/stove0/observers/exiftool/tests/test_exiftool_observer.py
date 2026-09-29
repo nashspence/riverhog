@@ -70,7 +70,7 @@ def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
     root = CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("2"),
-        content_identity=_sha("3"),
+        artifact_set_identity=_sha("3"),
     )
     return ContentObservationRequest.seal(
         ContentObservationRequestPayload(
