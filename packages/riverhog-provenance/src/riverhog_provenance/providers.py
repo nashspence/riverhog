@@ -149,7 +149,10 @@ class _ContractValidatedObserver:
         )
         self._validator(graph)
         return ObservationResult.from_graph(
-            graph, observation_id=result.observation_id, observer_agent_id=result.observer_agent_id
+            graph,
+            observation_id=result.observation_id,
+            observer_agent_id=result.observer_agent_id,
+            catalog=result.catalog,
         )
 
 

@@ -39,7 +39,7 @@ from riverhog_provenance import (
     software_agent_id,
     validate_journal,
 )
-from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
+from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 _RECORD_FRAGMENTS_PER_ENTRY = 24
 
@@ -222,7 +222,7 @@ def build_member_journal(
             evidence_items=[evidence(producer_agent_id, "process_record")],
         )
     )
-    catalog = ContractCatalog((collection_production_contract(),))
+    catalog = observation.catalog.with_contracts((collection_production_contract(),))
     raw = create_journal(
         graph,
         recorded_by_agent_id=producer_agent_id,
