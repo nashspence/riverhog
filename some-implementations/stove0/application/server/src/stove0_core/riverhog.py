@@ -494,11 +494,13 @@ class Stove0RiverhogClient:
                 "synchronous observation timeout exceeds its claim/capability lifetime"
             )
         audience = f"stove0.observer/{request.observer_registration_id}"
-        actions: tuple[CapabilityAction, ...] = (
-            ("read-root",)
-            if request.read_actions == ("read-evidence",)
-            else request.read_actions
-        )
+        read_action = request.read_actions[0]
+        if read_action == "read-evidence":
+            actions: tuple[CapabilityAction, ...] = ("read-root",)
+        elif read_action == "read-provenance":
+            actions = ("read-provenance",)
+        else:
+            actions = ("read-inputs",)
         capability = self._capability(
             claim,
             audience=audience,
