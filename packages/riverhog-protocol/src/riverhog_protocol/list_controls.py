@@ -21,7 +21,7 @@ type RetrievalCacheSort = Literal[
     "verified_at",
     "protected_until",
 ]
-type SearchSort = Literal["file_ref", "collection_id", "path", "bytes"]
+type SearchSort = Literal["artifact_ref", "collection_id", "artifact_id", "bytes"]
 type ProvenanceStatus = Literal["captured", "omitted"]
 type ProvenanceSort = Literal["path", "bytes", "status"]
 type ArchiveStoreSort = Literal[
