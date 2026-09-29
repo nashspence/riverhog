@@ -653,10 +653,9 @@ def _fixture_selection(work: WorkIdentity) -> ArtifactSelection:
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
-                path="source/input.bin",
+                artifact_id="a" * 64,
                 bytes=str(12),
                 sha256="4" * 64,
-                media_type="application/octet-stream",
             ),
         )
     )
@@ -794,14 +793,14 @@ class _LifecycleTargetCallbacks:
                 archive_root_sha256="1" * 64,
                 artifact_set_identity="2" * 64,
             ),
-            path="source/input.bin",
+            artifact_id="a" * 64,
             bytes=str(12),
             sha256="4" * 64,
         )
         self.output = OutputArtifact(
             id="output",
             role="fixture.output/v1",
-            path="output/result.bin",
+            artifact_id="b" * 64,
             bytes=str(12),
             sha256="5" * 64,
         )
