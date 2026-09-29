@@ -51,7 +51,7 @@ services:
       - stove0_database_url
       - stove0_target_callback_signing_key
       - stove0_browse_token_signing_key
-      - a_stove0_ffprobe_sampling_observer_token
+      - a_stove0_ffprobe_observer_token
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
       - a_stove0_opus_target_token
@@ -88,7 +88,7 @@ services:
       - stove0_database_url
       - stove0_target_callback_signing_key
       - stove0_browse_token_signing_key
-      - a_stove0_ffprobe_sampling_observer_token
+      - a_stove0_ffprobe_observer_token
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
       - a_stove0_opus_target_token
@@ -109,7 +109,7 @@ services:
       - stove0_database_url
       - stove0_target_callback_signing_key
       - stove0_browse_token_signing_key
-      - a_stove0_ffprobe_sampling_observer_token
+      - a_stove0_ffprobe_observer_token
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
       - a_stove0_opus_target_token
@@ -118,26 +118,26 @@ services:
       - source: stove0_worker_riverhog_token
         target: stove0_riverhog_token
 
-  a-stove0-ffprobe-sampling-observer:
+  a-stove0-ffprobe-observer:
     <<: *hardening
-    image: ${A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_REF:-a-stove0-ffprobe-sampling-observer:dev}
+    image: ${A_STOVE0_FFPROBE_OBSERVER_IMAGE_REF:-a-stove0-ffprobe-observer:dev}
     build:
       context: ../../..
-      dockerfile: some-implementations/stove0/observers/ffprobe-sampling/Dockerfile
+      dockerfile: some-implementations/stove0/observers/ffprobe/Dockerfile
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-    command: ["a-stove0-ffprobe-sampling-observer", "--host", "0.0.0.0", "--port", "8080"]
+    command: ["a-stove0-ffprobe-observer", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       TZ: ${TZ:-UTC}
-      A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_ffprobe_sampling_observer_token
-      A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
-      A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID: ${A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID:?A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID is required}
-      A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE: /run/a-stove0-ffprobe-sampling-observer
-    secrets: ["a_stove0_ffprobe_sampling_observer_token"]
+      A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_ffprobe_observer_token
+      A_STOVE0_FFPROBE_OBSERVER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+      A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID: ${A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID:?A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID is required}
+      A_STOVE0_FFPROBE_OBSERVER_WORKSPACE: /run/a-stove0-ffprobe-observer
+    secrets: ["a_stove0_ffprobe_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
-      - /run/a-stove0-ffprobe-sampling-observer:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_OBSERVER_TMPFS_SIZE:-8g}
+      - /run/a-stove0-ffprobe-observer:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_OBSERVER_TMPFS_SIZE:-8g}
     healthcheck: &ffmpeg-health
       test:
         - CMD
@@ -368,8 +368,8 @@ secrets:
     file: ${STOVE0_CONTROLLER_RIVERHOG_TOKEN_FILE:?STOVE0_CONTROLLER_RIVERHOG_TOKEN_FILE is required}
   stove0_worker_riverhog_token:
     file: ${STOVE0_WORKER_RIVERHOG_TOKEN_FILE:?STOVE0_WORKER_RIVERHOG_TOKEN_FILE is required}
-  a_stove0_ffprobe_sampling_observer_token:
-    file: ${A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE:?A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE is required}
+  a_stove0_ffprobe_observer_token:
+    file: ${A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE:?A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE is required}
   a_stove0_exiftool_observer_token:
     file: ${A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE:?A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE is required}
   a_stove0_nvenc_av1_opus_target_token:

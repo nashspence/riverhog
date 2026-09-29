@@ -17,7 +17,7 @@ def test_supplied_topology_uses_one_postgres_authority_and_distinct_roles() -> N
         "api",
         "controller",
         "a-stove0-exiftool-observer",
-        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-ffprobe-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
@@ -61,7 +61,7 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         "worker",
         "state",
         "a-stove0-exiftool-observer",
-        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-ffprobe-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
@@ -75,7 +75,7 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         assert services[name]["cap_drop"] == ["ALL"]
     for name in (
         "a-stove0-exiftool-observer",
-        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-ffprobe-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
@@ -86,8 +86,8 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         assert "ports" not in services[name]
     assert services["a-stove0-nvenc-av1-opus-target"]["profiles"] == ["nvenc"]
     assert services["a-review0-nvenc-av1-opus-sampler"]["profiles"] == ["nvenc"]
-    assert services["a-stove0-ffprobe-sampling-observer"]["command"][0] == (
-        "a-stove0-ffprobe-sampling-observer"
+    assert services["a-stove0-ffprobe-observer"]["command"][0] == (
+        "a-stove0-ffprobe-observer"
     )
     assert services["a-stove0-exiftool-observer"]["command"][0] == "a-stove0-exiftool-observer"
     assert services["a-stove0-opus-target"]["command"][0] == "a-stove0-opus-target"
@@ -220,8 +220,8 @@ def test_supplied_observer_registrations_connect_exact_one_role_services() -> No
             ["media-metadata"],
         ),
         "ffprobe-sampling": (
-            "http://a-stove0-ffprobe-sampling-observer:8080",
-            "a_stove0_ffprobe_sampling_observer_token",
+            "http://a-stove0-ffprobe-observer:8080",
+            "a_stove0_ffprobe_observer_token",
             ["media-sampling"],
         ),
     }

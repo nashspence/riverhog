@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "a-stove0-ffprobe-sampling-observer"
+name = "a-stove0-ffprobe-observer"
 version = "0.1.0"
-description = "FFprobe media sampling observer for Stove0."
+description = "FFprobe stream and sampling observer for Stove0."
 requires-python = ">=3.12"
 license = "CAL-1.0"
 license-files = ["LICENSE"]
-readme = { text = "FFprobe media sampling observer for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "FFprobe stream and sampling observer for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [project.scripts]
-a-stove0-ffprobe-sampling-observer = "a_stove0_ffprobe_sampling_observer.app:main"
+a-stove0-ffprobe-observer = "a_stove0_ffprobe_observer.app:main"
 
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
@@ -35,4 +35,4 @@ a-stove0-media-sampling-contract-lib = { workspace = true }
 a-stove0-ffprobe-streams-contract-lib = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/a_stove0_ffprobe_sampling_observer"]
+packages = ["src/a_stove0_ffprobe_observer"]

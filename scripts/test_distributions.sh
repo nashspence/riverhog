@@ -332,10 +332,10 @@ smoke_workspace_distribution \
   'import importlib.metadata as m; import stove0_api.app; import stove0_core; m.version("stove0-server")' \
   stove0-server
 smoke_workspace_distribution \
-  a-stove0-ffprobe-sampling-observer \
-  'a_stove0_ffprobe_sampling_observer-*.whl' \
-  'import importlib.metadata as m; import a_stove0_ffprobe_sampling_observer.app; m.version("a-stove0-ffprobe-sampling-observer")' \
-  a-stove0-ffprobe-sampling-observer
+  a-stove0-ffprobe-observer \
+  'a_stove0_ffprobe_observer-*.whl' \
+  'import importlib.metadata as m; import a_stove0_ffprobe_observer.app; m.version("a-stove0-ffprobe-observer")' \
+  a-stove0-ffprobe-observer
 smoke_workspace_distribution \
   a-stove0-exiftool-observer \
   'a_stove0_exiftool_observer-*.whl' \

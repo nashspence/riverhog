@@ -1,4 +1,4 @@
-"""FFprobe implementation of the maintained media-sampling contract."""
+"""Separate FFprobe stream-facts and media-sampling registrations."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ from stove0_observer_protocol import (
 )
 from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
 
-from a_stove0_ffprobe_sampling_observer.streams import (
+from a_stove0_ffprobe_observer.streams import (
     StreamProbeError,
     bounded_ffprobe_report,
     ffprobe_tool_identity,
@@ -41,13 +41,13 @@ from a_stove0_ffprobe_sampling_observer.streams import (
 
 def _version() -> str:
     try:
-        return importlib.metadata.version("a-stove0-ffprobe-sampling-observer")
+        return importlib.metadata.version("a-stove0-ffprobe-observer")
     except importlib.metadata.PackageNotFoundError:
         return "development"
 
 
-class FfprobeSamplingObserver:
-    """Report bounded duration/sample ranges from exact immutable artifacts."""
+class FfprobeObserver:
+    """Report bounded stream facts or duration ranges over exact artifacts."""
 
     def __init__(
         self,
@@ -58,12 +58,10 @@ class FfprobeSamplingObserver:
         image_id: str,
     ) -> None:
         self.ffprobe = ffprobe
-        self.workspace_root = (
-            workspace_root or Path("/run/a-stove0-ffprobe-sampling-observer")
-        ).resolve()
+        self.workspace_root = (workspace_root or Path("/run/a-stove0-ffprobe-observer")).resolve()
         self._descriptor = ObserverDescriptor.seal(
             ObserverDescriptorPayload(
-                implementation_id="a-stove0-ffprobe-sampling-observer/v1",
+                implementation_id="a-stove0-ffprobe-observer/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
                 image_id=image_id,
@@ -248,4 +246,4 @@ def _tool_version(command: str) -> str:
     return lines[0][:200] if lines else "unavailable"
 
 
-__all__ = ["FfprobeSamplingObserver"]
+__all__ = ["FfprobeObserver"]

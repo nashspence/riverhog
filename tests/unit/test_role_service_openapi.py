@@ -7,7 +7,7 @@ from typing import Any, cast
 from a_review0_nvenc_av1_opus_sampler.app import create_app as create_nvenc_sampler_app
 from a_review0_opus_sampler.app import create_app as create_opus_sampler_app
 from a_stove0_exiftool_observer.app import create_app as create_exiftool_app
-from a_stove0_ffprobe_sampling_observer.app import create_app as create_ffprobe_app
+from a_stove0_ffprobe_observer.app import create_app as create_ffprobe_app
 from a_stove0_nvenc_av1_opus_target.app import create_target_app as create_nvenc_target_app
 from a_stove0_opus_target.app import create_target_app as create_opus_target_app
 from a_stove0_rclone_target.app import create_app as create_review_effect_app

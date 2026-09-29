@@ -15,7 +15,7 @@ members = [
   "some-implementations/stove0/application/client",
   "some-implementations/stove0/application/server",
   "some-implementations/stove0/observers/exiftool",
-  "some-implementations/stove0/observers/ffprobe-sampling",
+  "some-implementations/stove0/observers/ffprobe",
   "some-implementations/stove0/observers/contracts/*",
   "some-implementations/stove0/targets/media-archive/*",
   "some-implementations/stove0/review0/contracts",

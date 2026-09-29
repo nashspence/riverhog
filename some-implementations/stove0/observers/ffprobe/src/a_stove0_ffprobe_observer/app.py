@@ -23,14 +23,14 @@ from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_ope
 from stove0_observer_protocol import SemanticValidatorRegistry
 from stove0_observer_support import OBSERVER_HTTP_OPERATIONS, ObserverHttpBinding
 
-from a_stove0_ffprobe_sampling_observer.observer import FfprobeSamplingObserver
+from a_stove0_ffprobe_observer.observer import FfprobeObserver
 
-SERVICE = "a-stove0-ffprobe-sampling-observer"
+SERVICE = "a-stove0-ffprobe-observer"
 _PUBLIC_METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE"})
 _bearer = HTTPBearer(auto_error=False)
 
 
-def create_app(*, token: str, observer: FfprobeSamplingObserver) -> FastAPI:
+def create_app(*, token: str, observer: FfprobeObserver) -> FastAPI:
     credential = token.strip()
     if not credential:
         raise ValueError("FFprobe observer token must be nonempty")
@@ -40,9 +40,7 @@ def create_app(*, token: str, observer: FfprobeSamplingObserver) -> FastAPI:
             (FFPROBE_STREAMS_SEMANTIC_VALIDATOR, MEDIA_SAMPLING_SEMANTIC_VALIDATOR)
         ),
     )
-    app = FastAPI(
-        title="Stove0 FFprobe sampling observer", version="1", openapi_url="/v1/openapi.json"
-    )
+    app = FastAPI(title="Stove0 FFprobe observer", version="1", openapi_url="/v1/openapi.json")
 
     @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
@@ -61,7 +59,7 @@ def create_app(*, token: str, observer: FfprobeSamplingObserver) -> FastAPI:
         if result.returncode:
             return _error(503, "service_unavailable", "FFprobe is not ready")
         return Response(
-            content=b'{"service":"a-stove0-ffprobe-sampling-observer","status":"ok"}',
+            content=b'{"service":"a-stove0-ffprobe-observer","status":"ok"}',
             media_type="application/json",
         )
 
@@ -108,8 +106,8 @@ def _error(status: int, code: str, message: str) -> Response:
 
 
 def _secret() -> str:
-    direct = os.getenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN")
-    path = os.getenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE")
+    direct = os.getenv("A_STOVE0_FFPROBE_OBSERVER_TOKEN")
+    path = os.getenv("A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE")
     if bool(direct) == bool(path):
         raise ValueError("set exactly one FFprobe observer token source")
     value = direct if direct is not None else Path(str(path)).read_text(encoding="utf-8")
@@ -120,11 +118,11 @@ def _secret() -> str:
 
 _CLI_RESULT_CONTRACT = {
     "format": "riverhog-cli-result-contract/v1",
-    "identity_prefix": "a-stove0-ffprobe-sampling-observer-cli-result",
+    "identity_prefix": "a-stove0-ffprobe-observer-cli-result",
     "default_profile": "runtime",
     "profiles": {
         "runtime": {
-            "id": "a-stove0-ffprobe-sampling-observer-cli-runtime/v1",
+            "id": "a-stove0-ffprobe-observer-cli-runtime/v1",
             "structured_output": "none",
             "human_json_relationship": "not-applicable",
             "success": [
@@ -153,54 +151,51 @@ _CLI_RESULT_CONTRACT = {
         "usage": {"kind": "parser-rejected-invocation"},
     },
     "output_authorities": {},
-    "version_distribution": "a-stove0-ffprobe-sampling-observer",
+    "version_distribution": "a-stove0-ffprobe-observer",
 }
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog=SERVICE)
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
-    parser.add_argument(
-        "--host", default=os.getenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST", "127.0.0.1")
-    )
+    parser.add_argument("--host", default=os.getenv("A_STOVE0_FFPROBE_OBSERVER_HOST", "127.0.0.1"))
     parser.add_argument(
         "--port",
         type=int,
-        default=int(os.getenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT", "8080")),
+        default=int(os.getenv("A_STOVE0_FFPROBE_OBSERVER_PORT", "8080")),
     )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    observer = FfprobeSamplingObserver(
+    observer = FfprobeObserver(
         ffprobe=os.getenv("STOVE0_FFPROBE_BIN", "ffprobe"),
         workspace_root=Path(
             os.getenv(
-                "A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE",
-                "/run/a-stove0-ffprobe-sampling-observer",
+                "A_STOVE0_FFPROBE_OBSERVER_WORKSPACE",
+                "/run/a-stove0-ffprobe-observer",
             )
         ),
-        source_revision=os.getenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION", "unknown"),
+        source_revision=os.getenv("A_STOVE0_FFPROBE_OBSERVER_SOURCE_REVISION", "unknown"),
         image_id=_image_id(),
     )
     token = _secret()
     with contextlib.suppress(KeyError):
-        os.environ.pop("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN")
+        os.environ.pop("A_STOVE0_FFPROBE_OBSERVER_TOKEN")
     uvicorn.run(create_app(token=token, observer=observer), host=args.host, port=args.port)
     return 0
 
 
 def _image_id() -> str:
-    value = os.getenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID", "").strip()
+    value = os.getenv("A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID", "").strip()
     if not (
         len(value) == 71
         and value.startswith("sha256:")
         and all(character in "0123456789abcdef" for character in value[7:])
     ):
         raise ValueError(
-            "A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID must be an OCI ImageID "
-            "(sha256:<64 lowercase hex>)"
+            "A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID must be an OCI ImageID (sha256:<64 lowercase hex>)"
         )
     return value
 

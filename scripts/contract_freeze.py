@@ -847,7 +847,7 @@ CLI_MODULES = {
     "a-riverhog-b2-store": "a_riverhog_b2_store.app",
     "a-riverhog-filesystem-store": "a_riverhog_filesystem_store.app",
     "a-stove0-exiftool-observer": "a_stove0_exiftool_observer.app",
-    "a-stove0-ffprobe-sampling-observer": "a_stove0_ffprobe_sampling_observer.app",
+    "a-stove0-ffprobe-observer": "a_stove0_ffprobe_observer.app",
     "a-review0-nvenc-av1-opus-sampler": "a_review0_nvenc_av1_opus_sampler.app",
     "a-stove0-nvenc-av1-opus-target": "a_stove0_nvenc_av1_opus_target.app",
     "a-review0-opus-sampler": "a_review0_opus_sampler.app",

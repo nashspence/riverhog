@@ -29,6 +29,7 @@ COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/stove0/packages/observer-client some-implementations/stove0/packages/observer-client
 COPY some-implementations/stove0/packages/observer-protocol some-implementations/stove0/packages/observer-protocol
@@ -45,9 +46,11 @@ FROM build AS bundled-components-build
 
 COPY some-implementations/stove0/observers/contracts/media-metadata some-implementations/stove0/observers/contracts/media-metadata
 COPY some-implementations/stove0/observers/contracts/media-sampling some-implementations/stove0/observers/contracts/media-sampling
+COPY some-implementations/stove0/observers/contracts/ffprobe-streams some-implementations/stove0/observers/contracts/ffprobe-streams
 RUN uv sync --frozen --package stove0-server \
     --package a-stove0-media-metadata-contract-lib \
     --package a-stove0-media-sampling-contract-lib \
+    --package a-stove0-ffprobe-streams-contract-lib \
     --no-dev --no-editable
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS runtime-base

@@ -300,7 +300,7 @@ def test_stove0_server_consumes_component_boundaries_only_as_protocols_and_calle
         "review0_contracts",
         "review0_sampler_lib",
         "stove0_target_support",
-        "a_stove0_ffprobe_sampling_observer",
+        "a_stove0_ffprobe_observer",
         "a_review0_nvenc_av1_opus_sampler",
         "a_stove0_nvenc_av1_opus_target",
         "a_review0_opus_sampler",
