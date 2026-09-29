@@ -505,7 +505,7 @@ class SearchService(Protocol):
         collection: int | None = None,
         principal: Principal | None = None,
     ) -> JsonObject: ...
-    def iter_files(
+    def iter_artifacts(
         self,
         *,
         q: str | None,

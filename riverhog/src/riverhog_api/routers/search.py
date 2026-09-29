@@ -16,7 +16,7 @@ from riverhog_api.browse import (
 )
 from riverhog_api.deps import ContainerDep
 from riverhog_api.routing import RiverhogRouter
-from riverhog_api.schemas.search import SearchFileOut, SearchOut
+from riverhog_api.schemas.search import SearchArtifactOut, SearchOut
 
 router = RiverhogRouter(tags=["search"])
 
@@ -32,7 +32,7 @@ def search(
     q: BrowseQueryParameter = None,
     page_size: int = Query(25, ge=1, le=100),
     page_token: BrowsePageTokenQuery = None,
-    sort: Annotated[SearchSort, Query()] = "file_ref",
+    sort: Annotated[SearchSort, Query()] = "artifact_ref",
     order: Annotated[SortOrder, Query()] = "asc",
     collection: Annotated[CollectionIdParameter | None, Query()] = None,
 ) -> SearchOut:
@@ -59,10 +59,10 @@ def search(
         operation="search",
         selectors=selectors,
     )
-    files = cast(list[dict[str, object]], payload["files"])
+    artifacts = cast(list[dict[str, object]], payload["artifacts"])
     return SearchOut.model_validate(
         {
             **payload,
-            "files": [SearchFileOut.model_validate(record) for record in files],
+            "artifacts": [SearchArtifactOut.model_validate(record) for record in artifacts],
         }
     )

@@ -67,12 +67,14 @@ def persisted_artifact_scope(
             CollectionProcessingCapabilityArtifactRecord(
                 capability_id=capability_id,
                 collection_id=collection_id,
-                path=path,
+                artifact_id=artifact_id,
                 artifact_order=artifact_order,
                 bytes=byte_count,
                 sha256=sha256,
             )
-            for artifact_order, (collection_id, path, byte_count, sha256) in enumerate(members)
+            for artifact_order, (collection_id, artifact_id, byte_count, sha256) in enumerate(
+                members
+            )
         )
     return Principal(
         id=f"claim:{claim_id}",
