@@ -16,6 +16,7 @@ classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Langu
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "a-stove0-materialization-hint-evidence-contract-lib>=0.1,<0.2",
+  "a-stove0-riverhog-provenance-evidence-contract-lib>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
@@ -31,6 +32,7 @@ a-stove0-riverhog-provenance-observer = "a_stove0_riverhog_provenance_observer.a
 
 [tool.uv.sources]
 a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
+a-stove0-riverhog-provenance-evidence-contract-lib = { workspace = true }
 http-api-contracts = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance = { workspace = true }

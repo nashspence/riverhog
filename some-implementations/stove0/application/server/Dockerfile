@@ -49,12 +49,14 @@ COPY some-implementations/stove0/observers/contracts/media-sampling some-impleme
 COPY some-implementations/stove0/observers/contracts/ffprobe-streams some-implementations/stove0/observers/contracts/ffprobe-streams
 COPY some-implementations/stove0/observers/contracts/magic some-implementations/stove0/observers/contracts/magic
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
+COPY some-implementations/stove0/observers/contracts/riverhog-provenance some-implementations/stove0/observers/contracts/riverhog-provenance
 RUN uv sync --frozen --package stove0-server \
     --package a-stove0-media-metadata-contract-lib \
     --package a-stove0-media-sampling-contract-lib \
     --package a-stove0-ffprobe-streams-contract-lib \
     --package a-stove0-magic-facts-contract-lib \
     --package a-stove0-materialization-hint-evidence-contract-lib \
+    --package a-stove0-riverhog-provenance-evidence-contract-lib \
     --no-dev --no-editable
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS runtime-base

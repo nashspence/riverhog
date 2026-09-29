@@ -92,6 +92,10 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/stove0/observers/contracts/materialization-hint/src",
         {"a_stove0_materialization_hint_evidence_contract_lib"},
     ),
+    "a-stove0-riverhog-provenance-evidence-contract-lib": (
+        REPO / "some-implementations/stove0/observers/contracts/riverhog-provenance/src",
+        {"a_stove0_riverhog_provenance_evidence_contract_lib"},
+    ),
     "a-stove0-nvenc-av1-opus-target": (
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/target/src",
         {"a_stove0_nvenc_av1_opus_target"},
@@ -162,6 +166,7 @@ SHARED_PROVIDER_MODULES = {
     "a-stove0-ffprobe-streams-contract-lib",
     "a-stove0-magic-facts-contract-lib",
     "a-stove0-materialization-hint-evidence-contract-lib",
+    "a-stove0-riverhog-provenance-evidence-contract-lib",
     "a-stove0-media-metadata-contract-lib",
     "a-stove0-media-sampling-contract-lib",
     "review0-planner",
@@ -839,6 +844,7 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
         REPO / "some-implementations/stove0/observers/riverhog-provenance/Dockerfile": (
             "some-implementations/stove0/observers/riverhog-provenance",
             "some-implementations/stove0/observers/contracts/materialization-hint",
+            "some-implementations/stove0/observers/contracts/riverhog-provenance",
         ),
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": (
             "some-implementations/stove0/observers/contracts/media-metadata",
@@ -958,6 +964,9 @@ def test_maintained_observer_distributions_do_not_pull_target_authority() -> Non
         closure = dependency_closure(distribution, graph)
         assert observer_contract in closure
         assert not closure & forbidden
+    assert "a-stove0-riverhog-provenance-evidence-contract-lib" in dependency_closure(
+        "a-stove0-riverhog-provenance-observer", graph
+    )
 
 
 def test_media_archive_target_contracts_do_not_pull_observer_authority() -> None:
@@ -973,6 +982,7 @@ def test_semantic_contract_distributions_do_not_pull_runtime_support() -> None:
         "a-stove0-media-sampling-contract-lib",
         "a-stove0-magic-facts-contract-lib",
         "a-stove0-materialization-hint-evidence-contract-lib",
+        "a-stove0-riverhog-provenance-evidence-contract-lib",
         "a-stove0-media-archive-contract-lib",
         "review0-contracts",
         "a-stove0-media-archive-lib",
