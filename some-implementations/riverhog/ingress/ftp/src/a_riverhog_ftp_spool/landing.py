@@ -41,11 +41,14 @@ from riverhog_provenance import (
     validate_graph,
 )
 from riverhog_provenance.native_source import (
-    SOURCE_NAMING_VIEW_SCHEME,
     NativeFileObserver,
     filesystem_name,
 )
-from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
+from riverhog_provenance_contracts import (
+    SOURCE_NAMING_VIEW_SCHEME,
+    ContractCatalog,
+    require_canonical_uuid_urn,
+)
 
 from a_riverhog_ftp_spool.completion import (
     CONTROL_DIR,

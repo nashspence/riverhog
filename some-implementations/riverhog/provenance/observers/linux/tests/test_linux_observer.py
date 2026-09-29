@@ -23,7 +23,7 @@ from riverhog_provenance.native_capture import (
     NativeStat,
     SymlinkRefusedError,
 )
-from riverhog_provenance.native_source import SOURCE_NAMING_VIEW_SCHEME
+from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
 
 pytestmark = pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux only")
 

@@ -41,6 +41,7 @@ members = [
     "a-stove0-exiftool-observer",
     "a-stove0-ffprobe-observer",
     "a-stove0-ffprobe-streams-contract-lib",
+    "a-stove0-filename-prefix-sidecar-observer",
     "a-stove0-media-archive-contract-lib",
     "a-stove0-media-archive-lib",
     "a-stove0-media-metadata-contract-lib",
@@ -733,6 +734,21 @@ dependencies = [
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
+]
+
+[[package]]
+name = "a-stove0-filename-prefix-sidecar-observer"
+version = "0.1.0"
+source = { editable = "some-implementations/stove0/observers/filename-prefix-sidecars" }
+dependencies = [
+    { name = "riverhog-canonical-json" },
+    { name = "riverhog-provenance-contracts" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
 
 [[package]]
