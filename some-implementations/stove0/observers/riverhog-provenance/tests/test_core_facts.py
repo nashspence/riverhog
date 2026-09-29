@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from copy import deepcopy
 from types import SimpleNamespace
 from typing import Any, cast
 
@@ -26,6 +27,7 @@ from riverhog_provenance import (
     assertion,
     create_journal,
     external_reference,
+    new_id,
     reference,
     validate_journal,
 )
@@ -45,11 +47,18 @@ def _fixture(
     view_id: str,
     describes: dict[str, object] | None = None,
     hint: dict[str, object] | None = None,
+    other_hint: dict[str, object] | None = None,
 ) -> tuple[WorkArtifactSubject, CollectionArtifactProvenanceBindingDocument, object]:
     observed = BoundedSourceObserver().observe(BytesSource(b"abc"))
     graph = observed.graph_fragment()
     if hint is not None:
         graph["occurrences"][0]["materialization_hint"] = hint
+    if other_hint is not None:
+        other = deepcopy(graph["occurrences"][0])
+        other["id"] = new_id()
+        other["assertion_id"] = new_id()
+        other["materialization_hint"] = other_hint
+        graph["occurrences"].append(other)
     graph["descriptions"][0]["address_status"] = "known"
     context = assertion(
         "context",
@@ -204,6 +213,20 @@ def test_hint_fact_uses_exact_delivered_occurrence_and_valid_missing_hint() -> N
     missing = extract_materialization_hint_fact(missing_subject, missing_binding, missing_summary)
     assert missing["materialization_hint"] is None
     validate_materialization_hint_facts({"artifacts": [missing]}, (missing_subject,))
+
+
+def test_hint_fact_ignores_another_occurrence_and_source_locator_name() -> None:
+    subject, binding, summary = _fixture(
+        name="/camera/source-name.mp4",
+        view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+        other_hint={"components": ["unrelated.mp4"]},
+    )
+    fact = extract_materialization_hint_fact(subject, binding, summary)
+    assert fact["materialization_hint"] is None
+    assert fact["occurrence"]["object_id"] == next(
+        row["id"] for row in summary.graph["occurrences"] if "materialization_hint" not in row
+    )
+    validate_materialization_hint_facts({"artifacts": [fact]}, (subject,))
 
 
 def test_observer_fails_when_exact_primary_provenance_is_unavailable() -> None:
