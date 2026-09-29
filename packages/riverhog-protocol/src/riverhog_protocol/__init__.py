@@ -49,6 +49,12 @@ __all__ = [
     "error_type_for_code",
 ]
 
+from riverhog_protocol.artifact_discovery import (
+    ArtifactDiscoveryRequest,
+    AssertionClause,
+    ProfilePin,
+    ValuePredicate,
+)
 from riverhog_protocol.artifact_identity import (
     ArtifactId,
     ArtifactMemberIdentityDocument,
@@ -448,5 +454,9 @@ __all__ += [
     "RetrievalCacheSort",
     "RetrievalCacheState",
     "SearchSort",
+    "ArtifactDiscoveryRequest",
+    "AssertionClause",
+    "ProfilePin",
+    "ValuePredicate",
     "SortOrder",
 ]
