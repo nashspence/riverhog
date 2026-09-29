@@ -95,8 +95,6 @@ class NativeCapturePolicy:
     strict_consistency: bool = True
     attempt_noatime: bool = True
     verify_path_binding: bool = True
-    second_content_hash: bool = False
-    hash_chunk_bytes: int = 8 * 1024 * 1024
     inline_native_value_bytes: int = 1024 * 1024
     maximum_native_value_bytes: int = 256 * 1024 * 1024
     large_value_disposition: LargeValueDisposition = LargeValueDisposition.DIGEST_ONLY
@@ -123,7 +121,6 @@ class NativeCapturePolicy:
 
     def __post_init__(self) -> None:
         positive = {
-            "hash_chunk_bytes": self.hash_chunk_bytes,
             "inline_native_value_bytes": self.inline_native_value_bytes,
             "maximum_native_value_bytes": self.maximum_native_value_bytes,
             "maximum_sparse_extents": self.maximum_sparse_extents,
