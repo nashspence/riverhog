@@ -8,16 +8,26 @@ from typing import Any
 import pytest
 from riverhog_client.processing import ClaimedArtifact, ClaimedCollectionReader
 from riverhog_protocol.collection_workflows import CollectionRootIdentity
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    create_journal,
+    validate_journal,
+)
 
 
 class ProvenanceApi:
     def __init__(self) -> None:
         self.root = CollectionRootIdentity(1, "a" * 64, "b" * 64)
         self.artifact = ClaimedArtifact(self.root, "c" * 64, 3, hashlib.sha256(b"abc").hexdigest())
-        self.journal_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
-        self.entry_id = "urn:uuid:22222222-2222-4222-8222-222222222222"
+        source = BoundedSourceObserver().observe(BytesSource(b"abc"))
+        self.journal = create_journal(
+            source.graph_fragment(), recorded_by_agent_id=source.observer_agent_id
+        )
+        self.summary = validate_journal(self.journal)
+        self.journal_id = self.summary.journal_id
+        self.entry_id = self.summary.tail.reference["entry_id"]
         self.association_id = "urn:uuid:33333333-3333-4333-8333-333333333333"
-        self.journal = b"journal"
         self.calls: list[str] = []
 
     def get_collection(self, collection_id: int) -> dict[str, Any]:
@@ -47,10 +57,10 @@ class ProvenanceApi:
                     "through": {
                         "entry_id": self.entry_id,
                         "sequence": "0",
-                        "json_sha256": "d" * 64,
+                        "json_sha256": self.summary.tail.sha256,
                     },
-                    "prefix_sha256": "e" * 64,
-                    "prefix_bytes": "7",
+                    "prefix_sha256": self.summary.journal_sha256,
+                    "prefix_bytes": str(len(self.journal)),
                 },
                 "delivery_association_id": self.association_id,
             },
@@ -89,12 +99,13 @@ class ProvenanceApi:
         *,
         expected_bytes: int,
         expected_sha256: str,
+        end: int | None = None,
     ) -> Iterator[Iterator[bytes]]:
         assert collection_id == 1 and journal_id == self.journal_id
         assert expected_bytes == len(self.journal)
         assert expected_sha256 == hashlib.sha256(self.journal).hexdigest()
         self.calls.append("stream")
-        yield iter((self.journal,))
+        yield iter((self.journal[:end],))
 
 
 def _reader(api: ProvenanceApi) -> ClaimedCollectionReader:
@@ -113,9 +124,10 @@ def test_claimed_provenance_verifies_member_root_and_streams_exact_journal() -> 
     assert view.binding.artifact_id == api.artifact.artifact_id
     journals = tuple(view.iter_journals())
     assert len(journals) == 1
+    assert view.bound_summary().anchor == api.summary.anchor
     with view.stream_journal(journals[0]) as chunks:
         assert b"".join(chunks) == api.journal
-    assert api.calls == ["detail", "journals", "stream"]
+    assert api.calls == ["detail", "journals", "journals", "stream", "stream"]
 
 
 def test_claimed_provenance_rejects_unselected_artifact_and_changed_root() -> None:

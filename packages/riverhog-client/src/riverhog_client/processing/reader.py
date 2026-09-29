@@ -47,6 +47,7 @@ class ClaimedCollectionApi(Protocol):
         *,
         expected_bytes: int,
         expected_sha256: str,
+        end: int | None,
     ) -> AbstractContextManager[Iterator[bytes]]: ...
 
     def get_portable_collection_inventory(
