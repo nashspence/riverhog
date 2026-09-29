@@ -11,7 +11,11 @@ from pytest import FixtureRequest
 from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_core.app_permissions import (
     ARCHIVES_MANAGE,
+    CATALOG_READ,
     COLLECTION_TAGS_MANAGE,
+    PROVENANCE_EXPORT,
+    PROVENANCE_READ,
+    RETRIEVAL_MANAGE,
     ApplicationAccess,
     Principal,
     tag_resource,
@@ -339,6 +343,34 @@ def _issue_capability(
         principal=_principal(),
     )
     return capability
+
+
+def test_root_verification_capability_cannot_read_payload_or_provenance(
+    tmp_path: Path, request: FixtureRequest
+) -> None:
+    factory = _session_factory(tmp_path, request)
+    root = _setup(factory)
+    service = SqlAlchemyCollectionWorkflowService(cast(Any, object()), session_factory=factory)
+    claim = _create_claim(
+        service,
+        work_id=WORK_ID,
+        work_document=_work_document(root),
+        root=root,
+    )
+    capability = _issue_capability(
+        service,
+        str(claim["id"]),
+        root,
+        audience="fixture.observer/v1",
+        actions=("read-root",),
+    )
+    delegated = service.authenticate_capability(str(capability["token"]))
+    assert delegated is not None
+    assert delegated.has_artifact_scope
+    assert delegated.allows_collection(CATALOG_READ, root.collection_id)
+    assert not delegated.allows_collection(RETRIEVAL_MANAGE, root.collection_id)
+    assert not delegated.allows_collection(PROVENANCE_READ, root.collection_id)
+    assert not delegated.allows_collection(PROVENANCE_EXPORT, root.collection_id)
 
 
 def test_sealed_output_policy_grants_exact_initial_classification_only(

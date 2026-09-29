@@ -123,7 +123,12 @@ def test_opaque_work_and_evidence_runtime_match_their_schema_byte_bounds() -> No
 
 
 def test_processing_capability_actions_are_the_exact_read_contract() -> None:
-    for actions in (["read-inputs"], ["read-inputs", "write-output"]):
+    for actions in (
+        ["read-root"],
+        ["read-inputs"],
+        ["read-provenance"],
+        ["read-inputs", "write-output"],
+    ):
         capability = ProcessingCapabilityCreateDocument(
             fence="1",
             audience="processing:test",
@@ -134,14 +139,19 @@ def test_processing_capability_actions_are_the_exact_read_contract() -> None:
             capability.model_dump(mode="json")
         )
 
-    for actions in (["write-output"], ["read-inputs", "manage-output"]):
+    for actions in (
+        ["write-output"],
+        ["read-evidence"],
+        ["read-inputs", "read-provenance"],
+        ["read-inputs", "manage-output"],
+    ):
         invalid = {
             "fence": "1",
             "audience": "processing:test",
             "actions": actions,
             "ttl_seconds": 900,
         }
-        with pytest.raises(ValidationError, match="read-inputs"):
+        with pytest.raises(ValidationError, match="actions|scoped read"):
             ProcessingCapabilityCreateDocument.model_validate(invalid)
         with pytest.raises(JsonSchemaValidationError):
             Draft202012Validator(ProcessingCapabilityCreateDocument.model_json_schema()).validate(

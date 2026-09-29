@@ -494,10 +494,15 @@ class Stove0RiverhogClient:
                 "synchronous observation timeout exceeds its claim/capability lifetime"
             )
         audience = f"stove0.observer/{request.observer_registration_id}"
+        actions: tuple[CapabilityAction, ...] = (
+            ("read-root",)
+            if request.read_actions == ("read-evidence",)
+            else request.read_actions
+        )
         capability = self._capability(
             claim,
             audience=audience,
-            actions=request.read_actions,
+            actions=actions,
             # Observation subjects are semantically ordered by their request-scoped
             # IDs.  Capability scope is a different, generic Riverhog authority and
             # must be projected into immutable collection-artifact order.

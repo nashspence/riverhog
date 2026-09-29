@@ -35,6 +35,7 @@ from stove0_core.coordinator import (
     PlanningObservationTerminal,
     PlanningPort,
     TargetPort,
+    _selected_observation_evidence,
 )
 from stove0_core.work_state import ClaimBinding, WorkInapplicable, WorkNoAction
 
@@ -204,6 +205,7 @@ class WorkflowPreviewService:
                     "configured observer descriptor changed after preview request sealing"
                 )
             validate_observation_request(observation_request, descriptor)
+            predecessors = _selected_observation_evidence(observation_request, evidence)
             authority = self.riverhog.observation_authority(claim, observation_request)
             result = self.observers.observe(
                 observation_request.observer_registration_id,
@@ -212,6 +214,7 @@ class WorkflowPreviewService:
                     claim_id=claim.claim_id,
                     fence=claim.fence,
                     runtime=authority,
+                    evidence=predecessors,
                 ),
                 descriptor=descriptor,
             )

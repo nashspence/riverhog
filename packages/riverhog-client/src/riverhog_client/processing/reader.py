@@ -155,6 +155,12 @@ class ClaimedCollectionReader:
     def replace_api(self, api: ClaimedCollectionApi) -> None:
         self.api = api
 
+    def verify_roots(self) -> None:
+        """Recheck each selected immutable root under the current claim authority."""
+
+        for root in self.inputs:
+            self._verify_root(root)
+
     def iter_inventory(self) -> Iterator[ClaimedArtifact]:
         previous: ClaimedArtifact | None = None
         for root in self.inputs:

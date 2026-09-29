@@ -108,7 +108,6 @@ from riverhog_core.runtime_config import RuntimeConfig
 _MIN_LEASE_SECONDS = 30
 _MAX_LEASE_SECONDS = 24 * 60 * 60
 _DEFAULT_LEASE_SECONDS = 30 * 60
-_CAPABILITY_ACTIONS = frozenset({"read-inputs", "read-provenance", "write-output"})
 _CAPABILITY_AUDIENCE = re.compile(r"^[a-z0-9][a-z0-9._:/-]{0,299}$", re.ASCII)
 _SOURCE_COLLECTION_RETIREMENT_POLICIES = frozenset({"retain", "retire-after-settlement"})
 _CLAIM_STATES = closed_literal_values(ClaimState)
@@ -751,7 +750,12 @@ class SqlAlchemyCollectionWorkflowService:
     ) -> dict[str, object]:
         ttl = _lease_seconds(ttl_seconds)
         normalized_actions = tuple(sorted(set(str(item) for item in actions)))
-        if not normalized_actions or not set(normalized_actions).issubset(_CAPABILITY_ACTIONS):
+        if normalized_actions not in (
+            ("read-root",),
+            ("read-inputs",),
+            ("read-provenance",),
+            ("read-inputs", "write-output"),
+        ):
             raise BadRequest("processing capability actions are invalid")
         normalized_audience = str(audience)
         if _CAPABILITY_AUDIENCE.fullmatch(normalized_audience) is None:
@@ -933,7 +937,7 @@ class SqlAlchemyCollectionWorkflowService:
                 return None
             grants: set[ApplicationAccess] = set()
             grants.add(ApplicationAccess(COLLECTION_PROCESSING_EXECUTE))
-            if {"read-inputs", "read-provenance"} & set(actions):
+            if {"read-root", "read-inputs", "read-provenance"} & set(actions):
                 collection_ids = session.scalars(
                     select(CollectionProcessingCapabilityArtifactRecord.collection_id)
                     .where(
@@ -969,7 +973,10 @@ class SqlAlchemyCollectionWorkflowService:
                 .where(CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id)
                 .limit(1)
             )
-            if {"read-inputs", "read-provenance"} & set(actions) and has_artifact_scope is None:
+            if (
+                {"read-root", "read-inputs", "read-provenance"} & set(actions)
+                and has_artifact_scope is None
+            ):
                 return None
             return Principal(
                 id=principal_id,
@@ -979,7 +986,9 @@ class SqlAlchemyCollectionWorkflowService:
                 key_id=claim.consumer_key_id,
                 access=frozenset(grants),
                 artifact_scope_capability_id=(
-                    capability.id if {"read-inputs", "read-provenance"} & set(actions) else None
+                    capability.id
+                    if {"read-root", "read-inputs", "read-provenance"} & set(actions)
+                    else None
                 ),
             )
 

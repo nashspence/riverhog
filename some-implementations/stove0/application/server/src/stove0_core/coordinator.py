@@ -86,6 +86,35 @@ class ParentOutcomeBinding:
     outcome_id: str
 
 
+def _selected_observation_evidence(
+    request: ContentObservationRequest,
+    accepted: Iterable[ContentObservationEvidence],
+) -> tuple[ContentObservationEvidence, ...]:
+    """Resolve only sealed predecessor results already accepted by the controller."""
+
+    accepted_items = tuple(accepted)
+    available = {
+        (
+            item.request.request_id,
+            item.result.result_sha256,
+            item.request.observer_contract_id,
+        ): item
+        for item in accepted_items
+    }
+    if len(available) != len(accepted_items):
+        raise ValueError("accepted observation evidence is duplicated")
+    selected: list[ContentObservationEvidence] = []
+    for slot in request.evidence_slots or ():
+        key = (slot.request_id, slot.result_sha256, slot.observer_contract_id)
+        predecessor = available.get(key)
+        if predecessor is None:
+            raise ValueError("required observation evidence was not accepted")
+        if predecessor.result.state != "observed":
+            raise ValueError("required observation evidence was not successful")
+        selected.append(predecessor)
+    return tuple(selected)
+
+
 class RiverhogControlPort(Protocol):
     """Riverhog claim/capability/verification authority used by stove0."""
 
@@ -726,6 +755,13 @@ class Stove0Coordinator:
         if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
             raise RuntimeError("configured observer descriptor changed after request sealing")
         validate_observation_request(request, descriptor)
+        accepted = tuple(
+            ContentObservationEvidence(request=prior, result=result)
+            for prior in record.observation_requests
+            for result in record.observation_results
+            if prior.request_id == result.request_id
+        )
+        predecessors = _selected_observation_evidence(request, accepted)
         authority = self.riverhog.observation_authority(record.claim, request)
         result = self.observers.observe(
             request.observer_registration_id,
@@ -734,6 +770,7 @@ class Stove0Coordinator:
                 claim_id=record.claim.claim_id,
                 fence=record.claim.fence,
                 runtime=authority,
+                evidence=predecessors,
             ),
             descriptor=descriptor,
         )
@@ -760,6 +797,7 @@ class Stove0Coordinator:
             if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
                 raise RuntimeError("configured observer descriptor changed during tree planning")
             validate_observation_request(request, descriptor)
+            predecessors = _selected_observation_evidence(request, evidence)
             authority = self.riverhog.observation_authority(parent.claim, request)
             result = self.observers.observe(
                 request.observer_registration_id,
@@ -768,6 +806,7 @@ class Stove0Coordinator:
                     claim_id=parent.claim.claim_id,
                     fence=parent.claim.fence,
                     runtime=authority,
+                    evidence=predecessors,
                 ),
                 descriptor=descriptor,
             )
