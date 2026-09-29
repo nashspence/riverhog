@@ -125,7 +125,7 @@ class ExiftoolObserver:
                 source = runtime.materialize(
                     subject,
                     workspace=workspace,
-                    relative_path=f"input/{subject.id}/{Path(subject.path).name}",
+                    relative_path=f"input/{subject.id}/payload",
                 )
                 materialized.append((subject.id, source))
             documents = self._probe(

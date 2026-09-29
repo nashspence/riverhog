@@ -84,19 +84,17 @@ def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
                     id="camera-primary",
                     role="stove0.media.source/v1",
                     collection=root,
-                    path="camera/clip.mov",
+                    artifact_id=_sha("6"),
                     bytes=str(15),
                     sha256=_sha("4"),
-                    media_type="video/quicktime",
                 ),
                 WorkArtifactSubject(
                     id="camera-sidecar",
                     role="stove0.media.source/v1",
                     collection=root,
-                    path="camera/clip.xmp",
+                    artifact_id=_sha("7"),
                     bytes=str(15),
                     sha256=_sha("5"),
-                    media_type="application/rdf+xml",
                 ),
             ),
             maximum_result_bytes=512 * 1024,
@@ -124,7 +122,7 @@ def test_exiftool_observer_preserves_conflicting_exact_field_evidence(
         sources = tuple(Path(value) for value in command if value.startswith(str(tmp_path)))
         documents: list[dict[str, object]] = []
         for source in sources:
-            if source.suffix == ".xmp":
+            if source.parent.name == "camera-sidecar":
                 documents.append(
                     {
                         "SourceFile": str(source),
