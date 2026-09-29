@@ -59,6 +59,7 @@ from riverhog_protocol import (
     collection_description_identity,
     collection_upload_raw_digest_summary,
     decode_collection_tag_node,
+    validate_archive_binding_page,
     validate_collection_tag,
     validate_collection_upload_batch_against_registration_constraints,
 )
@@ -3162,8 +3163,8 @@ class SqlAlchemyCollectionUploadService:
                 if not rows:
                     raise RuntimeError("provenance binding pages do not cover the member set")
                 bindings = [_provenance_binding_row(row) for row in rows]
-                CollectionArtifactProvenanceBindingBatchDocument.model_validate(
-                    {"bindings": bindings}
+                validate_archive_binding_page(
+                    bindings, max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX
                 )
                 payload = canonical_json_bytes(
                     {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": bindings}

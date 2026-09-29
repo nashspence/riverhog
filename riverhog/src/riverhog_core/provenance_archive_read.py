@@ -8,10 +8,12 @@ bytes. It retains only one descriptor and one payload segment at a time.
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass
+from typing import Any, cast
 
 from riverhog_archive_contracts import (
+    PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_METADATA_BYTES_MAX,
     PROVENANCE_SEQUENCE_DOMAIN,
@@ -22,7 +24,7 @@ from riverhog_archive_contracts import (
     update_provenance_commitment,
 )
 from riverhog_canonical_json import require_canonical_json
-from riverhog_protocol import CollectionArtifactProvenanceBindingBatchDocument
+from riverhog_protocol import validate_archive_binding_page
 
 ObjectReader = Callable[[str], Iterator[bytes]]
 
@@ -249,16 +251,27 @@ class CanonicalProvenanceArchiveReader:
                 raise ProvenanceArchiveReadError("provenance binding page is invalid")
             if value["format"] != PROVENANCE_BINDINGS_FORMAT:
                 raise ProvenanceArchiveReadError("provenance binding page format changed")
-            batch = CollectionArtifactProvenanceBindingBatchDocument.model_validate(
-                {"bindings": value["bindings"]}
-            )
+            raw_bindings = value["bindings"]
+            if not isinstance(raw_bindings, list) or not all(
+                isinstance(row, dict) for row in raw_bindings
+            ):
+                raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
+            try:
+                bindings = validate_archive_binding_page(
+                    cast(list[Mapping[str, Any]], raw_bindings),
+                    max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
+                )
+            except ValueError as exc:
+                raise ProvenanceArchiveReadError(
+                    "provenance binding page rows are invalid"
+                ) from exc
             if (
-                len(batch.bindings) != document.binding_count
-                or batch.bindings[0].artifact_id != document.first_artifact_id
-                or batch.bindings[-1].artifact_id != document.last_artifact_id
+                len(bindings) != document.binding_count
+                or bindings[0].artifact_id != document.first_artifact_id
+                or bindings[-1].artifact_id != document.last_artifact_id
             ):
                 raise ProvenanceArchiveReadError("provenance binding page range changed")
-            for binding in batch.bindings:
+            for binding in bindings:
                 if last_id is not None and binding.artifact_id <= last_id:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
                 last_id = binding.artifact_id

@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Self
+from collections.abc import Mapping, Sequence
+from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from riverhog_provenance_contracts import (
@@ -62,6 +63,26 @@ class CollectionArtifactProvenanceBindingBatchDocument(BaseModel):
         if identities != tuple(sorted(set(identities))):
             raise ValueError("artifact provenance bindings must be strictly ID ordered")
         return self
+
+
+def validate_archive_binding_page(
+    bindings: Sequence[CollectionArtifactProvenanceBindingDocument | Mapping[str, Any]],
+    *,
+    max_members: int,
+) -> tuple[CollectionArtifactProvenanceBindingDocument, ...]:
+    """Validate an archive page independently of the smaller HTTP upload batch."""
+
+    if type(max_members) is not int or max_members < 1:
+        raise ValueError("archive binding page limit is invalid")
+    if not 1 <= len(bindings) <= max_members:
+        raise ValueError("archive binding page member count is invalid")
+    rows = tuple(
+        CollectionArtifactProvenanceBindingDocument.model_validate(row) for row in bindings
+    )
+    ids = tuple(row.artifact_id for row in rows)
+    if ids != tuple(sorted(set(ids))):
+        raise ValueError("archive binding page must be strictly artifact-ID ordered")
+    return rows
 
 
 class MaterializationHintDocument(BaseModel):
@@ -127,4 +148,5 @@ __all__ = [
     "CollectionArtifactProvenanceBindingBatchDocument",
     "CollectionArtifactProvenanceBindingDocument",
     "JournalAnchorDocument",
+    "validate_archive_binding_page",
 ]
