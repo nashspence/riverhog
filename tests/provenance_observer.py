@@ -6,6 +6,7 @@ import sys
 
 from riverhog_provenance.native_capture import UnsupportedPlatformError
 from riverhog_provenance.native_source import NativeFileObserver
+from riverhog_provenance.providers import ResolvedProvenanceObserver, resolve_provenance_observer
 
 
 def native_provenance_observer() -> NativeFileObserver:
@@ -24,4 +25,16 @@ def native_provenance_observer() -> NativeFileObserver:
     raise UnsupportedPlatformError(f"no test provenance observer for {sys.platform!r}")
 
 
-__all__ = ["native_provenance_observer"]
+def native_provenance_provider() -> ResolvedProvenanceObserver:
+    if sys.platform.startswith("linux"):
+        name = "a-riverhog-linux-provenance-observer"
+    elif sys.platform == "darwin":
+        name = "a-riverhog-macos-provenance-observer"
+    elif sys.platform == "win32":
+        name = "a-riverhog-windows-provenance-observer"
+    else:
+        raise UnsupportedPlatformError(f"no test provenance provider for {sys.platform!r}")
+    return resolve_provenance_observer(name)
+
+
+__all__ = ["native_provenance_observer", "native_provenance_provider"]
