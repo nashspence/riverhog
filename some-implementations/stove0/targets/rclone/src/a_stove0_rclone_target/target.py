@@ -5,10 +5,13 @@ from __future__ import annotations
 import hashlib
 import os
 import subprocess
+import tempfile
 import threading
 from collections import defaultdict
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
+from typing import BinaryIO
 
 from a_stove0_materialization_hint_evidence_contract_lib import (
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
@@ -18,7 +21,6 @@ from pydantic import JsonValue
 from riverhog_materialization import (
     DestinationRules,
     MemberAdvice,
-    id_components,
     plan_materialization,
 )
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
@@ -119,14 +121,17 @@ class RcloneDestination:
                 capture_output=True,
                 timeout=self.timeout_seconds,
             )
-            readback = subprocess.run(
-                [*command, "cat", marker],
-                check=True,
-                capture_output=True,
-                timeout=self.timeout_seconds,
-            ).stdout
-            if readback != manifest_path.read_bytes():
-                raise ValueError("rclone delivery marker differs from its sealed manifest")
+            with tempfile.TemporaryFile(mode="w+b") as readback:
+                subprocess.run(
+                    [*command, "cat", marker],
+                    check=True,
+                    stdout=readback,
+                    stderr=subprocess.DEVNULL,
+                    timeout=self.timeout_seconds,
+                )
+                readback.seek(0)
+                if _stream_identity(readback) != _file_identity(manifest_path):
+                    raise ValueError("rclone delivery marker differs from its sealed manifest")
         except Exception as exc:
             raise TargetEffectCommitUncertain(
                 "rclone delivery may have committed; inspect the configured destination"
@@ -225,72 +230,55 @@ class RcloneEffectTargetService(PersistentTargetService):
             workspace = execution.open_workspace(self.workspace_root)
             try:
                 objects_root = workspace.resolve("output/objects")
-                entries: list[dict[str, JsonValue]] = []
-                total_bytes = 0
-                for artifact, claimed in execution.iter_inputs():
-                    check()
-                    planned = destinations.get(artifact.id)
-                    if destinations and planned is None:
-                        raise ValueError("accepted hint evidence differs from the sealed input")
-                    if planned is not None and (
-                        planned.subject.collection != artifact.collection
-                        or planned.subject.artifact_id != artifact.artifact_id
-                        or planned.subject.bytes != artifact.bytes
-                        or planned.subject.sha256 != artifact.sha256
-                    ):
-                        raise ValueError("forwarded hint belongs to another sealed input")
-                    relative = (
-                        planned.relative_path
-                        if planned is not None
-                        else _id_destination(
-                            artifact.collection.collection_id, artifact.artifact_id
-                        )
-                    )
-                    local = objects_root / relative
-                    local.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                    with execution.prepare_inputs((artifact,)) as retrieval:
-                        retrieval.download(claimed, local)
-                    size, sha256 = _file_identity(local)
-                    if (size, sha256) != (int(artifact.bytes), artifact.sha256):
-                        raise ValueError(
-                            "retrieved artifact differs from the sealed input authority"
-                        )
-                    entries.append(
-                        {
-                            "collection": artifact.collection.model_dump(mode="json"),
-                            "subject_id": artifact.id,
-                            "artifact_id": artifact.artifact_id,
-                            "role": artifact.role,
-                            "bytes": str(artifact.bytes),
-                            "sha256": artifact.sha256,
-                            "delivered_path": relative,
-                            "materialization_reason": (
-                                planned.reason if planned is not None else "id-layout"
-                            ),
-                            "canonical_occurrence": (
-                                planned.occurrence if planned is not None else None
-                            ),
-                        }
-                    )
-                    total_bytes += int(artifact.bytes)
-                if len(entries) != request.declaration.plan.inputs.selection.artifact_count:
-                    raise ValueError("rclone input page count differs from the sealed selection")
-                check()
-                entries.sort(key=lambda item: str(item["delivered_path"]))
-                manifest = canonical_json_bytes(
-                    {
-                        "format": "stove0-rclone-delivery-manifest/v1",
-                        "delivery_id": request.declaration.job_id,
-                        "source_selection_sha256": (
-                            request.declaration.plan.inputs.selection.selection_sha256
-                        ),
-                        "artifacts": entries,
-                    }
-                )
                 manifest_path = workspace.resolve("control/manifest.json")
                 manifest_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                manifest_path.write_bytes(manifest)
-                manifest_sha256 = hashlib.sha256(manifest).hexdigest()
+
+                def delivered_entries() -> Iterator[tuple[str, int, dict[str, JsonValue]]]:
+                    for artifact, claimed in execution.iter_inputs():
+                        check()
+                        planned = destinations.get(artifact.id)
+                        if planned is None:
+                            raise ValueError("accepted hint evidence differs from the sealed input")
+                        if (
+                            planned.subject.collection != artifact.collection
+                            or planned.subject.artifact_id != artifact.artifact_id
+                            or planned.subject.bytes != artifact.bytes
+                            or planned.subject.sha256 != artifact.sha256
+                        ):
+                            raise ValueError("forwarded hint belongs to another sealed input")
+                        relative = planned.relative_path
+                        local = objects_root / relative
+                        local.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+                        with execution.prepare_inputs((artifact,)) as retrieval:
+                            retrieval.download(claimed, local)
+                        size, sha256 = _file_identity(local)
+                        if (size, sha256) != (int(artifact.bytes), artifact.sha256):
+                            raise ValueError(
+                                "retrieved artifact differs from the sealed input authority"
+                            )
+                        yield (
+                            artifact.id,
+                            int(artifact.bytes),
+                            {
+                                "collection": artifact.collection.model_dump(mode="json"),
+                                "subject_id": artifact.id,
+                                "artifact_id": artifact.artifact_id,
+                                "role": artifact.role,
+                                "bytes": str(artifact.bytes),
+                                "sha256": artifact.sha256,
+                                "delivered_path": relative,
+                                "materialization_reason": planned.reason,
+                                "canonical_occurrence": planned.occurrence,
+                            },
+                        )
+
+                artifact_count, total_bytes, manifest_sha256 = _write_delivery_manifest(
+                    manifest_path,
+                    delivery_id=request.declaration.job_id,
+                    selection=request.declaration.plan.inputs.selection,
+                    entries=delivered_entries(),
+                )
+                check()
                 execution_sha256 = canonical_json_sha256(
                     {
                         "format": "stove0-rclone-target-execution/v1",
@@ -312,7 +300,7 @@ class RcloneEffectTargetService(PersistentTargetService):
                             request.declaration.plan.inputs.selection.selection_sha256
                         ),
                         "manifest_sha256": manifest_sha256,
-                        "artifact_count": len(entries),
+                        "artifact_count": artifact_count,
                         "total_bytes": total_bytes,
                         "verification": "rclone-download-check-and-manifest-readback/v1",
                     },
@@ -327,13 +315,56 @@ class RcloneEffectTargetService(PersistentTargetService):
 
 
 def _file_identity(path: Path) -> tuple[int, str]:
+    with path.open("rb") as stream:
+        return _stream_identity(stream)
+
+
+def _stream_identity(stream: BinaryIO) -> tuple[int, str]:
     digest = hashlib.sha256()
     size = 0
-    with path.open("rb") as stream:
-        while chunk := stream.read(8 * 1024**2):
-            digest.update(chunk)
-            size += len(chunk)
+    while chunk := stream.read(8 * 1024**2):
+        digest.update(chunk)
+        size += len(chunk)
     return size, digest.hexdigest()
+
+
+def _write_delivery_manifest(
+    path: Path,
+    *,
+    delivery_id: str,
+    selection: ArtifactSelectionRef,
+    entries: Iterable[tuple[str, int, Mapping[str, JsonValue]]],
+) -> tuple[int, int, str]:
+    """Stream one canonical marker after validating the complete ordered input extent."""
+
+    digest = hashlib.sha256()
+    count = 0
+    total_bytes = 0
+    previous_id: str | None = None
+    with path.open("xb") as manifest:
+
+        def write(part: bytes) -> None:
+            manifest.write(part)
+            digest.update(part)
+
+        write(b'{"artifacts":[')
+        for subject_id, member_bytes, entry in entries:
+            if previous_id is not None and subject_id <= previous_id:
+                raise ValueError("rclone input pages are not ordered by subject identity")
+            previous_id = subject_id
+            if count:
+                write(b",")
+            write(canonical_json_bytes(dict(entry)))
+            count += 1
+            total_bytes += member_bytes
+        if count != selection.artifact_count or total_bytes != int(selection.total_bytes):
+            raise ValueError("rclone input pages differ from the sealed selection")
+        write(b'],"delivery_id":')
+        write(canonical_json_bytes(delivery_id))
+        write(b',"format":"stove0-rclone-delivery-manifest/v1","source_selection_sha256":')
+        write(canonical_json_bytes(selection.selection_sha256))
+        write(b"}")
+    return count, total_bytes, digest.hexdigest()
 
 
 @dataclass(frozen=True, slots=True)
@@ -342,10 +373,6 @@ class _PlannedDelivery:
     reason: str
     occurrence: dict[str, JsonValue]
     subject: WorkArtifactSubject
-
-
-def _id_destination(collection_id: int, artifact_id: str) -> str:
-    return "/".join((str(collection_id), *id_components(artifact_id)))
 
 
 def _planned_destinations(
