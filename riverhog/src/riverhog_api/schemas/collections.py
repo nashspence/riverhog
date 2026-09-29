@@ -97,25 +97,8 @@ _UPLOAD_CUSTODY_STATE_SCHEMA: list[dict[str, Any]] = [
     },
     {
         "if": {
-            "properties": {"state": {"enum": ["finalizing", "finalized"]}},
+            "properties": {"state": {"const": "finalized"}},
             "required": ["state"],
-        },
-        "then": {
-            "properties": {
-                "custody": {
-                    "properties": {"state": {"const": "complete"}},
-                    "required": ["state"],
-                }
-            }
-        },
-    },
-    {
-        "if": {
-            "properties": {
-                "custody_mode": {"const": "custody-transfer"},
-                "state": {"const": "uploading"},
-            },
-            "required": ["custody_mode", "state"],
         },
         "then": {
             "properties": {
@@ -248,9 +231,7 @@ def _validate_complete_upload_custody(
     custody_mode: str | None,
     custody_state: str,
 ) -> None:
-    complete_required = state in {"finalizing", "finalized"} or (
-        state == "uploading" and custody_mode == "custody-transfer"
-    )
+    complete_required = state == "finalized"
     if complete_required and custody_state != "complete":
         raise ValueError(f"{state} upload state requires complete Riverhog custody")
 
@@ -536,6 +517,7 @@ class CollectionDeletionResultOut(RiverhogModel):
 
 
 class CollectionUploadArtifactOut(ArtifactMemberIdentityDocument):
+    payload_sealed: bool
     custody_receipt: CollectionUploadArtifactCustodyReceiptDocument | None = None
 
 

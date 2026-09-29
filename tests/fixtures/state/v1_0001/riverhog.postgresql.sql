@@ -7,26 +7,6 @@ CREATE TABLE state_schema_revision (
     CONSTRAINT state_schema_revision_pkc PRIMARY KEY (version_num)
 );
 
-CREATE TABLE storage_incarnations (
-	id VARCHAR(36) NOT NULL,
-	kind VARCHAR NOT NULL,
-	name VARCHAR NOT NULL,
-	state VARCHAR NOT NULL,
-	binding_generation BIGINT NOT NULL,
-	created_at VARCHAR NOT NULL,
-	last_bound_at VARCHAR,
-	last_read_mode VARCHAR,
-	PRIMARY KEY (kind, name),
-	CONSTRAINT uq_storage_incarnations_id_name UNIQUE (id, name),
-	CONSTRAINT ck_storage_incarnations_kind CHECK (kind IN ('archive','cache')),
-	CONSTRAINT ck_storage_incarnations_state CHECK (state IN ('bound','disabled','retired')),
-	CONSTRAINT ck_storage_incarnations_generation CHECK (binding_generation >= 1),
-	CONSTRAINT ck_storage_incarnations_read_mode CHECK (last_read_mode IS NULL OR last_read_mode IN ('immediate','restore_required')),
-	CONSTRAINT ck_storage_incarnations_uuid4 CHECK (length(id) = 36 AND substr(id, 9, 1) = '-' AND substr(id, 14, 1) = '-' AND substr(id, 19, 1) = '-' AND substr(id, 24, 1) = '-' AND substr(id, 15, 1) = '4' AND substr(id, 20, 1) >= '8' AND substr(id, 20, 1) <= 'b' AND length(replace(id, '-', '')) = 32 AND lower(replace(id, '-', '')) = replace(id, '-', '') AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '-', ''), '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
-);
-
-CREATE INDEX ix_storage_incarnations_state ON storage_incarnations (kind, state, name);
-
 CREATE TABLE app_keys (
 	id VARCHAR NOT NULL,
 	app VARCHAR NOT NULL,
@@ -80,7 +60,8 @@ CREATE TABLE catalog_events (
 	occurred_at VARCHAR NOT NULL,
 	inventory_identity VARCHAR(64) NOT NULL,
 	archive_root_sha256 VARCHAR(64) NOT NULL,
-	content_identity VARCHAR(64) NOT NULL,
+	artifact_set_identity VARCHAR(64) NOT NULL,
+	provenance_identity VARCHAR(64) NOT NULL,
 	description TEXT,
 	description_revision BIGINT NOT NULL,
 	description_identity VARCHAR(64) NOT NULL,
@@ -101,7 +82,8 @@ CREATE TABLE catalog_events (
 	UNIQUE (revision),
 	CONSTRAINT ck_catalog_events_inventory_identity_hex CHECK (length(inventory_identity) = 64 AND lower(inventory_identity) = inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_catalog_events_archive_root_sha256_hex CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_catalog_events_content_identity_hex CHECK (length(content_identity) = 64 AND lower(content_identity) = content_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(content_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_catalog_events_artifact_set_identity_hex CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_catalog_events_provenance_identity_hex CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_catalog_events_description_identity_hex CHECK (length(description_identity) = 64 AND lower(description_identity) = description_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(description_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_catalog_events_tag_set_identity_hex CHECK (length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
@@ -137,6 +119,14 @@ CREATE TABLE collection_deletions (
 	PRIMARY KEY (collection_id)
 );
 
+CREATE TABLE collection_tag_node_reclamations (
+	node_digest VARCHAR(64) NOT NULL,
+	claimed_at VARCHAR NOT NULL,
+	PRIMARY KEY (node_digest),
+	CONSTRAINT ck_collection_tag_node_reclamations_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_tag_node_reclamations_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 CREATE TABLE collection_tag_nodes (
 	digest VARCHAR(64) NOT NULL,
 	encoded BYTEA NOT NULL,
@@ -146,28 +136,6 @@ CREATE TABLE collection_tag_nodes (
 	CONSTRAINT ck_collection_tag_nodes_bytes CHECK (length(encoded) > 0 AND length(encoded) <= 131072),
 	CONSTRAINT ck_collection_tag_nodes_digest_hex CHECK (length(digest) = 64 AND lower(digest) = digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
-
-CREATE TABLE collection_tag_node_reclamations (
-	node_digest VARCHAR(64) NOT NULL,
-	claimed_at VARCHAR NOT NULL,
-	PRIMARY KEY (node_digest),
-	CONSTRAINT ck_collection_tag_node_reclamations_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_tag_node_reclamations_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE TABLE collection_tag_node_edges (
-	parent_digest VARCHAR(64) NOT NULL,
-	child_digest VARCHAR(64) NOT NULL,
-	PRIMARY KEY (parent_digest, child_digest),
-	FOREIGN KEY(parent_digest) REFERENCES collection_tag_nodes (digest),
-	FOREIGN KEY(child_digest) REFERENCES collection_tag_nodes (digest),
-	CONSTRAINT ck_collection_tag_node_edges_parent_digest CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_tag_node_edges_child_digest CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_tag_node_edges_parent_digest_hex CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_tag_node_edges_child_digest_hex CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE INDEX ix_collection_tag_node_edges_child ON collection_tag_node_edges (child_digest, parent_digest);
 
 CREATE TABLE collection_tag_visibility (
 	collection_id BIGINT NOT NULL,
@@ -206,165 +174,6 @@ CREATE INDEX ix_collection_tags_search_trgm ON collection_tags USING gin (search
 
 CREATE INDEX ix_collection_tags_updated_at ON collection_tags (updated_at, tag_sha256);
 
-CREATE TABLE collection_upload_copy_intents (
-	collection_id BIGINT NOT NULL,
-	destination_store VARCHAR NOT NULL,
-	destination_incarnation_id VARCHAR(36) NOT NULL,
-	source_store VARCHAR NOT NULL,
-	source_incarnation_id VARCHAR(36) NOT NULL,
-	initiated_by_app VARCHAR NOT NULL,
-	initiated_by_key_id VARCHAR NOT NULL,
-	event_context_json TEXT,
-	use_cache BOOLEAN NOT NULL,
-	state VARCHAR NOT NULL,
-	accepted_at VARCHAR NOT NULL,
-	next_attempt_at VARCHAR,
-	attempts INTEGER NOT NULL,
-	handed_off_at VARCHAR,
-	job_created BOOLEAN,
-	failure_code VARCHAR,
-	PRIMARY KEY (collection_id, destination_store),
-	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
-	FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name),
-	CONSTRAINT ck_collection_upload_copy_intents_state CHECK (state IN ('accepted','pending','handed_off','failed','canceled')),
-	CONSTRAINT ck_collection_upload_copy_intents_attempts CHECK (attempts >= 0)
-);
-
-CREATE INDEX ix_collection_upload_copy_intents_due ON collection_upload_copy_intents (state, next_attempt_at);
-
-CREATE TABLE collection_uploads (
-	collection_id BIGINT GENERATED BY DEFAULT AS IDENTITY,
-	idempotency_key VARCHAR NOT NULL,
-	creation_identity_sha256 VARCHAR(64) NOT NULL,
-	initial_tag_set_identity VARCHAR(64) NOT NULL,
-	archive_generation VARCHAR(64) NOT NULL,
-	ingest_source VARCHAR,
-	description TEXT,
-	description_revision BIGINT,
-	description_identity VARCHAR(64),
-	description_publication_receipt_json TEXT,
-	tag_revision BIGINT,
-	tag_staging_root_sha256 VARCHAR(64),
-	tag_staging_set_identity VARCHAR(64) DEFAULT 'd99a47346b904680a2b3182b3950c159b297a427edfd0c8a23124b7bfb296ed9' NOT NULL,
-	tag_root_sha256 VARCHAR(64),
-	tag_set_identity VARCHAR(64),
-	tag_head_identity VARCHAR(64),
-	tag_publication_receipt_json TEXT,
-	provenance_mode VARCHAR NOT NULL,
-	provenance_omission_reason TEXT,
-	provenance_identity VARCHAR(64),
-	encryption_format VARCHAR NOT NULL,
-	passphrase_id VARCHAR NOT NULL,
-	initiated_by_principal_id VARCHAR NOT NULL,
-	initiated_by_key_id VARCHAR,
-	event_context_json TEXT,
-	state VARCHAR NOT NULL,
-	custody_mode VARCHAR NOT NULL,
-	lease_expires_at VARCHAR,
-	orphaned_at VARCHAR,
-	archive_store VARCHAR NOT NULL,
-	archive_incarnation_id VARCHAR(36) NOT NULL,
-	use_cache BOOLEAN NOT NULL,
-	copy_to_json TEXT NOT NULL,
-	opened_at VARCHAR NOT NULL,
-	last_activity_at VARCHAR NOT NULL,
-	closed_at VARCHAR,
-	archive_phase VARCHAR NOT NULL,
-	archive_phase_updated_at VARCHAR NOT NULL,
-	archive_attempt_count INTEGER NOT NULL,
-	archive_next_attempt_at VARCHAR,
-	archive_last_attempt_at VARCHAR,
-	archive_failure VARCHAR,
-	archive_storage_prefix VARCHAR NOT NULL,
-	planner_checkpoint_json TEXT NOT NULL,
-	archive_tree_next_file_order BIGINT DEFAULT 0 NOT NULL,
-	archive_tree_after_path_sort_key BYTEA,
-	archive_tree_hash_state TEXT,
-	archive_tree_sha256 VARCHAR(64),
-	archive_volume_next_sequence VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
-	archive_volume_hash_state TEXT,
-	archive_ordered_volume_sha256 VARCHAR(64),
-	archive_terminal_receipt_json TEXT,
-	provenance_validation_next_file_order BIGINT DEFAULT 0 NOT NULL,
-	provenance_closure_validated BOOLEAN DEFAULT false NOT NULL,
-	derivative_provenance_state VARCHAR DEFAULT 'not-required' NOT NULL,
-	derivative_provenance_cursor_json TEXT DEFAULT '{}' NOT NULL,
-	provenance_archive_next_file_order BIGINT DEFAULT 0 NOT NULL,
-	provenance_archive_after_path_sort_key BYTEA,
-	provenance_archive_last_journal_id VARCHAR,
-	provenance_archive_current_journal_id VARCHAR,
-	provenance_archive_current_journal_offset BIGINT DEFAULT 0 NOT NULL,
-	provenance_archive_next_sequence VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
-	provenance_archive_hash_state TEXT,
-	provenance_archive_ordered_sha256 VARCHAR(64),
-	provenance_archive_terminal_receipt_json TEXT,
-	provenance_archive_root_receipt_json TEXT,
-	final_authority_json TEXT,
-	catalog_phase VARCHAR DEFAULT 'content-identity' NOT NULL,
-	catalog_cursor_json TEXT DEFAULT '{}' NOT NULL,
-	catalog_hash_state TEXT,
-	catalog_content_identity VARCHAR(64),
-	catalog_inventory_identity VARCHAR(64),
-	file_count BIGINT DEFAULT 0 NOT NULL,
-	file_bytes BIGINT DEFAULT 0 NOT NULL,
-	custodied_file_count BIGINT DEFAULT 0 NOT NULL,
-	custodied_file_bytes BIGINT DEFAULT 0 NOT NULL,
-	uploaded_payload_bytes BIGINT DEFAULT 0 NOT NULL,
-	search_text VARCHAR NOT NULL,
-	PRIMARY KEY (collection_id),
-	FOREIGN KEY(archive_incarnation_id, archive_store) REFERENCES storage_incarnations (id, name),
-	CONSTRAINT ck_collection_uploads_file_count CHECK (file_count >= 0),
-	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_file_order >= 0),
-	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_file_order >= 0 AND provenance_archive_next_file_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('content-identity','inventory-identity','collection','tags','files','journals','provenance-relations','bindings','archive-objects','file-objects','terminal','complete')),
-	CONSTRAINT ck_collection_uploads_file_bytes CHECK (file_bytes >= 0),
-	CONSTRAINT ck_collection_uploads_custodied_file_count CHECK (custodied_file_count >= 0 AND custodied_file_count <= file_count),
-	CONSTRAINT ck_collection_uploads_custodied_file_bytes CHECK (custodied_file_bytes >= 0 AND custodied_file_bytes <= file_bytes),
-	CONSTRAINT ck_collection_uploads_empty_custody CHECK (custodied_file_count > 0 OR custodied_file_bytes = 0),
-	CONSTRAINT ck_collection_uploads_uploaded_payload_bytes CHECK (uploaded_payload_bytes >= 0),
-	CONSTRAINT ck_collection_uploads_state CHECK (state IN ('open','closing','uploading','finalizing','orphaned','discarding')),
-	CONSTRAINT ck_collection_uploads_custody_mode CHECK (custody_mode IN ('producer-retained','custody-transfer')),
-	CONSTRAINT ck_collection_uploads_provenance_mode CHECK (provenance_mode IN ('captured','omitted')),
-	CONSTRAINT ck_collection_uploads_derivative_provenance_state CHECK (derivative_provenance_state IN ('not-required','discovering','copying','generating','complete','failed')),
-	CONSTRAINT ck_collection_uploads_archive_phase CHECK (archive_phase IN ('planning','uploading','finalization_queued','finalizing','retry_wait','orphaned','discarding')),
-	CONSTRAINT ck_collection_uploads_description_bytes CHECK (description IS NULL OR octet_length(description) <= 32768),
-	CONSTRAINT ck_collection_uploads_description_state CHECK (description_revision IS NULL AND description_identity IS NULL OR description_revision >= 0 AND description_revision <= 9007199254740991 AND description_identity IS NOT NULL),
-	CONSTRAINT ck_collection_uploads_tag_state CHECK (tag_revision IS NULL AND tag_set_identity IS NULL AND tag_head_identity IS NULL OR tag_revision >= 1 AND tag_revision <= 9007199254740991 AND tag_set_identity IS NOT NULL AND tag_head_identity IS NOT NULL),
-	CONSTRAINT ck_collection_uploads_tag_root CHECK (tag_root_sha256 IS NULL OR length(tag_root_sha256) = 64 AND lower(tag_root_sha256) = tag_root_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_tag_staging_root CHECK (tag_staging_root_sha256 IS NULL OR length(tag_staging_root_sha256) = 64 AND lower(tag_staging_root_sha256) = tag_staging_root_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_tag_staging_identity CHECK (length(tag_staging_set_identity) = 64 AND lower(tag_staging_set_identity) = tag_staging_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_initial_tag_set_identity CHECK (length(initial_tag_set_identity) = 64 AND lower(initial_tag_set_identity) = initial_tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(initial_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_attempt_count CHECK (archive_attempt_count >= 0),
-	CONSTRAINT ck_collection_uploads_creation_identity_sha256_hex CHECK (length(creation_identity_sha256) = 64 AND lower(creation_identity_sha256) = creation_identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(creation_identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_initial_tag_set_identity_hex CHECK (length(initial_tag_set_identity) = 64 AND lower(initial_tag_set_identity) = initial_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(initial_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_archive_generation_hex CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_description_identity_hex CHECK (description_identity IS NULL OR length(description_identity) = 64 AND lower(description_identity) = description_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(description_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_tag_staging_root_sha256_hex CHECK (tag_staging_root_sha256 IS NULL OR length(tag_staging_root_sha256) = 64 AND lower(tag_staging_root_sha256) = tag_staging_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_tag_staging_set_identity_hex CHECK (length(tag_staging_set_identity) = 64 AND lower(tag_staging_set_identity) = tag_staging_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_tag_root_sha256_hex CHECK (tag_root_sha256 IS NULL OR length(tag_root_sha256) = 64 AND lower(tag_root_sha256) = tag_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_tag_set_identity_hex CHECK (tag_set_identity IS NULL OR length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_tag_head_identity_hex CHECK (tag_head_identity IS NULL OR length(tag_head_identity) = 64 AND lower(tag_head_identity) = tag_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_provenance_identity_hex CHECK (provenance_identity IS NULL OR length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_archive_tree_sha256_hex CHECK (archive_tree_sha256 IS NULL OR length(archive_tree_sha256) = 64 AND lower(archive_tree_sha256) = archive_tree_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_tree_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_archive_ordered_volume_sha256_hex CHECK (archive_ordered_volume_sha256 IS NULL OR length(archive_ordered_volume_sha256) = 64 AND lower(archive_ordered_volume_sha256) = archive_ordered_volume_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_ordered_volume_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_provenance_archive_ordered_sha256_hex CHECK (provenance_archive_ordered_sha256 IS NULL OR length(provenance_archive_ordered_sha256) = 64 AND lower(provenance_archive_ordered_sha256) = provenance_archive_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_catalog_content_identity_hex CHECK (catalog_content_identity IS NULL OR length(catalog_content_identity) = 64 AND lower(catalog_content_identity) = catalog_content_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_content_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_catalog_inventory_identity_hex CHECK (catalog_inventory_identity IS NULL OR length(catalog_inventory_identity) = 64 AND lower(catalog_inventory_identity) = catalog_inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE INDEX ix_collection_uploads_file_bytes ON collection_uploads (file_bytes, collection_id);
-
-CREATE INDEX ix_collection_uploads_file_count ON collection_uploads (file_count, collection_id);
-
-CREATE INDEX ix_collection_uploads_opened_at ON collection_uploads (opened_at, collection_id);
-
-CREATE INDEX ix_collection_uploads_search_trgm ON collection_uploads USING gin (search_text gin_trgm_ops);
-
-CREATE INDEX ix_collection_uploads_state ON collection_uploads (state, collection_id);
-
-CREATE UNIQUE INDEX ux_collection_uploads_principal_idempotency_key ON collection_uploads (initiated_by_principal_id, idempotency_key);
-
 CREATE TABLE collections (
 	id BIGSERIAL NOT NULL,
 	search_text VARCHAR GENERATED ALWAYS AS (CAST(id AS TEXT)) STORED NOT NULL,
@@ -375,11 +184,11 @@ CREATE TABLE collections (
 	creation_use_cache BOOLEAN NOT NULL,
 	creation_copy_to_json TEXT NOT NULL,
 	archive_generation VARCHAR(64) NOT NULL,
-	content_identity VARCHAR(64) NOT NULL,
+	delivery_context_id VARCHAR NOT NULL,
+	artifact_set_identity VARCHAR(64) NOT NULL,
 	encryption_format VARCHAR NOT NULL,
 	passphrase_id VARCHAR NOT NULL,
-	provenance_mode VARCHAR NOT NULL,
-	provenance_identity VARCHAR(64),
+	provenance_identity VARCHAR(64) NOT NULL,
 	inventory_identity VARCHAR(64) NOT NULL,
 	archive_root_sha256 VARCHAR(64),
 	catalog_revision BIGINT,
@@ -405,15 +214,14 @@ CREATE TABLE collections (
 	created_by_key_id VARCHAR,
 	created_at VARCHAR NOT NULL,
 	is_published BOOLEAN DEFAULT true NOT NULL,
-	file_count BIGINT DEFAULT 0 NOT NULL,
-	file_bytes BIGINT DEFAULT 0 NOT NULL,
+	artifact_count BIGINT DEFAULT 0 NOT NULL,
+	artifact_bytes BIGINT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (id),
 	CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_principal_id, creation_idempotency_key),
-	CONSTRAINT ck_collections_file_count CHECK (file_count >= 0),
-	CONSTRAINT ck_collections_file_bytes CHECK (file_bytes >= 0),
-	CONSTRAINT ck_collections_provenance_mode CHECK (provenance_mode IN ('captured','mixed','omitted')),
-	CONSTRAINT ck_collections_provenance_identity CHECK (provenance_mode IN ('captured','mixed') AND provenance_identity IS NOT NULL OR provenance_mode = 'omitted' AND provenance_identity IS NULL),
-	CONSTRAINT ck_collections_content_identity CHECK (length(content_identity) = 64),
+	CONSTRAINT ck_collections_artifact_count CHECK (artifact_count >= 0),
+	CONSTRAINT ck_collections_artifact_bytes CHECK (artifact_bytes >= 0),
+	CONSTRAINT ck_collections_provenance_identity CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collections_artifact_set_identity CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collections_inventory_identity CHECK (length(inventory_identity) = 64),
 	CONSTRAINT ck_collections_archive_root_sha256 CHECK (archive_root_sha256 IS NULL OR length(archive_root_sha256) = 64),
 	CONSTRAINT ck_collections_catalog_revision CHECK (catalog_revision IS NULL OR catalog_revision > 0),
@@ -434,8 +242,8 @@ CREATE TABLE collections (
 	CONSTRAINT ck_collections_tag_head_identity CHECK (length(tag_head_identity) = 64 AND lower(tag_head_identity) = tag_head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collections_creation_identity_sha256_hex CHECK (length(creation_identity_sha256) = 64 AND lower(creation_identity_sha256) = creation_identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(creation_identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collections_archive_generation_hex CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collections_content_identity_hex CHECK (length(content_identity) = 64 AND lower(content_identity) = content_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(content_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collections_provenance_identity_hex CHECK (provenance_identity IS NULL OR length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collections_artifact_set_identity_hex CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collections_provenance_identity_hex CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collections_inventory_identity_hex CHECK (length(inventory_identity) = 64 AND lower(inventory_identity) = inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collections_archive_root_sha256_hex CHECK (archive_root_sha256 IS NULL OR length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collections_description_identity_hex CHECK (length(description_identity) = 64 AND lower(description_identity) = description_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(description_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -445,15 +253,15 @@ CREATE TABLE collections (
 	CONSTRAINT ck_collections_tag_head_identity_hex CHECK (length(tag_head_identity) = 64 AND lower(tag_head_identity) = tag_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+CREATE INDEX ix_collections_artifact_bytes_id ON collections (artifact_bytes, id);
+
+CREATE INDEX ix_collections_artifact_count_id ON collections (artifact_count, id);
+
 CREATE INDEX ix_collections_created_at_id ON collections (created_at, id);
 
 CREATE INDEX ix_collections_description_search_trgm ON collections USING gin (description_search gin_trgm_ops);
 
 CREATE INDEX ix_collections_encryption_format ON collections (encryption_format, id);
-
-CREATE INDEX ix_collections_file_bytes_id ON collections (file_bytes, id);
-
-CREATE INDEX ix_collections_file_count_id ON collections (file_count, id);
 
 CREATE INDEX ix_collections_passphrase_id ON collections (passphrase_id, id);
 
@@ -477,44 +285,6 @@ CREATE INDEX ix_lifecycle_events_owner_sequence ON lifecycle_events (owner_princ
 
 CREATE INDEX ix_lifecycle_events_owner_subject_context ON lifecycle_events (owner_principal_id, subject, context_expires_at);
 
-CREATE TABLE retrieval_cache_populations (
-	source_store VARCHAR NOT NULL,
-	source_incarnation_id VARCHAR(36) NOT NULL,
-	collection_id BIGINT NOT NULL,
-	object_id VARCHAR NOT NULL,
-	cache_store VARCHAR,
-	cache_incarnation_id VARCHAR(36),
-	object_path VARCHAR,
-	write_token VARCHAR,
-	expected_bytes BIGINT NOT NULL,
-	state VARCHAR NOT NULL,
-	initiated_at VARCHAR NOT NULL,
-	updated_at VARCHAR NOT NULL,
-	failure TEXT,
-	PRIMARY KEY (source_store, collection_id, object_id),
-	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
-	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
-	CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1),
-	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning')),
-	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))
-);
-
-CREATE INDEX ix_retrieval_cache_populations_store_state ON retrieval_cache_populations (cache_store, state, updated_at, collection_id, source_store, object_id);
-
-CREATE TABLE retrieval_cache_store_accounting (
-	cache_store VARCHAR NOT NULL,
-	cache_incarnation_id VARCHAR(36) NOT NULL,
-	reserved_bytes BIGINT DEFAULT 0 NOT NULL,
-	committed_bytes BIGINT DEFAULT 0 NOT NULL,
-	generation BIGINT DEFAULT 0 NOT NULL,
-	updated_at VARCHAR NOT NULL,
-	PRIMARY KEY (cache_store),
-	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
-	CONSTRAINT ck_retrieval_cache_store_accounting_reserved CHECK (reserved_bytes >= 0),
-	CONSTRAINT ck_retrieval_cache_store_accounting_committed CHECK (committed_bytes >= 0),
-	CONSTRAINT ck_retrieval_cache_store_accounting_generation CHECK (generation >= 0)
-);
-
 CREATE TABLE retrieval_plans (
 	id VARCHAR NOT NULL,
 	principal_id VARCHAR NOT NULL,
@@ -529,12 +299,12 @@ CREATE TABLE retrieval_plans (
 	ready_at VARCHAR,
 	expires_at VARCHAR NOT NULL,
 	failure TEXT,
-	next_file_order INTEGER NOT NULL,
+	next_artifact_order INTEGER NOT NULL,
 	next_placement_sequence VARCHAR(64) NOT NULL,
 	object_count VARCHAR(64) NOT NULL,
 	retrieval_bytes VARCHAR(64) NOT NULL,
 	requires_restore BOOLEAN NOT NULL,
-	file_commitment_sha256 VARCHAR(64) NOT NULL,
+	artifact_commitment_sha256 VARCHAR(64) NOT NULL,
 	segment_commitment_sha256 VARCHAR(64) NOT NULL,
 	etag VARCHAR(64),
 	PRIMARY KEY (id),
@@ -542,14 +312,34 @@ CREATE TABLE retrieval_plans (
 	CONSTRAINT ck_retrieval_plans_state CHECK (state IN ('planning','ready','consumed','expired','failed')),
 	CONSTRAINT ck_retrieval_plans_lease CHECK (lease_seconds > 0),
 	CONSTRAINT ck_retrieval_plans_restore_policy CHECK (restore_policy IN ('allow','never')),
-	CONSTRAINT ck_retrieval_plans_file_order CHECK (next_file_order >= 0),
+	CONSTRAINT ck_retrieval_plans_artifact_order CHECK (next_artifact_order >= 0),
 	CONSTRAINT ck_retrieval_plans_creation_identity_sha256_hex CHECK (length(creation_identity_sha256) = 64 AND lower(creation_identity_sha256) = creation_identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(creation_identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_retrieval_plans_file_commitment_sha256_hex CHECK (length(file_commitment_sha256) = 64 AND lower(file_commitment_sha256) = file_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(file_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_retrieval_plans_artifact_commitment_sha256_hex CHECK (length(artifact_commitment_sha256) = 64 AND lower(artifact_commitment_sha256) = artifact_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_retrieval_plans_segment_commitment_sha256_hex CHECK (length(segment_commitment_sha256) = 64 AND lower(segment_commitment_sha256) = segment_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(segment_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_retrieval_plans_etag_hex CHECK (etag IS NULL OR length(etag) = 64 AND lower(etag) = etag AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(etag, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_retrieval_plans_owner ON retrieval_plans (principal_id, initiated_by_key_id, id);
+
+CREATE TABLE storage_incarnations (
+	id VARCHAR(36) NOT NULL,
+	kind VARCHAR NOT NULL,
+	name VARCHAR NOT NULL,
+	state VARCHAR NOT NULL,
+	binding_generation BIGINT NOT NULL,
+	created_at VARCHAR NOT NULL,
+	last_bound_at VARCHAR,
+	last_read_mode VARCHAR,
+	PRIMARY KEY (kind, name),
+	CONSTRAINT uq_storage_incarnations_id_name UNIQUE (id, name),
+	CONSTRAINT ck_storage_incarnations_kind CHECK (kind IN ('archive','cache')),
+	CONSTRAINT ck_storage_incarnations_state CHECK (state IN ('bound','disabled','retired')),
+	CONSTRAINT ck_storage_incarnations_generation CHECK (binding_generation >= 1),
+	CONSTRAINT ck_storage_incarnations_read_mode CHECK (last_read_mode IS NULL OR last_read_mode IN ('immediate','restore_required')),
+	CONSTRAINT ck_storage_incarnations_uuid4 CHECK (length(id) = 36 AND substr(id, 9, 1) = '-' AND substr(id, 14, 1) = '-' AND substr(id, 19, 1) = '-' AND substr(id, 24, 1) = '-' AND substr(id, 15, 1) = '4' AND substr(id, 20, 1) >= '8' AND substr(id, 20, 1) <= 'b' AND length(replace(id, '-', '')) = 32 AND lower(replace(id, '-', '')) = replace(id, '-', '') AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '-', ''), '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
+);
+
+CREATE INDEX ix_storage_incarnations_state ON storage_incarnations (kind, state, name);
 
 CREATE TABLE app_key_access_grants (
 	key_id VARCHAR NOT NULL,
@@ -598,78 +388,51 @@ CREATE TABLE collection_archive_copies (
 	CONSTRAINT ck_collection_archive_copies_state CHECK (state IN ('pending','uploading','uploaded','retrying','failed'))
 );
 
-CREATE TABLE collection_archive_object_uploads (
+CREATE TABLE collection_artifacts (
 	collection_id BIGINT NOT NULL,
-	object_id VARCHAR NOT NULL,
-	sequence VARCHAR(64) NOT NULL,
-	kind VARCHAR NOT NULL,
-	relative_path VARCHAR NOT NULL,
-	object_path VARCHAR NOT NULL,
-	plaintext_bytes BIGINT NOT NULL,
-	source_bytes BIGINT NOT NULL,
-	source_path VARCHAR,
-	source_first_part BIGINT,
-	source_part_count BIGINT,
-	unit_plaintext_bytes BIGINT NOT NULL,
-	plan_json TEXT NOT NULL,
-	plan_sha256 VARCHAR(64) NOT NULL,
-	state VARCHAR NOT NULL,
-	checkpoint_json TEXT,
-	sealed_receipt_json TEXT,
-	metadata_receipt_json TEXT,
-	failure TEXT,
-	uploaded_bytes BIGINT NOT NULL,
-	uploaded_units INTEGER NOT NULL,
-	total_units INTEGER NOT NULL,
-	updated_at VARCHAR NOT NULL,
-	sealed_at VARCHAR,
-	PRIMARY KEY (collection_id, object_id),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0),
-	CONSTRAINT ck_archive_object_uploads_source CHECK (source_bytes >= 0),
-	CONSTRAINT ck_archive_object_uploads_source_parts CHECK (kind = 'pack' AND source_path IS NULL AND source_first_part IS NULL AND source_part_count IS NULL OR kind = 'segment' AND source_path IS NOT NULL AND source_first_part >= 0 AND source_part_count > 0),
-	CONSTRAINT ck_archive_object_uploads_unit CHECK (unit_plaintext_bytes > 0),
-	CONSTRAINT ck_archive_object_uploads_state CHECK (state IN ('planned','uploading','sealed')),
-	CONSTRAINT ck_archive_object_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0),
-	CONSTRAINT ck_archive_object_uploads_uploaded_units CHECK (uploaded_units >= 0),
-	CONSTRAINT ck_archive_object_uploads_total_units CHECK (total_units >= 0),
-	CONSTRAINT ck_archive_object_uploads_unit_progress CHECK (uploaded_units <= total_units),
-	CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence);
-
-CREATE TABLE collection_files (
-	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
-	provenance_status VARCHAR DEFAULT 'missing' NOT NULL,
-	path_sort_key BYTEA NOT NULL,
-	search_text VARCHAR NOT NULL,
-	path_search_text VARCHAR NOT NULL,
-	PRIMARY KEY (collection_id, path),
+	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_files_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_collection_files_sha256 CHECK (length(sha256) = 64),
-	CONSTRAINT ck_collection_files_provenance_status CHECK (provenance_status IN ('captured','omitted','missing')),
-	CONSTRAINT ck_collection_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_artifacts_bytes CHECK (bytes >= 0 AND bytes < 9223372036854775808),
+	CONSTRAINT ck_collection_artifacts_id CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_artifacts_sha256 CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_artifacts_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_files_bytes ON collection_files (bytes, collection_id, path_sort_key);
+CREATE INDEX ix_collection_artifacts_collection_bytes ON collection_artifacts (collection_id, bytes, artifact_id);
 
-CREATE INDEX ix_collection_files_collection_bytes ON collection_files (collection_id, bytes, path_sort_key);
+CREATE INDEX ix_collection_artifacts_digest ON collection_artifacts (collection_id, sha256, artifact_id);
 
-CREATE INDEX ix_collection_files_collection_path ON collection_files (collection_id, path_sort_key);
+CREATE TABLE collection_mutable_document_reclamations (
+	receipt_identity VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
+	document_kind VARCHAR NOT NULL,
+	object_path VARCHAR NOT NULL,
+	provider_revision VARCHAR NOT NULL,
+	stored_bytes BIGINT NOT NULL,
+	stored_sha256 VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	next_attempt_at VARCHAR NOT NULL,
+	failure TEXT,
+	PRIMARY KEY (receipt_identity),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
+	CONSTRAINT ck_mutable_document_reclamations_identity CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_mutable_document_reclamations_kind CHECK (document_kind IN ('description','tag_head')),
+	CONSTRAINT ck_mutable_document_reclamations_bytes CHECK (stored_bytes > 0),
+	CONSTRAINT ck_mutable_document_reclamations_stored_sha256 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_mutable_document_reclamations_state CHECK (state IN ('pending','deleting','retry_wait')),
+	CONSTRAINT ck_sha256_22e6e1bdfada4730 CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_c2ced24a99b9db78 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
 
-CREATE INDEX ix_collection_files_collection_provenance ON collection_files (collection_id, provenance_status, path_sort_key);
+CREATE INDEX ix_collection_mutable_document_reclamations_due ON collection_mutable_document_reclamations (state, next_attempt_at, receipt_identity);
 
-CREATE INDEX ix_collection_files_path ON collection_files (path_sort_key, collection_id);
-
-CREATE INDEX ix_collection_files_path_search_trgm ON collection_files USING gin (path_search_text gin_trgm_ops);
-
-CREATE INDEX ix_collection_files_search_trgm ON collection_files USING gin (search_text gin_trgm_ops);
+CREATE INDEX ix_collection_mutable_document_reclamations_owner ON collection_mutable_document_reclamations (collection_id, store, document_kind);
 
 CREATE TABLE collection_processing_claims (
 	id VARCHAR(64) NOT NULL,
@@ -751,45 +514,6 @@ CREATE TABLE collection_processing_claims (
 	CONSTRAINT ck_collection_processing_claims_outcome_expected_sha256_hex CHECK (outcome_expected_sha256 IS NULL OR length(outcome_expected_sha256) = 64 AND lower(outcome_expected_sha256) = outcome_expected_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(outcome_expected_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE collection_processing_effect_settlements (
-	claim_id VARCHAR(64) NOT NULL,
-	fence BIGINT NOT NULL,
-	execution_id VARCHAR(64) NOT NULL,
-	document_json TEXT NOT NULL,
-	document_sha256 VARCHAR(64) NOT NULL,
-	receipt_sha256 VARCHAR(64) NOT NULL,
-	created_at VARCHAR NOT NULL,
-	PRIMARY KEY (claim_id),
-	CONSTRAINT ck_effect_settlement_fence CHECK (fence >= 1),
-	CONSTRAINT ck_effect_settlement_digest CHECK (length(document_sha256) = 64 AND length(receipt_sha256) = 64),
-	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT,
-	UNIQUE (execution_id),
-	UNIQUE (document_sha256),
-	UNIQUE (receipt_sha256),
-	CONSTRAINT ck_collection_processing_effect_settlements_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_effect_settlements_execution_id_hex CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_b8d7c869121aa1db CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_a5db6e9ad22a9196 CHECK (length(receipt_sha256) = 64 AND lower(receipt_sha256) = receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE TABLE collection_processing_no_output_settlements (
-	claim_id VARCHAR(64) NOT NULL,
-	fence BIGINT NOT NULL,
-	execution_id VARCHAR(64) NOT NULL,
-	document_json TEXT NOT NULL,
-	document_sha256 VARCHAR(64) NOT NULL,
-	created_at VARCHAR NOT NULL,
-	PRIMARY KEY (claim_id),
-	CONSTRAINT ck_no_output_settlement_fence CHECK (fence >= 1),
-	CONSTRAINT ck_no_output_settlement_digest CHECK (length(document_sha256) = 64),
-	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT,
-	UNIQUE (execution_id),
-	UNIQUE (document_sha256),
-	CONSTRAINT ck_collection_processing_no_output_settlements_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_cae379d62e6b6234 CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_a0b49cc18366ecca CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
 CREATE INDEX ix_collection_processing_claims_expiry ON collection_processing_claims (state, expires_at);
 
 CREATE INDEX ix_collection_processing_claims_owner_created ON collection_processing_claims (consumer_app, created_at, id);
@@ -814,24 +538,17 @@ CREATE TABLE collection_provenance_journals (
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
 	entries BIGINT NOT NULL,
-	agent_count BIGINT NOT NULL,
-	entity_counts_json TEXT NOT NULL,
-	current_state_id VARCHAR NOT NULL,
-	current_entry_id VARCHAR NOT NULL,
-	current_entry_json_sha256 VARCHAR(64) NOT NULL,
-	current_path VARCHAR NOT NULL,
-	current_bytes BIGINT NOT NULL,
-	current_sha256 VARCHAR(64) NOT NULL,
+	terminal_entry_id VARCHAR NOT NULL,
+	terminal_sequence BIGINT NOT NULL,
+	terminal_json_sha256 VARCHAR(64) NOT NULL,
 	PRIMARY KEY (collection_id, journal_id),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
 	CONSTRAINT ck_provenance_journals_bytes CHECK (bytes >= 0),
 	CONSTRAINT ck_provenance_journals_entries CHECK (entries >= 0),
-	CONSTRAINT ck_provenance_journals_agent_count CHECK (agent_count >= 0),
-	CONSTRAINT ck_provenance_journals_current_bytes CHECK (current_bytes >= 0),
+	CONSTRAINT ck_provenance_journals_terminal_sequence CHECK (terminal_sequence >= 0),
 	CONSTRAINT ck_provenance_journals_sha256 CHECK (length(sha256) = 64),
 	CONSTRAINT ck_collection_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_4b4f04aff752e0e1 CHECK (length(current_entry_json_sha256) = 64 AND lower(current_entry_json_sha256) = current_entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_provenance_journals_current_sha256_hex CHECK (length(current_sha256) = 64 AND lower(current_sha256) = current_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_provenance_journals_terminal_json_sha256_hex CHECK (length(terminal_json_sha256) = 64 AND lower(terminal_json_sha256) = terminal_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_collection_provenance_journals_sha256 ON collection_provenance_journals (sha256, collection_id);
@@ -911,18 +628,19 @@ CREATE TABLE collection_tag_mutations (
 
 CREATE INDEX ix_collection_tag_mutations_work ON collection_tag_mutations (state, updated_at, collection_id);
 
-CREATE TABLE collection_tag_mutation_node_references (
-	collection_id BIGINT NOT NULL,
-	operation_id VARCHAR NOT NULL,
-	node_digest VARCHAR(64) NOT NULL,
-	PRIMARY KEY (collection_id, operation_id, node_digest),
-	FOREIGN KEY(collection_id, operation_id) REFERENCES collection_tag_mutations (collection_id, operation_id) ON DELETE CASCADE,
-	FOREIGN KEY(node_digest) REFERENCES collection_tag_nodes (digest),
-	CONSTRAINT ck_collection_tag_mutation_node_references_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_tag_mutation_node_references_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+CREATE TABLE collection_tag_node_edges (
+	parent_digest VARCHAR(64) NOT NULL,
+	child_digest VARCHAR(64) NOT NULL,
+	PRIMARY KEY (parent_digest, child_digest),
+	FOREIGN KEY(parent_digest) REFERENCES collection_tag_nodes (digest),
+	FOREIGN KEY(child_digest) REFERENCES collection_tag_nodes (digest),
+	CONSTRAINT ck_collection_tag_node_edges_parent_digest CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_tag_node_edges_child_digest CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_tag_node_edges_parent_digest_hex CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_tag_node_edges_child_digest_hex CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_tag_mutation_node_references_digest ON collection_tag_mutation_node_references (node_digest, collection_id, operation_id);
+CREATE INDEX ix_collection_tag_node_edges_child ON collection_tag_node_edges (child_digest, parent_digest);
 
 CREATE TABLE collection_tag_revisions (
 	collection_id BIGINT NOT NULL,
@@ -945,143 +663,169 @@ CREATE TABLE collection_tag_revisions (
 
 CREATE INDEX ix_collection_tag_revisions_cleanup ON collection_tag_revisions (cleanup_started_at, collection_id, revision);
 
-CREATE TABLE collection_upload_files (
+CREATE TABLE collection_upload_copy_intents (
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
-	path_sort_key BYTEA NOT NULL,
-	semantic_order_rank INTEGER NOT NULL,
-	file_order INTEGER NOT NULL,
-	bytes BIGINT NOT NULL,
-	sha256 VARCHAR(64) NOT NULL,
-	raw_part_plaintext_bytes BIGINT,
-	raw_part_count BIGINT,
-	raw_part_ordered_sha256 VARCHAR(64),
-	raw_parts_accepted BIGINT DEFAULT 0 NOT NULL,
-	raw_part_commitment_sha256 VARCHAR(64),
-	provenance_status VARCHAR NOT NULL,
-	provenance_journal_id VARCHAR,
-	provenance_current_state_id VARCHAR,
-	provenance_omission_reason TEXT,
-	custodied_at VARCHAR,
-	custody_receipt_json TEXT,
-	PRIMARY KEY (collection_id, path),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_upload_files_order CHECK (file_order >= 0),
-	CONSTRAINT ck_collection_upload_files_semantic_order_rank CHECK (semantic_order_rank >= 0 AND semantic_order_rank <= 2),
-	CONSTRAINT ck_collection_upload_files_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_collection_upload_files_raw_parts CHECK (raw_parts_accepted >= 0),
-	CONSTRAINT ck_collection_upload_files_sha256 CHECK (length(sha256) = 64),
-	CONSTRAINT ck_collection_upload_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_upload_files_raw_part_ordered_sha256_hex CHECK (raw_part_ordered_sha256 IS NULL OR length(raw_part_ordered_sha256) = 64 AND lower(raw_part_ordered_sha256) = raw_part_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_upload_files_raw_part_commitment_sha256_hex CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE INDEX idx_collection_upload_files_collection_order ON collection_upload_files (collection_id, file_order);
-
-CREATE INDEX idx_collection_upload_files_collection_path ON collection_upload_files (collection_id, path_sort_key);
-
-CREATE INDEX idx_collection_upload_files_semantic_order ON collection_upload_files (collection_id, semantic_order_rank, path_sort_key);
-
-CREATE UNIQUE INDEX ux_collection_upload_files_order ON collection_upload_files (collection_id, file_order);
-
-CREATE TABLE collection_upload_provenance_archive_volumes (
-	collection_id BIGINT NOT NULL,
-	sequence VARCHAR(64) NOT NULL,
-	kind VARCHAR NOT NULL,
-	document_json TEXT NOT NULL,
-	payload_receipt_json TEXT NOT NULL,
-	metadata_receipt_json TEXT NOT NULL,
-	PRIMARY KEY (collection_id, sequence),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_provenance_archive_volumes_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_upload_provenance_archive_volumes_kind CHECK (kind IN ('bindings','journal'))
-);
-
-CREATE TABLE collection_upload_provenance_journals (
-	collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	bytes BIGINT NOT NULL,
-	sha256 VARCHAR(64) NOT NULL,
+	destination_store VARCHAR NOT NULL,
+	destination_incarnation_id VARCHAR(36) NOT NULL,
+	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
+	initiated_by_app VARCHAR NOT NULL,
+	initiated_by_key_id VARCHAR NOT NULL,
+	event_context_json TEXT,
+	use_cache BOOLEAN NOT NULL,
 	state VARCHAR NOT NULL,
-	accepted_bytes BIGINT DEFAULT 0 NOT NULL,
-	next_chunk_ordinal VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
-	content_hash_state TEXT NOT NULL,
-	validation_byte_offset BIGINT DEFAULT 0 NOT NULL,
-	validation_sequence BIGINT DEFAULT 0 NOT NULL,
-	validation_previous_entry_id VARCHAR,
-	validation_previous_json_sha256 VARCHAR(64),
-	primary_lineage_id VARCHAR,
-	entity_counts_json TEXT DEFAULT '{}' NOT NULL,
-	failure TEXT,
-	current_state_id VARCHAR,
-	current_entry_id VARCHAR,
-	current_entry_json_sha256 VARCHAR(64),
-	current_path VARCHAR,
-	current_bytes BIGINT,
-	current_sha256 VARCHAR(64),
-	generated_output_path VARCHAR,
-	generation_after_journal_id VARCHAR,
-	generation_after_state_id VARCHAR,
-	PRIMARY KEY (collection_id, journal_id),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_provenance_journals_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_upload_provenance_journals_accepted_bytes CHECK (accepted_bytes >= 0 AND accepted_bytes <= bytes),
-	CONSTRAINT ck_upload_provenance_journals_next_chunk_ordinal CHECK (length(next_chunk_ordinal) = 64 AND lower(next_chunk_ordinal) = next_chunk_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_chunk_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_upload_provenance_journals_validation_offset CHECK (validation_byte_offset >= 0 AND validation_byte_offset <= accepted_bytes),
-	CONSTRAINT ck_upload_provenance_journals_validation_sequence CHECK (validation_sequence >= 0),
-	CONSTRAINT ck_upload_provenance_journals_state CHECK (state IN ('accepting','generating','validating','sealed','failed')),
-	CONSTRAINT ck_upload_provenance_journals_current_bytes CHECK (current_bytes IS NULL OR current_bytes >= 0),
-	CONSTRAINT ck_upload_provenance_journals_sha256 CHECK (length(sha256) = 64),
-	CONSTRAINT ck_collection_upload_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_beecad13199605d9 CHECK (current_entry_json_sha256 IS NULL OR length(current_entry_json_sha256) = 64 AND lower(current_entry_json_sha256) = current_entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_upload_provenance_journals_current_sha256_hex CHECK (current_sha256 IS NULL OR length(current_sha256) = 64 AND lower(current_sha256) = current_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	accepted_at VARCHAR NOT NULL,
+	next_attempt_at VARCHAR,
+	attempts INTEGER NOT NULL,
+	handed_off_at VARCHAR,
+	job_created BOOLEAN,
+	failure_code VARCHAR,
+	PRIMARY KEY (collection_id, destination_store),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name),
+	CONSTRAINT ck_collection_upload_copy_intents_state CHECK (state IN ('accepted','pending','handed_off','failed','canceled')),
+	CONSTRAINT ck_collection_upload_copy_intents_attempts CHECK (attempts >= 0)
 );
 
-CREATE TABLE collection_upload_tag_publication_frontier (
-	collection_id BIGINT NOT NULL,
-	node_digest VARCHAR(64) NOT NULL,
-	expanded BOOLEAN DEFAULT false NOT NULL,
-	published BOOLEAN DEFAULT false NOT NULL,
-	object_path VARCHAR,
-	provider_revision VARCHAR,
-	stored_bytes BIGINT,
-	stored_sha256 VARCHAR(64),
-	published_at VARCHAR,
-	PRIMARY KEY (collection_id, node_digest),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_upload_tag_frontier_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_upload_tag_frontier_receipt CHECK (published = false AND object_path IS NULL AND stored_bytes IS NULL AND stored_sha256 IS NULL AND published_at IS NULL OR published = true AND object_path IS NOT NULL AND stored_bytes > 0 AND stored_sha256 IS NOT NULL AND published_at IS NOT NULL),
-	CONSTRAINT ck_sha256_a9a6767f54e4c1ef CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_6acac9b414fb5e15 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+CREATE INDEX ix_collection_upload_copy_intents_due ON collection_upload_copy_intents (state, next_attempt_at);
+
+CREATE TABLE collection_uploads (
+	collection_id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+	idempotency_key VARCHAR NOT NULL,
+	creation_identity_sha256 VARCHAR(64) NOT NULL,
+	initial_tag_set_identity VARCHAR(64) NOT NULL,
+	archive_generation VARCHAR(64) NOT NULL,
+	ingest_source VARCHAR,
+	description TEXT,
+	description_revision BIGINT,
+	description_identity VARCHAR(64),
+	description_publication_receipt_json TEXT,
+	tag_revision BIGINT,
+	tag_staging_root_sha256 VARCHAR(64),
+	tag_staging_set_identity VARCHAR(64) DEFAULT 'd99a47346b904680a2b3182b3950c159b297a427edfd0c8a23124b7bfb296ed9' NOT NULL,
+	tag_root_sha256 VARCHAR(64),
+	tag_set_identity VARCHAR(64),
+	tag_head_identity VARCHAR(64),
+	tag_publication_receipt_json TEXT,
+	provenance_identity VARCHAR(64),
+	encryption_format VARCHAR NOT NULL,
+	passphrase_id VARCHAR NOT NULL,
+	initiated_by_principal_id VARCHAR NOT NULL,
+	initiated_by_key_id VARCHAR,
+	event_context_json TEXT,
+	state VARCHAR NOT NULL,
+	custody_mode VARCHAR NOT NULL,
+	lease_expires_at VARCHAR,
+	orphaned_at VARCHAR,
+	archive_store VARCHAR NOT NULL,
+	archive_incarnation_id VARCHAR(36) NOT NULL,
+	use_cache BOOLEAN NOT NULL,
+	copy_to_json TEXT NOT NULL,
+	opened_at VARCHAR NOT NULL,
+	last_activity_at VARCHAR NOT NULL,
+	closed_at VARCHAR,
+	archive_phase VARCHAR NOT NULL,
+	archive_phase_updated_at VARCHAR NOT NULL,
+	archive_attempt_count INTEGER NOT NULL,
+	archive_next_attempt_at VARCHAR,
+	archive_last_attempt_at VARCHAR,
+	archive_failure VARCHAR,
+	archive_storage_prefix VARCHAR NOT NULL,
+	delivery_context_id VARCHAR NOT NULL,
+	planner_checkpoint_json TEXT NOT NULL,
+	archive_tree_next_artifact_order BIGINT DEFAULT 0 NOT NULL,
+	archive_tree_after_artifact_id VARCHAR(64),
+	archive_tree_hash_state TEXT,
+	archive_tree_sha256 VARCHAR(64),
+	archive_volume_next_sequence VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	archive_volume_hash_state TEXT,
+	archive_ordered_volume_sha256 VARCHAR(64),
+	archive_terminal_receipt_json TEXT,
+	provenance_validation_next_artifact_order BIGINT DEFAULT 0 NOT NULL,
+	provenance_validation_after_artifact_id VARCHAR(64),
+	provenance_closure_validated BOOLEAN DEFAULT false NOT NULL,
+	derivative_provenance_state VARCHAR DEFAULT 'not-required' NOT NULL,
+	derivative_provenance_cursor_json TEXT DEFAULT '{}' NOT NULL,
+	provenance_archive_next_artifact_order BIGINT DEFAULT 0 NOT NULL,
+	provenance_archive_after_artifact_id VARCHAR(64),
+	provenance_archive_last_journal_id VARCHAR,
+	provenance_archive_current_journal_id VARCHAR,
+	provenance_archive_current_journal_offset BIGINT DEFAULT 0 NOT NULL,
+	provenance_archive_next_sequence VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	provenance_archive_hash_state TEXT,
+	provenance_archive_ordered_sha256 VARCHAR(64),
+	provenance_archive_terminal_receipt_json TEXT,
+	provenance_archive_root_receipt_json TEXT,
+	final_authority_json TEXT,
+	catalog_phase VARCHAR DEFAULT 'artifact-set-identity' NOT NULL,
+	catalog_cursor_json TEXT DEFAULT '{}' NOT NULL,
+	catalog_hash_state TEXT,
+	catalog_artifact_set_identity VARCHAR(64),
+	catalog_inventory_identity VARCHAR(64),
+	artifact_count BIGINT DEFAULT 0 NOT NULL,
+	artifact_bytes BIGINT DEFAULT 0 NOT NULL,
+	payload_sealed_artifact_count BIGINT DEFAULT 0 NOT NULL,
+	payload_sealed_artifact_bytes BIGINT DEFAULT 0 NOT NULL,
+	safe_release_artifact_count BIGINT DEFAULT 0 NOT NULL,
+	safe_release_artifact_bytes BIGINT DEFAULT 0 NOT NULL,
+	uploaded_payload_bytes BIGINT DEFAULT 0 NOT NULL,
+	search_text VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id),
+	FOREIGN KEY(archive_incarnation_id, archive_store) REFERENCES storage_incarnations (id, name),
+	CONSTRAINT ck_collection_uploads_artifact_count CHECK (artifact_count >= 0),
+	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_artifact_order >= 0),
+	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_artifact_order >= 0 AND provenance_archive_next_artifact_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','terminal','complete')),
+	CONSTRAINT ck_collection_uploads_artifact_bytes CHECK (artifact_bytes >= 0),
+	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_count CHECK (payload_sealed_artifact_count >= 0 AND payload_sealed_artifact_count <= artifact_count),
+	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_bytes CHECK (payload_sealed_artifact_bytes >= 0 AND payload_sealed_artifact_bytes <= artifact_bytes),
+	CONSTRAINT ck_collection_uploads_empty_payload_seal CHECK (payload_sealed_artifact_count > 0 OR payload_sealed_artifact_bytes = 0),
+	CONSTRAINT ck_collection_uploads_safe_release_progress CHECK (safe_release_artifact_count >= 0 AND safe_release_artifact_count <= payload_sealed_artifact_count AND safe_release_artifact_bytes >= 0 AND safe_release_artifact_bytes <= payload_sealed_artifact_bytes),
+	CONSTRAINT ck_collection_uploads_uploaded_payload_bytes CHECK (uploaded_payload_bytes >= 0),
+	CONSTRAINT ck_collection_uploads_state CHECK (state IN ('open','closing','uploading','finalizing','orphaned','discarding')),
+	CONSTRAINT ck_collection_uploads_custody_mode CHECK (custody_mode IN ('producer-retained','custody-transfer')),
+	CONSTRAINT ck_collection_uploads_derivative_provenance_state CHECK (derivative_provenance_state IN ('not-required','discovering','copying','generating','complete','failed')),
+	CONSTRAINT ck_collection_uploads_archive_phase CHECK (archive_phase IN ('planning','uploading','finalization_queued','finalizing','retry_wait','orphaned','discarding')),
+	CONSTRAINT ck_collection_uploads_description_bytes CHECK (description IS NULL OR octet_length(description) <= 32768),
+	CONSTRAINT ck_collection_uploads_description_state CHECK (description_revision IS NULL AND description_identity IS NULL OR description_revision >= 0 AND description_revision <= 9007199254740991 AND description_identity IS NOT NULL),
+	CONSTRAINT ck_collection_uploads_tag_state CHECK (tag_revision IS NULL AND tag_set_identity IS NULL AND tag_head_identity IS NULL OR tag_revision >= 1 AND tag_revision <= 9007199254740991 AND tag_set_identity IS NOT NULL AND tag_head_identity IS NOT NULL),
+	CONSTRAINT ck_collection_uploads_tag_root CHECK (tag_root_sha256 IS NULL OR length(tag_root_sha256) = 64 AND lower(tag_root_sha256) = tag_root_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_tag_staging_root CHECK (tag_staging_root_sha256 IS NULL OR length(tag_staging_root_sha256) = 64 AND lower(tag_staging_root_sha256) = tag_staging_root_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_tag_staging_identity CHECK (length(tag_staging_set_identity) = 64 AND lower(tag_staging_set_identity) = tag_staging_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_initial_tag_set_identity CHECK (length(initial_tag_set_identity) = 64 AND lower(initial_tag_set_identity) = initial_tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(initial_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_attempt_count CHECK (archive_attempt_count >= 0),
+	CONSTRAINT ck_collection_uploads_creation_identity_sha256_hex CHECK (length(creation_identity_sha256) = 64 AND lower(creation_identity_sha256) = creation_identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(creation_identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_initial_tag_set_identity_hex CHECK (length(initial_tag_set_identity) = 64 AND lower(initial_tag_set_identity) = initial_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(initial_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_archive_generation_hex CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_description_identity_hex CHECK (description_identity IS NULL OR length(description_identity) = 64 AND lower(description_identity) = description_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(description_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_tag_staging_root_sha256_hex CHECK (tag_staging_root_sha256 IS NULL OR length(tag_staging_root_sha256) = 64 AND lower(tag_staging_root_sha256) = tag_staging_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_tag_staging_set_identity_hex CHECK (length(tag_staging_set_identity) = 64 AND lower(tag_staging_set_identity) = tag_staging_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_staging_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_tag_root_sha256_hex CHECK (tag_root_sha256 IS NULL OR length(tag_root_sha256) = 64 AND lower(tag_root_sha256) = tag_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_tag_set_identity_hex CHECK (tag_set_identity IS NULL OR length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_tag_head_identity_hex CHECK (tag_head_identity IS NULL OR length(tag_head_identity) = 64 AND lower(tag_head_identity) = tag_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_provenance_identity_hex CHECK (provenance_identity IS NULL OR length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_archive_tree_after_artifact_id_hex CHECK (archive_tree_after_artifact_id IS NULL OR length(archive_tree_after_artifact_id) = 64 AND lower(archive_tree_after_artifact_id) = archive_tree_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_tree_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_archive_tree_sha256_hex CHECK (archive_tree_sha256 IS NULL OR length(archive_tree_sha256) = 64 AND lower(archive_tree_sha256) = archive_tree_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_tree_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_archive_ordered_volume_sha256_hex CHECK (archive_ordered_volume_sha256 IS NULL OR length(archive_ordered_volume_sha256) = 64 AND lower(archive_ordered_volume_sha256) = archive_ordered_volume_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_ordered_volume_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_200bf9812aaa6966 CHECK (provenance_validation_after_artifact_id IS NULL OR length(provenance_validation_after_artifact_id) = 64 AND lower(provenance_validation_after_artifact_id) = provenance_validation_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_validation_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_c13ae3d276f577ae CHECK (provenance_archive_after_artifact_id IS NULL OR length(provenance_archive_after_artifact_id) = 64 AND lower(provenance_archive_after_artifact_id) = provenance_archive_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_provenance_archive_ordered_sha256_hex CHECK (provenance_archive_ordered_sha256 IS NULL OR length(provenance_archive_ordered_sha256) = 64 AND lower(provenance_archive_ordered_sha256) = provenance_archive_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_catalog_artifact_set_identity_hex CHECK (catalog_artifact_set_identity IS NULL OR length(catalog_artifact_set_identity) = 64 AND lower(catalog_artifact_set_identity) = catalog_artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_catalog_inventory_identity_hex CHECK (catalog_inventory_identity IS NULL OR length(catalog_inventory_identity) = 64 AND lower(catalog_inventory_identity) = catalog_inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_upload_tag_frontier_work ON collection_upload_tag_publication_frontier (collection_id, published, expanded, node_digest);
+CREATE INDEX ix_collection_uploads_artifact_bytes ON collection_uploads (artifact_bytes, collection_id);
 
-CREATE TABLE collection_upload_tag_node_references (
-	collection_id BIGINT NOT NULL,
-	node_digest VARCHAR(64) NOT NULL,
-	PRIMARY KEY (collection_id, node_digest),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	FOREIGN KEY(node_digest) REFERENCES collection_tag_nodes (digest) ON DELETE RESTRICT,
-	CONSTRAINT ck_collection_upload_tag_node_references_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_upload_tag_node_references_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
+CREATE INDEX ix_collection_uploads_artifact_count ON collection_uploads (artifact_count, collection_id);
 
-CREATE INDEX ix_collection_upload_tag_node_references_digest ON collection_upload_tag_node_references (node_digest, collection_id);
+CREATE INDEX ix_collection_uploads_opened_at ON collection_uploads (opened_at, collection_id);
 
-CREATE TABLE collection_upload_tags (
-	collection_id BIGINT NOT NULL,
-	tag_sha256 VARCHAR(64) NOT NULL,
-	tag TEXT NOT NULL,
-	added_at VARCHAR NOT NULL,
-	PRIMARY KEY (collection_id, tag_sha256),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_upload_tags_bytes CHECK (octet_length(tag) > 0 AND octet_length(tag) <= 65536),
-	CONSTRAINT ck_collection_upload_tags_sha256 CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT uq_collection_upload_tags_value UNIQUE (collection_id, tag),
-	CONSTRAINT ck_collection_upload_tags_tag_sha256_hex CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
+CREATE INDEX ix_collection_uploads_search_trgm ON collection_uploads USING gin (search_text gin_trgm_ops);
+
+CREATE INDEX ix_collection_uploads_state ON collection_uploads (state, collection_id);
+
+CREATE UNIQUE INDEX ux_collection_uploads_principal_idempotency_key ON collection_uploads (initiated_by_principal_id, idempotency_key);
 
 CREATE TABLE key_download_reservations (
 	id VARCHAR NOT NULL,
@@ -1114,32 +858,43 @@ CREATE TABLE key_download_usage (
 	CONSTRAINT ck_key_download_usage_bytes CHECK (accounted_bytes >= 0)
 );
 
-CREATE TABLE retrieval_cache_accounting_reconciliations (
-	cache_store VARCHAR NOT NULL,
-	generation BIGINT NOT NULL,
-	after_source_store VARCHAR,
-	after_collection_id BIGINT,
-	after_object_id VARCHAR,
-	accumulated_bytes BIGINT DEFAULT 0 NOT NULL,
-	started_at VARCHAR NOT NULL,
-	updated_at VARCHAR NOT NULL,
-	PRIMARY KEY (cache_store),
-	FOREIGN KEY(cache_store) REFERENCES retrieval_cache_store_accounting (cache_store) ON DELETE CASCADE,
-	CONSTRAINT ck_cache_accounting_reconciliations_generation CHECK (generation >= 0),
-	CONSTRAINT ck_cache_accounting_reconciliations_bytes CHECK (accumulated_bytes >= 0)
-);
-
-CREATE TABLE retrieval_cache_population_claims (
-	owner VARCHAR NOT NULL,
+CREATE TABLE retrieval_cache_populations (
 	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	object_id VARCHAR NOT NULL,
-	created_at VARCHAR NOT NULL,
-	PRIMARY KEY (owner, source_store, collection_id, object_id),
-	FOREIGN KEY(source_store, collection_id, object_id) REFERENCES retrieval_cache_populations (source_store, collection_id, object_id) ON DELETE CASCADE
+	cache_store VARCHAR,
+	cache_incarnation_id VARCHAR(36),
+	object_path VARCHAR,
+	write_token VARCHAR,
+	expected_bytes BIGINT NOT NULL,
+	state VARCHAR NOT NULL,
+	initiated_at VARCHAR NOT NULL,
+	updated_at VARCHAR NOT NULL,
+	failure TEXT,
+	PRIMARY KEY (source_store, collection_id, object_id),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
+	CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1),
+	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning')),
+	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))
 );
 
-CREATE INDEX ix_retrieval_cache_population_claims_object ON retrieval_cache_population_claims (source_store, collection_id, object_id, owner);
+CREATE INDEX ix_retrieval_cache_populations_store_state ON retrieval_cache_populations (cache_store, state, updated_at, collection_id, source_store, object_id);
+
+CREATE TABLE retrieval_cache_store_accounting (
+	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
+	reserved_bytes BIGINT DEFAULT 0 NOT NULL,
+	committed_bytes BIGINT DEFAULT 0 NOT NULL,
+	generation BIGINT DEFAULT 0 NOT NULL,
+	updated_at VARCHAR NOT NULL,
+	PRIMARY KEY (cache_store),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
+	CONSTRAINT ck_retrieval_cache_store_accounting_reserved CHECK (reserved_bytes >= 0),
+	CONSTRAINT ck_retrieval_cache_store_accounting_committed CHECK (committed_bytes >= 0),
+	CONSTRAINT ck_retrieval_cache_store_accounting_generation CHECK (generation >= 0)
+);
 
 CREATE TABLE retrieval_jobs (
 	id VARCHAR NOT NULL,
@@ -1228,6 +983,49 @@ CREATE TABLE archive_copy_retirements (
 	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE
 );
 
+CREATE TABLE collection_archive_object_uploads (
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	sequence VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	relative_path VARCHAR NOT NULL,
+	object_path VARCHAR NOT NULL,
+	plaintext_bytes BIGINT NOT NULL,
+	source_bytes BIGINT NOT NULL,
+	source_artifact_id VARCHAR(64),
+	source_first_part BIGINT,
+	source_part_count BIGINT,
+	unit_plaintext_bytes BIGINT NOT NULL,
+	plan_json TEXT NOT NULL,
+	plan_sha256 VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	checkpoint_json TEXT,
+	sealed_receipt_json TEXT,
+	metadata_receipt_json TEXT,
+	failure TEXT,
+	uploaded_bytes BIGINT NOT NULL,
+	uploaded_units INTEGER NOT NULL,
+	total_units INTEGER NOT NULL,
+	updated_at VARCHAR NOT NULL,
+	sealed_at VARCHAR,
+	PRIMARY KEY (collection_id, object_id),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0),
+	CONSTRAINT ck_archive_object_uploads_source CHECK (source_bytes >= 0),
+	CONSTRAINT ck_archive_object_uploads_source_parts CHECK (kind = 'pack' AND source_artifact_id IS NULL AND source_first_part IS NULL AND source_part_count IS NULL OR kind = 'segment' AND source_artifact_id IS NOT NULL AND source_first_part >= 0 AND source_part_count > 0),
+	CONSTRAINT ck_archive_object_uploads_unit CHECK (unit_plaintext_bytes > 0),
+	CONSTRAINT ck_archive_object_uploads_state CHECK (state IN ('planned','uploading','sealed')),
+	CONSTRAINT ck_archive_object_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0),
+	CONSTRAINT ck_archive_object_uploads_uploaded_units CHECK (uploaded_units >= 0),
+	CONSTRAINT ck_archive_object_uploads_total_units CHECK (total_units >= 0),
+	CONSTRAINT ck_archive_object_uploads_unit_progress CHECK (uploaded_units <= total_units),
+	CONSTRAINT ck_collection_archive_object_uploads_source_artifact_id_hex CHECK (source_artifact_id IS NULL OR length(source_artifact_id) = 64 AND lower(source_artifact_id) = source_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence);
+
 CREATE TABLE collection_archive_objects (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
@@ -1258,6 +1056,28 @@ CREATE TABLE collection_archive_objects (
 );
 
 CREATE INDEX idx_collection_archive_objects_order ON collection_archive_objects (collection_id, store, object_order);
+
+CREATE TABLE collection_artifact_provenance (
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	through_entry_id VARCHAR NOT NULL,
+	through_sequence BIGINT NOT NULL,
+	through_json_sha256 VARCHAR(64) NOT NULL,
+	prefix_sha256 VARCHAR(64) NOT NULL,
+	prefix_bytes BIGINT NOT NULL,
+	delivery_association_id VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, artifact_id),
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_artifact_provenance_anchor_extent CHECK (through_sequence >= 0 AND prefix_bytes > 0),
+	CONSTRAINT ck_collection_artifact_provenance_hashes CHECK (length(through_json_sha256) = 64 AND lower(through_json_sha256) = through_json_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(through_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0 AND length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_artifact_provenance_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_artifact_provenance_through_json_sha256_hex CHECK (length(through_json_sha256) = 64 AND lower(through_json_sha256) = through_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(through_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_artifact_provenance_prefix_sha256_hex CHECK (length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_collection_artifact_provenance_journal ON collection_artifact_provenance (collection_id, journal_id);
 
 CREATE TABLE collection_derivations (
 	collection_id BIGINT NOT NULL,
@@ -1315,40 +1135,105 @@ CREATE TABLE collection_description_publications (
 
 CREATE INDEX ix_collection_description_publications_due ON collection_description_publications (state, next_attempt_at, collection_id, store);
 
-CREATE TABLE collection_file_provenance (
+CREATE TABLE collection_mutable_document_publication_attempts (
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
-	status VARCHAR NOT NULL,
-	journal_id VARCHAR,
-	current_state_id VARCHAR,
-	omission_reason TEXT,
-	PRIMARY KEY (collection_id, path),
-	FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path) ON DELETE CASCADE,
-	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_file_provenance_status CHECK (status IN ('captured','omitted')),
-	CONSTRAINT ck_collection_file_provenance_binding CHECK (status = 'captured' AND journal_id IS NOT NULL AND current_state_id IS NOT NULL AND omission_reason IS NULL OR status = 'omitted' AND journal_id IS NULL AND current_state_id IS NULL AND omission_reason IS NOT NULL)
+	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
+	document_kind VARCHAR NOT NULL,
+	attempt_identity VARCHAR(64) NOT NULL,
+	document_revision BIGINT NOT NULL,
+	document_identity VARCHAR(64) NOT NULL,
+	document_bytes BYTEA NOT NULL,
+	archive_storage_prefix VARCHAR NOT NULL,
+	passphrase_id VARCHAR NOT NULL,
+	prior_object_path VARCHAR,
+	prior_provider_revision VARCHAR,
+	prior_stored_bytes BIGINT,
+	prior_stored_sha256 VARCHAR(64),
+	created_at VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, store, document_kind),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE,
+	CONSTRAINT ck_mutable_document_publication_attempts_kind CHECK (document_kind IN ('description','tag_head')),
+	CONSTRAINT ck_mutable_document_publication_attempts_identity CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_mutable_document_publication_attempts_revision CHECK (document_revision >= 1 AND document_revision <= 9007199254740991),
+	CONSTRAINT ck_mutable_document_publication_attempts_document_identity CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_mutable_document_publication_attempts_bytes CHECK (octet_length(document_bytes) > 0 AND octet_length(document_bytes) <= 65807),
+	CONSTRAINT ck_mutable_document_publication_attempts_prior_receipt CHECK (prior_object_path IS NULL AND prior_provider_revision IS NULL AND prior_stored_bytes IS NULL AND prior_stored_sha256 IS NULL OR prior_object_path IS NOT NULL AND prior_stored_bytes IS NOT NULL AND prior_stored_bytes > 0 AND prior_stored_sha256 IS NOT NULL),
+	CONSTRAINT ck_mutable_document_publication_attempts_prior_sha256 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	UNIQUE (attempt_identity),
+	CONSTRAINT ck_sha256_0f9f415e5b2f4112 CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_2b9f56df047af7b5 CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_a1e9d33ca9fd7958 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_file_provenance_journal ON collection_file_provenance (collection_id, journal_id);
+CREATE INDEX ix_mutable_document_publication_attempts_created ON collection_mutable_document_publication_attempts (created_at, collection_id, store, document_kind);
+
+CREATE TABLE collection_processing_capabilities (
+	id VARCHAR(32) NOT NULL,
+	claim_id VARCHAR(64) NOT NULL,
+	fence BIGINT NOT NULL,
+	audience VARCHAR(300) NOT NULL,
+	token_sha256 VARCHAR(64) NOT NULL,
+	actions_json TEXT NOT NULL,
+	artifact_count BIGINT NOT NULL,
+	artifact_bytes BIGINT NOT NULL,
+	artifact_hash_state TEXT,
+	artifact_set_sha256 VARCHAR(64),
+	artifacts_sealed_at VARCHAR,
+	state VARCHAR NOT NULL,
+	expires_at VARCHAR NOT NULL,
+	created_at VARCHAR NOT NULL,
+	revoked_at VARCHAR,
+	PRIMARY KEY (id),
+	CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked')),
+	CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1),
+	CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0),
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
+	UNIQUE (token_sha256),
+	CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_f421ad4e24e487cb CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_collection_processing_capabilities_claim_state ON collection_processing_capabilities (claim_id, state, expires_at);
 
 CREATE TABLE collection_processing_claim_inputs (
 	claim_id VARCHAR(64) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	collection_order INTEGER NOT NULL,
 	archive_root_sha256 VARCHAR(64) NOT NULL,
-	content_identity VARCHAR(64) NOT NULL,
+	artifact_set_identity VARCHAR(64) NOT NULL,
 	PRIMARY KEY (claim_id, collection_id),
 	CONSTRAINT uq_collection_processing_claim_inputs_order UNIQUE (claim_id, collection_order),
 	CONSTRAINT ck_processing_claim_inputs_order CHECK (collection_order >= 0),
 	CONSTRAINT ck_claim_inputs_archive_root CHECK (length(archive_root_sha256) = 64),
-	CONSTRAINT ck_claim_inputs_content_identity CHECK (length(content_identity) = 64),
+	CONSTRAINT ck_claim_inputs_artifact_set_identity CHECK (length(artifact_set_identity) = 64),
 	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_processing_claim_inputs_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_0bcbb66e83231f7f CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_claim_inputs_content_identity_hex CHECK (length(content_identity) = 64 AND lower(content_identity) = content_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(content_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_sha256_2b905a06e7189bb7 CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_collection_processing_claim_inputs_collection ON collection_processing_claim_inputs (collection_id, claim_id);
+
+CREATE TABLE collection_processing_consideration_evidence (
+	claim_id VARCHAR(64) NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	document_json TEXT NOT NULL,
+	observer_contract_id VARCHAR NOT NULL,
+	observer_contract_sha256 VARCHAR(64) NOT NULL,
+	profile_sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (claim_id, sha256),
+	CONSTRAINT ck_processing_consideration_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT ck_processing_consideration_contract_sha256 CHECK (length(observer_contract_sha256) = 64),
+	CONSTRAINT ck_processing_consideration_profile_sha256 CHECK (length(profile_sha256) = 64),
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_processing_consideration_evidence_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_consideration_evidence_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_eaf7b3cb4b95f7e0 CHECK (length(observer_contract_sha256) = 64 AND lower(observer_contract_sha256) = observer_contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(observer_contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_304ec13c78be9105 CHECK (length(profile_sha256) = 64 AND lower(profile_sha256) = profile_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(profile_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
 
 CREATE TABLE collection_processing_disposition_sets (
 	claim_id VARCHAR(64) NOT NULL,
@@ -1360,10 +1245,10 @@ CREATE TABLE collection_processing_disposition_sets (
 	successor_bound_count BIGINT NOT NULL,
 	validation_phase VARCHAR,
 	validation_collection_id BIGINT,
-	validation_input_path VARCHAR,
-	validation_output_path VARCHAR,
+	validation_input_artifact_id VARCHAR,
+	validation_output_artifact_id VARCHAR,
 	validation_output_collection_id BIGINT,
-	validation_output_input_path VARCHAR,
+	validation_output_input_artifact_id VARCHAR,
 	disposition_hash_state TEXT,
 	output_hash_state TEXT,
 	disposition_sha256 VARCHAR(64),
@@ -1387,6 +1272,45 @@ CREATE TABLE collection_processing_disposition_sets (
 
 CREATE INDEX ix_processing_disposition_sets_state ON collection_processing_disposition_sets (state, updated_at, claim_id);
 
+CREATE TABLE collection_processing_effect_settlements (
+	claim_id VARCHAR(64) NOT NULL,
+	fence BIGINT NOT NULL,
+	execution_id VARCHAR(64) NOT NULL,
+	document_json TEXT NOT NULL,
+	document_sha256 VARCHAR(64) NOT NULL,
+	receipt_sha256 VARCHAR(64) NOT NULL,
+	created_at VARCHAR NOT NULL,
+	PRIMARY KEY (claim_id),
+	CONSTRAINT ck_effect_settlement_fence CHECK (fence >= 1),
+	CONSTRAINT ck_effect_settlement_digest CHECK (length(document_sha256) = 64 AND length(receipt_sha256) = 64),
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT,
+	UNIQUE (execution_id),
+	UNIQUE (document_sha256),
+	UNIQUE (receipt_sha256),
+	CONSTRAINT ck_collection_processing_effect_settlements_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_effect_settlements_execution_id_hex CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_b8d7c869121aa1db CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_a5db6e9ad22a9196 CHECK (length(receipt_sha256) = 64 AND lower(receipt_sha256) = receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_processing_no_output_settlements (
+	claim_id VARCHAR(64) NOT NULL,
+	fence BIGINT NOT NULL,
+	execution_id VARCHAR(64) NOT NULL,
+	document_json TEXT NOT NULL,
+	document_sha256 VARCHAR(64) NOT NULL,
+	created_at VARCHAR NOT NULL,
+	PRIMARY KEY (claim_id),
+	CONSTRAINT ck_no_output_settlement_fence CHECK (fence >= 1),
+	CONSTRAINT ck_no_output_settlement_digest CHECK (length(document_sha256) = 64),
+	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT,
+	UNIQUE (execution_id),
+	UNIQUE (document_sha256),
+	CONSTRAINT ck_collection_processing_no_output_settlements_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_cae379d62e6b6234 CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_a0b49cc18366ecca CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 CREATE TABLE collection_processing_outcomes (
 	claim_id VARCHAR(64) NOT NULL,
 	outcome_id VARCHAR(160) NOT NULL,
@@ -1399,13 +1323,13 @@ CREATE TABLE collection_processing_outcomes (
 	no_output_settlement_sha256 VARCHAR(64),
 	collection_id BIGINT,
 	archive_root_sha256 VARCHAR(64),
-	content_identity VARCHAR(64),
+	artifact_set_identity VARCHAR(64),
 	derivation_sha256 VARCHAR(64),
 	outcome_order BIGINT,
 	created_at VARCHAR NOT NULL,
 	PRIMARY KEY (claim_id, outcome_id),
 	CONSTRAINT ck_processing_outcome_fence CHECK (source_fence >= 1),
-	CONSTRAINT ck_processing_outcome_result CHECK (result_kind = 'collection' AND collection_id IS NOT NULL AND archive_root_sha256 IS NOT NULL AND content_identity IS NOT NULL AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL AND no_output_settlement_sha256 IS NULL OR result_kind = 'external-effect' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND content_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL AND effect_settlement_sha256 IS NOT NULL AND no_output_settlement_sha256 IS NULL OR result_kind = 'no-output' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND content_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL AND no_output_settlement_sha256 IS NOT NULL),
+	CONSTRAINT ck_processing_outcome_result CHECK (result_kind = 'collection' AND collection_id IS NOT NULL AND archive_root_sha256 IS NOT NULL AND artifact_set_identity IS NOT NULL AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL AND no_output_settlement_sha256 IS NULL OR result_kind = 'external-effect' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND artifact_set_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL AND effect_settlement_sha256 IS NOT NULL AND no_output_settlement_sha256 IS NULL OR result_kind = 'no-output' AND collection_id IS NULL AND archive_root_sha256 IS NULL AND artifact_set_identity IS NULL AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NULL AND effect_settlement_sha256 IS NULL AND no_output_settlement_sha256 IS NOT NULL),
 	CONSTRAINT uq_collection_processing_outcomes_source_claim UNIQUE (claim_id, source_claim_id),
 	CONSTRAINT uq_collection_processing_outcomes_output UNIQUE (claim_id, collection_id),
 	CONSTRAINT ck_collection_processing_outcomes_order CHECK (outcome_order IS NULL OR outcome_order >= 0),
@@ -1418,7 +1342,7 @@ CREATE TABLE collection_processing_outcomes (
 	CONSTRAINT ck_sha256_96479c182bf1b6f0 CHECK (effect_settlement_sha256 IS NULL OR length(effect_settlement_sha256) = 64 AND lower(effect_settlement_sha256) = effect_settlement_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(effect_settlement_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_2568db5df24dffd6 CHECK (no_output_settlement_sha256 IS NULL OR length(no_output_settlement_sha256) = 64 AND lower(no_output_settlement_sha256) = no_output_settlement_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(no_output_settlement_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_outcomes_archive_root_sha256_hex CHECK (archive_root_sha256 IS NULL OR length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_outcomes_content_identity_hex CHECK (content_identity IS NULL OR length(content_identity) = 64 AND lower(content_identity) = content_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(content_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_outcomes_artifact_set_identity_hex CHECK (artifact_set_identity IS NULL OR length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_processing_outcomes_derivation_sha256_hex CHECK (derivation_sha256 IS NULL OR length(derivation_sha256) = 64 AND lower(derivation_sha256) = derivation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(derivation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
@@ -1464,17 +1388,22 @@ CREATE TABLE collection_provenance_journal_agents (
 
 CREATE INDEX ix_collection_provenance_journal_agents_agent ON collection_provenance_journal_agents (agent_id, collection_id);
 
-CREATE TABLE collection_provenance_journal_chunks (
+CREATE TABLE collection_provenance_journal_segments (
 	collection_id BIGINT NOT NULL,
 	journal_id VARCHAR NOT NULL,
-	ordinal VARCHAR(64) NOT NULL,
+	sequence VARCHAR(64) NOT NULL,
 	byte_offset BIGINT NOT NULL,
-	content BYTEA NOT NULL,
-	PRIMARY KEY (collection_id, journal_id, ordinal),
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	object_id VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, sequence),
 	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
-	CONSTRAINT ck_provenance_journal_chunks_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_provenance_journal_chunks_offset CHECK (byte_offset >= 0),
-	CONSTRAINT ck_provenance_journal_chunks_content CHECK (length(content) > 0)
+	CONSTRAINT ck_provenance_journal_segments_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_provenance_journal_segments_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_provenance_journal_segments_bytes CHECK (bytes > 0),
+	CONSTRAINT ck_provenance_journal_segments_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT uq_provenance_journal_segment_offset UNIQUE (collection_id, journal_id, byte_offset),
+	CONSTRAINT ck_collection_provenance_journal_segments_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE TABLE collection_provenance_verification_agents (
@@ -1535,67 +1464,18 @@ CREATE TABLE collection_provenance_verification_reachability (
 
 CREATE INDEX ix_provenance_verification_reachability_work ON collection_provenance_verification_reachability (collection_id, expanded, journal_id);
 
-CREATE TABLE collection_mutable_document_publication_attempts (
+CREATE TABLE collection_tag_mutation_node_references (
 	collection_id BIGINT NOT NULL,
-	store VARCHAR NOT NULL,
-	incarnation_id VARCHAR(36) NOT NULL,
-	document_kind VARCHAR NOT NULL,
-	attempt_identity VARCHAR(64) NOT NULL,
-	document_revision BIGINT NOT NULL,
-	document_identity VARCHAR(64) NOT NULL,
-	document_bytes BYTEA NOT NULL,
-	archive_storage_prefix VARCHAR NOT NULL,
-	passphrase_id VARCHAR NOT NULL,
-	prior_object_path VARCHAR,
-	prior_provider_revision VARCHAR,
-	prior_stored_bytes BIGINT,
-	prior_stored_sha256 VARCHAR(64),
-	created_at VARCHAR NOT NULL,
-	PRIMARY KEY (collection_id, store, document_kind),
-	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
-	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE,
-	CONSTRAINT ck_mutable_document_publication_attempts_kind CHECK (document_kind IN ('description','tag_head')),
-	CONSTRAINT ck_mutable_document_publication_attempts_identity CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_mutable_document_publication_attempts_revision CHECK (document_revision >= 1 AND document_revision <= 9007199254740991),
-	CONSTRAINT ck_mutable_document_publication_attempts_document_identity CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_mutable_document_publication_attempts_bytes CHECK (octet_length(document_bytes) > 0 AND octet_length(document_bytes) <= 65807),
-	CONSTRAINT ck_mutable_document_publication_attempts_prior_receipt CHECK (prior_object_path IS NULL AND prior_provider_revision IS NULL AND prior_stored_bytes IS NULL AND prior_stored_sha256 IS NULL OR prior_object_path IS NOT NULL AND prior_stored_bytes IS NOT NULL AND prior_stored_bytes > 0 AND prior_stored_sha256 IS NOT NULL),
-	CONSTRAINT ck_mutable_document_publication_attempts_prior_sha256 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	UNIQUE (attempt_identity),
-	CONSTRAINT ck_sha256_0f9f415e5b2f4112 CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_2b9f56df047af7b5 CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_a1e9d33ca9fd7958 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	operation_id VARCHAR NOT NULL,
+	node_digest VARCHAR(64) NOT NULL,
+	PRIMARY KEY (collection_id, operation_id, node_digest),
+	FOREIGN KEY(collection_id, operation_id) REFERENCES collection_tag_mutations (collection_id, operation_id) ON DELETE CASCADE,
+	FOREIGN KEY(node_digest) REFERENCES collection_tag_nodes (digest),
+	CONSTRAINT ck_collection_tag_mutation_node_references_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_tag_mutation_node_references_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_mutable_document_publication_attempts_created ON collection_mutable_document_publication_attempts (created_at, collection_id, store, document_kind);
-
-CREATE TABLE collection_mutable_document_reclamations (
-	receipt_identity VARCHAR(64) NOT NULL,
-	collection_id BIGINT NOT NULL,
-	store VARCHAR NOT NULL,
-	incarnation_id VARCHAR(36) NOT NULL,
-	document_kind VARCHAR NOT NULL,
-	object_path VARCHAR NOT NULL,
-	provider_revision VARCHAR NOT NULL,
-	stored_bytes BIGINT NOT NULL,
-	stored_sha256 VARCHAR(64) NOT NULL,
-	state VARCHAR NOT NULL,
-	next_attempt_at VARCHAR NOT NULL,
-	failure TEXT,
-	PRIMARY KEY (receipt_identity),
-	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
-	CONSTRAINT ck_mutable_document_reclamations_identity CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_mutable_document_reclamations_kind CHECK (document_kind IN ('description','tag_head')),
-	CONSTRAINT ck_mutable_document_reclamations_bytes CHECK (stored_bytes > 0),
-	CONSTRAINT ck_mutable_document_reclamations_stored_sha256 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_mutable_document_reclamations_state CHECK (state IN ('pending','deleting','retry_wait')),
-	CONSTRAINT ck_sha256_22e6e1bdfada4730 CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_c2ced24a99b9db78 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE INDEX ix_collection_mutable_document_reclamations_due ON collection_mutable_document_reclamations (state, next_attempt_at, receipt_identity);
-
-CREATE INDEX ix_collection_mutable_document_reclamations_owner ON collection_mutable_document_reclamations (collection_id, store, document_kind);
+CREATE INDEX ix_collection_tag_mutation_node_references_digest ON collection_tag_mutation_node_references (node_digest, collection_id, operation_id);
 
 CREATE TABLE collection_tag_publications (
 	collection_id BIGINT NOT NULL,
@@ -1651,58 +1531,82 @@ CREATE TABLE collection_tag_published_nodes (
 	CONSTRAINT ck_collection_tag_published_nodes_stored_sha256_hex CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE collection_processing_capabilities (
-	id VARCHAR(32) NOT NULL,
-	claim_id VARCHAR(64) NOT NULL,
-	fence BIGINT NOT NULL,
-	audience VARCHAR(300) NOT NULL,
-	token_sha256 VARCHAR(64) NOT NULL,
-	actions_json TEXT NOT NULL,
-	artifact_count BIGINT NOT NULL,
-	artifact_bytes BIGINT NOT NULL,
-	artifact_hash_state TEXT,
-	artifact_set_sha256 VARCHAR(64),
-	artifacts_sealed_at VARCHAR,
+CREATE TABLE collection_upload_artifacts (
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	artifact_order BIGINT NOT NULL,
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	raw_part_plaintext_bytes BIGINT,
+	raw_part_count BIGINT,
+	raw_part_ordered_sha256 VARCHAR(64),
+	raw_parts_accepted BIGINT DEFAULT 0 NOT NULL,
+	raw_part_commitment_sha256 VARCHAR(64),
+	payload_sealed_at VARCHAR,
+	custody_receipt_json TEXT,
+	PRIMARY KEY (collection_id, artifact_id),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_upload_artifacts_order CHECK (artifact_order >= 0),
+	CONSTRAINT ck_collection_upload_artifacts_bytes CHECK (bytes >= 0 AND bytes < 9223372036854775808),
+	CONSTRAINT ck_collection_upload_artifacts_raw_parts CHECK (raw_parts_accepted >= 0),
+	CONSTRAINT ck_collection_upload_artifacts_id CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_upload_artifacts_sha256 CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_upload_artifacts_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_upload_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_upload_artifacts_raw_part_ordered_sha256_hex CHECK (raw_part_ordered_sha256 IS NULL OR length(raw_part_ordered_sha256) = 64 AND lower(raw_part_ordered_sha256) = raw_part_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_ca35dbfa303620e0 CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX idx_collection_upload_artifacts_collection_id ON collection_upload_artifacts (collection_id, artifact_id);
+
+CREATE UNIQUE INDEX ux_collection_upload_artifacts_order ON collection_upload_artifacts (collection_id, artifact_order);
+
+CREATE TABLE collection_upload_provenance_archive_volumes (
+	collection_id BIGINT NOT NULL,
+	sequence VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	document_json TEXT NOT NULL,
+	payload_receipt_json TEXT NOT NULL,
+	metadata_receipt_json TEXT NOT NULL,
+	PRIMARY KEY (collection_id, sequence),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_provenance_archive_volumes_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_archive_volumes_kind CHECK (kind IN ('bindings','journal'))
+);
+
+CREATE TABLE collection_upload_provenance_journals (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
 	state VARCHAR NOT NULL,
-	expires_at VARCHAR NOT NULL,
-	created_at VARCHAR NOT NULL,
-	revoked_at VARCHAR,
-	PRIMARY KEY (id),
-	CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked')),
-	CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1),
-	CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0),
-	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
-	UNIQUE (token_sha256),
-	CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_f421ad4e24e487cb CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE INDEX ix_collection_processing_capabilities_claim_state ON collection_processing_capabilities (claim_id, state, expires_at);
-
-CREATE TABLE collection_upload_provenance_journal_chunks (
-	collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	ordinal VARCHAR(64) NOT NULL,
-	byte_offset BIGINT NOT NULL,
-	content BYTEA NOT NULL,
-	PRIMARY KEY (collection_id, journal_id, ordinal),
-	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_provenance_journal_chunks_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_upload_provenance_journal_chunks_offset CHECK (byte_offset >= 0),
-	CONSTRAINT ck_upload_provenance_journal_chunks_content CHECK (length(content) > 0)
-);
-
-CREATE TABLE collection_upload_provenance_reachability (
-	collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	after_external_fact_key VARCHAR,
-	expanded BOOLEAN DEFAULT false NOT NULL,
+	accepted_bytes BIGINT DEFAULT 0 NOT NULL,
+	next_chunk_ordinal VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	content_hash_state TEXT NOT NULL,
+	validation_byte_offset BIGINT DEFAULT 0 NOT NULL,
+	validation_sequence BIGINT DEFAULT 0 NOT NULL,
+	validation_previous_entry_id VARCHAR,
+	validation_previous_json_sha256 VARCHAR(64),
+	primary_lineage_id VARCHAR,
+	entity_counts_json TEXT DEFAULT '{}' NOT NULL,
+	failure TEXT,
+	terminal_entry_id VARCHAR,
+	terminal_sequence BIGINT,
+	terminal_json_sha256 VARCHAR(64),
 	PRIMARY KEY (collection_id, journal_id),
-	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_provenance_journals_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_upload_provenance_journals_accepted_bytes CHECK (accepted_bytes >= 0 AND accepted_bytes <= bytes),
+	CONSTRAINT ck_upload_provenance_journals_next_chunk_ordinal CHECK (length(next_chunk_ordinal) = 64 AND lower(next_chunk_ordinal) = next_chunk_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_chunk_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_journals_validation_offset CHECK (validation_byte_offset >= 0 AND validation_byte_offset <= accepted_bytes),
+	CONSTRAINT ck_upload_provenance_journals_validation_sequence CHECK (validation_sequence >= 0),
+	CONSTRAINT ck_upload_provenance_journals_state CHECK (state IN ('accepting','generating','validating','sealed','failed')),
+	CONSTRAINT ck_upload_provenance_journals_terminal_sequence CHECK (terminal_sequence IS NULL OR terminal_sequence >= 0),
+	CONSTRAINT ck_upload_provenance_journals_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT ck_collection_upload_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_079f7a2aeed5fb0d CHECK (terminal_json_sha256 IS NULL OR length(terminal_json_sha256) = 64 AND lower(terminal_json_sha256) = terminal_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
-
-CREATE INDEX ix_upload_provenance_reachability_pending ON collection_upload_provenance_reachability (collection_id, expanded, journal_id);
 
 CREATE TABLE collection_upload_provenance_sources (
 	collection_id BIGINT NOT NULL,
@@ -1722,50 +1626,100 @@ CREATE TABLE collection_upload_provenance_sources (
 
 CREATE INDEX ix_collection_upload_provenance_sources_work ON collection_upload_provenance_sources (collection_id, expanded, copied, source_collection_id, journal_id);
 
-CREATE TABLE collection_upload_provenance_validation_facts (
+CREATE TABLE collection_upload_tag_node_references (
 	collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	kind VARCHAR NOT NULL,
-	fact_key VARCHAR NOT NULL,
-	value_json TEXT NOT NULL,
-	PRIMARY KEY (collection_id, journal_id, kind, fact_key),
-	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_provenance_validation_fact_kind CHECK (kind IN ('entry','agent','event','state','binding','entity','external-state'))
+	node_digest VARCHAR(64) NOT NULL,
+	PRIMARY KEY (collection_id, node_digest),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	FOREIGN KEY(node_digest) REFERENCES collection_tag_nodes (digest) ON DELETE RESTRICT,
+	CONSTRAINT ck_collection_upload_tag_node_references_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_upload_tag_node_references_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE collection_upload_raw_part_digests (
+CREATE INDEX ix_collection_upload_tag_node_references_digest ON collection_upload_tag_node_references (node_digest, collection_id);
+
+CREATE TABLE collection_upload_tag_publication_frontier (
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
-	part_number BIGINT NOT NULL,
-	sha256 VARCHAR(64) NOT NULL,
-	PRIMARY KEY (collection_id, path, part_number),
-	FOREIGN KEY(collection_id, path) REFERENCES collection_upload_files (collection_id, path) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_raw_part_digest_number CHECK (part_number >= 0),
-	CONSTRAINT ck_upload_raw_part_digest_sha256 CHECK (length(sha256) = 64),
-	CONSTRAINT ck_collection_upload_raw_part_digests_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	node_digest VARCHAR(64) NOT NULL,
+	expanded BOOLEAN DEFAULT false NOT NULL,
+	published BOOLEAN DEFAULT false NOT NULL,
+	object_path VARCHAR,
+	provider_revision VARCHAR,
+	stored_bytes BIGINT,
+	stored_sha256 VARCHAR(64),
+	published_at VARCHAR,
+	PRIMARY KEY (collection_id, node_digest),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_upload_tag_frontier_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_upload_tag_frontier_receipt CHECK (published = false AND object_path IS NULL AND stored_bytes IS NULL AND stored_sha256 IS NULL AND published_at IS NULL OR published = true AND object_path IS NOT NULL AND stored_bytes > 0 AND stored_sha256 IS NOT NULL AND published_at IS NOT NULL),
+	CONSTRAINT ck_sha256_a9a6767f54e4c1ef CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_6acac9b414fb5e15 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE retrieval_plan_files (
+CREATE INDEX ix_collection_upload_tag_frontier_work ON collection_upload_tag_publication_frontier (collection_id, published, expanded, node_digest);
+
+CREATE TABLE collection_upload_tags (
+	collection_id BIGINT NOT NULL,
+	tag_sha256 VARCHAR(64) NOT NULL,
+	tag TEXT NOT NULL,
+	added_at VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, tag_sha256),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_upload_tags_bytes CHECK (octet_length(tag) > 0 AND octet_length(tag) <= 65536),
+	CONSTRAINT ck_collection_upload_tags_sha256 CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT uq_collection_upload_tags_value UNIQUE (collection_id, tag),
+	CONSTRAINT ck_collection_upload_tags_tag_sha256_hex CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE retrieval_cache_accounting_reconciliations (
+	cache_store VARCHAR NOT NULL,
+	generation BIGINT NOT NULL,
+	after_source_store VARCHAR,
+	after_collection_id BIGINT,
+	after_object_id VARCHAR,
+	accumulated_bytes BIGINT DEFAULT 0 NOT NULL,
+	started_at VARCHAR NOT NULL,
+	updated_at VARCHAR NOT NULL,
+	PRIMARY KEY (cache_store),
+	FOREIGN KEY(cache_store) REFERENCES retrieval_cache_store_accounting (cache_store) ON DELETE CASCADE,
+	CONSTRAINT ck_cache_accounting_reconciliations_generation CHECK (generation >= 0),
+	CONSTRAINT ck_cache_accounting_reconciliations_bytes CHECK (accumulated_bytes >= 0)
+);
+
+CREATE TABLE retrieval_cache_population_claims (
+	owner VARCHAR NOT NULL,
+	source_store VARCHAR NOT NULL,
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	created_at VARCHAR NOT NULL,
+	PRIMARY KEY (owner, source_store, collection_id, object_id),
+	FOREIGN KEY(source_store, collection_id, object_id) REFERENCES retrieval_cache_populations (source_store, collection_id, object_id) ON DELETE CASCADE
+);
+
+CREATE INDEX ix_retrieval_cache_population_claims_object ON retrieval_cache_population_claims (source_store, collection_id, object_id, owner);
+
+CREATE TABLE retrieval_plan_artifacts (
 	plan_id VARCHAR NOT NULL,
-	file_order INTEGER NOT NULL,
+	artifact_order INTEGER NOT NULL,
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
 	source_store VARCHAR NOT NULL,
 	source_incarnation_id VARCHAR(36) NOT NULL,
 	requires_restore BOOLEAN NOT NULL,
-	PRIMARY KEY (plan_id, file_order),
+	PRIMARY KEY (plan_id, artifact_order),
 	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE,
-	FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path),
-	UNIQUE (plan_id, collection_id, path),
-	CONSTRAINT ck_retrieval_plan_files_order CHECK (file_order >= 0),
-	CONSTRAINT ck_retrieval_plan_files_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_retrieval_plan_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_artifacts (collection_id, artifact_id),
+	UNIQUE (plan_id, collection_id, artifact_id),
+	CONSTRAINT ck_retrieval_plan_artifacts_order CHECK (artifact_order >= 0),
+	CONSTRAINT ck_retrieval_plan_artifacts_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_retrieval_plan_artifacts_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_retrieval_plan_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_retrieval_plan_files_collection ON retrieval_plan_files (collection_id, plan_id);
+CREATE INDEX ix_retrieval_plan_artifacts_collection ON retrieval_plan_artifacts (collection_id, plan_id);
 
 CREATE TABLE archive_copy_object_uploads (
 	collection_id BIGINT NOT NULL,
@@ -1790,35 +1744,55 @@ CREATE TABLE archive_copy_object_uploads (
 	CONSTRAINT ck_archive_copy_object_uploads_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE collection_archive_file_objects (
+CREATE TABLE collection_archive_artifact_objects (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
-	path VARCHAR NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
 	sequence BIGINT NOT NULL,
 	object_id VARCHAR NOT NULL,
-	file_offset BIGINT NOT NULL,
+	artifact_offset BIGINT NOT NULL,
 	object_offset BIGINT NOT NULL,
 	bytes BIGINT NOT NULL,
 	member VARCHAR,
-	PRIMARY KEY (collection_id, store, path, sequence),
+	PRIMARY KEY (collection_id, store, artifact_id, sequence),
 	FOREIGN KEY(collection_id, store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id) ON DELETE CASCADE,
-	FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path) ON DELETE CASCADE,
-	CONSTRAINT ck_archive_file_objects_sequence CHECK (sequence >= 0),
-	CONSTRAINT ck_archive_file_objects_file_offset CHECK (file_offset >= 0),
-	CONSTRAINT ck_archive_file_objects_object_offset CHECK (object_offset >= 0),
-	CONSTRAINT ck_archive_file_objects_bytes CHECK (bytes >= 0)
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
+	CONSTRAINT ck_archive_artifact_objects_sequence CHECK (sequence >= 0),
+	CONSTRAINT ck_archive_artifact_objects_offset CHECK (artifact_offset >= 0),
+	CONSTRAINT ck_archive_artifact_objects_object_offset CHECK (object_offset >= 0),
+	CONSTRAINT ck_archive_artifact_objects_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_collection_archive_artifact_objects_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX idx_collection_archive_file_objects_object ON collection_archive_file_objects (collection_id, store, object_id);
+CREATE INDEX idx_collection_archive_artifact_objects_object ON collection_archive_artifact_objects (collection_id, store, object_id);
+
+CREATE TABLE collection_processing_capability_artifacts (
+	capability_id VARCHAR(32) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR NOT NULL,
+	artifact_order BIGINT NOT NULL,
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (capability_id, collection_id, artifact_id),
+	CONSTRAINT ck_capability_artifacts_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_capability_artifacts_order CHECK (artifact_order >= 0),
+	CONSTRAINT ck_capability_artifacts_sha256 CHECK (length(sha256) = 64),
+	FOREIGN KEY(capability_id) REFERENCES collection_processing_capabilities (id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_processing_capability_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_collection_processing_capability_artifacts_collection ON collection_processing_capability_artifacts (collection_id, artifact_id, capability_id);
+
+CREATE UNIQUE INDEX ix_collection_processing_capability_artifacts_order ON collection_processing_capability_artifacts (capability_id, artifact_order);
 
 CREATE TABLE collection_processing_claim_artifacts (
 	claim_id VARCHAR(64) NOT NULL,
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
+	artifact_id VARCHAR NOT NULL,
 	artifact_order BIGINT NOT NULL,
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
-	PRIMARY KEY (claim_id, collection_id, path),
+	PRIMARY KEY (claim_id, collection_id, artifact_id),
 	FOREIGN KEY(claim_id, collection_id) REFERENCES collection_processing_claim_inputs (claim_id, collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_processing_claim_artifacts_bytes CHECK (bytes >= 0),
 	CONSTRAINT ck_processing_claim_artifacts_order CHECK (artifact_order >= 0),
@@ -1827,9 +1801,25 @@ CREATE TABLE collection_processing_claim_artifacts (
 	CONSTRAINT ck_collection_processing_claim_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_processing_claim_artifacts_collection ON collection_processing_claim_artifacts (collection_id, path, claim_id);
+CREATE INDEX ix_collection_processing_claim_artifacts_collection ON collection_processing_claim_artifacts (collection_id, artifact_id, claim_id);
 
 CREATE UNIQUE INDEX ix_collection_processing_claim_artifacts_order ON collection_processing_claim_artifacts (claim_id, artifact_order);
+
+CREATE TABLE collection_processing_consideration_subjects (
+	claim_id VARCHAR(64) NOT NULL,
+	evidence_sha256 VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR NOT NULL,
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (claim_id, evidence_sha256, collection_id, artifact_id),
+	FOREIGN KEY(claim_id, evidence_sha256) REFERENCES collection_processing_consideration_evidence (claim_id, sha256) ON DELETE CASCADE,
+	CONSTRAINT ck_processing_consideration_subject_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_processing_consideration_subject_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT ck_collection_processing_consideration_subjects_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_d466a5fbcfa1bb32 CHECK (length(evidence_sha256) = 64 AND lower(evidence_sha256) = evidence_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(evidence_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_consideration_subjects_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
 
 CREATE TABLE collection_tag_node_gc (
 	collection_id BIGINT NOT NULL,
@@ -1871,24 +1861,98 @@ CREATE TABLE collection_tag_publication_frontier (
 
 CREATE INDEX ix_collection_tag_publication_frontier_work ON collection_tag_publication_frontier (collection_id, store, head_identity, published, expanded, node_digest);
 
-CREATE TABLE collection_processing_capability_artifacts (
-	capability_id VARCHAR(32) NOT NULL,
+CREATE TABLE collection_upload_artifact_materialization_decisions (
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
-	artifact_order BIGINT NOT NULL,
-	bytes BIGINT NOT NULL,
-	sha256 VARCHAR(64) NOT NULL,
-	PRIMARY KEY (capability_id, collection_id, path),
-	CONSTRAINT ck_capability_artifacts_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_capability_artifacts_order CHECK (artifact_order >= 0),
-	CONSTRAINT ck_capability_artifacts_sha256 CHECK (length(sha256) = 64),
-	FOREIGN KEY(capability_id) REFERENCES collection_processing_capabilities (id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_processing_capability_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	artifact_id VARCHAR(64) NOT NULL,
+	hint_json TEXT,
+	allow_missing_materialization_hint BOOLEAN NOT NULL,
+	PRIMARY KEY (collection_id, artifact_id),
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK ((hint_json IS NULL AND allow_missing_materialization_hint) OR (hint_json IS NOT NULL AND NOT allow_missing_materialization_hint)),
+	CONSTRAINT ck_sha256_fb5e4ae93fbc40f2 CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_processing_capability_artifacts_collection ON collection_processing_capability_artifacts (collection_id, path, capability_id);
+CREATE TABLE collection_upload_artifact_provenance_bindings (
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	through_entry_id VARCHAR NOT NULL,
+	through_sequence BIGINT NOT NULL,
+	through_json_sha256 VARCHAR(64) NOT NULL,
+	prefix_sha256 VARCHAR(64) NOT NULL,
+	prefix_bytes BIGINT NOT NULL,
+	delivery_association_id VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, artifact_id),
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_artifact_provenance_anchor_extent CHECK (through_sequence >= 0 AND prefix_bytes > 0),
+	CONSTRAINT ck_upload_artifact_provenance_hashes CHECK (length(through_json_sha256) = 64 AND lower(through_json_sha256) = through_json_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(through_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0 AND length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_sha256_6692855b38445992 CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_2886f44bcd161a5d CHECK (length(through_json_sha256) = 64 AND lower(through_json_sha256) = through_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(through_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_5fdbd728eab0df69 CHECK (length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
 
-CREATE UNIQUE INDEX ix_collection_processing_capability_artifacts_order ON collection_processing_capability_artifacts (capability_id, artifact_order);
+CREATE INDEX ix_collection_upload_artifact_provenance_journal ON collection_upload_artifact_provenance_bindings (collection_id, journal_id);
+
+CREATE TABLE collection_upload_artifact_volumes (
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	object_id VARCHAR NOT NULL,
+	PRIMARY KEY (collection_id, artifact_id, object_id),
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
+	FOREIGN KEY(collection_id, object_id) REFERENCES collection_archive_object_uploads (collection_id, object_id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_upload_artifact_volumes_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id);
+
+CREATE TABLE collection_upload_provenance_journal_chunks (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	ordinal VARCHAR(64) NOT NULL,
+	byte_offset BIGINT NOT NULL,
+	content BYTEA NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, ordinal),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_provenance_journal_chunks_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_upload_provenance_journal_chunks_offset CHECK (byte_offset >= 0),
+	CONSTRAINT ck_upload_provenance_journal_chunks_content CHECK (length(content) > 0)
+);
+
+CREATE TABLE collection_upload_provenance_reachability (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	after_external_fact_key VARCHAR,
+	expanded BOOLEAN DEFAULT false NOT NULL,
+	PRIMARY KEY (collection_id, journal_id),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE
+);
+
+CREATE INDEX ix_upload_provenance_reachability_pending ON collection_upload_provenance_reachability (collection_id, expanded, journal_id);
+
+CREATE TABLE collection_upload_provenance_validation_facts (
+	collection_id BIGINT NOT NULL,
+	journal_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	fact_key VARCHAR NOT NULL,
+	value_json TEXT NOT NULL,
+	PRIMARY KEY (collection_id, journal_id, kind, fact_key),
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_provenance_validation_fact_kind CHECK (kind IN ('entry','agent','event','state','binding','entity','external-state'))
+);
+
+CREATE TABLE collection_upload_raw_part_digests (
+	collection_id BIGINT NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	part_number BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	PRIMARY KEY (collection_id, artifact_id, part_number),
+	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
+	CONSTRAINT ck_upload_raw_part_digest_number CHECK (part_number >= 0),
+	CONSTRAINT ck_upload_raw_part_digest_sha256 CHECK (length(sha256) = 64),
+	CONSTRAINT ck_collection_upload_raw_part_digests_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_upload_raw_part_digests_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
 
 CREATE TABLE retrieval_cache_objects (
 	source_store VARCHAR NOT NULL,
@@ -1964,7 +2028,7 @@ CREATE INDEX ix_retrieval_plan_objects_copy ON retrieval_plan_objects (collectio
 CREATE TABLE collection_processing_dispositions (
 	claim_id VARCHAR(64) NOT NULL,
 	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
+	artifact_id VARCHAR NOT NULL,
 	disposition_order BIGINT,
 	status VARCHAR NOT NULL,
 	reason_code VARCHAR,
@@ -1972,8 +2036,8 @@ CREATE TABLE collection_processing_dispositions (
 	effect_receipt_sha256 VARCHAR(64),
 	discard_approval_json TEXT,
 	retain_required BOOLEAN NOT NULL,
-	PRIMARY KEY (claim_id, collection_id, path),
-	FOREIGN KEY(claim_id, collection_id, path) REFERENCES collection_processing_claim_artifacts (claim_id, collection_id, path) ON DELETE CASCADE,
+	PRIMARY KEY (claim_id, collection_id, artifact_id),
+	FOREIGN KEY(claim_id, collection_id, artifact_id) REFERENCES collection_processing_claim_artifacts (claim_id, collection_id, artifact_id) ON DELETE CASCADE,
 	CONSTRAINT ck_processing_dispositions_status CHECK (status IN ('transformed','preserved','effect-applied','not-carried-forward','omitted','rejected')),
 	CONSTRAINT ck_processing_dispositions_effect_receipt_required CHECK (status <> 'effect-applied' OR effect_receipt_sha256 IS NOT NULL),
 	CONSTRAINT ck_processing_dispositions_effect_receipt_forbidden CHECK (status = 'effect-applied' OR effect_receipt_sha256 IS NULL),
@@ -2020,17 +2084,17 @@ CREATE INDEX ix_retrieval_job_object_progress_due ON retrieval_job_object_progre
 
 CREATE TABLE retrieval_plan_placements (
 	plan_id VARCHAR NOT NULL,
-	file_order INTEGER NOT NULL,
+	artifact_order INTEGER NOT NULL,
 	sequence VARCHAR(64) NOT NULL,
 	object_order VARCHAR(64) NOT NULL,
-	file_offset BIGINT NOT NULL,
+	artifact_offset BIGINT NOT NULL,
 	object_offset BIGINT NOT NULL,
 	bytes BIGINT NOT NULL,
 	member VARCHAR,
-	PRIMARY KEY (plan_id, file_order, sequence),
-	FOREIGN KEY(plan_id, file_order) REFERENCES retrieval_plan_files (plan_id, file_order) ON DELETE CASCADE,
+	PRIMARY KEY (plan_id, artifact_order, sequence),
+	FOREIGN KEY(plan_id, artifact_order) REFERENCES retrieval_plan_artifacts (plan_id, artifact_order) ON DELETE CASCADE,
 	FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order),
-	CONSTRAINT ck_retrieval_plan_placements_file_offset CHECK (file_offset >= 0),
+	CONSTRAINT ck_retrieval_plan_placements_artifact_offset CHECK (artifact_offset >= 0),
 	CONSTRAINT ck_retrieval_plan_placements_object_offset CHECK (object_offset >= 0),
 	CONSTRAINT ck_retrieval_plan_placements_bytes CHECK (bytes >= 0)
 );
@@ -2039,52 +2103,18 @@ CREATE INDEX ix_retrieval_plan_placements_object ON retrieval_plan_placements (p
 
 CREATE TABLE collection_processing_disposition_outputs (
 	claim_id VARCHAR(64) NOT NULL,
-	output_path VARCHAR NOT NULL,
+	output_artifact_id VARCHAR NOT NULL,
 	input_collection_id BIGINT NOT NULL,
-	input_path VARCHAR NOT NULL,
+	input_artifact_id VARCHAR NOT NULL,
 	output_order BIGINT,
-	PRIMARY KEY (claim_id, output_path, input_collection_id, input_path),
-	FOREIGN KEY(claim_id, input_collection_id, input_path) REFERENCES collection_processing_dispositions (claim_id, collection_id, path) ON DELETE CASCADE,
+	PRIMARY KEY (claim_id, output_artifact_id, input_collection_id, input_artifact_id),
+	FOREIGN KEY(claim_id, input_collection_id, input_artifact_id) REFERENCES collection_processing_dispositions (claim_id, collection_id, artifact_id) ON DELETE CASCADE,
 	CONSTRAINT ck_processing_disposition_outputs_order_nonnegative CHECK (output_order IS NULL OR output_order >= 0),
 	CONSTRAINT ck_collection_processing_disposition_outputs_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE UNIQUE INDEX ix_processing_disposition_outputs_order ON collection_processing_disposition_outputs (claim_id, output_order);
 
-CREATE INDEX ix_processing_disposition_outputs_source ON collection_processing_disposition_outputs (claim_id, input_collection_id, input_path, output_path);
-
-CREATE TABLE collection_processing_consideration_evidence (
-	claim_id VARCHAR(64) NOT NULL,
-	sha256 VARCHAR(64) NOT NULL,
-	document_json TEXT NOT NULL,
-	observer_contract_id VARCHAR NOT NULL,
-	observer_contract_sha256 VARCHAR(64) NOT NULL,
-	profile_sha256 VARCHAR(64) NOT NULL,
-	PRIMARY KEY (claim_id, sha256),
-	CONSTRAINT ck_processing_consideration_sha256 CHECK (length(sha256) = 64),
-	CONSTRAINT ck_processing_consideration_contract_sha256 CHECK (length(observer_contract_sha256) = 64),
-	CONSTRAINT ck_processing_consideration_profile_sha256 CHECK (length(profile_sha256) = 64),
-	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_processing_consideration_evidence_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_consideration_evidence_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_eaf7b3cb4b95f7e0 CHECK (length(observer_contract_sha256) = 64 AND lower(observer_contract_sha256) = observer_contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(observer_contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_304ec13c78be9105 CHECK (length(profile_sha256) = 64 AND lower(profile_sha256) = profile_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(profile_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
-
-CREATE TABLE collection_processing_consideration_subjects (
-	claim_id VARCHAR(64) NOT NULL,
-	evidence_sha256 VARCHAR(64) NOT NULL,
-	collection_id BIGINT NOT NULL,
-	path VARCHAR NOT NULL,
-	bytes BIGINT NOT NULL,
-	sha256 VARCHAR(64) NOT NULL,
-	PRIMARY KEY (claim_id, evidence_sha256, collection_id, path),
-	FOREIGN KEY(claim_id, evidence_sha256) REFERENCES collection_processing_consideration_evidence (claim_id, sha256) ON DELETE CASCADE,
-	CONSTRAINT ck_processing_consideration_subject_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_processing_consideration_subject_sha256 CHECK (length(sha256) = 64),
-	CONSTRAINT ck_collection_processing_consideration_subjects_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_d466a5fbcfa1bb32 CHECK (length(evidence_sha256) = 64 AND lower(evidence_sha256) = evidence_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(evidence_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_processing_consideration_subjects_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
+CREATE INDEX ix_processing_disposition_outputs_source ON collection_processing_disposition_outputs (claim_id, input_collection_id, input_artifact_id, output_artifact_id);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
