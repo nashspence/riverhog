@@ -12,6 +12,7 @@ from riverhog_provenance import (
     ConcurrentJournalChangeError,
     ObservationRequest,
     ProvenanceValidationError,
+    append_assertion_batches,
     append_assertions,
     append_checkpoint,
     append_correction,
@@ -78,6 +79,25 @@ def test_exact_bytes_and_predecessor_hashes_are_preserved(journal, who, catalog)
     assert frames[1].document["previous_entry"] == frames[0].reference
     assert frames[0].sha256 == hashlib.sha256(journal[1:-1]).hexdigest()
     assert len(validate_journal(result, catalog=catalog).frames) == 2
+
+
+def test_batched_assertions_preserve_exact_chain_and_every_preimage(journal, who, catalog):
+    artifact_id = validate_journal(journal, catalog=catalog).graph["artifacts"][0]["id"]
+    rows = [extension(who, artifact_id, value=f"fragment-{index}") for index in range(3)]
+    result = append_assertion_batches(
+        journal,
+        ({"extensions": [row]} for row in rows),
+        recorded_by_agent_id=who,
+        catalog=catalog,
+    )
+    summary = validate_journal(result, catalog=catalog)
+    assert len(summary.frames) == 4
+    assert {item["value"]["value"] for item in summary.graph["extensions"]} == {
+        f"fragment-{index}" for index in range(3)
+    }
+    assert [frame.document["previous_entry"] for frame in summary.frames[1:]] == [
+        frame.reference for frame in summary.frames[:-1]
+    ]
 
 
 @pytest.mark.parametrize(

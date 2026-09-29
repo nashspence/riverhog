@@ -18,6 +18,7 @@ from riverhog_protocol.collection_production_provenance import (
     COLLECTION_MEMBER_HISTORY_ROLE,
     COLLECTION_MEMBER_ROLE,
     COLLECTION_PRODUCTION_CONTRACT_ID,
+    COLLECTION_RECORD_FRAGMENT_BYTES_MAX,
     PRODUCER_SCHEMA_ID,
     RECORD_FRAGMENT_SCHEMA_ID,
     RECORD_MANIFEST_SCHEMA_ID,
@@ -29,7 +30,7 @@ from riverhog_protocol.provenance_transport import (
 )
 from riverhog_provenance import (
     ObservationResult,
-    append_assertions,
+    append_assertion_batches,
     assertion,
     create_journal,
     evidence,
@@ -40,7 +41,7 @@ from riverhog_provenance import (
 )
 from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
 
-_RECORD_FRAGMENT_BYTES = 128 * 1024
+_RECORD_FRAGMENTS_PER_ENTRY = 24
 
 
 @dataclass(frozen=True, slots=True)
@@ -189,8 +190,8 @@ def build_member_journal(
                             "record_sha256": source_context_sha256,
                             "total_bytes": str(len(source_context)),
                             "part_count": str(
-                                (len(source_context) + _RECORD_FRAGMENT_BYTES - 1)
-                                // _RECORD_FRAGMENT_BYTES
+                                (len(source_context) + COLLECTION_RECORD_FRAGMENT_BYTES_MAX - 1)
+                                // COLLECTION_RECORD_FRAGMENT_BYTES_MAX
                             ),
                         },
                     ),
@@ -228,34 +229,42 @@ def build_member_journal(
         journal_id=journal_id,
         catalog=catalog,
     )
-    for offset in range(0, len(source_context), _RECORD_FRAGMENT_BYTES):
-        fragment = source_context[offset : offset + _RECORD_FRAGMENT_BYTES]
-        row = assertion(
-            "extension",
-            producer_agent_id,
-            subject=reference(delivery_context_id, "context"),
-            property=COLLECTION_PRODUCTION_CONTRACT_ID + "/record-fragment",
-            value={
-                "type": "json",
-                "value": collection_production_profile(
-                    RECORD_FRAGMENT_SCHEMA_ID,
-                    {
-                        "record_kind": "source-context",
-                        "record_sha256": source_context_sha256,
-                        "total_bytes": str(len(source_context)),
-                        "offset": str(offset),
-                        "data_base64": base64.b64encode(fragment).decode("ascii"),
+
+    def fragment_batches() -> Iterable[dict[str, Any]]:
+        fragment_rows: list[dict[str, Any]] = []
+        for offset in range(0, len(source_context), COLLECTION_RECORD_FRAGMENT_BYTES_MAX):
+            fragment = source_context[offset : offset + COLLECTION_RECORD_FRAGMENT_BYTES_MAX]
+            fragment_rows.append(
+                assertion(
+                    "extension",
+                    producer_agent_id,
+                    subject=reference(delivery_context_id, "context"),
+                    property=COLLECTION_PRODUCTION_CONTRACT_ID + "/record-fragment",
+                    value={
+                        "type": "json",
+                        "value": collection_production_profile(
+                            RECORD_FRAGMENT_SCHEMA_ID,
+                            {
+                                "record_kind": "source-context",
+                                "record_sha256": source_context_sha256,
+                                "total_bytes": str(len(source_context)),
+                                "offset": str(offset),
+                                "data_base64": base64.b64encode(fragment).decode("ascii"),
+                            },
+                        ),
                     },
-                ),
-            },
-            evidence_items=[evidence(producer_agent_id, "process_record")],
-        )
-        raw = append_assertions(
-            raw,
-            {"extensions": [row]},
-            recorded_by_agent_id=producer_agent_id,
-            catalog=catalog,
-        )
+                    evidence_items=[evidence(producer_agent_id, "process_record")],
+                )
+            )
+            if len(fragment_rows) == _RECORD_FRAGMENTS_PER_ENTRY:
+                yield {"extensions": fragment_rows}
+                fragment_rows = []
+        if fragment_rows:
+            yield {"extensions": fragment_rows}
+
+    raw = append_assertion_batches(
+        raw, fragment_batches(), recorded_by_agent_id=producer_agent_id, catalog=catalog
+    )
     summary = validate_journal(raw, catalog=catalog)
     binding = CollectionArtifactProvenanceBindingDocument.model_validate(
         {

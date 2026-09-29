@@ -189,6 +189,7 @@ from riverhog_core.collection_creation_identity import (
     CollectionUploadCreationIdentityPayload,
 )
 from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.collection_production_validation import validate_collection_production_records
 from riverhog_core.domain.archive import (
     ArchiveArtifact,
     PackVolumePlan,
@@ -3197,6 +3198,9 @@ class SqlAlchemyCollectionUploadService:
                         binding=binding,
                         summary=summary,
                         delivery_context_id=upload.delivery_context_id,
+                    )
+                    validate_collection_production_records(
+                        summary.graph, delivery_context_id=upload.delivery_context_id
                     )
                     decision = session.get(
                         CollectionUploadArtifactMaterializationDecisionRecord,
