@@ -265,15 +265,12 @@ def test_macos_volume_attribute_failure_retains_fstatfs_context(
     validate_graph_fragment(result.graph_fragment())
 
 
-def test_macos_volume_context_is_a_pinned_validated_assertion(
-    tmp_path: Path, urn_factory
-) -> None:
+def test_macos_volume_context_is_a_pinned_validated_assertion(tmp_path: Path, urn_factory) -> None:
     payload = tmp_path / "volume.dat"
     payload.write_bytes(b"volume")
     graph = _observe(payload, urn_factory()).graph_fragment()
     volume = next(
-        row for row in graph["extensions"]
-        if row["property"].endswith("/macos-volume-context")
+        row for row in graph["extensions"] if row["property"].endswith("/macos-volume-context")
     )
     assert volume["value"]["value"]["profile"]["contract_sha256"] == (
         CONTRACT_BINDING.contract_sha256

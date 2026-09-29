@@ -846,8 +846,12 @@ class CollectionArchiveManifest:
         if not isinstance(value, Mapping):
             raise ArchiveManifestError("collection archive manifest is not a mapping")
         expected = {
-            "format", "archive_generation", "storage_profile", "artifact_set",
-            "volume_sequence", "provenance",
+            "format",
+            "archive_generation",
+            "storage_profile",
+            "artifact_set",
+            "volume_sequence",
+            "provenance",
         }
         if set(value) != expected:
             raise ArchiveManifestError("collection archive manifest fields are invalid")

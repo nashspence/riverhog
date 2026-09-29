@@ -122,11 +122,15 @@ class SqlAlchemyCanonicalProvenanceService:
                 break
             if candidate.artifact_id > canonical_id:
                 break
-        if binding is None or (
-            binding.journal.journal_id,
-            binding.journal.prefix_sha256,
-            binding.delivery_association_id,
-        ) != projected_binding:
+        if (
+            binding is None
+            or (
+                binding.journal.journal_id,
+                binding.journal.prefix_sha256,
+                binding.delivery_association_id,
+            )
+            != projected_binding
+        ):
             raise NotFound("archive does not confirm the artifact's canonical binding")
         with read_snapshot(self._session_factory) as session:
             current = _authorized_collection(session, normalized_id, principal)
@@ -145,9 +149,7 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> tuple[int, str]:
         normalized_id = validate_collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            _authorized_collection(
-                session, normalized_id, principal, permission=PROVENANCE_EXPORT
-            )
+            _authorized_collection(session, normalized_id, principal, permission=PROVENANCE_EXPORT)
         return self._archives.reader(normalized_id).journal_metadata(journal_id)
 
     def list_journals(
@@ -206,9 +208,7 @@ class SqlAlchemyCanonicalProvenanceService:
     ) -> Iterator[bytes]:
         normalized_id = validate_collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            _authorized_collection(
-                session, normalized_id, principal, permission=PROVENANCE_EXPORT
-            )
+            _authorized_collection(session, normalized_id, principal, permission=PROVENANCE_EXPORT)
         yield from self._archives.reader(normalized_id).iter_journal_range(
             journal_id, offset=offset, size=size
         )

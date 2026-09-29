@@ -241,8 +241,7 @@ def _search_filters(
                     .select_from(CollectionTagMembershipRecord)
                     .join(
                         CollectionTagRecord,
-                        CollectionTagMembershipRecord.tag_sha256
-                        == CollectionTagRecord.tag_sha256,
+                        CollectionTagMembershipRecord.tag_sha256 == CollectionTagRecord.tag_sha256,
                     )
                     .where(
                         CollectionTagMembershipRecord.collection_id

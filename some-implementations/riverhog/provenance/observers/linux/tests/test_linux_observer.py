@@ -87,8 +87,9 @@ def test_distinct_native_contexts_can_carry_one_explicit_source_naming_view(
     host_id = urn_factory()
     view_id = urn_factory()
     graphs = [
-        observer.observe(observer.source(path, host_id=host_id, naming_view_id=view_id))
-        .graph_fragment()
+        observer.observe(
+            observer.source(path, host_id=host_id, naming_view_id=view_id)
+        ).graph_fragment()
         for path in files
     ]
     contexts = [graph["contexts"][0] for graph in graphs]
@@ -278,6 +279,7 @@ def test_second_content_measurement_uses_canonical_observation_policy(
         ObservationRequest(policy=ObservationPolicy(second_content_hash=True)),
     )
     assert result.observation["consistency"]["level"] == "verified_unchanged"
-    assert result.graph_fragment()["activities"][0]["configuration"]["data"][
-        "second_content_hash"
-    ] is True
+    assert (
+        result.graph_fragment()["activities"][0]["configuration"]["data"]["second_content_hash"]
+        is True
+    )
