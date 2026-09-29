@@ -59,3 +59,18 @@ def test_processing_payload_and_provenance_read_scopes_are_distinct(tmp_path) ->
         assert provenance.allows_collection(PROVENANCE_READ, collection_id)
         assert provenance.allows_collection(PROVENANCE_EXPORT, collection_id)
         assert not provenance.allows_collection(RETRIEVAL_MANAGE, collection_id)
+
+    with session_scope(make_session_factory(database_url)) as session:
+        capability = session.get(
+            CollectionProcessingCapabilityRecord, fixture.artifact_scope_capability_id
+        )
+        assert capability is not None
+        capability.actions_json = '["read-root"]'
+    root = service.authenticate_capability(token)
+    assert root is not None
+    assert root.artifact_scope_capability_id == fixture.artifact_scope_capability_id
+    for collection_id in (1, 2):
+        assert root.allows_collection(CATALOG_READ, collection_id)
+        assert not root.allows_collection(RETRIEVAL_MANAGE, collection_id)
+        assert not root.allows_collection(PROVENANCE_READ, collection_id)
+        assert not root.allows_collection(PROVENANCE_EXPORT, collection_id)
