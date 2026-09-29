@@ -8,6 +8,7 @@ group "default" {
     "stove0",
     "a-stove0-exiftool-observer",
     "a-stove0-ffprobe-observer",
+    "a-stove0-riverhog-provenance-observer",
     "a-stove0-nvenc-av1-opus-target",
     "a-stove0-opus-target",
     "review0",
@@ -92,6 +93,14 @@ target "a-stove0-ffprobe-observer" {
   context    = "."
   dockerfile = "some-implementations/stove0/observers/ffprobe/Dockerfile"
   tags       = ["a-stove0-ffprobe-observer:dev"]
+  args       = { SOURCE_REVISION = "unknown" }
+}
+
+target "a-stove0-riverhog-provenance-observer" {
+  inherits   = ["image-common"]
+  context    = "."
+  dockerfile = "some-implementations/stove0/observers/riverhog-provenance/Dockerfile"
+  tags       = ["a-stove0-riverhog-provenance-observer:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 

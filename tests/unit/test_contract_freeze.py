@@ -267,6 +267,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "stove0",
         "a-stove0-exiftool-observer",
         "a-stove0-ffprobe-observer",
+        "a-stove0-riverhog-provenance-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "stove0-observer-conformance",

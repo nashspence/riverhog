@@ -9,21 +9,33 @@ description = "Exact core provenance facts for Stove0 without platform interpret
 requires-python = ">=3.12"
 license = "CAL-1.0"
 license-files = ["LICENSE"]
-readme = { text = "Exact core provenance facts for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Exact core provenance facts for Stove0 without platform interpretation.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "a-stove0-materialization-hint-evidence-contract-lib>=0.1,<0.2",
+  "fastapi>=0.111,<1.0",
+  "http-api-contracts>=0.1,<0.2",
+  "pydantic>=2.7,<3.0",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
   "stove0-observer-protocol>=0.1,<0.2",
+  "stove0-observer-support>=0.1,<0.2",
+  "uvicorn[standard]>=0.30,<1.0",
 ]
 
+[project.scripts]
+a-stove0-riverhog-provenance-observer = "a_stove0_riverhog_provenance_observer.app:main"
+
 [tool.uv.sources]
+a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
+http-api-contracts = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance = { workspace = true }
 stove0-observer-protocol = { workspace = true }
+stove0-observer-support = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/a_stove0_riverhog_provenance_observer"]

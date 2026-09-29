@@ -1,4 +1,10 @@
 token_file: /run/secrets/rclone-target-token
-destination_identity: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+destination_identity: bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1
+destination_naming_rules:
+  windows_names: false
+  case_sensitive: true
+  unicode_equivalence: exact
+  component_bytes: 255
+  relative_path_bytes: 4096
 rclone_remote: "fake-remote:"
 rclone_config_file: /run/secrets/rclone-config

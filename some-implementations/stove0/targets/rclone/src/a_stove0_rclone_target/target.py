@@ -6,12 +6,29 @@ import hashlib
 import os
 import subprocess
 import threading
-from dataclasses import dataclass
+from collections import defaultdict
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
+from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+    validate_materialization_hint_facts,
+)
 from pydantic import JsonValue
+from riverhog_materialization import (
+    DestinationRules,
+    MemberAdvice,
+    id_components,
+    plan_materialization,
+)
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol import JsonSchemaValidationProfile
+from stove0_observer_protocol import ContentObservationEvidence
+from stove0_protocol import (
+    ArtifactSelection,
+    ArtifactSelectionRef,
+    JsonSchemaValidationProfile,
+    WorkArtifactSubject,
+)
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     PersistentTargetService,
@@ -36,9 +53,10 @@ RCLONE_OPTIONS = JsonSchemaValidationProfile.from_schema(
     {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
-        "required": ["destination_identity"],
+        "required": ["destination_identity", "destination_rules_sha256"],
         "properties": {
             "destination_identity": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "destination_rules_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         },
         "additionalProperties": False,
     },
@@ -51,6 +69,7 @@ class RcloneDestination:
 
     identity: str
     remote: str
+    naming_rules: DestinationRules
     config_path: Path | None = None
     executable: str = "rclone"
     timeout_seconds: int = 86400
@@ -66,6 +85,12 @@ class RcloneDestination:
             raise ValueError("rclone config path must be absolute")
         if self.timeout_seconds < 1:
             raise ValueError("rclone timeout must be positive")
+        if not isinstance(self.naming_rules, DestinationRules):
+            raise TypeError("rclone destination requires qualified naming rules")
+
+    @property
+    def rules_sha256(self) -> str:
+        return canonical_json_sha256(asdict(self.naming_rules))
 
     def commit(self, *, delivery_id: str, objects_root: Path, manifest_path: Path) -> None:
         """Verify remote bytes, publish the marker last, then read it back exactly."""
@@ -151,12 +176,19 @@ class RcloneEffectTargetService(PersistentTargetService):
         )
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:
-        if request.target_options.get("destination_identity") != self.destination.identity:
+        if (
+            request.target_options.get("destination_identity") != self.destination.identity
+            or request.target_options.get("destination_rules_sha256")
+            != self.destination.rules_sha256
+        ):
             raise TargetServiceError(
                 400,
                 "invalid_target_request",
-                "rclone destination differs from the configured identity",
+                "rclone destination or naming rules differ from the configured identity",
             )
+        _planned_destinations(
+            request.observations, request.inputs.selection, self.destination.naming_rules
+        )
         return super().preflight(request)
 
     def _execute(
@@ -169,8 +201,16 @@ class RcloneEffectTargetService(PersistentTargetService):
         if (
             request.declaration.plan.target_options.get("destination_identity")
             != self.destination.identity
+            or request.declaration.plan.target_options.get("destination_rules_sha256")
+            != self.destination.rules_sha256
         ):
             raise ValueError("sealed rclone plan differs from configured destination")
+        workflow = request.declaration.controller_evidence.execution_envelope.workflow_plan
+        destinations = _planned_destinations(
+            workflow.observations,
+            request.declaration.plan.inputs.selection,
+            self.destination.naming_rules,
+        )
 
         def check() -> None:
             if cancellation.is_set():
@@ -189,7 +229,23 @@ class RcloneEffectTargetService(PersistentTargetService):
                 total_bytes = 0
                 for artifact, claimed in execution.iter_inputs():
                     check()
-                    relative = f"{artifact.collection.collection_id}/{artifact.artifact_id}"
+                    planned = destinations.get(artifact.id)
+                    if destinations and planned is None:
+                        raise ValueError("accepted hint evidence differs from the sealed input")
+                    if planned is not None and (
+                        planned.subject.collection != artifact.collection
+                        or planned.subject.artifact_id != artifact.artifact_id
+                        or planned.subject.bytes != artifact.bytes
+                        or planned.subject.sha256 != artifact.sha256
+                    ):
+                        raise ValueError("forwarded hint belongs to another sealed input")
+                    relative = (
+                        planned.relative_path
+                        if planned is not None
+                        else _id_destination(
+                            artifact.collection.collection_id, artifact.artifact_id
+                        )
+                    )
                     local = objects_root / relative
                     local.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
@@ -208,6 +264,12 @@ class RcloneEffectTargetService(PersistentTargetService):
                             "bytes": str(artifact.bytes),
                             "sha256": artifact.sha256,
                             "delivered_path": relative,
+                            "materialization_reason": (
+                                planned.reason if planned is not None else "id-layout"
+                            ),
+                            "canonical_occurrence": (
+                                planned.occurrence if planned is not None else None
+                            ),
                         }
                     )
                     total_bytes += int(artifact.bytes)
@@ -272,6 +334,86 @@ def _file_identity(path: Path) -> tuple[int, str]:
             digest.update(chunk)
             size += len(chunk)
     return size, digest.hexdigest()
+
+
+@dataclass(frozen=True, slots=True)
+class _PlannedDelivery:
+    relative_path: str
+    reason: str
+    occurrence: dict[str, JsonValue]
+    subject: WorkArtifactSubject
+
+
+def _id_destination(collection_id: int, artifact_id: str) -> str:
+    return "/".join((str(collection_id), *id_components(artifact_id)))
+
+
+def _planned_destinations(
+    evidence: tuple[ContentObservationEvidence, ...],
+    selection: ArtifactSelectionRef,
+    rules: DestinationRules,
+) -> dict[str, _PlannedDelivery]:
+    """Interpret only controller-accepted hint facts for the exact sealed selection."""
+
+    selected = tuple(
+        item
+        for item in evidence
+        if item.request.observer_contract_id == MATERIALIZATION_HINT_OBSERVER_CONTRACT.id
+    )
+    if not selected:
+        raise ValueError(
+            "rclone delivery requires accepted canonical hint evidence for every input"
+        )
+    subjects = []
+    advice: dict[int, list[MemberAdvice]] = defaultdict(list)
+    subject_ids: dict[tuple[int, str], str] = {}
+    occurrence_by_subject: dict[str, dict[str, JsonValue]] = {}
+    subject_by_id: dict[str, WorkArtifactSubject] = {}
+    for item in selected:
+        if (
+            item.request.observer_contract_sha256
+            != MATERIALIZATION_HINT_OBSERVER_CONTRACT.contract_sha256
+            or item.request.read_actions != ("read-provenance",)
+            or item.request.options
+            or item.result.facts_schema != MATERIALIZATION_HINT_OBSERVER_CONTRACT.facts_schema
+            or item.result.facts is None
+        ):
+            raise ValueError("forwarded hint evidence has the wrong accepted contract")
+        facts = validate_materialization_hint_facts(item.result.facts, item.request.subjects)
+        for subject, fact in zip(item.request.subjects, facts.artifacts, strict=True):
+            subjects.append(subject)
+            key = (subject.collection.collection_id, subject.artifact_id)
+            if key in subject_ids:
+                raise ValueError("hint evidence repeats a selected collection member")
+            subject_ids[key] = subject.id
+            subject_by_id[subject.id] = subject
+            occurrence_by_subject[subject.id] = fact.occurrence.model_dump(mode="json")
+            advice[key[0]].append(MemberAdvice(subject.artifact_id, fact.materialization_hint))
+    observed = ArtifactSelection.seal(subjects)
+    if (
+        observed.artifact_count != selection.artifact_count
+        or observed.total_bytes != selection.total_bytes
+    ):
+        raise ValueError("forwarded hint evidence does not cover the input selection")
+    planned: dict[str, _PlannedDelivery] = {}
+    for collection_id, members in advice.items():
+        prefix = str(collection_id)
+        remaining = rules.relative_path_bytes - len(prefix.encode("utf-8")) - 1
+        if remaining < 1:
+            raise ValueError("destination cannot represent a collection-qualified path")
+        per_collection = replace(rules, relative_path_bytes=remaining)
+        for row in plan_materialization(members, rules=per_collection):
+            components = (prefix, *row.components)
+            if not rules.fits(components):
+                raise ValueError("planned delivery exceeds qualified destination limits")
+            subject_id = subject_ids[(collection_id, row.artifact_id)]
+            planned[subject_id] = _PlannedDelivery(
+                "/".join(components),
+                row.reason,
+                occurrence_by_subject[subject_id],
+                subject_by_id[subject_id],
+            )
+    return planned
 
 
 __all__ = ["RCLONE_OPTIONS", "RcloneDestination", "RcloneEffectTargetService"]

@@ -18,6 +18,7 @@ path = [
   "some-implementations/stove0/application/server/**",
   "some-implementations/stove0/observers/exiftool/**",
   "some-implementations/stove0/observers/ffprobe/**",
+  "some-implementations/stove0/observers/riverhog-provenance/**",
   "some-implementations/stove0/targets/nvenc-av1-opus/**",
   "some-implementations/stove0/targets/opus/**",
   "some-implementations/stove0/targets/rclone/**",

@@ -18,6 +18,7 @@ def test_supplied_topology_uses_one_postgres_authority_and_distinct_roles() -> N
         "controller",
         "a-stove0-exiftool-observer",
         "a-stove0-ffprobe-observer",
+        "a-stove0-riverhog-provenance-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
@@ -62,6 +63,7 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
         "state",
         "a-stove0-exiftool-observer",
         "a-stove0-ffprobe-observer",
+        "a-stove0-riverhog-provenance-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
@@ -76,6 +78,7 @@ def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -
     for name in (
         "a-stove0-exiftool-observer",
         "a-stove0-ffprobe-observer",
+        "a-stove0-riverhog-provenance-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "a-review0-opus-sampler",
@@ -221,6 +224,11 @@ def test_supplied_observer_registrations_connect_exact_one_role_services() -> No
             "http://a-stove0-ffprobe-observer:8080",
             "a_stove0_ffprobe_observer_token",
             ["media-sampling"],
+        ),
+        "canonical-hint": (
+            "http://a-stove0-riverhog-provenance-observer:8080",
+            "a_stove0_riverhog_provenance_observer_token",
+            ["materialization-hint"],
         ),
     }
     assert set(registrations) == set(expected)

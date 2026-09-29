@@ -155,8 +155,16 @@ class RecipeRoute(_RecipeRouteBase):
     operation_id: SemanticId
     target_registration_id: str
     target_options: dict[str, JsonValue] = Field(default_factory=dict)
+    forward_observation_contract_ids: tuple[SemanticId, ...] = ()
     input_retrieval_policy: Literal["available-only", "allow"] = "available-only"
     output_policy: OutputCollectionPolicy = Field(default_factory=OutputCollectionPolicy)
+
+    @field_validator("forward_observation_contract_ids")
+    @classmethod
+    def canonical_forwarded_contracts(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if value != tuple(sorted(set(value))):
+            raise ValueError("forwarded observation contracts must be unique and ordered")
+        return value
 
 
 class RecipeCoordinationRoute(_RecipeRouteBase):
@@ -277,7 +285,12 @@ class RecipeDefinition(RecipeModel):
         ):
             raise ValueError("artifact associations must be unique and ordered by primary role")
         associations = {item.primary_role: item for item in self.artifact_associations}
+        observer_contracts = {item.contract_id for item in self.observers}
         for route in self.routes:
+            if isinstance(route, RecipeRoute):
+                undeclared = set(route.forward_observation_contract_ids) - observer_contracts
+                if undeclared:
+                    raise ValueError("route forwards an undeclared observation contract")
             if not route.associated_roles:
                 continue
             assert route.primary_role is not None

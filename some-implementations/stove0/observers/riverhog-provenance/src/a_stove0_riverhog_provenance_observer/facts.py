@@ -69,29 +69,23 @@ def _local_object(
     return row
 
 
-def extract_core_facts(
+def _delivered_occurrence(
     subject: WorkArtifactSubject,
     binding: CollectionArtifactProvenanceBindingDocument,
     summary: JournalSummary,
-    *,
-    predicates: Sequence[str] = (),
-    resolve_external: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
-) -> dict[str, Any]:
-    """Read the exact selected primary snapshot and direct observed locator claims.
-
-    Foreign relation endpoints require an exact corpus resolver. Until one is
-    supplied, they fail closed instead of looking absent to a recipe.
-    """
+) -> tuple[
+    Mapping[str, dict[str, Any]],
+    dict[str, dict[str, str]],
+    dict[str, Any],
+    dict[str, Any],
+]:
+    """Resolve only the root-selected primary member's directly verified Occurrence."""
 
     if (
         binding.artifact_id != subject.artifact_id
         or binding.journal.model_dump(mode="json") != summary.anchor
     ):
         raise ValueError("primary canonical snapshot differs from the frozen subject")
-    if tuple(predicates) != tuple(sorted(set(predicates))):
-        raise ValueError("requested predicate list must be unique and ordered")
-    if len(predicates) > 64 or any(not value or len(value) > 2048 for value in predicates):
-        raise ValueError("requested predicate scope is invalid")
     objects = summary.graph_validation.objects
     origins = _origins(summary)
     association = objects.get(binding.delivery_association_id)
@@ -120,6 +114,28 @@ def extract_core_facts(
         not in {(item["algorithm"], item["value"]) for item in measurement["content"]["digests"]}
     ):
         raise ValueError("primary canonical observation differs from member fixity")
+    return objects, origins, state, occurrence
+
+
+def extract_core_facts(
+    subject: WorkArtifactSubject,
+    binding: CollectionArtifactProvenanceBindingDocument,
+    summary: JournalSummary,
+    *,
+    predicates: Sequence[str] = (),
+    resolve_external: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Read the exact selected primary snapshot and direct observed locator claims.
+
+    Foreign relation endpoints require an exact corpus resolver. Until one is
+    supplied, they fail closed instead of looking absent to a recipe.
+    """
+
+    if tuple(predicates) != tuple(sorted(set(predicates))):
+        raise ValueError("requested predicate list must be unique and ordered")
+    if len(predicates) > 64 or any(not value or len(value) > 2048 for value in predicates):
+        raise ValueError("requested predicate scope is invalid")
+    objects, origins, state, occurrence = _delivered_occurrence(subject, binding, summary)
     state_endpoint = _endpoint(summary, origins, state)
     occurrence_endpoint = _endpoint(summary, origins, occurrence)
     locators: list[dict[str, Any]] = []
@@ -200,5 +216,20 @@ def extract_core_facts(
         "occurrence": occurrence_endpoint,
         "locators": locators,
         "claims": claims,
+        "materialization_hint": occurrence.get("materialization_hint"),
+    }
+
+
+def extract_materialization_hint_fact(
+    subject: WorkArtifactSubject,
+    binding: CollectionArtifactProvenanceBindingDocument,
+    summary: JournalSummary,
+) -> dict[str, Any]:
+    """Forward advice from the exact delivered Occurrence, with its canonical support."""
+
+    _, origins, _, occurrence = _delivered_occurrence(subject, binding, summary)
+    return {
+        "subject_id": subject.id,
+        "occurrence": {"scope": "external", **_endpoint(summary, origins, occurrence)},
         "materialization_hint": occurrence.get("materialization_hint"),
     }
