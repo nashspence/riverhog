@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
+from riverhog_protocol import CollectionArtifactProvenanceBindingDocument
 from riverhog_provenance_contracts import PROFILE, ContractCatalog, ExternalReference
 from stove0_observer_protocol import (
     ContentObservationRequest,
@@ -32,6 +33,7 @@ class MaterializationHintFact(_Model):
     """One selected subject and its exact canonical Occurrence assertion."""
 
     subject_id: str = Field(min_length=1)
+    primary_binding: CollectionArtifactProvenanceBindingDocument
     occurrence: ExternalReference
     materialization_hint: dict[str, JsonValue] | None
 
@@ -39,6 +41,10 @@ class MaterializationHintFact(_Model):
     def exact_occurrence(self) -> Self:
         if self.occurrence.object_type != "occurrence":
             raise ValueError("materialization hint support must name an Occurrence")
+        if self.primary_binding.journal.journal_id != self.occurrence.journal_id or int(
+            self.occurrence.entry.sequence
+        ) > int(self.primary_binding.journal.through.sequence):
+            raise ValueError("materialization hint Occurrence is outside its primary binding")
         return self
 
     @field_validator("materialization_hint")
@@ -66,6 +72,11 @@ def validate_materialization_hint_facts(
     document = MaterializationHintFacts.model_validate_json(canonical_json_bytes(dict(facts)))
     if tuple(item.subject_id for item in document.artifacts) != tuple(item.id for item in subjects):
         raise ValueError("materialization hint facts differ from the exact request subjects")
+    if any(
+        fact.primary_binding.artifact_id != subject.artifact_id
+        for fact, subject in zip(document.artifacts, subjects, strict=True)
+    ):
+        raise ValueError("materialization hint binding differs from the exact member")
     return document
 
 
@@ -111,6 +122,16 @@ _SAMPLE_OCCURRENCE = {
 }
 _SAMPLE_FACT = {
     "subject_id": "sample",
+    "primary_binding": {
+        "artifact_id": "c" * 64,
+        "journal": {
+            "journal_id": _SAMPLE_OCCURRENCE["journal_id"],
+            "through": _SAMPLE_OCCURRENCE["entry"],
+            "prefix_sha256": "f" * 64,
+            "prefix_bytes": "100",
+        },
+        "delivery_association_id": "urn:uuid:55555555-5555-4555-8555-555555555555",
+    },
     "occurrence": _SAMPLE_OCCURRENCE,
     "materialization_hint": {"components": ["archive", "sample.bin"]},
 }
@@ -130,6 +151,22 @@ MATERIALIZATION_HINT_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model
                 "subjects": [_SAMPLE_SUBJECT],
                 "facts": {
                     "artifacts": [{**_SAMPLE_FACT, "materialization_hint": {"components": [".."]}}]
+                },
+            },
+            {
+                "id": "rejected-other-member-binding",
+                "accepted": False,
+                "subjects": [_SAMPLE_SUBJECT],
+                "facts": {
+                    "artifacts": [
+                        {
+                            **_SAMPLE_FACT,
+                            "primary_binding": {
+                                **_SAMPLE_FACT["primary_binding"],
+                                "artifact_id": "0" * 64,
+                            },
+                        }
+                    ]
                 },
             },
             {
@@ -160,6 +197,7 @@ MATERIALIZATION_HINT_FACTS_SEMANTICS = SemanticValidationProfile.seal(
         rules=(
             "stove0.riverhog-materialization-hint.canonical-advice/v1",
             "stove0.riverhog-materialization-hint.exact-subject-and-occurrence/v1",
+            "stove0.riverhog-materialization-hint.root-selected-primary-binding/v1",
         ),
         conformance_vectors_sha256=MATERIALIZATION_HINT_CONFORMANCE_VECTORS.sha256,
     )

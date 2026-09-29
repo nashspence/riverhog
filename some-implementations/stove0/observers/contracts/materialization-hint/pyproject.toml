@@ -16,6 +16,7 @@ classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Langu
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "pydantic>=2.7,<3.0",
+  "riverhog-protocol>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
   "stove0-observer-protocol>=0.1,<0.2",
 ]
@@ -24,6 +25,7 @@ dependencies = [
 materialization-hint = "a_stove0_materialization_hint_evidence_contract_lib:MATERIALIZATION_HINT_SEMANTIC_VALIDATOR"
 
 [tool.uv.sources]
+riverhog-protocol = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 stove0-observer-protocol = { workspace = true }
 
