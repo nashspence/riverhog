@@ -343,7 +343,7 @@ _SAMPLE_SUBJECT = {
     "collection": {
         "collection_id": "1",
         "archive_root_sha256": "a" * 64,
-        "content_identity": "b" * 64,
+        "artifact_set_identity": "b" * 64,
     },
     "artifact_id": "c" * 64,
     "bytes": "1",

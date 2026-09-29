@@ -42,7 +42,7 @@ def _intent() -> DepartureEffectIntent:
             last_collection=CatalogSyncDescriptor(
                 collection_id="17",
                 archive_root_sha256="4" * 64,
-                content_identity="5" * 64,
+                artifact_set_identity="5" * 64,
                 description=None,
                 description_revision=0,
                 description_identity="6" * 64,

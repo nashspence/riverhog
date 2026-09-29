@@ -655,7 +655,7 @@ class ClassificationAdmissionService:
                     {
                         "collection_id": intent.collection.model_dump(mode="json")["collection_id"],
                         "archive_root_sha256": intent.collection.archive_root_sha256,
-                        "content_identity": intent.collection.content_identity,
+                        "artifact_set_identity": intent.collection.artifact_set_identity,
                     }
                 ),
             ),

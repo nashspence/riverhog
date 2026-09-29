@@ -97,7 +97,7 @@ def _root() -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
 
 
@@ -708,7 +708,7 @@ class FinishingController:
             output = OutputCollectionRef(
                 collection_id=str(100 + len(variant.variant_id)),
                 archive_root_sha256=_sha("a"),
-                content_identity=_sha("b"),
+                artifact_set_identity=_sha("b"),
                 derivation_sha256=_sha("c"),
             )
             settlement = TargetSettlementAuthority.seal(
@@ -866,7 +866,7 @@ def test_evaluation_projects_single_settled_collection_branch() -> None:
     output = OutputCollectionRef(
         collection_id="101",
         archive_root_sha256=_sha("a"),
-        content_identity=_sha("b"),
+        artifact_set_identity=_sha("b"),
         derivation_sha256=_sha("c"),
     )
     output_selection = ArtifactSelection.seal(
@@ -877,7 +877,7 @@ def test_evaluation_projects_single_settled_collection_branch() -> None:
                 collection=CollectionRootIdentityRef(
                     collection_id=str(output.collection_id),
                     archive_root_sha256=output.archive_root_sha256,
-                    content_identity=output.content_identity,
+                    artifact_set_identity=output.artifact_set_identity,
                 ),
                 path="review/output.bin",
                 bytes="1",

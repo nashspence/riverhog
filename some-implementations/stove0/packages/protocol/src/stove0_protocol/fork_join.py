@@ -76,7 +76,7 @@ def _without_digest(model: Stove0ProtocolModel, field: str) -> dict[str, Any]:
 
 
 def _root_key(root: CollectionRootIdentityRef) -> tuple[int, str, str]:
-    return root.collection_id, root.archive_root_sha256, root.content_identity
+    return root.collection_id, root.archive_root_sha256, root.artifact_set_identity
 
 
 def _artifact_key(artifact: WorkArtifactSubject) -> tuple[int, str, str, str, int, str, str]:
@@ -85,7 +85,7 @@ def _artifact_key(artifact: WorkArtifactSubject) -> tuple[int, str, str, str, in
     return (
         artifact.collection.collection_id,
         artifact.collection.archive_root_sha256,
-        artifact.collection.content_identity,
+        artifact.collection.artifact_set_identity,
         artifact.path,
         artifact.bytes,
         artifact.sha256,

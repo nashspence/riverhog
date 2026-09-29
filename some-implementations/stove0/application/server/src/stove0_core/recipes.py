@@ -576,7 +576,7 @@ class RecipePlanner:
             current = self.riverhog.get_collection(root.collection_id)
             if (
                 str(current.get("archive_root_sha256") or "") != root.archive_root_sha256
-                or str(current.get("content_identity") or "") != root.content_identity
+                or str(current.get("artifact_set_identity") or "") != root.artifact_set_identity
             ):
                 raise RuntimeError(f"collection root changed: {root.collection_id}")
             cursor: str | None = None

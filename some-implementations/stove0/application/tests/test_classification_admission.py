@@ -54,7 +54,7 @@ def _descriptor(
     return CatalogSyncDescriptor(
         collection_id=str(collection_id),
         archive_root_sha256="1" * 64,
-        content_identity="2" * 64,
+        artifact_set_identity="2" * 64,
         description=None,
         description_revision=0,
         description_identity="3" * 64,
@@ -424,7 +424,7 @@ def test_no_action_admission_recovers_work_saved_before_resolution() -> None:
             CollectionRootIdentityRef(
                 collection_id=str(descriptor.collection_id),
                 archive_root_sha256=descriptor.archive_root_sha256,
-                content_identity=descriptor.content_identity,
+                artifact_set_identity=descriptor.artifact_set_identity,
             ),
         ),
         revision=policy.recipe_revision,
@@ -884,7 +884,7 @@ def test_policy_identity_is_evidence_but_semantic_work_converges() -> None:
             CollectionRootIdentityRef(
                 collection_id=str(descriptor.collection_id),
                 archive_root_sha256=descriptor.archive_root_sha256,
-                content_identity=descriptor.content_identity,
+                artifact_set_identity=descriptor.artifact_set_identity,
             ),
         ),
         revision=first.recipe_revision,

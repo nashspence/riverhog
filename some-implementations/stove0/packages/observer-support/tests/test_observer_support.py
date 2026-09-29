@@ -80,7 +80,7 @@ class RetrievalApi:
         return {
             "id": str(collection_id),
             "archive_root_sha256": _sha("1"),
-            "content_identity": _sha("2"),
+            "artifact_set_identity": _sha("2"),
         }
 
     def search(self, _query: str | None = None, **_kwargs: Any) -> dict[str, Any]:
@@ -121,7 +121,7 @@ class RetrievalApi:
             authority=PortableCollectionInventoryAuthority(
                 header=PortableCollectionHeader(
                     collection="1",
-                    content_identity=_sha("2"),
+                    artifact_set_identity=_sha("2"),
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
                     provenance_mode="omitted",
@@ -277,7 +277,7 @@ def _request(
                     collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("1"),
-                        content_identity=_sha("2"),
+                        artifact_set_identity=_sha("2"),
                     ),
                     path="camera/input.mov",
                     bytes=str(len(api.data)),
@@ -621,7 +621,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
     root = CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
     subjects = tuple(
         WorkArtifactSubject(

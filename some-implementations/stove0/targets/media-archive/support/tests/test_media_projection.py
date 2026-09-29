@@ -55,7 +55,7 @@ def _root() -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
 
 

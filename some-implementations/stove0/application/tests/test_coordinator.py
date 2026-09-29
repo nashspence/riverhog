@@ -107,7 +107,7 @@ def _root() -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
 
 
@@ -790,7 +790,7 @@ def _successful_target_status(
     output_sha256: str,
     collection_id: int,
     archive_root_sha256: str,
-    content_identity: str,
+    artifact_set_identity: str,
 ) -> TargetJobStatus:
     declaration = request.declaration
     workflow = declaration.controller_evidence.execution_envelope.workflow_plan
@@ -858,7 +858,7 @@ def _successful_target_status(
         output_collection=OutputCollectionRef(
             collection_id=str(collection_id),
             archive_root_sha256=archive_root_sha256,
-            content_identity=content_identity,
+            artifact_set_identity=artifact_set_identity,
             derivation_sha256=derivation.sha256,
         ),
         execution_evidence=TargetExecutionEvidence(
@@ -993,7 +993,7 @@ class FixtureTarget:
             output_sha256=_sha("5"),
             collection_id=7,
             archive_root_sha256=_sha("6"),
-            content_identity=_sha("7"),
+            artifact_set_identity=_sha("7"),
         )
 
 
@@ -1060,7 +1060,7 @@ class ForkJoinTarget(FixtureTarget):
             output_sha256=job_id,
             collection_id=100 + int(workflow.work.work_id[:12], 16) % 1_000_000_000,
             archive_root_sha256=workflow.work.work_id,
-            content_identity=workflow.workflow_plan_sha256,
+            artifact_set_identity=workflow.workflow_plan_sha256,
         )
 
 

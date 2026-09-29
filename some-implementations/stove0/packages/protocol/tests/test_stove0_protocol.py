@@ -125,7 +125,7 @@ def test_embedded_identity_references_preserve_riverhog_identity_values() -> Non
     root = CollectionRootIdentity(
         collection_id=(1 << 63) - 1,
         archive_root_sha256=_sha("a"),
-        content_identity=_sha("b"),
+        artifact_set_identity=_sha("b"),
     )
     recipe = RecipeIdentity(id="camera.archive/v1", revision=(1 << 63) + 3, sha256=_sha("c"))
     operation = OperationIdentity(id="video.archive/v1", sha256=_sha("d"))
@@ -150,7 +150,7 @@ def _root(collection_id: int = 1) -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(collection_id),
         archive_root_sha256=_sha(str(collection_id)),
-        content_identity=_sha(chr(ord("a") + collection_id)),
+        artifact_set_identity=_sha(chr(ord("a") + collection_id)),
     )
 
 

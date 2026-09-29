@@ -97,7 +97,7 @@ def test_media_metadata_semantics_bind_evidence_and_exact_request_subjects() -> 
         collection=CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256="a" * 64,
-            content_identity="b" * 64,
+            artifact_set_identity="b" * 64,
         ),
         artifact_id="d" * 64,
         bytes=str(10),

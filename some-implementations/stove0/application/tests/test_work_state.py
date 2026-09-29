@@ -100,7 +100,7 @@ def _root() -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
-        content_identity=_sha("2"),
+        artifact_set_identity=_sha("2"),
     )
 
 
@@ -864,7 +864,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
     output_collection = OutputCollectionRef(
         collection_id=str(7),
         archive_root_sha256=_sha("6"),
-        content_identity=_sha("7"),
+        artifact_set_identity=_sha("7"),
         derivation_sha256=derivation.sha256,
     )
     production = TargetProductionAuthority.seal(
@@ -1121,7 +1121,7 @@ def test_stale_revision_and_invalid_success_order_fail_closed() -> None:
             OutputCollectionRef(
                 collection_id=str(7),
                 archive_root_sha256=_sha("6"),
-                content_identity=_sha("7"),
+                artifact_set_identity=_sha("7"),
                 derivation_sha256=_sha("8"),
             ),
             TargetSettlementAuthority.seal(
@@ -1131,7 +1131,7 @@ def test_stale_revision_and_invalid_success_order_fail_closed() -> None:
                     output_collection=OutputCollectionRef(
                         collection_id=str(7),
                         archive_root_sha256=_sha("6"),
-                        content_identity=_sha("7"),
+                        artifact_set_identity=_sha("7"),
                         derivation_sha256=_sha("8"),
                     ),
                     output_bindings=TargetOutputBindingSetIdentity(
@@ -1298,7 +1298,7 @@ def test_sql_runnable_scan_ignores_terminal_history_and_uses_a_keyset(
                     CollectionRootIdentityRef(
                         collection_id=str(index + 1),
                         archive_root_sha256=f"{index + 1:064x}",
-                        content_identity=_sha("2"),
+                        artifact_set_identity=_sha("2"),
                     ),
                 ),
             )

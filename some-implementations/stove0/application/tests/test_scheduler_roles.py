@@ -15,7 +15,7 @@ def _identity(index: int) -> WorkIdentity:
                 CollectionRootIdentityRef(
                     collection_id=str(index),
                     archive_root_sha256=f"{index:064x}",
-                    content_identity="b" * 64,
+                    artifact_set_identity="b" * 64,
                 ),
             ),
         )

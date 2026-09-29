@@ -312,7 +312,7 @@ class EvaluationService:
             if (
                 output.collection_id != result.output_collection.collection_id
                 or output.archive_root_sha256 != result.output_collection.archive_root_sha256
-                or output.content_identity != result.output_collection.content_identity
+                or output.artifact_set_identity != result.output_collection.artifact_set_identity
                 or output.derivation_sha256 != result.derivation_sha256
             ):
                 raise RuntimeError("evaluation join output differs from exact settlement")
