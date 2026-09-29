@@ -12,6 +12,7 @@ from riverhog_client.processing import (
     CapabilityApiClient,
     ClaimedArtifact,
     ClaimedCollectionReader,
+    ClaimedProvenance,
     ClaimedRetrieval,
     ProcessingWorkspace,
 )
@@ -173,6 +174,15 @@ class ContentObservationRuntime:
             artifacts.append(artifact)
         kwargs.setdefault("restore_policy", self.request.retrieval_policy)
         return self.reader.prepare(artifacts, **kwargs)
+
+    def open_provenance(self, subject: WorkArtifactSubject) -> ClaimedProvenance:
+        if "read-provenance" not in self.request.read_actions:
+            raise PermissionError("observer request has no provenance read authority")
+        artifact = dict(self.subjects()).get(subject)
+        if artifact is None:
+            raise ValueError("subject is not authorized by this observation")
+        self.heartbeat()
+        return self.reader.provenance(artifact)
 
     @contextmanager
     def stream(
