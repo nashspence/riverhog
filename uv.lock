@@ -803,6 +803,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/materialization-hint" }
 dependencies = [
     { name = "pydantic" },
+    { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol" },
 ]
@@ -810,6 +811,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]

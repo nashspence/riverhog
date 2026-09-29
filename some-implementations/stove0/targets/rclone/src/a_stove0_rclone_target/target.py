@@ -269,6 +269,7 @@ class RcloneEffectTargetService(PersistentTargetService):
                                 "delivered_path": relative,
                                 "materialization_reason": planned.reason,
                                 "canonical_occurrence": planned.occurrence,
+                                "canonical_primary_binding": planned.primary_binding,
                             },
                         )
 
@@ -372,6 +373,7 @@ class _PlannedDelivery:
     relative_path: str
     reason: str
     occurrence: dict[str, JsonValue]
+    primary_binding: dict[str, JsonValue]
     subject: WorkArtifactSubject
 
 
@@ -395,6 +397,7 @@ def _planned_destinations(
     advice: dict[int, list[MemberAdvice]] = defaultdict(list)
     subject_ids: dict[tuple[int, str], str] = {}
     occurrence_by_subject: dict[str, dict[str, JsonValue]] = {}
+    binding_by_subject: dict[str, dict[str, JsonValue]] = {}
     subject_by_id: dict[str, WorkArtifactSubject] = {}
     for item in selected:
         if (
@@ -415,6 +418,7 @@ def _planned_destinations(
             subject_ids[key] = subject.id
             subject_by_id[subject.id] = subject
             occurrence_by_subject[subject.id] = fact.occurrence.model_dump(mode="json")
+            binding_by_subject[subject.id] = fact.primary_binding.model_dump(mode="json")
             advice[key[0]].append(MemberAdvice(subject.artifact_id, fact.materialization_hint))
     observed = ArtifactSelection.seal(subjects)
     if (
@@ -438,6 +442,7 @@ def _planned_destinations(
                 "/".join(components),
                 row.reason,
                 occurrence_by_subject[subject_id],
+                binding_by_subject[subject_id],
                 subject_by_id[subject_id],
             )
     return planned

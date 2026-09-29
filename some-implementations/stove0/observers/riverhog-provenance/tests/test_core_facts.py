@@ -148,6 +148,7 @@ def test_hint_fact_uses_exact_delivered_occurrence_and_valid_missing_hint() -> N
     assert fact["subject_id"] == subject.id
     assert fact["occurrence"]["scope"] == "external"
     assert fact["occurrence"]["object_type"] == "occurrence"
+    assert fact["primary_binding"] == binding.model_dump(mode="json")
     assert fact["materialization_hint"] == {"components": ["Album", "clip.mp4"]}
     validate_materialization_hint_facts({"artifacts": [fact]}, (subject,))
 

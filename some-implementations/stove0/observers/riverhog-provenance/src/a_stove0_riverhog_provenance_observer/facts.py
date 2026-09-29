@@ -230,6 +230,7 @@ def extract_materialization_hint_fact(
     _, origins, _, occurrence = _delivered_occurrence(subject, binding, summary)
     return {
         "subject_id": subject.id,
+        "primary_binding": binding.model_dump(mode="json"),
         "occurrence": {"scope": "external", **_endpoint(summary, origins, occurrence)},
         "materialization_hint": occurrence.get("materialization_hint"),
     }

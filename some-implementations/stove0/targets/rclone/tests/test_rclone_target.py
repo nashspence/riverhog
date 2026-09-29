@@ -105,6 +105,18 @@ def _hint_evidence(
             "artifacts": [
                 {
                     "subject_id": subject.id,
+                    "primary_binding": {
+                        "artifact_id": str(subject.artifact_id),
+                        "journal": {
+                            "journal_id": occurrence["journal_id"],
+                            "through": occurrence["entry"],
+                            "prefix_sha256": "f" * 64,
+                            "prefix_bytes": "100",
+                        },
+                        "delivery_association_id": (
+                            "urn:uuid:55555555-5555-4555-8555-555555555555"
+                        ),
+                    },
                     "occurrence": occurrence,
                     "materialization_hint": hint,
                 }
@@ -131,6 +143,7 @@ def test_rclone_uses_forwarded_exact_hint_and_id_fallback() -> None:
     assert planned[first.id].relative_path == "1/files/Album/clip.mp4"
     assert planned[first.id].reason == "hint"
     assert planned[first.id].occurrence["object_type"] == "occurrence"
+    assert planned[first.id].primary_binding["artifact_id"] == first.artifact_id
     assert planned[second.id].relative_path == f"1/artifacts/22/{second.artifact_id}"
     assert planned[second.id].reason == "no-hint"
 
