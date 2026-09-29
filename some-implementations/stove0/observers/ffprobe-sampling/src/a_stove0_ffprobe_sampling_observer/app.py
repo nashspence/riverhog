@@ -12,6 +12,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import uvicorn
+from a_stove0_ffprobe_streams_contract_lib import FFPROBE_STREAMS_SEMANTIC_VALIDATOR
 from a_stove0_media_sampling_contract_lib import (
     MEDIA_SAMPLING_SEMANTIC_VALIDATOR,
 )
@@ -35,7 +36,9 @@ def create_app(*, token: str, observer: FfprobeSamplingObserver) -> FastAPI:
         raise ValueError("FFprobe observer token must be nonempty")
     binding = ObserverHttpBinding(
         observer,
-        semantic_validators=SemanticValidatorRegistry((MEDIA_SAMPLING_SEMANTIC_VALIDATOR,)),
+        semantic_validators=SemanticValidatorRegistry(
+            (FFPROBE_STREAMS_SEMANTIC_VALIDATOR, MEDIA_SAMPLING_SEMANTIC_VALIDATOR)
+        ),
     )
     app = FastAPI(
         title="Stove0 FFprobe sampling observer", version="1", openapi_url="/v1/openapi.json"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -8,6 +9,7 @@ from typing import Any, cast
 from a_stove0_ffprobe_sampling_observer import FfprobeSamplingObserver
 from a_stove0_ffprobe_sampling_observer import app as observer_app
 from a_stove0_ffprobe_sampling_observer.app import create_app
+from a_stove0_ffprobe_streams_contract_lib import FFPROBE_STREAMS_OBSERVER_CONTRACT
 from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from fastapi.testclient import TestClient
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
@@ -72,7 +74,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
         image_id="sha256:" + _sha("9"),
     )
     descriptor = observer.descriptor()
-    support = descriptor.contracts[0]
+    support = descriptor.support_for(MEDIA_SAMPLING_OBSERVER_CONTRACT.id)
     request = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
             work_id=_sha("1"),
@@ -89,10 +91,9 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
                         archive_root_sha256=_sha("2"),
                         content_identity=_sha("3"),
                     ),
-                    path="camera/source.mp4",
+                    artifact_id=_sha("5"),
                     bytes=str(15),
                     sha256=_sha("4"),
-                    media_type="video/mp4",
                 ),
             ),
             maximum_result_bytes=256 * 1024,
@@ -133,6 +134,98 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
     }
     assert runtime.heartbeats == 1
     assert runtime.workspace is not None and runtime.workspace.released
+
+
+def test_stream_registration_reports_exact_subject_bound_container_and_streams(
+    tmp_path: Path,
+) -> None:
+    report = json.dumps(
+        {
+            "format": {"format_name": "wav", "duration": "1.000000", "bit_rate": "768000"},
+            "streams": [
+                {
+                    "index": 0,
+                    "codec_type": "audio",
+                    "codec_name": "pcm_s16le",
+                    "sample_rate": "48000",
+                    "channels": 1,
+                    "channel_layout": "mono",
+                }
+            ],
+        },
+        separators=(",", ":"),
+    )
+    tool = tmp_path / "fixture-ffprobe"
+    tool.write_text(
+        "#!/bin/sh\n"
+        'if [ "$1" = "-version" ]; then printf \'ffprobe fixture\\n\'; '
+        f"else printf '%s' '{report}'; fi\n",
+        encoding="utf-8",
+    )
+    tool.chmod(0o755)
+    observer = FfprobeSamplingObserver(
+        ffprobe=str(tool),
+        source_revision="fixture",
+        image_id="sha256:" + _sha("9"),
+        workspace_root=tmp_path / "workspace",
+    )
+    descriptor = observer.descriptor()
+    assert [item.contract_id for item in descriptor.contracts] == [
+        FFPROBE_STREAMS_OBSERVER_CONTRACT.id,
+        MEDIA_SAMPLING_OBSERVER_CONTRACT.id,
+    ]
+    support = descriptor.support_for(FFPROBE_STREAMS_OBSERVER_CONTRACT.id)
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id=_sha("1"),
+            observer_registration_id="ffprobe-streams",
+            observer_descriptor_sha256=descriptor.descriptor_sha256,
+            observer_contract_id=support.contract_id,
+            observer_contract_sha256=support.contract_sha256,
+            subjects=(
+                WorkArtifactSubject(
+                    id="source",
+                    role="stove0.source/v1",
+                    collection=CollectionRootIdentityRef(
+                        collection_id="1",
+                        archive_root_sha256=_sha("2"),
+                        content_identity=_sha("3"),
+                    ),
+                    artifact_id=_sha("5"),
+                    bytes="15",
+                    sha256=_sha("4"),
+                ),
+            ),
+            maximum_result_bytes=4 * 1024 * 1024,
+        )
+    )
+    runtime = FixtureRuntime(tmp_path / "request")
+    result = observer.observe(request, cast(ContentObservationRuntime, runtime))
+    assert result.state == "observed"
+    assert result.facts is not None
+    row = cast(dict[str, Any], result.facts["artifacts"][0])
+    assert row["artifact_id"] == "source"
+    assert row["format"]["duration_ms"] == 1000
+    assert row["streams"][0]["sample_rate"] == 48000
+    assert row["has_audio"] and not row["has_non_attached_video"]
+    assert row["report_sha256"] == hashlib.sha256(report.encode()).hexdigest()
+    assert row["executable_sha256"] == hashlib.sha256(tool.read_bytes()).hexdigest()
+    assert result.execution_evidence["ffprobe_version"] == "ffprobe fixture"
+    assert runtime.workspace is not None and runtime.workspace.released
+
+    tool.write_text(
+        "#!/bin/sh\n"
+        'if [ "$1" = "-version" ]; then printf \'ffprobe fixture\\n\'; '
+        "else printf '{}'; fi\n",
+        encoding="utf-8",
+    )
+    tool.chmod(0o755)
+    malformed = observer.observe(
+        request,
+        cast(ContentObservationRuntime, FixtureRuntime(tmp_path / "malformed-request")),
+    )
+    assert malformed.state == "failed"
+    assert malformed.failure is not None and malformed.failure.code == "invalid-stream-report"
 
 
 def test_observer_process_exposes_only_observer_contract() -> None:
