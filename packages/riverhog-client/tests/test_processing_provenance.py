@@ -12,6 +12,7 @@ from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
     create_journal,
+    external_reference,
     validate_journal,
 )
 
@@ -144,3 +145,14 @@ def test_claimed_provenance_rejects_unselected_artifact_and_changed_root() -> No
     api.root = CollectionRootIdentity(1, "d" * 64, "b" * 64)
     with pytest.raises(RuntimeError, match="claimed collection root changed"):
         reader.provenance(api.artifact)
+
+
+def test_claimed_provenance_resolves_only_exact_foreign_assertions() -> None:
+    api = ProvenanceApi()
+    view = _reader(api).provenance(api.artifact)
+    reference = external_reference(api.summary, api.summary.states[0]["id"])
+    resolved = view.resolve_external_reference(reference)
+    assert resolved == {key: value for key, value in reference.items() if key != "scope"}
+    changed = {**reference, "object_id": api.summary.graph["occurrences"][0]["id"]}
+    with pytest.raises(ValueError, match="differs"):
+        view.resolve_external_reference(changed)
