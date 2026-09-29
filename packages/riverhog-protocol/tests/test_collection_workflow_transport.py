@@ -165,9 +165,7 @@ def test_structural_workflow_relationships_match_their_published_schema() -> Non
     disposition_validator.validate(transformed)
 
     output = {"input": input_identity, "output_artifact_id": "5" * 64}
-    assert ArtifactDispositionOutputDocument.model_validate(output).output_artifact_id == (
-        "5" * 64
-    )
+    assert ArtifactDispositionOutputDocument.model_validate(output).output_artifact_id == ("5" * 64)
 
     plan = {
         "fence": "1",

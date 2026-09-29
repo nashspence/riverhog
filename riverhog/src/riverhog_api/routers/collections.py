@@ -342,9 +342,7 @@ def get_collection_upload_session_artifact_provenance_binding(
 ) -> CollectionArtifactProvenanceBindingDocument:
     container.collection_uploads.require_access(collection_id, principal)
     return CollectionArtifactProvenanceBindingDocument.model_validate(
-        container.collection_uploads.get_artifact_provenance_binding(
-            collection_id, artifact_id
-        )
+        container.collection_uploads.get_artifact_provenance_binding(collection_id, artifact_id)
     )
 
 

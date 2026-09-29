@@ -64,9 +64,7 @@ class PublishedCanonicalProvenance:
                     )
                 )
                 if row is None:
-                    raise InvalidState(
-                        f"published provenance object is missing: {relative_path}"
-                    )
+                    raise InvalidState(f"published provenance object is missing: {relative_path}")
                 object_identity = ArchiveObjectIdentity(
                     object_id=row.object_id,
                     kind=row.kind,
@@ -105,8 +103,7 @@ class PublishedCanonicalProvenance:
                 .order_by(
                     case(
                         (
-                            CollectionArchiveCopyRecord.store
-                            == collection.creation_archive_store,
+                            CollectionArchiveCopyRecord.store == collection.creation_archive_store,
                             0,
                         ),
                         else_=1,

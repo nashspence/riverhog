@@ -8,14 +8,14 @@ from pydantic import ConfigDict, Field, model_validator
 from riverhog_protocol import (
     RETRIEVAL_ARTIFACT_BATCH_MAX,
     ArchiveStoreName,
-    CollectionId,
     ArtifactMemberIdentityDocument,
+    CollectionId,
+    RetrievalArtifactReferenceDocument,
+    RetrievalArtifactReferenceSetDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
     RetrievalCacheState,
     RetrievalCacheStoreName,
-    RetrievalArtifactReferenceDocument,
-    RetrievalArtifactReferenceSetDocument,
     SortOrder,
 )
 from time_formats import CanonicalUtcTimestamp

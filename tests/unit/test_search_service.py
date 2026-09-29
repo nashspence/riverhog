@@ -109,11 +109,14 @@ def test_search_pages_opaque_members_with_stable_identity(tmp_path: Path) -> Non
 def test_search_current_description_and_exact_member_digest(tmp_path: Path) -> None:
     path = tmp_path / "catalog.sqlite3"
     _seed(path)
-    assert len(
-        _service(path).search(
-            q="tax", page_size=25, position=None, sort="artifact_ref", order="asc"
-        )["artifacts"]
-    ) == 3
+    assert (
+        len(
+            _service(path).search(
+                q="tax", page_size=25, position=None, sort="artifact_ref", order="asc"
+            )["artifacts"]
+        )
+        == 3
+    )
     result = _service(path).search(
         q="f" * 16, page_size=25, position=None, sort="artifact_ref", order="asc"
     )
@@ -128,14 +131,17 @@ def test_search_applies_collection_and_exact_artifact_scope(tmp_path: Path) -> N
         key_id="reader-key",
         access=frozenset({ApplicationAccess(CATALOG_READ, "tag:other")}),
     )
-    assert _service(path).search(
-        q=None,
-        page_size=25,
-        position=None,
-        sort="artifact_ref",
-        order="asc",
-        principal=denied,
-    )["artifacts"] == []
+    assert (
+        _service(path).search(
+            q=None,
+            page_size=25,
+            position=None,
+            sort="artifact_ref",
+            order="asc",
+            principal=denied,
+        )["artifacts"]
+        == []
+    )
     scoped = persisted_artifact_scope(
         sqlite_url(path),
         access=(ApplicationAccess(CATALOG_READ, "collection:1"),),

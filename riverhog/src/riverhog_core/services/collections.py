@@ -26,7 +26,6 @@ from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionDescriptionPublicationRecord,
-    CollectionArtifactRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
     CollectionTagPublicationRecord,

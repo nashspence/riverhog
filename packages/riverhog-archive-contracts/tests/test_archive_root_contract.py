@@ -105,7 +105,9 @@ def test_archive_root_has_one_canonical_public_model() -> None:
 def test_archive_root_keeps_large_exact_artifact_totals() -> None:
     source = _manifest_mapping()
     source["artifact_set"] = {
-        "count": str(2**63 - 1), "bytes": str(2**100 + 1), "sha256": ZERO,
+        "count": str(2**63 - 1),
+        "bytes": str(2**100 + 1),
+        "sha256": ZERO,
     }
     manifest = CollectionArchiveManifest.from_mapping(source)
     encoded = manifest.to_json_bytes()
@@ -193,20 +195,23 @@ def test_segment_placement_selects_opaque_member_not_workspace_name() -> None:
             "artifact_bytes": "1",
             "sha256": "b" * 64,
         },
-        "parts": [{
-            "number": 1,
-            "plaintext_start": "0",
-            "plaintext_bytes": "1",
-            "plaintext_sha256": ZERO,
-            "stored_bytes": "1",
-            "stored_sha256": ONE,
-        }],
+        "parts": [
+            {
+                "number": 1,
+                "plaintext_start": "0",
+                "plaintext_bytes": "1",
+                "plaintext_sha256": ZERO,
+                "stored_bytes": "1",
+                "stored_sha256": ONE,
+            }
+        ],
     }
     document = CollectionArchiveVolumeDocument.from_mapping(row)
     assert document.volume.source_artifact.artifact_id == "a" * 64
     schema = json.loads(
-        (Path(__file__).parents[1] / "schemas" / "collection-archive-volume-v1.schema.json")
-        .read_text()
+        (
+            Path(__file__).parents[1] / "schemas" / "collection-archive-volume-v1.schema.json"
+        ).read_text()
     )
     Draft202012Validator(schema).validate(row)
     legacy = json.loads(json.dumps(row))
