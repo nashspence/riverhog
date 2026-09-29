@@ -39,6 +39,7 @@ from stove0_protocol import (
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkIdentity,
+    WorkInputGroup,
     WorkPayload,
 )
 from stove0_recipe_config import (
@@ -76,7 +77,7 @@ class _PlanningFrame:
     work: WorkIdentity
     recipe: RecipeDefinition
     evidence: tuple[ContentObservationEvidence, ...]
-    selected: tuple[tuple[RecipeBranch, ArtifactSelection], ...]
+    selected: tuple[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]], ...]
     decision_sha256: str
     root: bool
     next_branch: int = 0
@@ -176,7 +177,7 @@ class RecipePlanner:
         while stack:
             frame = stack[-1]
             if frame.next_branch < len(frame.selected):
-                route, selection = frame.selected[frame.next_branch]
+                route, selection, groups = frame.selected[frame.next_branch]
                 frame.next_branch += 1
                 if isinstance(route, RecipeRoute):
                     frame.branches.append(
@@ -185,6 +186,7 @@ class RecipePlanner:
                             observations=frame.evidence,
                             route=route,
                             selection=selection,
+                            groups=groups,
                             decision_sha256=frame.decision_sha256,
                             recipe=frame.recipe,
                         )
@@ -310,9 +312,9 @@ class RecipePlanner:
         ):
             return WorkNoAction(code=recipe.no_action.code, message=recipe.no_action.message)
         inventory = self._inventory(work)
-        selected: list[tuple[RecipeBranch, ArtifactSelection]] = []
+        selected: list[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]]] = []
         for route in recipe.routes:
-            artifacts = _route_artifacts(
+            artifacts, groups = _route_artifacts(
                 _subjects(inventory, route.artifact_rules, observations=evidence),
                 route=route,
                 associations=recipe.artifact_associations,
@@ -320,7 +322,7 @@ class RecipePlanner:
             )
             if not artifacts:
                 continue
-            selected.append((route, ArtifactSelection.seal(artifacts)))
+            selected.append((route, ArtifactSelection.seal(artifacts), groups))
         selected.sort(key=lambda item: item[0].id)
         if not selected:
             return WorkInapplicable(
@@ -328,7 +330,7 @@ class RecipePlanner:
                 message="No configured recipe branch accepted the immutable inputs.",
             )
 
-        selected_ids = {route.id for route, _selection in selected}
+        selected_ids = {route.id for route, _selection, _groups in selected}
         if recipe.join is not None:
             missing = [
                 member.branch_id
@@ -374,8 +376,9 @@ class RecipePlanner:
                         "branch_id": route.id,
                         "kind": route.kind,
                         "artifact_selection_sha256": selection.selection_sha256,
+                        "input_groups": [group.model_dump(mode="json") for group in groups],
                     }
-                    for route, selection in selected
+                    for route, selection, groups in selected
                 ],
                 "join_members": (
                     [member.model_dump(mode="json") for member in recipe.join.members]
@@ -384,7 +387,9 @@ class RecipePlanner:
                 ),
             }
         )
-        documents = {selection.selection_sha256: selection for _route, selection in selected}
+        documents = {
+            selection.selection_sha256: selection for _route, selection, _groups in selected
+        }
         return _PlanningFrame(
             work=work,
             recipe=recipe,
@@ -402,6 +407,7 @@ class RecipePlanner:
         observations: tuple[ContentObservationEvidence, ...],
         route: RecipeRoute,
         selection: ArtifactSelection,
+        groups: tuple[WorkInputGroup, ...],
         decision_sha256: str,
         recipe: RecipeDefinition,
     ) -> BranchPlan:
@@ -427,6 +433,7 @@ class RecipePlanner:
                 target_registration_id=route.target_registration_id,
                 target_descriptor_sha256=target.descriptor_sha256,
                 requested_target_options={**route.target_options, **compiled_options},
+                input_groups=groups,
                 input_retrieval_policy=route.input_retrieval_policy,
                 source_collection_retirement_policy="retain",
                 output_policy=route.output_policy,
@@ -483,6 +490,7 @@ class RecipePlanner:
             inputs=authority,
             intent=plan.work.effective_intent,
             target_options=plan.requested_target_options,
+            input_groups=plan.input_groups,
             observations=plan.observations,
         )
 
@@ -700,13 +708,13 @@ def _route_artifacts(
     route: RecipeBranch,
     associations: tuple[ArtifactAssociation, ...],
     observations: tuple[ContentObservationEvidence, ...],
-) -> tuple[WorkArtifactSubject, ...]:
+) -> tuple[tuple[WorkArtifactSubject, ...], tuple[WorkInputGroup, ...]]:
     if route.primary_role is None:
         if all(
             _predicate_matches(predicate, observations, candidate=()) for predicate in route.when
         ):
-            return subjects
-        return ()
+            return subjects, ()
+        return (), ()
 
     association = next(
         (item for item in associations if item.primary_role == route.primary_role), None
@@ -721,6 +729,7 @@ def _route_artifacts(
         else ({}, set())
     )
     selected: dict[str, WorkArtifactSubject] = {}
+    groups: list[WorkInputGroup] = []
     for primary in primaries:
         if primary.id in blocked:
             continue
@@ -734,7 +743,16 @@ def _route_artifacts(
         ):
             continue
         selected.update((subject.id, subject) for subject in exact_candidate)
-    return tuple(selected[artifact_id] for artifact_id in sorted(selected))
+        groups.append(
+            WorkInputGroup(
+                primary_id=primary.id,
+                associated_ids=tuple(sorted(subject.id for subject in candidate[1:])),
+            )
+        )
+    return (
+        tuple(selected[artifact_id] for artifact_id in sorted(selected)),
+        tuple(sorted(groups, key=lambda group: group.primary_id)),
+    )
 
 
 def _accepted_relationships(
@@ -903,7 +921,7 @@ def _resolve_relation_endpoint(
 
 def _uncovered_inventory(
     inventory: Sequence[Mapping[str, object]],
-    selected: Sequence[tuple[RecipeBranch, ArtifactSelection]],
+    selected: Sequence[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]]],
 ) -> list[str]:
     covered = {
         (
@@ -913,7 +931,7 @@ def _uncovered_inventory(
             artifact.bytes,
             artifact.sha256,
         )
-        for _route, selection in selected
+        for _route, selection, _groups in selected
         for artifact in selection.artifacts
     }
     return sorted(

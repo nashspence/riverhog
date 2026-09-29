@@ -25,6 +25,7 @@ from a_stove0_media_archive_lib import (
 )
 from riverhog_client import ProducerFile
 from riverhog_protocol import canonical_json_sha256
+from riverhog_protocol.artifact_identity import ArtifactId
 from stove0_protocol import JsonSchemaValidationProfile
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
@@ -180,8 +181,7 @@ class OpusTargetService(PersistentTargetService):
                 for item in projection.items:
                     check()
                     artifact, claimed = resolved_by_id[item.input_artifact_id]
-                    suffix = PurePosixPath(artifact.path).suffix[:32]
-                    source = workspace.resolve(f"input/{artifact.id}{suffix}")
+                    source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
@@ -217,19 +217,25 @@ class OpusTargetService(PersistentTargetService):
                             ) from exc
                         os.replace(temporary, destination)
                         size, sha256 = file_identity(destination)
+                        output_id = _output_id("opus", item.derived_from)
                         output = OutputArtifact.model_validate(
                             dict(
-                                id=_output_id("opus", item.derived_from),
+                                id=output_id,
                                 role=AUDIO_ARCHIVE_ROLE,
-                                path=relative,
+                                artifact_id=_member_id(
+                                    request.declaration.plan.plan_sha256, output_id
+                                ),
                                 bytes=str(size),
                                 sha256=sha256,
-                                media_type="audio/ogg",
                             )
                         )
                         outputs.append(output)
                         publication.append(
-                            ProducerFile(destination, relative),
+                            ProducerFile(
+                                destination,
+                                output.artifact_id,
+                                materialization_hint=PurePosixPath(relative).parts,
+                            ),
                             output,
                             derived_from=item.derived_from,
                         )
@@ -239,19 +245,25 @@ class OpusTargetService(PersistentTargetService):
                             render_projection_xmp(item, tags=intent.metadata_projection.tags)
                         )
                         xmp_size, xmp_sha256 = file_identity(xmp)
+                        xmp_output_id = _output_id("metadata-xmp", item.derived_from)
                         xmp_output = OutputArtifact.model_validate(
                             dict(
-                                id=_output_id("metadata-xmp", item.derived_from),
+                                id=xmp_output_id,
                                 role=METADATA_XMP_ROLE,
-                                path=item.xmp_path,
+                                artifact_id=_member_id(
+                                    request.declaration.plan.plan_sha256, xmp_output_id
+                                ),
                                 bytes=str(xmp_size),
                                 sha256=xmp_sha256,
-                                media_type="application/rdf+xml",
                             )
                         )
                         outputs.append(xmp_output)
                         publication.append(
-                            ProducerFile(xmp, item.xmp_path),
+                            ProducerFile(
+                                xmp,
+                                xmp_output.artifact_id,
+                                materialization_hint=PurePosixPath(item.xmp_path).parts,
+                            ),
                             xmp_output,
                             derived_from=item.derived_from,
                         )
@@ -259,8 +271,7 @@ class OpusTargetService(PersistentTargetService):
                         source.unlink(missing_ok=True)
                 for retained in projection.retained_xmp_sidecars:
                     artifact, claimed = resolved_by_id[retained.input_artifact_id]
-                    suffix = PurePosixPath(artifact.path).suffix[:32]
-                    source = workspace.resolve(f"input/{artifact.id}{suffix}")
+                    source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
@@ -269,19 +280,25 @@ class OpusTargetService(PersistentTargetService):
                         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         shutil.copyfile(source, destination)
                         retained_size, retained_sha256 = file_identity(destination)
+                        retained_output_id = _output_id("source-xmp", (retained.input_artifact_id,))
                         retained_output = OutputArtifact.model_validate(
                             dict(
-                                id=_output_id("source-xmp", (retained.input_artifact_id,)),
+                                id=retained_output_id,
                                 role=SOURCE_ARTIFACT_ROLE,
-                                path=retained.output_path,
+                                artifact_id=_member_id(
+                                    request.declaration.plan.plan_sha256, retained_output_id
+                                ),
                                 bytes=str(retained_size),
                                 sha256=retained_sha256,
-                                media_type="application/rdf+xml",
                             )
                         )
                         outputs.append(retained_output)
                         publication.append(
-                            ProducerFile(destination, retained.output_path),
+                            ProducerFile(
+                                destination,
+                                retained_output.artifact_id,
+                                materialization_hint=PurePosixPath(retained.output_path).parts,
+                            ),
                             retained_output,
                             derived_from=(retained.input_artifact_id,),
                         )
@@ -325,6 +342,18 @@ def _execution_sha256(
 def _output_id(kind: str, derived_from: Sequence[str]) -> str:
     return (
         f"{kind}-{canonical_json_sha256({'kind': kind, 'derived_from': sorted(derived_from)})[:32]}"
+    )
+
+
+def _member_id(plan_sha256: str, output_id: str) -> ArtifactId:
+    return ArtifactId(
+        canonical_json_sha256(
+            {
+                "format": "stove0-output-member-id/v1",
+                "plan_sha256": plan_sha256,
+                "output_id": output_id,
+            }
+        )
     )
 
 

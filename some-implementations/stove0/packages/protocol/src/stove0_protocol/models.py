@@ -231,6 +231,28 @@ class WorkArtifactSubject(Stove0ProtocolModel):
     sha256: Sha256
 
 
+class WorkInputGroup(Stove0ProtocolModel):
+    """One recipe-selected primary and its exact associated subjects."""
+
+    primary_id: str = Field(pattern=ARTIFACT_ID_PATTERN)
+    associated_ids: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def canonical_group(self) -> Self:
+        if self.associated_ids != tuple(sorted(set(self.associated_ids))):
+            raise ValueError("associated subjects must be unique and ordered")
+        if self.primary_id in self.associated_ids:
+            raise ValueError("primary subject cannot associate with itself")
+        return self
+
+
+def _canonical_input_groups(groups: tuple[WorkInputGroup, ...]) -> tuple[WorkInputGroup, ...]:
+    primary_ids = [group.primary_id for group in groups]
+    if primary_ids != sorted(set(primary_ids)):
+        raise ValueError("input groups must be unique and ordered by primary subject")
+    return groups
+
+
 class BranchWorkBinding(Stove0ProtocolModel):
     """Stable parent/branch lineage for one ordinary child work identity."""
 
@@ -658,6 +680,7 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     target_registration_id: RegistrationId
     target_descriptor_sha256: Sha256
     requested_target_options: dict[str, JsonValue] = Field(default_factory=dict)
+    input_groups: tuple[WorkInputGroup, ...] = ()
     input_retrieval_policy: RetrievalPolicy = "available-only"
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
         default="retain",
@@ -678,6 +701,11 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("workflow observations must be unique and ordered by request id")
         return value
+
+    @field_validator("input_groups")
+    @classmethod
+    def canonical_groups(cls, value: tuple[WorkInputGroup, ...]) -> tuple[WorkInputGroup, ...]:
+        return _canonical_input_groups(value)
 
     @model_validator(mode="after")
     def protect_evaluation_sources(self) -> Self:
@@ -720,6 +748,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
     target_registration_id: RegistrationId
     target_descriptor_sha256: Sha256
     requested_target_options: dict[str, JsonValue] = Field(default_factory=dict)
+    input_groups: tuple[WorkInputGroup, ...] = ()
     input_retrieval_policy: RetrievalPolicy = "available-only"
     source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
         default="retain",
@@ -742,6 +771,11 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
             raise ValueError("effect workflow intent cannot declare an output collection policy")
         return self
 
+    @field_validator("input_groups")
+    @classmethod
+    def canonical_groups(cls, value: tuple[WorkInputGroup, ...]) -> tuple[WorkInputGroup, ...]:
+        return _canonical_input_groups(value)
+
     @classmethod
     def from_plan(cls, plan: WorkflowPlan) -> WorkflowPlanIntent:
         return cls(
@@ -750,6 +784,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
             target_registration_id=plan.target_registration_id,
             target_descriptor_sha256=plan.target_descriptor_sha256,
             requested_target_options=plan.requested_target_options,
+            input_groups=plan.input_groups,
             input_retrieval_policy=plan.input_retrieval_policy,
             source_collection_retirement_policy=plan.source_collection_retirement_policy,
             source_collection_retirement_grace_seconds=plan.source_collection_retirement_grace_seconds,
@@ -771,6 +806,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
                 target_registration_id=self.target_registration_id,
                 target_descriptor_sha256=self.target_descriptor_sha256,
                 requested_target_options=self.requested_target_options,
+                input_groups=self.input_groups,
                 input_retrieval_policy=self.input_retrieval_policy,
                 source_collection_retirement_policy=self.source_collection_retirement_policy,
                 source_collection_retirement_grace_seconds=self.source_collection_retirement_grace_seconds,

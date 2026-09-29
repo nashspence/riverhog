@@ -6,7 +6,6 @@ import math
 import re
 from collections.abc import Sequence
 from html import escape
-from pathlib import PurePosixPath
 from typing import Final, Literal, Self, cast
 
 from a_stove0_media_archive_contract_lib import (
@@ -29,7 +28,7 @@ from stove0_observer_protocol import (
     canonical_json_bytes,
     canonical_json_sha256,
 )
-from stove0_protocol import ArtifactSelection, WorkArtifactSubject
+from stove0_protocol import ArtifactSelection, WorkArtifactSubject, WorkInputGroup
 from stove0_target_protocol import (
     InputArtifact,
     TargetInputAuthority,
@@ -201,6 +200,7 @@ class MediaArchiveProjection(MediaArchiveProjectionPayload):
 def resolve_media_archive_projection(
     *,
     inputs: Sequence[InputArtifact],
+    input_groups: Sequence[WorkInputGroup],
     observations: Sequence[ContentObservationEvidence],
     policy: MediaProjectionPolicy,
     archive_directory: str,
@@ -217,6 +217,24 @@ def resolve_media_archive_projection(
         raise ValueError("media projection received unsupported input roles: " + ", ".join(unknown))
     if not primary:
         raise ValueError("media projection requires at least one primary artifact")
+    by_id = {item.id: item for item in inputs}
+    if len(by_id) != len(inputs):
+        raise ValueError("media projection repeats a target input")
+    group_primary_ids = {group.primary_id for group in input_groups}
+    group_associated_ids = [
+        associated_id for group in input_groups for associated_id in group.associated_ids
+    ]
+    if (
+        group_primary_ids != {item.id for item in primary}
+        or set(group_associated_ids) != {item.id for item in sidecars}
+        or len(group_associated_ids) != len(set(group_associated_ids))
+        or any(
+            by_id[group.primary_id].role != SOURCE_ROLE
+            or any(by_id[item_id].role != XMP_SOURCE_ROLE for item_id in group.associated_ids)
+            for group in input_groups
+        )
+    ):
+        raise ValueError("recipe input groups differ from exact media input roles")
 
     relevant = tuple(
         item
@@ -252,29 +270,18 @@ def resolve_media_archive_projection(
         subject = subjects_by_artifact[item.id]
         expected = {
             "id": item.id,
-            "role": item.role,
             "collection": item.collection,
-            "path": item.path,
+            "artifact_id": item.artifact_id,
             "bytes": item.bytes,
             "sha256": item.sha256,
-            "media_type": item.media_type,
         }
         if any(getattr(subject, key) != value for key, value in expected.items()):
             raise ValueError("media observation evidence differs from an exact target input")
 
-    sidecars_by_stem: dict[tuple[str, str], list[InputArtifact]] = {}
-    for sidecar in sidecars:
-        path = PurePosixPath(sidecar.path)
-        sidecars_by_stem.setdefault((str(path.parent), path.stem), []).append(sidecar)
-
     items: list[MediaProjectionItem] = []
-    for primary_artifact in primary:
-        path = PurePosixPath(primary_artifact.path)
-        associated = tuple(
-            sorted(
-                sidecars_by_stem.get((str(path.parent), path.stem), ()), key=lambda item: item.id
-            )
-        )
+    for group in input_groups:
+        primary_artifact = by_id[group.primary_id]
+        associated = tuple(by_id[item_id] for item_id in group.associated_ids)
         assertions = tuple(
             sorted(
                 (
@@ -319,13 +326,7 @@ def resolve_media_archive_preflight_projection(
     archive_directory: str,
     archive_suffix: str,
 ) -> MediaArchiveProjection:
-    """Derive target-owned projection from exact neutral preflight evidence.
-
-    Stove0 supplies only its sealed input authority and immutable observer
-    evidence.  The media target owns the bridge from that evidence to its
-    operation-specific execution plan and proves that the observed subjects
-    are exactly the target inputs before sealing the projection.
-    """
+    """Validate the recipe's exact grouping and seal media execution details."""
 
     subjects: dict[str, WorkArtifactSubject] = {}
     for evidence in request.observations:
@@ -335,9 +336,20 @@ def resolve_media_archive_preflight_projection(
             if subject.id in subjects:
                 raise ValueError("media preflight evidence repeats an exact input")
             subjects[subject.id] = subject
-    ordered_subjects = tuple(subjects[key] for key in sorted(subjects))
-    if not ordered_subjects:
-        raise ValueError("media preflight requires exact media observation evidence")
+    roles: dict[str, str] = {}
+    for group in request.input_groups:
+        if group.primary_id in roles:
+            raise ValueError("media preflight repeats a primary subject")
+        roles[group.primary_id] = SOURCE_ROLE
+        for associated_id in group.associated_ids:
+            if associated_id in roles:
+                raise ValueError("media preflight repeats an associated subject")
+            roles[associated_id] = XMP_SOURCE_ROLE
+    if not roles or not set(roles) <= set(subjects):
+        raise ValueError("recipe groups lack exact media observation subjects")
+    ordered_subjects = tuple(
+        subjects[key].model_copy(update={"role": roles[key]}) for key in sorted(roles)
+    )
     selection = ArtifactSelection.seal(ordered_subjects)
     if TargetInputAuthority.from_selection(selection) != request.inputs:
         raise ValueError("media preflight evidence differs from the exact input authority")
@@ -347,16 +359,16 @@ def resolve_media_archive_preflight_projection(
                 id=subject.id,
                 role=subject.role,
                 collection=subject.collection,
-                path=subject.path,
+                artifact_id=subject.artifact_id,
                 bytes=str(subject.bytes),
                 sha256=subject.sha256,
-                media_type=subject.media_type,
             )
         )
         for subject in ordered_subjects
     )
     return resolve_media_archive_projection(
         inputs=inputs,
+        input_groups=request.input_groups,
         observations=request.observations,
         policy=policy,
         archive_directory=archive_directory,

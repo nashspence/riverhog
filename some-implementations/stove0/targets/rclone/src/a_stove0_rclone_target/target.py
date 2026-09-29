@@ -189,7 +189,7 @@ class RcloneEffectTargetService(PersistentTargetService):
                 total_bytes = 0
                 for artifact, claimed in execution.iter_inputs():
                     check()
-                    relative = f"{artifact.collection.collection_id}/{artifact.path}"
+                    relative = f"{artifact.collection.collection_id}/{artifact.artifact_id}"
                     local = objects_root / relative
                     local.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
@@ -202,9 +202,9 @@ class RcloneEffectTargetService(PersistentTargetService):
                     entries.append(
                         {
                             "collection": artifact.collection.model_dump(mode="json"),
-                            "artifact_id": artifact.id,
+                            "subject_id": artifact.id,
+                            "artifact_id": artifact.artifact_id,
                             "role": artifact.role,
-                            "path": artifact.path,
                             "bytes": str(artifact.bytes),
                             "sha256": artifact.sha256,
                             "delivered_path": relative,
