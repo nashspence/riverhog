@@ -100,6 +100,7 @@ class ResolvedProvenanceObserver:
         path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
         *,
         host_id: str,
+        naming_view_id: str | None = None,
         native_policy: NativeCapturePolicy | None = None,
         request: ObservationRequest | None = None,
     ) -> ObservationResult:
@@ -111,7 +112,9 @@ class ResolvedProvenanceObserver:
         source_factory = getattr(observer, "source", None)
         if not callable(source_factory):
             raise TypeError("selected observer has no native file source adapter")
-        source = source_factory(path, host_id=host_id, policy=native_policy)
+        source = source_factory(
+            path, host_id=host_id, naming_view_id=naming_view_id, policy=native_policy
+        )
         if not isinstance(source, ObservationSource):
             raise TypeError("selected native adapter returned an invalid source")
         return _ContractValidatedObserver(

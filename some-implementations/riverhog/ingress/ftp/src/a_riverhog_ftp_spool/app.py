@@ -152,7 +152,7 @@ class FtpSpoolComposition:
             adapter=FtpSpool(
                 api,
                 config,
-                provenance_observer_factory=observer.create if observer is not None else None,
+                provenance_observer=observer,
             ),
         )
 

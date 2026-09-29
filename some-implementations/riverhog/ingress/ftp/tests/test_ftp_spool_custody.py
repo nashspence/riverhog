@@ -25,7 +25,7 @@ from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from riverhog_client.producer import ProducedCollection
 from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
 
-from tests.provenance_observer import native_provenance_observer
+from tests.provenance_observer import native_provenance_provider
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 
@@ -1010,7 +1010,7 @@ def test_captured_provenance_is_identity_checked_and_projected_for_the_producer(
     result = FtpSpool(
         object(),  # type: ignore[arg-type]
         config,
-        provenance_observer_factory=native_provenance_observer,
+        provenance_observer=native_provenance_provider(),
     ).flush(source.id)
 
     assert result["completed"] == 1
@@ -1036,7 +1036,7 @@ def test_captured_observation_cannot_change_before_publication(tmp_path: Path) -
     adapter = FtpSpool(
         object(),  # type: ignore[arg-type]
         config,
-        provenance_observer_factory=native_provenance_observer,
+        provenance_observer=native_provenance_provider(),
     )
     payload = source.root / "capture.bin"
     payload.write_bytes(b"stable source evidence")
@@ -1112,7 +1112,7 @@ def test_completion_source_names_share_persisted_view_across_independent_observa
     adapter = FtpSpool(
         object(),  # type: ignore[arg-type]
         config,
-        provenance_observer_factory=native_provenance_observer,
+        provenance_observer=native_provenance_provider(),
     )
     assert adapter.flush(source.id)["completed"] == 1
     graphs = {
@@ -1145,7 +1145,7 @@ def test_completion_source_names_share_persisted_view_across_independent_observa
     restarted = FtpSpool(
         object(),  # type: ignore[arg-type]
         config,
-        provenance_observer_factory=native_provenance_observer,
+        provenance_observer=native_provenance_provider(),
     )
     with closing(restarted._open_state(source)) as connection:
         stored = connection.execute(

@@ -13,11 +13,11 @@ import stat
 import threading
 import uuid
 from bisect import bisect_right
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-from typing import Any, cast
+from typing import Any, Protocol
 
 from a_riverhog_ftp_spool_client.events import (
     ATTEMPT_FAILED,
@@ -32,6 +32,7 @@ from lifecycle_events import lifecycle_event
 from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_provenance import (
     ObservationResult,
     assertion,
@@ -40,13 +41,11 @@ from riverhog_provenance import (
     software_agent_id,
     validate_graph,
 )
-from riverhog_provenance.native_source import (
-    NativeFileObserver,
-    filesystem_name,
-)
+from riverhog_provenance.native_source import filesystem_name
 from riverhog_provenance_contracts import (
     SOURCE_NAMING_VIEW_SCHEME,
     ContractCatalog,
+    ProvenanceContractBinding,
     require_canonical_uuid_urn,
 )
 
@@ -77,6 +76,19 @@ _STATE_DB = "state.sqlite3"
 _COMPLETION_EVENT_SCHEME = (
     "https://nashspence.github.io/riverhog/v1/provenance/identifiers/ftp-completion-event"
 )
+
+
+class NativeObservationPort(Protocol):
+    @property
+    def contract(self) -> ProvenanceContractBinding: ...
+
+    def observe_native_file(
+        self,
+        path: Path,
+        *,
+        host_id: str,
+        naming_view_id: str | None = None,
+    ) -> ObservationResult: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -140,11 +152,11 @@ class FtpSpool:
         api: ApiClient,
         config: FtpSpoolConfig,
         *,
-        provenance_observer_factory: Callable[[], NativeFileObserver] | None = None,
+        provenance_observer: NativeObservationPort | None = None,
     ) -> None:
         self.api = api
         self.config = config
-        self._provenance_observer_factory = provenance_observer_factory
+        self._provenance_observer = provenance_observer
         self._custody_pass_lock = threading.Lock()
         for source in config.sources:
             self._initialize_source(source)
@@ -1292,11 +1304,7 @@ class FtpSpool:
     ) -> dict[str, object] | None:
         if source.provenance == "omit":
             return None
-        observer = (
-            self._provenance_observer_factory()
-            if self._provenance_observer_factory is not None
-            else None
-        )
+        observer = self._provenance_observer
         if observer is None:
             raise FtpSpoolError("configured provenance observer is unavailable")
         with closing(self._open_state(source)) as connection:
@@ -1304,12 +1312,10 @@ class FtpSpool:
         if naming_view_id is None:
             raise FtpSpoolError("FTP source naming view identity is unavailable")
         require_canonical_uuid_urn(naming_view_id, "FTP source naming view")
-        observed = observer.observe(
-            cast(Any, observer).source(
-                path,
-                host_id=self.config.host_id,
-                **({"naming_view_id": naming_view_id} if source_view_path else {}),
-            )
+        observed = observer.observe_native_file(
+            path,
+            host_id=self.config.host_id,
+            naming_view_id=naming_view_id if source_view_path else None,
         )
         graph_value = observed.graph_fragment()
         if completion_record is not None:
@@ -1321,7 +1327,7 @@ class FtpSpool:
                 observed_path=path,
                 naming_view_id=naming_view_id,
             )
-            validate_graph(graph_value, catalog=ContractCatalog((observer.contract_binding,)))
+            validate_graph(graph_value, catalog=ContractCatalog((observer.contract,)))
         graph = canonical_json_bytes(graph_value)
         graph_path = f"provenance/observations/{artifact_id}.json"
         _write_atomic(claim_root / graph_path, graph)
@@ -1331,7 +1337,7 @@ class FtpSpool:
             "graph_sha256": hashlib.sha256(graph).hexdigest(),
             "observation_id": observed.observation_id,
             "observer_agent_id": observed.observer_agent_id,
-            "contract_sha256": observer.contract_binding.contract_sha256,
+            "contract_sha256": observer.contract.contract_sha256,
         }
 
     def _load_observation(
@@ -1342,14 +1348,8 @@ class FtpSpool:
             return None
         if not isinstance(details, Mapping):
             raise FtpSpoolError("FTP claim observation is invalid")
-        observer = (
-            self._provenance_observer_factory()
-            if self._provenance_observer_factory is not None
-            else None
-        )
-        if observer is None or observer.contract_binding.contract_sha256 != details.get(
-            "contract_sha256"
-        ):
+        observer = self._provenance_observer
+        if observer is None or observer.contract.contract_sha256 != details.get("contract_sha256"):
             raise FtpSpoolError("FTP claim observer contract is unavailable")
         expected_path = f"provenance/observations/{row['artifact_id']}.json"
         if details.get("graph_path") != expected_path:
@@ -1363,7 +1363,7 @@ class FtpSpool:
             json.loads(raw),
             observation_id=str(details["observation_id"]),
             observer_agent_id=str(details["observer_agent_id"]),
-            catalog=ContractCatalog((observer.contract_binding,)),
+            catalog=ContractCatalog((observer.contract,)),
         )
 
     def _reconcile_claim(self, source: SourceConfig, claim_root: Path) -> dict[str, object]:
@@ -1451,7 +1451,7 @@ class FtpSpool:
         files = tuple(
             ProducerFile(
                 source=claim_root / "payload" / str(row["path"]),
-                artifact_id=str(row["artifact_id"]),
+                artifact_id=ArtifactId(str(row["artifact_id"])),
                 materialization_hint=PurePosixPath(str(row["path"])).parts,
                 observation=self._load_observation(claim_root, row),
             )
