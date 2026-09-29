@@ -14,7 +14,7 @@ from riverhog_protocol import (
     CollectionArtifactProvenanceBindingDocument,
 )
 from riverhog_provenance import JournalSummary, validate_journal_chunks
-from riverhog_provenance_contracts import require_canonical_uuid_urn
+from riverhog_provenance_contracts import ExternalReference, require_canonical_uuid_urn
 
 from riverhog_client.processing.models import ClaimedArtifact
 
@@ -177,6 +177,39 @@ class ClaimedProvenance:
                 require_exact_tail=True,
                 require_profiles=False,
             )
+
+    def resolve_external_reference(self, reference: Mapping[str, Any]) -> dict[str, Any]:
+        """Verify an exact foreign assertion in this collection's frozen corpus."""
+
+        selected = ExternalReference.model_validate(reference)
+        journal = next(
+            (item for item in self.iter_journals() if item.journal_id == selected.journal_id),
+            None,
+        )
+        if journal is None:
+            raise ValueError("referenced canonical journal is absent from the selected root")
+        with self.stream_journal(journal) as chunks:
+            summary = validate_journal_chunks(chunks, require_profiles=False)
+        if summary.journal_id != selected.journal_id:
+            raise ValueError("referenced canonical journal identity differs")
+        expected_entry = selected.entry.model_dump(mode="json")
+        frame = next((item for item in summary.frames if item.reference == expected_entry), None)
+        if frame is None:
+            raise ValueError("referenced canonical entry anchor is absent")
+        for rows in frame.document["body"].get("assertions", {}).values():
+            for row in rows:
+                if row["assertion_id"] != selected.assertion_id:
+                    continue
+                if row["id"] != selected.object_id or row["type"] != selected.object_type:
+                    raise ValueError("referenced canonical assertion differs")
+                return {
+                    "journal_id": selected.journal_id,
+                    "entry": expected_entry,
+                    "assertion_id": selected.assertion_id,
+                    "object_id": selected.object_id,
+                    "object_type": selected.object_type,
+                }
+        raise ValueError("referenced canonical assertion is absent")
 
 
 __all__ = ["ClaimedProvenance", "ClaimedProvenanceApi", "ProvenanceJournal"]
