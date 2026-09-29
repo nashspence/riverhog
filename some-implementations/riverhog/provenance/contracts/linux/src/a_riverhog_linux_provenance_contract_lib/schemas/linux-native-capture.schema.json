@@ -47,12 +47,6 @@
         "type": "object"
       }
     },
-    "extension_details": {
-      "type": "array",
-      "items": {
-        "type": "object"
-      }
-    },
     "noatime_effective": {
       "type": "boolean"
     }
@@ -66,7 +60,6 @@
     "native_metadata",
     "coverage",
     "diagnostics",
-    "extension_details",
     "noatime_effective"
   ]
 }
