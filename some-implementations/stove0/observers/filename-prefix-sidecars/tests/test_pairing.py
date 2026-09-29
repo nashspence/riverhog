@@ -17,16 +17,17 @@ def _locator(
     *,
     context_id: str,
     view_ids: Sequence[str] = (),
+    syntax: str = "posix",
 ) -> LocatorEvidence:
     return LocatorEvidence(
         subject_id=subject_id,
         locator={
             "kind": "filesystem_path",
             "form": "absolute",
-            "syntax": "posix",
+            "syntax": syntax,
             "name": {
                 "kind": "bytes",
-                "encoding": "utf-8",
+                "encoding": "utf-8" if syntax == "posix" else "utf-16le",
                 "bytes": {
                     "encoding": "base64",
                     "data": base64.b64encode(name).decode(),
@@ -143,4 +144,77 @@ def test_source_root_and_parent_units_are_exact() -> None:
     first = _locator("primary", b"/camera/clip.mp4", context_id="context-a", view_ids=(VIEW_A,))
     second = _locator("sidecar", b"/other/clip.xmp", context_id="context-b", view_ids=(VIEW_A,))
     _, candidates = _compare(first, second)
+    assert candidates == ()
+
+
+def test_windows_drive_unc_and_extended_roots_keep_exact_spelling() -> None:
+    first = _locator(
+        "primary",
+        "C:\\camera\\clip.mov".encode("utf-16le"),
+        context_id="context-a",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    second = _locator(
+        "sidecar",
+        "C:\\camera\\clip.xmp".encode("utf-16le"),
+        context_id="context-b",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    _, candidates = _compare(first, second)
+    assert [row.rule for row in candidates] == ["stem"]
+    lowercase_drive = _locator(
+        "sidecar",
+        "c:\\camera\\clip.xmp".encode("utf-16le"),
+        context_id="context-b",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    assert _compare(first, lowercase_drive)[1] == ()
+    extended = _locator(
+        "sidecar",
+        "\\\\?\\C:\\camera\\clip.xmp".encode("utf-16le"),
+        context_id="context-b",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    assert _compare(first, extended)[1] == ()
+    unc_primary = _locator(
+        "primary",
+        "\\\\server\\share\\clip.mov".encode("utf-16le"),
+        context_id="context-a",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    unc_sidecar = _locator(
+        "sidecar",
+        "\\\\server\\share\\clip.xmp".encode("utf-16le"),
+        context_id="context-b",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    assert [row.rule for row in _compare(unc_primary, unc_sidecar)[1]] == ["stem"]
+
+
+def test_filename_candidates_do_not_use_arbitrary_prefix_or_stream_suffix() -> None:
+    first = _locator("primary", b"/camera/clip2.mov", context_id="a", view_ids=(VIEW_A,))
+    sidecar = _locator("sidecar", b"/camera/clip.xmp", context_id="b", view_ids=(VIEW_A,))
+    assert _compare(first, sidecar)[1] == ()
+    stream = _locator(
+        "sidecar",
+        "C:\\camera\\clip.xmp:stream".encode("utf-16le"),
+        context_id="b",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    windows_primary = _locator(
+        "primary",
+        "C:\\camera\\clip.mov".encode("utf-16le"),
+        context_id="a",
+        view_ids=(VIEW_A,),
+        syntax="windows",
+    )
+    statuses, candidates = _compare(windows_primary, stream)
+    assert statuses[1].status == "unsupported"
     assert candidates == ()
