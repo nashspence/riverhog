@@ -108,7 +108,7 @@ from riverhog_core.runtime_config import RuntimeConfig
 _MIN_LEASE_SECONDS = 30
 _MAX_LEASE_SECONDS = 24 * 60 * 60
 _DEFAULT_LEASE_SECONDS = 30 * 60
-_CAPABILITY_ACTIONS = frozenset({"read-inputs", "write-output"})
+_CAPABILITY_ACTIONS = frozenset({"read-inputs", "read-provenance", "write-output"})
 _CAPABILITY_AUDIENCE = re.compile(r"^[a-z0-9][a-z0-9._:/-]{0,299}$", re.ASCII)
 _SOURCE_COLLECTION_RETIREMENT_POLICIES = frozenset({"retain", "retire-after-settlement"})
 _CLAIM_STATES = closed_literal_values(ClaimState)
@@ -933,26 +933,26 @@ class SqlAlchemyCollectionWorkflowService:
                 return None
             grants: set[ApplicationAccess] = set()
             grants.add(ApplicationAccess(COLLECTION_PROCESSING_EXECUTE))
-            if "read-inputs" in actions:
-                representative_collection_id = session.scalar(
+            if {"read-inputs", "read-provenance"} & set(actions):
+                collection_ids = session.scalars(
                     select(CollectionProcessingCapabilityArtifactRecord.collection_id)
                     .where(
                         CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id
                     )
-                    .order_by(CollectionProcessingCapabilityArtifactRecord.artifact_order)
-                    .limit(1)
+                    .distinct()
                 )
-                if representative_collection_id is None:
+                found = False
+                for collection_id in collection_ids:
+                    found = True
+                    resource = collection_resource(collection_id)
+                    grants.add(ApplicationAccess(CATALOG_READ, resource))
+                    if "read-inputs" in actions:
+                        grants.add(ApplicationAccess(RETRIEVAL_MANAGE, resource))
+                    if "read-provenance" in actions:
+                        grants.add(ApplicationAccess(PROVENANCE_READ, resource))
+                        grants.add(ApplicationAccess(PROVENANCE_EXPORT, resource))
+                if not found:
                     return None
-                resource = collection_resource(representative_collection_id)
-                grants.update(
-                    {
-                        ApplicationAccess(CATALOG_READ, resource),
-                        ApplicationAccess(RETRIEVAL_MANAGE, resource),
-                        ApplicationAccess(PROVENANCE_READ, resource),
-                        ApplicationAccess(PROVENANCE_EXPORT, resource),
-                    }
-                )
             if "write-output" in actions:
                 grants.add(ApplicationAccess(COLLECTION_PROCESSING_EXECUTE))
                 grants.add(ApplicationAccess(COLLECTIONS_CREATE))
@@ -969,7 +969,7 @@ class SqlAlchemyCollectionWorkflowService:
                 .where(CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id)
                 .limit(1)
             )
-            if "read-inputs" in actions and has_artifact_scope is None:
+            if {"read-inputs", "read-provenance"} & set(actions) and has_artifact_scope is None:
                 return None
             return Principal(
                 id=principal_id,
@@ -978,7 +978,9 @@ class SqlAlchemyCollectionWorkflowService:
                 # stable across capability refreshes.
                 key_id=claim.consumer_key_id,
                 access=frozenset(grants),
-                artifact_scope_capability_id=(capability.id if "read-inputs" in actions else None),
+                artifact_scope_capability_id=(
+                    capability.id if {"read-inputs", "read-provenance"} & set(actions) else None
+                ),
             )
 
     def record_consideration_evidence(
