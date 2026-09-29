@@ -54,7 +54,7 @@ class CatalogSyncModel(BaseModel):
 class CatalogSyncDescriptor(CatalogSyncModel):
     collection_id: CollectionId
     archive_root_sha256: CatalogSyncIdentity
-    content_identity: CatalogSyncIdentity
+    artifact_set_identity: CatalogSyncIdentity
     description: CollectionDescription | None
     description_revision: int = Field(
         ge=0,

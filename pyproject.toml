@@ -43,6 +43,7 @@ a-riverhog-ftp-spool-client = { workspace = true }
 a-riverhog-witness-contract-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }
+riverhog-materialization = { workspace = true }
 riverhog-provenance = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 a-riverhog-linux-provenance-contract-lib = { workspace = true }

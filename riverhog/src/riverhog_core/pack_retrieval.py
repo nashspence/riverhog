@@ -8,13 +8,12 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from riverhog_age import AEAD_TAG_SIZE, CHUNK_SIZE, ResumableAgeScryptSession, UploadState
-from riverhog_protocol.paths import validate_canonical_relpath
+from riverhog_protocol.artifact_identity import ArtifactId
 
 from riverhog_core.age_range import (
     iter_decrypt_age_plaintext_range,
     plan_age_plaintext_range,
 )
-from riverhog_core.pack_volume import RESERVED_ARCHIVE_PREFIX
 from riverhog_core.ports.archive_objects import ArchiveObjectRangeStore
 from riverhog_core.streaming_age import ResumableAgeSessionCache
 from riverhog_core.throughput import (
@@ -60,15 +59,13 @@ class PackVolumeRetrievalSource:
 
 @dataclass(frozen=True, slots=True)
 class PackMemberRetrievalSource:
-    path: str
+    artifact_id: str
     bytes: int
     sha256: str
     data_offset: int
 
     def __post_init__(self) -> None:
-        path = validate_canonical_relpath(self.path)
-        if path.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError("pack retrieval member path is invalid")
+        ArtifactId(self.artifact_id)
         if self.bytes < 0 or self.data_offset < 0:
             raise ValueError("pack retrieval member range is invalid")
         if _SHA256_RE.fullmatch(self.sha256) is None:
@@ -77,7 +74,7 @@ class PackMemberRetrievalSource:
 
 @dataclass(frozen=True, slots=True)
 class PackMemberRange:
-    path: str
+    artifact_id: str
     bytes: int
     sha256: str
     data_offset: int
@@ -98,7 +95,7 @@ class PackCiphertextRequest:
     ciphertext_bytes: int
     first_chunk: int
     last_chunk: int
-    member_paths: tuple[str, ...]
+    member_ids: tuple[str, ...]
 
     @property
     def ciphertext_end(self) -> int:
@@ -153,12 +150,12 @@ def plan_pack_range_retrieval(
     effective_policy = policy or PackRangeRetrievalPolicy()
     seen: set[str] = set()
     planned_members: list[PackMemberRange] = []
-    for member in sorted(members, key=lambda current: (current.data_offset, current.path)):
-        if member.path in seen:
-            raise ValueError(f"pack range retrieval repeats member path: {member.path}")
+    for member in sorted(members, key=lambda current: (current.data_offset, current.artifact_id)):
+        if member.artifact_id in seen:
+            raise ValueError(f"pack range retrieval repeats artifact ID: {member.artifact_id}")
         if member.data_offset + member.bytes > source.plaintext_bytes:
-            raise ValueError(f"pack member range exceeds its volume: {member.path}")
-        seen.add(member.path)
+            raise ValueError(f"pack member range exceeds its volume: {member.artifact_id}")
+        seen.add(member.artifact_id)
         range_plan = plan_age_plaintext_range(
             age_state=source.age_state_json,
             total_plaintext_bytes=source.plaintext_bytes,
@@ -167,7 +164,7 @@ def plan_pack_range_retrieval(
         )
         planned_members.append(
             PackMemberRange(
-                path=member.path,
+                artifact_id=member.artifact_id,
                 bytes=member.bytes,
                 sha256=member.sha256,
                 data_offset=member.data_offset,
@@ -267,7 +264,7 @@ class PackMemberRangeReader:
             raise ValueError("pack member requested range is invalid")
         started = time.perf_counter()
         requested = PackMemberRetrievalSource(
-            path=member.path,
+            artifact_id=member.artifact_id,
             bytes=size,
             sha256=member.sha256,
             data_offset=member.data_offset + offset,
@@ -282,7 +279,7 @@ class PackMemberRangeReader:
                 self._timing_observer(
                     TransferTiming(
                         operation="pack_retrieval_member",
-                        identity=f"{source.volume_id}:{current.path}",
+                        identity=f"{source.volume_id}:{current.artifact_id}",
                         plaintext_bytes=0,
                         stored_bytes=0,
                         queue_wait_seconds=0.0,
@@ -364,21 +361,21 @@ class PackMemberRangeReader:
                     emitted += len(chunk)
                     if emitted > current.bytes:
                         raise ValueError(
-                            f"pack member range is longer than declared: {current.path}"
+                            f"pack member range is longer than declared: {current.artifact_id}"
                         )
                     digest.update(chunk)
                     downstream_started = time.perf_counter()
                     yield chunk
                     downstream_seconds += time.perf_counter() - downstream_started
         if emitted != current.bytes:
-            raise ValueError(f"pack member range byte count mismatch: {current.path}")
+            raise ValueError(f"pack member range byte count mismatch: {current.artifact_id}")
         if offset == 0 and size == member.bytes and digest.hexdigest() != member.sha256:
-            raise ValueError(f"pack member verification failed: {current.path}")
+            raise ValueError(f"pack member verification failed: {current.artifact_id}")
         if self._timing_observer is not None:
             self._timing_observer(
                 TransferTiming(
                     operation="pack_retrieval_member",
-                    identity=f"{source.volume_id}:{current.path}",
+                    identity=f"{source.volume_id}:{current.artifact_id}",
                     plaintext_bytes=current.bytes,
                     stored_bytes=age_plan.ciphertext_bytes,
                     queue_wait_seconds=byte_wait_seconds + request_wait_seconds,
@@ -452,7 +449,7 @@ class PackRangeBatchReader:
             plan.source,
             tuple(
                 PackMemberRetrievalSource(
-                    path=current.path,
+                    artifact_id=current.artifact_id,
                     bytes=current.bytes,
                     sha256=current.sha256,
                     data_offset=current.data_offset,
@@ -466,7 +463,7 @@ class PackRangeBatchReader:
         if not plan.members:
             return {}
 
-        members_by_path = {current.path: current for current in plan.members}
+        members_by_id = {current.artifact_id: current for current in plan.members}
         out: dict[str, bytes] = {}
         state = UploadState.from_json_bytes(plan.source.age_state_json)
         session = self._session_cache.get(state)
@@ -474,7 +471,7 @@ class PackRangeBatchReader:
         for member in plan.members:
             if member.bytes == 0:
                 _require_verified_member(member, b"")
-                out[member.path] = b""
+                out[member.artifact_id] = b""
 
         futures: list[Future[_PackRequestResult]] = []
         with ThreadPoolExecutor(
@@ -487,7 +484,7 @@ class PackRangeBatchReader:
                         self._read_request,
                         plan=plan,
                         request=request,
-                        members_by_path=members_by_path,
+                        members_by_id=members_by_id,
                         state=state,
                         session=session,
                         prefix_bytes=prefix_bytes,
@@ -510,7 +507,7 @@ class PackRangeBatchReader:
                     future.cancel()
                 raise
 
-        if set(out) != set(members_by_path):
+        if set(out) != set(members_by_id):
             raise RuntimeError("pack range retrieval did not return every requested member")
         return out
 
@@ -519,7 +516,7 @@ class PackRangeBatchReader:
         *,
         plan: PackRangeRetrievalPlan,
         request: PackCiphertextRequest,
-        members_by_path: dict[str, PackMemberRange],
+        members_by_id: dict[str, PackMemberRange],
         state: UploadState,
         session: ResumableAgeScryptSession,
         prefix_bytes: int,
@@ -588,15 +585,15 @@ class PackRangeBatchReader:
         if remote_bytes != request.ciphertext_bytes:
             raise ValueError("pack range response byte count mismatch")
         selected: dict[str, bytes] = {}
-        for path in request.member_paths:
-            member = members_by_path[path]
+        for artifact_id in request.member_ids:
+            member = members_by_id[artifact_id]
             relative_start = member.data_offset - plaintext_start
             relative_end = relative_start + member.bytes
             if relative_start < 0 or relative_end > len(plaintext):
                 raise RuntimeError("pack member is outside its coalesced plaintext range")
             content = plaintext[relative_start:relative_end]
             _require_verified_member(member, content)
-            selected[path] = content
+            selected[artifact_id] = content
         return _PackRequestResult(
             members=selected,
             timing=TransferTiming(
@@ -623,7 +620,7 @@ def _coalesced_requests(
     if not nonempty:
         return ()
     oversized = [
-        current.path
+        current.artifact_id
         for current in nonempty
         if current.ciphertext_bytes > policy.max_request_ciphertext_bytes
     ]
@@ -638,7 +635,7 @@ def _coalesced_requests(
     end = first.ciphertext_end
     first_chunk = first.first_chunk
     last_chunk = _required_last_chunk(first)
-    paths = [first.path]
+    member_ids = [first.artifact_id]
 
     for current in nonempty[1:]:
         current_end = current.ciphertext_end
@@ -652,7 +649,7 @@ def _coalesced_requests(
         if merge:
             end = merged_end
             last_chunk = max(last_chunk, _required_last_chunk(current))
-            paths.append(current.path)
+            member_ids.append(current.artifact_id)
             continue
         requests.append(
             PackCiphertextRequest(
@@ -661,14 +658,14 @@ def _coalesced_requests(
                 ciphertext_bytes=end - start,
                 first_chunk=first_chunk,
                 last_chunk=last_chunk,
-                member_paths=tuple(paths),
+                member_ids=tuple(member_ids),
             )
         )
         start = current.ciphertext_offset
         end = current_end
         first_chunk = current.first_chunk
         last_chunk = _required_last_chunk(current)
-        paths = [current.path]
+        member_ids = [current.artifact_id]
 
     requests.append(
         PackCiphertextRequest(
@@ -677,7 +674,7 @@ def _coalesced_requests(
             ciphertext_bytes=end - start,
             first_chunk=first_chunk,
             last_chunk=last_chunk,
-            member_paths=tuple(paths),
+            member_ids=tuple(member_ids),
         )
     )
     return tuple(requests)
@@ -701,16 +698,16 @@ def _verify_member_bytes(
             continue
         byte_count += len(data)
         if byte_count > member.bytes:
-            raise ValueError(f"pack member range is longer than declared: {member.path}")
+            raise ValueError(f"pack member range is longer than declared: {member.artifact_id}")
         digest.update(data)
         yield data
     if byte_count != member.bytes or digest.hexdigest() != member.sha256:
-        raise ValueError(f"pack member range verification failed: {member.path}")
+        raise ValueError(f"pack member range verification failed: {member.artifact_id}")
 
 
 def _require_verified_member(member: PackMemberRange, content: bytes) -> None:
     if len(content) != member.bytes or hashlib.sha256(content).hexdigest() != member.sha256:
-        raise ValueError(f"pack member range verification failed: {member.path}")
+        raise ValueError(f"pack member range verification failed: {member.artifact_id}")
 
 
 def _read_exact(chunks: Iterable[bytes], *, expected_bytes: int, label: str) -> bytes:

@@ -13,6 +13,8 @@ from riverhog_canonical_json import parse_scalar
 from riverhog_core.app_permissions import COLLECTIONS_DELETE
 from riverhog_protocol import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
+    ArtifactMaterializationDecisionBatchDocument,
+    CollectionArtifactProvenanceBindingBatchDocument,
     CollectionIdParameter,
     CollectionSort,
     CollectionUploadProvenanceJournalCreateDocument,
@@ -55,7 +57,7 @@ from riverhog_api.schemas.collections import (
     CollectionUploadDiscardPlanOut,
     CollectionUploadDiscardResultOut,
     CollectionUploadProvenanceJournalOut,
-    CollectionUploadSessionFilesRegistrationOut,
+    CollectionUploadSessionArtifactsRegistrationOut,
     CollectionUploadSessionOut,
     CollectionUploadTagsOut,
     CollectionUploadUnitOut,
@@ -65,9 +67,9 @@ from riverhog_api.schemas.collections import (
     DeleteCollectionRequest,
     DiscardCollectionUploadRequest,
     ListCollectionsOut,
-    ListCollectionUploadSessionFilesOut,
+    ListCollectionUploadSessionArtifactsOut,
     ListCollectionUploadSessionsOut,
-    RegisterCollectionUploadSessionFilesRequest,
+    RegisterCollectionUploadSessionArtifactsRequest,
     ReplaceCollectionDescriptionRequest,
     SearchCollectionsRequest,
 )
@@ -264,8 +266,6 @@ def create_or_resume_collection_upload_session(
         copy_to=request.copy_to,
         initiator=principal,
         event_context=request.event_context,
-        provenance_mode=request.provenance_mode,
-        provenance_omission_reason=request.provenance_omission_reason,
         custody_mode=request.custody_mode,
     )
     return CreateOrResumeCollectionUploadSessionOut.model_validate(payload)
@@ -292,22 +292,56 @@ def add_collection_upload_session_tags(
 
 
 @router.post(
-    "/collection-upload-sessions/{collection_id}/files",
-    response_model=CollectionUploadSessionFilesRegistrationOut,
+    "/collection-upload-sessions/{collection_id}/artifacts",
+    response_model=CollectionUploadSessionArtifactsRegistrationOut,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def register_collection_upload_session_files(
+def register_collection_upload_session_artifacts(
     collection_id: CollectionIdParameter,
-    request: RegisterCollectionUploadSessionFilesRequest,
+    request: RegisterCollectionUploadSessionArtifactsRequest,
     container: ContainerDep,
     principal: CollectionCreator,
-) -> CollectionUploadSessionFilesRegistrationOut:
+) -> CollectionUploadSessionArtifactsRegistrationOut:
     container.collection_uploads.require_access(collection_id, principal)
-    payload = container.collection_uploads.register_files(
+    payload = container.collection_uploads.register_artifacts(
         collection_id,
-        [item.model_dump(mode="json") for item in request.files],
+        [item.model_dump(mode="json") for item in request.artifacts],
     )
-    return CollectionUploadSessionFilesRegistrationOut.model_validate(payload)
+    return CollectionUploadSessionArtifactsRegistrationOut.model_validate(payload)
+
+
+@router.post(
+    "/collection-upload-sessions/{collection_id}/provenance/bindings",
+    response_model=CollectionArtifactProvenanceBindingBatchDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def bind_collection_upload_session_artifact_provenance(
+    collection_id: CollectionIdParameter,
+    request: CollectionArtifactProvenanceBindingBatchDocument,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> CollectionArtifactProvenanceBindingBatchDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    return CollectionArtifactProvenanceBindingBatchDocument.model_validate(
+        container.collection_uploads.bind_artifact_provenance(collection_id, request)
+    )
+
+
+@router.post(
+    "/collection-upload-sessions/{collection_id}/materialization-decisions",
+    response_model=ArtifactMaterializationDecisionBatchDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def set_collection_upload_artifact_materialization_decisions(
+    collection_id: CollectionIdParameter,
+    request: ArtifactMaterializationDecisionBatchDocument,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> ArtifactMaterializationDecisionBatchDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    return ArtifactMaterializationDecisionBatchDocument.model_validate(
+        container.collection_uploads.set_artifact_materialization_decisions(collection_id, request)
+    )
 
 
 @router.post(
@@ -417,36 +451,36 @@ def get_collection_upload_session_provenance_journal(
 
 
 @router.get(
-    "/collection-upload-sessions/{collection_id}/files",
-    response_model=ListCollectionUploadSessionFilesOut,
+    "/collection-upload-sessions/{collection_id}/artifacts",
+    response_model=ListCollectionUploadSessionArtifactsOut,
     openapi_extra=mutable_browse_operation(),
 )
-def list_collection_upload_session_files(
+def list_collection_upload_session_artifacts(
     collection_id: CollectionIdParameter,
     container: ContainerDep,
     principal: CollectionUploadReader,
     page_size: int = Query(25, ge=1, le=100),
     page_token: BrowsePageTokenQuery = None,
-) -> ListCollectionUploadSessionFilesOut:
+) -> ListCollectionUploadSessionArtifactsOut:
     container.collection_uploads.require_read_access(collection_id, principal)
     selectors = canonical_selectors(collection_id=collection_id)
-    payload = container.collection_uploads.list_files(
+    payload = container.collection_uploads.list_artifacts(
         collection_id,
         page_size=page_size,
         position=page_position(
             container,
             principal,
-            operation="list_collection_upload_session_files",
+            operation="list_collection_upload_session_artifacts",
             page_token=page_token,
             selectors=selectors,
         ),
     )
-    return ListCollectionUploadSessionFilesOut.model_validate(
+    return ListCollectionUploadSessionArtifactsOut.model_validate(
         page_payload(
             payload,
             container=container,
             principal=principal,
-            operation="list_collection_upload_session_files",
+            operation="list_collection_upload_session_artifacts",
             selectors=selectors,
         )
     )

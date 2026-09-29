@@ -58,7 +58,43 @@ class CollectionArtifactProvenanceBindingBatchDocument(BaseModel):
         return self
 
 
+class ArtifactMaterializationDecisionDocument(BaseModel):
+    """Publication policy for one preallocated collection member."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    artifact_id: ArtifactId
+    allow_missing_materialization_hint: bool = False
+
+
+class ArtifactMaterializationDecisionBatchDocument(BaseModel):
+    """One bounded, ID-ordered slice of explicit member decisions."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    decisions: list[ArtifactMaterializationDecisionDocument] = Field(
+        min_length=1,
+        max_length=COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-artifact-publication-decisions",
+                "progression": "artifact-id",
+            }
+        },
+    )
+
+    @model_validator(mode="after")
+    def validate_order(self) -> Self:
+        identities = tuple(item.artifact_id for item in self.decisions)
+        if identities != tuple(sorted(set(identities))):
+            raise ValueError("artifact materialization decisions must be strictly ID ordered")
+        return self
+
+
 __all__ = [
+    "ArtifactMaterializationDecisionBatchDocument",
+    "ArtifactMaterializationDecisionDocument",
     "CollectionArtifactProvenanceBindingBatchDocument",
     "CollectionArtifactProvenanceBindingDocument",
     "JournalAnchorDocument",

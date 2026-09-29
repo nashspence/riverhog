@@ -452,7 +452,7 @@ class PackVolumeUploader:
             volume_id=plan.volume_id,
             sequence=plan.sequence,
             relative_path=checkpoint.relative_path,
-            files=len(plan.members),
+            artifacts=len(plan.members),
             source_bytes=sum(current.bytes for current in plan.members),
             plaintext_bytes=plan.plaintext_bytes,
             age_state_json=checkpoint.age_state_json,

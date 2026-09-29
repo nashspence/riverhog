@@ -230,7 +230,7 @@ class SqlAlchemyCatalogSyncService:
                 _descriptor(
                     collection_id=int(row.id),
                     archive_root_sha256=row.archive_root_sha256,
-                    content_identity=row.content_identity,
+                    artifact_set_identity=row.artifact_set_identity,
                     description=row.description,
                     description_revision=row.description_revision,
                     description_identity=row.description_identity,
@@ -359,7 +359,7 @@ class SqlAlchemyCatalogSyncService:
                             dict(
                                 collection_id=format_scalar("sequence63", event.collection_id),
                                 archive_root_sha256=event.archive_root_sha256,
-                                content_identity=event.content_identity,
+                                artifact_set_identity=event.artifact_set_identity,
                                 description=event.description,
                                 description_revision=event.description_revision,
                                 description_identity=event.description_identity,
@@ -964,7 +964,7 @@ def _catalog_collection_page_statement(
         select(
             CollectionRecord.id,
             CollectionRecord.archive_root_sha256,
-            CollectionRecord.content_identity,
+            CollectionRecord.artifact_set_identity,
             CollectionRecord.description,
             CollectionRecord.description_revision,
             CollectionRecord.description_identity,
@@ -1049,7 +1049,7 @@ def _descriptor(
     *,
     collection_id: int,
     archive_root_sha256: str | None,
-    content_identity: str,
+    artifact_set_identity: str,
     description: str | None,
     description_revision: int,
     description_identity: str,
@@ -1063,7 +1063,7 @@ def _descriptor(
         dict(
             collection_id=format_scalar("sequence63", collection_id),
             archive_root_sha256=archive_root_sha256,
-            content_identity=content_identity,
+            artifact_set_identity=artifact_set_identity,
             description=description,
             description_revision=description_revision,
             description_identity=description_identity,

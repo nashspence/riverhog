@@ -8,7 +8,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    PortableCollectionFile,
+    PortableCollectionArtifact,
     PortableCollectionHeader,
     PortableCollectionInventoryPage,
 )
@@ -297,7 +297,7 @@ class RetrievalService(Protocol):
         principal: Principal | None = None,
     ) -> tuple[
         PortableCollectionHeader,
-        Iterator[PortableCollectionFile],
+        Iterator[PortableCollectionArtifact],
         str,
         int,
         int,

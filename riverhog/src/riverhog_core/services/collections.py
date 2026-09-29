@@ -400,9 +400,6 @@ def _collection_list_filters(
                 CollectionTagRecord.tag_sha256 == CollectionTagMembershipRecord.tag_sha256,
             )
             .where(CollectionTagRecord.search_text.like(pattern, escape="\\")),
-            select(CollectionArtifactRecord.collection_id.label("collection_id")).where(
-                CollectionArtifactRecord.path_search_text.like(pattern, escape="\\")
-            ),
         ).subquery()
         filters.append(CollectionRecord.id.in_(select(matching_ids.c.collection_id)))
     if normalized_format is not None:
@@ -548,8 +545,8 @@ def _collection_summary_query() -> tuple[Any, dict[str, Any]]:
     return (
         select(
             CollectionRecord,
-            CollectionRecord.file_count.label("files"),
-            CollectionRecord.file_bytes.label("bytes"),
+            CollectionRecord.artifact_count.label("files"),
+            CollectionRecord.artifact_bytes.label("bytes"),
             archive_copy_count.label("archive_copy_count"),
             (
                 remote_storage_bytes
@@ -566,8 +563,8 @@ def _collection_summary_query() -> tuple[Any, dict[str, Any]]:
         {
             "id": CollectionRecord.id,
             "created_at": CollectionRecord.created_at,
-            "bytes": CollectionRecord.file_bytes,
-            "files": CollectionRecord.file_count,
+            "bytes": CollectionRecord.artifact_bytes,
+            "files": CollectionRecord.artifact_count,
         },
     )
 
@@ -598,7 +595,7 @@ def _collection_summary(
             if int(row.current_tag_copies) == int(row.retained_archive_copy_count)
             else "reconciling"
         ),
-        content_identity=collection.content_identity,
+        artifact_set_identity=collection.artifact_set_identity,
         archive_root_sha256=str(row.archive_root_sha256),
         encryption_format=collection.encryption_format,
         passphrase_id=collection.passphrase_id,

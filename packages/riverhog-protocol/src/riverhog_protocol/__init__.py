@@ -12,6 +12,7 @@ from riverhog_protocol.errors import (
     InvalidPath,
     InvalidRange,
     InvalidState,
+    MaterializationDecisionRequired,
     NotFound,
     PreconditionFailed,
     PreconditionRequired,
@@ -36,6 +37,7 @@ __all__ = [
     "InvalidRange",
     "InvalidPath",
     "InvalidState",
+    "MaterializationDecisionRequired",
     "NotFound",
     "PreconditionFailed",
     "PreconditionRequired",
@@ -234,6 +236,8 @@ from riverhog_protocol.portable_collection import (
 )
 from riverhog_protocol.principal_ids import PrincipalId, validate_principal_id
 from riverhog_protocol.provenance_transport import (
+    ArtifactMaterializationDecisionBatchDocument,
+    ArtifactMaterializationDecisionDocument,
     CollectionArtifactProvenanceBindingBatchDocument,
     CollectionArtifactProvenanceBindingDocument,
     JournalAnchorDocument,
@@ -312,6 +316,8 @@ __all__ += [
     "ArtifactDisposition",
     "ArtifactId",
     "ArtifactMemberIdentityDocument",
+    "ArtifactMaterializationDecisionBatchDocument",
+    "ArtifactMaterializationDecisionDocument",
     "CollectionArtifactProvenanceBindingBatchDocument",
     "CollectionArtifactProvenanceBindingDocument",
     "CollectionUploadArtifactBatchDocument",

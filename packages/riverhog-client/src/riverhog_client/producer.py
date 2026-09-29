@@ -119,7 +119,7 @@ class ProducerArtifactIdentity:
 class ProducedCollection:
     collection_id: CollectionId
     archive_root_sha256: str
-    content_identity: str
+    artifact_set_identity: str
     receipt: dict[str, Any]
 
 
@@ -1067,20 +1067,20 @@ def _finalized_receipt(payload: Mapping[str, Any]) -> ProducedCollection:
     if not isinstance(collection, Mapping):
         raise RuntimeError("finalized Riverhog upload has no collection receipt")
     collection_id = int(collection["id"])
-    content_identity = str(
-        payload.get("content_identity") or collection.get("content_identity") or ""
+    artifact_set_identity = str(
+        payload.get("artifact_set_identity") or collection.get("artifact_set_identity") or ""
     )
     archive_root_sha256 = str(
         collection.get("archive_root_sha256") or payload.get("archive_root_sha256") or ""
     )
     if len(archive_root_sha256) != 64:
         raise RuntimeError("finalized Riverhog receipt has no immutable archive-root identity")
-    if len(content_identity) != 64:
+    if len(artifact_set_identity) != 64:
         raise RuntimeError("finalized Riverhog receipt has no content identity")
     return ProducedCollection(
         collection_id=collection_id,
         archive_root_sha256=archive_root_sha256,
-        content_identity=content_identity,
+        artifact_set_identity=artifact_set_identity,
         receipt=dict(payload),
     )
 

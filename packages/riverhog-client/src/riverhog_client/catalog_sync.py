@@ -84,7 +84,7 @@ class CatalogReplica:
                     collection_id INTEGER NOT NULL CHECK (collection_id > 0),
                     revision INTEGER NOT NULL CHECK (revision > 0),
                     archive_root_sha256 TEXT,
-                    content_identity TEXT,
+                    artifact_set_identity TEXT,
                     description TEXT,
                     description_revision INTEGER,
                     description_identity TEXT,
@@ -100,7 +100,7 @@ class CatalogReplica:
                            AND departure_cause IS NOT NULL
                            AND departure_cause IN ('collection_deleted', 'visibility_lost')
                            AND archive_root_sha256 IS NULL
-                           AND content_identity IS NULL
+                           AND artifact_set_identity IS NULL
                            AND description IS NULL
                            AND description_revision IS NULL
                            AND description_identity IS NULL
@@ -109,7 +109,7 @@ class CatalogReplica:
                         OR departed = 0
                            AND departure_cause IS NULL
                            AND length(archive_root_sha256) = 64
-                           AND length(content_identity) = 64
+                           AND length(artifact_set_identity) = 64
                            AND description_revision >= 0
                            AND length(description_identity) = 64
                            AND tag_revision >= 1
@@ -378,7 +378,7 @@ class CatalogReplica:
             parameters.append(limit)
             rows = db.execute(
                 f"""
-                SELECT collection_id, revision, archive_root_sha256, content_identity,
+                SELECT collection_id, revision, archive_root_sha256, artifact_set_identity,
                        description, description_revision, description_identity,
                        tag_revision, tag_set_identity
                 FROM catalog_replica_collections
@@ -395,7 +395,7 @@ class CatalogReplica:
                         collection_id=str(row["collection_id"]),
                         revision=str(row["revision"]),
                         archive_root_sha256=str(row["archive_root_sha256"]),
-                        content_identity=str(row["content_identity"]),
+                        artifact_set_identity=str(row["artifact_set_identity"]),
                         description=row["description"],
                         description_revision=int(row["description_revision"]),
                         description_identity=str(row["description_identity"]),
@@ -469,7 +469,7 @@ class CatalogReplica:
                 raise RuntimeError("catalog replica is not synchronized for its current view")
             row = db.execute(
                 """
-                SELECT collection_id, revision, archive_root_sha256, content_identity,
+                SELECT collection_id, revision, archive_root_sha256, artifact_set_identity,
                        description, description_revision, description_identity,
                        tag_revision, tag_set_identity
                 FROM catalog_replica_collections
@@ -484,7 +484,7 @@ class CatalogReplica:
                     collection_id=str(row["collection_id"]),
                     revision=str(row["revision"]),
                     archive_root_sha256=str(row["archive_root_sha256"]),
-                    content_identity=str(row["content_identity"]),
+                    artifact_set_identity=str(row["artifact_set_identity"]),
                     description=row["description"],
                     description_revision=int(row["description_revision"]),
                     description_identity=str(row["description_identity"]),
@@ -736,7 +736,7 @@ class CatalogReplica:
     ) -> None:
         revision = int(item.revision)
         root = None if departed else item.archive_root_sha256  # type: ignore[union-attr]
-        content = None if departed else item.content_identity  # type: ignore[union-attr]
+        content = None if departed else item.artifact_set_identity  # type: ignore[union-attr]
         description = None if departed else item.description  # type: ignore[union-attr]
         description_revision = None if departed else item.description_revision  # type: ignore[union-attr]
         description_identity = None if departed else item.description_identity  # type: ignore[union-attr]
@@ -750,7 +750,7 @@ class CatalogReplica:
         if existing is not None and int(existing["revision"]) == revision:
             if (
                 existing["archive_root_sha256"],
-                existing["content_identity"],
+                existing["artifact_set_identity"],
                 existing["description"],
                 existing["description_revision"],
                 existing["description_identity"],
@@ -775,14 +775,14 @@ class CatalogReplica:
             """
             INSERT INTO catalog_replica_collections (
                 generation, collection_id, revision,
-                archive_root_sha256, content_identity, description,
+                archive_root_sha256, artifact_set_identity, description,
                 description_revision, description_identity,
                 tag_revision, tag_set_identity, departed, departure_cause
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (generation, collection_id) DO UPDATE SET
                 revision = excluded.revision,
                 archive_root_sha256 = excluded.archive_root_sha256,
-                content_identity = excluded.content_identity,
+                artifact_set_identity = excluded.artifact_set_identity,
                 description = excluded.description,
                 description_revision = excluded.description_revision,
                 description_identity = excluded.description_identity,

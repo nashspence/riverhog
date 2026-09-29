@@ -1735,10 +1735,10 @@ class SqlAlchemyArchiveCopyJobService:
                     CollectionArchiveArtifactObjectRecord(
                         collection_id=collection_id,
                         store=destination_store,
-                        path=placement.path,
+                        artifact_id=placement.artifact_id,
                         sequence=placement.sequence,
                         object_id=source.object_id,
-                        file_offset=placement.file_offset,
+                        artifact_offset=placement.artifact_offset,
                         object_offset=placement.object_offset,
                         bytes=placement.bytes,
                         member=placement.member,
@@ -1863,8 +1863,7 @@ class SqlAlchemyArchiveCopyJobService:
                 raise Conflict("archive copy result has no archive volume")
             collection = session.get(CollectionRecord, collection_id)
             assert collection is not None
-            if collection.provenance_mode != "omitted":
-                provenance_kinds = set(
+            provenance_kinds = set(
                     session.scalars(
                         select(CollectionArchiveObjectRecord.kind)
                         .where(
@@ -1880,13 +1879,13 @@ class SqlAlchemyArchiveCopyJobService:
                         )
                         .distinct()
                     )
-                )
-                if provenance_kinds != {
-                    "provenance-root",
-                    "provenance-volume-metadata",
-                    "provenance-terminal",
-                }:
-                    raise Conflict("archive copy provenance authority is incomplete")
+            )
+            if provenance_kinds != {
+                "provenance-root",
+                "provenance-volume-metadata",
+                "provenance-terminal",
+            }:
+                raise Conflict("archive copy provenance authority is incomplete")
             uploaded_at = session.scalar(
                 select(func.max(CollectionArchiveObjectRecord.uploaded_at)).where(
                     CollectionArchiveObjectRecord.collection_id == collection_id,
@@ -2257,10 +2256,8 @@ def _volume_metadata(source: CollectionArchiveObjectRecord) -> dict[str, str]:
         placement = source.placements[0]
         metadata.update(
             {
-                "riverhog-source-path-sha256": hashlib.sha256(
-                    placement.path.encode("utf-8")
-                ).hexdigest(),
-                "riverhog-file-offset": str(placement.file_offset),
+                "riverhog-artifact-id": placement.artifact_id,
+                "riverhog-artifact-offset": str(placement.artifact_offset),
             }
         )
     return metadata

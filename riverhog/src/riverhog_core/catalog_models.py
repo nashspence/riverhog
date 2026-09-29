@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import secrets
+import uuid
 
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX,
@@ -147,6 +148,7 @@ class CollectionRecord(Base):
     archive_generation: Mapped[str] = mapped_column(
         String(64), nullable=False, default=lambda: secrets.token_hex(32)
     )
+    delivery_context_id: Mapped[str] = mapped_column(String, nullable=False)
     artifact_set_identity: Mapped[str] = mapped_column(String(64))
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
@@ -638,8 +640,6 @@ class CollectionProvenanceJournalRecord(Base):
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
     entries: Mapped[int] = mapped_column(BigInteger)
-    agent_count: Mapped[int] = mapped_column(BigInteger)
-    entity_counts_json: Mapped[str] = mapped_column(Text)
     terminal_entry_id: Mapped[str] = mapped_column(String)
     terminal_sequence: Mapped[int] = mapped_column(BigInteger)
     terminal_json_sha256: Mapped[str] = mapped_column(String(64))
@@ -649,7 +649,6 @@ class CollectionProvenanceJournalRecord(Base):
         Index("ix_collection_provenance_journals_sha256", "sha256", "collection_id"),
         CheckConstraint("bytes >= 0", name="ck_provenance_journals_bytes"),
         CheckConstraint("entries >= 0", name="ck_provenance_journals_entries"),
-        CheckConstraint("agent_count >= 0", name="ck_provenance_journals_agent_count"),
         CheckConstraint("terminal_sequence >= 0", name="ck_provenance_journals_terminal_sequence"),
         CheckConstraint("length(sha256) = 64", name="ck_provenance_journals_sha256"),
     )
@@ -2547,6 +2546,9 @@ class CollectionUploadRecord(Base):
     archive_last_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_failure: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_storage_prefix: Mapped[str] = mapped_column(String)
+    delivery_context_id: Mapped[str] = mapped_column(
+        String, nullable=False, default=lambda: f"urn:uuid:{uuid.uuid4()}"
+    )
     planner_checkpoint_json: Mapped[str] = mapped_column(Text)
     archive_tree_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
@@ -2562,6 +2564,9 @@ class CollectionUploadRecord(Base):
     archive_terminal_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     provenance_validation_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
+    )
+    provenance_validation_after_artifact_id: Mapped[str | None] = mapped_column(
+        String(64), nullable=True
     )
     provenance_closure_validated: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default=text("false")
@@ -2982,6 +2987,29 @@ class CollectionUploadArtifactProvenanceBindingRecord(Base):
     )
 
 
+class CollectionUploadArtifactMaterializationDecisionRecord(Base):
+    """Accepted upload decision, separate from immutable canonical history."""
+
+    __tablename__ = "collection_upload_artifact_materialization_decisions"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    allow_missing_materialization_hint: Mapped[bool] = mapped_column(
+        Boolean, nullable=False
+    )
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "artifact_id"],
+            [
+                "collection_upload_artifacts.collection_id",
+                "collection_upload_artifacts.artifact_id",
+            ],
+            ondelete="CASCADE",
+        ),
+    )
+
+
 class CollectionUploadProvenanceJournalRecord(Base):
     __tablename__ = "collection_upload_provenance_journals"
 
@@ -3220,7 +3248,7 @@ class CollectionArchiveObjectUploadRecord(Base):
     object_path: Mapped[str] = mapped_column(String)
     plaintext_bytes: Mapped[int] = mapped_column(BigInteger)
     source_bytes: Mapped[int] = mapped_column(BigInteger)
-    source_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    source_artifact_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     source_first_part: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     source_part_count: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     unit_plaintext_bytes: Mapped[int] = mapped_column(BigInteger)
@@ -3256,9 +3284,9 @@ class CollectionArchiveObjectUploadRecord(Base):
         CheckConstraint("plaintext_bytes >= 0", name="ck_archive_object_uploads_plaintext"),
         CheckConstraint("source_bytes >= 0", name="ck_archive_object_uploads_source"),
         CheckConstraint(
-            "kind = 'pack' AND source_path IS NULL AND source_first_part IS NULL "
+            "kind = 'pack' AND source_artifact_id IS NULL AND source_first_part IS NULL "
             "AND source_part_count IS NULL OR "
-            "kind = 'segment' AND source_path IS NOT NULL AND source_first_part >= 0 "
+            "kind = 'segment' AND source_artifact_id IS NOT NULL AND source_first_part >= 0 "
             "AND source_part_count > 0",
             name="ck_archive_object_uploads_source_parts",
         ),

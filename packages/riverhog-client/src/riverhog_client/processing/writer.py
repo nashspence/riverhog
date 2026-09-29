@@ -219,7 +219,7 @@ class DerivedCollectionWriter:
         return DerivedCollectionReceipt(
             collection_id=receipt.collection_id,
             archive_root_sha256=receipt.archive_root_sha256,
-            content_identity=receipt.content_identity,
+            artifact_set_identity=receipt.artifact_set_identity,
             derivation=derivation,
         )
 
@@ -353,7 +353,7 @@ class IncrementalDerivedCollectionWriter:
         return DerivedCollectionReceipt(
             collection_id=produced.collection_id,
             archive_root_sha256=produced.archive_root_sha256,
-            content_identity=produced.content_identity,
+            artifact_set_identity=produced.artifact_set_identity,
             derivation=derivation,
         )
 

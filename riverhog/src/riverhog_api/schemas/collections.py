@@ -10,13 +10,14 @@ from riverhog_protocol import (
     MAX_COLLECTION_DESCRIPTION_REVISION,
     MAX_COLLECTION_TAG_REVISION,
     ArchiveStoreName,
+    ArtifactMemberIdentityDocument,
     CollectionDescription,
     CollectionId,
     CollectionSort,
     CollectionTag,
+    CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyMode,
-    CollectionUploadFileBatchDocument,
     CollectionUploadProvenanceJournalStatusDocument,
     CollectionUploadRegistrationConstraintsDocument,
     CollectionUploadSort,
@@ -24,15 +25,10 @@ from riverhog_protocol import (
     CollectionUploadUnitWorkDocument,
     CollectionUploadVolumeSummaryDocument,
     CollectionUploadWorkBatchDocument,
-    FileProvenanceBinding,
-    ImmutableFileIdentityDocument,
     ProcessingClaimId,
     SortOrder,
     SourceCollectionRetirementClaimReferenceDocument,
     validate_collection_upload_artifact_custody_receipt,
-)
-from riverhog_protocol import (
-    CollectionUploadFileIn as CollectionUploadFileIn,
 )
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKERS_MAX
 from time_formats import CanonicalUtcTimestamp
@@ -213,41 +209,6 @@ _UPLOAD_ARCHIVE_PHASE_SCHEMA: list[dict[str, Any]] = [
         "then": {"properties": {"archive_next_attempt_at": {"type": "null"}}},
     },
 ]
-_UPLOAD_PROVENANCE_STATE_SCHEMA: list[dict[str, Any]] = [
-    {
-        "if": {
-            "properties": {"state": {"const": "finalized"}},
-            "required": ["state"],
-        },
-        "then": {
-            "oneOf": [
-                {
-                    "properties": {
-                        "provenance_mode": {"enum": ["captured", "mixed"]},
-                        "provenance_identity": {
-                            "type": "string",
-                            "pattern": r"^[0-9a-f]{64}$",
-                        },
-                    },
-                    "required": ["provenance_mode", "provenance_identity"],
-                },
-                {
-                    "properties": {
-                        "provenance_mode": {"const": "omitted"},
-                        "provenance_identity": {"type": "null"},
-                    },
-                    "required": ["provenance_mode", "provenance_identity"],
-                },
-            ]
-        },
-        "else": {
-            "properties": {
-                "provenance_mode": {"enum": ["captured", "omitted"]},
-                "provenance_identity": {"type": "null"},
-            }
-        },
-    }
-]
 
 
 def _validate_upload_custody_state(
@@ -327,26 +288,6 @@ def _validate_upload_custody_progress(
 
 
 class CreateOrResumeCollectionUploadSessionRequest(RiverhogModel):
-    model_config = ConfigDict(
-        json_schema_extra={
-            "oneOf": [
-                {
-                    "properties": {
-                        "provenance_mode": {"const": "captured"},
-                        "provenance_omission_reason": {"type": "null"},
-                    }
-                },
-                {
-                    "properties": {
-                        "provenance_mode": {"const": "omitted"},
-                        "provenance_omission_reason": {"type": "string"},
-                    },
-                    "required": ["provenance_mode", "provenance_omission_reason"],
-                },
-            ]
-        }
-    )
-
     idempotency_key: CanonicalVisibleText = Field(max_length=200)
     ingest_source: str | None = None
     description: CollectionDescription | None = None
@@ -366,27 +307,18 @@ class CreateOrResumeCollectionUploadSessionRequest(RiverhogModel):
     use_cache: bool | None = None
     copy_to: list[ArchiveStoreName] | None = None
     event_context: EventContext | None = None
-    provenance_mode: Literal["captured", "omitted"] = "captured"
-    provenance_omission_reason: CanonicalVisibleText | None = None
     custody_mode: CollectionUploadCustodyMode = "producer-retained"
 
     @model_validator(mode="after")
-    def validate_provenance_choice(self) -> CreateOrResumeCollectionUploadSessionRequest:
+    def validate_unique_choices(self) -> CreateOrResumeCollectionUploadSessionRequest:
         if len(set(self.tags)) != len(self.tags):
             raise ValueError("initial collection tags must not contain duplicates")
         if self.copy_to is not None and len(set(self.copy_to)) != len(self.copy_to):
             raise ValueError("copy_to destinations must not contain duplicates")
-        if self.provenance_mode == "captured":
-            if self.provenance_omission_reason is not None:
-                raise ValueError("captured provenance cannot have an omission reason")
-            return self
-        reason = self.provenance_omission_reason
-        if reason is None or not reason or reason.strip() != reason:
-            raise ValueError("omitted provenance requires a canonical omission reason")
         return self
 
 
-class RegisterCollectionUploadSessionFilesRequest(CollectionUploadFileBatchDocument):
+class RegisterCollectionUploadSessionArtifactsRequest(CollectionUploadArtifactBatchDocument):
     pass
 
 
@@ -426,7 +358,7 @@ class CollectionSummaryOut(RiverhogModel):
     tag_revision: int = Field(ge=1, le=MAX_COLLECTION_TAG_REVISION, strict=True)
     tag_set_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
     tag_publication: Literal["current", "reconciling"]
-    content_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    artifact_set_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
     archive_root_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     encryption_format: str
     passphrase_id: str = Field(pattern=r"^[A-Za-z0-9_-]{16,128}$")
@@ -603,27 +535,26 @@ class CollectionDeletionResultOut(RiverhogModel):
     remote_storage_bytes: int
 
 
-class CollectionUploadFileOut(ImmutableFileIdentityDocument):
-    provenance: FileProvenanceBinding | None = None
+class CollectionUploadArtifactOut(ArtifactMemberIdentityDocument):
     custody_receipt: CollectionUploadArtifactCustodyReceiptDocument | None = None
 
 
 CollectionUploadProvenanceJournalOut = CollectionUploadProvenanceJournalStatusDocument
 
 
-class CollectionUploadSessionFilesRegistrationOut(RiverhogModel):
+class CollectionUploadSessionArtifactsRegistrationOut(RiverhogModel):
     collection_id: CollectionId
     ingest_source: str | None
     archive_store: ArchiveStoreName
     encryption_format: str
     passphrase_id: str = Field(pattern=r"^[A-Za-z0-9_-]{16,128}$")
     state: Literal["open"]
-    files: list[CollectionUploadFileOut]
+    artifacts: list[CollectionUploadArtifactOut]
     volumes: list[CollectionUploadVolumeSummaryOut]
 
     @model_validator(mode="after")
-    def validate_custody_receipts(self) -> CollectionUploadSessionFilesRegistrationOut:
-        for item in self.files:
+    def validate_custody_receipts(self) -> CollectionUploadSessionArtifactsRegistrationOut:
+        for item in self.artifacts:
             if item.custody_receipt is not None:
                 validate_collection_upload_artifact_custody_receipt(
                     self.collection_id,
@@ -640,15 +571,15 @@ class CollectionUploadSessionFilesRegistrationOut(RiverhogModel):
 CollectionUploadVolumeSummaryOut = CollectionUploadVolumeSummaryDocument
 
 
-class ListCollectionUploadSessionFilesOut(RiverhogModel):
+class ListCollectionUploadSessionArtifactsOut(RiverhogModel):
     collection_id: CollectionId
     page_size: int = Field(ge=1, le=100)
     next_page_token: BrowsePageToken | None
-    files: list[CollectionUploadFileOut]
+    artifacts: list[CollectionUploadArtifactOut]
 
     @model_validator(mode="after")
-    def validate_custody_receipts(self) -> ListCollectionUploadSessionFilesOut:
-        for item in self.files:
+    def validate_custody_receipts(self) -> ListCollectionUploadSessionArtifactsOut:
+        for item in self.artifacts:
             if item.custody_receipt is not None:
                 validate_collection_upload_artifact_custody_receipt(
                     self.collection_id,
@@ -744,7 +675,7 @@ class CollectionUploadSessionOut(RiverhogModel):
                     "if": {"properties": {"state": {"const": "finalized"}}},
                     "then": {
                         "properties": {
-                            "content_identity": {"type": "string"},
+                            "artifact_set_identity": {"type": "string"},
                             "archive_root_sha256": {"type": "string"},
                             "registration_constraints": {"type": "null"},
                             "collection": {"type": "object"},
@@ -755,7 +686,7 @@ class CollectionUploadSessionOut(RiverhogModel):
                     },
                     "else": {
                         "properties": {
-                            "content_identity": {"type": "null"},
+                            "artifact_set_identity": {"type": "null"},
                             "archive_root_sha256": {"type": "null"},
                             "registration_constraints": {"type": "object"},
                             "collection": {"type": "null"},
@@ -771,7 +702,6 @@ class CollectionUploadSessionOut(RiverhogModel):
                         }
                     },
                 },
-                *_UPLOAD_PROVENANCE_STATE_SCHEMA,
                 *_UPLOAD_CUSTODY_STATE_SCHEMA,
                 *_UPLOAD_ARCHIVE_PHASE_SCHEMA,
             ]
@@ -795,9 +725,9 @@ class CollectionUploadSessionOut(RiverhogModel):
     tag_set_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     tag_publication: Literal["pending", "current"]
     tag_count: int = Field(ge=0, strict=True)
-    provenance_mode: Literal["captured", "mixed", "omitted"]
     provenance_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
-    content_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    delivery_context_id: str
+    artifact_set_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_root_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_store: ArchiveStoreName
     use_cache: bool
@@ -836,7 +766,7 @@ class CollectionUploadSessionOut(RiverhogModel):
     @model_validator(mode="after")
     def validate_terminal_evidence(self) -> CollectionUploadSessionOut:
         if self.state == "finalized" and (
-            self.content_identity is None
+            self.artifact_set_identity is None
             or self.archive_root_sha256 is None
             or self.registration_constraints is not None
             or self.collection is None
@@ -846,7 +776,7 @@ class CollectionUploadSessionOut(RiverhogModel):
         ):
             raise ValueError("finalized upload sessions require immutable collection evidence")
         if self.state != "finalized" and (
-            self.content_identity is not None
+            self.artifact_set_identity is not None
             or self.archive_root_sha256 is not None
             or self.registration_constraints is None
             or self.collection is not None
@@ -857,16 +787,8 @@ class CollectionUploadSessionOut(RiverhogModel):
                 raise ValueError("current collection tags require their exact authority")
         elif (self.tag_revision is None) != (self.tag_set_identity is None):
             raise ValueError("pending collection tag authority must be complete when exposed")
-        if self.state == "finalized":
-            if self.provenance_mode in {"captured", "mixed"}:
-                if self.provenance_identity is None:
-                    raise ValueError("finalized captured provenance requires its identity")
-            elif self.provenance_identity is not None:
-                raise ValueError("finalized omitted provenance cannot have an identity")
-        elif self.provenance_identity is not None:
-            raise ValueError("nonfinal upload sessions cannot have a provenance identity")
-        if self.state != "finalized" and self.provenance_mode == "mixed":
-            raise ValueError("mixed provenance is only a finalized collection result")
+        if (self.state == "finalized") != (self.provenance_identity is not None):
+            raise ValueError("finalized upload requires exact canonical provenance identity")
         _validate_upload_custody_state(
             state=self.state,
             custody_mode=self.custody_mode,

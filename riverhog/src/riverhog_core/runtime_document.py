@@ -55,7 +55,6 @@ class CacheStoreDocument(AdapterDocument):
 
 class VolumePolicyDocument(_Document):
     pack_source_bytes: str = str(_VOLUME.pack_source_bytes)
-    pack_files: int = Field(default=_VOLUME.pack_files, ge=1)
     pack_member_bytes: str = str(_VOLUME.pack_member_bytes)
     pack_part_plaintext_bytes: str = str(_VOLUME.pack_part_plaintext_bytes)
     raw_volume_plaintext_bytes: str = str(_VOLUME.raw_volume_plaintext_bytes)
@@ -64,7 +63,6 @@ class VolumePolicyDocument(_Document):
     def policy(self) -> CollectionVolumePolicy:
         return CollectionVolumePolicy(
             pack_source_bytes=_bytes(self.pack_source_bytes, "volume_policy.pack_source_bytes", 1),
-            pack_files=self.pack_files,
             pack_member_bytes=_bytes(self.pack_member_bytes, "volume_policy.pack_member_bytes", 1),
             pack_part_plaintext_bytes=_bytes(
                 self.pack_part_plaintext_bytes, "volume_policy.pack_part_plaintext_bytes", 1
