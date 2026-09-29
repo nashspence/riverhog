@@ -13,6 +13,7 @@ from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
     CollectionArtifactProvenanceBindingDocument,
 )
+from riverhog_provenance import JournalSummary, validate_journal_chunks
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from riverhog_client.processing.models import ClaimedArtifact
@@ -39,6 +40,7 @@ class ClaimedProvenanceApi(Protocol):
         *,
         expected_bytes: int,
         expected_sha256: str,
+        end: int | None,
     ) -> AbstractContextManager[Iterator[bytes]]: ...
 
 
@@ -137,7 +139,9 @@ class ClaimedProvenance:
                 raise RuntimeError("provenance journal continuation is invalid")
 
     @contextmanager
-    def stream_journal(self, journal: ProvenanceJournal) -> Iterator[Iterator[bytes]]:
+    def stream_journal(
+        self, journal: ProvenanceJournal, *, end: int | None = None
+    ) -> Iterator[Iterator[bytes]]:
         self.heartbeat()
         self.verify_root()
         with self.api.stream_collection_provenance_journal(
@@ -145,6 +149,7 @@ class ClaimedProvenance:
             journal.journal_id,
             expected_bytes=journal.bytes,
             expected_sha256=journal.sha256,
+            end=end,
         ) as chunks:
 
             def guarded() -> Iterator[bytes]:
@@ -154,6 +159,24 @@ class ClaimedProvenance:
 
             yield guarded()
         self.verify_root()
+
+    def bound_summary(self) -> JournalSummary:
+        """Validate the exact primary prefix selected by this member binding."""
+
+        anchor = self.binding.journal
+        journal = next(
+            (item for item in self.iter_journals() if item.journal_id == anchor.journal_id),
+            None,
+        )
+        if journal is None or int(anchor.prefix_bytes) > journal.bytes:
+            raise RuntimeError("primary provenance journal is absent or shorter than its anchor")
+        with self.stream_journal(journal, end=int(anchor.prefix_bytes)) as chunks:
+            return validate_journal_chunks(
+                chunks,
+                expected_anchor=anchor.model_dump(mode="json"),
+                require_exact_tail=True,
+                require_profiles=False,
+            )
 
 
 __all__ = ["ClaimedProvenance", "ClaimedProvenanceApi", "ProvenanceJournal"]
