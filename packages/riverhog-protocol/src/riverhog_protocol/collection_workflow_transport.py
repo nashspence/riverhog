@@ -52,7 +52,7 @@ SemanticId = Annotated[
     str,
     Field(pattern=r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$"),
 ]
-CapabilityAction = Literal["read-inputs", "read-provenance", "write-output"]
+CapabilityAction = Literal["read-root", "read-inputs", "read-provenance", "write-output"]
 
 WORK_DOCUMENT_MAX_BYTES = 4 * 1024 * 1024
 CONTROLLER_EVIDENCE_MAX_BYTES = 16 * 1024 * 1024
@@ -778,7 +778,9 @@ class ProcessingCapabilityCreateDocument(RiverhogWorkflowDocument):
         min_length=1,
         json_schema_extra={
             "oneOf": [
+                {"const": ["read-root"]},
                 {"const": ["read-inputs"]},
+                {"const": ["read-provenance"]},
                 {"const": ["read-inputs", "write-output"]},
             ]
         },
@@ -787,9 +789,14 @@ class ProcessingCapabilityCreateDocument(RiverhogWorkflowDocument):
 
     @model_validator(mode="after")
     def validate_capability(self) -> Self:
-        if self.actions not in (["read-inputs"], ["read-inputs", "write-output"]):
+        if self.actions not in (
+            ["read-root"],
+            ["read-inputs"],
+            ["read-provenance"],
+            ["read-inputs", "write-output"],
+        ):
             raise ValueError(
-                "capability actions must be read-inputs, optionally followed by write-output"
+                "capability actions must select one scoped read or input/output execution"
             )
         if self.actions != sorted(set(self.actions)):
             raise ValueError("capability actions must be unique and canonically ordered")
@@ -1186,7 +1193,9 @@ class ProcessingCapabilityDocument(RiverhogWorkflowDocument):
         min_length=1,
         json_schema_extra={
             "oneOf": [
+                {"const": ["read-root"]},
                 {"const": ["read-inputs"]},
+                {"const": ["read-provenance"]},
                 {"const": ["read-inputs", "write-output"]},
             ]
         },
