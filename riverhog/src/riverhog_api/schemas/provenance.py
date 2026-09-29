@@ -11,6 +11,7 @@ from riverhog_protocol import (
     CollectionArtifactProvenanceBindingDocument,
     CollectionId,
 )
+from riverhog_provenance_contracts import ProvenanceJournalId
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -33,7 +34,21 @@ class CollectionArtifactProvenanceDetailOut(RiverhogModel):
     binding: CollectionArtifactProvenanceBindingDocument
 
 
+class ProvenanceJournalSummaryOut(RiverhogModel):
+    journal_id: ProvenanceJournalId
+    bytes: Annotated[str, Field(pattern=r"^(0|[1-9][0-9]*)$")]
+    sha256: Sha256
+
+
+class ListCollectionProvenanceJournalsOut(RiverhogModel):
+    collection_id: CollectionId
+    archive_root_sha256: Sha256
+    journals: list[ProvenanceJournalSummaryOut] = Field(max_length=200)
+    next_journal_id: ProvenanceJournalId | None = None
+
+
 __all__ = [
     "CollectionArtifactProvenanceDetailOut",
     "ListCollectionArtifactProvenanceOut",
+    "ListCollectionProvenanceJournalsOut",
 ]

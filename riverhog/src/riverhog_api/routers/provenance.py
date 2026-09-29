@@ -18,6 +18,7 @@ from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.provenance import (
     CollectionArtifactProvenanceDetailOut,
     ListCollectionArtifactProvenanceOut,
+    ListCollectionProvenanceJournalsOut,
 )
 
 router = RiverhogRouter(tags=["provenance"])
@@ -84,6 +85,33 @@ def get_collection_artifact_provenance(
     container: ContainerDep,
 ) -> dict[str, Any]:
     return container.provenance.get_artifact(collection_id, artifact_id, principal=principal)
+
+
+@router.get(
+    "/collections/{collection_id}/provenance/journals",
+    response_model=ListCollectionProvenanceJournalsOut,
+    openapi_extra=operation_interface("standard-tool/protocol"),
+)
+def list_collection_provenance_journals(
+    collection_id: CollectionIdParameter,
+    principal: ProvenanceExporter,
+    container: ContainerDep,
+    page_size: Annotated[int, Query(ge=1, le=200)] = 50,
+    after_journal_id: ProvenanceJournalId | None = None,
+    if_match: Annotated[str | None, Header(alias="If-Match")] = None,
+) -> dict[str, Any]:
+    if after_journal_id is not None and if_match is None:
+        raise PreconditionRequired("provenance continuation requires the archive root If-Match")
+    expected_root = parse_quoted_sha256_identity(if_match) if if_match is not None else None
+    page = container.provenance.list_journals(
+        collection_id,
+        page_size=page_size,
+        after_journal_id=after_journal_id,
+        principal=principal,
+    )
+    if expected_root is not None and page["archive_root_sha256"] != expected_root:
+        raise PreconditionFailed("collection archive root changed")
+    return page
 
 
 @router.head(
