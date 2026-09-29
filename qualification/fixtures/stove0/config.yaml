@@ -13,8 +13,8 @@ observers:
     allow_insecure_http: true
     semantic_validator_providers: [media-metadata]
   ffprobe-sampling:
-    base_url: http://a-stove0-ffprobe-sampling-observer:8080
-    token_file: /run/secrets/a_stove0_ffprobe_sampling_observer_token
+    base_url: http://a-stove0-ffprobe-observer:8080
+    token_file: /run/secrets/a_stove0_ffprobe_observer_token
     allow_insecure_http: true
     semantic_validator_providers: [media-sampling]
 targets:

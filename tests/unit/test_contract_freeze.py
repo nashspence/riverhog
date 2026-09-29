@@ -266,7 +266,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "riverhog-storage-adapter-schemas",
         "stove0",
         "a-stove0-exiftool-observer",
-        "a-stove0-ffprobe-sampling-observer",
+        "a-stove0-ffprobe-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
         "stove0-observer-conformance",

@@ -38,7 +38,7 @@ members = [
     "a-riverhog-witness-contract-lib",
     "a-stove0-cli",
     "a-stove0-exiftool-observer",
-    "a-stove0-ffprobe-sampling-observer",
+    "a-stove0-ffprobe-observer",
     "a-stove0-ffprobe-streams-contract-lib",
     "a-stove0-media-archive-contract-lib",
     "a-stove0-media-archive-lib",
@@ -678,9 +678,9 @@ requires-dist = [
 ]
 
 [[package]]
-name = "a-stove0-ffprobe-sampling-observer"
+name = "a-stove0-ffprobe-observer"
 version = "0.1.0"
-source = { editable = "some-implementations/stove0/observers/ffprobe-sampling" }
+source = { editable = "some-implementations/stove0/observers/ffprobe" }
 dependencies = [
     { name = "a-stove0-ffprobe-streams-contract-lib" },
     { name = "a-stove0-media-sampling-contract-lib" },
@@ -2653,7 +2653,9 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-provenance" }
 dependencies = [
     { name = "jsonschema" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
+    { name = "time-formats" },
 ]
 
 [package.optional-dependencies]
@@ -2667,7 +2669,9 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.23,<5.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8,<10" },
     { name = "rdflib", marker = "extra == 'test'", specifier = ">=7,<8" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 provides-extras = ["test"]
 

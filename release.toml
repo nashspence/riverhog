@@ -48,7 +48,7 @@ required_checks = [
   "build a-riverhog-minisign-witness",
   "build a-riverhog-opentimestamps-witness",
   "build a-stove0-exiftool-observer",
-  "build a-stove0-ffprobe-sampling-observer",
+  "build a-stove0-ffprobe-observer",
   "build a-stove0-nvenc-av1-opus-target",
   "build a-stove0-opus-target",
   "build a-stove0-rclone-target",
@@ -151,7 +151,8 @@ protected_components = [
   "stove0-api-client",
   "a-stove0-cli",
   "a-stove0-exiftool-observer",
-  "a-stove0-ffprobe-sampling-observer",
+  "a-stove0-ffprobe-observer",
+  "a-stove0-ffprobe-streams-contract-lib",
   "a-stove0-media-archive-contract-lib",
   "a-stove0-media-archive-lib",
   "a-stove0-media-metadata-contract-lib",
@@ -190,7 +191,7 @@ protected_runtime_images = [
   "a-riverhog-filesystem-store",
   "stove0",
   "a-stove0-exiftool-observer",
-  "a-stove0-ffprobe-sampling-observer",
+  "a-stove0-ffprobe-observer",
   "a-stove0-nvenc-av1-opus-target",
   "a-stove0-opus-target",
   "review0",
@@ -412,6 +413,7 @@ component = [
   "some-implementations/stove0/review0/planning",
   "some-implementations/stove0/observers/contracts/media-metadata",
   "some-implementations/stove0/observers/contracts/media-sampling",
+  "some-implementations/stove0/observers/contracts/ffprobe-streams",
   "some-implementations/gogurt/listener-host/linux",
   "some-implementations/gogurt/listener-host/macos",
   "some-implementations/gogurt/listener-host/windows",
@@ -430,7 +432,7 @@ component = [
   "some-implementations/riverhog/storage/backblaze",
   "some-implementations/riverhog/storage/filesystem",
   "some-implementations/stove0/observers/exiftool",
-  "some-implementations/stove0/observers/ffprobe-sampling",
+  "some-implementations/stove0/observers/ffprobe",
   "some-implementations/stove0/review0/samplers/nvenc-av1-opus",
   "some-implementations/stove0/targets/nvenc-av1-opus/target",
   "some-implementations/stove0/review0/samplers/opus",
@@ -455,6 +457,7 @@ reusable_library = [
   "packages/riverhog-archive-contracts",
   "packages/riverhog-canonical-json",
   "packages/riverhog-client",
+  "packages/riverhog-materialization",
   "packages/riverhog-protocol",
   "packages/riverhog-provenance",
   "packages/riverhog-provenance-contracts",
@@ -497,7 +500,7 @@ a-riverhog-b2-store = { role = "component", description = "Backblaze B2-backed R
 a-riverhog-filesystem-store = { role = "component", description = "Filesystem-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-filesystem-store"], repository = "ghcr.io/nashspence/a-riverhog-filesystem-store" }
 stove0 = { role = "application", description = "Content-opaque transformation application for Riverhog.", distributions = ["stove0-server"], repository = "ghcr.io/nashspence/stove0" }
 a-stove0-exiftool-observer = { role = "component", description = "ExifTool media metadata observer for Stove0.", distributions = ["a-stove0-exiftool-observer"], repository = "ghcr.io/nashspence/a-stove0-exiftool-observer" }
-a-stove0-ffprobe-sampling-observer = { role = "component", description = "FFprobe media sampling observer for Stove0.", distributions = ["a-stove0-ffprobe-sampling-observer"], repository = "ghcr.io/nashspence/a-stove0-ffprobe-sampling-observer" }
+a-stove0-ffprobe-observer = { role = "component", description = "FFprobe stream and sampling observer for Stove0.", distributions = ["a-stove0-ffprobe-observer"], repository = "ghcr.io/nashspence/a-stove0-ffprobe-observer" }
 a-stove0-nvenc-av1-opus-target = { role = "component", description = "NVENC AV1 and Opus transformation target for Stove0.", distributions = ["a-stove0-nvenc-av1-opus-target", "a-review0-nvenc-av1-opus-sampler"], repository = "ghcr.io/nashspence/a-stove0-nvenc-av1-opus-target" }
 a-stove0-opus-target = { role = "component", description = "Opus transformation target for Stove0.", distributions = ["a-stove0-opus-target", "a-review0-opus-sampler"], repository = "ghcr.io/nashspence/a-stove0-opus-target" }
 review0 = { role = "application", description = "Review0 collection materialization application for Stove0.", distributions = ["review0"], repository = "ghcr.io/nashspence/review0" }

@@ -27,7 +27,7 @@ MISE_CONTAINER_TOOLS = {
     "a-riverhog-filesystem-store": {"uv"},
     "stove0": {"uv"},
     "a-stove0-exiftool-observer": {"http:exiftool", "uv"},
-    "a-stove0-ffprobe-sampling-observer": {"uv"},
+    "a-stove0-ffprobe-observer": {"uv"},
     "a-stove0-nvenc-av1-opus-target": {"uv"},
     "a-stove0-opus-target": {"uv"},
     "review0": {"uv"},
@@ -104,15 +104,15 @@ IMAGE_CONTRACTS = {
             ("some-implementations/stove0/application/compose.yaml", "a-stove0-exiftool-observer"),
         ),
     },
-    "a-stove0-ffprobe-sampling-observer": {
-        "dockerfile": "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile",
-        "tag": "a-stove0-ffprobe-sampling-observer:dev",
-        "title": "stove0 FFprobe sampling observer",
+    "a-stove0-ffprobe-observer": {
+        "dockerfile": "some-implementations/stove0/observers/ffprobe/Dockerfile",
+        "tag": "a-stove0-ffprobe-observer:dev",
+        "title": "stove0 FFprobe observer",
         "license": "CAL-1.0",
         "compose": (
             (
                 "some-implementations/stove0/application/compose.yaml",
-                "a-stove0-ffprobe-sampling-observer",
+                "a-stove0-ffprobe-observer",
             ),
         ),
     },
@@ -689,6 +689,7 @@ def test_stove0_supplied_validators_are_compose_composition_only() -> None:
     assert "--package stove0-server --no-dev --no-editable" in generic_build
     assert "a-stove0-media-metadata-contract-lib" not in generic_build
     assert "a-stove0-media-sampling-contract-lib" not in generic_build
+    assert "a-stove0-ffprobe-streams-contract-lib" not in generic_build
 
     assert (
         "COPY some-implementations/stove0/observers/contracts/media-metadata "
@@ -700,6 +701,7 @@ def test_stove0_supplied_validators_are_compose_composition_only() -> None:
     ) in composition_build
     assert "--package a-stove0-media-metadata-contract-lib" in composition_build
     assert "--package a-stove0-media-sampling-contract-lib" in composition_build
+    assert "--package a-stove0-ffprobe-streams-contract-lib" in composition_build
 
     assert "FROM runtime-base AS bundled-components" in composition_runtime
     assert 'io.github.nashspence.riverhog.composition="bundled-components"' in composition_runtime

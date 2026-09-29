@@ -20,14 +20,18 @@ classifiers = [
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "jsonschema>=4.23,<5.0",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
+  "time-formats>=0.1,<0.2",
 ]
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10", "rdflib>=7,<8"]
 
 [tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
+time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/riverhog_provenance"]

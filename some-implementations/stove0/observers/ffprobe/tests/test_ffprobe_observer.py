@@ -6,9 +6,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 
-from a_stove0_ffprobe_sampling_observer import FfprobeSamplingObserver
-from a_stove0_ffprobe_sampling_observer import app as observer_app
-from a_stove0_ffprobe_sampling_observer.app import create_app
+from a_stove0_ffprobe_observer import FfprobeObserver
+from a_stove0_ffprobe_observer import app as observer_app
+from a_stove0_ffprobe_observer.app import create_app
 from a_stove0_ffprobe_streams_contract_lib import FFPROBE_STREAMS_OBSERVER_CONTRACT
 from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from fastapi.testclient import TestClient
@@ -67,7 +67,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    observer = FfprobeSamplingObserver(
+    observer = FfprobeObserver(
         ffprobe="fixture-ffprobe",
         workspace_root=tmp_path / "observer-workspace",
         source_revision="fixture",
@@ -112,7 +112,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
         )
 
     monkeypatch.setattr(
-        "a_stove0_ffprobe_sampling_observer.observer.subprocess.run",
+        "a_stove0_ffprobe_observer.observer.subprocess.run",
         run,
     )
     runtime = FixtureRuntime(tmp_path / "request")
@@ -163,7 +163,7 @@ def test_stream_registration_reports_exact_subject_bound_container_and_streams(
         encoding="utf-8",
     )
     tool.chmod(0o755)
-    observer = FfprobeSamplingObserver(
+    observer = FfprobeObserver(
         ffprobe=str(tool),
         source_revision="fixture",
         image_id="sha256:" + _sha("9"),
@@ -229,7 +229,7 @@ def test_stream_registration_reports_exact_subject_bound_container_and_streams(
 
 
 def test_observer_process_exposes_only_observer_contract() -> None:
-    observer = FfprobeSamplingObserver(
+    observer = FfprobeObserver(
         source_revision="fixture",
         image_id="sha256:" + _sha("9"),
     )
@@ -239,7 +239,7 @@ def test_observer_process_exposes_only_observer_contract() -> None:
         headers={"Authorization": "Bearer observer-secret"},
     )
     assert response.status_code == 200
-    assert response.json()["implementation_id"] == "a-stove0-ffprobe-sampling-observer/v1"
+    assert response.json()["implementation_id"] == "a-stove0-ffprobe-observer/v1"
     assert (
         client.get(
             "/v1/target",
@@ -255,20 +255,20 @@ def test_observer_process_environment_is_connected(
 ) -> None:
     token_file = tmp_path / "observer.token"
     token_file.write_text("file-secret\n", encoding="utf-8")
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE", str(token_file))
-    monkeypatch.delenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN", raising=False)
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE", str(token_file))
+    monkeypatch.delenv("A_STOVE0_FFPROBE_OBSERVER_TOKEN", raising=False)
     assert observer_app._secret() == "file-secret"
-    monkeypatch.delenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE")
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN", "direct-secret")
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST", "127.0.0.7")
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT", "8177")
+    monkeypatch.delenv("A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE")
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_TOKEN", "direct-secret")
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_HOST", "127.0.0.7")
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_PORT", "8177")
     monkeypatch.setenv("STOVE0_FFPROBE_BIN", "fixture-ffprobe")
     monkeypatch.setenv(
-        "A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE",
+        "A_STOVE0_FFPROBE_OBSERVER_WORKSPACE",
         str(tmp_path / "workspace"),
     )
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION", "fixture-revision")
-    monkeypatch.setenv("A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID", "sha256:" + _sha("8"))
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_SOURCE_REVISION", "fixture-revision")
+    monkeypatch.setenv("A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID", "sha256:" + _sha("8"))
     created: dict[str, object] = {}
 
     class ConfiguredObserver:
@@ -280,7 +280,7 @@ def test_observer_process_environment_is_connected(
         created["host"] = host
         created["port"] = port
 
-    monkeypatch.setattr(observer_app, "FfprobeSamplingObserver", ConfiguredObserver)
+    monkeypatch.setattr(observer_app, "FfprobeObserver", ConfiguredObserver)
     monkeypatch.setattr(observer_app.uvicorn, "run", run)
 
     assert observer_app.main([]) == 0

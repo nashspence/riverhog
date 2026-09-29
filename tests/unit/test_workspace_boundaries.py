@@ -60,9 +60,9 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/stove0/observers/exiftool/src",
         {"a_stove0_exiftool_observer"},
     ),
-    "a-stove0-ffprobe-sampling-observer": (
-        REPO / "some-implementations/stove0/observers/ffprobe-sampling/src",
-        {"a_stove0_ffprobe_sampling_observer"},
+    "a-stove0-ffprobe-observer": (
+        REPO / "some-implementations/stove0/observers/ffprobe/src",
+        {"a_stove0_ffprobe_observer"},
     ),
     "a-stove0-media-metadata-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/media-metadata/src",
@@ -71,6 +71,10 @@ IMPLEMENTATION_OWNERS = {
     "a-stove0-media-sampling-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/media-sampling/src",
         {"a_stove0_media_sampling_contract_lib"},
+    ),
+    "a-stove0-ffprobe-streams-contract-lib": (
+        REPO / "some-implementations/stove0/observers/contracts/ffprobe-streams/src",
+        {"a_stove0_ffprobe_streams_contract_lib"},
     ),
     "a-stove0-nvenc-av1-opus-target": (
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/target/src",
@@ -139,6 +143,7 @@ IMPLEMENTATION_OWNERS = {
     ),
 }
 SHARED_PROVIDER_MODULES = {
+    "a-stove0-ffprobe-streams-contract-lib",
     "a-stove0-media-metadata-contract-lib",
     "a-stove0-media-sampling-contract-lib",
     "review0-planner",
@@ -804,9 +809,10 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "some-implementations/stove0/observers/exiftool",
             "some-implementations/stove0/observers/contracts/media-metadata",
         ),
-        REPO / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile": (
-            "some-implementations/stove0/observers/ffprobe-sampling",
+        REPO / "some-implementations/stove0/observers/ffprobe/Dockerfile": (
+            "some-implementations/stove0/observers/ffprobe",
             "some-implementations/stove0/observers/contracts/media-sampling",
+            "some-implementations/stove0/observers/contracts/ffprobe-streams",
         ),
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": (
             "some-implementations/stove0/observers/contracts/media-metadata",
@@ -906,7 +912,7 @@ def test_maintained_observer_distributions_do_not_pull_target_authority() -> Non
     _projects, graph = workspace_project_graph()
     expected = {
         "a-stove0-exiftool-observer": "a-stove0-media-metadata-contract-lib",
-        "a-stove0-ffprobe-sampling-observer": "a-stove0-media-sampling-contract-lib",
+        "a-stove0-ffprobe-observer": "a-stove0-media-sampling-contract-lib",
     }
     forbidden = {
         "a-stove0-media-archive-contract-lib",
@@ -1017,8 +1023,8 @@ def test_images_copy_their_complete_internal_dependency_closure() -> None:
         REPO / "some-implementations/stove0/observers/exiftool/Dockerfile": (
             "a-stove0-exiftool-observer"
         ),
-        REPO / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile": (
-            "a-stove0-ffprobe-sampling-observer"
+        REPO / "some-implementations/stove0/observers/ffprobe/Dockerfile": (
+            "a-stove0-ffprobe-observer"
         ),
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile": (
             "a-stove0-nvenc-av1-opus-target",

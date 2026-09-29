@@ -771,7 +771,7 @@ def test_deployed_application_dockerfiles_use_locked_workspace_dependencies() ->
         REPO_ROOT / "some-implementations/riverhog/ingress/ftp/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/application/server/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/observers/exiftool/Dockerfile",
-        REPO_ROOT / "some-implementations/stove0/observers/ffprobe-sampling/Dockerfile",
+        REPO_ROOT / "some-implementations/stove0/observers/ffprobe/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/targets/nvenc-av1-opus/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/targets/opus/Dockerfile",
         REPO_ROOT / "some-implementations/stove0/review0/application/Dockerfile",

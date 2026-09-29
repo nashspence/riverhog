@@ -16,7 +16,7 @@ License 1.0 (`CAL-1.0`):
 - `some-implementations/riverhog/applications/a-riverhog-minisign-witness/**`
 - `some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/**`
 - `some-implementations/stove0/observers/exiftool/**`
-- `some-implementations/stove0/observers/ffprobe-sampling/**`
+- `some-implementations/stove0/observers/ffprobe/**`
 - `some-implementations/stove0/targets/nvenc-av1-opus/**`
 - `some-implementations/stove0/targets/opus/**`
 - `some-implementations/stove0/review0/**`

@@ -44,7 +44,7 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
         "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/**",
         "some-implementations/stove0/application/server/**",
         "some-implementations/stove0/observers/exiftool/**",
-        "some-implementations/stove0/observers/ffprobe-sampling/**",
+        "some-implementations/stove0/observers/ffprobe/**",
         "some-implementations/stove0/targets/nvenc-av1-opus/**",
         "some-implementations/stove0/targets/opus/**",
         "some-implementations/stove0/targets/rclone/**",

@@ -21,21 +21,23 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
-COPY some-implementations/stove0/observers/ffprobe-sampling some-implementations/stove0/observers/ffprobe-sampling
+COPY some-implementations/stove0/observers/ffprobe some-implementations/stove0/observers/ffprobe
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
+COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/stove0/packages/observer-client some-implementations/stove0/packages/observer-client
 COPY some-implementations/stove0/packages/observer-protocol some-implementations/stove0/packages/observer-protocol
 COPY some-implementations/stove0/packages/observer-support some-implementations/stove0/packages/observer-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol
 COPY some-implementations/stove0/observers/contracts/media-sampling some-implementations/stove0/observers/contracts/media-sampling
+COPY some-implementations/stove0/observers/contracts/ffprobe-streams some-implementations/stove0/observers/contracts/ffprobe-streams
 COPY packages/time-formats packages/time-formats
-RUN uv sync --frozen --package a-stove0-ffprobe-sampling-observer --no-dev --no-editable
+RUN uv sync --frozen --package a-stove0-ffprobe-observer --no-dev --no-editable
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203
 
@@ -61,8 +63,8 @@ COPY --from=build /opt/venv /opt/venv
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
-LABEL org.opencontainers.image.title="stove0 FFprobe sampling observer" \
-      org.opencontainers.image.description="FFprobe media sampling observer for Stove0." \
+LABEL org.opencontainers.image.title="stove0 FFprobe observer" \
+      org.opencontainers.image.description="FFprobe stream and sampling observer for Stove0." \
       org.opencontainers.image.licenses="CAL-1.0" \
       org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
       org.opencontainers.image.revision="${SOURCE_REVISION}" \
@@ -75,4 +77,4 @@ LABEL org.opencontainers.image.title="stove0 FFprobe sampling observer" \
 USER 65532:65532
 EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["a-stove0-ffprobe-sampling-observer", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["a-stove0-ffprobe-observer", "--host", "0.0.0.0", "--port", "8080"]

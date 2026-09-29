@@ -135,7 +135,7 @@ jobs:
           - a-riverhog-filesystem-store
           - stove0
           - a-stove0-exiftool-observer
-          - a-stove0-ffprobe-sampling-observer
+          - a-stove0-ffprobe-observer
           - a-stove0-nvenc-av1-opus-target
           - a-stove0-opus-target
           - review0
