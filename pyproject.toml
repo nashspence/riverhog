@@ -62,6 +62,7 @@ a-stove0-media-archive-contract-lib = { workspace = true }
 a-stove0-media-archive-lib = { workspace = true }
 a-stove0-media-metadata-contract-lib = { workspace = true }
 a-stove0-media-sampling-contract-lib = { workspace = true }
+a-stove0-ffprobe-streams-contract-lib = { workspace = true }
 stove0-observer-client = { workspace = true }
 stove0-protocol = { workspace = true }
 stove0-recipe-config = { workspace = true }

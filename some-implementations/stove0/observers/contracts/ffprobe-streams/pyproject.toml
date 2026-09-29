@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-stove0-ffprobe-streams-contract-lib"
+version = "0.1.0"
+description = "FFprobe stream and container observation contract for Stove0."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+dependencies = [
+  "pydantic>=2.7,<3.0",
+  "stove0-observer-protocol>=0.1,<0.2",
+]
+
+[project.entry-points."stove0.observer-semantic-validators"]
+ffprobe-streams = "a_stove0_ffprobe_streams_contract_lib:FFPROBE_STREAMS_SEMANTIC_VALIDATOR"
+
+[tool.uv.sources]
+stove0-observer-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_stove0_ffprobe_streams_contract_lib"]

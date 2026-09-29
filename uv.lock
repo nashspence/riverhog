@@ -39,6 +39,7 @@ members = [
     "a-stove0-cli",
     "a-stove0-exiftool-observer",
     "a-stove0-ffprobe-sampling-observer",
+    "a-stove0-ffprobe-streams-contract-lib",
     "a-stove0-media-archive-contract-lib",
     "a-stove0-media-archive-lib",
     "a-stove0-media-metadata-contract-lib",
@@ -681,6 +682,7 @@ name = "a-stove0-ffprobe-sampling-observer"
 version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/ffprobe-sampling" }
 dependencies = [
+    { name = "a-stove0-ffprobe-streams-contract-lib" },
     { name = "a-stove0-media-sampling-contract-lib" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
@@ -691,12 +693,28 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "a-stove0-ffprobe-streams-contract-lib", editable = "some-implementations/stove0/observers/contracts/ffprobe-streams" },
     { name = "a-stove0-media-sampling-contract-lib", editable = "some-implementations/stove0/observers/contracts/media-sampling" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
     { name = "stove0-observer-support", editable = "some-implementations/stove0/packages/observer-support" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
+]
+
+[[package]]
+name = "a-stove0-ffprobe-streams-contract-lib"
+version = "0.1.0"
+source = { editable = "some-implementations/stove0/observers/contracts/ffprobe-streams" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "stove0-observer-protocol" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
 ]
 
 [[package]]

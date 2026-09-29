@@ -33,8 +33,7 @@
             "content_identity": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
           },
           "id": "camera",
-          "media_type": "video/mp4",
-          "path": "camera.mp4",
+          "artifact_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
           "role": "stove0.source/v1",
           "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
         }
@@ -67,8 +66,7 @@
             "content_identity": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
           },
           "id": "camera",
-          "media_type": "video/mp4",
-          "path": "camera.mp4",
+          "artifact_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
           "role": "stove0.source/v1",
           "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
         }
@@ -105,8 +103,7 @@
             "content_identity": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
           },
           "id": "camera",
-          "media_type": "video/mp4",
-          "path": "camera.mp4",
+          "artifact_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
           "role": "stove0.source/v1",
           "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
         }

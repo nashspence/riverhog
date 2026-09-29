@@ -9,6 +9,13 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from a_stove0_ffprobe_streams_contract_lib import (
+    FFPROBE_STREAMS_OBSERVATION_ID,
+    FFPROBE_STREAMS_OBSERVER_CONTRACT,
+    FFprobeStreamFacts,
+    artifact_facts,
+    validate_ffprobe_stream_facts,
+)
 from a_stove0_media_sampling_contract_lib import (
     MEDIA_SAMPLING_OBSERVER_CONTRACT,
     MediaSamplingArtifactFacts,
@@ -24,6 +31,12 @@ from stove0_observer_protocol import (
     ObserverDescriptorPayload,
 )
 from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
+
+from a_stove0_ffprobe_sampling_observer.streams import (
+    StreamProbeError,
+    bounded_ffprobe_report,
+    ffprobe_tool_identity,
+)
 
 
 def _version() -> str:
@@ -55,6 +68,9 @@ class FfprobeSamplingObserver:
                 source_revision=source_revision,
                 image_id=image_id,
                 contracts=(
+                    ObserverContractSupport.from_contract(
+                        FFPROBE_STREAMS_OBSERVER_CONTRACT, preferred_subject_batch_size=1
+                    ),
                     ObserverContractSupport.from_contract(MEDIA_SAMPLING_OBSERVER_CONTRACT),
                 ),
             )
@@ -68,6 +84,8 @@ class FfprobeSamplingObserver:
         request: ContentObservationRequest,
         runtime: ContentObservationRuntime,
     ) -> ContentObservationResult:
+        if request.observer_contract_id == FFPROBE_STREAMS_OBSERVATION_ID:
+            return self._observe_streams(request, runtime)
         builder = ContentObservationResultBuilder(self._descriptor, request)
         self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self.workspace_root, 0o700)
@@ -107,6 +125,67 @@ class FfprobeSamplingObserver:
                 message="FFprobe sampling exceeded its sealed deadline.",
                 retryable=True,
                 execution_evidence=self.execution_evidence(),
+            )
+        finally:
+            workspace.release()
+
+    def _observe_streams(
+        self,
+        request: ContentObservationRequest,
+        runtime: ContentObservationRuntime,
+    ) -> ContentObservationResult:
+        builder = ContentObservationResultBuilder(self._descriptor, request)
+        self.workspace_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+        os.chmod(self.workspace_root, 0o700)
+        workspace = runtime.open_workspace(self.workspace_root)
+        evidence: dict[str, str] = {"implementation": _version()}
+        try:
+            version, executable_sha256 = ffprobe_tool_identity(self.ffprobe)
+            evidence.update(
+                {"ffprobe_version": version, "ffprobe_executable_sha256": executable_sha256}
+            )
+            facts = []
+            for subject in request.subjects:
+                runtime.heartbeat()
+                source = runtime.materialize(
+                    subject,
+                    workspace=workspace,
+                    relative_path=f"input/{subject.id}",
+                )
+                raw = bounded_ffprobe_report(
+                    self.ffprobe, source, timeout_seconds=min(request.timeout_seconds, 300)
+                )
+                facts.append(
+                    artifact_facts(
+                        subject.id,
+                        raw,
+                        ffprobe_version=version,
+                        executable_sha256=executable_sha256,
+                    )
+                )
+            document = FFprobeStreamFacts(artifacts=tuple(facts)).model_dump(mode="json")
+            validate_ffprobe_stream_facts(document, request.subjects)
+            return builder.observed(document, execution_evidence=evidence)
+        except subprocess.TimeoutExpired:
+            return builder.failed(
+                code="observer-timeout",
+                message="FFprobe stream observation exceeded its sealed deadline.",
+                retryable=True,
+                execution_evidence=evidence,
+            )
+        except (StreamProbeError, ValueError) as exc:
+            return builder.failed(
+                code="invalid-stream-report",
+                message=str(exc)[:1000],
+                retryable=False,
+                execution_evidence=evidence,
+            )
+        except OSError:
+            return builder.failed(
+                code="observer-tool-unavailable",
+                message="FFprobe stream observation could not run its tool.",
+                retryable=True,
+                execution_evidence=evidence,
             )
         finally:
             workspace.release()
