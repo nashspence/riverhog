@@ -74,6 +74,7 @@ class CollectionUploadRawDigestBatchDocument(CollectionUploadDocument):
         },
     )
 
+
 class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
     artifact_id: ArtifactId
     accepted_parts: NonnegativeDecimal
@@ -135,6 +136,7 @@ class CollectionUploadUnitSourceDocument(CollectionUploadDocument):
     offset: NonnegativeDecimal
     bytes: NonnegativeDecimal
     artifact_sha256: Sha256
+
 
 class CollectionUploadUnitDocument(CollectionUploadDocument):
     """Protocol-owned identity of one server-planned plaintext upload unit."""
@@ -258,13 +260,16 @@ class CollectionUploadCustodyObjectDocument(CollectionUploadDocument):
 
 
 class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
-    """Exact safe-release evidence for one artifact in construction state."""
+    """Safe-release evidence after payload and canonical corpus roots are sealed."""
 
     format: Literal["riverhog-artifact-custody-receipt/v1"] = "riverhog-artifact-custody-receipt/v1"
     collection_id: CollectionId
     artifact_id: ArtifactId
     bytes: NonnegativeDecimal
     sha256: Sha256
+    archive_root_sha256: Sha256
+    provenance_root_sha256: Sha256
+    provenance_root_receipt_sha256: Sha256
     archive_object_count: NonnegativeDecimal = Field(ge=1)
     archive_object_set_sha256: Sha256
     receipt_sha256: Sha256
@@ -289,6 +294,9 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
         artifact_id: ArtifactId,
         bytes: int,
         sha256: str,
+        archive_root_sha256: str,
+        provenance_root_sha256: str,
+        provenance_root_receipt_sha256: str,
         archive_objects: Sequence[CollectionUploadCustodyObjectDocument],
     ) -> CollectionUploadArtifactCustodyReceiptDocument:
         digest = hashlib.sha256()
@@ -310,6 +318,9 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
             "artifact_id": str(artifact_id),
             "bytes": format_scalar("nonnegative", bytes),
             "sha256": sha256,
+            "archive_root_sha256": archive_root_sha256,
+            "provenance_root_sha256": provenance_root_sha256,
+            "provenance_root_receipt_sha256": provenance_root_receipt_sha256,
             "archive_object_count": format_scalar("nonnegative", count),
             "archive_object_set_sha256": digest.hexdigest(),
         }
@@ -361,9 +372,7 @@ def collection_upload_raw_digest_summary(
     if raw is None:
         raise ValueError(f"raw part digests are required for large member: {item.artifact_id}")
     if raw.part_plaintext_bytes != constraints.raw_part_plaintext_bytes:
-        raise ValueError(
-            f"raw part digest policy does not match the session: {item.artifact_id}"
-        )
+        raise ValueError(f"raw part digest policy does not match the session: {item.artifact_id}")
     return RawSourceDigestSummary(
         artifact_id=item.artifact_id,
         bytes=item.bytes,

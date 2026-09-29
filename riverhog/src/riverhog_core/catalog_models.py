@@ -2628,15 +2628,21 @@ class CollectionUploadRecord(Base):
         default=0,
         server_default=text("0"),
     )
-    custodied_artifact_count: Mapped[int] = mapped_column(
+    payload_sealed_artifact_count: Mapped[int] = mapped_column(
         BigInteger,
         default=0,
         server_default=text("0"),
     )
-    custodied_artifact_bytes: Mapped[int] = mapped_column(
+    payload_sealed_artifact_bytes: Mapped[int] = mapped_column(
         BigInteger,
         default=0,
         server_default=text("0"),
+    )
+    safe_release_artifact_count: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    safe_release_artifact_bytes: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
     )
     uploaded_payload_bytes: Mapped[int] = mapped_column(
         BigInteger,
@@ -2715,16 +2721,25 @@ class CollectionUploadRecord(Base):
         ),
         CheckConstraint("artifact_bytes >= 0", name="ck_collection_uploads_artifact_bytes"),
         CheckConstraint(
-            "custodied_artifact_count >= 0 AND custodied_artifact_count <= artifact_count",
-            name="ck_collection_uploads_custodied_artifact_count",
+            "payload_sealed_artifact_count >= 0 AND "
+            "payload_sealed_artifact_count <= artifact_count",
+            name="ck_collection_uploads_payload_sealed_artifact_count",
         ),
         CheckConstraint(
-            "custodied_artifact_bytes >= 0 AND custodied_artifact_bytes <= artifact_bytes",
-            name="ck_collection_uploads_custodied_artifact_bytes",
+            "payload_sealed_artifact_bytes >= 0 AND "
+            "payload_sealed_artifact_bytes <= artifact_bytes",
+            name="ck_collection_uploads_payload_sealed_artifact_bytes",
         ),
         CheckConstraint(
-            "custodied_artifact_count > 0 OR custodied_artifact_bytes = 0",
-            name="ck_collection_uploads_empty_custody",
+            "payload_sealed_artifact_count > 0 OR payload_sealed_artifact_bytes = 0",
+            name="ck_collection_uploads_empty_payload_seal",
+        ),
+        CheckConstraint(
+            "safe_release_artifact_count >= 0 AND "
+            "safe_release_artifact_count <= payload_sealed_artifact_count AND "
+            "safe_release_artifact_bytes >= 0 AND "
+            "safe_release_artifact_bytes <= payload_sealed_artifact_bytes",
+            name="ck_collection_uploads_safe_release_progress",
         ),
         CheckConstraint(
             "uploaded_payload_bytes >= 0",
@@ -2891,7 +2906,7 @@ class CollectionUploadArtifactRecord(Base):
         server_default=text("0"),
     )
     raw_part_commitment_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    custodied_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    payload_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
     custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
@@ -3320,3 +3335,33 @@ class CollectionArchiveObjectUploadRecord(Base):
     )
 
     upload: Mapped[CollectionUploadRecord] = relationship(back_populates="archive_objects")
+
+
+class CollectionUploadArtifactVolumeRecord(Base):
+    """Bounded construction-time coverage from a member to its payload volumes."""
+
+    __tablename__ = "collection_upload_artifact_volumes"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    object_id: Mapped[str] = mapped_column(String, primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "artifact_id"],
+            [
+                "collection_upload_artifacts.collection_id",
+                "collection_upload_artifacts.artifact_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["collection_id", "object_id"],
+            [
+                "collection_archive_object_uploads.collection_id",
+                "collection_archive_object_uploads.object_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        Index("ix_collection_upload_artifact_volumes_object", "collection_id", "object_id"),
+    )

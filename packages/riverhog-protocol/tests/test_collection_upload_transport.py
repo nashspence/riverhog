@@ -90,6 +90,9 @@ def test_custody_receipt_binds_exact_member_and_recovering_objects() -> None:
         artifact_id=ArtifactId(FIRST),
         bytes=123,
         sha256="a" * 64,
+        archive_root_sha256="c" * 64,
+        provenance_root_sha256="d" * 64,
+        provenance_root_receipt_sha256="e" * 64,
         archive_objects=(
             CollectionUploadCustodyObjectDocument(
                 volume_id="segment-" + "0" * 63 + "1",

@@ -279,9 +279,10 @@ class CollectionProducer:
 class IncrementalCollectionProducer:
     """Transfer finalized artifacts into one resumable Riverhog construction session.
 
-    The producer retains readable bytes only until Riverhog returns an exact
-    artifact custody receipt. Completion remains explicit and is the sole path
-    that publishes an immutable collection.
+    A payload seal lets this client discard its range-reader state. The caller
+    retains each original source until Riverhog returns a custody receipt that
+    binds both the final archive root and canonical provenance root. Completion
+    remains explicit and is the sole path that publishes a collection.
     """
 
     def __init__(
@@ -665,9 +666,7 @@ class IncrementalCollectionProducer:
                     f"Riverhog returned an unexpected artifact: {source.artifact_id}"
                 )
             if _source_identity(expected_source) != _source_identity(source):
-                raise RuntimeError(
-                    f"Riverhog changed a registered artifact: {source.artifact_id}"
-                )
+                raise RuntimeError(f"Riverhog changed a registered artifact: {source.artifact_id}")
             receipt_value = row.get("custody_receipt")
             if receipt_value is not None:
                 receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate(
@@ -692,6 +691,12 @@ class IncrementalCollectionProducer:
                         receipt=receipt,
                     )
                 )
+                owned = self._sources.pop(source.artifact_id, None)
+                if owned is not None:
+                    owned.close()
+            elif row.get("payload_sealed") is True:
+                # Only the internal range reader can be released here. The
+                # adapter retains its source until the full custody receipt.
                 owned = self._sources.pop(source.artifact_id, None)
                 if owned is not None:
                     owned.close()
@@ -731,9 +736,7 @@ def _hash_local_source(
         after = item.source.stat()
         _require_same_file(after, observed, artifact_id=item.artifact_id)
         if len(content) != size:
-            raise RuntimeError(
-                f"producer source returned an incomplete range: {item.artifact_id}"
-            )
+            raise RuntimeError(f"producer source returned an incomplete range: {item.artifact_id}")
         return content
 
     def chunks() -> Iterator[bytes]:
@@ -790,9 +793,7 @@ def _hash_local_source(
 def _require_same_file(current: object, expected: object, *, artifact_id: ArtifactId) -> None:
     for attribute in ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns"):
         if getattr(current, attribute) != getattr(expected, attribute):
-            raise RuntimeError(
-                f"producer source changed during upload verification: {artifact_id}"
-            )
+            raise RuntimeError(f"producer source changed during upload verification: {artifact_id}")
 
 
 def _verify_stream_source(
@@ -842,9 +843,7 @@ def _verify_stream_source(
         raw_parts = None
         raw_digest_spool = None
     if sha256 != item.sha256:
-        raise RuntimeError(
-            f"producer stream identity changed before upload: {item.artifact_id}"
-        )
+        raise RuntimeError(f"producer stream identity changed before upload: {item.artifact_id}")
     verified_reader = _VerifiedRangeReader(
         source=item.read_range,
         artifact_id=item.artifact_id,
@@ -906,9 +905,7 @@ class _VerifiedRangeReader:
 
     def __call__(self, offset: int, size: int) -> builtins.bytes:
         if offset < 0 or size < 0 or offset + size > self.bytes:
-            raise RuntimeError(
-                f"producer source requested an invalid range: {self.artifact_id}"
-            )
+            raise RuntimeError(f"producer source requested an invalid range: {self.artifact_id}")
         if size == 0:
             return b""
         first = offset // _STREAM_VERIFY_BLOCK_BYTES

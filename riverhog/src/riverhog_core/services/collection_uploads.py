@@ -160,6 +160,7 @@ from riverhog_core.catalog_models import (
     CollectionUploadArtifactMaterializationDecisionRecord,
     CollectionUploadArtifactProvenanceBindingRecord,
     CollectionUploadArtifactRecord,
+    CollectionUploadArtifactVolumeRecord,
     CollectionUploadCopyIntentRecord,
     CollectionUploadProvenanceArchiveVolumeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
@@ -2056,7 +2057,7 @@ class SqlAlchemyCollectionUploadService:
             if upload is not None:
                 _touch_upload(upload, config=self._config, now=now)
                 upload.archive_phase_updated_at = now
-                _record_artifact_custody_receipts(session, upload, now=now)
+                _record_payload_custody_progress(session, upload, record, now=now)
 
     def requeue_interrupted_finalizations_for_startup(self, *, limit: int = 100) -> int:
         if limit < 1:
@@ -2294,6 +2295,9 @@ class SqlAlchemyCollectionUploadService:
         if self._publish_final_authority(collection_id):
             self._requeue_finalization_step(collection_id)
             return
+        if self._publish_custody_receipts(collection_id):
+            self._requeue_finalization_step(collection_id)
+            return
         if self._publish_initial_tags(collection_id):
             self._requeue_finalization_step(collection_id)
             return
@@ -2387,6 +2391,96 @@ class SqlAlchemyCollectionUploadService:
                     raise RuntimeError("final archive authority receipt changed")
                 upload.final_authority_json = encoded
         return True
+
+    def _publish_custody_receipts(self, collection_id: int) -> bool:
+        """Authorize source release only after both immutable roots are sealed."""
+
+        with session_scope(self._session_factory) as session:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .with_for_update()
+            )
+            if upload is None or upload.final_authority_json is None:
+                return False
+            if (
+                upload.provenance_identity is None
+                or upload.provenance_archive_root_receipt_json is None
+            ):
+                raise RuntimeError("final provenance custody is unavailable")
+            artifacts = list(
+                session.scalars(
+                    select(CollectionUploadArtifactRecord)
+                    .where(
+                        CollectionUploadArtifactRecord.collection_id == collection_id,
+                        CollectionUploadArtifactRecord.custody_receipt_json.is_(None),
+                    )
+                    .order_by(CollectionUploadArtifactRecord.artifact_id)
+                    .limit(_FINALIZATION_FILE_BATCH)
+                )
+            )
+            if not artifacts:
+                if upload.safe_release_artifact_count != upload.artifact_count:
+                    raise RuntimeError("safe-release receipts do not cover the artifact set")
+                return False
+            authority = _final_authority(upload)
+            root_sha256 = str(authority["root"]["plaintext_sha256"])
+            provenance_receipt_sha256 = hashlib.sha256(
+                canonical_json_bytes(json.loads(upload.provenance_archive_root_receipt_json))
+            ).hexdigest()
+            for artifact in artifacts:
+                if artifact.payload_sealed_at is None:
+                    raise RuntimeError("payload volume coverage is incomplete")
+                volumes = list(
+                    session.scalars(
+                        select(CollectionArchiveObjectUploadRecord)
+                        .join(
+                            CollectionUploadArtifactVolumeRecord,
+                            (
+                                CollectionUploadArtifactVolumeRecord.collection_id
+                                == CollectionArchiveObjectUploadRecord.collection_id
+                            )
+                            & (
+                                CollectionUploadArtifactVolumeRecord.object_id
+                                == CollectionArchiveObjectUploadRecord.object_id
+                            ),
+                        )
+                        .where(
+                            CollectionUploadArtifactVolumeRecord.collection_id == collection_id,
+                            CollectionUploadArtifactVolumeRecord.artifact_id
+                            == artifact.artifact_id,
+                        )
+                        .order_by(CollectionArchiveObjectUploadRecord.object_id)
+                    )
+                )
+                if not volumes or any(
+                    volume.state != "sealed" or volume.sealed_receipt_json is None
+                    for volume in volumes
+                ):
+                    raise RuntimeError("payload volume custody is incomplete")
+                objects = tuple(
+                    CollectionUploadCustodyObjectDocument(
+                        volume_id=volume.object_id,
+                        sealed_receipt_sha256=hashlib.sha256(
+                            volume.sealed_receipt_json.encode("utf-8")
+                        ).hexdigest(),
+                    )
+                    for volume in volumes
+                )
+                receipt = CollectionUploadArtifactCustodyReceiptDocument.seal(
+                    collection_id=collection_id,
+                    artifact_id=ArtifactId(artifact.artifact_id),
+                    bytes=artifact.bytes,
+                    sha256=artifact.sha256,
+                    archive_root_sha256=root_sha256,
+                    provenance_root_sha256=upload.provenance_identity,
+                    provenance_root_receipt_sha256=provenance_receipt_sha256,
+                    archive_objects=objects,
+                )
+                artifact.custody_receipt_json = receipt.model_dump_json(exclude_none=True)
+                upload.safe_release_artifact_count += 1
+                upload.safe_release_artifact_bytes += artifact.bytes
+            return True
 
     def _publish_initial_description(self, collection_id: int) -> bool:
         """Establish the initial description state after the root and before catalog publish."""
@@ -4708,8 +4802,8 @@ def _seal_open_collection_upload(
     upload.catalog_phase = "artifact-set-identity"
     upload.catalog_cursor_json = "{}"
     upload.catalog_hash_state = None
-    custody_pending = (
-        upload.custody_mode == "custody-transfer" and not _has_complete_artifact_custody(upload)
+    custody_pending = upload.custody_mode == "custody-transfer" and not _has_complete_payload_seal(
+        upload
     )
     upload.state = "closing" if custody_pending else "uploading"
     if custody_pending:
@@ -4730,6 +4824,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
     if not upload.archive_storage_prefix:
         raise RuntimeError("collection archive storage prefix is missing")
     now = utc_timestamp_now()
+    coverage: list[tuple[str, str]] = []
     for plan in batch.packs:
         plan_json = pack_volume_plan_bytes(plan).decode("utf-8")
         relative = f"volumes/{plan.volume_id}.tar.age"
@@ -4753,6 +4848,8 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                 updated_at=now,
             )
         )
+        for member in plan.members:
+            coverage.append((member.artifact_id, plan.volume_id))
     for plan in batch.raw_volumes:
         plan_json = raw_volume_plan_bytes(plan).decode("utf-8")
         relative = f"volumes/{plan.volume_id}.bin.age"
@@ -4787,6 +4884,18 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                     // batch.checkpoint.policy.raw_part_plaintext_bytes,
                 ),
                 updated_at=now,
+            )
+        )
+        coverage.append((plan.artifact_id, plan.volume_id))
+    # The archive objects are appended through a relationship. Flush their
+    # primary keys before adding the independent coverage rows with two FKs.
+    session.flush()
+    for artifact_id, volume_id in coverage:
+        session.add(
+            CollectionUploadArtifactVolumeRecord(
+                collection_id=upload.collection_id,
+                artifact_id=artifact_id,
+                object_id=volume_id,
             )
         )
     session.flush()
@@ -4839,15 +4948,15 @@ def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) ->
         checkpoint.closed
         and checkpoint.next_sequence > 0
         and sealed == checkpoint.next_sequence
-        and _has_complete_artifact_custody(upload)
+        and _has_complete_payload_seal(upload)
     )
 
 
-def _has_complete_artifact_custody(upload: CollectionUploadRecord) -> bool:
+def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
     return bool(
         upload.artifact_count > 0
-        and upload.custodied_artifact_count == upload.artifact_count
-        and upload.custodied_artifact_bytes == upload.artifact_bytes
+        and upload.payload_sealed_artifact_count == upload.artifact_count
+        and upload.payload_sealed_artifact_bytes == upload.artifact_bytes
     )
 
 
@@ -4872,6 +4981,7 @@ def _artifact_payload(record: CollectionUploadArtifactRecord) -> dict[str, objec
         "artifact_id": record.artifact_id,
         "bytes": format_scalar("nonnegative", record.bytes),
         "sha256": record.sha256,
+        "payload_sealed": record.payload_sealed_at is not None,
         "custody_receipt": (
             CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(
                 record.custody_receipt_json
@@ -5345,7 +5455,7 @@ def _custody_stats(session: Session, collection_id: int) -> tuple[int, int]:
     upload = session.get(CollectionUploadRecord, collection_id)
     if upload is None:
         return 0, 0
-    return int(upload.custodied_artifact_count), int(upload.custodied_artifact_bytes)
+    return int(upload.safe_release_artifact_count), int(upload.safe_release_artifact_bytes)
 
 
 def _custody_payload(
@@ -5586,63 +5696,60 @@ def _touch_upload(
         upload.lease_expires_at = _custody_lease_expiry(config, now=current)
 
 
-def _archive_object_artifact_ids(record: CollectionArchiveObjectUploadRecord) -> tuple[str, ...]:
-    if record.kind == "pack":
-        return tuple(
-            member.artifact_id for member in parse_pack_volume_plan(record.plan_json).members
-        )
-    if record.kind == "segment":
-        return (parse_raw_volume_plan(record.plan_json).artifact_id,)
-    raise RuntimeError(f"unsupported archive volume kind: {record.kind}")
-
-
-def _record_artifact_custody_receipts(
+def _record_payload_custody_progress(
     session: Session,
     upload: CollectionUploadRecord,
+    sealed_volume: CollectionArchiveObjectUploadRecord,
     *,
     now: str,
 ) -> None:
-    """Persist exact safe-release evidence once every covering object is sealed."""
+    """Track payload-only sealing so finalization can start without releasing sources."""
 
-    volumes_by_id: dict[str, list[CollectionArchiveObjectUploadRecord]] = {}
-    for volume in upload.archive_objects:
-        for artifact_id in _archive_object_artifact_ids(volume):
-            volumes_by_id.setdefault(artifact_id, []).append(volume)
-    newly_custodied_artifacts = 0
-    newly_custodied_bytes = 0
-    for artifact in upload.artifacts:
-        if artifact.custody_receipt_json is not None:
+    newly_sealed_artifacts = 0
+    newly_sealed_bytes = 0
+    artifact_ids = tuple(
+        session.scalars(
+            select(CollectionUploadArtifactVolumeRecord.artifact_id).where(
+                CollectionUploadArtifactVolumeRecord.collection_id == upload.collection_id,
+                CollectionUploadArtifactVolumeRecord.object_id == sealed_volume.object_id,
+            )
+        )
+    )
+    for artifact_id in artifact_ids:
+        artifact = session.get(CollectionUploadArtifactRecord, (upload.collection_id, artifact_id))
+        if artifact is None:
+            raise RuntimeError("payload volume names an unregistered artifact")
+        if artifact.payload_sealed_at is not None:
             continue
-        volumes = volumes_by_id.get(artifact.artifact_id, [])
+        volumes = list(
+            session.scalars(
+                select(CollectionArchiveObjectUploadRecord)
+                .join(
+                    CollectionUploadArtifactVolumeRecord,
+                    (
+                        CollectionUploadArtifactVolumeRecord.collection_id
+                        == CollectionArchiveObjectUploadRecord.collection_id
+                    )
+                    & (
+                        CollectionUploadArtifactVolumeRecord.object_id
+                        == CollectionArchiveObjectUploadRecord.object_id
+                    ),
+                )
+                .where(
+                    CollectionUploadArtifactVolumeRecord.collection_id == upload.collection_id,
+                    CollectionUploadArtifactVolumeRecord.artifact_id == artifact_id,
+                )
+            )
+        )
         if not volumes or any(
             volume.state != "sealed" or volume.sealed_receipt_json is None for volume in volumes
         ):
             continue
-        objects = tuple(
-            CollectionUploadCustodyObjectDocument(
-                volume_id=volume.object_id,
-                sealed_receipt_sha256=hashlib.sha256(
-                    str(volume.sealed_receipt_json).encode("utf-8")
-                ).hexdigest(),
-            )
-            for volume in sorted(volumes, key=lambda current: current.object_id)
-        )
-        receipt = CollectionUploadArtifactCustodyReceiptDocument.seal(
-            collection_id=upload.collection_id,
-            artifact_id=ArtifactId(artifact.artifact_id),
-            bytes=artifact.bytes,
-            sha256=artifact.sha256,
-            archive_objects=objects,
-        )
-        artifact.custodied_at = now
-        artifact.custody_receipt_json = receipt.model_dump_json(
-            exclude_none=True,
-            by_alias=True,
-        )
-        newly_custodied_artifacts += 1
-        newly_custodied_bytes += artifact.bytes
-    upload.custodied_artifact_count += newly_custodied_artifacts
-    upload.custodied_artifact_bytes += newly_custodied_bytes
+        artifact.payload_sealed_at = now
+        newly_sealed_artifacts += 1
+        newly_sealed_bytes += artifact.bytes
+    upload.payload_sealed_artifact_count += newly_sealed_artifacts
+    upload.payload_sealed_artifact_bytes += newly_sealed_bytes
 
 
 def _upload_payload(
