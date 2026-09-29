@@ -2573,6 +2573,7 @@ dependencies = [
     { name = "riverhog-application-access" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
+    { name = "riverhog-provenance" },
     { name = "riverhog-provenance-contracts" },
     { name = "time-formats" },
 ]
@@ -2585,6 +2586,7 @@ requires-dist = [
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
+    { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "time-formats", editable = "packages/time-formats" },
 ]

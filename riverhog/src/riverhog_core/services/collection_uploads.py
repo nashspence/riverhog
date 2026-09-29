@@ -147,6 +147,7 @@ from riverhog_core.catalog_models import (
     CollectionArtifactRecord,
     CollectionDescriptionPublicationRecord,
     CollectionProvenanceJournalRecord,
+    CollectionProvenanceJournalSegmentRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
     CollectionTagNodeRecord,
@@ -1041,6 +1042,13 @@ class SqlAlchemyCollectionUploadService:
                 raise Conflict("collection upload no longer accepts materialization decisions")
             for decision in batch.decisions:
                 artifact_id = str(decision.artifact_id)
+                hint_json = (
+                    canonical_json_bytes(
+                        decision.materialization_hint.model_dump(mode="json")
+                    ).decode("utf-8")
+                    if decision.materialization_hint is not None
+                    else None
+                )
                 if (
                     session.get(CollectionUploadArtifactRecord, (normalized_id, artifact_id))
                     is None
@@ -1055,6 +1063,7 @@ class SqlAlchemyCollectionUploadService:
                         CollectionUploadArtifactMaterializationDecisionRecord(
                             collection_id=normalized_id,
                             artifact_id=artifact_id,
+                            hint_json=hint_json,
                             allow_missing_materialization_hint=(
                                 decision.allow_missing_materialization_hint
                             ),
@@ -1063,6 +1072,7 @@ class SqlAlchemyCollectionUploadService:
                 elif (
                     existing.allow_missing_materialization_hint
                     != decision.allow_missing_materialization_hint
+                    or existing.hint_json != hint_json
                 ):
                     raise Conflict("materialization decision retry differs from accepted choice")
             _touch_upload(upload, config=self._config)
@@ -2613,6 +2623,8 @@ class SqlAlchemyCollectionUploadService:
                 _advance_catalog_journals(session, upload)
             elif phase == "bindings":
                 _advance_catalog_bindings(session, upload)
+            elif phase == "provenance-segments":
+                _advance_catalog_provenance_segments(session, upload)
             elif phase == "archive-objects":
                 self._advance_catalog_archive_objects(session, upload)
             elif phase == "artifact-objects":
@@ -2633,6 +2645,8 @@ class SqlAlchemyCollectionUploadService:
             or upload.catalog_inventory_identity is None
         ):
             raise RuntimeError("catalog identities are incomplete")
+        if upload.catalog_artifact_set_identity != upload.archive_tree_sha256:
+            raise RuntimeError("catalog artifact set differs from the sealed archive")
         if upload.provenance_identity is None:
             raise RuntimeError("canonical provenance authority is incomplete")
         if session.get(CollectionRecord, upload.collection_id) is None:
@@ -3082,18 +3096,16 @@ class SqlAlchemyCollectionUploadService:
                         raise MaterializationDecisionRequired(
                             f"materialization decision is missing: {row.artifact_id}"
                         )
-                    if verified.materialization_hint is None:
-                        if not decision.allow_missing_materialization_hint:
-                            raise MaterializationDecisionRequired(
-                                "No materialization hint was supplied. Artifacts do not require "
-                                "filesystem names, but human-facing downloads may use opaque "
-                                "artifact IDs without a hint. Supply materialization_hint or "
-                                "explicitly set allow_missing_materialization_hint=true for "
-                                "this publication."
-                            )
-                    elif decision.allow_missing_materialization_hint:
-                        raise Conflict(
-                            "materialization omission override contradicts the supplied hint"
+                    expected_hint = (
+                        None
+                        if decision.hint_json is None
+                        else tuple(json.loads(decision.hint_json)["components"])
+                    )
+                    if expected_hint != verified.materialization_hint:
+                        raise Conflict("publication hint differs from the delivered Occurrence")
+                    if (expected_hint is None) != decision.allow_missing_materialization_hint:
+                        raise MaterializationDecisionRequired(
+                            "publication requires exactly one hint or explicit omission"
                         )
                     upload.provenance_validation_after_artifact_id = row.artifact_id
                     upload.provenance_validation_next_artifact_order += 1
@@ -3881,7 +3893,7 @@ def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) 
     if not rows:
         if _cursor_nonnegative_int(cursor, "bindings_seen") != upload.artifact_count:
             raise RuntimeError("catalog provenance bindings are incomplete")
-        upload.catalog_phase = "archive-objects"
+        upload.catalog_phase = "provenance-segments"
         upload.catalog_cursor_json = "{}"
         return
     session.execute(
@@ -3907,6 +3919,85 @@ def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) 
             "after_artifact_id": rows[-1].artifact_id,
             "bindings_seen": _cursor_nonnegative_int(cursor, "bindings_seen") + len(rows),
         },
+    )
+
+
+def _advance_catalog_provenance_segments(session: Session, upload: CollectionUploadRecord) -> None:
+    """Project bounded encrypted segment locations, never a journal byte replica."""
+
+    cursor = _catalog_cursor(upload)
+    sequence = _cursor_nonnegative_int(cursor, "sequence")
+    last_journal_id = cursor.get("journal_id")
+    last_offset = _cursor_nonnegative_int(cursor, "journal_offset")
+    if last_journal_id is not None and not isinstance(last_journal_id, str):
+        raise RuntimeError("catalog provenance segment cursor is invalid")
+    if sequence == upload.provenance_archive_next_sequence:
+        if last_journal_id is not None:
+            last = session.get(
+                CollectionProvenanceJournalRecord, (upload.collection_id, last_journal_id)
+            )
+            if last is None or last_offset != last.bytes:
+                raise RuntimeError("catalog journal segments do not cover the exact journal")
+        upload.catalog_phase = "archive-objects"
+        upload.catalog_cursor_json = "{}"
+        return
+    if sequence > upload.provenance_archive_next_sequence:
+        raise RuntimeError("catalog provenance segment cursor exceeds the archive")
+    record = session.get(
+        CollectionUploadProvenanceArchiveVolumeRecord, (upload.collection_id, sequence)
+    )
+    if record is None:
+        raise RuntimeError("catalog provenance volume is missing")
+    document = ProvenanceVolumeDocument.from_json_bytes(record.document_json.encode("utf-8"))
+    if document.sequence != sequence or document.archive_generation != upload.archive_generation:
+        raise RuntimeError("catalog provenance volume changed archive authority")
+    if document.artifact_set_sha256 != upload.archive_tree_sha256:
+        raise RuntimeError("catalog provenance volume changed the artifact set")
+    if document.payload.kind == "journal":
+        journal_id = document.journal_id
+        offset = document.journal_offset
+        if journal_id is None or offset is None or document.journal_bytes is None:
+            raise RuntimeError("catalog journal segment is incomplete")
+        journal = session.get(CollectionProvenanceJournalRecord, (upload.collection_id, journal_id))
+        if (
+            journal is None
+            or document.journal_bytes != journal.bytes
+            or document.journal_sha256 != journal.sha256
+        ):
+            raise RuntimeError("catalog journal segment changed journal authority")
+        if journal_id != last_journal_id:
+            if last_journal_id is not None:
+                previous = session.get(
+                    CollectionProvenanceJournalRecord, (upload.collection_id, last_journal_id)
+                )
+                if previous is None or last_offset != previous.bytes:
+                    raise RuntimeError("catalog journal segments are incomplete")
+            if offset != 0:
+                raise RuntimeError("catalog journal segment does not start at zero")
+        elif offset != last_offset:
+            raise RuntimeError("catalog journal segments are not contiguous")
+        sealed = _parse_sealed_provenance_object(record.payload_receipt_json)
+        if (
+            sealed.plaintext_bytes != document.payload.bytes
+            or sealed.plaintext_sha256 != document.payload.sha256
+        ):
+            raise RuntimeError("catalog journal segment differs from its sealed receipt")
+        session.add(
+            CollectionProvenanceJournalSegmentRecord(
+                collection_id=upload.collection_id,
+                journal_id=journal_id,
+                sequence=sequence,
+                byte_offset=offset,
+                bytes=document.payload.bytes,
+                sha256=document.payload.sha256,
+                object_id=sealed.object_id,
+            )
+        )
+        last_journal_id = journal_id
+        last_offset = offset + document.payload.bytes
+    _set_catalog_cursor(
+        upload,
+        {"sequence": sequence + 1, "journal_id": last_journal_id, "journal_offset": last_offset},
     )
 
 
@@ -4598,7 +4689,7 @@ def _seal_open_collection_upload(
         "utf-8"
     )
     upload.catalog_artifact_set_identity = None
-    upload.catalog_phase = "content-identity"
+    upload.catalog_phase = "artifact-set-identity"
     upload.catalog_cursor_json = "{}"
     upload.catalog_hash_state = None
     custody_pending = (

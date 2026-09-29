@@ -358,7 +358,7 @@ class RetrievalService(Protocol):
     ) -> JsonObject: ...
     def plan(
         self,
-        files: Sequence[tuple[int, str]],
+        artifacts: Sequence[tuple[int, str]],
         *,
         idempotency_key: str | None = None,
         lease: timedelta | None = None,
@@ -379,7 +379,7 @@ class RetrievalService(Protocol):
         plan_id: str,
         key_id: str | None = None,
     ) -> JsonObject: ...
-    def list_plan_files(
+    def list_plan_artifacts(
         self,
         *,
         principal_id: str,
@@ -428,7 +428,7 @@ class RetrievalService(Protocol):
         principal_id: str,
         job_id: str,
         collection_id: int,
-        path: str,
+        artifact_id: str,
         key_id: str | None = None,
     ) -> tuple[int, str]: ...
     def content(
@@ -437,7 +437,7 @@ class RetrievalService(Protocol):
         principal_id: str,
         job_id: str,
         collection_id: int,
-        path: str,
+        artifact_id: str,
         offset: int = 0,
         size: int | None = None,
         key_id: str | None = None,

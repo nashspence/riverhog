@@ -7,7 +7,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, replace
 
 from riverhog_age import ResumableAgeScryptSession, UploadState
-from riverhog_protocol.paths import validate_canonical_relpath
+from riverhog_protocol.artifact_identity import ArtifactId
 
 from riverhog_core.age_range import (
     iter_decrypt_age_plaintext_range,
@@ -35,21 +35,21 @@ class RawVolumeRetrievalSource:
     volume_id: str
     object_path: str
     revision: str | None
-    source_path: str
-    file_offset: int
+    artifact_id: str
+    artifact_offset: int
     plaintext_bytes: int
-    file_bytes: int
-    file_sha256: str
+    artifact_bytes: int
+    artifact_sha256: str
     age_state_json: str
     parts: tuple[StoredArchivePart, ...]
 
     def __post_init__(self) -> None:
         if not self.volume_id.startswith("segment-") or not self.object_path:
             raise ValueError("raw retrieval volume identity is invalid")
-        validate_canonical_relpath(self.source_path)
-        if self.file_offset < 0 or self.plaintext_bytes < 0 or self.file_bytes < 0:
+        ArtifactId(self.artifact_id)
+        if self.artifact_offset < 0 or self.plaintext_bytes < 0 or self.artifact_bytes < 0:
             raise ValueError("raw retrieval byte range is invalid")
-        if self.file_offset + self.plaintext_bytes > self.file_bytes:
+        if self.artifact_offset + self.plaintext_bytes > self.artifact_bytes:
             raise ValueError("raw retrieval volume exceeds its source file")
         state = UploadState.from_json_bytes(self.age_state_json)
         if state.plaintext_size != self.plaintext_bytes:
@@ -392,31 +392,31 @@ class RawFileRangeReader:
     ) -> Iterator[bytes]:
         if not volumes:
             raise ValueError("raw file retrieval requires at least one volume")
-        ordered = tuple(sorted(volumes, key=lambda current: current.file_offset))
-        path = ordered[0].source_path
-        file_bytes = ordered[0].file_bytes
-        file_sha256 = ordered[0].file_sha256
+        ordered = tuple(sorted(volumes, key=lambda current: current.artifact_offset))
+        path = ordered[0].artifact_id
+        artifact_bytes = ordered[0].artifact_bytes
+        artifact_sha256 = ordered[0].artifact_sha256
         expected_offset = 0
         for volume in ordered:
             if (
-                volume.source_path != path
-                or volume.file_bytes != file_bytes
-                or volume.file_sha256 != file_sha256
-                or volume.file_offset != expected_offset
+                volume.artifact_id != path
+                or volume.artifact_bytes != artifact_bytes
+                or volume.artifact_sha256 != artifact_sha256
+                or volume.artifact_offset != expected_offset
             ):
                 raise ValueError("raw file retrieval volumes are not one contiguous file")
             expected_offset += volume.plaintext_bytes
-        if expected_offset != file_bytes:
+        if expected_offset != artifact_bytes:
             raise ValueError("raw file retrieval volumes do not cover the file")
-        resolved_size = file_bytes - offset if size is None else size
-        if offset < 0 or resolved_size < 0 or offset + resolved_size > file_bytes:
+        resolved_size = artifact_bytes - offset if size is None else size
+        if offset < 0 or resolved_size < 0 or offset + resolved_size > artifact_bytes:
             raise ValueError("raw file requested range is invalid")
 
         requested_end = offset + resolved_size
-        digest = hashlib.sha256() if offset == 0 and resolved_size == file_bytes else None
+        digest = hashlib.sha256() if offset == 0 and resolved_size == artifact_bytes else None
         emitted = 0
         for volume in ordered:
-            volume_start = volume.file_offset
+            volume_start = volume.artifact_offset
             volume_end = volume_start + volume.plaintext_bytes
             if volume_end <= offset or volume_start >= requested_end:
                 continue
@@ -438,5 +438,5 @@ class RawFileRangeReader:
                 raise ValueError("raw volume ended before the requested range")
         if emitted != resolved_size:
             raise ValueError("raw file retrieval emitted an unexpected byte count")
-        if digest is not None and digest.hexdigest() != file_sha256:
+        if digest is not None and digest.hexdigest() != artifact_sha256:
             raise ValueError("raw file retrieval verification failed")

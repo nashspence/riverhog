@@ -37,8 +37,8 @@ from riverhog_core.catalog_models import (
     AppKeyRecord,
     ArchiveCopyJobRecord,
     ArchiveCopyObjectUploadRecord,
-    CollectionArchiveCopyRecord,
     CollectionArchiveArtifactObjectRecord,
+    CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionRecord,
     CollectionUploadCopyIntentRecord,
@@ -1864,21 +1864,21 @@ class SqlAlchemyArchiveCopyJobService:
             collection = session.get(CollectionRecord, collection_id)
             assert collection is not None
             provenance_kinds = set(
-                    session.scalars(
-                        select(CollectionArchiveObjectRecord.kind)
-                        .where(
-                            CollectionArchiveObjectRecord.collection_id == collection_id,
-                            CollectionArchiveObjectRecord.store == destination_store,
-                            CollectionArchiveObjectRecord.kind.in_(
-                                (
-                                    "provenance-root",
-                                    "provenance-volume-metadata",
-                                    "provenance-terminal",
-                                )
-                            ),
-                        )
-                        .distinct()
+                session.scalars(
+                    select(CollectionArchiveObjectRecord.kind)
+                    .where(
+                        CollectionArchiveObjectRecord.collection_id == collection_id,
+                        CollectionArchiveObjectRecord.store == destination_store,
+                        CollectionArchiveObjectRecord.kind.in_(
+                            (
+                                "provenance-root",
+                                "provenance-volume-metadata",
+                                "provenance-terminal",
+                            )
+                        ),
                     )
+                    .distinct()
+                )
             )
             if provenance_kinds != {
                 "provenance-root",

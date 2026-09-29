@@ -13,7 +13,7 @@ from http_api_contracts import (
     parse_quoted_sha256_identity,
 )
 from riverhog_protocol import (
-    RETRIEVAL_FILE_BATCH_MAX,
+    RETRIEVAL_ARTIFACT_BATCH_MAX,
     ArchiveStoreName,
     CollectionIdParameter,
     RetrievalCacheProtection,
@@ -41,7 +41,7 @@ from riverhog_api.schemas.retrieval import (
     RetrievalCacheObjectOut,
     RetrievalCacheStatusOut,
     RetrievalJobOut,
-    RetrievalPlanFilePageOut,
+    RetrievalPlanArtifactPageOut,
     RetrievalPlanOut,
     RetrievalPlanRequest,
 )
@@ -49,8 +49,8 @@ from riverhog_api.schemas.retrieval import (
 router = RiverhogRouter(tags=["retrieval"])
 
 
-def _files(request: RetrievalPlanRequest) -> list[tuple[int, str]]:
-    return [(item.collection_id, item.path) for item in request.files]
+def _artifacts(request: RetrievalPlanRequest) -> list[tuple[int, str]]:
+    return [(item.collection_id, item.artifact_id) for item in request.artifacts]
 
 
 def _cache_object_wire(value: dict[str, object]) -> dict[str, object]:
@@ -172,7 +172,7 @@ def plan_retrieval(
     container: ContainerDep,
 ) -> RetrievalPlanOut:
     payload = container.retrieval.plan(
-        _files(request),
+        _artifacts(request),
         idempotency_key=request.idempotency_key,
         lease=(
             timedelta(seconds=request.lease_seconds) if request.lease_seconds is not None else None
@@ -222,28 +222,28 @@ def advance_retrieval_plan(
 
 
 @router.get(
-    "/retrieval-plans/{plan_id}/files",
-    response_model=RetrievalPlanFilePageOut,
+    "/retrieval-plans/{plan_id}/artifacts",
+    response_model=RetrievalPlanArtifactPageOut,
     openapi_extra={
         **operation_interface("client-only-primitive"),
         **exact_authority_page_operation(
-            authority="retrieval-plan-files",
+            authority="retrieval-plan-artifacts",
             authority_parameter=None,
             cursor_parameter="start_ordinal",
             limit_parameter="page_size",
         ),
     },
 )
-def list_retrieval_plan_files(
+def list_retrieval_plan_artifacts(
     plan_id: str,
     principal: RetrievalManager,
     container: ContainerDep,
     if_match: Annotated[QuotedSha256Identity, Header(alias="If-Match")],
-    start_ordinal: int = Query(0, ge=0, le=RETRIEVAL_FILE_BATCH_MAX),
+    start_ordinal: int = Query(0, ge=0, le=RETRIEVAL_ARTIFACT_BATCH_MAX),
     page_size: int = Query(100, ge=1, le=100),
-) -> RetrievalPlanFilePageOut:
-    return RetrievalPlanFilePageOut.model_validate(
-        container.retrieval.list_plan_files(
+) -> RetrievalPlanArtifactPageOut:
+    return RetrievalPlanArtifactPageOut.model_validate(
+        container.retrieval.list_plan_artifacts(
             principal_id=principal.id,
             key_id=principal.key_id,
             plan_id=plan_id,
@@ -356,7 +356,7 @@ def acknowledge_retrieval_job(
 @router.head(
     "/retrieval-jobs/{job_id}/content",
     include_in_schema=False,
-    operation_id="head_retrieval_file",
+    operation_id="head_retrieval_artifact",
     openapi_extra=operation_interface("standard-tool/protocol"),
 )
 @router.get(
@@ -364,14 +364,14 @@ def acknowledge_retrieval_job(
     response_class=StreamingResponse,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def download_retrieval_file(
+def download_retrieval_artifact(
     job_id: str,
     principal: RetrievalManager,
     container: ContainerDep,
     http_request: Request,
     collection_id: Annotated[CollectionIdParameter, Query()],
     if_match: Annotated[QuotedSha256Identity, Header(alias="If-Match")],
-    path: str = Query(),
+    artifact_id: str = Query(),
     range_header: Annotated[str | None, Header(alias="Range")] = None,
     if_none_match: Annotated[str | None, Header(alias="If-None-Match")] = None,
 ) -> Response:
@@ -379,12 +379,12 @@ def download_retrieval_file(
         principal_id=principal.id,
         job_id=job_id,
         collection_id=collection_id,
-        path=path,
+        artifact_id=artifact_id,
         key_id=principal.key_id,
     )
     etag = f'"{sha256}"'
     if parse_quoted_sha256_identity(if_match) != sha256:
-        raise PreconditionFailed("retrieval file identity changed")
+        raise PreconditionFailed("retrieval artifact identity changed")
     headers = {
         "Accept-Ranges": "bytes",
         "ETag": etag,
@@ -404,7 +404,7 @@ def download_retrieval_file(
         principal_id=principal.id,
         job_id=job_id,
         collection_id=collection_id,
-        path=path,
+        artifact_id=artifact_id,
         offset=start,
         size=content_length,
         key_id=principal.key_id,

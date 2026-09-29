@@ -6,16 +6,16 @@ from http_api_contracts import BrowsePageToken, CanonicalVisibleText, Sha256Iden
 from lifecycle_events import EventContext
 from pydantic import ConfigDict, Field, model_validator
 from riverhog_protocol import (
-    RETRIEVAL_FILE_BATCH_MAX,
+    RETRIEVAL_ARTIFACT_BATCH_MAX,
     ArchiveStoreName,
     CollectionId,
-    ImmutableFileIdentityDocument,
+    ArtifactMemberIdentityDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
     RetrievalCacheState,
     RetrievalCacheStoreName,
-    RetrievalFileReferenceDocument,
-    RetrievalFileReferenceSetDocument,
+    RetrievalArtifactReferenceDocument,
+    RetrievalArtifactReferenceSetDocument,
     SortOrder,
 )
 from time_formats import CanonicalUtcTimestamp
@@ -23,17 +23,17 @@ from time_formats import CanonicalUtcTimestamp
 from riverhog_api.schemas.common import RiverhogModel
 
 
-class RetrievalFileIn(RetrievalFileReferenceDocument):
+class RetrievalArtifactIn(RetrievalArtifactReferenceDocument):
     pass
 
 
-class RetrievalPlanRequest(RetrievalFileReferenceSetDocument):
+class RetrievalPlanRequest(RetrievalArtifactReferenceSetDocument):
     idempotency_key: CanonicalVisibleText = Field(max_length=200)
     lease_seconds: int | None = Field(default=None, ge=1)
     restore_policy: Literal["allow", "never"] = "allow"
 
 
-class RetrievalPlanFileOut(ImmutableFileIdentityDocument):
+class RetrievalPlanArtifactOut(ArtifactMemberIdentityDocument):
     collection_id: CollectionId
     requires_restore: bool
 
@@ -49,7 +49,7 @@ class RetrievalPlanOut(RiverhogModel):
     lease_seconds: int
     restore_policy: Literal["allow", "never"]
     requires_restore: bool
-    file_count: int = Field(ge=1, le=RETRIEVAL_FILE_BATCH_MAX)
+    artifact_count: int = Field(ge=1, le=RETRIEVAL_ARTIFACT_BATCH_MAX)
     etag: Sha256Identity | None
 
     @model_validator(mode="after")
@@ -65,25 +65,25 @@ class RetrievalPlanOut(RiverhogModel):
         return self
 
 
-class RetrievalPlanFilePageOut(RiverhogModel):
-    format: Literal["riverhog-retrieval-plan-files/v1"]
+class RetrievalPlanArtifactPageOut(RiverhogModel):
+    format: Literal["riverhog-retrieval-plan-artifacts/v1"]
     plan_id: str
     etag: Sha256Identity
-    start_ordinal: int = Field(ge=0, le=RETRIEVAL_FILE_BATCH_MAX)
+    start_ordinal: int = Field(ge=0, le=RETRIEVAL_ARTIFACT_BATCH_MAX)
     next_ordinal: int | None = Field(
         default=None,
         ge=1,
-        le=RETRIEVAL_FILE_BATCH_MAX,
+        le=RETRIEVAL_ARTIFACT_BATCH_MAX,
     )
     complete: bool
-    files: list[RetrievalPlanFileOut] = Field(max_length=100)
+    artifacts: list[RetrievalPlanArtifactOut] = Field(max_length=100)
 
     @model_validator(mode="after")
     def validate_progression(self) -> Self:
         if self.complete:
             if self.next_ordinal is not None:
                 raise ValueError("complete retrieval plan pages cannot continue")
-        elif not self.files or self.next_ordinal != self.start_ordinal + len(self.files):
+        elif not self.artifacts or self.next_ordinal != self.start_ordinal + len(self.artifacts):
             raise ValueError("retrieval plan page continuation must advance exactly")
         return self
 

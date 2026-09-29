@@ -27,6 +27,9 @@ dependencies = [
   "time-formats>=0.1,<0.2",
 ]
 
+[project.entry-points."riverhog.provenance-contracts"]
+collection-production = "riverhog_protocol.collection_production_provenance:CONTRACT_BINDING"
+
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
 lifecycle-events = { workspace = true }
