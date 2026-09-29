@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-stove0-magic-facts-contract-lib"
+version = "0.1.0"
+description = "Bounded byte-classification facts for a selected Stove0 subject."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Bounded byte-classification facts for a selected Stove0 subject.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = ["pydantic>=2.7,<3.0", "stove0-observer-protocol>=0.1,<0.2"]
+
+[project.entry-points."stove0.observer-semantic-validators"]
+magic = "a_stove0_magic_facts_contract_lib:MAGIC_SEMANTIC_VALIDATOR"
+
+[tool.uv.sources]
+stove0-observer-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_stove0_magic_facts_contract_lib"]

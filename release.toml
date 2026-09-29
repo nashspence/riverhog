@@ -49,6 +49,7 @@ required_checks = [
   "build a-riverhog-opentimestamps-witness",
   "build a-stove0-exiftool-observer",
   "build a-stove0-ffprobe-observer",
+  "build a-stove0-magic-observer",
   "build a-stove0-riverhog-provenance-observer",
   "build a-stove0-nvenc-av1-opus-target",
   "build a-stove0-opus-target",
@@ -154,8 +155,10 @@ protected_components = [
   "a-stove0-cli",
   "a-stove0-exiftool-observer",
   "a-stove0-ffprobe-observer",
+  "a-stove0-magic-observer",
   "a-stove0-riverhog-provenance-observer",
   "a-stove0-ffprobe-streams-contract-lib",
+  "a-stove0-magic-facts-contract-lib",
   "a-stove0-materialization-hint-evidence-contract-lib",
   "a-stove0-media-archive-contract-lib",
   "a-stove0-media-archive-lib",
@@ -196,6 +199,7 @@ protected_runtime_images = [
   "stove0",
   "a-stove0-exiftool-observer",
   "a-stove0-ffprobe-observer",
+  "a-stove0-magic-observer",
   "a-stove0-riverhog-provenance-observer",
   "a-stove0-nvenc-av1-opus-target",
   "a-stove0-opus-target",
@@ -419,6 +423,7 @@ component = [
   "some-implementations/stove0/observers/contracts/media-metadata",
   "some-implementations/stove0/observers/contracts/media-sampling",
   "some-implementations/stove0/observers/contracts/ffprobe-streams",
+  "some-implementations/stove0/observers/contracts/magic",
   "some-implementations/stove0/observers/contracts/materialization-hint",
   "some-implementations/stove0/observers/filename-prefix-sidecars",
   "some-implementations/gogurt/listener-host/linux",
@@ -441,6 +446,7 @@ component = [
   "some-implementations/riverhog/storage/filesystem",
   "some-implementations/stove0/observers/exiftool",
   "some-implementations/stove0/observers/ffprobe",
+  "some-implementations/stove0/observers/magic",
   "some-implementations/stove0/observers/riverhog-provenance",
   "some-implementations/stove0/review0/samplers/nvenc-av1-opus",
   "some-implementations/stove0/targets/nvenc-av1-opus/target",
@@ -510,6 +516,7 @@ a-riverhog-filesystem-store = { role = "component", description = "Filesystem-ba
 stove0 = { role = "application", description = "Content-opaque transformation application for Riverhog.", distributions = ["stove0-server"], repository = "ghcr.io/nashspence/stove0" }
 a-stove0-exiftool-observer = { role = "component", description = "ExifTool media metadata observer for Stove0.", distributions = ["a-stove0-exiftool-observer"], repository = "ghcr.io/nashspence/a-stove0-exiftool-observer" }
 a-stove0-ffprobe-observer = { role = "component", description = "FFprobe stream and sampling observer for Stove0.", distributions = ["a-stove0-ffprobe-observer"], repository = "ghcr.io/nashspence/a-stove0-ffprobe-observer" }
+a-stove0-magic-observer = { role = "component", description = "Bounded byte-only file classification observer for Stove0.", distributions = ["a-stove0-magic-observer"], repository = "ghcr.io/nashspence/a-stove0-magic-observer" }
 a-stove0-riverhog-provenance-observer = { role = "component", description = "Exact canonical Occurrence hint observer for Stove0.", distributions = ["a-stove0-riverhog-provenance-observer"], repository = "ghcr.io/nashspence/a-stove0-riverhog-provenance-observer" }
 a-stove0-nvenc-av1-opus-target = { role = "component", description = "NVENC AV1 and Opus transformation target for Stove0.", distributions = ["a-stove0-nvenc-av1-opus-target", "a-review0-nvenc-av1-opus-sampler"], repository = "ghcr.io/nashspence/a-stove0-nvenc-av1-opus-target" }
 a-stove0-opus-target = { role = "component", description = "Opus transformation target for Stove0.", distributions = ["a-stove0-opus-target", "a-review0-opus-sampler"], repository = "ghcr.io/nashspence/a-stove0-opus-target" }

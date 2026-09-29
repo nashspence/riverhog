@@ -64,6 +64,10 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/stove0/observers/ffprobe/src",
         {"a_stove0_ffprobe_observer"},
     ),
+    "a-stove0-magic-observer": (
+        REPO / "some-implementations/stove0/observers/magic/src",
+        {"a_stove0_magic_observer"},
+    ),
     "a-stove0-riverhog-provenance-observer": (
         REPO / "some-implementations/stove0/observers/riverhog-provenance/src",
         {"a_stove0_riverhog_provenance_observer"},
@@ -79,6 +83,10 @@ IMPLEMENTATION_OWNERS = {
     "a-stove0-ffprobe-streams-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/ffprobe-streams/src",
         {"a_stove0_ffprobe_streams_contract_lib"},
+    ),
+    "a-stove0-magic-facts-contract-lib": (
+        REPO / "some-implementations/stove0/observers/contracts/magic/src",
+        {"a_stove0_magic_facts_contract_lib"},
     ),
     "a-stove0-materialization-hint-evidence-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/materialization-hint/src",
@@ -152,6 +160,7 @@ IMPLEMENTATION_OWNERS = {
 }
 SHARED_PROVIDER_MODULES = {
     "a-stove0-ffprobe-streams-contract-lib",
+    "a-stove0-magic-facts-contract-lib",
     "a-stove0-materialization-hint-evidence-contract-lib",
     "a-stove0-media-metadata-contract-lib",
     "a-stove0-media-sampling-contract-lib",
@@ -823,6 +832,10 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "some-implementations/stove0/observers/contracts/media-sampling",
             "some-implementations/stove0/observers/contracts/ffprobe-streams",
         ),
+        REPO / "some-implementations/stove0/observers/magic/Dockerfile": (
+            "some-implementations/stove0/observers/magic",
+            "some-implementations/stove0/observers/contracts/magic",
+        ),
         REPO / "some-implementations/stove0/observers/riverhog-provenance/Dockerfile": (
             "some-implementations/stove0/observers/riverhog-provenance",
             "some-implementations/stove0/observers/contracts/materialization-hint",
@@ -927,6 +940,7 @@ def test_maintained_observer_distributions_do_not_pull_target_authority() -> Non
     expected = {
         "a-stove0-exiftool-observer": "a-stove0-media-metadata-contract-lib",
         "a-stove0-ffprobe-observer": "a-stove0-media-sampling-contract-lib",
+        "a-stove0-magic-observer": "a-stove0-magic-facts-contract-lib",
         "a-stove0-riverhog-provenance-observer": (
             "a-stove0-materialization-hint-evidence-contract-lib"
         ),
@@ -957,6 +971,7 @@ def test_semantic_contract_distributions_do_not_pull_runtime_support() -> None:
     for distribution in (
         "a-stove0-media-metadata-contract-lib",
         "a-stove0-media-sampling-contract-lib",
+        "a-stove0-magic-facts-contract-lib",
         "a-stove0-materialization-hint-evidence-contract-lib",
         "a-stove0-media-archive-contract-lib",
         "review0-contracts",
@@ -1043,6 +1058,9 @@ def test_images_copy_their_complete_internal_dependency_closure() -> None:
         ),
         REPO / "some-implementations/stove0/observers/ffprobe/Dockerfile": (
             "a-stove0-ffprobe-observer"
+        ),
+        REPO / "some-implementations/stove0/observers/magic/Dockerfile": (
+            "a-stove0-magic-observer"
         ),
         REPO / "some-implementations/stove0/observers/riverhog-provenance/Dockerfile": (
             "a-stove0-riverhog-provenance-observer"

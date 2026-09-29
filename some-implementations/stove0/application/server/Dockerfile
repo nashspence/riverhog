@@ -47,11 +47,13 @@ FROM build AS bundled-components-build
 COPY some-implementations/stove0/observers/contracts/media-metadata some-implementations/stove0/observers/contracts/media-metadata
 COPY some-implementations/stove0/observers/contracts/media-sampling some-implementations/stove0/observers/contracts/media-sampling
 COPY some-implementations/stove0/observers/contracts/ffprobe-streams some-implementations/stove0/observers/contracts/ffprobe-streams
+COPY some-implementations/stove0/observers/contracts/magic some-implementations/stove0/observers/contracts/magic
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
 RUN uv sync --frozen --package stove0-server \
     --package a-stove0-media-metadata-contract-lib \
     --package a-stove0-media-sampling-contract-lib \
     --package a-stove0-ffprobe-streams-contract-lib \
+    --package a-stove0-magic-facts-contract-lib \
     --package a-stove0-materialization-hint-evidence-contract-lib \
     --no-dev --no-editable
 
