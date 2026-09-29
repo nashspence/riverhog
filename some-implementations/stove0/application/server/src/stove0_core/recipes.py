@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import fnmatch
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
-from pathlib import PurePosixPath
 from typing import cast
 
 from pydantic import JsonValue
@@ -20,6 +18,7 @@ from stove0_observer_protocol import (
     ContentObservationRequest,
     ContentObservationRequestPayload,
     ContentObservationResult,
+    canonical_json_bytes,
 )
 from stove0_protocol import (
     ArtifactSelection,
@@ -46,6 +45,7 @@ from stove0_recipe_config import (
     ArtifactAssociation,
     ArtifactFactBinding,
     ArtifactRule,
+    AssociationEvidenceSource,
     FactPredicate,
     ObserverUse,
     OperationProjection,
@@ -131,7 +131,7 @@ class RecipePlanner:
             support = descriptor.support_for(use.contract_id)
             if support.contract_sha256 != use.contract_sha256:
                 raise RuntimeError("observer supports another revision of the recipe contract")
-            subjects = _subjects(inventory, use.artifact_rules)
+            subjects = _subjects(inventory)
             if not subjects:
                 continue
             batch_size = support.preferred_subject_batch_size
@@ -313,7 +313,7 @@ class RecipePlanner:
         selected: list[tuple[RecipeBranch, ArtifactSelection]] = []
         for route in recipe.routes:
             artifacts = _route_artifacts(
-                _subjects(inventory, route.artifact_rules),
+                _subjects(inventory, route.artifact_rules, observations=evidence),
                 route=route,
                 associations=recipe.artifact_associations,
                 observations=evidence,
@@ -509,10 +509,9 @@ class RecipePlanner:
                         id=artifact.id,
                         role=artifact.role,
                         collection=artifact.collection,
-                        path=artifact.path,
+                        artifact_id=artifact.artifact_id,
                         bytes=str(artifact.bytes),
                         sha256=artifact.sha256,
-                        media_type=artifact.media_type,
                     )
                 )
                 for artifact in artifacts
@@ -592,12 +591,11 @@ class RecipePlanner:
                     inventory_identity = page.authority.inventory_identity
                 elif page.authority.inventory_identity != inventory_identity:
                     raise RuntimeError("collection inventory identity changed")
-                for artifact in page.files:
-                    path = artifact.path
+                for artifact in page.artifacts:
                     rows.append(
                         {
                             "collection": root,
-                            "path": path,
+                            "artifact_id": artifact.artifact_id,
                             "bytes": artifact.bytes,
                             "sha256": artifact.sha256,
                         }
@@ -656,34 +654,43 @@ def _json_pointer_set(document: dict[str, JsonValue], pointer: str, value: JsonV
 
 def _subjects(
     inventory: Sequence[Mapping[str, object]],
-    rules: Sequence[ArtifactRule],
+    rules: Sequence[ArtifactRule] = (),
+    *,
+    observations: Sequence[ContentObservationEvidence] = (),
 ) -> tuple[WorkArtifactSubject, ...]:
     subjects: list[WorkArtifactSubject] = []
     for raw in inventory:
-        rule = _artifact_rule(str(raw["path"]), rules)
-        if rule is None:
-            continue
         root = cast(CollectionRootIdentityRef, raw["collection"])
         byte_count = raw["bytes"]
         if isinstance(byte_count, bool) or not isinstance(byte_count, int):
             raise RuntimeError("Riverhog returned an invalid artifact byte count")
         artifact_id = (
             "a-"
-            + canonical_json_sha256({"collection_id": root.collection_id, "path": raw["path"]})[:32]
+            + canonical_json_sha256(
+                {"collection_id": root.collection_id, "artifact_id": str(raw["artifact_id"])}
+            )[:32]
         )
-        subjects.append(
-            WorkArtifactSubject.model_validate(
-                dict(
-                    id=artifact_id,
-                    role=rule.role,
-                    collection=root,
-                    path=str(raw["path"]),
-                    bytes=str(byte_count),
-                    sha256=str(raw["sha256"]),
-                    media_type=rule.media_type,
-                )
+        base = WorkArtifactSubject.model_validate(
+            dict(
+                id=artifact_id,
+                role="stove0.source/v1",
+                collection=root,
+                artifact_id=str(raw["artifact_id"]),
+                bytes=str(byte_count),
+                sha256=str(raw["sha256"]),
             )
         )
+        if not rules:
+            subjects.append(base)
+            continue
+        for rule in rules:
+            candidate = base.model_copy(update={"role": rule.role})
+            if all(
+                _predicate_matches(predicate, observations, candidate=(candidate,))
+                for predicate in rule.when
+            ):
+                subjects.append(candidate)
+                break
     return tuple(sorted(subjects, key=lambda subject: subject.id))
 
 
@@ -702,23 +709,24 @@ def _route_artifacts(
         return ()
 
     association = next(
-        (item for item in associations if item.primary_role == route.primary_role),
-        None,
+        (item for item in associations if item.primary_role == route.primary_role), None
     )
     if route.associated_roles and association is None:
         raise RuntimeError("validated recipe route is missing its artifact association")
     primaries = [subject for subject in subjects if subject.role == route.primary_role]
     associated = [subject for subject in subjects if subject.role in set(route.associated_roles)]
+    relationships, blocked = (
+        _accepted_relationships(primaries, associated, association, observations)
+        if association is not None
+        else ({}, set())
+    )
     selected: dict[str, WorkArtifactSubject] = {}
     for primary in primaries:
+        if primary.id in blocked:
+            continue
         candidate = [primary]
         if route.associated_roles:
-            identity = _path_association_identity(primary.path)
-            candidate.extend(
-                subject
-                for subject in associated
-                if _path_association_identity(subject.path) == identity
-            )
+            candidate.extend(relationships.get(primary.id, ()))
         exact_candidate = tuple(sorted(candidate, key=lambda subject: subject.id))
         if not all(
             _predicate_matches(predicate, observations, candidate=exact_candidate)
@@ -729,9 +737,168 @@ def _route_artifacts(
     return tuple(selected[artifact_id] for artifact_id in sorted(selected))
 
 
-def _path_association_identity(path: str) -> tuple[str, str]:
-    value = PurePosixPath(path)
-    return value.parent.as_posix(), value.stem
+def _accepted_relationships(
+    primaries: Sequence[WorkArtifactSubject],
+    associated: Sequence[WorkArtifactSubject],
+    association: ArtifactAssociation,
+    observations: Sequence[ContentObservationEvidence],
+) -> tuple[dict[str, list[WorkArtifactSubject]], set[str]]:
+    """Use ordered accepted facts; only a complete negative permits fallback."""
+
+    primary_by_id = {item.id: item for item in primaries}
+    associated_by_id = {item.id: item for item in associated}
+    links: dict[str, list[WorkArtifactSubject]] = {}
+    blocked: set[str] = set()
+    for sidecar in associated:
+        for source in association.sources:
+            records, endpoint_map = _relationship_source(
+                source, observations, set(primary_by_id), set(associated_by_id)
+            )
+            matches: set[str] = set()
+            unsupported = False
+            for record in records:
+                if source.status_pointer is not None:
+                    present, status = _json_pointer(record, source.status_pointer)
+                    if (
+                        present
+                        and isinstance(status, str)
+                        and status in {"unsupported", "ambiguous"}
+                    ):
+                        unsupported = True
+                        continue
+                left_present, left = _json_pointer(record, source.associated_pointer)
+                if not left_present:
+                    raise ValueError("accepted relation record has no associated endpoint")
+                left_id = _resolve_relation_endpoint(source, left, endpoint_map)
+                if left_id != sidecar.id:
+                    continue
+                if not all(_document_matches_predicate(rule, record) for rule in source.required):
+                    unsupported = True
+                    continue
+                right_present, right = _json_pointer(record, source.primary_pointer)
+                if not right_present:
+                    unsupported = True
+                    continue
+                right_id = _resolve_relation_endpoint(source, right, endpoint_map)
+                if right_id not in primary_by_id or right_id == sidecar.id:
+                    unsupported = True
+                    continue
+                matches.add(right_id)
+            if unsupported or len(matches) > 1:
+                blocked.update(matches or primary_by_id)
+                break
+            if matches:
+                primary_id = next(iter(matches))
+                links.setdefault(primary_id, []).append(sidecar)
+                break
+    return links, blocked
+
+
+def _relationship_source(
+    source: AssociationEvidenceSource,
+    observations: Sequence[ContentObservationEvidence],
+    primary_ids: set[str],
+    associated_ids: set[str],
+) -> tuple[list[dict[str, JsonValue]], dict[str, str]]:
+    evidence = [
+        item
+        for item in observations
+        if item.request.observer_contract_id == source.observation_contract_id
+        and item.request.observer_contract_sha256 == source.observation_contract_sha256
+    ]
+    if not evidence:
+        raise ValueError("declared relationship evidence was not accepted")
+    records: list[dict[str, JsonValue]] = []
+    covered_subject_ids: set[str] = set()
+    for item in evidence:
+        if item.result.facts is None:
+            raise ValueError("accepted relationship evidence has no facts")
+        covered_subject_ids.update(subject.id for subject in item.request.subjects)
+        static_options = deepcopy(item.request.options)
+        for pointer, expected in (
+            (source.primary_partition_pointer, primary_ids),
+            (source.associated_partition_pointer, associated_ids),
+        ):
+            if pointer is None:
+                continue
+            present, actual = _json_pointer(item.request.options, pointer)
+            if (
+                not present
+                or not isinstance(actual, list)
+                or any(not isinstance(value, str) for value in actual)
+                or set(actual) != expected
+                or len(actual) != len(expected)
+            ):
+                raise ValueError("accepted relationship question covers another subject partition")
+            _delete_json_pointer(static_options, pointer)
+        if canonical_json_bytes(static_options) != canonical_json_bytes(source.expected_options):
+            raise ValueError("accepted relationship question differs from the recipe")
+        present, value = _json_pointer(item.result.facts, source.records_pointer)
+        if (
+            not present
+            or not isinstance(value, list)
+            or any(not isinstance(row, dict) for row in value)
+        ):
+            raise ValueError("accepted relationship facts lack their declared records")
+        records.extend(cast(list[dict[str, JsonValue]], value))
+    if covered_subject_ids != primary_ids | associated_ids:
+        raise ValueError("accepted relationship evidence differs from its exact subject scope")
+    endpoint_map: dict[str, str] = {}
+    if source.endpoint_mode == "exact-endpoint":
+        for item in observations:
+            if item.request.observer_contract_id != source.endpoint_observation_contract_id:
+                continue
+            if item.result.facts is None:
+                raise ValueError("accepted endpoint evidence has no facts")
+            present, value = _json_pointer(item.result.facts, source.endpoint_records_pointer)
+            if not present or not isinstance(value, list):
+                raise ValueError("accepted endpoint evidence lacks its subject records")
+            for row in value:
+                if not isinstance(row, dict):
+                    raise ValueError("accepted endpoint record is malformed")
+                present, subject_id = _json_pointer(row, source.endpoint_subject_pointer)
+                if not present or not isinstance(subject_id, str):
+                    raise ValueError("accepted endpoint record has no subject identity")
+                for pointer in source.endpoint_pointers:
+                    present, endpoint = _json_pointer(row, pointer)
+                    if not present:
+                        raise ValueError("accepted endpoint record lacks its declared endpoint")
+                    identity = canonical_json_sha256(endpoint)
+                    previous = endpoint_map.setdefault(identity, subject_id)
+                    if previous != subject_id:
+                        raise ValueError("one exact endpoint identifies multiple member instances")
+        if not endpoint_map:
+            raise ValueError("declared exact endpoint evidence was not accepted")
+        if not (primary_ids | associated_ids) <= set(endpoint_map.values()):
+            raise ValueError("declared exact endpoint evidence omits a candidate subject")
+    return records, endpoint_map
+
+
+def _delete_json_pointer(document: dict[str, JsonValue], pointer: str) -> None:
+    parts = _pointer_parts(pointer)
+    if not parts:
+        raise ValueError("relationship partition pointer must identify a field")
+    current = document
+    parents: list[tuple[dict[str, JsonValue], str]] = []
+    for part in parts[:-1]:
+        child = current.get(part)
+        if not isinstance(child, dict):
+            raise ValueError("relationship partition pointer is not an object field")
+        parents.append((current, part))
+        current = child
+    current.pop(parts[-1])
+    for parent, key in reversed(parents):
+        if parent[key]:
+            break
+        del parent[key]
+
+
+def _resolve_relation_endpoint(
+    source: AssociationEvidenceSource, value: JsonValue, endpoint_map: Mapping[str, str]
+) -> str | None:
+    if source.endpoint_mode == "subject-id":
+        return value if isinstance(value, str) else None
+    return endpoint_map.get(canonical_json_sha256(value))
 
 
 def _uncovered_inventory(
@@ -742,7 +909,7 @@ def _uncovered_inventory(
         (
             artifact.collection.collection_id,
             artifact.collection.archive_root_sha256,
-            artifact.path,
+            artifact.artifact_id,
             artifact.bytes,
             artifact.sha256,
         )
@@ -750,12 +917,12 @@ def _uncovered_inventory(
         for artifact in selection.artifacts
     }
     return sorted(
-        str(raw["path"])
+        str(raw["artifact_id"])
         for raw in inventory
         if (
             cast(CollectionRootIdentityRef, raw["collection"]).collection_id,
             cast(CollectionRootIdentityRef, raw["collection"]).archive_root_sha256,
-            str(raw["path"]),
+            str(raw["artifact_id"]),
             raw["bytes"],
             str(raw["sha256"]),
         )
@@ -797,10 +964,9 @@ def _target_inputs(
                 id=subject.id,
                 role=subject.role,
                 collection=subject.collection,
-                path=subject.path,
+                artifact_id=subject.artifact_id,
                 bytes=str(subject.bytes),
                 sha256=subject.sha256,
-                media_type=subject.media_type,
             )
         )
         for subject in _subjects(inventory, rules)
@@ -816,10 +982,9 @@ def _target_inputs_from_selection(
                 id=subject.id,
                 role=subject.role,
                 collection=subject.collection,
-                path=subject.path,
+                artifact_id=subject.artifact_id,
                 bytes=str(subject.bytes),
                 sha256=subject.sha256,
-                media_type=subject.media_type,
             )
         )
         for subject in selection.artifacts
@@ -854,18 +1019,13 @@ def _join_target_inputs(
                         id=artifact_id,
                         role=subject.role,
                         collection=subject.collection,
-                        path=subject.path,
+                        artifact_id=subject.artifact_id,
                         bytes=str(subject.bytes),
                         sha256=subject.sha256,
-                        media_type=subject.media_type,
                     )
                 )
             )
     return tuple(sorted(artifacts, key=lambda item: item.id))
-
-
-def _artifact_rule(path: str, rules: Sequence[ArtifactRule]) -> ArtifactRule | None:
-    return next((rule for rule in rules if fnmatch.fnmatchcase(path, rule.glob)), None)
 
 
 def _predicate_matches(
@@ -934,11 +1094,13 @@ def _document_matches_predicate(
     if not present:
         return False
     if predicate.operator == "equals":
-        return value == predicate.value
+        return canonical_json_bytes(value) == canonical_json_bytes(predicate.value)
     if predicate.operator == "not-equals":
-        return value != predicate.value
+        return canonical_json_bytes(value) != canonical_json_bytes(predicate.value)
     if predicate.operator == "contains":
-        return isinstance(value, list) and predicate.value in value
+        return isinstance(value, list) and any(
+            canonical_json_bytes(item) == canonical_json_bytes(predicate.value) for item in value
+        )
     raise AssertionError(predicate.operator)
 
 
