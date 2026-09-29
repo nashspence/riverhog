@@ -1,11 +1,66 @@
 {
+  "$defs": {
+    "RcloneNamingRules": {
+      "additionalProperties": false,
+      "properties": {
+        "windows_names": {
+          "title": "Windows Names",
+          "type": "boolean"
+        },
+        "case_sensitive": {
+          "title": "Case Sensitive",
+          "type": "boolean"
+        },
+        "unicode_equivalence": {
+          "enum": [
+            "exact",
+            "NFC"
+          ],
+          "title": "Unicode Equivalence",
+          "type": "string"
+        },
+        "component_bytes": {
+          "minimum": 1,
+          "title": "Component Bytes",
+          "type": "integer"
+        },
+        "relative_path_bytes": {
+          "minimum": 1,
+          "title": "Relative Path Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "windows_names",
+        "case_sensitive",
+        "unicode_equivalence",
+        "component_bytes",
+        "relative_path_bytes"
+      ],
+      "title": "RcloneNamingRules",
+      "type": "object"
+    }
+  },
   "$id": "https://nashspence.github.io/riverhog/v1/config/a-stove0-rclone-target.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "token_file": {
+      "format": "path",
+      "title": "Token File",
+      "type": "string"
+    },
     "destination_identity": {
       "pattern": "^[0-9a-f]{64}$",
       "title": "Destination Identity",
+      "type": "string"
+    },
+    "destination_naming_rules": {
+      "$ref": "#/$defs/RcloneNamingRules"
+    },
+    "rclone_remote": {
+      "minLength": 1,
+      "title": "Rclone Remote",
       "type": "string"
     },
     "rclone_config_file": {
@@ -21,26 +76,17 @@
       "default": null,
       "title": "Rclone Config File"
     },
-    "rclone_remote": {
-      "minLength": 1,
-      "title": "Rclone Remote",
-      "type": "string"
-    },
     "rclone_timeout_seconds": {
       "default": 86400,
       "minimum": 1,
       "title": "Rclone Timeout Seconds",
       "type": "integer"
-    },
-    "token_file": {
-      "format": "path",
-      "title": "Token File",
-      "type": "string"
     }
   },
   "required": [
     "token_file",
     "destination_identity",
+    "destination_naming_rules",
     "rclone_remote"
   ],
   "title": "RcloneTargetConfig",

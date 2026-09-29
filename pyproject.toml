@@ -66,6 +66,7 @@ a-stove0-media-archive-lib = { workspace = true }
 a-stove0-media-metadata-contract-lib = { workspace = true }
 a-stove0-media-sampling-contract-lib = { workspace = true }
 a-stove0-ffprobe-streams-contract-lib = { workspace = true }
+a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
 a-stove0-filename-prefix-sidecar-observer = { workspace = true }
 a-stove0-riverhog-provenance-observer = { workspace = true }
 stove0-observer-client = { workspace = true }

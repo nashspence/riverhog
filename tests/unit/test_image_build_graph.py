@@ -28,6 +28,7 @@ MISE_CONTAINER_TOOLS = {
     "stove0": {"uv"},
     "a-stove0-exiftool-observer": {"http:exiftool", "uv"},
     "a-stove0-ffprobe-observer": {"uv"},
+    "a-stove0-riverhog-provenance-observer": {"uv"},
     "a-stove0-nvenc-av1-opus-target": {"uv"},
     "a-stove0-opus-target": {"uv"},
     "review0": {"uv"},
@@ -113,6 +114,18 @@ IMAGE_CONTRACTS = {
             (
                 "some-implementations/stove0/application/compose.yaml",
                 "a-stove0-ffprobe-observer",
+            ),
+        ),
+    },
+    "a-stove0-riverhog-provenance-observer": {
+        "dockerfile": "some-implementations/stove0/observers/riverhog-provenance/Dockerfile",
+        "tag": "a-stove0-riverhog-provenance-observer:dev",
+        "title": "Stove0 Riverhog provenance observer",
+        "license": "CAL-1.0",
+        "compose": (
+            (
+                "some-implementations/stove0/application/compose.yaml",
+                "a-stove0-riverhog-provenance-observer",
             ),
         ),
     },

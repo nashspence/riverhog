@@ -11,6 +11,7 @@ from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
 from importlib.resources import files
 from pathlib import Path
+from typing import Literal
 
 import uvicorn
 from config_validation import load_validated_yaml_config, read_secret_file
@@ -19,6 +20,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
 from http_api_contracts import HealthOut, error_payload, operation_openapi
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from riverhog_materialization import DestinationRules
 from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
     TargetHttpBinding,
@@ -33,6 +35,19 @@ _PUBLIC_METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE"})
 _bearer = HTTPBearer(auto_error=False)
 
 
+class RcloneNamingRules(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    windows_names: bool
+    case_sensitive: bool
+    unicode_equivalence: Literal["exact", "NFC"]
+    component_bytes: int = Field(ge=1)
+    relative_path_bytes: int = Field(ge=1)
+
+    def qualified(self) -> DestinationRules:
+        return DestinationRules(**self.model_dump())
+
+
 class RcloneTargetConfig(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -45,6 +60,7 @@ class RcloneTargetConfig(BaseModel):
 
     token_file: Path
     destination_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    destination_naming_rules: RcloneNamingRules
     rclone_remote: str = Field(min_length=1)
     rclone_config_file: Path | None = None
     rclone_timeout_seconds: int = Field(default=86400, ge=1)
@@ -81,6 +97,7 @@ def _effect_destination(config: RcloneTargetConfig) -> RcloneDestination:
     return RcloneDestination(
         identity=config.destination_identity,
         remote=config.rclone_remote,
+        naming_rules=config.destination_naming_rules.qualified(),
         config_path=config.rclone_config_file,
         executable=os.getenv(f"{PREFIX}_RCLONE_BIN", "rclone").strip(),
         timeout_seconds=config.rclone_timeout_seconds,

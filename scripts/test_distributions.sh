@@ -337,6 +337,11 @@ smoke_workspace_distribution \
   'import importlib.metadata as m; import a_stove0_ffprobe_observer.app; m.version("a-stove0-ffprobe-observer")' \
   a-stove0-ffprobe-observer
 smoke_workspace_distribution \
+  a-stove0-riverhog-provenance-observer \
+  'a_stove0_riverhog_provenance_observer-*.whl' \
+  'import importlib.metadata as m; import a_stove0_riverhog_provenance_observer.app; m.version("a-stove0-riverhog-provenance-observer")' \
+  a-stove0-riverhog-provenance-observer
+smoke_workspace_distribution \
   a-stove0-exiftool-observer \
   'a_stove0_exiftool_observer-*.whl' \
   'import importlib.metadata as m; import a_stove0_exiftool_observer.app; m.version("a-stove0-exiftool-observer")' \

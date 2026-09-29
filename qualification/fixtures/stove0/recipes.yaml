@@ -713,18 +713,24 @@ recipes:
   event_input_closure: single-finalized-collection
   source_collection_retirement_policy: retire-after-settlement
   unmatched_artifact_disposition: retain-in-source
-  observers: []
+  observers:
+  - registration_id: canonical-hint
+    contract_id: stove0.riverhog-materialization-hint/v1
+    contract_sha256: b22d63d21745cd7dcb56fa6ca75ad2319dfa2eb883977f597c0407b340c7a29f
+    maximum_result_bytes: 1048576
   routes:
   - id: deliver
     kind: operation
     operation_id: stove0.rclone.deliver/v1
     target_registration_id: rclone
     artifact_rules:
-    - glob: '*'
-      role: stove0.rclone.source/v1
+    - role: stove0.rclone.source/v1
     intent: {}
+    forward_observation_contract_ids:
+    - stove0.riverhog-materialization-hint/v1
     target_options:
       destination_identity: bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1
+      destination_rules_sha256: ce6270abd5855b6eba66a518a54475163993ff6a43e9599ad42a8d2d2531c919
     input_retrieval_policy: available-only
 - id: stove0.review/v1
   revision: '1'

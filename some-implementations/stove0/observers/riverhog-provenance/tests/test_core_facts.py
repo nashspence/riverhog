@@ -1,9 +1,19 @@
 from __future__ import annotations
 
 import hashlib
+from types import SimpleNamespace
+from typing import Any, cast
 
 import pytest
-from a_stove0_riverhog_provenance_observer import extract_core_facts
+from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+    validate_materialization_hint_facts,
+)
+from a_stove0_riverhog_provenance_observer import (
+    RiverhogProvenanceObserver,
+    extract_core_facts,
+    extract_materialization_hint_fact,
+)
 from riverhog_protocol import CollectionArtifactProvenanceBindingDocument
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_provenance import (
@@ -16,14 +26,26 @@ from riverhog_provenance import (
     validate_journal,
 )
 from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
-from stove0_observer_protocol import CollectionRootIdentityRef, WorkArtifactSubject
+from stove0_observer_protocol import (
+    CollectionRootIdentityRef,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    WorkArtifactSubject,
+)
+from stove0_observer_support import ContentObservationRuntime
 
 
 def _fixture(
-    *, name: str, view_id: str, describes: dict[str, object] | None = None
+    *,
+    name: str,
+    view_id: str,
+    describes: dict[str, object] | None = None,
+    hint: dict[str, object] | None = None,
 ) -> tuple[WorkArtifactSubject, CollectionArtifactProvenanceBindingDocument, object]:
     observed = BoundedSourceObserver().observe(BytesSource(b"abc"))
     graph = observed.graph_fragment()
+    if hint is not None:
+        graph["occurrences"][0]["materialization_hint"] = hint
     graph["descriptions"][0]["address_status"] = "known"
     context = assertion(
         "context",
@@ -113,6 +135,69 @@ def test_direct_locator_facts_preserve_context_identifier_and_exact_support() ->
     assert locator["context_endpoint"]["journal_id"] == summary.journal_id
     assert locator["context_support"]["assertion_id"] != locator["locator_support"]["assertion_id"]
     assert locator["observation_endpoint"]["object_type"] == "observation"
+
+
+def test_hint_fact_uses_exact_delivered_occurrence_and_valid_missing_hint() -> None:
+    fixture = _fixture(
+        name="/camera/clip.mp4",
+        view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+        hint={"components": ["Album", "clip.mp4"]},
+    )
+    subject, binding, summary = fixture
+    fact = extract_materialization_hint_fact(subject, binding, summary)
+    assert fact["subject_id"] == subject.id
+    assert fact["occurrence"]["scope"] == "external"
+    assert fact["occurrence"]["object_type"] == "occurrence"
+    assert fact["materialization_hint"] == {"components": ["Album", "clip.mp4"]}
+    validate_materialization_hint_facts({"artifacts": [fact]}, (subject,))
+
+    missing_subject, missing_binding, missing_summary = _fixture(
+        name="/camera/other.mp4",
+        view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+    )
+    missing = extract_materialization_hint_fact(missing_subject, missing_binding, missing_summary)
+    assert missing["materialization_hint"] is None
+    validate_materialization_hint_facts({"artifacts": [missing]}, (missing_subject,))
+
+
+def test_observer_fails_when_exact_primary_provenance_is_unavailable() -> None:
+    subject, binding, summary = _fixture(
+        name="/camera/clip.mp4",
+        view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+    )
+    observer = RiverhogProvenanceObserver(image_id="sha256:" + "f" * 64)
+    support = observer.descriptor().support_for(MATERIALIZATION_HINT_OBSERVER_CONTRACT.id)
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id="a" * 64,
+            observer_registration_id="canonical-hint",
+            observer_descriptor_sha256=observer.descriptor().descriptor_sha256,
+            observer_contract_id=support.contract_id,
+            observer_contract_sha256=support.contract_sha256,
+            read_actions=("read-provenance",),
+            subjects=(subject,),
+        )
+    )
+
+    class Runtime:
+        def heartbeat(self) -> None:
+            pass
+
+        def open_provenance(self, _subject: WorkArtifactSubject) -> Any:
+            return SimpleNamespace(binding=binding, bound_summary=lambda: summary)
+
+    observed = observer.observe(request, cast(ContentObservationRuntime, Runtime()))
+    assert observed.state == "observed"
+    assert observed.facts is not None
+    assert observed.facts["artifacts"][0]["materialization_hint"] is None
+
+    class MissingRuntime(Runtime):
+        def open_provenance(self, _subject: WorkArtifactSubject) -> Any:
+            raise RuntimeError("root-selected primary anchor is absent")
+
+    failed = observer.observe(request, cast(ContentObservationRuntime, MissingRuntime()))
+    assert failed.state == "failed"
+    assert failed.facts is None
 
 
 def test_distinct_context_assertions_can_report_same_explicit_source_view() -> None:

@@ -420,6 +420,26 @@ class RecipePlanner:
             raise RuntimeError("target supports another result kind for the recipe operation")
         compiled_intent, compiled_options = self._project_operation(parent, route.projections)
         effective_intent = {**route.intent, **compiled_intent}
+        selected_ids = {item.id for item in selection.artifacts}
+        forwarded = tuple(
+            item
+            for item in observations
+            if item.request.observer_contract_id in route.forward_observation_contract_ids
+            and all(subject.id in selected_ids for subject in item.request.subjects)
+        )
+        if {item.request.observer_contract_id for item in forwarded} != set(
+            route.forward_observation_contract_ids
+        ):
+            raise ValueError("recipe route lacks accepted evidence it must forward")
+        for contract_id in route.forward_observation_contract_ids:
+            covered = {
+                subject.id
+                for item in forwarded
+                if item.request.observer_contract_id == contract_id
+                for subject in item.request.subjects
+            }
+            if not selected_ids <= covered:
+                raise ValueError("forwarded observation does not cover the selected inputs")
         return BranchPlan.build(
             parent_work=parent,
             branch_id=route.id,
@@ -438,7 +458,7 @@ class RecipePlanner:
                 source_collection_retirement_policy="retain",
                 output_policy=route.output_policy,
             ),
-            observations=observations,
+            observations=forwarded,
         )
 
     def _join_declaration(
