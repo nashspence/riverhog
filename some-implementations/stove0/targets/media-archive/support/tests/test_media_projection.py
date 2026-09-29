@@ -3,6 +3,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from typing import get_args
 
+import pytest
 from a_stove0_media_archive_contract_lib import (
     AUDIO_ARCHIVE_OPERATION,
     AV1_OPUS_ARCHIVE_OPERATION,
@@ -20,6 +21,7 @@ from a_stove0_media_archive_lib import (
     MEDIA_FACT_PROJECTION_FIELDS,
     ffmpeg_container_metadata_args,
     render_projection_xmp,
+    resolve_media_archive_preflight_projection,
     resolve_media_archive_projection,
 )
 from a_stove0_media_metadata_contract_lib import (
@@ -40,11 +42,13 @@ from stove0_observer_protocol import (
     ObserverImplementation,
 )
 from stove0_protocol import (
+    ArtifactSelection,
     CollectionRootIdentityRef,
     WorkArtifactSubject,
+    WorkInputGroup,
     canonical_json_sha256,
 )
-from stove0_target_protocol import InputArtifact
+from stove0_target_protocol import InputArtifact, TargetInputAuthority, TargetPreflightRequest
 
 
 def _sha(character: str) -> str:
@@ -62,16 +66,17 @@ def _root() -> CollectionRootIdentityRef:
 def _evidence(
     inputs: tuple[InputArtifact, ...],
     facts: dict[str, tuple[MediaMetadataFact, ...]],
+    *,
+    generic_subject_role: bool = False,
 ) -> tuple[ContentObservationEvidence, ...]:
     subjects = tuple(
         WorkArtifactSubject(
             id=item.id,
-            role=item.role,
+            role="stove0.source/v1" if generic_subject_role else item.role,
             collection=item.collection,
-            path=item.path,
+            artifact_id=item.artifact_id,
             bytes=str(item.bytes),
             sha256=item.sha256,
-            media_type=item.media_type,
         )
         for item in inputs
     )
@@ -170,10 +175,9 @@ def test_media_projection_accepts_large_collection_and_assertion_sets() -> None:
             id=f"primary-{index:03d}",
             role=SOURCE_ROLE,
             collection=_root(),
-            path=f"camera/clip-{index:03d}.mov",
+            artifact_id=f"{index:064x}",
             bytes=str(index),
             sha256=f"{index % 16:x}" * 64,
-            media_type="video/quicktime",
         )
         for index in range(257)
     )
@@ -181,6 +185,7 @@ def test_media_projection_accepts_large_collection_and_assertion_sets() -> None:
 
     projection = resolve_media_archive_projection(
         inputs=inputs,
+        input_groups=tuple(WorkInputGroup(primary_id=item.id) for item in inputs),
         observations=observations,
         policy=MediaProjectionPolicy(),
         archive_directory="video",
@@ -206,19 +211,17 @@ def test_projection_retains_conflicts_and_only_selects_explicit_evidence() -> No
             id="primary",
             role=SOURCE_ROLE,
             collection=root,
-            path="camera/clip.mov",
+            artifact_id=_sha("7"),
             bytes=str(100),
             sha256=_sha("5"),
-            media_type="video/quicktime",
         ),
         InputArtifact(
             id="sidecar",
             role=XMP_SOURCE_ROLE,
             collection=root,
-            path="camera/clip.xmp",
+            artifact_id=_sha("8"),
             bytes=str(20),
             sha256=_sha("6"),
-            media_type="application/rdf+xml",
         ),
     )
     facts = {
@@ -246,6 +249,7 @@ def test_projection_retains_conflicts_and_only_selects_explicit_evidence() -> No
     observations = _evidence(inputs, facts)
     unresolved = resolve_media_archive_projection(
         inputs=inputs,
+        input_groups=(WorkInputGroup(primary_id="primary", associated_ids=("sidecar",)),),
         observations=observations,
         policy=MediaProjectionPolicy(),
         archive_directory="video",
@@ -266,6 +270,7 @@ def test_projection_retains_conflicts_and_only_selects_explicit_evidence() -> No
 
     resolved = resolve_media_archive_projection(
         inputs=inputs,
+        input_groups=(WorkInputGroup(primary_id="primary", associated_ids=("sidecar",)),),
         observations=observations,
         policy=MediaProjectionPolicy(
             device_make="Example Camera Corp",
@@ -304,3 +309,62 @@ def test_projection_retains_conflicts_and_only_selects_explicit_evidence() -> No
         METADATA_XMP_ROLE,
         SOURCE_ARTIFACT_ROLE,
     }
+
+
+def test_preflight_uses_recipe_group_without_reclassifying_observer_subjects() -> None:
+    inputs = (
+        InputArtifact(
+            id="primary",
+            role=SOURCE_ROLE,
+            collection=_root(),
+            artifact_id=_sha("7"),
+            bytes="100",
+            sha256=_sha("5"),
+        ),
+        InputArtifact(
+            id="sidecar",
+            role=XMP_SOURCE_ROLE,
+            collection=_root(),
+            artifact_id=_sha("8"),
+            bytes="20",
+            sha256=_sha("6"),
+        ),
+    )
+    evidence = _evidence(inputs, {}, generic_subject_role=True)
+    selection = ArtifactSelection.seal(
+        tuple(
+            WorkArtifactSubject(
+                id=item.id,
+                role=item.role,
+                collection=item.collection,
+                artifact_id=item.artifact_id,
+                bytes=str(item.bytes),
+                sha256=item.sha256,
+            )
+            for item in inputs
+        )
+    )
+    group = WorkInputGroup(primary_id="primary", associated_ids=("sidecar",))
+    request = TargetPreflightRequest(
+        operation_id=AUDIO_ARCHIVE_OPERATION.id,
+        operation_contract_sha256=AUDIO_ARCHIVE_OPERATION.contract_sha256,
+        inputs=TargetInputAuthority.from_selection(selection),
+        input_groups=(group,),
+        intent={},
+        observations=evidence,
+    )
+    projection = resolve_media_archive_preflight_projection(
+        request,
+        policy=MediaProjectionPolicy(),
+        archive_directory="audio",
+        archive_suffix=".opus",
+    )
+    assert projection.items[0].associated_sidecar_artifact_ids == ("sidecar",)
+
+    with pytest.raises(ValueError, match="recipe groups"):
+        resolve_media_archive_preflight_projection(
+            request.model_copy(update={"input_groups": ()}),
+            policy=MediaProjectionPolicy(),
+            archive_directory="audio",
+            archive_suffix=".opus",
+        )

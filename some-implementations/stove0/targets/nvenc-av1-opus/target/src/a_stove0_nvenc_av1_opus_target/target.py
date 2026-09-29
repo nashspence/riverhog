@@ -26,6 +26,7 @@ from a_stove0_media_archive_lib import (
 )
 from riverhog_client import ProducerFile
 from riverhog_protocol import canonical_json_sha256
+from riverhog_protocol.artifact_identity import ArtifactId
 from stove0_protocol import JsonSchemaValidationProfile
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
@@ -190,8 +191,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 for item in projection.items:
                     check()
                     artifact, claimed = resolved_by_id[item.input_artifact_id]
-                    suffix = PurePosixPath(artifact.path).suffix[:32]
-                    source = workspace.resolve(f"input/{artifact.id}{suffix}")
+                    source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
@@ -255,11 +255,9 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                                 ) from exc
                         video = self._output(
                             destination,
-                            artifact_id=_output_id("video", item.derived_from),
+                            output_id=_output_id("video", item.derived_from),
+                            plan_sha256=request.declaration.plan.plan_sha256,
                             role=AV1_OPUS_ARCHIVE_ROLE,
-                            path=relative,
-                            media_type="video/x-matroska",
-                            derived_from=item.derived_from,
                         )
                         outputs.append(video)
                         xmp = workspace.resolve(f"output/{item.xmp_path}")
@@ -269,11 +267,9 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         )
                         xmp_output = self._output(
                             xmp,
-                            artifact_id=_output_id("metadata-xmp", item.derived_from),
+                            output_id=_output_id("metadata-xmp", item.derived_from),
+                            plan_sha256=request.declaration.plan.plan_sha256,
                             role=METADATA_XMP_ROLE,
-                            path=item.xmp_path,
-                            media_type="application/rdf+xml",
-                            derived_from=item.derived_from,
                         )
                         outputs.append(xmp_output)
                         bundle_relative = (
@@ -292,28 +288,38 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         )
                         source_artifact = self._output(
                             bundle,
-                            artifact_id=_output_id(
+                            output_id=_output_id(
                                 "source-artifacts",
                                 (item.input_artifact_id,),
                             ),
+                            plan_sha256=request.declaration.plan.plan_sha256,
                             role=SOURCE_ARTIFACT_ROLE,
-                            path=bundle_relative,
-                            media_type="application/zstd",
-                            derived_from=(item.input_artifact_id,),
                         )
                         outputs.append(source_artifact)
                         publication.append(
-                            ProducerFile(destination, relative),
+                            ProducerFile(
+                                destination,
+                                video.artifact_id,
+                                materialization_hint=PurePosixPath(relative).parts,
+                            ),
                             video,
                             derived_from=item.derived_from,
                         )
                         publication.append(
-                            ProducerFile(xmp, item.xmp_path),
+                            ProducerFile(
+                                xmp,
+                                xmp_output.artifact_id,
+                                materialization_hint=PurePosixPath(item.xmp_path).parts,
+                            ),
                             xmp_output,
                             derived_from=item.derived_from,
                         )
                         publication.append(
-                            ProducerFile(bundle, bundle_relative),
+                            ProducerFile(
+                                bundle,
+                                source_artifact.artifact_id,
+                                materialization_hint=PurePosixPath(bundle_relative).parts,
+                            ),
                             source_artifact,
                             derived_from=(item.input_artifact_id,),
                         )
@@ -321,8 +327,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         source.unlink(missing_ok=True)
                 for retained in projection.retained_xmp_sidecars:
                     artifact, claimed = resolved_by_id[retained.input_artifact_id]
-                    suffix = PurePosixPath(artifact.path).suffix[:32]
-                    source = workspace.resolve(f"input/{artifact.id}{suffix}")
+                    source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
@@ -332,18 +337,20 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         shutil.copyfile(source, destination)
                         retained_output = self._output(
                             destination,
-                            artifact_id=_output_id(
+                            output_id=_output_id(
                                 "source-xmp",
                                 (retained.input_artifact_id,),
                             ),
+                            plan_sha256=request.declaration.plan.plan_sha256,
                             role=SOURCE_ARTIFACT_ROLE,
-                            path=retained.output_path,
-                            media_type="application/rdf+xml",
-                            derived_from=(retained.input_artifact_id,),
                         )
                         outputs.append(retained_output)
                         publication.append(
-                            ProducerFile(destination, retained.output_path),
+                            ProducerFile(
+                                destination,
+                                retained_output.artifact_id,
+                                materialization_hint=PurePosixPath(retained.output_path).parts,
+                            ),
                             retained_output,
                             derived_from=(retained.input_artifact_id,),
                         )
@@ -405,21 +412,18 @@ class NvencAv1OpusTargetService(PersistentTargetService):
     def _output(
         source: Path,
         *,
-        artifact_id: str,
+        output_id: str,
+        plan_sha256: str,
         role: str,
-        path: str,
-        media_type: str,
-        derived_from: tuple[str, ...],
     ) -> OutputArtifact:
         size, sha256 = file_identity(source)
         return OutputArtifact.model_validate(
             dict(
-                id=artifact_id,
+                id=output_id,
                 role=role,
-                path=path,
+                artifact_id=_member_id(plan_sha256, output_id),
                 bytes=str(size),
                 sha256=sha256,
-                media_type=media_type,
             )
         )
 
@@ -442,6 +446,18 @@ def _execution_sha256(
 def _output_id(kind: str, derived_from: Sequence[str]) -> str:
     return (
         f"{kind}-{canonical_json_sha256({'kind': kind, 'derived_from': sorted(derived_from)})[:32]}"
+    )
+
+
+def _member_id(plan_sha256: str, output_id: str) -> ArtifactId:
+    return ArtifactId(
+        canonical_json_sha256(
+            {
+                "format": "stove0-output-member-id/v1",
+                "plan_sha256": plan_sha256,
+                "output_id": output_id,
+            }
+        )
     )
 
 

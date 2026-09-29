@@ -178,6 +178,7 @@ class PersistentTargetService:
             "inputs": request.inputs,
             "intent": request.intent,
             "target_options": request.target_options,
+            "input_groups": request.input_groups,
             "target_implementation_id": self._descriptor.implementation_id,
             "target_descriptor_sha256": self._descriptor.descriptor_sha256,
             "observation_result_sha256s": tuple(

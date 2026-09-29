@@ -38,6 +38,7 @@ from stove0_protocol import (
     OciImageId,
     OperationResultKind,
     SemanticValidationProfile,
+    WorkInputGroup,
 )
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
 from stove0_protocol.models import ContentObservationEvidence
@@ -540,6 +541,15 @@ class TargetDeclaration(TargetProtocolModel):
     inputs: TargetInputAuthority
     intent: dict[str, JsonValue]
     target_options: dict[str, JsonValue] = Field(default_factory=dict)
+    input_groups: tuple[WorkInputGroup, ...] = ()
+
+    @field_validator("input_groups")
+    @classmethod
+    def canonical_groups(cls, value: tuple[WorkInputGroup, ...]) -> tuple[WorkInputGroup, ...]:
+        primary_ids = [group.primary_id for group in value]
+        if primary_ids != sorted(set(primary_ids)):
+            raise ValueError("input groups must be unique and ordered by primary subject")
+        return value
 
 
 class TargetPreflightRequest(TargetDeclaration):
