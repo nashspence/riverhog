@@ -9,11 +9,8 @@ from pathlib import Path
 from typing import Any, Literal, Protocol, Self
 
 from pydantic import TypeAdapter
-from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
-    PRODUCER_EVIDENCE_PATH,
-    CollectionRootIdentity,
-)
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.collection_workflows import CollectionRootIdentity
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
@@ -21,7 +18,6 @@ from riverhog_protocol.portable_collection import PortableCollectionInventoryPag
 from riverhog_client.processing.models import ClaimedArtifact
 
 Heartbeat = Callable[[], None]
-_CONTROL_PATHS = frozenset({PRODUCER_EVIDENCE_PATH, DERIVATION_EVIDENCE_PATH})
 _TERMINAL_RETRIEVAL_STATES = frozenset({"completed", "expired", "failed", "canceled"})
 RetrievalPolicy = Literal["available-only", "allow"]
 RiverhogRestorePolicy = Literal["never", "allow"]
@@ -41,7 +37,7 @@ class ClaimedCollectionApi(Protocol):
 
     def plan_retrieval(
         self,
-        files: Sequence[tuple[CollectionId, str]],
+        artifacts: Sequence[tuple[CollectionId, str]],
         *,
         lease_seconds: int | None = None,
         restore_policy: RiverhogRestorePolicy = "never",
@@ -55,7 +51,7 @@ class ClaimedCollectionApi(Protocol):
         event_context: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]: ...
 
-    def list_retrieval_plan_files(
+    def list_retrieval_plan_artifacts(
         self,
         plan_id: str,
         *,
@@ -72,23 +68,23 @@ class ClaimedCollectionApi(Protocol):
 
     def cancel_retrieval_job(self, job_id: str) -> dict[str, Any]: ...
 
-    def download_retrieval_file(
+    def download_retrieval_artifact(
         self,
         job_id: str,
         *,
         collection_id: CollectionId,
-        path: str,
+        artifact_id: ArtifactId,
         output: Path,
         expected_bytes: int,
         expected_sha256: str,
     ) -> int: ...
 
-    def stream_retrieval_file(
+    def stream_retrieval_artifact(
         self,
         job_id: str,
         *,
         collection_id: CollectionId,
-        path: str,
+        artifact_id: ArtifactId,
         expected_bytes: int,
         expected_sha256: str,
         start: int = 0,
@@ -135,7 +131,7 @@ class ClaimedCollectionReader:
     def replace_api(self, api: ClaimedCollectionApi) -> None:
         self.api = api
 
-    def iter_inventory(self, *, include_control: bool = False) -> Iterator[ClaimedArtifact]:
+    def iter_inventory(self) -> Iterator[ClaimedArtifact]:
         previous: ClaimedArtifact | None = None
         for root in self.inputs:
             self._verify_root(root)
@@ -152,23 +148,19 @@ class ClaimedCollectionReader:
                     inventory_identity = page.authority.inventory_identity
                 elif page.authority.inventory_identity != inventory_identity:
                     raise RuntimeError("claimed collection inventory identity changed")
-                for item in page.files:
-                    path = item.path
-                    control = path in _CONTROL_PATHS or path.startswith("riverhog/")
+                for item in page.artifacts:
                     artifact = ClaimedArtifact(
                         root=root,
-                        path=path,
+                        artifact_id=item.artifact_id,
                         bytes=item.bytes,
                         sha256=item.sha256,
-                        control=control,
                     )
-                    if include_control or not control:
-                        if previous is not None and artifact <= previous:
-                            raise RuntimeError(
-                                "claimed collection inventory is not canonical and unique"
-                            )
-                        previous = artifact
-                        yield artifact
+                    if previous is not None and artifact <= previous:
+                        raise RuntimeError(
+                            "claimed collection inventory is not canonical and unique"
+                        )
+                    previous = artifact
+                    yield artifact
                 if page.complete:
                     break
                 cursor = page.next_cursor
@@ -192,7 +184,7 @@ class ClaimedCollectionReader:
             raise ValueError("claimed retrieval requires at least one artifact")
         if len({current.key for current in selected}) != len(selected):
             raise ValueError("claimed retrieval artifacts must be unique")
-        refs = [(current.root.collection_id, current.path) for current in selected]
+        refs = [(current.root.collection_id, current.artifact_id) for current in selected]
         plan = self.api.plan_retrieval(
             refs,
             lease_seconds=lease_seconds,
@@ -201,8 +193,8 @@ class ClaimedCollectionReader:
         plan_etag = str(plan.get("etag") or "")
         if len(plan_etag) != 64:
             raise RuntimeError("Riverhog retrieval plan has no stable identity")
-        _verify_plan_files(
-            _retrieval_plan_files(self.api, plan),
+        _verify_plan_artifacts(
+            _retrieval_plan_artifacts(self.api, plan),
             selected,
         )
         job = self.api.create_retrieval_job(
@@ -366,10 +358,10 @@ class ClaimedRetrieval:
         current = self._require_artifact(artifact)
         if self.heartbeat is not None:
             self.heartbeat()
-        with self.api.stream_retrieval_file(
+        with self.api.stream_retrieval_artifact(
             self.job_id,
             collection_id=current.root.collection_id,
-            path=current.path,
+            artifact_id=current.artifact_id,
             expected_bytes=current.bytes,
             expected_sha256=current.sha256,
             start=start,
@@ -391,10 +383,10 @@ class ClaimedRetrieval:
         current = self._require_artifact(artifact)
         if self.heartbeat is not None:
             self.heartbeat()
-        accepted = self.api.download_retrieval_file(
+        accepted = self.api.download_retrieval_artifact(
             self.job_id,
             collection_id=current.root.collection_id,
-            path=current.path,
+            artifact_id=current.artifact_id,
             output=output,
             expected_bytes=current.bytes,
             expected_sha256=current.sha256,
@@ -472,23 +464,23 @@ class ClaimedRetrieval:
         return current
 
 
-def _retrieval_plan_files(
+def _retrieval_plan_artifacts(
     api: ClaimedCollectionApi,
     plan: Mapping[str, Any],
 ) -> tuple[Mapping[str, Any], ...]:
     plan_id = str(plan.get("id") or "")
     plan_etag = str(plan.get("etag") or "")
-    file_count = _positive_int(plan.get("file_count"), "plan file count")
+    artifact_count = _positive_int(plan.get("artifact_count"), "plan artifact count")
     rows: list[Mapping[str, Any]] = []
     start_ordinal = 0
     while True:
-        page = api.list_retrieval_plan_files(
+        page = api.list_retrieval_plan_artifacts(
             plan_id,
             plan_etag=plan_etag,
             start_ordinal=start_ordinal,
             page_size=100,
         )
-        current = page.get("files")
+        current = page.get("artifacts")
         if (
             page.get("plan_id") != plan_id
             or page.get("etag") != plan_etag
@@ -496,15 +488,15 @@ def _retrieval_plan_files(
             or not isinstance(current, list)
             or any(not isinstance(item, Mapping) for item in current)
         ):
-            raise RuntimeError("Riverhog retrieval plan file page changed its authority")
+            raise RuntimeError("Riverhog retrieval plan artifact page changed its authority")
         rows.extend(current)
-        if len(rows) > file_count:
-            raise RuntimeError("Riverhog retrieval plan exceeded its declared file count")
+        if len(rows) > artifact_count:
+            raise RuntimeError("Riverhog retrieval plan exceeded its declared artifact count")
         complete = page.get("complete")
         if not isinstance(complete, bool):
             raise RuntimeError("Riverhog retrieval plan page omitted completion state")
         if complete:
-            if page.get("next_ordinal") is not None or len(rows) != file_count:
+            if page.get("next_ordinal") is not None or len(rows) != artifact_count:
                 raise RuntimeError("Riverhog retrieval plan traversal ended inconsistently")
             return tuple(rows)
         next_ordinal = page.get("next_ordinal")
@@ -514,7 +506,7 @@ def _retrieval_plan_files(
         start_ordinal = expected_next
 
 
-def _verify_plan_files(
+def _verify_plan_artifacts(
     rows: Sequence[Mapping[str, Any]],
     selected: Sequence[ClaimedArtifact],
 ) -> None:
@@ -522,10 +514,10 @@ def _verify_plan_files(
     actual: dict[tuple[int, str], tuple[int, str]] = {}
     for row in rows:
         if not isinstance(row, Mapping):
-            raise RuntimeError("Riverhog retrieval plan file is invalid")
+            raise RuntimeError("Riverhog retrieval plan artifact is invalid")
         key = (
             _wire_collection_id(row.get("collection_id"), "plan collection id"),
-            str(row.get("path") or ""),
+            ArtifactId(str(row.get("artifact_id") or "")),
         )
         if key in actual:
             raise RuntimeError("Riverhog retrieval plan repeats an artifact")
