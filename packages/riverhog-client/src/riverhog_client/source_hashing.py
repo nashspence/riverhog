@@ -8,6 +8,7 @@ from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from typing import BinaryIO
 
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.raw_ingress import (
     RAW_SOURCE_DIGEST_BATCH_MAX,
     RawSourceDigestSummary,
@@ -51,7 +52,7 @@ class RawSourceHash:
 
 def hash_raw_source_chunks(
     *,
-    path: str,
+    artifact_id: ArtifactId,
     chunks: Iterable[bytes],
     expected_bytes: int,
     part_plaintext_bytes: int,
@@ -106,7 +107,7 @@ def hash_raw_source_chunks(
         parts.flush()
         return RawSourceHash(
             summary=RawSourceDigestSummary(
-                path=path,
+                artifact_id=artifact_id,
                 bytes=expected_bytes,
                 sha256=whole.hexdigest(),
                 part_plaintext_bytes=part_plaintext_bytes,

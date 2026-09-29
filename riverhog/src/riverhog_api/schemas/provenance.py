@@ -1,230 +1,39 @@
+"""Exact canonical provenance read documents."""
+
 from __future__ import annotations
 
-from typing import Annotated, Literal
+from typing import Annotated
 
-from http_api_contracts import BrowsePageToken
-from pydantic import Field, RootModel, model_validator
+from pydantic import Field
 from riverhog_protocol import (
-    CapturedFileProvenanceBinding,
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingDocument,
     CollectionId,
-    ImmutableFileIdentityDocument,
-    OmittedFileProvenanceBinding,
-    ProvenanceSort,
-    ProvenanceStatus,
-    SortOrder,
 )
-from riverhog_protocol.paths import CanonicalRelPath
-from riverhog_provenance_contracts import (
-    ProvenanceEntryId,
-    ProvenanceJournalId,
-    ProvenanceStateId,
-)
-from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 
 
-class ProvenanceJournalOut(RiverhogModel):
-    journal_id: ProvenanceJournalId
-    bytes: int = Field(ge=0)
-    sha256: Sha256
-    entries: int = Field(ge=1)
-    current_state_id: ProvenanceStateId
-    current_path: CanonicalRelPath
-    current_bytes: int = Field(ge=0)
-    current_sha256: Sha256
-    agent_count: int = Field(ge=0)
-    entity_counts: dict[str, int]
-
-
-class ProvenanceJournalAgentOut(RiverhogModel):
-    agent_id: str
-
-
-class ListProvenanceJournalAgentsOut(RiverhogModel):
+class ListCollectionArtifactProvenanceOut(RiverhogModel):
     collection_id: CollectionId
-    journal_id: ProvenanceJournalId
-    page_size: int = Field(ge=1, le=100)
-    next_page_token: BrowsePageToken | None
-    agents: list[ProvenanceJournalAgentOut]
+    archive_root_sha256: Sha256
+    artifact_set_identity: Sha256
+    provenance_identity: Sha256
+    artifacts: list[ArtifactMemberIdentityDocument] = Field(max_length=200)
+    next_artifact_id: ArtifactId | None = None
 
 
-class CapturedCollectionFileProvenanceOut(ImmutableFileIdentityDocument):
+class CollectionArtifactProvenanceDetailOut(RiverhogModel):
     collection_id: CollectionId
-    provenance: CapturedFileProvenanceBinding
+    archive_root_sha256: Sha256
+    artifact: ArtifactMemberIdentityDocument
+    binding: CollectionArtifactProvenanceBindingDocument
 
 
-class OmittedCollectionFileProvenanceOut(ImmutableFileIdentityDocument):
-    collection_id: CollectionId
-    provenance: OmittedFileProvenanceBinding
-
-
-type _FileProvenanceOut = CapturedCollectionFileProvenanceOut | OmittedCollectionFileProvenanceOut
-
-
-class CollectionFileProvenanceOut(RootModel[_FileProvenanceOut]):
-    pass
-
-
-class CapturedCollectionFileProvenanceDetailOut(CapturedCollectionFileProvenanceOut):
-    journal: ProvenanceJournalOut
-
-
-class OmittedCollectionFileProvenanceDetailOut(OmittedCollectionFileProvenanceOut):
-    journal: None = None
-
-
-class CollectionFileProvenanceDetailOut(
-    RootModel[CapturedCollectionFileProvenanceDetailOut | OmittedCollectionFileProvenanceDetailOut]
-):
-    pass
-
-
-class ProvenanceExternalStateReferenceOut(RiverhogModel):
-    from_journal_id: ProvenanceJournalId
-    to_journal_id: ProvenanceJournalId
-    state_id: ProvenanceStateId
-    entry_id: ProvenanceEntryId
-    entry_json_sha256: Sha256
-
-
-class ProvenanceTraceJournalItemOut(RiverhogModel):
-    kind: Literal["journal"]
-    journal: ProvenanceJournalOut
-
-
-class ProvenanceTraceExternalStateReferenceItemOut(RiverhogModel):
-    kind: Literal["external_state_reference"]
-    reference: ProvenanceExternalStateReferenceOut
-
-
-type ProvenanceTraceItemOut = Annotated[
-    ProvenanceTraceJournalItemOut | ProvenanceTraceExternalStateReferenceItemOut,
-    Field(discriminator="kind"),
+__all__ = [
+    "CollectionArtifactProvenanceDetailOut",
+    "ListCollectionArtifactProvenanceOut",
 ]
-
-
-class _CollectionFileProvenanceTracePage(RiverhogModel):
-    page_size: int = Field(ge=1, le=100)
-    next_page_token: BrowsePageToken | None
-    items: list[ProvenanceTraceItemOut]
-
-
-class CapturedCollectionFileProvenanceTraceOut(
-    CapturedCollectionFileProvenanceDetailOut,
-    _CollectionFileProvenanceTracePage,
-):
-    pass
-
-
-class OmittedCollectionFileProvenanceTraceOut(
-    OmittedCollectionFileProvenanceDetailOut,
-    _CollectionFileProvenanceTracePage,
-):
-    pass
-
-
-class CollectionFileProvenanceTraceOut(
-    RootModel[CapturedCollectionFileProvenanceTraceOut | OmittedCollectionFileProvenanceTraceOut]
-):
-    pass
-
-
-class _CollectionFileProvenancePage(RiverhogModel):
-    page_size: int = Field(ge=1, le=100)
-    next_page_token: BrowsePageToken | None
-    sort: ProvenanceSort
-    order: SortOrder
-    query: str | None
-    status: ProvenanceStatus | None
-    collection_id: CollectionId
-
-
-class CapturedCollectionFileProvenancePage(_CollectionFileProvenancePage):
-    provenance_mode: Literal["captured"]
-    provenance_identity: Sha256
-    files: list[CapturedCollectionFileProvenanceOut]
-
-
-class MixedCollectionFileProvenancePage(_CollectionFileProvenancePage):
-    provenance_mode: Literal["mixed"]
-    provenance_identity: Sha256
-    files: list[_FileProvenanceOut]
-
-
-class OmittedCollectionFileProvenancePage(_CollectionFileProvenancePage):
-    provenance_mode: Literal["omitted"]
-    provenance_identity: None
-    files: list[OmittedCollectionFileProvenanceOut]
-
-
-class ListCollectionFileProvenanceOut(
-    RootModel[
-        Annotated[
-            CapturedCollectionFileProvenancePage
-            | MixedCollectionFileProvenancePage
-            | OmittedCollectionFileProvenancePage,
-            Field(discriminator="provenance_mode"),
-        ]
-    ]
-):
-    pass
-
-
-class _CollectionProvenanceVerification(RiverhogModel):
-    collection_id: CollectionId
-    valid: Literal[True]
-    files: int = Field(ge=0)
-    entities: int = Field(ge=0)
-
-
-class CapturedCollectionProvenanceVerification(_CollectionProvenanceVerification):
-    provenance_mode: Literal["captured", "mixed"]
-    provenance_identity: Sha256
-    journals: int = Field(ge=1)
-
-
-class OmittedCollectionProvenanceVerification(_CollectionProvenanceVerification):
-    provenance_mode: Literal["omitted"]
-    provenance_identity: None
-    journals: Literal[0]
-    entities: Literal[0]
-
-
-class CollectionProvenanceVerificationOut(
-    RootModel[
-        Annotated[
-            CapturedCollectionProvenanceVerification | OmittedCollectionProvenanceVerification,
-            Field(discriminator="provenance_mode"),
-        ]
-    ]
-):
-    pass
-
-
-class CollectionProvenanceVerificationJobOut(RiverhogModel):
-    collection_id: CollectionId
-    state: Literal["queued", "running", "canceling", "succeeded", "failed", "canceled"]
-    requested_at: CanonicalUtcTimestamp
-    started_at: CanonicalUtcTimestamp | None
-    finished_at: CanonicalUtcTimestamp | None
-    attempts: int = Field(ge=0)
-    result: CollectionProvenanceVerificationOut | None
-    failure: str | None
-
-    @model_validator(mode="after")
-    def validate_terminal_evidence(self) -> CollectionProvenanceVerificationJobOut:
-        if self.state == "succeeded":
-            if self.result is None or self.failure is not None or self.finished_at is None:
-                raise ValueError("succeeded provenance verification requires exact result evidence")
-        elif self.state == "failed":
-            if self.result is not None or not self.failure or self.finished_at is None:
-                raise ValueError("failed provenance verification requires failure evidence")
-        elif self.state == "canceled":
-            if self.result is not None or self.finished_at is None:
-                raise ValueError("canceled provenance verification requires terminal evidence")
-        elif self.result is not None or self.finished_at is not None:
-            raise ValueError("nonterminal provenance verification cannot contain terminal evidence")
-        return self

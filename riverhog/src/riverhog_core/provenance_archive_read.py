@@ -228,6 +228,26 @@ class CanonicalProvenanceArchiveReader:
         if full_digest is not None and full_digest.hexdigest() != journal_sha256:
             raise ProvenanceArchiveReadError("provenance journal digest changed")
 
+    def journal_metadata(self, journal_id: str) -> tuple[int, str]:
+        """Read one root-selected journal's exact length and digest authority."""
+
+        self.scan()
+        result: tuple[int, str] | None = None
+        for document in self._descriptors():
+            if isinstance(document, ProvenanceTerminalDocument):
+                break
+            if document.payload.kind != "journal" or document.journal_id != journal_id:
+                continue
+            assert document.journal_bytes is not None
+            assert document.journal_sha256 is not None
+            candidate = (document.journal_bytes, document.journal_sha256)
+            if result is not None and result != candidate:
+                raise ProvenanceArchiveReadError("journal segment authority changed")
+            result = candidate
+        if result is None:
+            raise ProvenanceArchiveReadError("provenance journal is absent")
+        return result
+
     def iter_bindings(self) -> Iterator[dict[str, object]]:
         """Stream exact member-ordered binding pages from the selected archive."""
 

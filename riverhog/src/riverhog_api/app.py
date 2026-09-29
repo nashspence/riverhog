@@ -144,15 +144,6 @@ def _process_archive_maintenance(
                 "startup requeued interrupted collection tags: count=%s",
                 requeued_tags,
             )
-        requeued_verifications = (
-            container.provenance.requeue_interrupted_verifications_for_startup()
-        )
-        progressed += requeued_verifications
-        if requeued_verifications:
-            _LOG.info(
-                "startup reconciled interrupted provenance verifications: count=%s",
-                requeued_verifications,
-            )
         requeued_dispositions = (
             container.collection_workflows.requeue_interrupted_disposition_sets_for_startup()
         )
@@ -183,7 +174,6 @@ def _process_archive_maintenance(
     progressed += container.archive_copy_jobs.process_due(limit=1)
     progressed += container.collection_descriptions.process_due(limit=1)
     progressed += container.collection_tags.process_due(limit=1)
-    progressed += container.provenance.process_due_verifications(limit=1)
     progressed += container.lifecycle_events.reap_expired_contexts()
     return progressed > 0
 

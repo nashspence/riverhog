@@ -13,8 +13,10 @@ from riverhog_canonical_json import parse_scalar
 from riverhog_core.app_permissions import COLLECTIONS_DELETE
 from riverhog_protocol import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
+    ArtifactId,
     ArtifactMaterializationDecisionBatchDocument,
     CollectionArtifactProvenanceBindingBatchDocument,
+    CollectionArtifactProvenanceBindingDocument,
     CollectionIdParameter,
     CollectionSort,
     CollectionUploadProvenanceJournalCreateDocument,
@@ -324,6 +326,25 @@ def bind_collection_upload_session_artifact_provenance(
     container.collection_uploads.require_access(collection_id, principal)
     return CollectionArtifactProvenanceBindingBatchDocument.model_validate(
         container.collection_uploads.bind_artifact_provenance(collection_id, request)
+    )
+
+
+@router.get(
+    "/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}/provenance-binding",
+    response_model=CollectionArtifactProvenanceBindingDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def get_collection_upload_session_artifact_provenance_binding(
+    collection_id: CollectionIdParameter,
+    artifact_id: ArtifactId,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> CollectionArtifactProvenanceBindingDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    return CollectionArtifactProvenanceBindingDocument.model_validate(
+        container.collection_uploads.get_artifact_provenance_binding(
+            collection_id, artifact_id
+        )
     )
 
 
