@@ -88,7 +88,7 @@ from riverhog_protocol.transport import (
 from riverhog_provenance import (
     ProvenanceValidationError,
     validate_journal_chunks,
-    validate_journal_set,
+    validate_journal_set_chunks,
 )
 from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true
 from sqlalchemy.orm import Session, selectinload
@@ -4593,8 +4593,8 @@ def _validate_staged_canonical_journal_set(
     )
     if not records or any(record.state != "sealed" for record in records):
         raise Conflict("canonical provenance corpus is absent or unsealed")
-    corpus = validate_journal_set(
-        (b"".join(_iter_upload_journal_chunks(session, record)) for record in records),
+    corpus = validate_journal_set_chunks(
+        (_iter_upload_journal_chunks(session, record) for record in records),
         catalog=admission_provenance_catalog(),
     )
     summaries = {summary.journal_id: summary for summary in corpus.journals}

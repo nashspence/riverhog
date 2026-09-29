@@ -43,6 +43,7 @@ from .journal import (
     validate_journal,
     validate_journal_chunks,
     validate_journal_set,
+    validate_journal_set_chunks,
 )
 from .model import (
     BinaryReadable,
@@ -105,6 +106,7 @@ __all__ = [
     "validate_journal",
     "validate_journal_chunks",
     "validate_journal_set",
+    "validate_journal_set_chunks",
     "BinaryReadable",
     "ObservationPolicy",
     "ObservationRequest",

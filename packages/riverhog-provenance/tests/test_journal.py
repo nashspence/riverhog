@@ -32,6 +32,7 @@ from riverhog_provenance import (
     validate_journal,
     validate_journal_chunks,
     validate_journal_set,
+    validate_journal_set_chunks,
     verify_delivery,
 )
 from riverhog_provenance_contracts import PROFILE, canonical_document
@@ -70,6 +71,13 @@ def test_streaming_frames_survive_arbitrary_octet_boundaries(journal, catalog, c
         validate_journal_chunks(chunks, catalog=catalog).journal_sha256
         == hashlib.sha256(journal).hexdigest()
     )
+
+
+def test_journal_set_accepts_bounded_chunk_iterators(journal, catalog):
+    chunks = (journal[i : i + 7] for i in range(0, len(journal), 7))
+    streamed = validate_journal_set_chunks((chunks,), catalog=catalog)
+    direct = validate_journal_set((journal,), catalog=catalog)
+    assert streamed.journals[0].anchor == direct.journals[0].anchor
 
 
 def test_exact_bytes_and_predecessor_hashes_are_preserved(journal, who, catalog):

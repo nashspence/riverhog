@@ -576,10 +576,27 @@ def validate_journal_set(
     require_all_references: bool = True,
     require_profiles: bool = True,
 ) -> JournalSetValidation:
+    return validate_journal_set_chunks(
+        ((journal,) for journal in journals),
+        catalog=catalog,
+        require_all_references=require_all_references,
+        require_profiles=require_profiles,
+    )
+
+
+def validate_journal_set_chunks(
+    journals: Iterable[Iterable[bytes]],
+    *,
+    catalog: ContractCatalog | None = None,
+    require_all_references: bool = True,
+    require_profiles: bool = True,
+) -> JournalSetValidation:
     """Resolve exact foreign assertions; do not silently import effective graphs."""
     summaries: dict[str, JournalSummary] = {}
-    for raw in journals:
-        journal = validate_journal(raw, catalog=catalog, require_profiles=require_profiles)
+    for chunks in journals:
+        journal = validate_journal_chunks(
+            chunks, catalog=catalog, require_profiles=require_profiles
+        )
         old = summaries.get(journal.journal_id)
         if old:
             short, long = sorted((old, journal), key=lambda item: len(item.frames))
@@ -672,9 +689,11 @@ def validate_journal_set(
                     raise ProvenanceValidationError("fork prefix anchor could not be resolved")
                 findings.append("unresolved journal fork prefix anchor")
             else:
-                raw = b"".join(frame.encoded for frame in target.frames)
-                validate_journal(
-                    raw, catalog=catalog, expected_anchor=parent, require_profiles=require_profiles
+                validate_journal_chunks(
+                    (frame.encoded for frame in target.frames),
+                    catalog=catalog,
+                    expected_anchor=parent,
+                    require_profiles=require_profiles,
                 )
     if unresolved and require_all_references:
         raise ProvenanceValidationError("unresolved external journal references")
