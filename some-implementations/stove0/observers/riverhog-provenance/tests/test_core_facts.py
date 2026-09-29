@@ -9,6 +9,10 @@ from a_stove0_materialization_hint_evidence_contract_lib import (
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
     validate_materialization_hint_facts,
 )
+from a_stove0_riverhog_provenance_evidence_contract_lib import (
+    CORE_PROVENANCE_OBSERVER_CONTRACT,
+    validate_core_provenance_facts,
+)
 from a_stove0_riverhog_provenance_observer import (
     RiverhogProvenanceObserver,
     extract_core_facts,
@@ -126,6 +130,7 @@ def test_direct_locator_facts_preserve_context_identifier_and_exact_support() ->
     view_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
     subject, binding, summary = _fixture(name="/camera/clip.mp4", view_id=view_id)
     facts = extract_core_facts(subject, binding, summary)
+    validate_core_provenance_facts({"artifacts": [facts]}, (subject,), {})
     assert facts["subject_id"] == subject.id
     assert facts["materialization_hint"] is None
     assert len(facts["locators"]) == 1
@@ -135,6 +140,46 @@ def test_direct_locator_facts_preserve_context_identifier_and_exact_support() ->
     assert locator["context_endpoint"]["journal_id"] == summary.journal_id
     assert locator["context_support"]["assertion_id"] != locator["locator_support"]["assertion_id"]
     assert locator["observation_endpoint"]["object_type"] == "observation"
+
+
+def test_core_observation_exposes_only_requested_predicates_at_exact_anchor() -> None:
+    subject, binding, summary = _fixture(
+        name="/camera/clip.mp4",
+        view_id="urn:uuid:11111111-1111-4111-8111-111111111111",
+    )
+    observer = RiverhogProvenanceObserver(image_id="sha256:" + "f" * 64)
+    support = observer.descriptor().support_for(CORE_PROVENANCE_OBSERVER_CONTRACT.id)
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id="a" * 64,
+            observer_registration_id="canonical-provenance",
+            observer_descriptor_sha256=observer.descriptor().descriptor_sha256,
+            observer_contract_id=support.contract_id,
+            observer_contract_sha256=support.contract_sha256,
+            read_actions=("read-provenance",),
+            subjects=(subject,),
+            options={"predicates": []},
+        )
+    )
+
+    class Runtime:
+        def heartbeat(self) -> None:
+            pass
+
+        def open_provenance(self, _subject: WorkArtifactSubject) -> Any:
+            return SimpleNamespace(
+                binding=binding,
+                bound_summary=lambda: summary,
+                resolve_external_reference=lambda _: None,
+            )
+
+    result = observer.observe(request, cast(ContentObservationRuntime, Runtime()))
+    assert result.state == "observed"
+    assert result.facts is not None
+    fact = result.facts["artifacts"][0]
+    assert fact["primary_binding"] == binding.model_dump(mode="json")
+    assert fact["locators"][0]["subject_id"] == subject.id
+    assert fact["claims"] == []
 
 
 def test_hint_fact_uses_exact_delivered_occurrence_and_valid_missing_hint() -> None:

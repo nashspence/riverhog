@@ -239,6 +239,11 @@ def test_supplied_observer_registrations_connect_exact_one_role_services() -> No
             "a_stove0_riverhog_provenance_observer_token",
             ["materialization-hint"],
         ),
+        "canonical-provenance": (
+            "http://a-stove0-riverhog-provenance-observer:8080",
+            "a_stove0_riverhog_provenance_observer_token",
+            ["riverhog-provenance"],
+        ),
     }
     assert set(registrations) == set(expected)
     for registration, (base_url, secret, providers) in expected.items():

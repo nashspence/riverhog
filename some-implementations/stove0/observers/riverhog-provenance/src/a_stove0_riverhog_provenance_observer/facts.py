@@ -212,6 +212,7 @@ def extract_core_facts(
         )
     return {
         "subject_id": subject.id,
+        "primary_binding": binding.model_dump(mode="json"),
         "state": state_endpoint,
         "occurrence": occurrence_endpoint,
         "locators": locators,

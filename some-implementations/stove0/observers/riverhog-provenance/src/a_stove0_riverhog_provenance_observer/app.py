@@ -14,6 +14,9 @@ import uvicorn
 from a_stove0_materialization_hint_evidence_contract_lib import (
     MATERIALIZATION_HINT_SEMANTIC_VALIDATOR,
 )
+from a_stove0_riverhog_provenance_evidence_contract_lib import (
+    CORE_PROVENANCE_SEMANTIC_VALIDATOR,
+)
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
@@ -43,7 +46,9 @@ def create_app(*, token: str, observer: RiverhogProvenanceObserver) -> FastAPI:
         raise ValueError("provenance observer token must be nonempty")
     binding = ObserverHttpBinding(
         observer,
-        semantic_validators=SemanticValidatorRegistry((MATERIALIZATION_HINT_SEMANTIC_VALIDATOR,)),
+        semantic_validators=SemanticValidatorRegistry(
+            (CORE_PROVENANCE_SEMANTIC_VALIDATOR, MATERIALIZATION_HINT_SEMANTIC_VALIDATOR)
+        ),
     )
     app = FastAPI(
         title="Stove0 Riverhog provenance observer", version="1", openapi_url="/v1/openapi.json"

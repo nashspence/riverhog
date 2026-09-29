@@ -27,6 +27,11 @@ observers:
     token_file: /run/secrets/a_stove0_riverhog_provenance_observer_token
     allow_insecure_http: true
     semantic_validator_providers: [materialization-hint]
+  canonical-provenance:
+    base_url: http://a-stove0-riverhog-provenance-observer:8080
+    token_file: /run/secrets/a_stove0_riverhog_provenance_observer_token
+    allow_insecure_http: true
+    semantic_validator_providers: [riverhog-provenance]
 targets:
   nvenc-av1-opus:
     base_url: http://a-stove0-nvenc-av1-opus-target:8080

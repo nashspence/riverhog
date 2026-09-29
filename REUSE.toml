@@ -18,6 +18,7 @@ path = [
   "some-implementations/stove0/application/server/**",
   "some-implementations/stove0/observers/exiftool/**",
   "some-implementations/stove0/observers/ffprobe/**",
+  "some-implementations/stove0/observers/filename-prefix-sidecars/**",
   "some-implementations/stove0/observers/magic/**",
   "some-implementations/stove0/observers/riverhog-provenance/**",
   "some-implementations/stove0/targets/nvenc-av1-opus/**",

@@ -9,7 +9,7 @@ description = "Pure local destination planning for Riverhog artifact materializa
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Pure destination planning shared by Riverhog CLI and recovery.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Pure local destination planning for Riverhog artifact materialization.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [

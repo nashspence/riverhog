@@ -9,7 +9,7 @@ description = "Closed schema packs and formal contracts for path-independent art
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = "README.md"
+readme = { text = "Closed schema packs and formal contracts for path-independent artifact provenance.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [

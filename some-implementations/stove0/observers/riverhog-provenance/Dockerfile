@@ -35,6 +35,7 @@ COPY some-implementations/stove0/packages/observer-protocol some-implementations
 COPY some-implementations/stove0/packages/observer-support some-implementations/stove0/packages/observer-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol
 COPY some-implementations/stove0/observers/contracts/materialization-hint some-implementations/stove0/observers/contracts/materialization-hint
+COPY some-implementations/stove0/observers/contracts/riverhog-provenance some-implementations/stove0/observers/contracts/riverhog-provenance
 COPY some-implementations/stove0/observers/riverhog-provenance some-implementations/stove0/observers/riverhog-provenance
 RUN uv sync --frozen --package a-stove0-riverhog-provenance-observer --no-dev --no-editable
 
@@ -58,7 +59,7 @@ ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
 LABEL org.opencontainers.image.title="Stove0 Riverhog provenance observer" \
-      org.opencontainers.image.description="Exact canonical Occurrence hint observer for Stove0." \
+      org.opencontainers.image.description="Exact canonical core facts and Occurrence hint observer for Stove0." \
       org.opencontainers.image.licenses="CAL-1.0" \
       org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
       org.opencontainers.image.revision="${SOURCE_REVISION}" \
