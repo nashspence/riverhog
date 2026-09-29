@@ -45,7 +45,8 @@ class ContractCatalog:
     """No network retrieval, code execution or unpinned schema replacement."""
 
     def __init__(self, contracts: Iterable[ProvenanceContractBinding] = ()) -> None:
-        all_bindings = (core_contract(), *tuple(contracts))
+        self.external_contracts = tuple(contracts)
+        all_bindings = (core_contract(), *self.external_contracts)
         self._bindings: dict[tuple[str, str], ProvenanceContractBinding] = {}
         schemas: dict[str, dict[str, Any]] = {}
         for binding in all_bindings:
@@ -61,6 +62,9 @@ class ContractCatalog:
         self._validators = {
             key: Draft202012Validator(value, registry=registry) for key, value in schemas.items()
         }
+
+    def with_contracts(self, contracts: Iterable[ProvenanceContractBinding]) -> ContractCatalog:
+        return ContractCatalog((*self.external_contracts, *contracts))
 
     def validate(self, schema_id: str, value: Any) -> None:
         require_portable_json(value)

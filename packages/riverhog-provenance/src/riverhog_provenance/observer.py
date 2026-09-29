@@ -241,4 +241,6 @@ class BoundedSourceObserver:
                 )
             _merge(graph, source_evidence.supporting_assertions)
         validate_graph(graph, catalog=self.catalog)
-        return ObservationResult.from_graph(graph, observation_id=observation_id)
+        return ObservationResult.from_graph(
+            graph, observation_id=observation_id, catalog=self.catalog
+        )

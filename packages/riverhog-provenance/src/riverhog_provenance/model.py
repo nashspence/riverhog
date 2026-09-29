@@ -8,7 +8,7 @@ from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
 from typing import Any, Protocol, cast, runtime_checkable
 
-from riverhog_provenance_contracts import PROFILE, canonical_document
+from riverhog_provenance_contracts import PROFILE, ContractCatalog, canonical_document
 
 from .common import software_agent_id
 
@@ -122,10 +122,16 @@ class ObservationResult:
     observation_id: str
     observer_agent_id: str
     _graph_json: bytes = field(repr=False)
+    _catalog: ContractCatalog = field(repr=False, compare=False)
 
     @classmethod
     def from_graph(
-        cls, graph: Mapping[str, Any], *, observation_id: str, observer_agent_id: str | None = None
+        cls,
+        graph: Mapping[str, Any],
+        *,
+        observation_id: str,
+        observer_agent_id: str | None = None,
+        catalog: ContractCatalog | None = None,
     ) -> ObservationResult:
         from riverhog_provenance_contracts import validate_graph_shape
 
@@ -155,7 +161,12 @@ class ObservationResult:
             observation_id,
             observer_agent_id,
             canonical_document(graph),
+            catalog or ContractCatalog(),
         )
+
+    @property
+    def catalog(self) -> ContractCatalog:
+        return self._catalog
 
     def graph_fragment(self) -> dict[str, Any]:
         return cast(dict[str, Any], json.loads(self._graph_json))
