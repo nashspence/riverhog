@@ -1,6 +1,12 @@
 """Formal storage-neutral Riverhog provenance wire and extension contracts."""
 
-from ._vocabulary import CATEGORY_TYPES, DIALECT, ENTRY_SCHEMA, PROFILE
+from ._vocabulary import (
+    CATEGORY_TYPES,
+    DIALECT,
+    ENTRY_SCHEMA,
+    PROFILE,
+    SOURCE_NAMING_VIEW_SCHEME,
+)
 from .binding import (
     CANONICAL_UUID_URN_PATTERN,
     PROVENANCE_CONTRACT_BINDING_FORMAT,
@@ -43,6 +49,7 @@ __all__ = [
     "DIALECT",
     "ENTRY_SCHEMA",
     "PROFILE",
+    "SOURCE_NAMING_VIEW_SCHEME",
     "CANONICAL_UUID_URN_PATTERN",
     "PROVENANCE_CONTRACT_BINDING_FORMAT",
     "PROVENANCE_CONTRACT_ENTRY_POINT_GROUP",

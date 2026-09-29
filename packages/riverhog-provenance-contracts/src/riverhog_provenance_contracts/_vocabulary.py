@@ -1,6 +1,7 @@
 """Schema vocabulary, generated alongside the normative schemas."""
 
 PROFILE = "https://nashspence.github.io/riverhog/v1/provenance"
+SOURCE_NAMING_VIEW_SCHEME = PROFILE + "/identifiers/source-naming-view"
 ENTRY_SCHEMA = "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json"
 DIALECT = "https://json-schema.org/draft/2020-12/schema"
 CATEGORY_TYPES = {

@@ -16,6 +16,7 @@ members = [
   "some-implementations/stove0/application/server",
   "some-implementations/stove0/observers/exiftool",
   "some-implementations/stove0/observers/ffprobe",
+  "some-implementations/stove0/observers/filename-prefix-sidecars",
   "some-implementations/stove0/observers/contracts/*",
   "some-implementations/stove0/targets/media-archive/*",
   "some-implementations/stove0/review0/contracts",
@@ -64,6 +65,7 @@ a-stove0-media-archive-lib = { workspace = true }
 a-stove0-media-metadata-contract-lib = { workspace = true }
 a-stove0-media-sampling-contract-lib = { workspace = true }
 a-stove0-ffprobe-streams-contract-lib = { workspace = true }
+a-stove0-filename-prefix-sidecar-observer = { workspace = true }
 stove0-observer-client = { workspace = true }
 stove0-protocol = { workspace = true }
 stove0-recipe-config = { workspace = true }

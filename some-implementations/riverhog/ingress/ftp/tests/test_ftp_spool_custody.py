@@ -23,7 +23,7 @@ from a_riverhog_ftp_spool_client.events import (
 )
 from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from riverhog_client.producer import ProducedCollection
-from riverhog_provenance.native_source import SOURCE_NAMING_VIEW_SCHEME
+from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
 
 from tests.provenance_observer import native_provenance_observer
 

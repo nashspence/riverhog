@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from typing import Any
 
 from riverhog_provenance_contracts import (
+    SOURCE_NAMING_VIEW_SCHEME,
     ContractCatalog,
     ProvenanceContractBinding,
     canonical_document,
@@ -37,10 +38,6 @@ from .native_capture import (
     UnstableFileError,
 )
 from .observer import BoundedSourceObserver
-
-SOURCE_NAMING_VIEW_SCHEME = (
-    "https://nashspence.github.io/riverhog/v1/provenance/identifiers/source-naming-view"
-)
 
 
 def _portable_native(value: Any) -> Any:
