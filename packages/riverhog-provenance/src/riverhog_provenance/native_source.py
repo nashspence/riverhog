@@ -16,7 +16,7 @@ from riverhog_provenance_contracts import (
 )
 from riverhog_provenance_contracts.codec import require_portable_json
 
-from .common import assertion, new_id, utc_now
+from .common import assertion, evidence, new_id, reference, utc_now
 from .constants import PROFILE, PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ObservationError
 from .interface import ObservationSource
@@ -162,6 +162,11 @@ class NativeFileSource:
                     },
                     "data": native_data,
                 }
+                extensions = self._native_extensions(
+                    collection,
+                    context_id=context_id,
+                    observer_agent_id=observer_agent_id,
+                )
                 coverage = tuple(
                     {
                         "profile_id": PROFILE + "/observers/" + backend.platform_family,
@@ -206,6 +211,7 @@ class NativeFileSource:
                     profiles=(profile,),
                     coverage=coverage,
                     locators=(locator,),
+                    supporting_assertions={"extensions": extensions} if extensions else {},
                 )
 
             @contextmanager
@@ -253,19 +259,56 @@ class NativeFileSource:
                 "native_metadata": collection.native_metadata,
                 "coverage": collection.coverage,
                 "diagnostics": [*open_diagnostics, *collection.diagnostics],
-                "extension_details": [
-                    {
-                        "subject_role": item.subject_role,
-                        "property": item.property,
-                        "value": item.value,
-                        "confidence": item.confidence,
-                        "note": item.note,
-                    }
-                    for item in collection.extension_drafts
-                ],
                 "noatime_effective": noatime_effective,
             }
         )
+
+
+    def _native_extensions(
+        self,
+        collection: NativeCapture,
+        *,
+        context_id: str,
+        observer_agent_id: str,
+    ) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        for draft in collection.extension_drafts:
+            value = draft.value
+            if (
+                draft.subject_role != "environment"
+                or value.get("type") != "json"
+                or not isinstance(value.get("schema"), str)
+                or not isinstance(value.get("data"), dict)
+                or value["schema"] not in self.contract.schemas
+            ):
+                raise ObservationError("native extension is not an exact pinned context profile")
+            rows.append(
+                assertion(
+                    "extension",
+                    observer_agent_id,
+                    subject=reference(context_id, "context"),
+                    property=draft.property,
+                    value={
+                        "type": "json",
+                        "value": {
+                            "profile": {
+                                "contract_id": self.contract.contract_id,
+                                "contract_sha256": self.contract.contract_sha256,
+                                "schema_id": value["schema"],
+                            },
+                            "data": _portable_native(value["data"]),
+                        },
+                    },
+                    evidence_items=[
+                        evidence(
+                            observer_agent_id,
+                            "direct_measurement",
+                            method_uri=PROFILE + "/methods/native-descriptor-observation",
+                        )
+                    ],
+                )
+            )
+        return rows
 
 
 class NativeFileObserver:

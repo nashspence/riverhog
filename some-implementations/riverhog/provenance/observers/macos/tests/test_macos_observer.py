@@ -4,14 +4,17 @@ import hashlib
 import os
 from pathlib import Path
 
+import pytest
+from a_riverhog_macos_provenance_contract_lib import CONTRACT_BINDING
 from a_riverhog_macos_provenance_observer import (
     ACLCapture,
     DarwinFileSystemInfo,
     MacOSBackend,
     MacOSProvenanceObserver,
 )
-from riverhog_provenance import validate_graph_fragment
+from riverhog_provenance import validate_graph, validate_graph_fragment
 from riverhog_provenance.native_capture import NativeCapturePolicy, NativeStat
+from riverhog_provenance_contracts import ContractCatalog
 
 
 class FakeMacOSNative:
@@ -241,10 +244,10 @@ def test_macos_omits_unavailable_empty_volume_observations(tmp_path: Path, urn_f
     }
     volume_context = next(
         item
-        for item in data["extension_details"]
+        for item in result.graph_fragment()["extensions"]
         if item["property"].endswith("/macos-volume-context")
     )
-    assert volume_context["value"]["data"]["filesystem_type"] == "unknown"
+    assert volume_context["value"]["value"]["data"]["filesystem_type"] == "unknown"
     validate_graph_fragment(result.graph_fragment())
 
 
@@ -260,3 +263,21 @@ def test_macos_volume_attribute_failure_retains_fstatfs_context(
     assert result.graph_fragment()["activities"][0]["outcome"] == "partial"
     assert any(item["code"] == "volume_attributes_unavailable" for item in data["diagnostics"])
     validate_graph_fragment(result.graph_fragment())
+
+
+def test_macos_volume_context_is_a_pinned_validated_assertion(
+    tmp_path: Path, urn_factory
+) -> None:
+    payload = tmp_path / "volume.dat"
+    payload.write_bytes(b"volume")
+    graph = _observe(payload, urn_factory()).graph_fragment()
+    volume = next(
+        row for row in graph["extensions"]
+        if row["property"].endswith("/macos-volume-context")
+    )
+    assert volume["value"]["value"]["profile"]["contract_sha256"] == (
+        CONTRACT_BINDING.contract_sha256
+    )
+    volume["value"]["value"]["data"]["filesystem_type"] = ""
+    with pytest.raises(ValueError, match="schema validation"):
+        validate_graph(graph, catalog=ContractCatalog((CONTRACT_BINDING,)))
