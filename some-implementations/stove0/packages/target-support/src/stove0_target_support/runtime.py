@@ -70,16 +70,16 @@ class TargetCollectionPublication:
         *,
         derived_from: Iterable[str],
     ) -> tuple[ProducerArtifactCustody, ...]:
-        if source.path != artifact.path:
-            raise ValueError(f"target output path does not match its source: {artifact.id}")
+        if source.artifact_id != artifact.artifact_id:
+            raise ValueError(f"target output artifact ID does not match its source: {artifact.id}")
         if isinstance(source, ProducerFile):
-            self._local_files[artifact.path] = source.source
+            self._local_files[artifact.artifact_id] = source.source
         runtime = cast(CollectionTransformRuntime, self.execution.runtime)
         receipts = runtime.append_incremental_output(
             self.writer,
             source,
             identity=ProducerArtifactIdentity(
-                path=artifact.path,
+                artifact_id=artifact.artifact_id,
                 bytes=artifact.bytes,
                 sha256=artifact.sha256,
             ),
@@ -169,7 +169,7 @@ class TargetCollectionPublication:
 
     def _release_custodied_files(self, receipts: Iterable[ProducerArtifactCustody]) -> None:
         for receipt in receipts:
-            local = self._local_files.pop(receipt.artifact.path, None)
+            local = self._local_files.pop(receipt.artifact.artifact_id, None)
             if local is None:
                 continue
             try:

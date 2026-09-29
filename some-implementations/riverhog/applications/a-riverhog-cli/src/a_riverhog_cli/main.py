@@ -801,7 +801,7 @@ def catalog_sync_collections_cmd(
         lines.append(
             f"- {item.collection_id}  revision={item.revision}  "
             f"archive_root_sha256={item.archive_root_sha256}  "
-            f"content_identity={item.content_identity}"
+            f"artifact_set_identity={item.artifact_set_identity}"
         )
         if item.description is not None:
             lines.append(f"  description: {item.description}")

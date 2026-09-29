@@ -41,7 +41,7 @@ class Api:
                 CatalogSyncDescriptor(
                     collection_id="42",
                     archive_root_sha256="c" * 64,
-                    content_identity="d" * 64,
+                    artifact_set_identity="d" * 64,
                     description=None,
                     description_revision=0,
                     description_identity="e" * 64,
@@ -149,7 +149,7 @@ def test_equal_revision_conflict_rolls_back_cursor_and_evidence(tmp_path: Path) 
                     CatalogSyncUpsert(
                         collection_id="42",
                         archive_root_sha256="9" * 64,
-                        content_identity="d" * 64,
+                        artifact_set_identity="d" * 64,
                         description=None,
                         description_revision=0,
                         description_identity="e" * 64,

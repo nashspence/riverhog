@@ -1588,7 +1588,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         *,
         page_size: int = 25,
         page_token: str | None = None,
-        sort: SearchSort = "file_ref",
+        sort: SearchSort = "artifact_ref",
         order: SortOrder = "asc",
         collection: CollectionId | None = None,
     ) -> dict[str, Any]:

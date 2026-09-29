@@ -6,7 +6,7 @@ import base64
 import os
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, cast
 
 from riverhog_provenance_contracts import (
     SOURCE_NAMING_VIEW_SCHEME,
@@ -265,18 +265,21 @@ class NativeFileSource:
         environment = dict(collection.environment or {})
         if environment.get("id") == "urn:uuid:00000000-0000-0000-0000-000000000000":
             del environment["id"]
-        return _portable_native(
-            {
-                "object_kind": "regular_file",
-                "environment": environment,
-                "timestamps": collection.timestamps,
-                "access": collection.access,
-                "native_identifiers": collection.native_identifiers,
-                "native_metadata": collection.native_metadata,
-                "coverage": collection.coverage,
-                "diagnostics": [*open_diagnostics, *collection.diagnostics],
-                "noatime_effective": noatime_effective,
-            }
+        return cast(
+            dict[str, Any],
+            _portable_native(
+                {
+                    "object_kind": "regular_file",
+                    "environment": environment,
+                    "timestamps": collection.timestamps,
+                    "access": collection.access,
+                    "native_identifiers": collection.native_identifiers,
+                    "native_metadata": collection.native_metadata,
+                    "coverage": collection.coverage,
+                    "diagnostics": [*open_diagnostics, *collection.diagnostics],
+                    "noatime_effective": noatime_effective,
+                }
+            ),
         )
 
     def _native_extensions(

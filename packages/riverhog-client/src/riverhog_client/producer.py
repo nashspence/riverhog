@@ -560,7 +560,7 @@ class IncrementalCollectionProducer:
                         collection_id=self.collection_id,
                         member=ArtifactMemberIdentityDocument(
                             artifact_id=source.artifact_id,
-                            bytes=str(source.bytes),
+                            bytes=source.bytes,
                             sha256=source.sha256,
                         ),
                         observation=observation,
