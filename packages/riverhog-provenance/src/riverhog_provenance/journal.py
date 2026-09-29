@@ -456,6 +456,45 @@ def append_assertions(
     )
 
 
+def append_assertion_batches(
+    raw: bytes,
+    batches: Iterable[Mapping[str, Any]],
+    *,
+    recorded_by_agent_id: str,
+    catalog: ContractCatalog | None = None,
+) -> bytes:
+    """Append bounded assertion entries with one final journal validation.
+
+    Each entry is independently schema/size checked before it is added. The
+    resulting chain is validated as a whole before any bytes are returned.
+    This avoids repeatedly parsing an ever-growing exact record when a large
+    required preimage needs several journal entries.
+    """
+
+    summary = validate_journal(raw, catalog=catalog)
+    previous = summary.tail.reference
+    frames = [raw]
+    sequence = len(summary.frames)
+    for assertions in batches:
+        document = _entry(
+            journal_id=summary.journal_id,
+            recorder_id=recorded_by_agent_id,
+            kind="assertion",
+            body={"assertions": dict(assertions)},
+            sequence=sequence,
+            previous=previous,
+        )
+        encoded = encode_entry(document, catalog=catalog)
+        frames.append(encoded)
+        previous = JournalFrame(encoded[1:-1]).reference
+        sequence += 1
+    if sequence == len(summary.frames):
+        return raw
+    result = b"".join(frames)
+    validate_journal(result, catalog=catalog)
+    return result
+
+
 def append_correction(
     raw: bytes,
     retracts: Iterable[Mapping[str, Any]],
