@@ -7,7 +7,7 @@ import os
 import threading
 from collections.abc import Sequence
 from dataclasses import dataclass
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from jsonschema import Draft202012Validator
 from pydantic import JsonValue
@@ -29,6 +29,7 @@ from review0_sampler_protocol import (
 from riverhog_client import ProducerFile
 from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
+from riverhog_protocol.artifact_identity import ArtifactId
 from stove0_protocol import JsonSchemaValidationProfile, OciImageId
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
@@ -273,8 +274,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                     if not artifact_windows:
                         continue
                     check()
-                    suffix = PurePosixPath(artifact.path).suffix[:32]
-                    relative = f"input/{artifact.id}{suffix}"
+                    relative = f"input/{artifact.id}/payload"
                     source = workspace.resolve(relative)
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                     with execution.prepare_inputs((artifact,)) as retrieval:
@@ -293,7 +293,6 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                                         path=relative,
                                         bytes=artifact.bytes,
                                         sha256=artifact.sha256,
-                                        media_type=artifact.media_type,
                                     ),
                                 ),
                                 windows=artifact_windows,
@@ -323,20 +322,21 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                         for output in sorted(sampler_result.outputs, key=lambda item: item.path):
                             path = workspace.resolve(output.path)
                             _verify_file(path, output.bytes, output.sha256)
-                            collection_path = output.path.removeprefix("output/")
+                            member_id = _member_id(request.declaration.plan.plan_sha256, output.id)
                             output_artifact = OutputArtifact.model_validate(
                                 dict(
                                     id=output.id,
                                     role=descriptor.output_role,
-                                    path=collection_path,
+                                    artifact_id=member_id,
                                     bytes=str(output.bytes),
                                     sha256=output.sha256,
-                                    media_type=output.media_type,
                                 )
                             )
                             artifacts.append(output_artifact)
                             publication.append(
-                                ProducerFile(path, collection_path),
+                                ProducerFile(
+                                    path, member_id, allow_missing_materialization_hint=True
+                                ),
                                 output_artifact,
                                 derived_from=output.derived_from,
                             )
@@ -345,7 +345,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                                 {
                                     "artifact_id": output.id,
                                     "source_artifact_id": window.input_id,
-                                    "path": collection_path,
+                                    "output_artifact_id": member_id,
                                     "start_ms": window.start_ms,
                                     "duration_ms": window.duration_ms,
                                 }
@@ -381,19 +381,23 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                     )
                 )
                 index_bytes, index_sha = file_identity(index_path)
+                index_member_id = _member_id(request.declaration.plan.plan_sha256, "review-index")
                 index = OutputArtifact.model_validate(
                     dict(
                         id="review-index",
                         role=REVIEW_INDEX_ROLE,
-                        path="review/summary.json",
+                        artifact_id=index_member_id,
                         bytes=str(index_bytes),
                         sha256=index_sha,
-                        media_type="application/json",
                     )
                 )
                 artifacts.append(index)
                 publication.append(
-                    ProducerFile(index_path, index.path),
+                    ProducerFile(
+                        index_path,
+                        index_member_id,
+                        allow_missing_materialization_hint=True,
+                    ),
                     index,
                     derived_from=(item.id for item, _claimed in execution.iter_inputs()),
                 )
@@ -486,6 +490,18 @@ def _execution_sha256(
             "sampler_result_sha256": sampler_result_sha256,
             "outputs": [item.model_dump(mode="json") for item in outputs],
         }
+    )
+
+
+def _member_id(plan_sha256: str, output_id: str) -> ArtifactId:
+    return ArtifactId(
+        canonical_json_sha256(
+            {
+                "format": "review0-output-member-id/v1",
+                "plan_sha256": plan_sha256,
+                "output_id": output_id,
+            }
+        )
     )
 
 
