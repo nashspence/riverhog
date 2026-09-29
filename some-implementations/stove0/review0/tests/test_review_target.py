@@ -148,10 +148,9 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
                         archive_root_sha256=_sha("1"),
                         artifact_set_identity=_sha("2"),
                     ),
-                    path="camera/source.wav",
+                    artifact_id=_sha("4"),
                     bytes=str(12),
                     sha256=_sha("3"),
-                    media_type="audio/wav",
                 )
             ),
             intent={
@@ -264,10 +263,9 @@ def test_review_execution_identity_is_the_canonical_semantic_result() -> None:
     output = OutputArtifact(
         id="review-index",
         role="stove0.review.index/v1",
-        path="review/index.json",
+        artifact_id=_sha("5"),
         bytes=str(12),
         sha256=_sha("4"),
-        media_type="application/json",
     )
     expected = canonical_json_sha256(
         {
@@ -286,6 +284,13 @@ def test_review_execution_identity_is_the_canonical_semantic_result() -> None:
         )
         == expected
     )
+
+
+def test_review_output_member_identity_is_bound_to_plan_and_output_key() -> None:
+    first = review_support._member_id(_sha("1"), "sample-0001")
+    assert first == review_support._member_id(_sha("1"), "sample-0001")
+    assert first != review_support._member_id(_sha("1"), "sample-0002")
+    assert first != review_support._member_id(_sha("2"), "sample-0001")
 
 
 def test_review_process_yaml_and_wiring_are_connected(
