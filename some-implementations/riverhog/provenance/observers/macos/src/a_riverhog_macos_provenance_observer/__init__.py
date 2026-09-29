@@ -14,8 +14,21 @@ from dataclasses import dataclass
 from typing import Any
 
 from a_riverhog_macos_provenance_contract_lib import CONTRACT_BINDING, PLATFORM_FAMILY
-from riverhog_provenance.common import (
-    DescriptorFileStateObserver,
+from riverhog_provenance.native_capture import (
+    DEFAULT_OBSERVER_AGENT_ID,
+    OBSERVER_NAMESPACE,
+    JsonObject,
+    LargeValueDisposition,
+    NativeCapture,
+    NativeCapturePolicy,
+    NativeCaptureRequest,
+    NativeExtensionDraft,
+    NativeObservationError,
+    NativeStat,
+    PathInput,
+    PlatformBackend,
+    SymlinkRefusedError,
+    UnsupportedPlatformError,
     basic_access,
     bytes_value,
     diagnostic,
@@ -34,21 +47,7 @@ from riverhog_provenance.common import (
     sparse_extents,
     timestamp_observation,
 )
-from riverhog_provenance.constants import DEFAULT_OBSERVER_AGENT_ID, OBSERVER_NAMESPACE
-from riverhog_provenance.errors import (
-    NativeObservationError,
-    SymlinkRefusedError,
-    UnsupportedPlatformError,
-)
-from riverhog_provenance.interface import PlatformBackend
-from riverhog_provenance.model import (
-    ExtensionDraft,
-    FileStateObservationRequest,
-    JsonObject,
-    LargeValueDisposition,
-    NativeCollection,
-    NativeStat,
-)
+from riverhog_provenance.native_source import NativeFileObserver, NativeFileSource
 from riverhog_provenance.providers import ProvenanceObserverBinding
 
 # Darwin getattrlist(2) constants, from XNU sys/attr.h.
@@ -546,7 +545,7 @@ class MacOSBackend(PlatformBackend):
         return self.native
 
     def open_readonly(
-        self, path: str | bytes, request: FileStateObservationRequest
+        self, path: str | bytes, request: NativeCaptureRequest
     ) -> tuple[int, list[JsonObject], bool]:
         flags = (
             os.O_RDONLY
@@ -600,9 +599,9 @@ class MacOSBackend(PlatformBackend):
         fd: int,
         path: str | bytes,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-    ) -> NativeCollection:
-        result = NativeCollection()
+        request: NativeCaptureRequest,
+    ) -> NativeCapture:
+        result = NativeCapture()
         result.timestamps = self._timestamps(stat, request)
         result.access = basic_access(stat, request)
         result.coverage.update(
@@ -730,7 +729,7 @@ class MacOSBackend(PlatformBackend):
             if volume_attrs.get("valid_capabilities") is not None:
                 volume_context["valid_capabilities"] = volume_attrs["valid_capabilities"]
             result.extension_drafts.append(
-                ExtensionDraft(
+                NativeExtensionDraft(
                     subject_role="environment",
                     property="https://nashspence.github.io/riverhog/v1/provenance/observers/vocab/macos-volume-context",
                     value={
@@ -744,7 +743,7 @@ class MacOSBackend(PlatformBackend):
         return result
 
     @staticmethod
-    def _timestamps(stat: NativeStat, request: FileStateObservationRequest) -> list[JsonObject]:
+    def _timestamps(stat: NativeStat, request: NativeCaptureRequest) -> list[JsonObject]:
         field_map = [
             ("content_modified", stat.mtime_ns, "ATTR_CMN_MODTIME"),
             ("metadata_changed", stat.ctime_ns, "ATTR_CMN_CHGTIME"),
@@ -847,7 +846,7 @@ class MacOSBackend(PlatformBackend):
         return identifiers
 
     def _capture_xattrs(
-        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
+        self, fd: int, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         try:
             names = self.api.list_xattrs(fd)
@@ -950,7 +949,7 @@ class MacOSBackend(PlatformBackend):
         fd: int,
         name: bytes,
         row: JsonObject,
-        request: FileStateObservationRequest,
+        request: NativeCaptureRequest,
     ) -> None:
         agent_id = request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID
         size = self.api.xattr_size(fd, name)
@@ -986,9 +985,7 @@ class MacOSBackend(PlatformBackend):
             ],
         }
 
-    def _capture_acl(
-        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
-    ) -> None:
+    def _capture_acl(self, fd: int, request: NativeCaptureRequest, result: NativeCapture) -> None:
         if not hasattr(self.native, "get_acl"):
             merge_coverage(result.coverage, "access_control", "not_supported")
             return
@@ -1049,7 +1046,7 @@ class MacOSBackend(PlatformBackend):
 
     @staticmethod
     def _capture_file_flags(
-        stat: NativeStat, request: FileStateObservationRequest, result: NativeCollection
+        stat: NativeStat, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         if stat.flags is None:
             merge_coverage(result.coverage, "file_flags", "not_supported")
@@ -1087,8 +1084,8 @@ class MacOSBackend(PlatformBackend):
     def _capture_sparse_map(
         fd: int,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         try:
             extents, complete = sparse_extents(
@@ -1133,7 +1130,7 @@ class MacOSBackend(PlatformBackend):
 
     @staticmethod
     def _capture_special_features(
-        stat: NativeStat, request: FileStateObservationRequest, result: NativeCollection
+        stat: NativeStat, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         keys = (
             "generation",
@@ -1170,7 +1167,7 @@ class MacOSBackend(PlatformBackend):
 
     @staticmethod
     def _capture_native_stat(
-        stat: NativeStat, request: FileStateObservationRequest, result: NativeCollection
+        stat: NativeStat, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         data: dict[str, Any] = {
             key: value
@@ -1211,7 +1208,7 @@ class MacOSBackend(PlatformBackend):
         self,
         fs_info: DarwinFileSystemInfo | None,
         volume_attrs: dict[str, Any],
-        request: FileStateObservationRequest,
+        request: NativeCaptureRequest,
     ) -> JsonObject:
         product_version = (
             self.api.sysctl_text("kern.osproductversion")
@@ -1305,8 +1302,8 @@ class MacOSBackend(PlatformBackend):
         }
 
 
-class MacOSFileStateObserver(DescriptorFileStateObserver):
-    """Archive-level Riverhog provenance observer for macOS Tahoe 26.6 and later 26.x."""
+class MacOSProvenanceObserver(NativeFileObserver):
+    """Canonical descriptor observation with the macOS native contract."""
 
     def __init__(
         self,
@@ -1314,7 +1311,20 @@ class MacOSFileStateObserver(DescriptorFileStateObserver):
         native: MacOSNativeAPI | Any | None = None,
         enforce_platform: bool = True,
     ) -> None:
-        super().__init__(MacOSBackend(native=native, enforce_platform=enforce_platform))
+        super().__init__(CONTRACT_BINDING, PLATFORM_FAMILY)
+        self.backend = MacOSBackend(native=native, enforce_platform=enforce_platform)
+
+    def source(
+        self, path: PathInput, *, host_id: str, policy: NativeCapturePolicy | None = None
+    ) -> NativeFileSource:
+        return NativeFileSource(
+            path,
+            backend=self.backend,
+            contract=CONTRACT_BINDING,
+            native_schema_id="https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-native-capture.json",
+            host_id=host_id,
+            policy=policy,
+        )
 
 
 OBSERVER_BINDING = ProvenanceObserverBinding(
@@ -1322,5 +1332,5 @@ OBSERVER_BINDING = ProvenanceObserverBinding(
     contract_provider="a-riverhog-macos-provenance-contract-lib",
     contract_id=CONTRACT_BINDING.contract_id,
     contract_sha256=CONTRACT_BINDING.contract_sha256,
-    factory=MacOSFileStateObserver,
+    factory=MacOSProvenanceObserver,
 )

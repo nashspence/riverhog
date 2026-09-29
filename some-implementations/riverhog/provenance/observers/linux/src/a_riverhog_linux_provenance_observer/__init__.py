@@ -19,8 +19,20 @@ from pathlib import Path
 from typing import Any
 
 from a_riverhog_linux_provenance_contract_lib import CONTRACT_BINDING, PLATFORM_FAMILY
-from riverhog_provenance.common import (
-    DescriptorFileStateObserver,
+from riverhog_provenance.native_capture import (
+    DEFAULT_OBSERVER_AGENT_ID,
+    OBSERVER_NAMESPACE,
+    JsonObject,
+    NativeCapture,
+    NativeCapturePolicy,
+    NativeCaptureRequest,
+    NativeExtensionDraft,
+    NativeObservationError,
+    NativeStat,
+    PathInput,
+    PlatformBackend,
+    SymlinkRefusedError,
+    UnsupportedPlatformError,
     basic_access,
     diagnostic,
     format_provenance_count,
@@ -37,20 +49,7 @@ from riverhog_provenance.common import (
     sparse_extents,
     timestamp_observation,
 )
-from riverhog_provenance.constants import DEFAULT_OBSERVER_AGENT_ID, OBSERVER_NAMESPACE
-from riverhog_provenance.errors import (
-    NativeObservationError,
-    SymlinkRefusedError,
-    UnsupportedPlatformError,
-)
-from riverhog_provenance.interface import PlatformBackend
-from riverhog_provenance.model import (
-    ExtensionDraft,
-    FileStateObservationRequest,
-    JsonObject,
-    NativeCollection,
-    NativeStat,
-)
+from riverhog_provenance.native_source import NativeFileObserver, NativeFileSource
 from riverhog_provenance.providers import ProvenanceObserverBinding
 
 # Linux uapi constants. These values are stable ABI, not libc implementation details.
@@ -542,7 +541,7 @@ class LinuxBackend(PlatformBackend):
         return self.native
 
     def open_readonly(
-        self, path: str | bytes, request: FileStateObservationRequest
+        self, path: str | bytes, request: NativeCaptureRequest
     ) -> tuple[int, list[JsonObject], bool]:
         flags = os.O_RDONLY
         flags |= getattr(os, "O_CLOEXEC", 0)
@@ -667,9 +666,9 @@ class LinuxBackend(PlatformBackend):
         fd: int,
         path: str | bytes,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-    ) -> NativeCollection:
-        result = NativeCollection()
+        request: NativeCaptureRequest,
+    ) -> NativeCapture:
+        result = NativeCapture()
         result.timestamps = self._timestamps(stat, request)
         result.access = basic_access(stat, request)
         result.coverage.update(
@@ -723,7 +722,7 @@ class LinuxBackend(PlatformBackend):
         result.environment = self._environment(stat, path, mount, request)
         if mount is not None:
             result.extension_drafts.append(
-                ExtensionDraft(
+                NativeExtensionDraft(
                     subject_role="environment",
                     property="https://nashspence.github.io/riverhog/v1/provenance/observers/vocab/linux-mount-context",
                     value={
@@ -754,7 +753,7 @@ class LinuxBackend(PlatformBackend):
         return result
 
     @staticmethod
-    def _timestamps(stat: NativeStat, request: FileStateObservationRequest) -> list[JsonObject]:
+    def _timestamps(stat: NativeStat, request: NativeCaptureRequest) -> list[JsonObject]:
         api = "statx(2)" if stat.extras.get("statx_available") else "fstat(2)"
         timestamps = [
             timestamp_observation(
@@ -839,7 +838,7 @@ class LinuxBackend(PlatformBackend):
         return identifiers
 
     def _capture_xattrs(
-        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
+        self, fd: int, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         had_error: dict[str, bool] = {
             "extended_attributes": False,
@@ -928,9 +927,7 @@ class LinuxBackend(PlatformBackend):
                 "partial" if had_error["access_control"] else "complete",
             )
 
-    def _capture_acl(
-        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
-    ) -> None:
+    def _capture_acl(self, fd: int, request: NativeCaptureRequest, result: NativeCapture) -> None:
         if self.api.libacl is None:
             merge_coverage(result.coverage, "access_control", "not_supported")
             return
@@ -992,8 +989,8 @@ class LinuxBackend(PlatformBackend):
         self,
         fd: int,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         agent_id = request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID
         captured_any = False
@@ -1091,8 +1088,8 @@ class LinuxBackend(PlatformBackend):
         self,
         fd: int,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         try:
             extents, complete = sparse_extents(
@@ -1137,7 +1134,7 @@ class LinuxBackend(PlatformBackend):
             )
 
     def _capture_special_features(
-        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
+        self, fd: int, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         try:
             buffer = bytearray(FSXATTR_STRUCT_SIZE)
@@ -1187,7 +1184,7 @@ class LinuxBackend(PlatformBackend):
 
     @staticmethod
     def _capture_native_stat(
-        stat: NativeStat, request: FileStateObservationRequest, result: NativeCollection
+        stat: NativeStat, request: NativeCaptureRequest, result: NativeCapture
     ) -> None:
         api = "statx(2)" if stat.extras.get("statx_available") else "fstat(2)"
         data: dict[str, Any] = {
@@ -1229,7 +1226,7 @@ class LinuxBackend(PlatformBackend):
         stat: NativeStat,
         path: str | bytes,
         mount: MountInfo | None,
-        request: FileStateObservationRequest,
+        request: NativeCaptureRequest,
     ) -> JsonObject:
         release = _read_os_release()
         host: JsonObject = {
@@ -1318,8 +1315,8 @@ class LinuxBackend(PlatformBackend):
         }
 
 
-class LinuxFileStateObserver(DescriptorFileStateObserver):
-    """Archive-level Riverhog provenance observer for Linux."""
+class LinuxProvenanceObserver(NativeFileObserver):
+    """Canonical descriptor observation with the Linux native contract."""
 
     def __init__(
         self,
@@ -1327,11 +1324,19 @@ class LinuxFileStateObserver(DescriptorFileStateObserver):
         native: LinuxNativeAPI | None = None,
         enforce_platform: bool = True,
     ) -> None:
-        super().__init__(
-            LinuxBackend(
-                native=native,
-                enforce_platform=enforce_platform,
-            )
+        super().__init__(CONTRACT_BINDING, PLATFORM_FAMILY)
+        self.backend = LinuxBackend(native=native, enforce_platform=enforce_platform)
+
+    def source(
+        self, path: PathInput, *, host_id: str, policy: NativeCapturePolicy | None = None
+    ) -> NativeFileSource:
+        return NativeFileSource(
+            path,
+            backend=self.backend,
+            contract=CONTRACT_BINDING,
+            native_schema_id="https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-native-capture.json",
+            host_id=host_id,
+            policy=policy,
         )
 
 
@@ -1340,5 +1345,5 @@ OBSERVER_BINDING = ProvenanceObserverBinding(
     contract_provider="a-riverhog-linux-provenance-contract-lib",
     contract_id=CONTRACT_BINDING.contract_id,
     contract_sha256=CONTRACT_BINDING.contract_sha256,
-    factory=LinuxFileStateObserver,
+    factory=LinuxProvenanceObserver,
 )
