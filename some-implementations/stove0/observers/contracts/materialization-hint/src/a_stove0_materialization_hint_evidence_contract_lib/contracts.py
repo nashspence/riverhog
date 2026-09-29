@@ -108,7 +108,7 @@ _SAMPLE_SUBJECT = {
     "bytes": "1",
     "sha256": "d" * 64,
 }
-_SAMPLE_OCCURRENCE = {
+_SAMPLE_OCCURRENCE: dict[str, object] = {
     "scope": "external",
     "journal_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
     "entry": {
@@ -120,18 +120,19 @@ _SAMPLE_OCCURRENCE = {
     "object_id": "urn:uuid:44444444-4444-4444-8444-444444444444",
     "object_type": "occurrence",
 }
-_SAMPLE_FACT = {
-    "subject_id": "sample",
-    "primary_binding": {
-        "artifact_id": "c" * 64,
-        "journal": {
-            "journal_id": _SAMPLE_OCCURRENCE["journal_id"],
-            "through": _SAMPLE_OCCURRENCE["entry"],
-            "prefix_sha256": "f" * 64,
-            "prefix_bytes": "100",
-        },
-        "delivery_association_id": "urn:uuid:55555555-5555-4555-8555-555555555555",
+_SAMPLE_BINDING: dict[str, object] = {
+    "artifact_id": "c" * 64,
+    "journal": {
+        "journal_id": _SAMPLE_OCCURRENCE["journal_id"],
+        "through": _SAMPLE_OCCURRENCE["entry"],
+        "prefix_sha256": "f" * 64,
+        "prefix_bytes": "100",
     },
+    "delivery_association_id": "urn:uuid:55555555-5555-4555-8555-555555555555",
+}
+_SAMPLE_FACT: dict[str, object] = {
+    "subject_id": "sample",
+    "primary_binding": _SAMPLE_BINDING,
     "occurrence": _SAMPLE_OCCURRENCE,
     "materialization_hint": {"components": ["archive", "sample.bin"]},
 }
@@ -162,7 +163,7 @@ MATERIALIZATION_HINT_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model
                         {
                             **_SAMPLE_FACT,
                             "primary_binding": {
-                                **_SAMPLE_FACT["primary_binding"],
+                                **_SAMPLE_BINDING,
                                 "artifact_id": "0" * 64,
                             },
                         }
