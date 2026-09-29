@@ -177,10 +177,9 @@ class TargetCallbackAuthority:
                         id=item.id,
                         role=item.role,
                         collection=item.collection,
-                        path=item.path,
+                        artifact_id=item.artifact_id,
                         bytes=str(item.bytes),
                         sha256=item.sha256,
-                        media_type=item.media_type,
                     )
                 )
                 for item in artifacts
@@ -559,7 +558,7 @@ class TargetCallbackAuthority:
                 ArtifactDisposition(
                     input_collection_id=subject.collection.collection_id,
                     input_archive_root_sha256=subject.collection.archive_root_sha256,
-                    input_path=subject.path,
+                    input_artifact_id=subject.artifact_id,
                     status=declaration.status,
                     code=declaration.code,
                     message=declaration.message,
@@ -597,8 +596,8 @@ class TargetCallbackAuthority:
                 ArtifactDispositionOutput(
                     input_collection_id=subject.collection.collection_id,
                     input_archive_root_sha256=subject.collection.archive_root_sha256,
-                    input_path=subject.path,
-                    output_path=output.path,
+                    input_artifact_id=subject.artifact_id,
+                    output_artifact_id=output.artifact_id,
                 )
             )
         self.projector.project_target_source_edges(record, projected)

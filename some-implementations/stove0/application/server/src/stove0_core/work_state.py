@@ -252,7 +252,7 @@ class TargetSettlementSealCheckpoint(Stove0StateModel):
 
     inventory_identity: str | None = Field(default=None, min_length=1, max_length=500)
     inventory_cursor: str | None = Field(default=None, min_length=1, max_length=2000)
-    output_path_cursor: str | None = Field(default=None, min_length=1, max_length=4096)
+    output_artifact_id_cursor: str | None = Field(default=None, min_length=1, max_length=4096)
     binding_hash_state: str
     artifact_count: int = Field(default=0, ge=0)
     total_bytes: int = Field(default=0, ge=0)
@@ -487,7 +487,7 @@ class WorkStore(Protocol):
 
     def iter_target_outputs(self, work_id: str, job_id: str) -> Iterator[OutputArtifact]: ...
 
-    def iter_target_outputs_by_path(
+    def iter_target_outputs_by_artifact_id(
         self, work_id: str, job_id: str
     ) -> Iterator[OutputArtifact]: ...
 
@@ -505,8 +505,8 @@ class WorkStore(Protocol):
         self, work_id: str, job_id: str, *, after_id: str | None, limit: int
     ) -> tuple[OutputArtifact, ...]: ...
 
-    def target_output_path_page(
-        self, work_id: str, job_id: str, *, after_path: str | None, limit: int
+    def target_output_artifact_page(
+        self, work_id: str, job_id: str, *, after_artifact_id: str | None, limit: int
     ) -> tuple[OutputArtifact, ...]: ...
 
     def target_disposition_page(
@@ -967,7 +967,9 @@ class InMemoryWorkStore:
             )
         return iter(values)
 
-    def iter_target_outputs_by_path(self, work_id: str, job_id: str) -> Iterator[OutputArtifact]:
+    def iter_target_outputs_by_artifact_id(
+        self, work_id: str, job_id: str
+    ) -> Iterator[OutputArtifact]:
         with self._lock:
             values = tuple(
                 sorted(
@@ -976,7 +978,7 @@ class InMemoryWorkStore:
                         for (owner, generation, _), value in self._target_outputs.items()
                         if (owner, generation) == (work_id, job_id)
                     ),
-                    key=lambda item: item.path,
+                    key=lambda item: item.artifact_id,
                 )
             )
         return iter(values)
@@ -1033,20 +1035,20 @@ class InMemoryWorkStore:
             if after_id is None or item.id > after_id
         )[:limit]
 
-    def target_output_path_page(
+    def target_output_artifact_page(
         self,
         work_id: str,
         job_id: str,
         *,
-        after_path: str | None,
+        after_artifact_id: str | None,
         limit: int,
     ) -> tuple[OutputArtifact, ...]:
         if limit < 1:
             return ()
         return tuple(
             item
-            for item in self.iter_target_outputs_by_path(work_id, job_id)
-            if after_path is None or item.path > after_path
+            for item in self.iter_target_outputs_by_artifact_id(work_id, job_id)
+            if after_artifact_id is None or item.artifact_id > after_artifact_id
         )[:limit]
 
     def target_disposition_page(
