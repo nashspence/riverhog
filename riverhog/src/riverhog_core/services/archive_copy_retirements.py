@@ -451,7 +451,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                         select(RetrievalPlanPlacementRecord)
                         .where(RetrievalPlanPlacementRecord.plan_id == plan_id)
                         .order_by(
-                            RetrievalPlanPlacementRecord.file_order,
+                            RetrievalPlanPlacementRecord.artifact_order,
                             RetrievalPlanPlacementRecord.sequence,
                         )
                         .limit(_RETRIEVAL_CLEANUP_BATCH)
@@ -465,7 +465,7 @@ class SqlAlchemyArchiveCopyRetirementService:
                     session.scalars(
                         select(RetrievalPlanArtifactRecord)
                         .where(RetrievalPlanArtifactRecord.plan_id == plan_id)
-                        .order_by(RetrievalPlanArtifactRecord.file_order)
+                        .order_by(RetrievalPlanArtifactRecord.artifact_order)
                         .limit(_RETRIEVAL_CLEANUP_BATCH)
                     )
                 )

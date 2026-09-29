@@ -541,7 +541,7 @@ class SqlAlchemyCollectionDeletionService:
                     select(RetrievalPlanPlacementRecord)
                     .where(RetrievalPlanPlacementRecord.plan_id == plan_id)
                     .order_by(
-                        RetrievalPlanPlacementRecord.file_order,
+                        RetrievalPlanPlacementRecord.artifact_order,
                         RetrievalPlanPlacementRecord.sequence,
                     )
                     .limit(_CATALOG_DELETE_BATCH)
@@ -572,7 +572,7 @@ class SqlAlchemyCollectionDeletionService:
                             (RetrievalPlanArtifactRecord.collection_id == collection_id, 1),
                             else_=0,
                         ),
-                        RetrievalPlanArtifactRecord.file_order,
+                        RetrievalPlanArtifactRecord.artifact_order,
                     )
                     .limit(_CATALOG_DELETE_BATCH)
                 )
@@ -779,7 +779,7 @@ def _build_plan(
         )
     file_count, file_bytes = session.execute(
         select(
-            func.count(CollectionArtifactRecord.path),
+            func.count(CollectionArtifactRecord.artifact_id),
             func.coalesce(func.sum(CollectionArtifactRecord.bytes), 0),
         ).where(CollectionArtifactRecord.collection_id == collection_id)
     ).one()
@@ -797,7 +797,7 @@ def _build_plan(
     upload = session.get(CollectionUploadRecord, collection_id)
     upload_file_count = int(
         session.scalar(
-            select(func.count(CollectionUploadArtifactRecord.path)).where(
+            select(func.count(CollectionUploadArtifactRecord.artifact_id)).where(
                 CollectionUploadArtifactRecord.collection_id == collection_id
             )
         )

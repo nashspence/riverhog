@@ -231,7 +231,7 @@ class SqlAlchemyRetrievalService:
             header = PortableCollectionHeader.model_validate(
                 dict(
                     collection=format_scalar("sequence63", normalized_id),
-                    content_identity=collection.content_identity,
+                    artifact_set_identity=collection.artifact_set_identity,
                     encryption_format=collection.encryption_format,
                     passphrase_id=collection.passphrase_id,
                     provenance_mode=cast(
@@ -306,7 +306,7 @@ class SqlAlchemyRetrievalService:
             header = PortableCollectionHeader.model_validate(
                 dict(
                     collection=format_scalar("sequence63", normalized_id),
-                    content_identity=collection.content_identity,
+                    artifact_set_identity=collection.artifact_set_identity,
                     encryption_format=collection.encryption_format,
                     passphrase_id=collection.passphrase_id,
                     provenance_mode=cast(

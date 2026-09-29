@@ -5,33 +5,47 @@ import json
 import logging
 import re
 import secrets
-import uuid
 from collections.abc import Iterator, Mapping, Sequence
 from datetime import timedelta
 from typing import Any, Literal, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
 from riverhog_archive_contracts import (
+    PROVENANCE_BINDING_PAGE_BYTES_MAX,
+    PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
+    PROVENANCE_BINDINGS_FORMAT,
+    PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
+    PROVENANCE_SEQUENCE_DOMAIN,
     CollectionArchiveTerminalDocument,
     CollectionArchiveVolumeDocument,
     CollectionEncryptionBinding,
+    ProvenancePayload,
+    ProvenanceRootDocument,
+    ProvenanceTerminalDocument,
+    ProvenanceVolumeDocument,
     format_archive_sequence,
     update_archive_sequence_commitment,
+    update_provenance_commitment,
 )
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+    ArtifactId,
+    ArtifactMaterializationDecisionBatchDocument,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingBatchDocument,
+    CollectionArtifactProvenanceBindingDocument,
     CollectionDescription,
     CollectionDescriptionDocument,
     CollectionTag,
     CollectionTagHeadDocument,
     CollectionTagSet,
     CollectionTagSetRoot,
+    CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
+    CollectionUploadArtifactIn,
     CollectionUploadCustodyMode,
     CollectionUploadCustodyObjectDocument,
-    CollectionUploadArtifactBatchDocument,
-    CollectionUploadArtifactIn,
     CollectionUploadProvenanceJournalCreateDocument,
     CollectionUploadProvenanceJournalStatusDocument,
     CollectionUploadRawDigestBatchDocument,
@@ -48,24 +62,17 @@ from riverhog_protocol import (
     validate_collection_tag,
     validate_collection_upload_batch_against_registration_constraints,
 )
-from riverhog_protocol.collection_workflow_transport import DISPOSITION_BATCH_MAX
-from riverhog_protocol.collection_workflows import (
-    DERIVATION_DISPOSITION_EVIDENCE_PREFIX,
-    DERIVATION_EVIDENCE_PATH,
-    DERIVATION_OUTPUT_EVIDENCE_PREFIX,
-    PRODUCER_EVIDENCE_PATH,
-    ArtifactDiscardApproval,
-    ArtifactDisposition,
-    ArtifactDispositionOutput,
-    ArtifactDispositionSetIdentity,
+from riverhog_protocol.errors import (
+    BadRequest,
+    Conflict,
+    Forbidden,
+    MaterializationDecisionRequired,
+    NotFound,
 )
-from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, NotFound
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.paths import (
     normalize_collection_id,
-    relpath_search_key,
-    relpath_sort_key,
     text_search_key,
 )
 from riverhog_protocol.raw_ingress import (
@@ -78,28 +85,11 @@ from riverhog_protocol.transport import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
 )
 from riverhog_provenance import (
-    PROVENANCE_BINDING_SEGMENT_FILES_MAX,
-    PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
-    PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    ArchiveArtifactProvenanceRecord,
-    DerivativeJournalSeed,
-    ExternalStateReference,
-    ProvenancePayloadIdentity,
-    ProvenanceRootDocument,
-    ProvenanceTerminalDocument,
     ProvenanceValidationError,
-    ProvenanceVolumeDocument,
-    bounded_binding_segment_bytes,
-    create_derivative_journal_seed,
-    create_derivative_source_entry,
-    format_provenance_sequence,
-    update_ordered_volume_commitment,
+    validate_journal_chunks,
+    validate_journal_set,
 )
-from riverhog_provenance.journal import (
-    resolve_incremental_journal_current_state,
-    validate_incremental_journal_entry,
-)
-from sqlalchemy import and_, asc, case, desc, exists, func, insert, or_, select, true
+from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true
 from sqlalchemy.orm import Session, selectinload
 from state_schema import read_snapshot
 from time_formats import (
@@ -149,17 +139,13 @@ from riverhog_core.catalog_models import (
     AppKeyAccessGrantRecord,
     AppKeyRecord,
     ArchiveCopyJobRecord,
-    CollectionArchiveCopyRecord,
     CollectionArchiveArtifactObjectRecord,
+    CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionArchiveObjectUploadRecord,
-    CollectionDescriptionPublicationRecord,
     CollectionArtifactProvenanceRecord,
     CollectionArtifactRecord,
-    CollectionProvenanceEntityRecord,
-    CollectionProvenanceExternalStateReferenceRecord,
-    CollectionProvenanceJournalAgentRecord,
-    CollectionProvenanceJournalChunkRecord,
+    CollectionDescriptionPublicationRecord,
     CollectionProvenanceJournalRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
@@ -169,14 +155,13 @@ from riverhog_core.catalog_models import (
     CollectionTagPublishedNodeRecord,
     CollectionTagRecord,
     CollectionTagRevisionRecord,
-    CollectionUploadCopyIntentRecord,
+    CollectionUploadArtifactMaterializationDecisionRecord,
+    CollectionUploadArtifactProvenanceBindingRecord,
     CollectionUploadArtifactRecord,
+    CollectionUploadCopyIntentRecord,
     CollectionUploadProvenanceArchiveVolumeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
-    CollectionUploadProvenanceReachabilityRecord,
-    CollectionUploadProvenanceSourceRecord,
-    CollectionUploadProvenanceValidationFactRecord,
     CollectionUploadRawPartDigestRecord,
     CollectionUploadRecord,
     CollectionUploadTagPublicationFrontierRecord,
@@ -184,10 +169,8 @@ from riverhog_core.catalog_models import (
     RetrievalCacheLeaseRecord,
 )
 from riverhog_core.catalog_workflow_models import (
-    CollectionProcessingClaimInputRecord,
     CollectionProcessingClaimRecord,
     CollectionProcessingDispositionOutputRecord,
-    CollectionProcessingDispositionRecord,
     CollectionProcessingDispositionSetRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
@@ -227,6 +210,8 @@ from riverhog_core.pack_volume import (
 from riverhog_core.placement_choices import resolve_use_cache
 from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore
 from riverhog_core.ports.retrieval_cache import RetrievalCache
+from riverhog_core.provenance_binding import verify_member_binding
+from riverhog_core.provenance_catalog import admission_provenance_catalog
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.raw_volume import parse_raw_volume_plan, raw_volume_plan_bytes
 from riverhog_core.retrieval_cache_receipts import (
@@ -948,7 +933,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
-            if upload.state != "open" or upload.provenance_mode == "omitted":
+            if upload.state != "open":
                 raise Conflict("collection upload does not accept provenance journals")
             existing = session.get(
                 CollectionUploadProvenanceJournalRecord,
@@ -974,6 +959,114 @@ class SqlAlchemyCollectionUploadService:
             _touch_upload(upload, config=self._config)
             session.flush()
             return _journal_payload(record)
+
+    def bind_artifact_provenance(
+        self,
+        collection_id: int,
+        batch: CollectionArtifactProvenanceBindingBatchDocument,
+    ) -> dict[str, object]:
+        """Stage exact member-to-journal selections independently of registration."""
+
+        normalized_id = _collection_id(collection_id)
+        with session_scope(self._session_factory) as session:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            )
+            if upload is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            if upload.state != "open":
+                raise Conflict("collection upload no longer accepts provenance bindings")
+            for binding in batch.bindings:
+                artifact_id = str(binding.artifact_id)
+                if (
+                    session.get(CollectionUploadArtifactRecord, (normalized_id, artifact_id))
+                    is None
+                ):
+                    raise NotFound(f"registered upload artifact not found: {artifact_id}")
+                journal = session.get(
+                    CollectionUploadProvenanceJournalRecord,
+                    (normalized_id, binding.journal.journal_id),
+                )
+                if journal is None or journal.state != "sealed":
+                    raise Conflict("primary canonical journal must be sealed before binding")
+                if binding.journal.prefix_bytes > journal.bytes:
+                    raise BadRequest("primary journal anchor exceeds its sealed octets")
+                values = {
+                    "journal_id": binding.journal.journal_id,
+                    "through_entry_id": binding.journal.through.entry_id,
+                    "through_sequence": binding.journal.through.sequence,
+                    "through_json_sha256": binding.journal.through.json_sha256,
+                    "prefix_sha256": binding.journal.prefix_sha256,
+                    "prefix_bytes": binding.journal.prefix_bytes,
+                    "delivery_association_id": binding.delivery_association_id,
+                }
+                existing = session.get(
+                    CollectionUploadArtifactProvenanceBindingRecord,
+                    (normalized_id, artifact_id),
+                )
+                if existing is None:
+                    session.add(
+                        CollectionUploadArtifactProvenanceBindingRecord(
+                            collection_id=normalized_id,
+                            artifact_id=artifact_id,
+                            **values,
+                        )
+                    )
+                elif any(getattr(existing, name) != value for name, value in values.items()):
+                    raise Conflict("artifact provenance binding retry differs from accepted anchor")
+            _touch_upload(upload, config=self._config)
+        return {
+            "bindings": [binding.model_dump(mode="json") for binding in batch.bindings],
+        }
+
+    def set_artifact_materialization_decisions(
+        self,
+        collection_id: int,
+        batch: ArtifactMaterializationDecisionBatchDocument,
+    ) -> dict[str, object]:
+        """Accept one immutable, explicit publication decision per member."""
+
+        normalized_id = _collection_id(collection_id)
+        with session_scope(self._session_factory) as session:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            )
+            if upload is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            if upload.state != "open":
+                raise Conflict("collection upload no longer accepts materialization decisions")
+            for decision in batch.decisions:
+                artifact_id = str(decision.artifact_id)
+                if (
+                    session.get(CollectionUploadArtifactRecord, (normalized_id, artifact_id))
+                    is None
+                ):
+                    raise NotFound(f"registered upload artifact not found: {artifact_id}")
+                existing = session.get(
+                    CollectionUploadArtifactMaterializationDecisionRecord,
+                    (normalized_id, artifact_id),
+                )
+                if existing is None:
+                    session.add(
+                        CollectionUploadArtifactMaterializationDecisionRecord(
+                            collection_id=normalized_id,
+                            artifact_id=artifact_id,
+                            allow_missing_materialization_hint=(
+                                decision.allow_missing_materialization_hint
+                            ),
+                        )
+                    )
+                elif (
+                    existing.allow_missing_materialization_hint
+                    != decision.allow_missing_materialization_hint
+                ):
+                    raise Conflict("materialization decision retry differs from accepted choice")
+            _touch_upload(upload, config=self._config)
+        return batch.model_dump(mode="json")
 
     def append_provenance_journal(
         self,
@@ -1163,7 +1256,7 @@ class SqlAlchemyCollectionUploadService:
         self._schedule_finalization_if_ready(normalized_id)
         return self.get(normalized_id)
 
-    def list_files(
+    def list_artifacts(
         self,
         collection_id: int,
         *,
@@ -1176,7 +1269,7 @@ class SqlAlchemyCollectionUploadService:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
             if position is None:
                 frontier = session.scalar(
-                    select(func.max(CollectionUploadArtifactRecord.file_order)).where(
+                    select(func.max(CollectionUploadArtifactRecord.artifact_order)).where(
                         CollectionUploadArtifactRecord.collection_id == normalized_id
                     )
                 )
@@ -1192,14 +1285,15 @@ class SqlAlchemyCollectionUploadService:
                 frontier = position[1]
             statement = select(CollectionUploadArtifactRecord).where(
                 CollectionUploadArtifactRecord.collection_id == normalized_id,
-                CollectionUploadArtifactRecord.file_order <= (frontier if frontier is not None else -1),
+                CollectionUploadArtifactRecord.artifact_order
+                <= (frontier if frontier is not None else -1),
             )
             rows, next_position = bounded_page(
                 list(
                     session.scalars(
                         keyset_statement(
                             statement,
-                            columns=(CollectionUploadArtifactRecord.file_order,),
+                            columns=(CollectionUploadArtifactRecord.artifact_order,),
                             position=after,
                             order="asc",
                             page_size=page_size,
@@ -1207,7 +1301,7 @@ class SqlAlchemyCollectionUploadService:
                     )
                 ),
                 page_size=page_size,
-                position_of=lambda row: (row.file_order,),
+                position_of=lambda row: (row.artifact_order,),
             )
             return {
                 "collection_id": format_scalar("sequence63", normalized_id),
@@ -1217,10 +1311,10 @@ class SqlAlchemyCollectionUploadService:
                     if next_position is not None and frontier is not None
                     else None
                 ),
-                "files": [_artifact_payload(row) for row in rows],
+                "artifacts": [_artifact_payload(row) for row in rows],
             }
 
-    def iter_files(self, collection_id: int) -> Iterator[dict[str, object]]:
+    def iter_artifacts(self, collection_id: int) -> Iterator[dict[str, object]]:
         normalized_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
             if session.get(CollectionUploadRecord, normalized_id) is None:
@@ -1228,7 +1322,7 @@ class SqlAlchemyCollectionUploadService:
             statement = (
                 select(CollectionUploadArtifactRecord)
                 .where(CollectionUploadArtifactRecord.collection_id == normalized_id)
-                .order_by(CollectionUploadArtifactRecord.file_order)
+                .order_by(CollectionUploadArtifactRecord.artifact_order)
                 .execution_options(yield_per=100)
             )
             for row in session.scalars(statement):
@@ -1285,10 +1379,10 @@ class SqlAlchemyCollectionUploadService:
                         or_(
                             CollectionArchiveObjectUploadRecord.kind == "pack",
                             exists(
-                                select(CollectionUploadArtifactRecord.path).where(
+                                select(CollectionUploadArtifactRecord.artifact_id).where(
                                     CollectionUploadArtifactRecord.collection_id == normalized_id,
-                                    CollectionUploadArtifactRecord.path
-                                    == CollectionArchiveObjectUploadRecord.source_path,
+                                    CollectionUploadArtifactRecord.artifact_id
+                                    == CollectionArchiveObjectUploadRecord.source_artifact_id,
                                     CollectionUploadArtifactRecord.raw_parts_accepted
                                     >= (
                                         CollectionArchiveObjectUploadRecord.source_first_part
@@ -1867,25 +1961,27 @@ class SqlAlchemyCollectionUploadService:
         plan: RawVolumePlan,
     ) -> tuple[str, ...]:
         with session_scope(self._session_factory) as session:
-            file = session.get(CollectionUploadArtifactRecord, (collection_id, plan.source_path))
+            artifact = session.get(
+                CollectionUploadArtifactRecord, (collection_id, plan.artifact_id)
+            )
             if (
-                file is None
-                or file.raw_part_plaintext_bytes is None
-                or file.raw_part_count is None
-                or file.raw_part_ordered_sha256 is None
+                artifact is None
+                or artifact.raw_part_plaintext_bytes is None
+                or artifact.raw_part_count is None
+                or artifact.raw_part_ordered_sha256 is None
             ):
                 raise RuntimeError("raw volume source digest authority is missing")
             summary = RawSourceDigestSummary(
-                path=file.path,
-                bytes=file.bytes,
-                sha256=file.sha256,
-                part_plaintext_bytes=file.raw_part_plaintext_bytes,
-                part_count=file.raw_part_count,
-                ordered_part_sha256=file.raw_part_ordered_sha256,
+                artifact_id=ArtifactId(artifact.artifact_id),
+                bytes=artifact.bytes,
+                sha256=artifact.sha256,
+                part_plaintext_bytes=artifact.raw_part_plaintext_bytes,
+                part_count=artifact.raw_part_count,
+                ordered_part_sha256=artifact.raw_part_ordered_sha256,
             )
             first, count = raw_volume_part_span(
                 summary,
-                file_offset=plan.file_offset,
+                file_offset=plan.artifact_offset,
                 plaintext_bytes=plan.plaintext_bytes,
             )
             values = tuple(
@@ -1893,7 +1989,7 @@ class SqlAlchemyCollectionUploadService:
                     select(CollectionUploadRawPartDigestRecord.sha256)
                     .where(
                         CollectionUploadRawPartDigestRecord.collection_id == collection_id,
-                        CollectionUploadRawPartDigestRecord.path == plan.source_path,
+                        CollectionUploadRawPartDigestRecord.artifact_id == plan.artifact_id,
                         CollectionUploadRawPartDigestRecord.part_number >= first,
                         CollectionUploadRawPartDigestRecord.part_number < first + count,
                     )
@@ -2157,9 +2253,6 @@ class SqlAlchemyCollectionUploadService:
             upload.archive_failure = f"{type(exc).__name__}: {exc}"[:1000]
 
     def _finalize(self, collection_id: int) -> None:
-        if self._advance_derivative_provenance(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
         if self._advance_provenance_closure_validation(collection_id):
             self._requeue_finalization_step(collection_id)
             return
@@ -2184,36 +2277,6 @@ class SqlAlchemyCollectionUploadService:
         if self._advance_catalog_projection(collection_id):
             self._requeue_finalization_step(collection_id)
 
-    def _advance_derivative_provenance(self, collection_id: int) -> bool:
-        """Advance one bounded step of server-owned transform provenance."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None or upload.derivative_provenance_state in {
-                "not-required",
-                "complete",
-            }:
-                return False
-            if upload.derivative_provenance_state == "failed":
-                raise Conflict("server-generated derivative provenance failed")
-            try:
-                if upload.derivative_provenance_state == "discovering":
-                    _advance_derivative_source_discovery(session, upload)
-                elif upload.derivative_provenance_state == "copying":
-                    _advance_derivative_source_closure(session, upload)
-                elif upload.derivative_provenance_state == "generating":
-                    _advance_derivative_output_journal(session, upload)
-                else:  # pragma: no cover - constrained durable state
-                    raise RuntimeError("derivative provenance state is invalid")
-            except Exception:
-                upload.derivative_provenance_state = "failed"
-                raise
-            return True
-
     def _publish_final_authority(self, collection_id: int) -> bool:
         """Publish the bounded immutable root once and persist its exact receipts."""
 
@@ -2234,14 +2297,14 @@ class SqlAlchemyCollectionUploadService:
             sealed_provenance = _sealed_upload_provenance(upload)
             manifest = build_collection_archive_root_manifest(
                 archive_generation=upload.archive_generation,
-                tree={
-                    "files": int(upload.file_count),
-                    "bytes": int(upload.file_bytes),
+                artifact_set={
+                    "count": int(upload.artifact_count),
+                    "bytes": int(upload.artifact_bytes),
                     "sha256": upload.archive_tree_sha256,
                 },
                 ordered_volume_sha256=upload.archive_ordered_volume_sha256,
-                provenance_identity=(sealed_provenance.identity if sealed_provenance else None),
-                provenance_objects=((sealed_provenance.root,) if sealed_provenance else ()),
+                provenance_identity=sealed_provenance.identity,
+                provenance_objects=(sealed_provenance.root,),
             )
         if not prefix:
             raise RuntimeError("collection archive storage prefix is missing")
@@ -2272,9 +2335,9 @@ class SqlAlchemyCollectionUploadService:
                 "plaintext_sha256": root.plaintext_sha256,
                 "stored_bytes": root.stored_bytes,
                 "stored_sha256": root.stored_sha256,
-                "tree_sha256": root.tree_sha256,
-                "files": root.files,
-                "bytes": root.bytes,
+                "artifact_set_sha256": root.artifact_set_sha256,
+                "artifact_count": root.artifact_count,
+                "artifact_bytes": root.artifact_bytes,
                 "completed_at": root.completed_at,
             },
             "recovery": {
@@ -2538,24 +2601,22 @@ class SqlAlchemyCollectionUploadService:
             phase = upload.catalog_phase
             if phase == "complete":
                 return False
-            if phase in {"content-identity", "inventory-identity"}:
+            if phase in {"artifact-set-identity", "inventory-identity"}:
                 _advance_catalog_identity(session, upload)
             elif phase == "collection":
                 self._create_catalog_collection(session, upload)
             elif phase == "tags":
                 _advance_catalog_tags(session, upload)
-            elif phase == "files":
-                _advance_catalog_files(session, upload)
+            elif phase == "artifacts":
+                _advance_catalog_artifacts(session, upload)
             elif phase == "journals":
                 _advance_catalog_journals(session, upload)
-            elif phase == "provenance-relations":
-                _advance_catalog_provenance_relations(session, upload)
             elif phase == "bindings":
                 _advance_catalog_bindings(session, upload)
             elif phase == "archive-objects":
                 self._advance_catalog_archive_objects(session, upload)
-            elif phase == "file-objects":
-                _advance_catalog_file_objects(session, upload)
+            elif phase == "artifact-objects":
+                _advance_catalog_artifact_objects(session, upload)
             elif phase == "terminal":
                 self._publish_catalog_collection(session, upload)
             else:  # pragma: no cover - constrained durable state
@@ -2567,16 +2628,16 @@ class SqlAlchemyCollectionUploadService:
         session: Session,
         upload: CollectionUploadRecord,
     ) -> None:
-        if upload.catalog_content_identity is None or upload.catalog_inventory_identity is None:
+        if (
+            upload.catalog_artifact_set_identity is None
+            or upload.catalog_inventory_identity is None
+        ):
             raise RuntimeError("catalog identities are incomplete")
+        if upload.provenance_identity is None:
+            raise RuntimeError("canonical provenance authority is incomplete")
         if session.get(CollectionRecord, upload.collection_id) is None:
             now = utc_timestamp_now()
             authority = _final_authority(upload)
-            provenance_mode = _final_provenance_mode(
-                session,
-                upload.collection_id,
-                upload.provenance_mode,
-            )
             if upload.description_revision is None or upload.description_identity is None:
                 raise RuntimeError("initial collection description state is unavailable")
             if (
@@ -2595,10 +2656,10 @@ class SqlAlchemyCollectionUploadService:
                     creation_use_cache=upload.use_cache,
                     creation_copy_to_json=upload.copy_to_json,
                     archive_generation=upload.archive_generation,
-                    content_identity=upload.catalog_content_identity,
+                    delivery_context_id=upload.delivery_context_id,
+                    artifact_set_identity=upload.catalog_artifact_set_identity,
                     encryption_format=upload.encryption_format,
                     passphrase_id=upload.passphrase_id,
-                    provenance_mode=provenance_mode,
                     provenance_identity=upload.provenance_identity,
                     inventory_identity=upload.catalog_inventory_identity,
                     archive_root_sha256=str(authority["root"]["plaintext_sha256"]),
@@ -2615,8 +2676,8 @@ class SqlAlchemyCollectionUploadService:
                     created_by_key_id=upload.initiated_by_key_id,
                     created_at=upload.opened_at or now,
                     is_published=False,
-                    file_count=upload.file_count,
-                    file_bytes=upload.file_bytes,
+                    artifact_count=upload.artifact_count,
+                    artifact_bytes=upload.artifact_bytes,
                 )
             )
             session.flush()
@@ -2841,42 +2902,34 @@ class SqlAlchemyCollectionUploadService:
                     )
                 _set_catalog_cursor(upload, {"section": "provenance", "sequence": sequence + 1})
                 return
-            if upload.provenance_mode != "omitted":
-                if upload.provenance_archive_terminal_receipt_json is None:
-                    raise RuntimeError("catalog provenance terminal receipt is unavailable")
-                terminal = _parse_sealed_provenance_object(
-                    upload.provenance_archive_terminal_receipt_json
+            if upload.provenance_archive_terminal_receipt_json is None:
+                raise RuntimeError("catalog provenance terminal receipt is unavailable")
+            terminal = _parse_sealed_provenance_object(
+                upload.provenance_archive_terminal_receipt_json
+            )
+            session.add(
+                _catalog_small_archive_object(
+                    upload=upload,
+                    current=terminal,
+                    object_order=2 * total_volumes + 1 + 2 * provenance_count,
+                    verified_at=now,
                 )
-                session.add(
-                    _catalog_small_archive_object(
-                        upload=upload,
-                        current=terminal,
-                        object_order=2 * total_volumes + 1 + 2 * provenance_count,
-                        verified_at=now,
-                    )
-                )
+            )
             _set_catalog_cursor(upload, {"section": "roots"})
             return
         if section == "roots":
             authority = _final_authority(upload)
-            order = (
-                2 * total_volumes
-                + 1
-                + 2 * provenance_count
-                + int(upload.provenance_mode != "omitted")
-            )
-            if upload.provenance_mode != "omitted":
-                sealed = _sealed_upload_provenance(upload)
-                assert sealed is not None
-                session.add(
-                    _catalog_small_archive_object(
-                        upload=upload,
-                        current=sealed.root,
-                        object_order=order,
-                        verified_at=now,
-                    )
+            order = 2 * total_volumes + 1 + 2 * provenance_count + 1
+            sealed = _sealed_upload_provenance(upload)
+            session.add(
+                _catalog_small_archive_object(
+                    upload=upload,
+                    current=sealed.root,
+                    object_order=order,
+                    verified_at=now,
                 )
-                order += 1
+            )
+            order += 1
             for object_id, kind, value in (
                 ("manifest", "manifest", authority["root"]),
                 ("recovery-descriptor", "recovery-descriptor", authority["recovery"]),
@@ -2905,7 +2958,7 @@ class SqlAlchemyCollectionUploadService:
                     )
                 )
                 order += 1
-            upload.catalog_phase = "file-objects"
+            upload.catalog_phase = "artifact-objects"
             upload.catalog_cursor_json = "{}"
             return
         raise RuntimeError("catalog archive-object cursor section is invalid")
@@ -2934,8 +2987,8 @@ class SqlAlchemyCollectionUploadService:
             type="collection.finalized",
             collection_id=upload.collection_id,
             details={
-                "files_total": int(upload.file_count),
-                "bytes_total": int(upload.file_bytes),
+                "files_total": int(upload.artifact_count),
+                "bytes_total": int(upload.artifact_bytes),
                 "archive_root_sha256": str(authority["root"]["plaintext_sha256"]),
             },
             terminal=True,
@@ -2954,7 +3007,7 @@ class SqlAlchemyCollectionUploadService:
         session.delete(upload)
 
     def _advance_provenance_closure_validation(self, collection_id: int) -> bool:
-        """Validate one bounded slice of the exact provenance closure."""
+        """Resolve each member against its exact primary canonical snapshot."""
 
         with session_scope(self._session_factory) as session:
             upload = session.scalar(
@@ -2964,279 +3017,215 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.provenance_closure_validated:
                 return False
-            if upload.provenance_mode == "omitted":
-                inconsistent = session.scalar(
-                    select(
-                        exists().where(
-                            CollectionUploadArtifactRecord.collection_id == collection_id,
-                            CollectionUploadArtifactRecord.provenance_status != "omitted",
-                        )
-                        | exists().where(
-                            CollectionUploadProvenanceJournalRecord.collection_id == collection_id
-                        )
+            statement = select(CollectionUploadArtifactRecord).where(
+                CollectionUploadArtifactRecord.collection_id == collection_id
+            )
+            if upload.provenance_validation_after_artifact_id is not None:
+                statement = statement.where(
+                    CollectionUploadArtifactRecord.artifact_id
+                    > upload.provenance_validation_after_artifact_id
+                )
+            rows = list(
+                session.scalars(
+                    statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                        _FINALIZATION_FILE_BATCH
                     )
                 )
-                if inconsistent:
-                    raise Conflict(
-                        "collection-wide provenance omission is not internally consistent"
-                    )
-                upload.provenance_validation_next_file_order = upload.file_count
-                upload.provenance_closure_validated = True
-                return True
-            if upload.provenance_validation_next_file_order < upload.file_count:
-                rows = list(
-                    session.scalars(
-                        select(CollectionUploadArtifactRecord)
-                        .where(
-                            CollectionUploadArtifactRecord.collection_id == collection_id,
-                            CollectionUploadArtifactRecord.file_order
-                            >= upload.provenance_validation_next_file_order,
-                        )
-                        .order_by(CollectionUploadArtifactRecord.file_order)
-                        .limit(_FINALIZATION_FILE_BATCH)
-                    )
-                )
-                if not rows:
-                    raise Conflict("provenance bindings do not cover the collection tree")
-                expected_order = upload.provenance_validation_next_file_order
+            )
+            if rows:
                 for row in rows:
-                    if row.file_order != expected_order:
-                        raise Conflict("provenance binding order is not contiguous")
-                    _validate_upload_file_provenance_binding(session, row)
-                    if row.provenance_status == "captured":
-                        assert row.provenance_journal_id is not None
-                        key = (collection_id, row.provenance_journal_id)
-                        if session.get(CollectionUploadProvenanceReachabilityRecord, key) is None:
-                            session.add(
-                                CollectionUploadProvenanceReachabilityRecord(
-                                    collection_id=collection_id,
-                                    journal_id=row.provenance_journal_id,
-                                )
-                            )
-                    expected_order += 1
-                upload.provenance_validation_next_file_order = expected_order
-                return True
-
-            reachable = session.scalar(
-                select(CollectionUploadProvenanceReachabilityRecord)
-                .where(
-                    CollectionUploadProvenanceReachabilityRecord.collection_id == collection_id,
-                    CollectionUploadProvenanceReachabilityRecord.expanded.is_(False),
-                )
-                .order_by(CollectionUploadProvenanceReachabilityRecord.journal_id)
-                .with_for_update(skip_locked=True)
-                .limit(1)
-            )
-            if reachable is not None:
-                statement = select(CollectionUploadProvenanceValidationFactRecord).where(
-                    CollectionUploadProvenanceValidationFactRecord.collection_id == collection_id,
-                    CollectionUploadProvenanceValidationFactRecord.journal_id
-                    == reachable.journal_id,
-                    CollectionUploadProvenanceValidationFactRecord.kind == "external-state",
-                )
-                if reachable.after_external_fact_key is not None:
-                    statement = statement.where(
-                        CollectionUploadProvenanceValidationFactRecord.fact_key
-                        > reachable.after_external_fact_key
+                    binding_row = session.get(
+                        CollectionUploadArtifactProvenanceBindingRecord,
+                        (collection_id, row.artifact_id),
                     )
-                facts = list(
-                    session.scalars(
-                        statement.order_by(
-                            CollectionUploadProvenanceValidationFactRecord.fact_key
-                        ).limit(_FINALIZATION_FILE_BATCH + 1)
-                    )
-                )
-                for fact in facts[:_FINALIZATION_FILE_BATCH]:
-                    reference = _validate_external_state_reference(session, fact)
-                    key = (collection_id, reference)
-                    if session.get(CollectionUploadProvenanceReachabilityRecord, key) is None:
-                        session.add(
-                            CollectionUploadProvenanceReachabilityRecord(
-                                collection_id=collection_id,
-                                journal_id=reference,
-                            )
+                    if binding_row is None:
+                        raise Conflict(
+                            f"canonical provenance binding is missing: {row.artifact_id}"
                         )
-                    reachable.after_external_fact_key = fact.fact_key
-                if len(facts) <= _FINALIZATION_FILE_BATCH:
-                    reachable.expanded = True
+                    journal = session.get(
+                        CollectionUploadProvenanceJournalRecord,
+                        (collection_id, binding_row.journal_id),
+                    )
+                    if journal is None or journal.state != "sealed":
+                        raise Conflict(
+                            f"primary canonical journal is not sealed: {row.artifact_id}"
+                        )
+                    binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+                        _provenance_binding_row(binding_row)
+                    )
+                    summary = validate_journal_chunks(
+                        _iter_upload_journal_chunks(
+                            session, journal, through_bytes=binding.journal.prefix_bytes
+                        ),
+                        catalog=admission_provenance_catalog(),
+                        expected_anchor=binding.journal.model_dump(mode="json"),
+                        require_exact_tail=True,
+                    )
+                    member = ArtifactMemberIdentityDocument.model_validate(
+                        {
+                            "artifact_id": row.artifact_id,
+                            "bytes": format_scalar("sequence63", row.bytes),
+                            "sha256": row.sha256,
+                        }
+                    )
+                    verified = verify_member_binding(
+                        member=member,
+                        binding=binding,
+                        summary=summary,
+                        delivery_context_id=upload.delivery_context_id,
+                    )
+                    decision = session.get(
+                        CollectionUploadArtifactMaterializationDecisionRecord,
+                        (collection_id, row.artifact_id),
+                    )
+                    if decision is None:
+                        raise MaterializationDecisionRequired(
+                            f"materialization decision is missing: {row.artifact_id}"
+                        )
+                    if verified.materialization_hint is None:
+                        if not decision.allow_missing_materialization_hint:
+                            raise MaterializationDecisionRequired(
+                                "No materialization hint was supplied. Artifacts do not require "
+                                "filesystem names, but human-facing downloads may use opaque "
+                                "artifact IDs without a hint. Supply materialization_hint or "
+                                "explicitly set allow_missing_materialization_hint=true for "
+                                "this publication."
+                            )
+                    elif decision.allow_missing_materialization_hint:
+                        raise Conflict(
+                            "materialization omission override contradicts the supplied hint"
+                        )
+                    upload.provenance_validation_after_artifact_id = row.artifact_id
+                    upload.provenance_validation_next_artifact_order += 1
                 return True
-
-            journal_count = int(
-                session.scalar(
-                    select(func.count(CollectionUploadProvenanceJournalRecord.journal_id)).where(
-                        CollectionUploadProvenanceJournalRecord.collection_id == collection_id
-                    )
-                )
-                or 0
-            )
-            reachable_count = int(
-                session.scalar(
-                    select(
-                        func.count(CollectionUploadProvenanceReachabilityRecord.journal_id)
-                    ).where(
-                        CollectionUploadProvenanceReachabilityRecord.collection_id == collection_id
-                    )
-                )
-                or 0
-            )
-            if journal_count != reachable_count:
-                raise Conflict("provenance contains a journal outside the captured closure")
+            if upload.provenance_validation_next_artifact_order != upload.artifact_count:
+                raise Conflict("canonical provenance bindings do not cover the artifact set")
+            _validate_staged_canonical_journal_set(session, upload)
             upload.provenance_closure_validated = True
             return True
 
     def _publish_next_provenance_archive_object(self, collection_id: int) -> bool:
-        """Publish one bounded provenance volume, checkpoint, or final root."""
+        """Publish one bounded structural page, journal segment, terminal or root."""
 
         with session_scope(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)
             if upload is None or not upload.provenance_closure_validated:
                 return False
-            if upload.provenance_mode == "omitted":
-                return False
-            if upload.archive_tree_sha256 is None:
-                return False
-            if upload.provenance_archive_root_receipt_json is not None:
+            artifact_set_sha256 = upload.archive_tree_sha256
+            if (
+                artifact_set_sha256 is None
+                or upload.provenance_archive_root_receipt_json is not None
+            ):
                 return False
             sequence = int(upload.provenance_archive_next_sequence)
             prefix = upload.archive_storage_prefix
             store_name = upload.archive_store
             archive_generation = upload.archive_generation
             passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-            tree_sha256 = upload.archive_tree_sha256
-            publish_terminal = False
+            document: ProvenanceVolumeDocument | None = None
+            terminal: ProvenanceTerminalDocument | None = None
+            root: ProvenanceRootDocument | None = None
+            payload = b""
+            after_artifact_id: str | None = None
+            journal_id: str | None = None
+            next_journal_offset = 0
+            next_artifact_order = int(upload.provenance_archive_next_artifact_order)
 
-            if upload.provenance_archive_next_file_order < upload.file_count:
-                first_file_order = int(upload.provenance_archive_next_file_order)
-                statement = select(CollectionUploadArtifactRecord).where(
-                    CollectionUploadArtifactRecord.collection_id == collection_id
+            if next_artifact_order < upload.artifact_count:
+                statement = select(CollectionUploadArtifactProvenanceBindingRecord).where(
+                    CollectionUploadArtifactProvenanceBindingRecord.collection_id == collection_id
                 )
-                if upload.provenance_archive_after_path_sort_key is not None:
+                if upload.provenance_archive_after_artifact_id is not None:
                     statement = statement.where(
-                        CollectionUploadArtifactRecord.path_sort_key
-                        > upload.provenance_archive_after_path_sort_key
+                        CollectionUploadArtifactProvenanceBindingRecord.artifact_id
+                        > upload.provenance_archive_after_artifact_id
                     )
                 rows = list(
                     session.scalars(
-                        statement.order_by(CollectionUploadArtifactRecord.path_sort_key).limit(
-                            PROVENANCE_BINDING_SEGMENT_FILES_MAX
-                        )
+                        statement.order_by(
+                            CollectionUploadArtifactProvenanceBindingRecord.artifact_id
+                        ).limit(PROVENANCE_BINDING_PAGE_MEMBERS_MAX)
                     )
                 )
                 if not rows:
-                    raise RuntimeError("provenance binding publication is not contiguous")
-                binding_rows: list[Mapping[str, object]] = [
-                    _provenance_binding_row(row) for row in rows
-                ]
-                payload, used = bounded_binding_segment_bytes(
-                    first_file_order=first_file_order,
-                    files=binding_rows,
+                    raise RuntimeError("provenance binding pages do not cover the member set")
+                bindings = [_provenance_binding_row(row) for row in rows]
+                CollectionArtifactProvenanceBindingBatchDocument.model_validate(
+                    {"bindings": bindings}
                 )
-                rows = rows[:used]
+                payload = canonical_json_bytes(
+                    {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": bindings}
+                )
+                if len(payload) > PROVENANCE_BINDING_PAGE_BYTES_MAX:
+                    raise RuntimeError("bounded binding page exceeds its byte contract")
                 document = _provenance_volume_document(
                     archive_generation=archive_generation,
-                    tree_sha256=tree_sha256,
+                    artifact_set_sha256=artifact_set_sha256,
                     sequence=sequence,
                     payload=payload,
-                    first_file_order=first_file_order,
-                    file_count=len(rows),
+                    first_artifact_id=rows[0].artifact_id,
+                    last_artifact_id=rows[-1].artifact_id,
+                    binding_count=len(rows),
                 )
-                next_file_order = first_file_order + len(rows)
-                next_path_sort_key = rows[-1].path_sort_key
-                journal_id = None
-                next_journal_offset = 0
+                next_artifact_order += len(rows)
+                after_artifact_id = rows[-1].artifact_id
             else:
                 journal = _next_provenance_publication_journal(session, upload)
-                if journal is None:
-                    if upload.provenance_archive_terminal_receipt_json is None:
-                        terminal_document = ProvenanceTerminalDocument(
-                            archive_generation=archive_generation,
-                            archive_tree_sha256=tree_sha256,
-                            sequence=sequence,
-                        )
-                        publish_terminal = True
-                        publish_root = False
-                        root_document = None
-                    else:
-                        if upload.provenance_archive_ordered_sha256 is None:
-                            raise RuntimeError("provenance terminal has no ordered commitment")
-                        root_document = ProvenanceRootDocument(
-                            archive_generation=archive_generation,
-                            archive_tree_sha256=tree_sha256,
-                            ordered_volume_sha256=upload.provenance_archive_ordered_sha256,
-                        )
-                        publish_root = True
-                    document = None
-                    payload = b""
-                    next_file_order = int(upload.provenance_archive_next_file_order)
-                    next_path_sort_key = None
-                    journal_id = None
-                    next_journal_offset = 0
-                else:
-                    publish_root = False
+                if journal is not None:
                     offset = int(upload.provenance_archive_current_journal_offset)
                     payload = _upload_journal_range_bytes(
                         session,
                         collection_id,
                         journal.journal_id,
                         offset=offset,
-                        size=min(
-                            PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-                            int(journal.bytes) - offset,
-                        ),
+                        size=min(PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX, journal.bytes - offset),
                     )
                     document = _provenance_volume_document(
                         archive_generation=archive_generation,
-                        tree_sha256=tree_sha256,
+                        artifact_set_sha256=artifact_set_sha256,
                         sequence=sequence,
                         payload=payload,
                         journal=journal,
                         journal_offset=offset,
                     )
-                    next_file_order = int(upload.provenance_archive_next_file_order)
-                    next_path_sort_key = None
                     journal_id = journal.journal_id
                     next_journal_offset = offset + len(payload)
-            if upload.provenance_archive_next_file_order < upload.file_count:
-                publish_root = False
-                root_document = None
+                elif upload.provenance_archive_terminal_receipt_json is None:
+                    terminal = ProvenanceTerminalDocument(
+                        archive_generation=archive_generation,
+                        artifact_set_sha256=artifact_set_sha256,
+                        sequence=sequence,
+                    )
+                else:
+                    if upload.provenance_archive_ordered_sha256 is None:
+                        raise RuntimeError("provenance terminal has no ordered commitment")
+                    journal_count = int(
+                        session.scalar(
+                            select(func.count())
+                            .select_from(CollectionUploadProvenanceJournalRecord)
+                            .where(
+                                CollectionUploadProvenanceJournalRecord.collection_id
+                                == collection_id
+                            )
+                        )
+                        or 0
+                    )
+                    root = ProvenanceRootDocument(
+                        archive_generation=archive_generation,
+                        artifact_set_sha256=artifact_set_sha256,
+                        delivery_context_id=upload.delivery_context_id,
+                        binding_count=upload.artifact_count,
+                        journal_count=journal_count,
+                        ordered_volume_sha256=upload.provenance_archive_ordered_sha256,
+                    )
 
         publisher = ArchiveProvenancePublisher(
             object_store=self._archive_stores.require(store_name).immutable_objects,
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
         )
-        if publish_terminal:
-            sealed_terminal = publisher.publish_terminal(
-                archive_storage_prefix=prefix,
-                terminal=terminal_document,
-            )
-            with session_scope(self._session_factory) as session:
-                upload = session.scalar(
-                    select(CollectionUploadRecord)
-                    .where(CollectionUploadRecord.collection_id == collection_id)
-                    .with_for_update()
-                )
-                if upload is None:
-                    return False
-                if upload.provenance_archive_terminal_receipt_json is None:
-                    digest = (
-                        CheckpointSHA256.from_state(upload.provenance_archive_hash_state)
-                        if upload.provenance_archive_hash_state is not None
-                        else CheckpointSHA256()
-                    )
-                    update_ordered_volume_commitment(digest, terminal_document)
-                    upload.provenance_archive_terminal_receipt_json = (
-                        _sealed_provenance_object_json(sealed_terminal)
-                    )
-                    upload.provenance_archive_ordered_sha256 = digest.hexdigest()
-                    upload.provenance_archive_hash_state = None
-            return True
-        if publish_root:
-            assert root_document is not None
-            sealed_root = publisher.publish_root(
-                archive_storage_prefix=prefix,
-                root=root_document,
-            )
+        if root is not None:
+            sealed_root = publisher.publish_root(archive_storage_prefix=prefix, root=root)
             with session_scope(self._session_factory) as session:
                 upload = session.scalar(
                     select(CollectionUploadRecord)
@@ -3251,12 +3240,30 @@ class SqlAlchemyCollectionUploadService:
                         sealed_root
                     )
             return True
-
+        if terminal is not None:
+            sealed_terminal = publisher.publish_terminal(
+                archive_storage_prefix=prefix, terminal=terminal
+            )
+            with session_scope(self._session_factory) as session:
+                upload = session.scalar(
+                    select(CollectionUploadRecord)
+                    .where(CollectionUploadRecord.collection_id == collection_id)
+                    .with_for_update()
+                )
+                if upload is None:
+                    return False
+                if upload.provenance_archive_terminal_receipt_json is None:
+                    digest = _provenance_commitment(upload)
+                    update_provenance_commitment(digest, terminal)
+                    upload.provenance_archive_terminal_receipt_json = (
+                        _sealed_provenance_object_json(sealed_terminal)
+                    )
+                    upload.provenance_archive_ordered_sha256 = digest.hexdigest()
+                    upload.provenance_archive_hash_state = None
+            return True
         assert document is not None
         sealed = publisher.publish_volume(
-            archive_storage_prefix=prefix,
-            document=document,
-            payload=payload,
+            archive_storage_prefix=prefix, document=document, payload=payload
         )
         with session_scope(self._session_factory) as session:
             upload = session.scalar(
@@ -3268,28 +3275,23 @@ class SqlAlchemyCollectionUploadService:
                 return False
             if upload.provenance_archive_next_sequence != sequence:
                 return True
-            digest = (
-                CheckpointSHA256.from_state(upload.provenance_archive_hash_state)
-                if upload.provenance_archive_hash_state is not None
-                else CheckpointSHA256()
-            )
-            update_ordered_volume_commitment(digest, document)
-            document_bytes = document.to_json_bytes()
+            digest = _provenance_commitment(upload)
+            update_provenance_commitment(digest, document)
             session.add(
                 CollectionUploadProvenanceArchiveVolumeRecord(
                     collection_id=collection_id,
                     sequence=sequence,
                     kind=document.payload.kind,
-                    document_json=document_bytes.decode("utf-8"),
+                    document_json=document.to_json_bytes().decode("utf-8"),
                     payload_receipt_json=_sealed_provenance_object_json(sealed.payload),
                     metadata_receipt_json=_sealed_provenance_object_json(sealed.metadata),
                 )
             )
             upload.provenance_archive_next_sequence = sequence + 1
             upload.provenance_archive_hash_state = digest.export_state()
-            upload.provenance_archive_next_file_order = next_file_order
-            if next_path_sort_key is not None:
-                upload.provenance_archive_after_path_sort_key = next_path_sort_key
+            upload.provenance_archive_next_artifact_order = next_artifact_order
+            if after_artifact_id is not None:
+                upload.provenance_archive_after_artifact_id = after_artifact_id
             if journal_id is not None:
                 if upload.provenance_archive_current_journal_id not in {None, journal_id}:
                     raise RuntimeError("provenance journal publication changed identity")
@@ -3303,7 +3305,7 @@ class SqlAlchemyCollectionUploadService:
             return True
 
     def _advance_archive_tree_checkpoint(self, collection_id: int) -> bool:
-        """Advance at most one bounded file batch; return whether work was performed."""
+        """Commit the ID-ordered artifact set in bounded catalog scans."""
 
         with session_scope(self._session_factory) as session:
             upload = session.scalar(
@@ -3318,34 +3320,51 @@ class SqlAlchemyCollectionUploadService:
                 if upload.archive_tree_hash_state is not None
                 else CheckpointSHA256()
             )
+            if upload.archive_tree_next_artifact_order == 0:
+                digest.update(b'{"artifacts":[')
             statement = select(CollectionUploadArtifactRecord).where(
                 CollectionUploadArtifactRecord.collection_id == collection_id
             )
-            if upload.archive_tree_after_path_sort_key is not None:
+            if upload.archive_tree_after_artifact_id is not None:
                 statement = statement.where(
-                    CollectionUploadArtifactRecord.path_sort_key
-                    > upload.archive_tree_after_path_sort_key
+                    CollectionUploadArtifactRecord.artifact_id
+                    > upload.archive_tree_after_artifact_id
                 )
             rows = list(
                 session.scalars(
-                    statement.order_by(CollectionUploadArtifactRecord.path_sort_key).limit(
+                    statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
                         _FINALIZATION_FILE_BATCH
                     )
                 )
             )
             if not rows:
-                if upload.archive_tree_next_file_order != upload.file_count:
-                    raise RuntimeError("archive tree checkpoint does not cover registered files")
+                if (
+                    upload.archive_tree_next_artifact_order != upload.artifact_count
+                    or upload.artifact_count < 1
+                ):
+                    raise RuntimeError("artifact set does not cover registered artifacts")
+                digest.update(b'],"format":"riverhog-artifact-set/v1"}')
                 upload.archive_tree_sha256 = digest.hexdigest()
                 upload.archive_tree_hash_state = None
                 return True
-            expected = upload.archive_tree_next_file_order
+            expected = upload.archive_tree_next_artifact_order
             for row in rows:
-                digest.update(f"{row.path}\t{row.bytes}\t{row.sha256}\n".encode())
+                if expected:
+                    digest.update(b",")
+                digest.update(
+                    canonical_json_bytes(
+                        {
+                            "artifact_id": row.artifact_id,
+                            "bytes": format_scalar("nonnegative", row.bytes),
+                            "sha256": row.sha256,
+                        }
+                    )
+                )
                 expected += 1
-            upload.archive_tree_next_file_order = expected
-            upload.archive_tree_after_path_sort_key = rows[-1].path_sort_key
-            if expected == upload.file_count:
+            upload.archive_tree_next_artifact_order = expected
+            upload.archive_tree_after_artifact_id = rows[-1].artifact_id
+            if expected == upload.artifact_count:
+                digest.update(b'],"format":"riverhog-artifact-set/v1"}')
                 upload.archive_tree_sha256 = digest.hexdigest()
                 upload.archive_tree_hash_state = None
             else:
@@ -3372,10 +3391,10 @@ class SqlAlchemyCollectionUploadService:
                 store_name = upload.archive_store
                 archive_generation = upload.archive_generation
                 passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-                tree_sha256 = upload.archive_tree_sha256
+                artifact_set_sha256 = upload.archive_tree_sha256
                 terminal = build_collection_archive_terminal_document(
                     archive_generation=archive_generation,
-                    tree_sha256=tree_sha256,
+                    artifact_set_sha256=artifact_set_sha256,
                     sequence=sequence,
                 )
                 terminal_mode = True
@@ -3396,7 +3415,7 @@ class SqlAlchemyCollectionUploadService:
                 store_name = upload.archive_store
                 archive_generation = upload.archive_generation
                 passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-                tree_sha256 = upload.archive_tree_sha256
+                artifact_set_sha256 = upload.archive_tree_sha256
                 receipt: SealedPackVolume | SealedRawVolume
                 plan: PackVolumePlan | None
                 if record.kind == "pack":
@@ -3421,7 +3440,7 @@ class SqlAlchemyCollectionUploadService:
         else:
             volume_document = build_collection_archive_volume_document(
                 archive_generation=archive_generation,
-                tree_sha256=tree_sha256,
+                artifact_set_sha256=artifact_set_sha256,
                 plan=plan,
                 receipt=receipt,
             )
@@ -3526,34 +3545,30 @@ def _mapping_nonnegative_int(
 
 def _advance_catalog_identity(session: Session, upload: CollectionUploadRecord) -> None:
     cursor = _catalog_cursor(upload)
-    files_seen = _cursor_nonnegative_int(cursor, "files_seen")
-    after_rank = _cursor_nonnegative_int(cursor, "after_rank")
-    after_path_value = cursor.get("after_path")
-    if after_path_value is not None and not isinstance(after_path_value, str):
-        raise RuntimeError("catalog identity path cursor is invalid")
-    after_path = relpath_sort_key(after_path_value) if after_path_value is not None else None
+    artifacts_seen = _cursor_nonnegative_int(cursor, "artifacts_seen")
+    after_id = cursor.get("after_artifact_id")
+    if after_id is not None and (
+        not isinstance(after_id, str) or _SHA256_RE.fullmatch(after_id) is None
+    ):
+        raise RuntimeError("catalog artifact identity cursor is invalid")
     digest = (
         CheckpointSHA256.from_state(upload.catalog_hash_state)
         if upload.catalog_hash_state is not None
         else CheckpointSHA256()
     )
-    if upload.catalog_phase == "content-identity" and files_seen == 0:
-        digest.update(b'{"files":[')
-    if upload.catalog_phase == "inventory-identity" and files_seen == 0:
-        if upload.catalog_content_identity is None:
-            raise RuntimeError("portable inventory has no content identity")
-        provenance_mode = _final_provenance_mode(
-            session,
-            upload.collection_id,
-            upload.provenance_mode,
-        )
+    if upload.catalog_phase == "artifact-set-identity" and artifacts_seen == 0:
+        digest.update(b'{"artifacts":[')
+    if upload.catalog_phase == "inventory-identity" and artifacts_seen == 0:
+        if upload.catalog_artifact_set_identity is None:
+            raise RuntimeError("portable inventory has no artifact-set identity")
+        if upload.provenance_identity is None:
+            raise RuntimeError("portable inventory has no canonical provenance identity")
         header = PortableCollectionHeader.model_validate(
             dict(
                 collection=format_scalar("sequence63", upload.collection_id),
-                content_identity=upload.catalog_content_identity,
+                artifact_set_identity=upload.catalog_artifact_set_identity,
                 encryption_format=upload.encryption_format,
                 passphrase_id=upload.passphrase_id,
-                provenance_mode=provenance_mode,
                 provenance_identity=upload.provenance_identity,
             )
         )
@@ -3561,33 +3576,24 @@ def _advance_catalog_identity(session: Session, upload: CollectionUploadRecord) 
     statement = select(CollectionUploadArtifactRecord).where(
         CollectionUploadArtifactRecord.collection_id == upload.collection_id
     )
-    if after_path is not None:
-        statement = statement.where(
-            or_(
-                CollectionUploadArtifactRecord.semantic_order_rank > after_rank,
-                and_(
-                    CollectionUploadArtifactRecord.semantic_order_rank == after_rank,
-                    CollectionUploadArtifactRecord.path_sort_key > after_path,
-                ),
-            )
-        )
+    if after_id is not None:
+        statement = statement.where(CollectionUploadArtifactRecord.artifact_id > after_id)
     rows = list(
         session.scalars(
-            statement.order_by(
-                CollectionUploadArtifactRecord.semantic_order_rank,
-                CollectionUploadArtifactRecord.path_sort_key,
-            ).limit(_FINALIZATION_FILE_BATCH)
+            statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                _FINALIZATION_FILE_BATCH
+            )
         )
     )
     if rows:
         for row in rows:
-            if upload.catalog_phase == "content-identity":
-                if files_seen:
+            if upload.catalog_phase == "artifact-set-identity":
+                if artifacts_seen:
                     digest.update(b",")
                 digest.update(
                     canonical_json_bytes(
                         {
-                            "path": row.path,
+                            "artifact_id": row.artifact_id,
                             "bytes": format_scalar("nonnegative", row.bytes),
                             "sha256": row.sha256,
                         }
@@ -3595,31 +3601,29 @@ def _advance_catalog_identity(session: Session, upload: CollectionUploadRecord) 
                 )
             else:
                 encoded = canonical_json_bytes(
-                    PortableCollectionFile(
-                        path=row.path,
+                    PortableCollectionArtifact(
+                        artifact_id=ArtifactId(row.artifact_id),
                         bytes=row.bytes,
                         sha256=row.sha256,
                     ).to_mapping()
                 )
                 digest.update(len(encoded).to_bytes(8, "big"))
                 digest.update(encoded)
-            files_seen += 1
+            artifacts_seen += 1
         upload.catalog_hash_state = digest.export_state()
-        final = rows[-1]
         _set_catalog_cursor(
             upload,
             {
-                "files_seen": files_seen,
-                "after_rank": final.semantic_order_rank,
-                "after_path": final.path,
+                "artifacts_seen": artifacts_seen,
+                "after_artifact_id": rows[-1].artifact_id,
             },
         )
         return
-    if files_seen != upload.file_count:
-        raise RuntimeError("catalog identity does not cover every registered file")
-    if upload.catalog_phase == "content-identity":
-        digest.update(b'],"format":"riverhog-collection-content/v1"}')
-        upload.catalog_content_identity = digest.hexdigest()
+    if artifacts_seen != upload.artifact_count:
+        raise RuntimeError("catalog identity does not cover every registered artifact")
+    if upload.catalog_phase == "artifact-set-identity":
+        digest.update(b'],"format":"riverhog-artifact-set/v1"}')
+        upload.catalog_artifact_set_identity = digest.hexdigest()
         upload.catalog_phase = "inventory-identity"
     else:
         upload.catalog_inventory_identity = digest.hexdigest()
@@ -3720,7 +3724,7 @@ def _advance_catalog_tags(session: Session, upload: CollectionUploadRecord) -> N
         )
     )
     if not rows:
-        upload.catalog_phase = "files"
+        upload.catalog_phase = "artifacts"
         upload.catalog_cursor_json = "{}"
         return
     now = utc_timestamp_now()
@@ -3759,286 +3763,123 @@ def _advance_catalog_tags(session: Session, upload: CollectionUploadRecord) -> N
     )
 
 
-def _advance_catalog_files(session: Session, upload: CollectionUploadRecord) -> None:
+def _advance_catalog_artifacts(session: Session, upload: CollectionUploadRecord) -> None:
     cursor = _catalog_cursor(upload)
-    next_order = _cursor_nonnegative_int(cursor, "next_file_order")
+    after_id = cursor.get("after_artifact_id")
+    if after_id is not None and (
+        not isinstance(after_id, str) or _SHA256_RE.fullmatch(after_id) is None
+    ):
+        raise RuntimeError("catalog artifact projection cursor is invalid")
+    statement = select(CollectionUploadArtifactRecord).where(
+        CollectionUploadArtifactRecord.collection_id == upload.collection_id
+    )
+    if after_id is not None:
+        statement = statement.where(CollectionUploadArtifactRecord.artifact_id > after_id)
     rows = list(
         session.scalars(
-            select(CollectionUploadArtifactRecord)
-            .where(
-                CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-                CollectionUploadArtifactRecord.file_order >= next_order,
+            statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                _FINALIZATION_FILE_BATCH
             )
-            .order_by(CollectionUploadArtifactRecord.file_order)
-            .limit(_FINALIZATION_FILE_BATCH)
         )
     )
     if not rows:
-        if next_order != upload.file_count:
-            raise RuntimeError("catalog file projection is incomplete")
+        if _cursor_nonnegative_int(cursor, "artifacts_seen") != upload.artifact_count:
+            raise RuntimeError("catalog artifact projection is incomplete")
         upload.catalog_phase = "journals"
         upload.catalog_cursor_json = "{}"
         return
-    expected = next_order
-    values: list[dict[str, object]] = []
-    for row in rows:
-        if row.file_order != expected:
-            raise RuntimeError("catalog file projection order is not contiguous")
-        values.append(
+    session.execute(
+        insert(CollectionArtifactRecord),
+        [
             {
-                "collection_id": format_scalar("sequence63", upload.collection_id),
-                "path": row.path,
+                "collection_id": upload.collection_id,
+                "artifact_id": row.artifact_id,
                 "bytes": row.bytes,
                 "sha256": row.sha256,
-                "provenance_status": row.provenance_status,
-                "path_sort_key": relpath_sort_key(row.path),
-                "search_text": f"{upload.collection_id}/{relpath_search_key(row.path)}",
-                "path_search_text": relpath_search_key(row.path),
             }
-        )
-        expected += 1
-    session.execute(insert(CollectionArtifactRecord), values)
-    _set_catalog_cursor(upload, {"next_file_order": expected})
+            for row in rows
+        ],
+    )
+    _set_catalog_cursor(
+        upload,
+        {
+            "after_artifact_id": rows[-1].artifact_id,
+            "artifacts_seen": _cursor_nonnegative_int(cursor, "artifacts_seen") + len(rows),
+        },
+    )
 
 
 def _advance_catalog_journals(session: Session, upload: CollectionUploadRecord) -> None:
-    cursor = _catalog_cursor(upload)
-    journal_id = cursor.get("journal_id")
-    after_journal = cursor.get("after_journal_id")
-    if journal_id is None:
-        statement = select(CollectionUploadProvenanceJournalRecord).where(
-            CollectionUploadProvenanceJournalRecord.collection_id == upload.collection_id
-        )
-        if isinstance(after_journal, str):
-            statement = statement.where(
-                CollectionUploadProvenanceJournalRecord.journal_id > after_journal
-            )
-        journal = session.scalar(
-            statement.order_by(CollectionUploadProvenanceJournalRecord.journal_id).limit(1)
-        )
-        if journal is None:
-            upload.catalog_phase = "provenance-relations"
-            upload.catalog_cursor_json = "{}"
-            return
-        journal_id = journal.journal_id
-        cursor = {
-            "after_journal_id": after_journal,
-            "journal_id": journal_id,
-            "stage": "header",
-        }
-    else:
-        journal = session.get(
-            CollectionUploadProvenanceJournalRecord,
-            (upload.collection_id, str(journal_id)),
-        )
-        if journal is None:
-            raise RuntimeError("catalog provenance journal disappeared")
-    stage = str(cursor.get("stage", "header"))
-    if stage == "header":
-        if (
-            session.get(
-                CollectionProvenanceJournalRecord,
-                (upload.collection_id, journal.journal_id),
-            )
-            is None
-        ):
-            agent_count = int(
-                session.scalar(
-                    select(func.count())
-                    .select_from(CollectionUploadProvenanceValidationFactRecord)
-                    .where(
-                        CollectionUploadProvenanceValidationFactRecord.collection_id
-                        == upload.collection_id,
-                        CollectionUploadProvenanceValidationFactRecord.journal_id
-                        == journal.journal_id,
-                        CollectionUploadProvenanceValidationFactRecord.kind == "agent",
-                    )
-                )
-                or 0
-            )
-            session.add(
-                CollectionProvenanceJournalRecord(
-                    collection_id=upload.collection_id,
-                    journal_id=journal.journal_id,
-                    bytes=journal.bytes,
-                    sha256=journal.sha256,
-                    entries=journal.validation_sequence,
-                    agent_count=agent_count,
-                    entity_counts_json=journal.entity_counts_json,
-                    current_state_id=journal.current_state_id,
-                    current_entry_id=journal.current_entry_id,
-                    current_entry_json_sha256=journal.current_entry_json_sha256,
-                    current_path=journal.current_path,
-                    current_bytes=journal.current_bytes,
-                    current_sha256=journal.current_sha256,
-                )
-            )
-        cursor.update({"stage": "chunks", "next_ordinal": 0})
-        _set_catalog_cursor(upload, cursor)
-        return
-    if stage == "chunks":
-        next_ordinal = _cursor_nonnegative_int(cursor, "next_ordinal")
-        rows = list(
-            session.scalars(
-                select(CollectionUploadProvenanceJournalChunkRecord)
-                .where(
-                    CollectionUploadProvenanceJournalChunkRecord.collection_id
-                    == upload.collection_id,
-                    CollectionUploadProvenanceJournalChunkRecord.journal_id == journal.journal_id,
-                    CollectionUploadProvenanceJournalChunkRecord.ordinal >= next_ordinal,
-                )
-                .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
-                .limit(16)
-            )
-        )
-        if rows:
-            session.execute(
-                insert(CollectionProvenanceJournalChunkRecord),
-                [
-                    {
-                        "collection_id": format_scalar("sequence63", upload.collection_id),
-                        "journal_id": journal.journal_id,
-                        "ordinal": row.ordinal,
-                        "byte_offset": row.byte_offset,
-                        "content": row.content,
-                    }
-                    for row in rows
-                ],
-            )
-            cursor["next_ordinal"] = int(rows[-1].ordinal) + 1
-            _set_catalog_cursor(upload, cursor)
-            return
-        cursor.update({"stage": "agents", "after_fact_key": None})
-        _set_catalog_cursor(upload, cursor)
-        return
-    if stage in {"agents", "entities"}:
-        kind = "agent" if stage == "agents" else "entity"
-        after_key = cursor.get("after_fact_key")
-        fact_statement = select(CollectionUploadProvenanceValidationFactRecord).where(
-            CollectionUploadProvenanceValidationFactRecord.collection_id == upload.collection_id,
-            CollectionUploadProvenanceValidationFactRecord.journal_id == journal.journal_id,
-            CollectionUploadProvenanceValidationFactRecord.kind == kind,
-        )
-        if isinstance(after_key, str):
-            fact_statement = fact_statement.where(
-                CollectionUploadProvenanceValidationFactRecord.fact_key > after_key
-            )
-        facts = list(
-            session.scalars(
-                fact_statement.order_by(
-                    CollectionUploadProvenanceValidationFactRecord.fact_key
-                ).limit(512)
-            )
-        )
-        if facts:
-            if kind == "agent":
-                session.execute(
-                    insert(CollectionProvenanceJournalAgentRecord),
-                    [
-                        {
-                            "collection_id": format_scalar("sequence63", upload.collection_id),
-                            "journal_id": journal.journal_id,
-                            "agent_id": fact.fact_key,
-                        }
-                        for fact in facts
-                    ],
-                )
-            else:
-                values: list[dict[str, object]] = []
-                for fact in facts:
-                    value = json.loads(fact.value_json)
-                    values.append(
-                        {
-                            "collection_id": format_scalar("sequence63", upload.collection_id),
-                            "journal_id": journal.journal_id,
-                            "entity_type": value["entity_type"],
-                            "entity_id": value["entity_id"],
-                            "entry_id": value["entry_id"],
-                            "document_json": json.dumps(
-                                value["document"], sort_keys=True, separators=(",", ":")
-                            ),
-                        }
-                    )
-                session.execute(insert(CollectionProvenanceEntityRecord), values)
-            cursor["after_fact_key"] = facts[-1].fact_key
-            _set_catalog_cursor(upload, cursor)
-            return
-        if stage == "agents":
-            cursor.update({"stage": "entities", "after_fact_key": None})
-        else:
-            cursor = {"after_journal_id": journal.journal_id}
-        _set_catalog_cursor(upload, cursor)
-        return
-    raise RuntimeError("catalog provenance journal stage is invalid")
+    """Project only exact journal summaries; archive custody owns the octets."""
 
-
-def _advance_catalog_provenance_relations(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> None:
     cursor = _catalog_cursor(upload)
-    after_journal = cursor.get("journal_id")
-    after_key = cursor.get("fact_key")
-    statement = select(CollectionUploadProvenanceValidationFactRecord).where(
-        CollectionUploadProvenanceValidationFactRecord.collection_id == upload.collection_id,
-        CollectionUploadProvenanceValidationFactRecord.kind == "external-state",
+    after_id = cursor.get("after_journal_id")
+    if after_id is not None and not isinstance(after_id, str):
+        raise RuntimeError("catalog journal cursor is invalid")
+    statement = select(CollectionUploadProvenanceJournalRecord).where(
+        CollectionUploadProvenanceJournalRecord.collection_id == upload.collection_id
     )
-    if isinstance(after_journal, str) and isinstance(after_key, str):
-        statement = statement.where(
-            or_(
-                CollectionUploadProvenanceValidationFactRecord.journal_id > after_journal,
-                (CollectionUploadProvenanceValidationFactRecord.journal_id == after_journal)
-                & (CollectionUploadProvenanceValidationFactRecord.fact_key > after_key),
-            )
-        )
-    facts = list(
+    if after_id is not None:
+        statement = statement.where(CollectionUploadProvenanceJournalRecord.journal_id > after_id)
+    journals = list(
         session.scalars(
-            statement.order_by(
-                CollectionUploadProvenanceValidationFactRecord.journal_id,
-                CollectionUploadProvenanceValidationFactRecord.fact_key,
-            ).limit(512)
+            statement.order_by(CollectionUploadProvenanceJournalRecord.journal_id).limit(
+                _FINALIZATION_FILE_BATCH
+            )
         )
     )
-    if not facts:
+    if not journals:
         upload.catalog_phase = "bindings"
         upload.catalog_cursor_json = "{}"
         return
-    values: list[dict[str, object]] = []
-    for fact in facts:
-        value = json.loads(fact.value_json)
-        values.append(
+    rows: list[dict[str, object]] = []
+    for journal in journals:
+        if (
+            journal.state != "sealed"
+            or journal.terminal_entry_id is None
+            or journal.terminal_sequence is None
+            or journal.terminal_json_sha256 is None
+        ):
+            raise RuntimeError("catalog journal projection requires a sealed canonical tail")
+        rows.append(
             {
-                "collection_id": format_scalar("sequence63", upload.collection_id),
-                "from_journal_id": fact.journal_id,
-                "to_journal_id": value["journal_id"],
-                "entry_id": value["entry_id"],
-                "state_id": value["state_id"],
-                "entry_json_sha256": value["entry_json_sha256"],
+                "collection_id": upload.collection_id,
+                "journal_id": journal.journal_id,
+                "bytes": journal.bytes,
+                "sha256": journal.sha256,
+                "entries": journal.validation_sequence,
+                "terminal_entry_id": journal.terminal_entry_id,
+                "terminal_sequence": journal.terminal_sequence,
+                "terminal_json_sha256": journal.terminal_json_sha256,
             }
         )
-    session.execute(insert(CollectionProvenanceExternalStateReferenceRecord), values)
-    _set_catalog_cursor(
-        upload,
-        {"journal_id": facts[-1].journal_id, "fact_key": facts[-1].fact_key},
-    )
+    session.execute(insert(CollectionProvenanceJournalRecord), rows)
+    _set_catalog_cursor(upload, {"after_journal_id": journals[-1].journal_id})
 
 
 def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) -> None:
     cursor = _catalog_cursor(upload)
-    next_order = _cursor_nonnegative_int(cursor, "next_file_order")
+    after_id = cursor.get("after_artifact_id")
+    if after_id is not None and (
+        not isinstance(after_id, str) or _SHA256_RE.fullmatch(after_id) is None
+    ):
+        raise RuntimeError("catalog binding cursor is invalid")
+    statement = select(CollectionUploadArtifactProvenanceBindingRecord).where(
+        CollectionUploadArtifactProvenanceBindingRecord.collection_id == upload.collection_id
+    )
+    if after_id is not None:
+        statement = statement.where(
+            CollectionUploadArtifactProvenanceBindingRecord.artifact_id > after_id
+        )
     rows = list(
         session.scalars(
-            select(CollectionUploadArtifactRecord)
-            .where(
-                CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-                CollectionUploadArtifactRecord.file_order >= next_order,
+            statement.order_by(CollectionUploadArtifactProvenanceBindingRecord.artifact_id).limit(
+                _FINALIZATION_FILE_BATCH
             )
-            .order_by(CollectionUploadArtifactRecord.file_order)
-            .limit(_FINALIZATION_FILE_BATCH)
         )
     )
     if not rows:
-        if next_order != upload.file_count:
+        if _cursor_nonnegative_int(cursor, "bindings_seen") != upload.artifact_count:
             raise RuntimeError("catalog provenance bindings are incomplete")
         upload.catalog_phase = "archive-objects"
         upload.catalog_cursor_json = "{}"
@@ -4047,17 +3888,26 @@ def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) 
         insert(CollectionArtifactProvenanceRecord),
         [
             {
-                "collection_id": format_scalar("sequence63", upload.collection_id),
-                "path": row.path,
-                "status": row.provenance_status,
-                "journal_id": row.provenance_journal_id,
-                "current_state_id": row.provenance_current_state_id,
-                "omission_reason": row.provenance_omission_reason,
+                "collection_id": upload.collection_id,
+                "artifact_id": row.artifact_id,
+                "journal_id": row.journal_id,
+                "through_entry_id": row.through_entry_id,
+                "through_sequence": row.through_sequence,
+                "through_json_sha256": row.through_json_sha256,
+                "prefix_sha256": row.prefix_sha256,
+                "prefix_bytes": row.prefix_bytes,
+                "delivery_association_id": row.delivery_association_id,
             }
             for row in rows
         ],
     )
-    _set_catalog_cursor(upload, {"next_file_order": int(rows[-1].file_order) + 1})
+    _set_catalog_cursor(
+        upload,
+        {
+            "after_artifact_id": rows[-1].artifact_id,
+            "bindings_seen": _cursor_nonnegative_int(cursor, "bindings_seen") + len(rows),
+        },
+    )
 
 
 def _final_authority(upload: CollectionUploadRecord) -> dict[str, dict[str, object]]:
@@ -4156,13 +4006,13 @@ def _catalog_small_archive_object(
     )
 
 
-def _advance_catalog_file_objects(session: Session, upload: CollectionUploadRecord) -> None:
+def _advance_catalog_artifact_objects(session: Session, upload: CollectionUploadRecord) -> None:
     cursor = _catalog_cursor(upload)
     sequence = _cursor_nonnegative_int(cursor, "sequence")
     total = _planner_checkpoint(upload).next_sequence
     if sequence >= total:
         if sequence != total:
-            raise RuntimeError("catalog file-object cursor exceeds archive authority")
+            raise RuntimeError("catalog artifact-object cursor exceeds archive authority")
         upload.catalog_phase = "terminal"
         upload.catalog_cursor_json = "{}"
         return
@@ -4173,7 +4023,7 @@ def _advance_catalog_file_objects(session: Session, upload: CollectionUploadReco
         )
     )
     if record is None or record.sealed_receipt_json is None:
-        raise RuntimeError("catalog file-object source is unavailable")
+        raise RuntimeError("catalog artifact-object source is unavailable")
     if record.kind == "pack":
         plan = parse_pack_volume_plan(record.plan_json)
         session.execute(
@@ -4182,13 +4032,13 @@ def _advance_catalog_file_objects(session: Session, upload: CollectionUploadReco
                 {
                     "collection_id": format_scalar("sequence63", upload.collection_id),
                     "store": upload.archive_store,
-                    "path": member.path,
+                    "artifact_id": member.artifact_id,
                     "sequence": 0,
                     "object_id": plan.volume_id,
-                    "file_offset": 0,
+                    "artifact_offset": 0,
                     "object_offset": member.data_offset,
                     "bytes": member.bytes,
-                    "member": member.path,
+                    "member": f"artifacts/{member.artifact_id}",
                 }
                 for member in plan.members
             ],
@@ -4201,17 +4051,17 @@ def _advance_catalog_file_objects(session: Session, upload: CollectionUploadReco
             CollectionArchiveArtifactObjectRecord(
                 collection_id=upload.collection_id,
                 store=upload.archive_store,
-                path=volume.source_path,
+                artifact_id=volume.artifact_id,
                 sequence=int(record.source_first_part),
                 object_id=volume.volume_id,
-                file_offset=volume.file_offset,
+                artifact_offset=volume.artifact_offset,
                 object_offset=0,
                 bytes=volume.plaintext_bytes,
                 member=None,
             )
         )
     else:
-        raise RuntimeError("catalog file-object source kind is invalid")
+        raise RuntimeError("catalog artifact-object source kind is invalid")
     _set_catalog_cursor(upload, {"sequence": sequence + 1})
 
 
@@ -4409,146 +4259,11 @@ def _require_transform_output_intent(
         raise Forbidden("collection upload differs from the sealed transform output intent")
 
 
-def _require_transform_control_paths(
-    session: Session,
-    upload: CollectionUploadRecord,
-    files: Sequence[_RegisteredFile],
-) -> None:
-    if not upload.initiated_by_principal_id.startswith("processing:"):
-        return
-    for item in files:
-        path = str(item["path"])
-        if not path.startswith("riverhog/"):
-            continue
-        if path in {PRODUCER_EVIDENCE_PATH, DERIVATION_EVIDENCE_PATH}:
-            continue
-        expected = _transform_derivation_evidence(session, upload, path)
-        if (
-            int(item["bytes"]) != len(expected)
-            or str(item["sha256"]) != hashlib.sha256(expected).hexdigest()
-        ):
-            raise Conflict("transform derivation evidence differs from its sealed identity")
-
-
-def _transform_derivation_evidence(
-    session: Session,
-    upload: CollectionUploadRecord,
-    path: str,
-) -> bytes:
-    matched = re.fullmatch(
-        rf"(?:({re.escape(DERIVATION_DISPOSITION_EVIDENCE_PREFIX)})|"
-        rf"({re.escape(DERIVATION_OUTPUT_EVIDENCE_PREFIX)}))/([0-9a-f]{{64}})\.json",
-        path,
-    )
-    if matched is None:
-        raise Conflict("transform output contains an unsupported Riverhog control file")
-    start = int(matched.group(3), 16)
-    if start % DISPOSITION_BATCH_MAX:
-        raise Conflict("transform derivation evidence starts outside a canonical page boundary")
-    claim = _derivative_claim(session, upload)
-    disposition_set = session.get(CollectionProcessingDispositionSetRecord, claim.id)
-    assert disposition_set is not None and disposition_set.identity_sha256 is not None
-    identity = ArtifactDispositionSetIdentity(
-        disposition_count=disposition_set.disposition_count,
-        output_edge_count=disposition_set.output_edge_count,
-        output_artifact_count=disposition_set.output_artifact_count,
-        sha256=disposition_set.identity_sha256,
-    )
-    total = (
-        identity.disposition_count if matched.group(1) is not None else identity.output_edge_count
-    )
-    if start >= total:
-        raise Conflict("transform derivation evidence page is outside its sealed identity")
-    if matched.group(1) is not None:
-        disposition_rows = list(
-            session.execute(
-                select(CollectionProcessingDispositionRecord, CollectionProcessingClaimInputRecord)
-                .join(
-                    CollectionProcessingClaimInputRecord,
-                    (CollectionProcessingClaimInputRecord.claim_id == claim.id)
-                    & (
-                        CollectionProcessingClaimInputRecord.collection_id
-                        == CollectionProcessingDispositionRecord.collection_id
-                    ),
-                )
-                .where(
-                    CollectionProcessingDispositionRecord.claim_id == claim.id,
-                    CollectionProcessingDispositionRecord.disposition_order >= start,
-                )
-                .order_by(CollectionProcessingDispositionRecord.disposition_order)
-                .limit(DISPOSITION_BATCH_MAX)
-            ).tuples()
-        )
-        values = [
-            ArtifactDisposition(
-                input_collection_id=row.collection_id,
-                input_archive_root_sha256=input_record.archive_root_sha256,
-                input_path=row.path,
-                status=cast(Any, row.status),
-                code=row.reason_code,
-                message=row.reason_message,
-                effect_receipt_sha256=row.effect_receipt_sha256,
-                discard_approval=(
-                    ArtifactDiscardApproval.from_mapping(json.loads(row.discard_approval_json))
-                    if row.discard_approval_json is not None
-                    else None
-                ),
-                retain_required=row.retain_required,
-            ).as_dict()
-            for row, input_record in disposition_rows
-        ]
-        field = "dispositions"
-    else:
-        output_rows = list(
-            session.execute(
-                select(
-                    CollectionProcessingDispositionOutputRecord,
-                    CollectionProcessingClaimInputRecord,
-                )
-                .join(
-                    CollectionProcessingClaimInputRecord,
-                    (CollectionProcessingClaimInputRecord.claim_id == claim.id)
-                    & (
-                        CollectionProcessingClaimInputRecord.collection_id
-                        == CollectionProcessingDispositionOutputRecord.input_collection_id
-                    ),
-                )
-                .where(
-                    CollectionProcessingDispositionOutputRecord.claim_id == claim.id,
-                    CollectionProcessingDispositionOutputRecord.output_order >= start,
-                )
-                .order_by(CollectionProcessingDispositionOutputRecord.output_order)
-                .limit(DISPOSITION_BATCH_MAX)
-            ).tuples()
-        )
-        values = [
-            ArtifactDispositionOutput(
-                input_collection_id=row.input_collection_id,
-                input_archive_root_sha256=input_record.archive_root_sha256,
-                input_path=row.input_path,
-                output_path=row.output_path,
-            ).as_dict()
-            for row, input_record in output_rows
-        ]
-        field = "outputs"
-    if not values:
-        raise Conflict("transform derivation evidence page is outside its sealed identity")
-    next_ordinal = start + len(values)
-    document: dict[str, object] = {
-        "identity": identity.as_dict(),
-        "start_ordinal": format_scalar("nonnegative", start),
-        field: values,
-    }
-    if next_ordinal < total:
-        document["next_ordinal"] = format_scalar("nonnegative", next_ordinal)
-    return canonical_json_bytes(document)
-
-
 def _require_transform_output_disposition_coverage(
     session: Session,
     upload: CollectionUploadRecord,
 ) -> None:
-    """Require exact coverage of sealed disposition outputs by staged transform files.
+    """Require exact coverage of sealed disposition outputs by staged members.
 
     Target artifacts enter Riverhog custody incrementally before the producer
     can seal its complete production and disposition evidence. Completion
@@ -4571,34 +4286,33 @@ def _require_transform_output_disposition_coverage(
     if disposition_set is None or disposition_set.state != "sealed":
         raise Conflict("transform completion requires a sealed disposition set")
     missing_edge = session.scalar(
-        select(CollectionUploadArtifactRecord.path)
+        select(CollectionUploadArtifactRecord.artifact_id)
         .where(
             CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-            ~CollectionUploadArtifactRecord.path.startswith("riverhog/"),
             ~exists().where(
                 CollectionProcessingDispositionOutputRecord.claim_id == claim.id,
-                CollectionProcessingDispositionOutputRecord.output_path
-                == CollectionUploadArtifactRecord.path,
+                CollectionProcessingDispositionOutputRecord.output_artifact_id
+                == CollectionUploadArtifactRecord.artifact_id,
             ),
         )
         .limit(1)
     )
     if missing_edge is not None:
-        raise Conflict(f"transform output file has no exact disposition edge: {missing_edge}")
-    missing_file = session.scalar(
-        select(CollectionProcessingDispositionOutputRecord.output_path)
+        raise Conflict(f"transform output member has no exact disposition edge: {missing_edge}")
+    missing_member = session.scalar(
+        select(CollectionProcessingDispositionOutputRecord.output_artifact_id)
         .where(
             CollectionProcessingDispositionOutputRecord.claim_id == claim.id,
             ~exists().where(
                 CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-                CollectionUploadArtifactRecord.path
-                == CollectionProcessingDispositionOutputRecord.output_path,
+                CollectionUploadArtifactRecord.artifact_id
+                == CollectionProcessingDispositionOutputRecord.output_artifact_id,
             ),
         )
         .limit(1)
     )
-    if missing_file is not None:
-        raise Conflict(f"transform disposition output file is absent: {missing_file}")
+    if missing_member is not None:
+        raise Conflict(f"transform disposition output member is absent: {missing_member}")
 
 
 def _normalize_artifact(
@@ -4634,128 +4348,111 @@ def _registered_artifact_identity(record: CollectionUploadArtifactRecord) -> _Re
     }
 
 
-def _validate_upload_file_provenance_binding(
-    session: Session,
-    row: CollectionUploadArtifactRecord,
+def _provenance_binding_row(
+    row: CollectionUploadArtifactProvenanceBindingRecord,
+) -> dict[str, object]:
+    document = CollectionArtifactProvenanceBindingBatchDocument.model_validate(
+        {
+            "bindings": [
+                {
+                    "artifact_id": row.artifact_id,
+                    "journal": {
+                        "journal_id": row.journal_id,
+                        "through": {
+                            "entry_id": row.through_entry_id,
+                            "sequence": format_scalar("sequence63", row.through_sequence),
+                            "json_sha256": row.through_json_sha256,
+                        },
+                        "prefix_sha256": row.prefix_sha256,
+                        "prefix_bytes": format_scalar("nonnegative", row.prefix_bytes),
+                    },
+                    "delivery_association_id": row.delivery_association_id,
+                }
+            ]
+        }
+    )
+    return document.bindings[0].model_dump(mode="json")
+
+
+def _validate_staged_canonical_journal_set(
+    session: Session, upload: CollectionUploadRecord
 ) -> None:
-    if row.provenance_status == "omitted":
-        if (
-            row.provenance_journal_id is not None
-            or row.provenance_current_state_id is not None
-            or not row.provenance_omission_reason
-            or row.provenance_omission_reason != row.provenance_omission_reason.strip()
-        ):
-            raise Conflict(f"omitted provenance binding is invalid: {row.path}")
-        return
-    if row.provenance_status != "captured" or row.provenance_journal_id is None:
-        raise Conflict(f"captured provenance binding is incomplete: {row.path}")
-    journal = session.get(
-        CollectionUploadProvenanceJournalRecord,
-        (row.collection_id, row.provenance_journal_id),
-    )
-    if (
-        journal is None
-        or journal.state != "sealed"
-        or journal.current_state_id != row.provenance_current_state_id
-        or journal.current_path != row.path
-        or journal.current_bytes != row.bytes
-        or journal.current_sha256 != row.sha256
-    ):
-        raise Conflict(f"captured file state is unresolved: {row.path}")
+    """Resolve foreign assertions and forks across the complete staged corpus."""
 
-
-def _validate_external_state_reference(
-    session: Session,
-    fact: CollectionUploadProvenanceValidationFactRecord,
-) -> str:
-    value = json.loads(fact.value_json)
-    journal_id = str(value.get("journal_id", ""))
-    entry_id = str(value.get("entry_id", ""))
-    state_id = str(value.get("state_id", ""))
-    entry_sha256 = str(value.get("entry_json_sha256", ""))
-    target = session.get(
-        CollectionUploadProvenanceJournalRecord,
-        (fact.collection_id, journal_id),
-    )
-    entry = session.get(
-        CollectionUploadProvenanceValidationFactRecord,
-        (fact.collection_id, journal_id, "entry", entry_id),
-    )
-    state = session.get(
-        CollectionUploadProvenanceValidationFactRecord,
-        (fact.collection_id, journal_id, "state", state_id),
-    )
-    entry_value = json.loads(entry.value_json) if entry is not None else None
-    if (
-        target is None
-        or target.state != "sealed"
-        or entry is None
-        or state is None
-        or not isinstance(entry_value, dict)
-        or entry_value.get("sha256") != entry_sha256
-    ):
-        raise Conflict(f"provenance external state is unresolved: {journal_id}")
-    return journal_id
-
-
-def _provenance_binding_row(row: CollectionUploadArtifactRecord) -> dict[str, object]:
-    binding = ArchiveArtifactProvenanceRecord(
-        path=row.path,
-        bytes=row.bytes,
-        sha256=row.sha256,
-        status=cast(Any, row.provenance_status),
-        journal_id=row.provenance_journal_id,
-        current_state_id=row.provenance_current_state_id,
-        omission_reason=row.provenance_omission_reason,
-    )
-    value: dict[str, object] = {
-        "path": binding.path,
-        "bytes": binding.bytes,
-        "sha256": binding.sha256,
-        "status": binding.status,
-    }
-    if binding.status == "captured":
-        value.update(
-            {
-                "journal_id": binding.journal_id,
-                "current_state_id": binding.current_state_id,
-            }
+    records = list(
+        session.scalars(
+            select(CollectionUploadProvenanceJournalRecord)
+            .where(CollectionUploadProvenanceJournalRecord.collection_id == upload.collection_id)
+            .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
         )
-    else:
-        value["omission_reason"] = binding.omission_reason
-    return value
+    )
+    if not records or any(record.state != "sealed" for record in records):
+        raise Conflict("canonical provenance corpus is absent or unsealed")
+    corpus = validate_journal_set(
+        (b"".join(_iter_upload_journal_chunks(session, record)) for record in records),
+        catalog=admission_provenance_catalog(),
+    )
+    summaries = {summary.journal_id: summary for summary in corpus.journals}
+    roots = set(
+        session.scalars(
+            select(CollectionUploadArtifactProvenanceBindingRecord.journal_id).where(
+                CollectionUploadArtifactProvenanceBindingRecord.collection_id
+                == upload.collection_id
+            )
+        )
+    )
+    pending = list(roots)
+    reached: set[str] = set()
+    while pending:
+        journal_id = pending.pop()
+        if journal_id in reached:
+            continue
+        summary = summaries.get(journal_id)
+        if summary is None:
+            raise Conflict(f"primary canonical journal is missing: {journal_id}")
+        reached.add(journal_id)
+        pending.extend(
+            reference["journal_id"] for reference in summary.graph_validation.external_references
+        )
+        parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+        if parent is not None:
+            pending.append(parent["journal_id"])
+    if reached != set(summaries):
+        raise Conflict("canonical provenance corpus contains unrelated journals")
 
 
 def _provenance_volume_document(
     *,
     archive_generation: str,
-    tree_sha256: str,
+    artifact_set_sha256: str,
     sequence: int,
     payload: bytes,
-    first_file_order: int | None = None,
-    file_count: int | None = None,
+    first_artifact_id: str | None = None,
+    last_artifact_id: str | None = None,
+    binding_count: int | None = None,
     journal: CollectionUploadProvenanceJournalRecord | None = None,
     journal_offset: int | None = None,
 ) -> ProvenanceVolumeDocument:
-    kind = "journal" if journal is not None else "bindings"
-    identity = ProvenancePayloadIdentity(
-        kind=cast(Literal["bindings", "journal"], kind),
-        path=(f"provenance/payloads/volume-{format_provenance_sequence(sequence)}.bin.age"),
+    kind: Literal["bindings", "journal"] = "journal" if journal is not None else "bindings"
+    identity = ProvenancePayload(
+        kind=kind,
+        sequence=sequence,
         bytes=len(payload),
         sha256=hashlib.sha256(payload).hexdigest(),
     )
     if journal is None:
         return ProvenanceVolumeDocument(
             archive_generation=archive_generation,
-            archive_tree_sha256=tree_sha256,
+            artifact_set_sha256=artifact_set_sha256,
             sequence=sequence,
             payload=identity,
-            first_file_order=first_file_order,
-            file_count=file_count,
+            first_artifact_id=first_artifact_id,
+            last_artifact_id=last_artifact_id,
+            binding_count=binding_count,
         )
     return ProvenanceVolumeDocument(
         archive_generation=archive_generation,
-        archive_tree_sha256=tree_sha256,
+        artifact_set_sha256=artifact_set_sha256,
         sequence=sequence,
         payload=identity,
         journal_id=journal.journal_id,
@@ -4763,6 +4460,16 @@ def _provenance_volume_document(
         journal_bytes=journal.bytes,
         journal_sha256=journal.sha256,
     )
+
+
+def _provenance_commitment(upload: CollectionUploadRecord) -> CheckpointSHA256:
+    if upload.provenance_archive_hash_state is not None:
+        return CheckpointSHA256.from_state(upload.provenance_archive_hash_state)
+    if upload.provenance_archive_next_sequence != 0:
+        raise RuntimeError("provenance volume commitment state is missing")
+    digest = CheckpointSHA256()
+    digest.update(PROVENANCE_SEQUENCE_DOMAIN)
+    return digest
 
 
 def _next_provenance_publication_journal(
@@ -4834,597 +4541,6 @@ def _upload_journal_range_bytes(
     return bytes(content)
 
 
-def _iter_upload_journal_chunks(
-    session: Session,
-    collection_id: int,
-    journal_id: str,
-) -> Iterator[bytes]:
-    statement = (
-        select(CollectionUploadProvenanceJournalChunkRecord.content)
-        .where(
-            CollectionUploadProvenanceJournalChunkRecord.collection_id == collection_id,
-            CollectionUploadProvenanceJournalChunkRecord.journal_id == journal_id,
-        )
-        .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
-        .execution_options(yield_per=16)
-    )
-    yield from session.scalars(statement)
-
-
-def _iter_upload_journal_ids(session: Session, collection_id: int) -> Iterator[str]:
-    after: str | None = None
-    while True:
-        statement = select(CollectionUploadProvenanceJournalRecord.journal_id).where(
-            CollectionUploadProvenanceJournalRecord.collection_id == collection_id
-        )
-        if after is not None:
-            statement = statement.where(CollectionUploadProvenanceJournalRecord.journal_id > after)
-        batch = list(
-            session.scalars(
-                statement.order_by(CollectionUploadProvenanceJournalRecord.journal_id).limit(100)
-            )
-        )
-        if not batch:
-            return
-        yield from batch
-        after = batch[-1]
-
-
-def _upload_journal_bytes(
-    session: Session,
-    collection_id: int,
-    journal_id: str,
-) -> bytes:
-    return b"".join(_iter_upload_journal_chunks(session, collection_id, journal_id))
-
-
-def _final_provenance_mode(
-    session: Session,
-    collection_id: int,
-    upload_provenance_mode: str,
-) -> str:
-    if upload_provenance_mode == "omitted":
-        return "omitted"
-    has_omission = session.scalar(
-        select(
-            exists().where(
-                CollectionUploadArtifactRecord.collection_id == collection_id,
-                CollectionUploadArtifactRecord.provenance_status == "omitted",
-            )
-        )
-    )
-    return "mixed" if has_omission else "captured"
-
-
-_DERIVATIVE_SOURCE_BATCH = 128
-_DERIVATIVE_REFERENCE_BATCH = 64
-_DERIVATIVE_JOURNAL_NAMESPACE = uuid.UUID("6c096a7c-8215-4c4d-9db0-22e11ca791ad")
-
-
-def _derivative_claim(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> CollectionProcessingClaimRecord:
-    execution_id = upload.initiated_by_principal_id.removeprefix("processing:")
-    claim = session.scalar(
-        select(CollectionProcessingClaimRecord).where(
-            CollectionProcessingClaimRecord.execution_id == execution_id
-        )
-    )
-    if claim is None or claim.plan_sealed_at is None:
-        raise Conflict("transform provenance requires its sealed collection-work claim")
-    disposition_set = session.get(CollectionProcessingDispositionSetRecord, claim.id)
-    if disposition_set is None or disposition_set.state != "sealed":
-        raise Conflict("transform provenance requires its sealed disposition set")
-    return claim
-
-
-def _derivative_cursor(upload: CollectionUploadRecord) -> dict[str, object]:
-    value = json.loads(upload.derivative_provenance_cursor_json)
-    if not isinstance(value, dict):
-        raise RuntimeError("derivative provenance cursor is invalid")
-    return value
-
-
-def _set_derivative_cursor(
-    upload: CollectionUploadRecord,
-    value: Mapping[str, object],
-) -> None:
-    upload.derivative_provenance_cursor_json = json.dumps(
-        dict(value), sort_keys=True, separators=(",", ":")
-    )
-
-
-def _advance_derivative_source_discovery(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> None:
-    claim = _derivative_claim(session, upload)
-    cursor = _derivative_cursor(upload)
-    after_output = cursor.get("output_path")
-    after_collection = cursor.get("input_collection_id")
-    after_path = cursor.get("input_path")
-    statement = select(
-        CollectionProcessingDispositionOutputRecord.output_path,
-        CollectionProcessingDispositionOutputRecord.input_collection_id,
-        CollectionProcessingDispositionOutputRecord.input_path,
-    ).where(CollectionProcessingDispositionOutputRecord.claim_id == claim.id)
-    if (
-        isinstance(after_output, str)
-        and isinstance(after_collection, int)
-        and isinstance(after_path, str)
-    ):
-        statement = statement.where(
-            or_(
-                CollectionProcessingDispositionOutputRecord.output_path > after_output,
-                (CollectionProcessingDispositionOutputRecord.output_path == after_output)
-                & (
-                    CollectionProcessingDispositionOutputRecord.input_collection_id
-                    > after_collection
-                ),
-                (CollectionProcessingDispositionOutputRecord.output_path == after_output)
-                & (
-                    CollectionProcessingDispositionOutputRecord.input_collection_id
-                    == after_collection
-                )
-                & (CollectionProcessingDispositionOutputRecord.input_path > after_path),
-            )
-        )
-    rows = list(
-        session.execute(
-            statement.order_by(
-                CollectionProcessingDispositionOutputRecord.output_path,
-                CollectionProcessingDispositionOutputRecord.input_collection_id,
-                CollectionProcessingDispositionOutputRecord.input_path,
-            ).limit(_DERIVATIVE_SOURCE_BATCH)
-        )
-    )
-    if not rows:
-        upload.derivative_provenance_state = "copying"
-        _set_derivative_cursor(upload, {})
-        return
-    for output_path, source_collection_id, source_path in rows:
-        if session.get(CollectionUploadArtifactRecord, (upload.collection_id, output_path)) is None:
-            continue
-        binding = session.get(
-            CollectionArtifactProvenanceRecord,
-            (source_collection_id, source_path),
-        )
-        if binding is None:
-            raise Conflict("transform source provenance binding is unavailable")
-        if binding.status == "captured":
-            assert binding.journal_id is not None
-            key = (upload.collection_id, source_collection_id, binding.journal_id)
-            if session.get(CollectionUploadProvenanceSourceRecord, key) is None:
-                session.add(
-                    CollectionUploadProvenanceSourceRecord(
-                        collection_id=upload.collection_id,
-                        source_collection_id=source_collection_id,
-                        journal_id=binding.journal_id,
-                    )
-                )
-    last = rows[-1]
-    _set_derivative_cursor(
-        upload,
-        {
-            "output_path": str(last.output_path),
-            "input_collection_id": int(last.input_collection_id),
-            "input_path": str(last.input_path),
-        },
-    )
-
-
-def _advance_derivative_source_closure(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> None:
-    source = session.scalar(
-        select(CollectionUploadProvenanceSourceRecord)
-        .where(
-            CollectionUploadProvenanceSourceRecord.collection_id == upload.collection_id,
-            CollectionUploadProvenanceSourceRecord.expanded.is_(False),
-        )
-        .order_by(
-            CollectionUploadProvenanceSourceRecord.source_collection_id,
-            CollectionUploadProvenanceSourceRecord.journal_id,
-        )
-        .with_for_update(skip_locked=True)
-        .limit(1)
-    )
-    if source is not None:
-        statement = select(CollectionProvenanceExternalStateReferenceRecord).where(
-            CollectionProvenanceExternalStateReferenceRecord.collection_id
-            == source.source_collection_id,
-            CollectionProvenanceExternalStateReferenceRecord.from_journal_id == source.journal_id,
-        )
-        if (
-            source.after_to_journal_id is not None
-            and source.after_entry_id is not None
-            and source.after_state_id is not None
-        ):
-            statement = statement.where(
-                or_(
-                    CollectionProvenanceExternalStateReferenceRecord.to_journal_id
-                    > source.after_to_journal_id,
-                    (
-                        CollectionProvenanceExternalStateReferenceRecord.to_journal_id
-                        == source.after_to_journal_id
-                    )
-                    & (
-                        CollectionProvenanceExternalStateReferenceRecord.entry_id
-                        > source.after_entry_id
-                    ),
-                    (
-                        CollectionProvenanceExternalStateReferenceRecord.to_journal_id
-                        == source.after_to_journal_id
-                    )
-                    & (
-                        CollectionProvenanceExternalStateReferenceRecord.entry_id
-                        == source.after_entry_id
-                    )
-                    & (
-                        CollectionProvenanceExternalStateReferenceRecord.state_id
-                        > source.after_state_id
-                    ),
-                )
-            )
-        references = list(
-            session.scalars(
-                statement.order_by(
-                    CollectionProvenanceExternalStateReferenceRecord.to_journal_id,
-                    CollectionProvenanceExternalStateReferenceRecord.entry_id,
-                    CollectionProvenanceExternalStateReferenceRecord.state_id,
-                ).limit(_DERIVATIVE_SOURCE_BATCH + 1)
-            )
-        )
-        for reference in references[:_DERIVATIVE_SOURCE_BATCH]:
-            key = (
-                upload.collection_id,
-                source.source_collection_id,
-                reference.to_journal_id,
-            )
-            if session.get(CollectionUploadProvenanceSourceRecord, key) is None:
-                session.add(
-                    CollectionUploadProvenanceSourceRecord(
-                        collection_id=upload.collection_id,
-                        source_collection_id=source.source_collection_id,
-                        journal_id=reference.to_journal_id,
-                    )
-                )
-            source.after_to_journal_id = reference.to_journal_id
-            source.after_entry_id = reference.entry_id
-            source.after_state_id = reference.state_id
-        if len(references) <= _DERIVATIVE_SOURCE_BATCH:
-            source.expanded = True
-        return
-
-    source = session.scalar(
-        select(CollectionUploadProvenanceSourceRecord)
-        .where(
-            CollectionUploadProvenanceSourceRecord.collection_id == upload.collection_id,
-            CollectionUploadProvenanceSourceRecord.copied.is_(False),
-        )
-        .order_by(
-            CollectionUploadProvenanceSourceRecord.source_collection_id,
-            CollectionUploadProvenanceSourceRecord.journal_id,
-        )
-        .with_for_update(skip_locked=True)
-        .limit(1)
-    )
-    if source is None:
-        upload.derivative_provenance_state = "generating"
-        _set_derivative_cursor(upload, {})
-        return
-    authoritative = session.get(
-        CollectionProvenanceJournalRecord,
-        (source.source_collection_id, source.journal_id),
-    )
-    if authoritative is None:
-        raise Conflict("transform source provenance journal is unavailable")
-    staged = session.get(
-        CollectionUploadProvenanceJournalRecord,
-        (upload.collection_id, source.journal_id),
-    )
-    if staged is None:
-        staged = CollectionUploadProvenanceJournalRecord(
-            collection_id=upload.collection_id,
-            journal_id=source.journal_id,
-            bytes=authoritative.bytes,
-            sha256=authoritative.sha256,
-            state="accepting",
-            accepted_bytes=0,
-            next_chunk_ordinal=0,
-            content_hash_state=CheckpointSHA256().export_state(),
-        )
-        session.add(staged)
-        session.flush()
-    elif staged.generated_output_path is not None or (
-        staged.bytes != authoritative.bytes or staged.sha256 != authoritative.sha256
-    ):
-        raise Conflict("source provenance journal identity collides in derivative closure")
-    if staged.state == "failed":
-        raise Conflict("copied source provenance journal validation failed")
-    if staged.state == "accepting":
-        chunk = session.scalar(
-            select(CollectionProvenanceJournalChunkRecord)
-            .where(
-                CollectionProvenanceJournalChunkRecord.collection_id == source.source_collection_id,
-                CollectionProvenanceJournalChunkRecord.journal_id == source.journal_id,
-                CollectionProvenanceJournalChunkRecord.byte_offset == source.copy_offset,
-            )
-            .order_by(CollectionProvenanceJournalChunkRecord.ordinal)
-            .limit(1)
-        )
-        if chunk is None:
-            raise Conflict("source provenance journal bytes are unavailable")
-        content = bytes(chunk.content)
-        digest = CheckpointSHA256.from_state(staged.content_hash_state)
-        digest.update(content)
-        next_ordinal = staged.next_chunk_ordinal
-        session.add(
-            CollectionUploadProvenanceJournalChunkRecord(
-                collection_id=upload.collection_id,
-                journal_id=source.journal_id,
-                ordinal=next_ordinal,
-                byte_offset=source.copy_offset,
-                content=content,
-            )
-        )
-        source.copy_offset += len(content)
-        staged.accepted_bytes = source.copy_offset
-        staged.next_chunk_ordinal += 1
-        staged.content_hash_state = digest.export_state()
-        if source.copy_offset == staged.bytes:
-            if digest.hexdigest() != staged.sha256:
-                raise Conflict("copied source provenance journal digest changed")
-            staged.state = "validating"
-        elif source.copy_offset > staged.bytes:
-            raise Conflict("copied source provenance journal exceeds its authority")
-        return
-    if staged.state == "validating":
-        _validate_next_upload_journal_entry(session, staged)
-        return
-    if staged.state != "sealed" or (
-        staged.current_state_id != authoritative.current_state_id
-        or staged.current_entry_id != authoritative.current_entry_id
-        or staged.current_entry_json_sha256 != authoritative.current_entry_json_sha256
-        or staged.current_path != authoritative.current_path
-        or staged.current_bytes != authoritative.current_bytes
-        or staged.current_sha256 != authoritative.current_sha256
-    ):
-        raise Conflict("copied source provenance journal projection changed")
-    source.copied = True
-
-
-def _derivative_reference_rows(
-    session: Session,
-    *,
-    claim_id: str,
-    output_path: str,
-    after_journal_id: str | None,
-    after_state_id: str | None,
-    limit: int,
-) -> list[Any]:
-    statement = (
-        select(
-            CollectionProvenanceJournalRecord.journal_id,
-            CollectionProvenanceJournalRecord.current_entry_id,
-            CollectionProvenanceJournalRecord.current_entry_json_sha256,
-            CollectionProvenanceJournalRecord.current_state_id,
-        )
-        .join(
-            CollectionArtifactProvenanceRecord,
-            (
-                CollectionArtifactProvenanceRecord.collection_id
-                == CollectionProvenanceJournalRecord.collection_id
-            )
-            & (
-                CollectionArtifactProvenanceRecord.journal_id
-                == CollectionProvenanceJournalRecord.journal_id
-            ),
-        )
-        .join(
-            CollectionProcessingDispositionOutputRecord,
-            (
-                CollectionProcessingDispositionOutputRecord.input_collection_id
-                == CollectionArtifactProvenanceRecord.collection_id
-            )
-            & (
-                CollectionProcessingDispositionOutputRecord.input_path
-                == CollectionArtifactProvenanceRecord.path
-            ),
-        )
-        .where(
-            CollectionProcessingDispositionOutputRecord.claim_id == claim_id,
-            CollectionProcessingDispositionOutputRecord.output_path == output_path,
-            CollectionArtifactProvenanceRecord.status == "captured",
-        )
-        .distinct()
-    )
-    if after_journal_id is not None and after_state_id is not None:
-        statement = statement.where(
-            or_(
-                CollectionProvenanceJournalRecord.journal_id > after_journal_id,
-                (CollectionProvenanceJournalRecord.journal_id == after_journal_id)
-                & (CollectionProvenanceJournalRecord.current_state_id > after_state_id),
-            )
-        )
-    return list(
-        session.execute(
-            statement.order_by(
-                CollectionProvenanceJournalRecord.journal_id,
-                CollectionProvenanceJournalRecord.current_state_id,
-            ).limit(limit)
-        )
-    )
-
-
-def _derivative_journal_id(execution_id: str, output_path: str) -> str:
-    return f"urn:uuid:{uuid.uuid5(_DERIVATIVE_JOURNAL_NAMESPACE, f'{execution_id}:{output_path}')}"
-
-
-def _derivative_seed(
-    upload: CollectionUploadRecord,
-    claim: CollectionProcessingClaimRecord,
-    file: CollectionUploadArtifactRecord,
-) -> tuple[bytes, DerivativeJournalSeed]:
-    assert claim.operation_id is not None
-    return create_derivative_journal_seed(
-        relative_path=file.path,
-        byte_count=file.bytes,
-        sha256=file.sha256,
-        agent_name="riverhog",
-        agent_version="v1",
-        event_label=claim.operation_id,
-        started_at=upload.opened_at,
-        ended_at=upload.closed_at or upload.last_activity_at,
-        journal_id=_derivative_journal_id(cast(str, claim.execution_id), file.path),
-    )
-
-
-def _advance_derivative_output_journal(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> None:
-    claim = _derivative_claim(session, upload)
-    file = session.scalar(
-        select(CollectionUploadArtifactRecord)
-        .where(
-            CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-            CollectionUploadArtifactRecord.provenance_status == "deriving",
-        )
-        .order_by(CollectionUploadArtifactRecord.file_order)
-        .with_for_update(skip_locked=True)
-        .limit(1)
-    )
-    if file is None:
-        upload.derivative_provenance_state = "complete"
-        _set_derivative_cursor(upload, {})
-        return
-    journal_id = _derivative_journal_id(cast(str, claim.execution_id), file.path)
-    journal = session.get(
-        CollectionUploadProvenanceJournalRecord,
-        (upload.collection_id, journal_id),
-    )
-    if journal is None:
-        first = _derivative_reference_rows(
-            session,
-            claim_id=claim.id,
-            output_path=file.path,
-            after_journal_id=None,
-            after_state_id=None,
-            limit=1,
-        )
-        if not first:
-            file.provenance_status = "omitted"
-            file.provenance_omission_reason = (
-                "No contributing source artifact carried captured provenance."
-            )
-            return
-        content, _seed = _derivative_seed(upload, claim, file)
-        digest = CheckpointSHA256()
-        digest.update(content)
-        journal = CollectionUploadProvenanceJournalRecord(
-            collection_id=upload.collection_id,
-            journal_id=journal_id,
-            bytes=len(content),
-            sha256="0" * 64,
-            state="generating",
-            accepted_bytes=len(content),
-            next_chunk_ordinal=1,
-            content_hash_state=digest.export_state(),
-            generated_output_path=file.path,
-        )
-        session.add(journal)
-        session.add(
-            CollectionUploadProvenanceJournalChunkRecord(
-                collection_id=upload.collection_id,
-                journal_id=journal_id,
-                ordinal=0,
-                byte_offset=0,
-                content=content,
-            )
-        )
-        session.flush()
-        _validate_next_upload_journal_entry(session, journal)
-        return
-    if journal.generated_output_path != file.path:
-        raise Conflict("generated provenance journal binds another output artifact")
-    if journal.state == "failed":
-        raise Conflict("generated derivative provenance journal validation failed")
-    if journal.state == "generating" and journal.validation_byte_offset < journal.bytes:
-        _validate_next_upload_journal_entry(session, journal)
-        return
-    if journal.state == "generating":
-        rows = _derivative_reference_rows(
-            session,
-            claim_id=claim.id,
-            output_path=file.path,
-            after_journal_id=journal.generation_after_journal_id,
-            after_state_id=journal.generation_after_state_id,
-            limit=_DERIVATIVE_REFERENCE_BATCH,
-        )
-        if rows:
-            _prefix, seed = _derivative_seed(upload, claim, file)
-            references = tuple(
-                ExternalStateReference(
-                    journal_id=str(row.journal_id),
-                    entry_id=str(row.current_entry_id),
-                    entry_json_sha256=str(row.current_entry_json_sha256),
-                    state_id=str(row.current_state_id),
-                )
-                for row in rows
-            )
-            if journal.validation_previous_entry_id is None or (
-                journal.validation_previous_json_sha256 is None
-            ):
-                raise RuntimeError("generated provenance predecessor is unavailable")
-            content = create_derivative_source_entry(
-                seed=seed,
-                references=references,
-                sequence=int(journal.validation_sequence),
-                previous_entry_id=journal.validation_previous_entry_id,
-                previous_entry_json_sha256=journal.validation_previous_json_sha256,
-                recorded_at=upload.closed_at or upload.last_activity_at,
-            )
-            digest = CheckpointSHA256.from_state(journal.content_hash_state)
-            digest.update(content)
-            ordinal = journal.next_chunk_ordinal
-            session.add(
-                CollectionUploadProvenanceJournalChunkRecord(
-                    collection_id=upload.collection_id,
-                    journal_id=journal_id,
-                    ordinal=ordinal,
-                    byte_offset=journal.bytes,
-                    content=content,
-                )
-            )
-            journal.bytes += len(content)
-            journal.accepted_bytes = journal.bytes
-            journal.next_chunk_ordinal += 1
-            journal.content_hash_state = digest.export_state()
-            last = rows[-1]
-            journal.generation_after_journal_id = str(last.journal_id)
-            journal.generation_after_state_id = str(last.current_state_id)
-            return
-        digest = CheckpointSHA256.from_state(journal.content_hash_state)
-        journal.sha256 = digest.hexdigest()
-        journal.state = "validating"
-        _validate_next_upload_journal_entry(session, journal)
-    if journal.state == "sealed":
-        if (
-            journal.current_path != file.path
-            or journal.current_bytes != file.bytes
-            or journal.current_sha256 != file.sha256
-            or journal.current_state_id is None
-        ):
-            raise Conflict("generated derivative provenance changed its output identity")
-        file.provenance_status = "captured"
-        file.provenance_journal_id = journal.journal_id
-        file.provenance_current_state_id = journal.current_state_id
-        file.provenance_omission_reason = None
-
-
 def _planner_checkpoint(upload: CollectionUploadRecord) -> Any:
     if not upload.planner_checkpoint_json:
         raise RuntimeError("collection upload planner checkpoint is missing")
@@ -5440,7 +4556,7 @@ def _seal_open_collection_upload(
 ) -> None:
     collection_id = upload.collection_id
     incomplete_raw = session.scalar(
-        select(CollectionUploadArtifactRecord.path)
+        select(CollectionUploadArtifactRecord.artifact_id)
         .where(
             CollectionUploadArtifactRecord.collection_id == collection_id,
             CollectionUploadArtifactRecord.raw_part_count.is_not(None),
@@ -5466,22 +4582,22 @@ def _seal_open_collection_upload(
     if incomplete_provenance is not None:
         raise Conflict(f"provenance journal is not sealed: {incomplete_provenance}")
     _require_transform_output_disposition_coverage(session, upload)
-    if upload.file_count < 1:
-        raise Conflict("collection upload has no registered files")
+    if upload.artifact_count < 1:
+        raise Conflict("collection upload has no registered artifacts")
     _require_pending_pack_matches_registration(session, upload, checkpoint)
     batch = advance_incremental_volume_plan(checkpoint, (), final=True)
     sealed = batch.checkpoint
     if (
         not sealed.closed
-        or sealed.files_seen != upload.file_count
-        or sealed.bytes_seen != upload.file_bytes
+        or sealed.artifacts_seen != upload.artifact_count
+        or sealed.bytes_seen != upload.artifact_bytes
     ):
-        raise Conflict("collection upload planner differs from registered files")
+        raise Conflict("collection upload planner differs from registered artifacts")
     _persist_plan_batch(session, upload=upload, batch=batch)
     upload.planner_checkpoint_json = incremental_volume_planner_checkpoint_bytes(sealed).decode(
         "utf-8"
     )
-    upload.catalog_content_identity = None
+    upload.catalog_artifact_set_identity = None
     upload.catalog_phase = "content-identity"
     upload.catalog_cursor_json = "{}"
     upload.catalog_hash_state = None
@@ -5543,9 +4659,9 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                 object_path=f"{upload.archive_storage_prefix}/{relative}",
                 plaintext_bytes=plan.plaintext_bytes,
                 source_bytes=plan.plaintext_bytes,
-                source_path=plan.source_path,
+                source_artifact_id=plan.artifact_id,
                 source_first_part=(
-                    plan.file_offset // batch.checkpoint.policy.raw_part_plaintext_bytes
+                    plan.artifact_offset // batch.checkpoint.policy.raw_part_plaintext_bytes
                 ),
                 source_part_count=max(
                     1,
@@ -5569,125 +4685,6 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
     session.flush()
 
 
-def _upload_file_batches(
-    session: Session,
-    collection_id: int,
-) -> Iterator[list[Any]]:
-    """Read a finalized upload inventory with bounded keyset batches."""
-
-    after = -1
-    while True:
-        rows = list(
-            session.execute(
-                select(
-                    CollectionUploadArtifactRecord.file_order,
-                    CollectionUploadArtifactRecord.path,
-                    CollectionUploadArtifactRecord.bytes,
-                    CollectionUploadArtifactRecord.sha256,
-                    CollectionUploadArtifactRecord.provenance_status,
-                    CollectionUploadArtifactRecord.provenance_journal_id,
-                    CollectionUploadArtifactRecord.provenance_current_state_id,
-                    CollectionUploadArtifactRecord.provenance_omission_reason,
-                )
-                .where(
-                    CollectionUploadArtifactRecord.collection_id == collection_id,
-                    CollectionUploadArtifactRecord.file_order > after,
-                )
-                .order_by(CollectionUploadArtifactRecord.file_order)
-                .limit(COLLECTION_UPLOAD_FILE_BATCH_MAX)
-            )
-        )
-        if not rows:
-            return
-        yield rows
-        after = int(rows[-1].file_order)
-
-
-def _upload_archive_object_batches(
-    session: Session,
-    collection_id: int,
-) -> Iterator[list[CollectionArchiveObjectUploadRecord]]:
-    """Read planned archive objects in bounded contiguous sequence batches."""
-
-    after = -1
-    while True:
-        rows = list(
-            session.scalars(
-                select(CollectionArchiveObjectUploadRecord)
-                .where(
-                    CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                    CollectionArchiveObjectUploadRecord.sequence > after,
-                )
-                .order_by(CollectionArchiveObjectUploadRecord.sequence)
-                .limit(64)
-            )
-        )
-        if not rows:
-            return
-        yield rows
-        after = int(rows[-1].sequence)
-
-
-def _upload_provenance_archive_volume_batches(
-    session: Session,
-    collection_id: int,
-) -> Iterator[list[CollectionUploadProvenanceArchiveVolumeRecord]]:
-    """Read bounded provenance archive receipts in exact sequence order."""
-
-    after = -1
-    while True:
-        rows = list(
-            session.scalars(
-                select(CollectionUploadProvenanceArchiveVolumeRecord)
-                .where(
-                    CollectionUploadProvenanceArchiveVolumeRecord.collection_id == collection_id,
-                    CollectionUploadProvenanceArchiveVolumeRecord.sequence > after,
-                )
-                .order_by(CollectionUploadProvenanceArchiveVolumeRecord.sequence)
-                .limit(64)
-            )
-        )
-        if not rows:
-            return
-        yield rows
-        after = int(rows[-1].sequence)
-
-
-def _upload_file_path_batches(
-    session: Session,
-    collection_id: int,
-) -> Iterator[list[Any]]:
-    """Read an upload inventory in portable UTF-8 path order with bounded keysets."""
-
-    after = b""
-    while True:
-        rows = list(
-            session.execute(
-                select(
-                    CollectionUploadArtifactRecord.file_order,
-                    CollectionUploadArtifactRecord.path,
-                    CollectionUploadArtifactRecord.bytes,
-                    CollectionUploadArtifactRecord.sha256,
-                    CollectionUploadArtifactRecord.provenance_status,
-                    CollectionUploadArtifactRecord.provenance_journal_id,
-                    CollectionUploadArtifactRecord.provenance_current_state_id,
-                    CollectionUploadArtifactRecord.provenance_omission_reason,
-                    CollectionUploadArtifactRecord.path_sort_key,
-                )
-                .where(
-                    CollectionUploadArtifactRecord.collection_id == collection_id,
-                    CollectionUploadArtifactRecord.path_sort_key > after,
-                )
-                .order_by(CollectionUploadArtifactRecord.path_sort_key)
-                .limit(COLLECTION_UPLOAD_FILE_BATCH_MAX)
-            )
-        )
-        if not rows:
-            return
-        yield rows
-        after = bytes(rows[-1].path_sort_key)
-
-
 def _require_pending_pack_matches_registration(
     session: Session,
     upload: CollectionUploadRecord,
@@ -5695,29 +4692,29 @@ def _require_pending_pack_matches_registration(
 ) -> None:
     """Verify the only planner state not yet sealed into immutable volume plans."""
 
-    pending = checkpoint.pending_pack_files
+    pending = checkpoint.pending_pack_artifacts
     if not pending:
         return
-    first_order = checkpoint.files_seen - len(pending)
+    first_order = checkpoint.artifacts_seen - len(pending)
     rows = list(
         session.execute(
             select(
-                CollectionUploadArtifactRecord.path,
+                CollectionUploadArtifactRecord.artifact_id,
                 CollectionUploadArtifactRecord.bytes,
                 CollectionUploadArtifactRecord.sha256,
             )
             .where(
                 CollectionUploadArtifactRecord.collection_id == upload.collection_id,
-                CollectionUploadArtifactRecord.file_order >= first_order,
+                CollectionUploadArtifactRecord.artifact_order >= first_order,
             )
-            .order_by(CollectionUploadArtifactRecord.file_order)
+            .order_by(CollectionUploadArtifactRecord.artifact_order)
             .limit(len(pending) + 1)
         )
     )
-    expected = [(current.path, current.bytes, current.sha256) for current in pending]
-    actual = [(row.path, row.bytes, row.sha256) for row in rows]
+    expected = [(current.artifact_id, current.bytes, current.sha256) for current in pending]
+    actual = [(row.artifact_id, row.bytes, row.sha256) for row in rows]
     if actual != expected:
-        raise Conflict("collection upload volume plans differ from registered files")
+        raise Conflict("collection upload volume plans differ from registered artifacts")
 
 
 def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) -> bool:
@@ -5741,9 +4738,9 @@ def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) ->
 
 def _has_complete_artifact_custody(upload: CollectionUploadRecord) -> bool:
     return bool(
-        upload.file_count > 0
-        and upload.custodied_file_count == upload.file_count
-        and upload.custodied_file_bytes == upload.file_bytes
+        upload.artifact_count > 0
+        and upload.custodied_artifact_count == upload.artifact_count
+        and upload.custodied_artifact_bytes == upload.artifact_bytes
     )
 
 
@@ -5794,336 +4791,97 @@ def _raw_digest_progress(record: CollectionUploadArtifactRecord) -> dict[str, ob
 def _journal_payload(
     record: CollectionUploadProvenanceJournalRecord,
 ) -> dict[str, object]:
-    payload: dict[str, object] = {
-        "journal_id": record.journal_id,
-        "state": record.state,
-        "bytes": format_scalar("nonnegative", record.bytes),
-        "sha256": record.sha256,
-        "accepted_bytes": format_scalar("nonnegative", record.accepted_bytes),
-        "failure": record.failure,
-    }
+    anchor = None
     if record.state == "sealed":
-        payload.update(
-            {
-                "current_state_id": record.current_state_id,
-                "current_path": record.current_path,
-                "current_bytes": (
-                    format_scalar("nonnegative", record.current_bytes)
-                    if record.current_bytes is not None
-                    else None
-                ),
-                "current_sha256": record.current_sha256,
-            }
+        if (
+            record.terminal_entry_id is None
+            or record.terminal_sequence is None
+            or record.terminal_json_sha256 is None
+        ):
+            raise RuntimeError("sealed canonical journal has no exact tail anchor")
+        anchor = {
+            "journal_id": record.journal_id,
+            "through": {
+                "entry_id": record.terminal_entry_id,
+                "sequence": format_scalar("sequence63", record.terminal_sequence),
+                "json_sha256": record.terminal_json_sha256,
+            },
+            "prefix_sha256": record.sha256,
+            "prefix_bytes": format_scalar("nonnegative", record.bytes),
+        }
+    return CollectionUploadProvenanceJournalStatusDocument.model_validate(
+        {
+            "journal_id": record.journal_id,
+            "state": record.state,
+            "bytes": format_scalar("nonnegative", record.bytes),
+            "sha256": record.sha256,
+            "accepted_bytes": format_scalar("nonnegative", record.accepted_bytes),
+            "failure": record.failure,
+            "anchor": anchor,
+        }
+    ).model_dump(mode="json")
+
+
+def _iter_upload_journal_chunks(
+    session: Session,
+    record: CollectionUploadProvenanceJournalRecord,
+    *,
+    through_bytes: int | None = None,
+) -> Iterator[bytes]:
+    """Read exact contiguous staged octets without constructing a giant byte string."""
+
+    limit = record.bytes if through_bytes is None else through_bytes
+    if type(limit) is not int or not 1 <= limit <= record.bytes:
+        raise ProvenanceValidationError("journal prefix byte extent is invalid")
+    statement = (
+        select(CollectionUploadProvenanceJournalChunkRecord)
+        .where(
+            CollectionUploadProvenanceJournalChunkRecord.collection_id == record.collection_id,
+            CollectionUploadProvenanceJournalChunkRecord.journal_id == record.journal_id,
         )
-    return CollectionUploadProvenanceJournalStatusDocument.model_validate(payload).model_dump(
-        mode="json"
+        .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
+        .execution_options(yield_per=16)
     )
+    offset = 0
+    ordinal = 0
+    for chunk in session.scalars(statement):
+        if offset >= limit:
+            break
+        raw = bytes(chunk.content)
+        if chunk.byte_offset != offset or chunk.ordinal != ordinal or not raw:
+            raise ProvenanceValidationError("staged canonical journal chunks are discontinuous")
+        selected = raw[: limit - offset]
+        yield selected
+        offset += len(selected)
+        ordinal += 1
+    if offset != limit:
+        raise ProvenanceValidationError("staged canonical journal prefix is incomplete")
 
 
 def _validate_next_upload_journal_entry(
     session: Session,
     record: CollectionUploadProvenanceJournalRecord,
 ) -> None:
-    if record.validation_byte_offset == record.bytes:
-        if record.state == "validating":
-            _seal_validated_upload_journal(session, record)
-        return
-    encoded = _next_upload_journal_entry_bytes(session, record)
-    projected = validate_incremental_journal_entry(
-        encoded,
-        sequence=record.validation_sequence,
-        journal_id=record.journal_id,
-        previous_entry_id=record.validation_previous_entry_id,
-        previous_json_sha256=record.validation_previous_json_sha256,
-    )
-    entry_id = str(projected.frame.document["id"])
-    _insert_validation_fact(
-        session,
-        record,
-        kind="entry",
-        key=entry_id,
-        value={"sequence": projected.frame.sequence, "sha256": projected.frame.sha256},
-        allow_identical=False,
-    )
-    if projected.primary_lineage_id is not None:
-        if record.primary_lineage_id is not None:
-            raise ProvenanceValidationError("journal repeats its initialization policy")
-        record.primary_lineage_id = projected.primary_lineage_id
-    for agent_id in projected.agents:
-        _insert_validation_fact(
-            session, record, kind="agent", key=agent_id, value={}, allow_identical=True
-        )
-    for event_id in projected.events:
-        _insert_validation_fact(
-            session, record, kind="event", key=event_id, value={}, allow_identical=True
-        )
-    for state_id, state_json in projected.states:
-        _insert_validation_fact(
-            session,
-            record,
-            kind="state",
-            key=state_id,
-            value=json.loads(state_json),
-            allow_identical=True,
-        )
-    counts = json.loads(record.entity_counts_json)
-    if not isinstance(counts, dict):
-        raise ProvenanceValidationError("journal entity-count checkpoint is invalid")
-    for entity_type, count in projected.entity_counts:
-        counts[entity_type] = int(counts.get(entity_type, 0)) + count
-    record.entity_counts_json = json.dumps(counts, sort_keys=True, separators=(",", ":"))
-    for entity_type, entity_id, document_json in projected.entities:
-        _insert_validation_fact(
-            session,
-            record,
-            kind="entity",
-            key=_entity_validation_fact_key(entity_type, entity_id),
-            value={
-                "entity_type": entity_type,
-                "entity_id": entity_id,
-                "entry_id": entry_id,
-                "document": json.loads(document_json),
-            },
-            allow_identical=False,
-            replace=True,
-        )
-    session.flush()
-    for role, operation, binding_json in projected.bindings:
-        binding = json.loads(binding_json)
-        existing = session.get(
-            CollectionUploadProvenanceValidationFactRecord,
-            (record.collection_id, record.journal_id, "binding", role),
-        )
-        if operation == "unbind":
-            if existing is not None:
-                session.delete(existing)
-            continue
-        established_by = binding.get("established_by_capture_id") or binding.get(
-            "established_by_activity_id"
-        )
-        if (
-            not isinstance(established_by, str)
-            or session.get(
-                CollectionUploadProvenanceValidationFactRecord,
-                (record.collection_id, record.journal_id, "event", established_by),
-            )
-            is None
-        ):
-            raise ProvenanceValidationError(
-                "payload binding references an absent capture or activity"
-            )
-        state_ref = binding.get("state")
-        binding_state_id = state_ref.get("id") if isinstance(state_ref, dict) else None
-        if (
-            not isinstance(state_ref, dict)
-            or state_ref.get("scope") != "local"
-            or not isinstance(binding_state_id, str)
-            or session.get(
-                CollectionUploadProvenanceValidationFactRecord,
-                (record.collection_id, record.journal_id, "state", binding_state_id),
-            )
-            is None
-        ):
-            raise ProvenanceValidationError("payload binding references an absent local state")
-        canonical = json.dumps(binding, sort_keys=True, separators=(",", ":"))
-        if existing is None:
-            session.add(
-                CollectionUploadProvenanceValidationFactRecord(
-                    collection_id=record.collection_id,
-                    journal_id=record.journal_id,
-                    kind="binding",
-                    fact_key=role,
-                    value_json=canonical,
-                )
-            )
-        else:
-            existing.value_json = canonical
-        session.flush()
-    for reference in projected.external_states:
-        value = {
-            "journal_id": reference.journal_id,
-            "entry_id": reference.entry_id,
-            "entry_json_sha256": reference.entry_json_sha256,
-            "state_id": reference.state_id,
-        }
-        key = hashlib.sha256(
-            json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
-        ).hexdigest()
-        _insert_validation_fact(
-            session,
-            record,
-            kind="external-state",
-            key=key,
-            value=value,
-            allow_identical=True,
-        )
-    record.validation_previous_entry_id = entry_id
-    record.validation_previous_json_sha256 = projected.frame.sha256
-    record.validation_sequence += 1
-    record.validation_byte_offset += len(encoded)
-    if record.validation_byte_offset == record.bytes and record.state == "validating":
-        _seal_validated_upload_journal(session, record)
+    """Validate the exact staged canonical journal before it can be bound."""
 
-
-def _entity_validation_fact_key(entity_type: str, entity_id: str) -> str:
-    identity = json.dumps(
-        [entity_type, entity_id],
-        ensure_ascii=False,
-        separators=(",", ":"),
-    ).encode()
-    return hashlib.sha256(b"riverhog-provenance-validation-entity/v1\x00" + identity).hexdigest()
-
-
-def _next_upload_journal_entry_bytes(
-    session: Session,
-    record: CollectionUploadProvenanceJournalRecord,
-) -> bytes:
-    offset = int(record.validation_byte_offset)
-    rows = session.execute(
-        select(
-            CollectionUploadProvenanceJournalChunkRecord.byte_offset,
-            CollectionUploadProvenanceJournalChunkRecord.content,
-        )
-        .where(
-            CollectionUploadProvenanceJournalChunkRecord.collection_id == record.collection_id,
-            CollectionUploadProvenanceJournalChunkRecord.journal_id == record.journal_id,
-            CollectionUploadProvenanceJournalChunkRecord.byte_offset
-            + func.length(CollectionUploadProvenanceJournalChunkRecord.content)
-            > offset,
-        )
-        .order_by(CollectionUploadProvenanceJournalChunkRecord.byte_offset)
-        .limit(
-            PROVENANCE_JOURNAL_ENTRY_BYTES_MAX // COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX + 2
-        )
+    if record.state != "validating" or record.accepted_bytes != record.bytes:
+        raise ProvenanceValidationError("canonical journal is not complete for validation")
+    summary = validate_journal_chunks(
+        _iter_upload_journal_chunks(session, record),
+        catalog=admission_provenance_catalog(),
+        require_profiles=True,
     )
-    if not rows:
-        raise ProvenanceValidationError("provenance journal content is unavailable")
-    content = bytearray()
-    expected_offset = offset
-    found_separator = False
-    for row in rows:
-        row_offset = int(row.byte_offset)
-        raw = bytes(row.content)
-        start = max(0, expected_offset - row_offset)
-        if row_offset > expected_offset or start >= len(raw):
-            raise ProvenanceValidationError("provenance journal chunks are not contiguous")
-        content.extend(raw[start:])
-        expected_offset = row_offset + len(raw)
-        separator = content.find(b"\x1e", 1)
-        if separator >= 0:
-            del content[separator:]
-            found_separator = True
-            break
-        if len(content) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
-            raise ProvenanceValidationError("provenance journal entry exceeds its bounded limit")
-        if expected_offset >= record.bytes:
-            break
-    if not content or (expected_offset < record.bytes and not found_separator):
-        raise ProvenanceValidationError("provenance journal entry boundary is unavailable")
-    if len(content) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
-        raise ProvenanceValidationError("provenance journal entry exceeds its bounded limit")
-    return bytes(content)
-
-
-def _insert_validation_fact(
-    session: Session,
-    record: CollectionUploadProvenanceJournalRecord,
-    *,
-    kind: str,
-    key: str,
-    value: object,
-    allow_identical: bool,
-    replace: bool = False,
-) -> None:
-    canonical = json.dumps(value, sort_keys=True, separators=(",", ":"))
-    existing = session.get(
-        CollectionUploadProvenanceValidationFactRecord,
-        (record.collection_id, record.journal_id, kind, key),
-    )
-    if existing is not None:
-        if replace:
-            existing.value_json = canonical
-            return
-        if allow_identical and existing.value_json == canonical:
-            return
-        raise ProvenanceValidationError(f"journal repeats or redefines {kind} identity {key}")
-    session.add(
-        CollectionUploadProvenanceValidationFactRecord(
-            collection_id=record.collection_id,
-            journal_id=record.journal_id,
-            kind=kind,
-            fact_key=key,
-            value_json=canonical,
-        )
-    )
-
-
-def _seal_validated_upload_journal(
-    session: Session,
-    record: CollectionUploadProvenanceJournalRecord,
-) -> None:
-    if record.validation_sequence < 1 or record.primary_lineage_id is None:
-        raise ProvenanceValidationError("journal must contain at least one entry")
-    binding = session.get(
-        CollectionUploadProvenanceValidationFactRecord,
-        (
-            record.collection_id,
-            record.journal_id,
-            "binding",
-            "co_resident_primary_payload",
-        ),
-    )
-    if binding is None:
-        raise ProvenanceValidationError("journal has no current primary payload binding")
-    binding_value = json.loads(binding.value_json)
-    state_ref = binding_value.get("state") if isinstance(binding_value, dict) else None
-    state_id = state_ref.get("id") if isinstance(state_ref, dict) else None
-    if not isinstance(state_id, str):
-        raise ProvenanceValidationError("current primary payload state is not asserted")
-    state = session.get(
-        CollectionUploadProvenanceValidationFactRecord,
-        (record.collection_id, record.journal_id, "state", state_id),
-    )
-    if state is None:
-        raise ProvenanceValidationError("current primary payload state is not asserted")
-    state_entity = session.get(
-        CollectionUploadProvenanceValidationFactRecord,
-        (
-            record.collection_id,
-            record.journal_id,
-            "entity",
-            _entity_validation_fact_key("states", state_id),
-        ),
-    )
-    state_entity_value = json.loads(state_entity.value_json) if state_entity is not None else None
-    current_entry_id = (
-        state_entity_value.get("entry_id") if isinstance(state_entity_value, dict) else None
-    )
-    entry = (
-        session.get(
-            CollectionUploadProvenanceValidationFactRecord,
-            (record.collection_id, record.journal_id, "entry", current_entry_id),
-        )
-        if isinstance(current_entry_id, str)
-        else None
-    )
-    entry_value = json.loads(entry.value_json) if entry is not None else None
-    current_entry_json_sha256 = entry_value.get("sha256") if isinstance(entry_value, dict) else None
-    if not isinstance(current_entry_id, str) or not isinstance(current_entry_json_sha256, str):
-        raise ProvenanceValidationError("current primary state has no exact asserting entry")
-    current_state_id, current_path, current_bytes, current_sha256 = (
-        resolve_incremental_journal_current_state(
-            primary_lineage_id=record.primary_lineage_id,
-            binding_json=binding.value_json,
-            state_json=state.value_json,
-        )
-    )
-    record.current_state_id = current_state_id
-    record.current_entry_id = current_entry_id
-    record.current_entry_json_sha256 = current_entry_json_sha256
-    record.current_path = current_path
-    record.current_bytes = current_bytes
-    record.current_sha256 = current_sha256
+    if (
+        summary.journal_id != record.journal_id
+        or summary.journal_sha256 != record.sha256
+        or summary.journal_bytes != record.bytes
+    ):
+        raise ProvenanceValidationError("staged canonical journal differs from its authority")
+    record.validation_byte_offset = record.bytes
+    record.validation_sequence = len(summary.frames)
+    record.terminal_entry_id = summary.tail.reference["entry_id"]
+    record.terminal_sequence = int(summary.tail.reference["sequence"])
+    record.terminal_json_sha256 = summary.tail.reference["json_sha256"]
     record.state = "sealed"
     record.failure = None
 
@@ -6169,7 +4927,7 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
                 "plaintext_bytes": format_scalar("nonnegative", current.plaintext_bytes),
                 "sources": [
                     {
-                        "path": source.path,
+                        "artifact_id": source.artifact_id,
                         "offset": "0",
                         "bytes": format_scalar("nonnegative", source.bytes),
                         "artifact_sha256": source.sha256,
@@ -6196,12 +4954,12 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
                     "plaintext_bytes": format_scalar("nonnegative", byte_count),
                     "sources": [
                         {
-                            "path": raw_plan.source_path,
+                            "artifact_id": raw_plan.artifact_id,
                             "offset": format_scalar(
-                                "nonnegative", raw_plan.file_offset + unit * raw_part_bytes
+                                "nonnegative", raw_plan.artifact_offset + unit * raw_part_bytes
                             ),
                             "bytes": format_scalar("nonnegative", byte_count),
-                            "artifact_sha256": raw_plan.file_sha256,
+                            "artifact_sha256": raw_plan.artifact_sha256,
                         }
                     ],
                     "state": "committed" if unit in committed else "pending",
@@ -6235,7 +4993,7 @@ def _unit_work_payload(
             "plaintext_bytes": format_scalar("nonnegative", current.plaintext_bytes),
             "sources": [
                 {
-                    "path": source.path,
+                    "artifact_id": source.artifact_id,
                     "offset": "0",
                     "bytes": format_scalar("nonnegative", source.bytes),
                     "artifact_sha256": source.sha256,
@@ -6258,12 +5016,12 @@ def _unit_work_payload(
             "plaintext_bytes": format_scalar("nonnegative", byte_count),
             "sources": [
                 {
-                    "path": plan.source_path,
+                    "artifact_id": plan.artifact_id,
                     "offset": format_scalar(
-                        "nonnegative", plan.file_offset + unit * record.unit_plaintext_bytes
+                        "nonnegative", plan.artifact_offset + unit * record.unit_plaintext_bytes
                     ),
                     "bytes": format_scalar("nonnegative", byte_count),
-                    "artifact_sha256": plan.file_sha256,
+                    "artifact_sha256": plan.artifact_sha256,
                 }
             ],
             "state": "committed" if committed else "pending",
@@ -6301,7 +5059,7 @@ def _sealed_volume_json(receipt: SealedPackVolume | SealedRawVolume) -> str:
         common.update(
             {
                 "kind": "pack",
-                "files": receipt.files,
+                "artifacts": receipt.artifacts,
                 "source_bytes": receipt.source_bytes,
                 "index_sha256": receipt.index_sha256,
                 "plan_sha256": receipt.plan_sha256,
@@ -6311,10 +5069,10 @@ def _sealed_volume_json(receipt: SealedPackVolume | SealedRawVolume) -> str:
         common.update(
             {
                 "kind": "segment",
-                "source_path": receipt.source_path,
-                "file_offset": receipt.file_offset,
-                "file_bytes": receipt.file_bytes,
-                "file_sha256": receipt.file_sha256,
+                "artifact_id": receipt.artifact_id,
+                "artifact_offset": receipt.artifact_offset,
+                "artifact_bytes": receipt.artifact_bytes,
+                "artifact_sha256": receipt.artifact_sha256,
             }
         )
     return json.dumps(common, sort_keys=True, separators=(",", ":"))
@@ -6405,13 +5163,9 @@ def _sealed_provenance_json(receipt: SealedArchiveProvenance) -> str:
 
 def _sealed_upload_provenance(
     upload: CollectionUploadRecord,
-) -> SealedArchiveProvenance | None:
-    if upload.provenance_mode == "omitted":
-        if upload.provenance_archive_root_receipt_json is not None:
-            raise RuntimeError("omitted provenance has an archive root")
-        return None
+) -> SealedArchiveProvenance:
     if upload.provenance_archive_root_receipt_json is None:
-        raise RuntimeError("captured provenance root is not published")
+        raise RuntimeError("canonical provenance root is not published")
     value = json.loads(upload.provenance_archive_root_receipt_json)
     root = _parse_sealed_provenance_object(
         json.dumps(value["root"], sort_keys=True, separators=(",", ":"))
@@ -6448,7 +5202,7 @@ def _parse_sealed_pack(content: str) -> SealedPackVolume:
         volume_id=str(value["volume_id"]),
         sequence=int(value["sequence"]),
         relative_path=str(value["relative_path"]),
-        files=int(value["files"]),
+        artifacts=int(value["artifacts"]),
         source_bytes=int(value["source_bytes"]),
         plaintext_bytes=int(value["plaintext_bytes"]),
         age_state_json=json.dumps(value["age_state"], sort_keys=True, separators=(",", ":")),
@@ -6467,11 +5221,11 @@ def _parse_sealed_raw(content: str) -> SealedRawVolume:
         volume_id=str(value["volume_id"]),
         sequence=int(value["sequence"]),
         relative_path=str(value["relative_path"]),
-        source_path=str(value["source_path"]),
-        file_offset=int(value["file_offset"]),
+        artifact_id=str(value["artifact_id"]),
+        artifact_offset=int(value["artifact_offset"]),
         plaintext_bytes=int(value["plaintext_bytes"]),
-        file_bytes=int(value["file_bytes"]),
-        file_sha256=str(value["file_sha256"]),
+        artifact_bytes=int(value["artifact_bytes"]),
+        artifact_sha256=str(value["artifact_sha256"]),
         age_state_json=json.dumps(value["age_state"], sort_keys=True, separators=(",", ":")),
         parts=_parse_parts(value["parts"]),
         revision=str(value["revision"]) if value["revision"] is not None else None,
@@ -6484,7 +5238,7 @@ def _custody_stats(session: Session, collection_id: int) -> tuple[int, int]:
     upload = session.get(CollectionUploadRecord, collection_id)
     if upload is None:
         return 0, 0
-    return int(upload.custodied_file_count), int(upload.custodied_file_bytes)
+    return int(upload.custodied_artifact_count), int(upload.custodied_artifact_bytes)
 
 
 def _custody_payload(
@@ -6542,16 +5296,16 @@ def _upload_list_statement(
         filters.append(CollectionUploadRecord.state == state)
     statement = select(
         CollectionUploadRecord,
-        CollectionUploadRecord.file_count.label("files"),
-        CollectionUploadRecord.file_bytes.label("bytes"),
+        CollectionUploadRecord.artifact_count.label("files"),
+        CollectionUploadRecord.artifact_bytes.label("bytes"),
     ).where(*filters)
     direction = asc if order == "asc" else desc
     sort_column = {
         "id": CollectionUploadRecord.collection_id,
         "created_at": CollectionUploadRecord.opened_at,
         "state": CollectionUploadRecord.state,
-        "bytes": CollectionUploadRecord.file_bytes,
-        "files": CollectionUploadRecord.file_count,
+        "bytes": CollectionUploadRecord.artifact_bytes,
+        "files": CollectionUploadRecord.artifact_count,
     }[sort]
     del direction
     return statement, (
@@ -6573,9 +5327,9 @@ def _upload_list_position(
     elif sort == "state":
         value = upload.state
     elif sort == "bytes":
-        value = upload.file_bytes
+        value = upload.artifact_bytes
     else:
-        value = upload.file_count
+        value = upload.artifact_count
     return (value,) if sort == "id" else (value, upload.collection_id)
 
 
@@ -6663,8 +5417,8 @@ def _orphan_discard_plan(
     upload = session.get(CollectionUploadRecord, collection_id)
     if upload is None:
         raise NotFound(f"collection upload session not found: {collection_id}")
-    files = upload.file_count
-    byte_count = upload.file_bytes
+    files = upload.artifact_count
+    byte_count = upload.artifact_bytes
     custodied_files, custodied_bytes = _custody_stats(session, collection_id)
     archive_objects = int(
         session.scalar(
@@ -6725,11 +5479,13 @@ def _touch_upload(
         upload.lease_expires_at = _custody_lease_expiry(config, now=current)
 
 
-def _archive_object_source_paths(record: CollectionArchiveObjectUploadRecord) -> tuple[str, ...]:
+def _archive_object_artifact_ids(record: CollectionArchiveObjectUploadRecord) -> tuple[str, ...]:
     if record.kind == "pack":
-        return tuple(member.path for member in parse_pack_volume_plan(record.plan_json).members)
+        return tuple(
+            member.artifact_id for member in parse_pack_volume_plan(record.plan_json).members
+        )
     if record.kind == "segment":
-        return (parse_raw_volume_plan(record.plan_json).source_path,)
+        return (parse_raw_volume_plan(record.plan_json).artifact_id,)
     raise RuntimeError(f"unsupported archive volume kind: {record.kind}")
 
 
@@ -6741,16 +5497,16 @@ def _record_artifact_custody_receipts(
 ) -> None:
     """Persist exact safe-release evidence once every covering object is sealed."""
 
-    volumes_by_path: dict[str, list[CollectionArchiveObjectUploadRecord]] = {}
+    volumes_by_id: dict[str, list[CollectionArchiveObjectUploadRecord]] = {}
     for volume in upload.archive_objects:
-        for path in _archive_object_source_paths(volume):
-            volumes_by_path.setdefault(path, []).append(volume)
-    newly_custodied_files = 0
+        for artifact_id in _archive_object_artifact_ids(volume):
+            volumes_by_id.setdefault(artifact_id, []).append(volume)
+    newly_custodied_artifacts = 0
     newly_custodied_bytes = 0
-    for artifact in upload.files:
+    for artifact in upload.artifacts:
         if artifact.custody_receipt_json is not None:
             continue
-        volumes = volumes_by_path.get(artifact.path, [])
+        volumes = volumes_by_id.get(artifact.artifact_id, [])
         if not volumes or any(
             volume.state != "sealed" or volume.sealed_receipt_json is None for volume in volumes
         ):
@@ -6766,7 +5522,7 @@ def _record_artifact_custody_receipts(
         )
         receipt = CollectionUploadArtifactCustodyReceiptDocument.seal(
             collection_id=upload.collection_id,
-            path=artifact.path,
+            artifact_id=ArtifactId(artifact.artifact_id),
             bytes=artifact.bytes,
             sha256=artifact.sha256,
             archive_objects=objects,
@@ -6776,10 +5532,10 @@ def _record_artifact_custody_receipts(
             exclude_none=True,
             by_alias=True,
         )
-        newly_custodied_files += 1
+        newly_custodied_artifacts += 1
         newly_custodied_bytes += artifact.bytes
-    upload.custodied_file_count += newly_custodied_files
-    upload.custodied_file_bytes += newly_custodied_bytes
+    upload.custodied_artifact_count += newly_custodied_artifacts
+    upload.custodied_artifact_bytes += newly_custodied_bytes
 
 
 def _upload_payload(
@@ -6789,8 +5545,8 @@ def _upload_payload(
     state: str | None = None,
     resumed: bool | None = None,
 ) -> dict[str, object]:
-    files_total = upload.file_count
-    bytes_total = upload.file_bytes
+    files_total = upload.artifact_count
+    bytes_total = upload.artifact_bytes
     custodied_files, custodied_bytes = _custody_stats(session, upload.collection_id)
     tag_count = _upload_tag_count(session, upload.collection_id)
     archive_progress = session.execute(
@@ -6820,8 +5576,8 @@ def _upload_payload(
             "current" if upload.tag_publication_receipt_json is not None else "pending"
         ),
         "tag_count": tag_count,
-        "provenance_mode": upload.provenance_mode,
         "provenance_identity": None,
+        "delivery_context_id": upload.delivery_context_id,
         "archive_store": upload.archive_store,
         "use_cache": upload.use_cache,
         "copy_to": json.loads(upload.copy_to_json),
@@ -6915,12 +5671,12 @@ def _finalized_payload(
         "tag_revision": collection.tag_revision,
         "tag_set_identity": collection.tag_set_identity,
         "tag_publication": "current",
-        "content_identity": collection.content_identity,
+        "artifact_set_identity": collection.artifact_set_identity,
         "archive_root_sha256": manifest_sha256,
         "encryption_format": collection.encryption_format,
         "passphrase_id": collection.passphrase_id,
-        "files": int(collection.file_count),
-        "bytes": int(collection.file_bytes),
+        "files": int(collection.artifact_count),
+        "bytes": int(collection.artifact_bytes),
         "remote_storage_bytes": stored_bytes,
         "archive_copy_count": archive_copy_count,
     }
@@ -6945,9 +5701,9 @@ def _finalized_payload(
             )
             or 0
         ),
-        "provenance_mode": collection.provenance_mode,
         "provenance_identity": collection.provenance_identity,
-        "content_identity": collection.content_identity,
+        "artifact_set_identity": collection.artifact_set_identity,
+        "delivery_context_id": collection.delivery_context_id,
         "archive_root_sha256": manifest_sha256,
         "archive_store": collection.creation_archive_store,
         "use_cache": collection.creation_use_cache,

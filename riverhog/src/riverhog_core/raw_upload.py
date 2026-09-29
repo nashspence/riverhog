@@ -14,6 +14,7 @@ from riverhog_age import (
     UploadState,
     age_ciphertext_len_for_plaintext_len,
 )
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.paths import validate_canonical_relpath
 
@@ -79,11 +80,11 @@ class RawUploadCheckpoint:
     volume_id: str
     object_path: str
     relative_path: str
-    source_path: str
-    file_offset: int
+    artifact_id: str
+    artifact_offset: int
     plaintext_bytes: int
-    file_bytes: int
-    file_sha256: str
+    artifact_bytes: int
+    artifact_sha256: str
     target_part_plaintext_bytes: int
     expected_part_sha256s: tuple[str, ...]
     write_token: str
@@ -101,11 +102,11 @@ class RawUploadCheckpoint:
                 "volume_id": self.volume_id,
                 "object_path": self.object_path,
                 "relative_path": self.relative_path,
-                "source_path": self.source_path,
-                "file_offset": self.file_offset,
+                "artifact_id": self.artifact_id,
+                "artifact_offset": self.artifact_offset,
                 "plaintext_bytes": self.plaintext_bytes,
-                "file_bytes": self.file_bytes,
-                "file_sha256": self.file_sha256,
+                "artifact_bytes": self.artifact_bytes,
+                "artifact_sha256": self.artifact_sha256,
                 "target_part_plaintext_bytes": self.target_part_plaintext_bytes,
                 "expected_part_sha256s": list(self.expected_part_sha256s),
                 "write_token": self.write_token,
@@ -142,11 +143,11 @@ class RawUploadCheckpoint:
             "volume_id",
             "object_path",
             "relative_path",
-            "source_path",
-            "file_offset",
+            "artifact_id",
+            "artifact_offset",
             "plaintext_bytes",
-            "file_bytes",
-            "file_sha256",
+            "artifact_bytes",
+            "artifact_sha256",
             "target_part_plaintext_bytes",
             "expected_part_sha256s",
             "write_token",
@@ -189,11 +190,11 @@ class RawUploadCheckpoint:
         volume_id = str(payload.get("volume_id", ""))
         if _SEGMENT_ID_RE.fullmatch(volume_id) is None:
             raise ValueError("raw upload volume id is invalid")
-        file_offset = _uint(payload.get("file_offset"), "file offset")
-        file_bytes = _uint(payload.get("file_bytes"), "file bytes")
-        if file_offset + plaintext_bytes > file_bytes:
-            raise ValueError("raw upload file range is invalid")
-        file_sha256 = _sha(payload.get("file_sha256"), "raw upload file")
+        artifact_offset = _uint(payload.get("artifact_offset"), "artifact offset")
+        artifact_bytes = _uint(payload.get("artifact_bytes"), "artifact bytes")
+        if artifact_offset + plaintext_bytes > artifact_bytes:
+            raise ValueError("raw upload artifact range is invalid")
+        artifact_sha256 = _sha(payload.get("artifact_sha256"), "raw upload artifact")
         object_path = str(payload.get("object_path", ""))
         write_token = str(payload.get("write_token", ""))
         if not object_path or not write_token:
@@ -204,16 +205,19 @@ class RawUploadCheckpoint:
         )
         if target_part_plaintext_bytes < CHUNK_SIZE or target_part_plaintext_bytes % CHUNK_SIZE:
             raise ValueError("raw upload part target must be a positive age-chunk multiple")
+        raw_artifact_id = payload.get("artifact_id")
+        if not isinstance(raw_artifact_id, str):
+            raise ValueError("raw upload artifact ID is invalid")
         return cls(
             collection_id=collection_id,
             volume_id=volume_id,
             object_path=object_path,
             relative_path=validate_canonical_relpath(payload.get("relative_path")),
-            source_path=validate_canonical_relpath(payload.get("source_path")),
-            file_offset=file_offset,
+            artifact_id=ArtifactId(raw_artifact_id),
+            artifact_offset=artifact_offset,
             plaintext_bytes=plaintext_bytes,
-            file_bytes=file_bytes,
-            file_sha256=file_sha256,
+            artifact_bytes=artifact_bytes,
+            artifact_sha256=artifact_sha256,
             target_part_plaintext_bytes=target_part_plaintext_bytes,
             expected_part_sha256s=expected_part_sha256s,
             write_token=write_token,
@@ -395,11 +399,11 @@ class RawVolumeUploader:
             volume_id=plan.volume_id,
             object_path=object_path,
             relative_path=normalized_relative_path,
-            source_path=plan.source_path,
-            file_offset=plan.file_offset,
+            artifact_id=plan.artifact_id,
+            artifact_offset=plan.artifact_offset,
             plaintext_bytes=plan.plaintext_bytes,
-            file_bytes=plan.file_bytes,
-            file_sha256=plan.file_sha256,
+            artifact_bytes=plan.artifact_bytes,
+            artifact_sha256=plan.artifact_sha256,
             target_part_plaintext_bytes=target_part_plaintext_bytes,
             expected_part_sha256s=expected_digests,
             write_token=write_session.write_token,
@@ -490,11 +494,11 @@ class RawVolumeUploader:
             volume_id=checkpoint.volume_id,
             sequence=int(checkpoint.volume_id.removeprefix("segment-"), 16),
             relative_path=checkpoint.relative_path,
-            source_path=checkpoint.source_path,
-            file_offset=checkpoint.file_offset,
+            artifact_id=checkpoint.artifact_id,
+            artifact_offset=checkpoint.artifact_offset,
             plaintext_bytes=checkpoint.plaintext_bytes,
-            file_bytes=checkpoint.file_bytes,
-            file_sha256=checkpoint.file_sha256,
+            artifact_bytes=checkpoint.artifact_bytes,
+            artifact_sha256=checkpoint.artifact_sha256,
             age_state_json=checkpoint.age_state_json,
             parts=tuple(sorted(checkpoint.archive_parts, key=lambda current: current.number)),
             revision=completed.revision,
@@ -686,11 +690,11 @@ class RawVolumeUploader:
     def _validate(self, plan: RawVolumePlan, checkpoint: RawUploadCheckpoint) -> None:
         if (
             checkpoint.volume_id != plan.volume_id
-            or checkpoint.source_path != plan.source_path
-            or checkpoint.file_offset != plan.file_offset
+            or checkpoint.artifact_id != plan.artifact_id
+            or checkpoint.artifact_offset != plan.artifact_offset
             or checkpoint.plaintext_bytes != plan.plaintext_bytes
-            or checkpoint.file_bytes != plan.file_bytes
-            or checkpoint.file_sha256 != plan.file_sha256
+            or checkpoint.artifact_bytes != plan.artifact_bytes
+            or checkpoint.artifact_sha256 != plan.artifact_sha256
         ):
             raise ValueError("raw upload checkpoint does not match its plan")
         state = UploadState.from_json_bytes(checkpoint.age_state_json)
@@ -795,11 +799,11 @@ def merge_raw_upload_checkpoints(
         "volume_id",
         "object_path",
         "relative_path",
-        "source_path",
-        "file_offset",
+        "artifact_id",
+        "artifact_offset",
         "plaintext_bytes",
-        "file_bytes",
-        "file_sha256",
+        "artifact_bytes",
+        "artifact_sha256",
         "target_part_plaintext_bytes",
         "expected_part_sha256s",
         "write_token",
@@ -840,10 +844,10 @@ def _metadata(
 ) -> dict[str, str]:
     metadata = {
         "riverhog-format": RAW_VOLUME_STORAGE_FORMAT,
-        "riverhog-source-path-sha256": hashlib.sha256(plan.source_path.encode("utf-8")).hexdigest(),
-        "riverhog-file-offset": str(plan.file_offset),
+        "riverhog-artifact-id": plan.artifact_id,
+        "riverhog-artifact-offset": str(plan.artifact_offset),
         "riverhog-plaintext-bytes": str(plan.plaintext_bytes),
-        "riverhog-file-sha256": plan.file_sha256,
+        "riverhog-artifact-sha256": plan.artifact_sha256,
     }
     if age_state_json is not None:
         state = UploadState.from_json_bytes(age_state_json)
@@ -855,11 +859,11 @@ def _checkpoint_plan(checkpoint: RawUploadCheckpoint) -> RawVolumePlan:
     return RawVolumePlan(
         volume_id=checkpoint.volume_id,
         sequence=int(checkpoint.volume_id.removeprefix("segment-"), 16),
-        source_path=checkpoint.source_path,
-        file_offset=checkpoint.file_offset,
+        artifact_id=checkpoint.artifact_id,
+        artifact_offset=checkpoint.artifact_offset,
         plaintext_bytes=checkpoint.plaintext_bytes,
-        file_bytes=checkpoint.file_bytes,
-        file_sha256=checkpoint.file_sha256,
+        artifact_bytes=checkpoint.artifact_bytes,
+        artifact_sha256=checkpoint.artifact_sha256,
     )
 
 

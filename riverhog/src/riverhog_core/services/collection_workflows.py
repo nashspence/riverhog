@@ -13,6 +13,7 @@ from typing import Any, cast
 from http_api_contracts import closed_literal_values
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
+    ArtifactId,
     ClaimState,
     ProcessingClaimSort,
     SortOrder,
@@ -25,10 +26,6 @@ from riverhog_protocol.collection_workflow_transport import (
     WORK_DOCUMENT_MAX_BYTES,
 )
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_DISPOSITION_EVIDENCE_PREFIX,
-    DERIVATION_EVIDENCE_PATH,
-    DERIVATION_OUTPUT_EVIDENCE_PREFIX,
-    PRODUCER_EVIDENCE_PATH,
     ArtifactDiscardApproval,
     ArtifactDisposition,
     ArtifactDispositionOutput,
@@ -84,8 +81,8 @@ from riverhog_core.browse import bounded_page, keyset_statement, validate_page_s
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectRecord,
-    CollectionDeletionRecord,
     CollectionArtifactRecord,
+    CollectionDeletionRecord,
     CollectionRecord,
     CollectionUploadRecord,
 )
@@ -308,7 +305,7 @@ class SqlAlchemyCollectionWorkflowService:
                         collection_id=value.collection_id,
                         collection_order=ordinal,
                         archive_root_sha256=value.archive_root_sha256,
-                        content_identity=value.content_identity,
+                        artifact_set_identity=value.artifact_set_identity,
                     )
                 )
                 _checkpoint_item(checkpoint, value.as_dict())
@@ -418,7 +415,7 @@ class SqlAlchemyCollectionWorkflowService:
                 _validate_claim_artifacts(session, claim, (value,))
                 existing = session.get(
                     CollectionProcessingClaimArtifactRecord,
-                    (claim.id, value.collection.collection_id, value.path),
+                    (claim.id, value.collection.collection_id, value.artifact_id),
                 )
                 if existing is not None:
                     raise Conflict("artifact is already staged")
@@ -426,7 +423,7 @@ class SqlAlchemyCollectionWorkflowService:
                     CollectionProcessingClaimArtifactRecord(
                         claim_id=claim.id,
                         collection_id=value.collection.collection_id,
-                        path=value.path,
+                        artifact_id=value.artifact_id,
                         artifact_order=ordinal,
                         bytes=value.bytes,
                         sha256=value.sha256,
@@ -851,7 +848,7 @@ class SqlAlchemyCollectionWorkflowService:
                 _validate_claim_artifacts(session, claim, (value,))
                 existing = session.get(
                     CollectionProcessingCapabilityArtifactRecord,
-                    (capability.id, value.collection.collection_id, value.path),
+                    (capability.id, value.collection.collection_id, value.artifact_id),
                 )
                 if existing is not None:
                     raise Conflict("capability artifact is already staged")
@@ -859,7 +856,7 @@ class SqlAlchemyCollectionWorkflowService:
                     CollectionProcessingCapabilityArtifactRecord(
                         capability_id=capability.id,
                         collection_id=value.collection.collection_id,
-                        path=value.path,
+                        artifact_id=value.artifact_id,
                         artifact_order=ordinal,
                         bytes=value.bytes,
                         sha256=value.sha256,
@@ -1032,7 +1029,7 @@ class SqlAlchemyCollectionWorkflowService:
                 root = _claim_input_root(session, claim.id, subject.collection.collection_id)
                 artifact = session.get(
                     CollectionProcessingClaimArtifactRecord,
-                    (claim.id, subject.collection.collection_id, subject.path),
+                    (claim.id, subject.collection.collection_id, subject.artifact_id),
                 )
                 if (
                     root != subject.collection
@@ -1046,7 +1043,7 @@ class SqlAlchemyCollectionWorkflowService:
                         claim_id=claim.id,
                         evidence_sha256=sha256,
                         collection_id=subject.collection.collection_id,
-                        path=subject.path,
+                        artifact_id=subject.artifact_id,
                         bytes=subject.bytes,
                         sha256=subject.sha256,
                     )
@@ -1079,7 +1076,7 @@ class SqlAlchemyCollectionWorkflowService:
         if not values or len(values) > DISPOSITION_BATCH_MAX:
             raise BadRequest(f"disposition batch must contain 1 to {DISPOSITION_BATCH_MAX} facts")
         keys = [
-            (item.input_collection_id, item.input_archive_root_sha256, item.input_path)
+            (item.input_collection_id, item.input_archive_root_sha256, item.input_artifact_id)
             for item in values
         ]
         if len(keys) != len(set(keys)):
@@ -1099,7 +1096,7 @@ class SqlAlchemyCollectionWorkflowService:
                 _require_disposition_authority(session, claim, item, principal)
                 existing = session.get(
                     CollectionProcessingDispositionRecord,
-                    (claim.id, item.input_collection_id, item.input_path),
+                    (claim.id, item.input_collection_id, item.input_artifact_id),
                 )
                 if existing is not None:
                     if _disposition_record_identity(session, claim, existing) != item:
@@ -1111,7 +1108,7 @@ class SqlAlchemyCollectionWorkflowService:
                     CollectionProcessingDispositionRecord(
                         claim_id=claim.id,
                         collection_id=item.input_collection_id,
-                        path=item.input_path,
+                        artifact_id=item.input_artifact_id,
                         status=item.status,
                         reason_code=item.code,
                         reason_message=item.message,
@@ -1149,7 +1146,10 @@ class SqlAlchemyCollectionWorkflowService:
             raise BadRequest(
                 f"disposition output batch must contain 1 to {DISPOSITION_BATCH_MAX} edges"
             )
-        keys = [(item.output_path, item.input_collection_id, item.input_path) for item in values]
+        keys = [
+            (item.output_artifact_id, item.input_collection_id, item.input_artifact_id)
+            for item in values
+        ]
         if len(keys) != len(set(keys)):
             raise BadRequest("disposition output batch repeats a source edge")
         with session_scope(self._session_factory) as session:
@@ -1163,7 +1163,7 @@ class SqlAlchemyCollectionWorkflowService:
             additions = 0
             new_outputs = 0
             newly_mapped_inputs = 0
-            batch_output_paths: set[str] = set()
+            batch_output_artifact_ids: set[str] = set()
             batch_input_keys: set[tuple[int, str]] = set()
             for item in values:
                 _require_disposition_output(session, claim, item)
@@ -1171,9 +1171,9 @@ class SqlAlchemyCollectionWorkflowService:
                     CollectionProcessingDispositionOutputRecord,
                     (
                         claim.id,
-                        item.output_path,
+                        item.output_artifact_id,
                         item.input_collection_id,
-                        item.input_path,
+                        item.input_artifact_id,
                     ),
                 )
                 if existing is not None:
@@ -1184,7 +1184,8 @@ class SqlAlchemyCollectionWorkflowService:
                     select(CollectionProcessingDispositionOutputRecord.claim_id)
                     .where(
                         CollectionProcessingDispositionOutputRecord.claim_id == claim.id,
-                        CollectionProcessingDispositionOutputRecord.output_path == item.output_path,
+                        CollectionProcessingDispositionOutputRecord.output_artifact_id
+                        == item.output_artifact_id,
                     )
                     .limit(1)
                 )
@@ -1194,25 +1195,29 @@ class SqlAlchemyCollectionWorkflowService:
                         CollectionProcessingDispositionOutputRecord.claim_id == claim.id,
                         CollectionProcessingDispositionOutputRecord.input_collection_id
                         == item.input_collection_id,
-                        CollectionProcessingDispositionOutputRecord.input_path == item.input_path,
+                        CollectionProcessingDispositionOutputRecord.input_artifact_id
+                        == item.input_artifact_id,
                     )
                     .limit(1)
                 )
                 session.add(
                     CollectionProcessingDispositionOutputRecord(
                         claim_id=claim.id,
-                        output_path=item.output_path,
+                        output_artifact_id=item.output_artifact_id,
                         input_collection_id=item.input_collection_id,
-                        input_path=item.input_path,
+                        input_artifact_id=item.input_artifact_id,
                     )
                 )
                 additions += 1
-                if output_exists is None and item.output_path not in batch_output_paths:
+                if (
+                    output_exists is None
+                    and item.output_artifact_id not in batch_output_artifact_ids
+                ):
                     new_outputs += 1
-                input_key = (item.input_collection_id, item.input_path)
+                input_key = (item.input_collection_id, item.input_artifact_id)
                 if source_exists is None and input_key not in batch_input_keys:
                     newly_mapped_inputs += 1
-                batch_output_paths.add(item.output_path)
+                batch_output_artifact_ids.add(item.output_artifact_id)
                 batch_input_keys.add(input_key)
             if additions:
                 disposition_set.output_edge_count += additions
@@ -1520,12 +1525,6 @@ class SqlAlchemyCollectionWorkflowService:
                 or output.creation_idempotency_key != claim.execution_id
             ):
                 raise Conflict("derived collection was not created by the sealed output intent")
-            evidence = session.get(
-                CollectionArtifactRecord,
-                (output.id, DERIVATION_EVIDENCE_PATH),
-            )
-            if evidence is None or evidence.sha256 != document.sha256:
-                raise Conflict("derived collection does not contain its exact derivation evidence")
             disposition_set = _verified_disposition_set(session, claim, document.disposition_set)
             _verify_dispositions(session, claim, disposition_set, output)
             _collection_root(session, output.id)
@@ -1630,7 +1629,7 @@ class SqlAlchemyCollectionWorkflowService:
             ):
                 raise Conflict("effect disposition set does not cover its exact input scope")
             wrong_effect = session.scalar(
-                select(CollectionProcessingDispositionRecord.path)
+                select(CollectionProcessingDispositionRecord.artifact_id)
                 .where(
                     CollectionProcessingDispositionRecord.claim_id == claim.id,
                     CollectionProcessingDispositionRecord.status == "effect-applied",
@@ -1642,7 +1641,7 @@ class SqlAlchemyCollectionWorkflowService:
             if wrong_effect is not None:
                 raise Conflict("effect disposition differs from the verified receipt")
             applied = session.scalar(
-                select(CollectionProcessingDispositionRecord.path)
+                select(CollectionProcessingDispositionRecord.artifact_id)
                 .where(
                     CollectionProcessingDispositionRecord.claim_id == claim.id,
                     CollectionProcessingDispositionRecord.status == "effect-applied",
@@ -2437,7 +2436,7 @@ def _input_identity(row: CollectionProcessingClaimInputRecord) -> CollectionRoot
     return CollectionRootIdentity(
         collection_id=row.collection_id,
         archive_root_sha256=row.archive_root_sha256,
-        content_identity=row.content_identity,
+        artifact_set_identity=row.artifact_set_identity,
     )
 
 
@@ -2464,7 +2463,7 @@ def _artifact_identity(
         raise InvalidState("claim artifact has no exact input root")
     return CollectionArtifactIdentity(
         collection=_input_identity(input_row),
-        path=row.path,
+        artifact_id=ArtifactId(row.artifact_id),
         bytes=row.bytes,
         sha256=row.sha256,
     )
@@ -2504,7 +2503,7 @@ def _capability_artifact_identity(
         raise InvalidState("capability artifact has no exact input root")
     return CollectionArtifactIdentity(
         collection=_input_identity(input_row),
-        path=row.path,
+        artifact_id=ArtifactId(row.artifact_id),
         bytes=row.bytes,
         sha256=row.sha256,
     )
@@ -2740,7 +2739,7 @@ def _claim_input_root(
     return CollectionRootIdentity(
         collection_id=root.collection_id,
         archive_root_sha256=root.archive_root_sha256,
-        content_identity=root.content_identity,
+        artifact_set_identity=root.artifact_set_identity,
     )
 
 
@@ -2754,7 +2753,7 @@ def _require_disposition_input(
         raise Conflict("disposition input archive root differs from the sealed claim")
     artifact = session.get(
         CollectionProcessingClaimArtifactRecord,
-        (claim.id, disposition.input_collection_id, disposition.input_path),
+        (claim.id, disposition.input_collection_id, disposition.input_artifact_id),
     )
     if artifact is None:
         raise Conflict("disposition references an artifact outside the sealed claim scope")
@@ -2803,11 +2802,11 @@ def _validated_consideration_document(
             raise BadRequest("consideration evidence subject is invalid")
         try:
             subject = CollectionArtifactIdentity.from_mapping(
-                {key: value[key] for key in ("collection", "path", "bytes", "sha256")}
+                {key: value[key] for key in ("collection", "artifact_id", "bytes", "sha256")}
             )
         except (KeyError, ValueError) as exc:
             raise BadRequest("consideration evidence subject is invalid") from exc
-        key = (subject.collection.collection_id, subject.path)
+        key = (subject.collection.collection_id, subject.artifact_id)
         if key in keys:
             raise BadRequest("consideration evidence repeats an exact subject")
         keys.add(key)
@@ -2866,12 +2865,12 @@ def _require_disposition_authority(
     root = _claim_input_root(session, claim.id, disposition.input_collection_id)
     artifact = session.get(
         CollectionProcessingClaimArtifactRecord,
-        (claim.id, disposition.input_collection_id, disposition.input_path),
+        (claim.id, disposition.input_collection_id, disposition.input_artifact_id),
     )
     assert artifact is not None
     subject = CollectionArtifactIdentity(
         collection=root,
-        path=artifact.path,
+        artifact_id=ArtifactId(artifact.artifact_id),
         bytes=artifact.bytes,
         sha256=artifact.sha256,
     ).as_dict()
@@ -2906,7 +2905,7 @@ def _require_disposition_authority(
                 claim.id,
                 slot["document_sha256"],
                 disposition.input_collection_id,
-                disposition.input_path,
+                disposition.input_artifact_id,
             ),
         )
         if (
@@ -2933,7 +2932,7 @@ def _disposition_record_identity(
     return ArtifactDisposition(
         input_collection_id=record.collection_id,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path=record.path,
+        input_artifact_id=ArtifactId(record.artifact_id),
         status=cast(DispositionState, record.status),
         code=record.reason_code,
         message=record.reason_message,
@@ -2952,14 +2951,12 @@ def _require_disposition_output(
     claim: CollectionProcessingClaimRecord,
     output: ArtifactDispositionOutput,
 ) -> None:
-    if output.output_path.startswith("riverhog/"):
-        raise BadRequest("transform output edges may not bind Riverhog control paths")
     root = _claim_input_root(session, claim.id, output.input_collection_id)
     if root.archive_root_sha256 != output.input_archive_root_sha256:
         raise Conflict("disposition output input root differs from the sealed claim")
     disposition = session.get(
         CollectionProcessingDispositionRecord,
-        (claim.id, output.input_collection_id, output.input_path),
+        (claim.id, output.input_collection_id, output.input_artifact_id),
     )
     if disposition is None or disposition.status not in {"transformed", "preserved"}:
         raise Conflict("output edge requires a successor-producing input disposition")
@@ -2974,8 +2971,8 @@ def _disposition_output_record_identity(
     return ArtifactDispositionOutput(
         input_collection_id=record.input_collection_id,
         input_archive_root_sha256=root.archive_root_sha256,
-        input_path=record.input_path,
-        output_path=record.output_path,
+        input_artifact_id=ArtifactId(record.input_artifact_id),
+        output_artifact_id=ArtifactId(record.output_artifact_id),
     )
 
 
@@ -3039,7 +3036,7 @@ def _advance_disposition_hash(
         CollectionProcessingDispositionRecord.claim_id == disposition_set.claim_id
     )
     if disposition_set.validation_collection_id is not None:
-        assert disposition_set.validation_input_path is not None
+        assert disposition_set.validation_input_artifact_id is not None
         statement = statement.where(
             or_(
                 CollectionProcessingDispositionRecord.collection_id
@@ -3047,8 +3044,8 @@ def _advance_disposition_hash(
                 and_(
                     CollectionProcessingDispositionRecord.collection_id
                     == disposition_set.validation_collection_id,
-                    CollectionProcessingDispositionRecord.path
-                    > disposition_set.validation_input_path,
+                    CollectionProcessingDispositionRecord.artifact_id
+                    > disposition_set.validation_input_artifact_id,
                 ),
             )
         )
@@ -3056,7 +3053,7 @@ def _advance_disposition_hash(
         session.scalars(
             statement.order_by(
                 CollectionProcessingDispositionRecord.collection_id,
-                CollectionProcessingDispositionRecord.path,
+                CollectionProcessingDispositionRecord.artifact_id,
             ).limit(_DISPOSITION_VALIDATION_BATCH)
         )
     )
@@ -3080,7 +3077,7 @@ def _advance_disposition_hash(
         identity = _disposition_record_identity(session, claim, row)
         digest.update(canonical_json_bytes(identity.as_dict()) + b"\n")
         disposition_set.validation_collection_id = row.collection_id
-        disposition_set.validation_input_path = row.path
+        disposition_set.validation_input_artifact_id = row.artifact_id
     disposition_set.disposition_hash_state = digest.export_state()
     disposition_set.updated_at = utc_timestamp_now()
     return True
@@ -3096,35 +3093,35 @@ def _advance_disposition_output_hash(
     statement = select(CollectionProcessingDispositionOutputRecord).where(
         CollectionProcessingDispositionOutputRecord.claim_id == disposition_set.claim_id
     )
-    if disposition_set.validation_output_path is not None:
+    if disposition_set.validation_output_artifact_id is not None:
         assert disposition_set.validation_output_collection_id is not None
-        assert disposition_set.validation_output_input_path is not None
+        assert disposition_set.validation_output_input_artifact_id is not None
         statement = statement.where(
             or_(
-                CollectionProcessingDispositionOutputRecord.output_path
-                > disposition_set.validation_output_path,
+                CollectionProcessingDispositionOutputRecord.output_artifact_id
+                > disposition_set.validation_output_artifact_id,
                 and_(
-                    CollectionProcessingDispositionOutputRecord.output_path
-                    == disposition_set.validation_output_path,
+                    CollectionProcessingDispositionOutputRecord.output_artifact_id
+                    == disposition_set.validation_output_artifact_id,
                     CollectionProcessingDispositionOutputRecord.input_collection_id
                     > disposition_set.validation_output_collection_id,
                 ),
                 and_(
-                    CollectionProcessingDispositionOutputRecord.output_path
-                    == disposition_set.validation_output_path,
+                    CollectionProcessingDispositionOutputRecord.output_artifact_id
+                    == disposition_set.validation_output_artifact_id,
                     CollectionProcessingDispositionOutputRecord.input_collection_id
                     == disposition_set.validation_output_collection_id,
-                    CollectionProcessingDispositionOutputRecord.input_path
-                    > disposition_set.validation_output_input_path,
+                    CollectionProcessingDispositionOutputRecord.input_artifact_id
+                    > disposition_set.validation_output_input_artifact_id,
                 ),
             )
         )
     rows = list(
         session.scalars(
             statement.order_by(
-                CollectionProcessingDispositionOutputRecord.output_path,
+                CollectionProcessingDispositionOutputRecord.output_artifact_id,
                 CollectionProcessingDispositionOutputRecord.input_collection_id,
-                CollectionProcessingDispositionOutputRecord.input_path,
+                CollectionProcessingDispositionOutputRecord.input_artifact_id,
             ).limit(_DISPOSITION_VALIDATION_BATCH)
         )
     )
@@ -3149,9 +3146,9 @@ def _advance_disposition_output_hash(
         row.output_order = ordinal
         identity = _disposition_output_record_identity(session, claim, row)
         digest.update(canonical_json_bytes(identity.as_dict()) + b"\n")
-        disposition_set.validation_output_path = row.output_path
+        disposition_set.validation_output_artifact_id = row.output_artifact_id
         disposition_set.validation_output_collection_id = row.input_collection_id
-        disposition_set.validation_output_input_path = row.input_path
+        disposition_set.validation_output_input_artifact_id = row.input_artifact_id
     disposition_set.output_hash_state = digest.export_state()
     disposition_set.updated_at = utc_timestamp_now()
     return True
@@ -3286,7 +3283,7 @@ def _insert_processing_outcome(
             result_kind=identity.result_kind,
             collection_id=root.collection_id if root else None,
             archive_root_sha256=root.archive_root_sha256 if root else None,
-            content_identity=root.content_identity if root else None,
+            artifact_set_identity=root.artifact_set_identity if root else None,
             derivation_sha256=identity.derivation_sha256,
             effect_receipt_sha256=identity.effect_receipt_sha256,
             effect_settlement_sha256=identity.effect_settlement_sha256,
@@ -3469,7 +3466,7 @@ def _outcome_identity(
             CollectionRootIdentity(
                 collection_id=record.collection_id,
                 archive_root_sha256=cast(str, record.archive_root_sha256),
-                content_identity=cast(str, record.content_identity),
+                artifact_set_identity=cast(str, record.artifact_set_identity),
             )
             if record.collection_id is not None
             else None
@@ -3527,20 +3524,12 @@ def _verify_dispositions(
 ) -> None:
     if disposition_set.disposition_count != claim.artifact_count:
         raise Conflict("derivation does not account for every input artifact exactly once")
-    evidence_pages = (
-        disposition_set.disposition_count + DISPOSITION_BATCH_MAX - 1
-    ) // DISPOSITION_BATCH_MAX + (
-        disposition_set.output_edge_count + DISPOSITION_BATCH_MAX - 1
-    ) // DISPOSITION_BATCH_MAX
-    # The server validates each bounded recovery-evidence page against the sealed
-    # generic identity when its exact identity is registered. The scalar count
-    # then proves complete output and evidence coverage without loading either set.
-    if output.file_count != disposition_set.output_artifact_count + evidence_pages + 2:
-        raise Conflict("derivation output paths do not match the derived collection artifacts")
+    if output.artifact_count != disposition_set.output_artifact_count:
+        raise Conflict("derivation outputs do not match the derived collection artifacts")
     source = aliased(CollectionProcessingClaimArtifactRecord)
     successor = aliased(CollectionArtifactRecord)
     changed_preservation = session.scalar(
-        select(CollectionProcessingDispositionRecord.path)
+        select(CollectionProcessingDispositionRecord.artifact_id)
         .join(
             CollectionProcessingDispositionOutputRecord,
             and_(
@@ -3548,8 +3537,8 @@ def _verify_dispositions(
                 == CollectionProcessingDispositionRecord.claim_id,
                 CollectionProcessingDispositionOutputRecord.input_collection_id
                 == CollectionProcessingDispositionRecord.collection_id,
-                CollectionProcessingDispositionOutputRecord.input_path
-                == CollectionProcessingDispositionRecord.path,
+                CollectionProcessingDispositionOutputRecord.input_artifact_id
+                == CollectionProcessingDispositionRecord.artifact_id,
             ),
         )
         .join(
@@ -3557,21 +3546,22 @@ def _verify_dispositions(
             and_(
                 source.claim_id == CollectionProcessingDispositionRecord.claim_id,
                 source.collection_id == CollectionProcessingDispositionRecord.collection_id,
-                source.path == CollectionProcessingDispositionRecord.path,
+                source.artifact_id == CollectionProcessingDispositionRecord.artifact_id,
             ),
         )
         .outerjoin(
             successor,
             and_(
                 successor.collection_id == output.id,
-                successor.path == CollectionProcessingDispositionOutputRecord.output_path,
+                successor.artifact_id
+                == CollectionProcessingDispositionOutputRecord.output_artifact_id,
             ),
         )
         .where(
             CollectionProcessingDispositionRecord.claim_id == claim.id,
             CollectionProcessingDispositionRecord.status == "preserved",
             or_(
-                successor.path.is_(None),
+                successor.artifact_id.is_(None),
                 successor.bytes != source.bytes,
                 successor.sha256 != source.sha256,
             ),
@@ -3762,17 +3752,17 @@ def _require_retirement_coverage(
             and_(
                 artifact.claim_id == disposition.claim_id,
                 artifact.collection_id == disposition.collection_id,
-                artifact.path == disposition.path,
+                artifact.artifact_id == disposition.artifact_id,
             ),
         )
         .where(
             disposition.claim_id.in_(required_claims),
             disposition.collection_id == CollectionArtifactRecord.collection_id,
-            disposition.path == CollectionArtifactRecord.path,
+            disposition.artifact_id == CollectionArtifactRecord.artifact_id,
             artifact.bytes == CollectionArtifactRecord.bytes,
             artifact.sha256 == CollectionArtifactRecord.sha256,
             child_input.archive_root_sha256 == parent_input.archive_root_sha256,
-            child_input.content_identity == parent_input.content_identity,
+            child_input.artifact_set_identity == parent_input.artifact_set_identity,
             child_claim.state.in_(("settled", "retiring", "released")),
         )
         .correlate(CollectionArtifactRecord, parent_input)
@@ -3804,7 +3794,7 @@ def _require_retirement_coverage(
     retained = matching.where(disposition.retain_required.is_(True)).exists()
     safe = matching.where(or_(material, applied, approved_loss)).exists()
     obligations = (
-        select(CollectionArtifactRecord.collection_id, CollectionArtifactRecord.path)
+        select(CollectionArtifactRecord.collection_id, CollectionArtifactRecord.artifact_id)
         .join(
             parent_input,
             and_(
@@ -3812,20 +3802,19 @@ def _require_retirement_coverage(
                 parent_input.collection_id == CollectionArtifactRecord.collection_id,
             ),
         )
-        .where(_is_retirement_obligation(CollectionArtifactRecord))
-        .order_by(CollectionArtifactRecord.collection_id, CollectionArtifactRecord.path_sort_key)
+        .order_by(CollectionArtifactRecord.collection_id, CollectionArtifactRecord.artifact_id)
     )
     veto = session.execute(obligations.where(retained).limit(1)).first()
     if veto is not None:
         raise Conflict(
             "source retirement has a required source-retention constraint for: "
-            f"{veto.collection_id}::{veto.path}"
+            f"{veto.collection_id}::{veto.artifact_id}"
         )
     missing = session.execute(obligations.where(~safe).limit(1)).first()
     if missing is not None:
         raise Conflict(
             "source collection retirement lacks a verified safe disposition for: "
-            f"{missing.collection_id}::{missing.path}"
+            f"{missing.collection_id}::{missing.artifact_id}"
         )
 
 
@@ -3835,7 +3824,7 @@ def _canonical_artifacts(
     artifacts = tuple(sorted(values))
     if not artifacts:
         raise BadRequest("exact artifact scope must not be empty")
-    keys = [(item.collection.collection_id, item.path) for item in artifacts]
+    keys = [(item.collection.collection_id, item.artifact_id) for item in artifacts]
     if len(keys) != len(set(keys)):
         raise BadRequest("exact artifact scope must not repeat a collection file")
     return artifacts
@@ -3850,7 +3839,7 @@ def _validate_claim_artifacts(
         item.collection_id: CollectionRootIdentity(
             collection_id=item.collection_id,
             archive_root_sha256=item.archive_root_sha256,
-            content_identity=item.content_identity,
+            artifact_set_identity=item.artifact_set_identity,
         )
         for item in _claim_inputs(session, claim.id)
     }
@@ -3860,7 +3849,7 @@ def _validate_claim_artifacts(
             raise Conflict("artifact scope is outside the exact claim roots")
         current = session.get(
             CollectionArtifactRecord,
-            (artifact.collection.collection_id, artifact.path),
+            (artifact.collection.collection_id, artifact.artifact_id),
         )
         if current is None or current.bytes != artifact.bytes or current.sha256 != artifact.sha256:
             raise Conflict("artifact scope differs from the immutable collection file")
@@ -3876,7 +3865,7 @@ def _claim_artifacts(
             .where(CollectionProcessingClaimArtifactRecord.claim_id == claim_id)
             .order_by(
                 CollectionProcessingClaimArtifactRecord.collection_id,
-                CollectionProcessingClaimArtifactRecord.path,
+                CollectionProcessingClaimArtifactRecord.artifact_id,
             )
         )
     )
@@ -3890,14 +3879,14 @@ def _claim_artifact_identities(
         item.collection_id: CollectionRootIdentity(
             collection_id=item.collection_id,
             archive_root_sha256=item.archive_root_sha256,
-            content_identity=item.content_identity,
+            artifact_set_identity=item.artifact_set_identity,
         )
         for item in _claim_inputs(session, claim_id)
     }
     return tuple(
         CollectionArtifactIdentity(
             collection=roots[item.collection_id],
-            path=item.path,
+            artifact_id=ArtifactId(item.artifact_id),
             bytes=item.bytes,
             sha256=item.sha256,
         )
@@ -3905,41 +3894,17 @@ def _claim_artifact_identities(
     )
 
 
-def _collection_payload_paths(session: Session, collection_id: int) -> tuple[str, ...]:
+def _collection_payload_artifact_ids(session: Session, collection_id: int) -> tuple[str, ...]:
     return tuple(
         path
         for path in session.scalars(
-            select(CollectionArtifactRecord.path)
+            select(CollectionArtifactRecord.artifact_id)
             .where(
                 CollectionArtifactRecord.collection_id == collection_id,
-                _is_retirement_obligation(CollectionArtifactRecord),
             )
-            .order_by(CollectionArtifactRecord.path_sort_key)
+            .order_by(CollectionArtifactRecord.artifact_id)
         )
     )
-
-
-def _is_retirement_obligation(file: Any) -> ColumnElement[bool]:
-    """Select every logical file except Riverhog's verified control artifacts.
-
-    The exact producer-evidence path is reserved by the upload contract. Derived
-    control files are recognized only for a collection with a verified derivation;
-    their page namespace is checked against the sealed disposition set at upload.
-    An arbitrary file under ``riverhog/`` is still a retirement obligation.
-    """
-
-    derived = (
-        select(CollectionDerivationRecord.collection_id)
-        .where(CollectionDerivationRecord.collection_id == file.collection_id)
-        .correlate(file)
-        .exists()
-    )
-    derived_control = or_(
-        file.path == DERIVATION_EVIDENCE_PATH,
-        file.path.startswith(f"{DERIVATION_DISPOSITION_EVIDENCE_PREFIX}/"),
-        file.path.startswith(f"{DERIVATION_OUTPUT_EVIDENCE_PREFIX}/"),
-    )
-    return ~or_(file.path == PRODUCER_EVIDENCE_PATH, and_(derived, derived_control))
 
 
 def _collection_root(
@@ -3976,7 +3941,7 @@ def _collection_root(
     return CollectionRootIdentity(
         collection_id=collection.id,
         archive_root_sha256=str(next(iter(roots))),
-        content_identity=collection.content_identity,
+        artifact_set_identity=collection.artifact_set_identity,
     )
 
 

@@ -195,7 +195,7 @@ class CollectionProcessingClaimInputRecord(Base):
     )
     collection_order: Mapped[int] = mapped_column(Integer, nullable=False)
     archive_root_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
-    content_identity: Mapped[str] = mapped_column(String(64), nullable=False)
+    artifact_set_identity: Mapped[str] = mapped_column(String(64), nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
@@ -210,7 +210,9 @@ class CollectionProcessingClaimInputRecord(Base):
         ),
         CheckConstraint("collection_order >= 0", name="ck_processing_claim_inputs_order"),
         CheckConstraint("length(archive_root_sha256) = 64", name="ck_claim_inputs_archive_root"),
-        CheckConstraint("length(content_identity) = 64", name="ck_claim_inputs_content_identity"),
+        CheckConstraint(
+            "length(artifact_set_identity) = 64", name="ck_claim_inputs_artifact_set_identity"
+        ),
     )
 
 
@@ -219,7 +221,7 @@ class CollectionProcessingClaimArtifactRecord(Base):
 
     claim_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String, primary_key=True)
     artifact_order: Mapped[int] = mapped_column(BigInteger, nullable=False)
     bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -242,7 +244,7 @@ class CollectionProcessingClaimArtifactRecord(Base):
         Index(
             "ix_collection_processing_claim_artifacts_collection",
             "collection_id",
-            "path",
+            "artifact_id",
             "claim_id",
         ),
         CheckConstraint("bytes >= 0", name="ck_processing_claim_artifacts_bytes"),
@@ -287,7 +289,7 @@ class CollectionProcessingConsiderationSubjectRecord(Base):
     claim_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     evidence_sha256: Mapped[str] = mapped_column(String(64), primary_key=True)
     collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String, primary_key=True)
     bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
@@ -321,12 +323,12 @@ class CollectionProcessingDispositionSetRecord(Base):
     successor_bound_count: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     validation_phase: Mapped[str | None] = mapped_column(String, nullable=True)
     validation_collection_id: Mapped[int | None] = mapped_column(_COLLECTION_ID_TYPE, nullable=True)
-    validation_input_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    validation_output_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    validation_input_artifact_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    validation_output_artifact_id: Mapped[str | None] = mapped_column(String, nullable=True)
     validation_output_collection_id: Mapped[int | None] = mapped_column(
         _COLLECTION_ID_TYPE, nullable=True
     )
-    validation_output_input_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    validation_output_input_artifact_id: Mapped[str | None] = mapped_column(String, nullable=True)
     disposition_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     output_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     disposition_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
@@ -365,7 +367,7 @@ class CollectionProcessingDispositionRecord(Base):
 
     claim_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String, primary_key=True)
     disposition_order: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False)
     reason_code: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -376,11 +378,11 @@ class CollectionProcessingDispositionRecord(Base):
 
     __table_args__ = (
         ForeignKeyConstraint(
-            ["claim_id", "collection_id", "path"],
+            ["claim_id", "collection_id", "artifact_id"],
             [
                 "collection_processing_claim_artifacts.claim_id",
                 "collection_processing_claim_artifacts.collection_id",
-                "collection_processing_claim_artifacts.path",
+                "collection_processing_claim_artifacts.artifact_id",
             ],
             ondelete="CASCADE",
         ),
@@ -422,18 +424,18 @@ class CollectionProcessingDispositionOutputRecord(Base):
     __tablename__ = "collection_processing_disposition_outputs"
 
     claim_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    output_path: Mapped[str] = mapped_column(String, primary_key=True)
+    output_artifact_id: Mapped[str] = mapped_column(String, primary_key=True)
     input_collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
-    input_path: Mapped[str] = mapped_column(String, primary_key=True)
+    input_artifact_id: Mapped[str] = mapped_column(String, primary_key=True)
     output_order: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
-            ["claim_id", "input_collection_id", "input_path"],
+            ["claim_id", "input_collection_id", "input_artifact_id"],
             [
                 "collection_processing_dispositions.claim_id",
                 "collection_processing_dispositions.collection_id",
-                "collection_processing_dispositions.path",
+                "collection_processing_dispositions.artifact_id",
             ],
             ondelete="CASCADE",
         ),
@@ -441,8 +443,8 @@ class CollectionProcessingDispositionOutputRecord(Base):
             "ix_processing_disposition_outputs_source",
             "claim_id",
             "input_collection_id",
-            "input_path",
-            "output_path",
+            "input_artifact_id",
+            "output_artifact_id",
         ),
         Index(
             "ix_processing_disposition_outputs_order",
@@ -508,7 +510,7 @@ class CollectionProcessingCapabilityArtifactRecord(Base):
         primary_key=True,
     )
     collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String, primary_key=True)
     artifact_order: Mapped[int] = mapped_column(BigInteger, nullable=False)
     bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -523,7 +525,7 @@ class CollectionProcessingCapabilityArtifactRecord(Base):
         Index(
             "ix_collection_processing_capability_artifacts_collection",
             "collection_id",
-            "path",
+            "artifact_id",
             "capability_id",
         ),
         CheckConstraint("bytes >= 0", name="ck_capability_artifacts_bytes"),
@@ -554,7 +556,7 @@ class CollectionProcessingOutcomeRecord(Base):
     no_output_settlement_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     collection_id: Mapped[int | None] = mapped_column(_COLLECTION_ID_TYPE, nullable=True)
     archive_root_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    content_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    artifact_set_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     derivation_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     outcome_order: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     created_at: Mapped[str] = mapped_column(String, nullable=False)
@@ -563,17 +565,17 @@ class CollectionProcessingOutcomeRecord(Base):
         CheckConstraint("source_fence >= 1", name="ck_processing_outcome_fence"),
         CheckConstraint(
             "result_kind = 'collection' AND collection_id IS NOT NULL "
-            "AND archive_root_sha256 IS NOT NULL AND content_identity IS NOT NULL "
+            "AND archive_root_sha256 IS NOT NULL AND artifact_set_identity IS NOT NULL "
             "AND derivation_sha256 IS NOT NULL AND effect_receipt_sha256 IS NULL "
             "AND effect_settlement_sha256 IS NULL "
             "AND no_output_settlement_sha256 IS NULL OR "
             "result_kind = 'external-effect' AND collection_id IS NULL "
-            "AND archive_root_sha256 IS NULL AND content_identity IS NULL "
+            "AND archive_root_sha256 IS NULL AND artifact_set_identity IS NULL "
             "AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NOT NULL "
             "AND effect_settlement_sha256 IS NOT NULL "
             "AND no_output_settlement_sha256 IS NULL OR "
             "result_kind = 'no-output' AND collection_id IS NULL "
-            "AND archive_root_sha256 IS NULL AND content_identity IS NULL "
+            "AND archive_root_sha256 IS NULL AND artifact_set_identity IS NULL "
             "AND derivation_sha256 IS NULL AND effect_receipt_sha256 IS NULL "
             "AND effect_settlement_sha256 IS NULL "
             "AND no_output_settlement_sha256 IS NOT NULL",

@@ -63,6 +63,7 @@ members = [
     "riverhog-archive-contracts",
     "riverhog-canonical-json",
     "riverhog-client",
+    "riverhog-materialization",
     "riverhog-protocol",
     "riverhog-provenance",
     "riverhog-provenance-contracts",
@@ -2586,6 +2587,21 @@ requires-dist = [
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "time-formats", editable = "packages/time-formats" },
+]
+
+[[package]]
+name = "riverhog-materialization"
+version = "0.1.0"
+source = { editable = "packages/riverhog-materialization" }
+dependencies = [
+    { name = "riverhog-protocol" },
+    { name = "riverhog-provenance-contracts" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
+    { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
 
 [[package]]

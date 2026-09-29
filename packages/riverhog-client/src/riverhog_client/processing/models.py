@@ -84,7 +84,7 @@ class DerivedCollectionReceipt:
 
     collection_id: CollectionId
     archive_root_sha256: str
-    content_identity: str
+    artifact_set_identity: str
     derivation: CollectionDerivation
 
     def __post_init__(self) -> None:
@@ -96,15 +96,15 @@ class DerivedCollectionReceipt:
         )
         object.__setattr__(
             self,
-            "content_identity",
-            _sha256(self.content_identity, "derived collection content identity"),
+            "artifact_set_identity",
+            _sha256(self.artifact_set_identity, "derived collection content identity"),
         )
 
     def as_dict(self) -> dict[str, object]:
         return {
             "collection_id": self.collection_id,
             "archive_root_sha256": self.archive_root_sha256,
-            "content_identity": self.content_identity,
+            "artifact_set_identity": self.artifact_set_identity,
             "derivation": self.derivation.as_dict(),
         }
 
@@ -113,7 +113,7 @@ class DerivedCollectionReceipt:
         if set(value) != {
             "collection_id",
             "archive_root_sha256",
-            "content_identity",
+            "artifact_set_identity",
             "derivation",
         }:
             raise ValueError("derived collection receipt fields are invalid")
@@ -126,7 +126,7 @@ class DerivedCollectionReceipt:
         return cls(
             collection_id=collection_id,
             archive_root_sha256=str(value.get("archive_root_sha256") or ""),
-            content_identity=str(value.get("content_identity") or ""),
+            artifact_set_identity=str(value.get("artifact_set_identity") or ""),
             derivation=CollectionDerivation.from_mapping(derivation),
         )
 

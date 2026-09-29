@@ -4,11 +4,11 @@ import hashlib
 from dataclasses import dataclass
 
 from riverhog_age import encrypt_age_scrypt
-from riverhog_provenance import (
+from riverhog_archive_contracts import (
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
-    format_provenance_sequence,
+    format_archive_sequence,
 )
 
 from riverhog_core.archive_formats import (
@@ -66,7 +66,7 @@ class ArchiveProvenancePublisher:
             raise ValueError("provenance payload identity changed before publication")
         payload_object = self._put(
             prefix=prefix,
-            object_id=f"provenance-payload-{format_provenance_sequence(document.sequence)}",
+            object_id=f"provenance-payload-{format_archive_sequence(document.sequence)}",
             kind=(
                 "provenance-bindings"
                 if document.payload.kind == "bindings"
@@ -82,7 +82,7 @@ class ArchiveProvenancePublisher:
         )
         metadata_object = self._put(
             prefix=prefix,
-            object_id=f"provenance-volume-{format_provenance_sequence(document.sequence)}",
+            object_id=f"provenance-volume-{format_archive_sequence(document.sequence)}",
             kind="provenance-volume-metadata",
             relative_path=document.metadata_path,
             content=document.to_json_bytes(),
@@ -122,7 +122,7 @@ class ArchiveProvenancePublisher:
 
         return self._put(
             prefix=_prefix(archive_storage_prefix),
-            object_id=f"provenance-terminal-{format_provenance_sequence(terminal.sequence)}",
+            object_id=f"provenance-terminal-{format_archive_sequence(terminal.sequence)}",
             kind="provenance-terminal",
             relative_path=terminal.metadata_path,
             content=terminal.to_json_bytes(),

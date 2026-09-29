@@ -6,8 +6,9 @@ from dataclasses import dataclass
 from riverhog_archive_contracts import format_archive_sequence
 from riverhog_core.archive_root import ArchiveRootPublisher
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     SealedPackVolume,
+    SealedProvenanceObject,
     StoredArchivePart,
 )
 from riverhog_core.pack_volume import iter_render_pack_upload_unit, plan_pack_volume
@@ -57,18 +58,18 @@ class MemoryImmutableStore:
 
 def test_root_publish_is_logically_idempotent_and_never_rewrites_manifest() -> None:
     content = b"alpha"
-    file = ArchiveFile(
-        path="alpha.txt",
+    artifact = ArchiveArtifact(
+        artifact_id="1" * 64,
         bytes=len(content),
         sha256=hashlib.sha256(content).hexdigest(),
     )
-    plan = plan_pack_volume((file,), sequence=0)
+    plan = plan_pack_volume((artifact,), sequence=0)
     plaintext = b"".join(iter_render_pack_upload_unit(plan, 0, lambda _path: (content,)))
     pack = SealedPackVolume(
         volume_id=plan.volume_id,
         sequence=0,
         relative_path=f"volumes/{plan.volume_id}.tar.age",
-        files=1,
+        artifacts=1,
         source_bytes=len(content),
         plaintext_bytes=plan.plaintext_bytes,
         age_state_json=age_state_json(plan.plaintext_bytes),
@@ -93,18 +94,33 @@ def test_root_publish_is_logically_idempotent_and_never_rewrites_manifest() -> N
         passphrase="archive passphrase",
         scrypt_log_n=1,
     )
+    provenance_root = SealedProvenanceObject(
+        object_id="provenance-root",
+        kind="provenance-root",
+        relative_path="provenance/root.json.age",
+        plaintext_bytes=32,
+        plaintext_sha256="b" * 64,
+        stored_bytes=64,
+        stored_sha256="c" * 64,
+        revision="provenance-v1",
+        completed_at="2026-08-03T00:00:00Z",
+    )
 
     first = publisher.publish(
         archive_generation="a" * 64,
         archive_storage_prefix="archives/opaque",
-        files=(file,),
+        artifacts=(artifact,),
         packs=((plan, pack),),
+        provenance_identity=provenance_root.plaintext_sha256,
+        provenance_objects=(provenance_root,),
     )
     second = publisher.publish(
         archive_generation="a" * 64,
         archive_storage_prefix="archives/opaque",
-        files=(file,),
+        artifacts=(artifact,),
         packs=((plan, pack),),
+        provenance_identity=provenance_root.plaintext_sha256,
+        provenance_objects=(provenance_root,),
     )
 
     assert first.manifest_bytes == second.manifest_bytes

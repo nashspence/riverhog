@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import builtins
 import hashlib
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -21,7 +20,7 @@ from riverhog_core.archive_formats import (
 from riverhog_core.archive_manifest import (
     build_collection_archive_authority,
     build_collection_archive_terminal_document,
-    collection_tree_identity,
+    collection_artifact_set_identity,
 )
 from riverhog_core.domain.archive import (
     ArchiveArtifact,
@@ -60,11 +59,11 @@ class SealedArchiveRoot:
     plaintext_sha256: str
     stored_bytes: int
     stored_sha256: str
-    tree_sha256: str
-    files: int
-    bytes: int
+    artifact_set_sha256: str
+    artifact_count: int
+    artifact_bytes: int
     completed_at: str
-    manifest_bytes: builtins.bytes
+    manifest_bytes: bytes
     volume_metadata: tuple[SealedArchiveVolumeMetadata, ...]
 
 
@@ -94,11 +93,11 @@ class ArchiveRootPublisher:
         *,
         archive_generation: str,
         archive_storage_prefix: str,
-        files: Sequence[ArchiveArtifact],
+        artifacts: Sequence[ArchiveArtifact],
         packs: Sequence[tuple[PackVolumePlan, SealedPackVolume]],
+        provenance_identity: str,
         raw_volumes: Sequence[SealedRawVolume] = (),
-        verified_raw_files: Sequence[VerifiedRawArtifact] = (),
-        provenance_identity: str | None = None,
+        verified_raw_artifacts: Sequence[VerifiedRawArtifact] = (),
         provenance_objects: Sequence[SealedProvenanceObject] = (),
     ) -> SealedArchiveRoot:
         prefix = archive_storage_prefix.strip("/")
@@ -106,15 +105,15 @@ class ArchiveRootPublisher:
             raise ValueError("archive storage prefix must not be empty")
         manifest, volume_documents = build_collection_archive_authority(
             archive_generation=archive_generation,
-            files=files,
+            artifacts=artifacts,
             packs=packs,
             raw_volumes=raw_volumes,
-            verified_raw_files=verified_raw_files,
+            verified_raw_artifacts=verified_raw_artifacts,
             provenance_identity=provenance_identity,
             provenance_objects=provenance_objects,
         )
         plaintext_sha256 = hashlib.sha256(manifest).hexdigest()
-        tree = collection_tree_identity(files)
+        artifact_set = collection_artifact_set_identity(artifacts)
         sealed_metadata: list[SealedArchiveVolumeMetadata] = []
         for document in volume_documents:
             metadata = document.to_json_bytes()
@@ -155,7 +154,7 @@ class ArchiveRootPublisher:
             )
         terminal = build_collection_archive_terminal_document(
             archive_generation=archive_generation,
-            tree_sha256=str(tree["sha256"]),
+            artifact_set_sha256=str(artifact_set["sha256"]),
             sequence=len(volume_documents),
         )
         sealed_metadata.append(
@@ -178,7 +177,7 @@ class ArchiveRootPublisher:
                 "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,
                 "riverhog-plaintext-bytes": str(len(manifest)),
                 "riverhog-plaintext-sha256": plaintext_sha256,
-                "riverhog-tree-sha256": str(tree["sha256"]),
+                "riverhog-artifact-set-sha256": str(artifact_set["sha256"]),
             },
             placement_policy="immediate_default",
         )
@@ -192,9 +191,9 @@ class ArchiveRootPublisher:
             plaintext_sha256=plaintext_sha256,
             stored_bytes=receipt.stored_bytes,
             stored_sha256=receipt.stored_sha256,
-            tree_sha256=str(tree["sha256"]),
-            files=tree["files"],
-            bytes=tree["bytes"],
+            artifact_set_sha256=str(artifact_set["sha256"]),
+            artifact_count=artifact_set["count"],
+            artifact_bytes=artifact_set["bytes"],
             completed_at=receipt.completed_at,
             manifest_bytes=manifest,
             volume_metadata=tuple(sealed_metadata),
@@ -316,7 +315,7 @@ class ArchiveRootPublisher:
                 "riverhog-format": ROOT_MANIFEST_STORAGE_FORMAT,
                 "riverhog-plaintext-bytes": str(len(manifest)),
                 "riverhog-plaintext-sha256": plaintext_sha256,
-                "riverhog-tree-sha256": authority.tree_sha256,
+                "riverhog-artifact-set-sha256": authority.artifact_set.sha256,
             },
             placement_policy="immediate_default",
         )
@@ -330,9 +329,9 @@ class ArchiveRootPublisher:
             plaintext_sha256=plaintext_sha256,
             stored_bytes=receipt.stored_bytes,
             stored_sha256=receipt.stored_sha256,
-            tree_sha256=authority.tree_sha256,
-            files=authority.files,
-            bytes=authority.bytes,
+            artifact_set_sha256=authority.artifact_set.sha256,
+            artifact_count=authority.artifact_set.count,
+            artifact_bytes=authority.artifact_set.bytes,
             completed_at=receipt.completed_at,
             manifest_bytes=manifest,
             volume_metadata=(),

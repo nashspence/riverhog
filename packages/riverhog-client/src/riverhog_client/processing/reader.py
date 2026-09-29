@@ -304,7 +304,7 @@ class ClaimedCollectionReader:
         actual = CollectionRootIdentity(
             collection_id=_wire_collection_id(payload.get("id"), "collection id"),
             archive_root_sha256=str(payload.get("archive_root_sha256") or ""),
-            content_identity=str(payload.get("content_identity") or ""),
+            artifact_set_identity=str(payload.get("artifact_set_identity") or ""),
         )
         if actual != expected:
             raise RuntimeError(f"claimed collection root changed: {expected.collection_id}")

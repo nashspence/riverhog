@@ -47,6 +47,10 @@ class Conflict(RiverhogError):
     code = "conflict"
 
 
+class MaterializationDecisionRequired(Conflict):
+    code = "materialization_decision_required"
+
+
 class CatalogSyncSourceChanged(RiverhogError):
     code = "catalog_sync_source_changed"
 
@@ -100,6 +104,7 @@ RIVERHOG_ERROR_TYPES_BY_CODE: dict[str, type[RiverhogError]] = {
         InvalidPath,
         NotFound,
         Conflict,
+        MaterializationDecisionRequired,
         CatalogSyncSourceChanged,
         CatalogSyncViewChanged,
         CatalogSyncCursorExpired,

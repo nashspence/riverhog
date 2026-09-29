@@ -79,7 +79,7 @@ class CollectionSummary:
     tag_revision: int
     tag_set_identity: str
     tag_publication: str
-    content_identity: str
+    artifact_set_identity: str
     archive_root_sha256: str
     encryption_format: str
     passphrase_id: str

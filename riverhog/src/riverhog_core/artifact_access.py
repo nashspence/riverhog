@@ -11,7 +11,7 @@ from riverhog_core.catalog_workflow_models import CollectionProcessingCapability
 
 def artifact_scope_filter(
     collection_column: ColumnElement[int] | InstrumentedAttribute[int],
-    path_column: ColumnElement[str] | InstrumentedAttribute[str],
+    artifact_column: ColumnElement[str] | InstrumentedAttribute[str],
     principal: Principal | None,
 ) -> ColumnElement[bool]:
     """Bind artifact scope without expanding persisted capabilities into predicates."""
@@ -24,7 +24,7 @@ def artifact_scope_filter(
             CollectionProcessingCapabilityArtifactRecord.capability_id
             == principal.artifact_scope_capability_id,
             CollectionProcessingCapabilityArtifactRecord.collection_id == collection_column,
-            CollectionProcessingCapabilityArtifactRecord.path == path_column,
+            CollectionProcessingCapabilityArtifactRecord.artifact_id == artifact_column,
         )
     )
 
@@ -33,7 +33,7 @@ def require_artifact_scope(
     session: Session,
     principal: Principal | None,
     collection_id: int,
-    path: str,
+    artifact_id: str,
 ) -> None:
     """Fail closed unless one exact artifact is inside the principal's scope."""
 
@@ -46,13 +46,13 @@ def require_artifact_scope(
             CollectionProcessingCapabilityArtifactRecord.capability_id
             == principal.artifact_scope_capability_id,
             CollectionProcessingCapabilityArtifactRecord.collection_id == collection_id,
-            CollectionProcessingCapabilityArtifactRecord.path == path,
+            CollectionProcessingCapabilityArtifactRecord.artifact_id == artifact_id,
         )
         .limit(1)
     )
     if allowed is not None:
         return
-    raise NotFound(f"collection file not found: {collection_id}/{path}")
+    raise NotFound(f"collection artifact not found: {collection_id}/{artifact_id}")
 
 
 __all__ = ["artifact_scope_filter", "require_artifact_scope"]

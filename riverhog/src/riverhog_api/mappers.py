@@ -98,7 +98,7 @@ def map_collection(summary: CollectionSummary) -> dict[str, object]:
         "tag_revision": summary.tag_revision,
         "tag_set_identity": summary.tag_set_identity,
         "tag_publication": summary.tag_publication,
-        "content_identity": summary.content_identity,
+        "artifact_set_identity": summary.artifact_set_identity,
         "archive_root_sha256": summary.archive_root_sha256,
         "encryption_format": summary.encryption_format,
         "passphrase_id": summary.passphrase_id,

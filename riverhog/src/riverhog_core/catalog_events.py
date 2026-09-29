@@ -71,7 +71,7 @@ def begin_catalog_event(
         occurred_at=occurred_at,
         inventory_identity=inventory_identity,
         archive_root_sha256=collection.archive_root_sha256,
-        content_identity=collection.content_identity,
+        artifact_set_identity=collection.artifact_set_identity,
         description=collection.description,
         description_revision=collection.description_revision,
         description_identity=collection.description_identity,
