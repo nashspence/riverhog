@@ -16,6 +16,7 @@ members = [
   "some-implementations/stove0/application/server",
   "some-implementations/stove0/observers/exiftool",
   "some-implementations/stove0/observers/ffprobe",
+  "some-implementations/stove0/observers/magic",
   "some-implementations/stove0/observers/filename-prefix-sidecars",
   "some-implementations/stove0/observers/riverhog-provenance",
   "some-implementations/stove0/observers/contracts/*",
@@ -66,6 +67,8 @@ a-stove0-media-archive-lib = { workspace = true }
 a-stove0-media-metadata-contract-lib = { workspace = true }
 a-stove0-media-sampling-contract-lib = { workspace = true }
 a-stove0-ffprobe-streams-contract-lib = { workspace = true }
+a-stove0-magic-facts-contract-lib = { workspace = true }
+a-stove0-magic-observer = { workspace = true }
 a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
 a-stove0-filename-prefix-sidecar-observer = { workspace = true }
 a-stove0-riverhog-provenance-observer = { workspace = true }
