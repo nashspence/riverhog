@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import subprocess
 from dataclasses import replace
 from pathlib import Path
@@ -15,8 +16,10 @@ from a_stove0_rclone_target.target import (
     RcloneDestination,
     RcloneEffectTargetService,
     _planned_destinations,
+    _write_delivery_manifest,
 )
 from riverhog_materialization import DestinationRules
+from riverhog_protocol import canonical_json_bytes
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     ContentObservationRequest,
@@ -161,6 +164,40 @@ def test_rclone_rejects_hint_evidence_for_another_selection_and_resolves_collisi
         _planned_destinations((evidence,), selection, limited)
 
 
+def test_rclone_streamed_manifest_is_canonical_and_covers_every_input(tmp_path: Path) -> None:
+    first, second = _subject("one", "1" * 64), _subject("two", "2" * 64)
+    selection = ArtifactSelection.seal((first, second)).ref()
+    rows = ((first.id, 1, {"z": 1}), (second.id, 1, {"a": 2}))
+    path = tmp_path / "manifest.json"
+    count, total, sha256 = _write_delivery_manifest(
+        path, delivery_id="e" * 64, selection=selection, entries=iter(rows)
+    )
+    expected = canonical_json_bytes(
+        {
+            "format": "stove0-rclone-delivery-manifest/v1",
+            "delivery_id": "e" * 64,
+            "source_selection_sha256": selection.selection_sha256,
+            "artifacts": [{"z": 1}, {"a": 2}],
+        }
+    )
+    assert (count, total, sha256) == (2, 2, hashlib.sha256(expected).hexdigest())
+    assert path.read_bytes() == expected
+    with pytest.raises(ValueError, match="ordered by subject"):
+        _write_delivery_manifest(
+            tmp_path / "unordered.json",
+            delivery_id="e" * 64,
+            selection=selection,
+            entries=iter(reversed(rows)),
+        )
+    with pytest.raises(ValueError, match="sealed selection"):
+        _write_delivery_manifest(
+            tmp_path / "incomplete.json",
+            delivery_id="e" * 64,
+            selection=selection,
+            entries=iter(rows[:1]),
+        )
+
+
 def test_generic_rclone_descriptor_has_one_effect_operation(tmp_path: Path) -> None:
     target = RcloneEffectTargetService(
         state_root=tmp_path / "state",
@@ -193,7 +230,9 @@ def test_delivery_verifies_bytes_before_marker_and_reads_marker_back(
 
     def run(command: list[str], **_kwargs: Any) -> SimpleNamespace:
         calls.append(tuple(command))
-        return SimpleNamespace(stdout=manifest.read_bytes() if command[1] == "cat" else b"")
+        if command[1] == "cat":
+            _kwargs["stdout"].write(manifest.read_bytes())
+        return SimpleNamespace(stdout=b"")
 
     monkeypatch.setattr(subprocess, "run", run)
     _destination().commit(delivery_id="c" * 64, objects_root=objects, manifest_path=manifest)
@@ -211,7 +250,9 @@ def test_delivery_readback_mismatch_is_commit_uncertain(
     manifest.write_bytes(b"sealed")
 
     def run(command: list[str], **_kwargs: Any) -> SimpleNamespace:
-        return SimpleNamespace(stdout=b"different" if command[1] == "cat" else b"")
+        if command[1] == "cat":
+            _kwargs["stdout"].write(b"different")
+        return SimpleNamespace(stdout=b"")
 
     monkeypatch.setattr(subprocess, "run", run)
     with pytest.raises(TargetEffectCommitUncertain):
