@@ -47,3 +47,21 @@ def test_opaque_profile_lookalikes_never_become_core_edges() -> None:
         },
     }
     assert [(edge.role, edge.target_id) for edge in core_edges(row)] == [("subject", subject)]
+
+
+def test_reference_valued_extension_has_generic_exact_value_edge() -> None:
+    subject = "urn:uuid:ec20adea-64fb-4c73-9e85-6a608cb17f14"
+    target = "urn:uuid:b034f5d0-7d39-4b2e-9556-febdf5c74cdc"
+    row = {
+        "type": "extension",
+        "subject": {"scope": "local", "object_type": "state", "object_id": subject},
+        "property": "urn:test:uninterpreted-predicate",
+        "value": {
+            "type": "reference",
+            "value": {"scope": "local", "object_type": "state", "object_id": target},
+        },
+    }
+    assert [(edge.role, edge.target_id) for edge in core_edges(row)] == [
+        ("subject", subject),
+        ("value", target),
+    ]

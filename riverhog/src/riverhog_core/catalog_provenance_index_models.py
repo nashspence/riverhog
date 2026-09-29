@@ -81,6 +81,7 @@ class CollectionProvenanceIndexSnapshotRecord(Base):
     through_entry_id: Mapped[str] = mapped_column(String(45), nullable=False)
     through_sequence: Mapped[int] = mapped_column(BigInteger, nullable=False)
     through_json_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    assertion_count: Mapped[int] = mapped_column(BigInteger, nullable=False)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -89,6 +90,7 @@ class CollectionProvenanceIndexSnapshotRecord(Base):
             ondelete="CASCADE",
         ),
         CheckConstraint("prefix_bytes > 0", name="ck_provenance_index_snapshot_bytes"),
+        CheckConstraint("assertion_count >= 0", name="ck_provenance_index_snapshot_assertions"),
         Index("ix_provenance_index_snapshots_journal", "journal_id", "prefix_sha256"),
     )
 
