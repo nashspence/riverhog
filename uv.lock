@@ -21,6 +21,7 @@ members = [
     "a-riverhog-aws-store",
     "a-riverhog-b2-store",
     "a-riverhog-cli",
+    "a-riverhog-direct-relations-contract-lib",
     "a-riverhog-event-relay",
     "a-riverhog-filesystem-store",
     "a-riverhog-ftp-spool",
@@ -336,6 +337,23 @@ requires-dist = [
     { name = "state-schema", editable = "packages/state-schema" },
     { name = "time-formats", editable = "packages/time-formats" },
     { name = "typer", specifier = ">=0.12,<1.0" },
+]
+
+[[package]]
+name = "a-riverhog-direct-relations-contract-lib"
+version = "0.1.0"
+source = { editable = "some-implementations/riverhog/provenance/contracts/direct-relations" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
+    { name = "riverhog-provenance-contracts" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.12,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
 
 [[package]]
