@@ -42,9 +42,6 @@ class _CompletionHandler(FTPHandler):  # type: ignore[misc]
         if file in self.active_uploads:
             self.respond("450 Another transfer owns this pathname.")
             return None
-        if self.handoff.has_pending_sidecar(Path(file)):
-            self.respond("450 This provenance sidecar already awaits its payload.")
-            return None
         result = super().ftp_STOR(file, mode)
         if result is not None:
             self.active_uploads.add(file)

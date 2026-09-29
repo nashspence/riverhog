@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from riverhog_protocol import CollectionId
+from riverhog_protocol import ArtifactId, CollectionId
 
 from a_riverhog_ftp_spool.completion import (
     COMPLETION_LOG_HEADER,
@@ -54,21 +54,13 @@ class _StateModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class CapturedProvenanceState(_StateModel):
-    path: str = Field(min_length=1)
-    bytes: NonNegativeInt
-    sha256: Sha256
-    status: Literal["captured"]
-    journal_id: str = Field(min_length=1)
-    current_state_id: str = Field(min_length=1)
-
-
-class OmittedProvenanceState(_StateModel):
-    path: str = Field(min_length=1)
-    bytes: NonNegativeInt
-    sha256: Sha256
-    status: Literal["omitted"]
-    omission_reason: str = Field(min_length=1)
+class CapturedObservationState(_StateModel):
+    graph_path: str = Field(min_length=1)
+    graph_bytes: NonNegativeInt
+    graph_sha256: Sha256
+    observation_id: str = Field(min_length=1)
+    observer_agent_id: str = Field(min_length=1)
+    contract_sha256: Sha256
 
 
 class CompletionRecordState(_StateModel):
@@ -84,13 +76,14 @@ class CompletionRecordState(_StateModel):
 
 class FtpClaimFileState(_StateModel):
     path: str = Field(min_length=1)
+    artifact_id: ArtifactId
     bytes: NonNegativeInt
     sha256: Sha256
     device: NonNegativeInt
     inode: NonNegativeInt
     original: str = Field(min_length=1)
     completion_record: CompletionRecordState | None = None
-    provenance: CapturedProvenanceState | OmittedProvenanceState
+    observation: CapturedObservationState | None = None
 
 
 class FtpClaimState(_StateModel):
@@ -100,7 +93,6 @@ class FtpClaimState(_StateModel):
     source: str = Field(min_length=1)
     completion_event_ids: list[str] | None = None
     files: list[FtpClaimFileState] = Field(min_length=1)
-    journals: dict[str, str]
 
 
 class FtpReceiptState(_StateModel):
@@ -109,7 +101,7 @@ class FtpReceiptState(_StateModel):
     source_event_id: str = Field(min_length=1)
     collection_id: CollectionId
     archive_root_sha256: Sha256
-    content_identity: Sha256
+    artifact_set_identity: Sha256
     riverhog_receipt: dict[str, Any]
 
 

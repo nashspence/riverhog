@@ -123,7 +123,10 @@ class _Producer:
     def publish(self, files: object, **_kwargs: object) -> ProducedCollection:
         materialized = tuple(files)  # type: ignore[arg-type]
         self.__class__.calls.append(
-            [(str(item.path), item.source.read_bytes()) for item in materialized]
+            [
+                ("/".join(item.materialization_hint or ()), item.source.read_bytes())
+                for item in materialized
+            ]
         )
         if not self.__class__.available:
             raise ConnectionError("publication intentionally unavailable")
@@ -131,7 +134,7 @@ class _Producer:
         return ProducedCollection(
             collection_id=ordinal,
             archive_root_sha256=f"{ordinal:064x}",
-            content_identity=f"{ordinal + 100:064x}",
+            artifact_set_identity=f"{ordinal + 100:064x}",
             receipt={"state": "finalized"},
         )
 
@@ -269,34 +272,20 @@ def test_listener_restart_finishes_durable_pre_record_handoff(
     assert (root / records[0].custody).read_bytes() == b"completed before crash"
 
 
-def test_completed_provenance_sidecar_enters_exact_payload_custody(tmp_path: Path) -> None:
+def test_completed_metadata_file_has_its_own_exact_payload_custody(tmp_path: Path) -> None:
     root = tmp_path / "intake"
-    sidecar = b"exact portable provenance"
-    payload = b"payload with provenance"
+    metadata = b"<xmp>ordinary metadata</xmp>"
+    payload = b"payload with metadata"
     with _listener(root) as address:
         with _login(address) as ftp:
-            assert ftp.storbinary(
-                "STOR clip.bin.riverhog-provenance.json-seq", BytesIO(sidecar)
-            ).startswith("226 ")
-            with pytest.raises(error_temp, match="450"):
-                ftp.storbinary(
-                    "STOR clip.bin.riverhog-provenance.json-seq", BytesIO(b"replacement")
-                )
+            assert ftp.storbinary("STOR clip.bin.xmp", BytesIO(metadata)).startswith("226 ")
             assert ftp.storbinary("STOR clip.bin", BytesIO(payload)).startswith("226 ")
 
     records = _records(root)
-    assert [record.path for record in records] == [
-        "clip.bin.riverhog-provenance.json-seq",
-        "clip.bin",
-    ]
-    payload_custody = root / records[1].custody
-    assert payload_custody.read_bytes() == payload
-    assert (
-        payload_custody.with_name(
-            payload_custody.name + ".riverhog-provenance.json-seq"
-        ).read_bytes()
-        == sidecar
-    )
+    assert [record.path for record in records] == ["clip.bin.xmp", "clip.bin"]
+    assert (root / records[0].custody).read_bytes() == metadata
+    assert (root / records[1].custody).read_bytes() == payload
+    assert records[0].custody != records[1].custody
 
 
 def test_same_path_replay_and_new_event_partition_into_restartable_claims(

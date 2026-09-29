@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import builtins
 import fcntl
-import hashlib
 import os
 import stat
 import uuid
@@ -17,7 +16,6 @@ from riverhog_canonical_json import (
     canonical_json_bytes,
     require_canonical_json,
 )
-from riverhog_provenance import SIDECAR_SUFFIX, canonical_sidecar_path
 
 CONTROL_DIR = ".a-riverhog-ftp-spool"
 COMPLETION_LOG = "completed-transfers.log"
@@ -25,9 +23,7 @@ COMPLETION_LOG_HEADER = "riverhog-ftp-completion-log/v1"
 MAX_COMPLETION_RECORD_BYTES = 16 * 1024
 _HANDOFFS_DIR = "handoffs"
 _INTENTS_DIR = "handoff-intents"
-_PENDING_SIDECARS_DIR = "pending-sidecars"
 _INTENT_FORMAT = "riverhog-ftp-completion-intent/v1"
-_PENDING_SIDECAR_FORMAT = "riverhog-ftp-pending-provenance-sidecar/v1"
 CompletionRecordFormat = Literal["riverhog-ftp-completion-record/v1"]
 COMPLETION_RECORD_FORMAT: Final[CompletionRecordFormat] = "riverhog-ftp-completion-record/v1"
 
@@ -63,7 +59,6 @@ def initialize_completion_authority(source_root: Path) -> tuple[str, int]:
     control.mkdir(mode=0o700, parents=True, exist_ok=True)
     (control / _HANDOFFS_DIR).mkdir(mode=0o700, exist_ok=True)
     (control / _INTENTS_DIR).mkdir(mode=0o700, exist_ok=True)
-    (control / _PENDING_SIDECARS_DIR).mkdir(mode=0o700, exist_ok=True)
     path = completion_log_path(source_root)
     header = f"{COMPLETION_LOG_HEADER} {uuid.uuid4()}\n".encode("ascii")
     try:
@@ -166,14 +161,6 @@ class CompletionHandoff:
         self._finish_intent(record, intent)
         return record
 
-    def has_pending_sidecar(self, uploaded_path: Path) -> bool:
-        """Report whether this sidecar pathname already awaits its payload."""
-
-        relative = _relative_source_path(self.source_root, uploaded_path.resolve())
-        if not relative.endswith(SIDECAR_SUFFIX):
-            return False
-        return self._pending_sidecar_path(relative).is_file()
-
     def recover(self) -> None:
         intent_root = self.source_root / CONTROL_DIR / _INTENTS_DIR
         disappeared_intents: set[str] = set()
@@ -229,8 +216,7 @@ class CompletionHandoff:
         source_exists = source.exists()
         custody_exists = custody.exists()
         if source_exists and custody_exists:
-            if not record.path.endswith(SIDECAR_SUFFIX) or not os.path.samefile(source, custody):
-                raise CompletionError("FTP completion intent has two payloads")
+            raise CompletionError("FTP completion intent has two payloads")
         if source_exists:
             _require_identity(source, record)
             if not custody_exists:
@@ -251,10 +237,6 @@ class CompletionHandoff:
                 return
             raise
         custody.chmod(0o400)
-        if record.path.endswith(SIDECAR_SUFFIX):
-            self._publish_pending_sidecar(record, source, custody)
-        else:
-            self._adopt_pending_sidecar(record, source, custody)
         self._append_record(record)
         self._retire_intent(record, intent)
 
@@ -272,75 +254,6 @@ class CompletionHandoff:
         acquisition = acquisitions[0]
         owner_id = acquisition.stem.removeprefix("acquired-")
         release_handoff_acquisition(self.source_root, record, owner_id)
-
-    def _pending_sidecar_path(self, relative: str) -> Path:
-        name = hashlib.sha256(relative.encode("utf-8")).hexdigest() + ".json"
-        return self.source_root / CONTROL_DIR / _PENDING_SIDECARS_DIR / name
-
-    def _publish_pending_sidecar(
-        self,
-        record: CompletionRecord,
-        source: Path,
-        custody: Path,
-    ) -> None:
-        pointer = self._pending_sidecar_path(record.path)
-        if pointer.exists():
-            existing = _read_pending_sidecar(pointer)
-            if existing != record:
-                raise CompletionError("a completed provenance sidecar already awaits this payload")
-        else:
-            _write_atomic(pointer, _pending_sidecar_bytes(record))
-        if source.exists():
-            if not os.path.samefile(source, custody):
-                raise CompletionError("pending provenance sidecar pathname was replaced")
-        else:
-            os.link(custody, source)
-            _fsync_directory(source.parent)
-
-    def _adopt_pending_sidecar(
-        self,
-        record: CompletionRecord,
-        source: Path,
-        custody: Path,
-    ) -> None:
-        sidecar_relative = record.path + SIDECAR_SUFFIX
-        pointer = self._pending_sidecar_path(sidecar_relative)
-        if not pointer.is_file():
-            return
-        sidecar_record = _read_pending_sidecar(pointer)
-        if sidecar_record.path != sidecar_relative:
-            raise CompletionError("pending provenance sidecar names another payload")
-        old_custody = self.source_root / sidecar_record.custody
-        visible = canonical_sidecar_path(source)
-        destination = canonical_sidecar_path(custody)
-        owner_id = hashlib.sha256(record.event_id.encode("ascii")).hexdigest()
-        acquisition = acquire_handoff(self.source_root, sidecar_record, owner_id)
-        if destination.exists():
-            _require_identity(destination, sidecar_record)
-        else:
-            origin = old_custody if old_custody.exists() else visible
-            _require_identity(origin, sidecar_record)
-            os.link(origin, destination)
-            _fsync_directory(destination.parent)
-        if visible.exists() and os.path.samefile(visible, destination):
-            visible.unlink()
-            _fsync_directory(visible.parent)
-        if old_custody.exists() and os.path.samefile(old_custody, destination):
-            old_parent = old_custody.parent
-            old_custody.unlink()
-            _fsync_directory(old_parent)
-            try:
-                old_parent.rmdir()
-            except OSError:
-                pass
-        pointer.unlink()
-        _fsync_directory(pointer.parent)
-        if acquisition is not None:
-            release_handoff_acquisition(
-                self.source_root,
-                sidecar_record,
-                owner_id,
-            )
 
     def _append_record(self, record: CompletionRecord) -> None:
         raw = record.canonical_bytes()
@@ -376,26 +289,6 @@ def _parse_intent(raw: bytes) -> CompletionRecord:
     parse_completion_record(record.canonical_bytes())
     if _intent_bytes(record) != raw:
         raise CompletionError("FTP completion intent is not canonical")
-    return record
-
-
-def _pending_sidecar_bytes(record: CompletionRecord) -> bytes:
-    payload = {"pending_format": _PENDING_SIDECAR_FORMAT, **asdict(record)}
-    return canonical_json_bytes(payload) + b"\n"
-
-
-def _read_pending_sidecar(path: Path) -> CompletionRecord:
-    try:
-        payload = _read_canonical_line(path.read_bytes())
-        if (
-            not isinstance(payload, dict)
-            or payload.pop("pending_format", None) != _PENDING_SIDECAR_FORMAT
-        ):
-            raise ValueError
-        record = CompletionRecord(**payload)
-        parse_completion_record(record.canonical_bytes())
-    except (OSError, ValueError, TypeError, CompletionError) as exc:
-        raise CompletionError("pending provenance sidecar authority is invalid") from exc
     return record
 
 
