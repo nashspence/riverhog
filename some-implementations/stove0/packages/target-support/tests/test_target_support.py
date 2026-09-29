@@ -224,7 +224,7 @@ def _input() -> InputArtifact:
             archive_root_sha256=_sha("1"),
             artifact_set_identity=_sha("2"),
         ),
-        path="source/input.bin",
+        artifact_id=_sha("4"),
         bytes=str(12),
         sha256=_sha("3"),
     )
@@ -491,7 +491,7 @@ def _success_status(
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_sha("6"),
         bytes=str(12),
         sha256=_sha("5"),
     )
@@ -748,7 +748,7 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_sha("6"),
         bytes=str(len(content)),
         sha256=hashlib.sha256(content).hexdigest(),
     )
@@ -771,9 +771,12 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
                 identity,
                 CollectionUploadArtifactCustodyReceiptDocument.seal(
                     collection_id=7,
-                    path=identity.path,
+                    artifact_id=identity.artifact_id,
                     bytes=identity.bytes,
                     sha256=identity.sha256,
+                    archive_root_sha256=_sha("b"),
+                    provenance_root_sha256=_sha("c"),
+                    provenance_root_receipt_sha256=_sha("d"),
                     archive_objects=(
                         CollectionUploadCustodyObjectDocument(
                             volume_id="pack-" + "0" * 64,
@@ -802,13 +805,13 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
 
     publication = TargetCollectionPublication(Execution(), writer)  # type: ignore[arg-type]
     custody = publication.append(
-        ProducerFile(local, output.path),
+        ProducerFile(local, output.artifact_id, allow_missing_materialization_hint=True),
         output,
         derived_from=("source",),
     )
 
     assert custody[0].artifact == ProducerArtifactIdentity(
-        output.path,
+        output.artifact_id,
         output.bytes,
         output.sha256,
     )
