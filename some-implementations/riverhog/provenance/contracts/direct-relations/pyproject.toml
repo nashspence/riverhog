@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-riverhog-direct-relations-contract-lib"
+version = "0.1.0"
+description = "Selected direct State relation vocabulary for Riverhog producers and consumers."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Selected direct State relation vocabulary for Riverhog producers and consumers.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "pydantic>=2.12,<3.0",
+  "riverhog-canonical-json>=0.1,<0.2",
+  "riverhog-provenance-contracts>=0.1,<0.2",
+]
+
+[tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
+riverhog-provenance-contracts = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_riverhog_direct_relations_contract_lib"]

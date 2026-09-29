@@ -47,6 +47,7 @@ riverhog-materialization = { workspace = true }
 riverhog-provenance = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 a-riverhog-linux-provenance-contract-lib = { workspace = true }
+a-riverhog-direct-relations-contract-lib = { workspace = true }
 a-riverhog-linux-provenance-observer = { workspace = true }
 a-riverhog-macos-provenance-contract-lib = { workspace = true }
 a-riverhog-macos-provenance-observer = { workspace = true }
