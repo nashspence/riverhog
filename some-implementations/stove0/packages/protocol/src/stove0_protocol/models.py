@@ -23,6 +23,7 @@ from pydantic import (
 from referencing import Registry
 from referencing.exceptions import Unresolvable
 from referencing.jsonschema import DRAFT202012
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
     OperationIdentity,
@@ -30,7 +31,7 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
-from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
+from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
@@ -220,20 +221,14 @@ class OperationIdentityRef(Stove0ProtocolModel):
 
 
 class WorkArtifactSubject(Stove0ProtocolModel):
-    """A collection logical file assigned an ID and role within one Stove0 work."""
+    """A source-qualified opaque member assigned a subject and role for one work."""
 
     id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
     collection: CollectionRootIdentityRef
-    path: str = Field(min_length=1, max_length=4096)
+    artifact_id: ArtifactId
     bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
-    media_type: str | None = Field(default=None, min_length=1, max_length=255)
-
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
 
 
 class BranchWorkBinding(Stove0ProtocolModel):

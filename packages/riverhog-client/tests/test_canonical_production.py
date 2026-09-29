@@ -2,10 +2,15 @@ from __future__ import annotations
 
 import base64
 import hashlib
+from unittest.mock import Mock
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
+from riverhog_client.canonical_production import (
+    ProducerAttribution,
+    bind_produced_member,
+    build_member_journal,
+)
 from riverhog_protocol import ArtifactMemberIdentityDocument
 from riverhog_protocol.collection_production_provenance import (
     COLLECTION_PRODUCTION_CONTRACT_ID,
@@ -76,3 +81,53 @@ def test_member_journal_rejects_unmeasured_payload() -> None:
             ),
             materialization_hint=None,
         )
+
+
+def test_publication_requires_explicit_hint_or_omission_before_network() -> None:
+    content = b"target output"
+    member = ArtifactMemberIdentityDocument.model_validate(
+        {
+            "artifact_id": "bf" * 32,
+            "bytes": str(len(content)),
+            "sha256": hashlib.sha256(content).hexdigest(),
+        }
+    )
+    observed = BoundedSourceObserver().observe(BytesSource(content))
+    attribution = ProducerAttribution(
+        "example", "example", "v1", "event-1", "example", {}, "f2" * 32
+    )
+    api = Mock()
+    with pytest.raises(ValueError, match="exactly one"):
+        bind_produced_member(
+            api,
+            collection_id=12,
+            member=member,
+            observation=observed,
+            delivery_context_id="urn:uuid:ba123103-fd14-4813-b2d9-b83859e36f31",
+            attribution=attribution,
+            materialization_hint=None,
+            allow_missing_materialization_hint=False,
+        )
+    api.assert_not_called()
+    assert not api.mock_calls
+
+    produced = bind_produced_member(
+        api,
+        collection_id=12,
+        member=member,
+        observation=observed,
+        delivery_context_id="urn:uuid:ba123103-fd14-4813-b2d9-b83859e36f31",
+        attribution=attribution,
+        materialization_hint=("output", "clip.mkv"),
+        allow_missing_materialization_hint=False,
+    )
+    assert [call[0] for call in api.mock_calls] == [
+        "upload_collection_upload_session_provenance_journal",
+        "bind_collection_upload_session_artifact_provenance",
+        "set_collection_upload_session_materialization_decisions",
+    ]
+    assert api.mock_calls[1].args[1].bindings == [produced.binding]
+    assert api.mock_calls[2].args[1].decisions[0].materialization_hint.components == [
+        "output",
+        "clip.mkv",
+    ]

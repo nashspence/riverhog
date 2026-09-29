@@ -142,10 +142,9 @@ class ContentObservationRuntime:
         for subject in self.request.subjects:
             artifact = ClaimedArtifact(
                 root=subject.collection.to_identity(),
-                path=subject.path,
+                artifact_id=subject.artifact_id,
                 bytes=subject.bytes,
                 sha256=subject.sha256,
-                control=False,
             )
             if artifact.root not in self.reader.inputs or artifact.key in seen:
                 raise RuntimeError(

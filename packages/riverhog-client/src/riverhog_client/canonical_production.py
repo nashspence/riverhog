@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import base64
 import hashlib
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_protocol import ArtifactMemberIdentityDocument
+from riverhog_protocol import (
+    ArtifactMaterializationDecisionBatchDocument,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingBatchDocument,
+)
 from riverhog_protocol.collection_production_provenance import (
     COLLECTION_MEMBER_HISTORY_ROLE,
     COLLECTION_MEMBER_ROLE,
@@ -55,6 +59,26 @@ class ProducedMemberJournal:
     journal_id: str
     content: bytes
     binding: CollectionArtifactProvenanceBindingDocument
+
+
+class CanonicalProductionApi(Protocol):
+    def upload_collection_upload_session_provenance_journal(
+        self,
+        collection_id: int,
+        journal_id: str,
+        *,
+        content: Iterable[bytes],
+        byte_count: int,
+        sha256: str,
+    ) -> object: ...
+
+    def bind_collection_upload_session_artifact_provenance(
+        self, collection_id: int, batch: CollectionArtifactProvenanceBindingBatchDocument
+    ) -> object: ...
+
+    def set_collection_upload_session_materialization_decisions(
+        self, collection_id: int, batch: ArtifactMaterializationDecisionBatchDocument
+    ) -> object: ...
 
 
 def build_member_journal(
@@ -243,4 +267,60 @@ def build_member_journal(
     return ProducedMemberJournal(journal_id, raw, binding)
 
 
-__all__ = ["ProducedMemberJournal", "ProducerAttribution", "build_member_journal"]
+def bind_produced_member(
+    api: CanonicalProductionApi,
+    *,
+    collection_id: int,
+    member: ArtifactMemberIdentityDocument,
+    observation: ObservationResult,
+    delivery_context_id: str,
+    attribution: ProducerAttribution,
+    materialization_hint: tuple[str, ...] | None,
+    allow_missing_materialization_hint: bool,
+) -> ProducedMemberJournal:
+    """Stage and bind one already registered member before finalization."""
+
+    decision = ArtifactMaterializationDecisionBatchDocument.model_validate(
+        {
+            "decisions": [
+                {
+                    "artifact_id": member.artifact_id,
+                    "materialization_hint": (
+                        {"components": list(materialization_hint)}
+                        if materialization_hint is not None
+                        else None
+                    ),
+                    "allow_missing_materialization_hint": allow_missing_materialization_hint,
+                }
+            ]
+        }
+    )
+    produced = build_member_journal(
+        member=member,
+        observation=observation,
+        delivery_context_id=delivery_context_id,
+        attribution=attribution,
+        materialization_hint=materialization_hint,
+    )
+    api.upload_collection_upload_session_provenance_journal(
+        collection_id,
+        produced.journal_id,
+        content=(produced.content,),
+        byte_count=len(produced.content),
+        sha256=hashlib.sha256(produced.content).hexdigest(),
+    )
+    api.bind_collection_upload_session_artifact_provenance(
+        collection_id,
+        CollectionArtifactProvenanceBindingBatchDocument(bindings=[produced.binding]),
+    )
+    api.set_collection_upload_session_materialization_decisions(collection_id, decision)
+    return produced
+
+
+__all__ = [
+    "CanonicalProductionApi",
+    "ProducedMemberJournal",
+    "ProducerAttribution",
+    "bind_produced_member",
+    "build_member_journal",
+]

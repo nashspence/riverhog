@@ -15,6 +15,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionDerivation,
@@ -261,17 +262,9 @@ class InputArtifact(TargetProtocolModel):
     id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
     collection: CollectionRootIdentityRef
-    path: str = Field(min_length=1, max_length=4096)
+    artifact_id: ArtifactId
     bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
-    media_type: str | None = Field(default=None, min_length=1, max_length=255)
-
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        from riverhog_protocol.paths import validate_canonical_relpath
-
-        return validate_canonical_relpath(value)
 
 
 class TargetInputRoleCount(TargetProtocolModel):
@@ -349,17 +342,9 @@ class TargetInputPage(TargetProtocolModel):
 class OutputArtifact(TargetProtocolModel):
     id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
-    path: str = Field(min_length=1, max_length=4096)
+    artifact_id: ArtifactId
     bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
-    media_type: str | None = Field(default=None, min_length=1, max_length=255)
-
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        from riverhog_protocol.paths import validate_canonical_relpath
-
-        return validate_canonical_relpath(value)
 
 
 class OutputSourceEdge(TargetProtocolModel):
@@ -798,7 +783,7 @@ class TargetExecutionEvidence(TargetProtocolModel):
 class OutputCollectionRef(TargetProtocolModel):
     collection_id: CollectionId
     archive_root_sha256: Sha256
-    content_identity: Sha256
+    artifact_set_identity: Sha256
     derivation_sha256: Sha256
 
 
@@ -808,10 +793,9 @@ class TargetOutputBinding(TargetProtocolModel):
     output_id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
     collection: OutputCollectionRef
-    path: str = Field(min_length=1, max_length=4096)
+    artifact_id: ArtifactId
     bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
-    media_type: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class TargetOutputBindingSetIdentity(TargetProtocolModel):

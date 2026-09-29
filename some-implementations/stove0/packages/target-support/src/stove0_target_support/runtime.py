@@ -132,7 +132,7 @@ class TargetCollectionPublication:
             {
                 "collection_id": str(receipt.collection_id),
                 "archive_root_sha256": receipt.archive_root_sha256,
-                "content_identity": receipt.content_identity,
+                "artifact_set_identity": receipt.artifact_set_identity,
                 "derivation_sha256": receipt.derivation.sha256,
             }
         )
@@ -322,10 +322,9 @@ class TargetExecutionRuntime:
                 expected,
                 ClaimedArtifact(
                     root=expected.collection.to_identity(),
-                    path=expected.path,
+                    artifact_id=expected.artifact_id,
                     bytes=expected.bytes,
                     sha256=expected.sha256,
-                    control=False,
                 ),
             )
 
@@ -369,10 +368,9 @@ class TargetExecutionRuntime:
         artifacts = [
             ClaimedArtifact(
                 root=item.collection.to_identity(),
-                path=item.path,
+                artifact_id=item.artifact_id,
                 bytes=item.bytes,
                 sha256=item.sha256,
-                control=False,
             )
             for item in inputs
         ]
