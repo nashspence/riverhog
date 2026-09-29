@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Protocol
 
 from riverhog_protocol import (
+    ArtifactId,
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
@@ -89,51 +90,21 @@ class CollectionDescriptionService(Protocol):
 
 
 class ProvenanceService(Protocol):
-    def list_files(
+    def list_artifacts(
         self,
         collection_id: int,
         *,
         page_size: int,
-        position: BrowsePosition,
-        q: str | None,
-        status: str | None,
-        sort: str,
-        order: str,
+        after_artifact_id: ArtifactId | None,
         principal: Principal,
     ) -> JsonObject: ...
-    def iter_files(
+    def get_artifact(
         self,
         collection_id: int,
-        *,
-        q: str | None,
-        status: str | None,
-        sort: str,
-        order: str,
-        principal: Principal,
-    ) -> Iterator[JsonObject]: ...
-    def show_file(
-        self,
-        collection_id: int,
-        path: str,
+        artifact_id: ArtifactId,
         *,
         principal: Principal,
     ) -> JsonObject: ...
-    def trace_file(
-        self,
-        collection_id: int,
-        path: str,
-        *,
-        page_size: int,
-        position: BrowsePosition,
-        principal: Principal,
-    ) -> JsonObject: ...
-    def iter_trace_file(
-        self,
-        collection_id: int,
-        path: str,
-        *,
-        principal: Principal,
-    ) -> Iterator[JsonObject]: ...
     def journal_metadata(
         self,
         collection_id: int,
@@ -141,58 +112,15 @@ class ProvenanceService(Protocol):
         *,
         principal: Principal,
     ) -> tuple[int, str]: ...
-    def iter_journal(
-        self,
-        collection_id: int,
-        journal_id: str,
-        *,
-        principal: Principal,
-    ) -> Iterator[bytes]: ...
     def iter_journal_range(
         self,
         collection_id: int,
         journal_id: str,
         *,
-        offset: int,
-        size: int,
+        offset: int = 0,
+        size: int | None = None,
         principal: Principal,
     ) -> Iterator[bytes]: ...
-    def list_journal_agents(
-        self,
-        collection_id: int,
-        journal_id: str,
-        *,
-        page_size: int,
-        position: BrowsePosition,
-        principal: Principal,
-    ) -> JsonObject: ...
-    def iter_journal_agents(
-        self,
-        collection_id: int,
-        journal_id: str,
-        *,
-        principal: Principal,
-    ) -> Iterator[JsonObject]: ...
-    def request_verification(
-        self,
-        collection_id: int,
-        *,
-        principal: Principal,
-    ) -> JsonObject: ...
-    def get_verification(
-        self,
-        collection_id: int,
-        *,
-        principal: Principal,
-    ) -> JsonObject: ...
-    def cancel_verification(
-        self,
-        collection_id: int,
-        *,
-        principal: Principal,
-    ) -> JsonObject: ...
-    def requeue_interrupted_verifications_for_startup(self) -> int: ...
-    def process_due_verifications(self, *, limit: int = 1) -> int: ...
 
 
 class CollectionTagService(Protocol):

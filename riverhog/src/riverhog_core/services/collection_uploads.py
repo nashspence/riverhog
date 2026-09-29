@@ -1023,6 +1023,21 @@ class SqlAlchemyCollectionUploadService:
             "bindings": [binding.model_dump(mode="json") for binding in batch.bindings],
         }
 
+    def get_artifact_provenance_binding(
+        self, collection_id: int, artifact_id: ArtifactId
+    ) -> dict[str, object]:
+        """Return the exact accepted primary binding for a restarted producer."""
+
+        normalized_id = _collection_id(collection_id)
+        with read_snapshot(self._session_factory) as session:
+            row = session.get(
+                CollectionUploadArtifactProvenanceBindingRecord,
+                (normalized_id, str(artifact_id)),
+            )
+            if row is None:
+                raise NotFound(f"artifact provenance binding not found: {artifact_id}")
+            return _provenance_binding_row(row)
+
     def set_artifact_materialization_decisions(
         self,
         collection_id: int,

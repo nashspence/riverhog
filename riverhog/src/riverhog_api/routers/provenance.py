@@ -1,75 +1,44 @@
+"""Root-selected canonical history, addressed by collection and artifact identity."""
+
 from __future__ import annotations
 
 from collections.abc import Iterator
 from typing import Annotated, Any
 
 from fastapi import Header, Query, Request, Response
-from http_api_contracts import (
-    mutable_browse_operation,
-    operation_interface,
-    parse_quoted_sha256_identity,
-)
-from riverhog_protocol import CollectionIdParameter, ProvenanceSort, ProvenanceStatus, SortOrder
+from http_api_contracts import operation_interface, parse_quoted_sha256_identity
+from riverhog_protocol import ArtifactId, CollectionIdParameter
 from riverhog_protocol.errors import BadRequest, PreconditionFailed, PreconditionRequired
-from riverhog_protocol.paths import CanonicalRelPath
 from riverhog_provenance_contracts import ProvenanceJournalId
 from starlette.responses import StreamingResponse
 
 from riverhog_api.auth import ProvenanceExporter, ProvenanceReader
-from riverhog_api.browse import (
-    BrowsePageTokenQuery,
-    BrowseQueryParameter,
-    canonical_selectors,
-    page_payload,
-    page_position,
-)
 from riverhog_api.deps import ContainerDep
 from riverhog_api.routing import RiverhogRouter
 from riverhog_api.schemas.provenance import (
-    CollectionFileProvenanceDetailOut,
-    CollectionFileProvenanceTraceOut,
-    CollectionProvenanceVerificationJobOut,
-    ListCollectionFileProvenanceOut,
-    ListProvenanceJournalAgentsOut,
+    CollectionArtifactProvenanceDetailOut,
+    ListCollectionArtifactProvenanceOut,
 )
 
 router = RiverhogRouter(tags=["provenance"])
 
 _PROVENANCE_JOURNAL_RESPONSE: dict[int | str, dict[str, Any]] = {
     200: {
-        "description": "Exact immutable provenance journal.",
+        "description": "Exact immutable canonical provenance journal.",
         "headers": {
-            "Content-Length": {
-                "required": True,
-                "description": "Exact response-body length in bytes.",
-                "schema": {"type": "integer", "minimum": 0},
-            },
-            "ETag": {
-                "required": True,
-                "description": "Quoted SHA-256 identity of the journal bytes.",
-                "schema": {"type": "string", "pattern": '^"[0-9a-f]{64}"$'},
-            },
-            "Accept-Ranges": {
-                "required": True,
-                "schema": {"type": "string", "const": "bytes"},
-            },
+            "Content-Length": {"required": True, "schema": {"type": "integer", "minimum": 0}},
+            "ETag": {"required": True, "schema": {"type": "string"}},
+            "Accept-Ranges": {"required": True, "schema": {"type": "string", "const": "bytes"}},
         },
-        "content": {
-            "application/json-seq": {
-                "schema": {"type": "string", "format": "binary"},
-            }
-        },
+        "content": {"application/json-seq": {"schema": {"type": "string", "format": "binary"}}},
     },
     206: {
-        "description": "Exact immutable provenance journal byte range.",
+        "description": "Exact immutable journal byte range.",
         "headers": {
             "Content-Length": {"required": True, "schema": {"type": "integer"}},
             "Content-Range": {"required": True, "schema": {"type": "string"}},
             "ETag": {"required": True, "schema": {"type": "string"}},
-            "Accept-Ranges": {
-                "required": True,
-                "schema": {"type": "string", "const": "bytes"},
-            },
+            "Accept-Ranges": {"required": True, "schema": {"type": "string", "const": "bytes"}},
         },
         "content": {"application/json-seq": {"schema": {"type": "string", "format": "binary"}}},
     },
@@ -77,98 +46,44 @@ _PROVENANCE_JOURNAL_RESPONSE: dict[int | str, dict[str, Any]] = {
 
 
 @router.get(
-    "/collections/{collection_id}/provenance/files",
-    response_model=ListCollectionFileProvenanceOut,
-    openapi_extra=mutable_browse_operation(),
+    "/collections/{collection_id}/provenance/artifacts",
+    response_model=ListCollectionArtifactProvenanceOut,
+    openapi_extra=operation_interface("standard-tool/protocol"),
 )
-def list_collection_provenance(
+def list_collection_artifact_provenance(
     collection_id: CollectionIdParameter,
     principal: ProvenanceReader,
     container: ContainerDep,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 25,
-    page_token: BrowsePageTokenQuery = None,
-    q: BrowseQueryParameter = None,
-    status: ProvenanceStatus | None = None,
-    sort: ProvenanceSort = "path",
-    order: SortOrder = "asc",
+    page_size: Annotated[int, Query(ge=1, le=200)] = 50,
+    after_artifact_id: ArtifactId | None = None,
+    if_match: Annotated[str | None, Header(alias="If-Match")] = None,
 ) -> dict[str, Any]:
-    selectors = canonical_selectors(
-        collection_id=collection_id, q=q, status=status, sort=sort, order=order
-    )
-    position = page_position(
-        container,
+    if after_artifact_id is not None and if_match is None:
+        raise PreconditionRequired("provenance continuation requires the archive root If-Match")
+    expected_root = parse_quoted_sha256_identity(if_match) if if_match is not None else None
+    page = container.provenance.list_artifacts(
+        collection_id,
+        page_size=page_size,
+        after_artifact_id=after_artifact_id,
         principal=principal,
-        operation="list_collection_provenance",
-        page_token=page_token,
-        selectors=selectors,
     )
-    return page_payload(
-        container.provenance.list_files(
-            collection_id,
-            page_size=page_size,
-            position=position,
-            q=q,
-            status=status,
-            sort=sort,
-            order=order,
-            principal=principal,
-        ),
-        container=container,
-        principal=principal,
-        operation="list_collection_provenance",
-        selectors=selectors,
-    )
+    if expected_root is not None and page["archive_root_sha256"] != expected_root:
+        raise PreconditionFailed("collection archive root changed")
+    return page
 
 
 @router.get(
-    "/collections/{collection_id}/provenance/files/{path:path}",
-    response_model=CollectionFileProvenanceDetailOut,
-    response_model_exclude_unset=True,
+    "/collections/{collection_id}/provenance/artifacts/{artifact_id}",
+    response_model=CollectionArtifactProvenanceDetailOut,
+    openapi_extra=operation_interface("standard-tool/protocol"),
 )
-def get_collection_file_provenance(
+def get_collection_artifact_provenance(
     collection_id: CollectionIdParameter,
-    path: CanonicalRelPath,
+    artifact_id: ArtifactId,
     principal: ProvenanceReader,
     container: ContainerDep,
 ) -> dict[str, Any]:
-    return container.provenance.show_file(collection_id, path, principal=principal)
-
-
-@router.get(
-    "/collections/{collection_id}/provenance/trace/{path:path}",
-    response_model=CollectionFileProvenanceTraceOut,
-    response_model_exclude_unset=True,
-    openapi_extra=mutable_browse_operation(),
-)
-def trace_collection_file_provenance(
-    collection_id: CollectionIdParameter,
-    path: CanonicalRelPath,
-    principal: ProvenanceReader,
-    container: ContainerDep,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 25,
-    page_token: BrowsePageTokenQuery = None,
-) -> dict[str, Any]:
-    selectors = canonical_selectors(collection_id=collection_id, path=path)
-    position = page_position(
-        container,
-        principal=principal,
-        operation="trace_collection_file_provenance",
-        page_token=page_token,
-        selectors=selectors,
-    )
-    return page_payload(
-        container.provenance.trace_file(
-            collection_id,
-            path,
-            page_size=page_size,
-            position=position,
-            principal=principal,
-        ),
-        container=container,
-        principal=principal,
-        operation="trace_collection_file_provenance",
-        selectors=selectors,
-    )
+    return container.provenance.get_artifact(collection_id, artifact_id, principal=principal)
 
 
 @router.head(
@@ -193,12 +108,8 @@ def stream_collection_provenance_journal(
     if_match: Annotated[str | None, Header(alias="If-Match")] = None,
 ) -> Response:
     byte_count, sha256 = container.provenance.journal_metadata(
-        collection_id,
-        journal_id,
-        principal=principal,
+        collection_id, journal_id, principal=principal
     )
-
-    etag = f'"{sha256}"'
     if range_header is not None:
         if if_match is None:
             raise PreconditionRequired("provenance journal continuation requires If-Match")
@@ -206,11 +117,10 @@ def stream_collection_provenance_journal(
             raise PreconditionFailed("provenance journal identity changed")
     start, end = _parse_range(range_header, byte_count)
     status_code = 206 if range_header is not None else 200
-    content_length = end - start
     headers = {
         "Accept-Ranges": "bytes",
-        "Content-Length": str(content_length),
-        "ETag": etag,
+        "Content-Length": str(end - start),
+        "ETag": f'"{sha256}"',
         "Content-Disposition": f'attachment; filename="{journal_id}.json-seq"',
     }
     if status_code == 206:
@@ -219,26 +129,16 @@ def stream_collection_provenance_journal(
         return Response(status_code=status_code, headers=headers)
 
     def content() -> Iterator[bytes]:
-        if range_header is None:
-            yield from container.provenance.iter_journal(
-                collection_id,
-                journal_id,
-                principal=principal,
-            )
-            return
         yield from container.provenance.iter_journal_range(
             collection_id,
             journal_id,
             offset=start,
-            size=content_length,
+            size=end - start,
             principal=principal,
         )
 
     return StreamingResponse(
-        content(),
-        status_code=status_code,
-        media_type="application/json-seq",
-        headers=headers,
+        content(), status_code=status_code, media_type="application/json-seq", headers=headers
     )
 
 
@@ -266,75 +166,3 @@ def _parse_range(value: str | None, total_bytes: int) -> tuple[int, int]:
     if start < 0 or start >= total_bytes or end <= start or end > total_bytes:
         raise BadRequest("bytes range is outside the journal")
     return start, end
-
-
-@router.get(
-    "/collections/{collection_id}/provenance/journals/{journal_id}/agents",
-    response_model=ListProvenanceJournalAgentsOut,
-    openapi_extra=mutable_browse_operation(),
-)
-def list_collection_provenance_journal_agents(
-    collection_id: CollectionIdParameter,
-    journal_id: ProvenanceJournalId,
-    principal: ProvenanceReader,
-    container: ContainerDep,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 25,
-    page_token: BrowsePageTokenQuery = None,
-) -> dict[str, Any]:
-    selectors = canonical_selectors(collection_id=collection_id, journal_id=journal_id)
-    position = page_position(
-        container,
-        principal=principal,
-        operation="list_collection_provenance_journal_agents",
-        page_token=page_token,
-        selectors=selectors,
-    )
-    return page_payload(
-        container.provenance.list_journal_agents(
-            collection_id,
-            journal_id,
-            page_size=page_size,
-            position=position,
-            principal=principal,
-        ),
-        container=container,
-        principal=principal,
-        operation="list_collection_provenance_journal_agents",
-        selectors=selectors,
-    )
-
-
-@router.post(
-    "/collections/{collection_id}/provenance/verification",
-    response_model=CollectionProvenanceVerificationJobOut,
-)
-def request_collection_provenance_verification(
-    collection_id: CollectionIdParameter,
-    principal: ProvenanceReader,
-    container: ContainerDep,
-) -> dict[str, Any]:
-    return container.provenance.request_verification(collection_id, principal=principal)
-
-
-@router.get(
-    "/collections/{collection_id}/provenance/verification",
-    response_model=CollectionProvenanceVerificationJobOut,
-)
-def get_collection_provenance_verification(
-    collection_id: CollectionIdParameter,
-    principal: ProvenanceReader,
-    container: ContainerDep,
-) -> dict[str, Any]:
-    return container.provenance.get_verification(collection_id, principal=principal)
-
-
-@router.delete(
-    "/collections/{collection_id}/provenance/verification",
-    response_model=CollectionProvenanceVerificationJobOut,
-)
-def cancel_collection_provenance_verification(
-    collection_id: CollectionIdParameter,
-    principal: ProvenanceReader,
-    container: ContainerDep,
-) -> dict[str, Any]:
-    return container.provenance.cancel_verification(collection_id, principal=principal)

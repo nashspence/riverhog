@@ -280,20 +280,10 @@ def bind_produced_member(
 ) -> ProducedMemberJournal:
     """Stage and bind one already registered member before finalization."""
 
-    decision = ArtifactMaterializationDecisionBatchDocument.model_validate(
-        {
-            "decisions": [
-                {
-                    "artifact_id": member.artifact_id,
-                    "materialization_hint": (
-                        {"components": list(materialization_hint)}
-                        if materialization_hint is not None
-                        else None
-                    ),
-                    "allow_missing_materialization_hint": allow_missing_materialization_hint,
-                }
-            ]
-        }
+    decision = member_materialization_decision(
+        artifact_id=member.artifact_id,
+        materialization_hint=materialization_hint,
+        allow_missing_materialization_hint=allow_missing_materialization_hint,
     )
     produced = build_member_journal(
         member=member,
@@ -317,10 +307,36 @@ def bind_produced_member(
     return produced
 
 
+def member_materialization_decision(
+    *,
+    artifact_id: str,
+    materialization_hint: tuple[str, ...] | None,
+    allow_missing_materialization_hint: bool,
+) -> ArtifactMaterializationDecisionBatchDocument:
+    """Validate the same immutable choice for initial publication and retries."""
+
+    return ArtifactMaterializationDecisionBatchDocument.model_validate(
+        {
+            "decisions": [
+                {
+                    "artifact_id": artifact_id,
+                    "materialization_hint": (
+                        {"components": list(materialization_hint)}
+                        if materialization_hint is not None
+                        else None
+                    ),
+                    "allow_missing_materialization_hint": allow_missing_materialization_hint,
+                }
+            ]
+        }
+    )
+
+
 __all__ = [
     "CanonicalProductionApi",
     "ProducedMemberJournal",
     "ProducerAttribution",
     "bind_produced_member",
     "build_member_journal",
+    "member_materialization_decision",
 ]

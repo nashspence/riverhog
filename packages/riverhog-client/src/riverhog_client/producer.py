@@ -12,32 +12,32 @@ from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from pathlib import Path
-from typing import Any, BinaryIO, Literal, cast
+from typing import Any, BinaryIO
 
 from pydantic import TypeAdapter
 from riverhog_protocol import (
     CollectionDescription,
     CollectionTag,
 )
+from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdentityDocument
 from riverhog_protocol.collection_upload_transport import (
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadRegistrationConstraintsDocument,
     CollectionUploadUnitWorkDocument,
     validate_collection_upload_artifact_custody_receipt,
 )
-from riverhog_protocol.collection_workflows import (
-    DERIVATION_DISPOSITION_EVIDENCE_PREFIX,
-    DERIVATION_EVIDENCE_PATH,
-    DERIVATION_OUTPUT_EVIDENCE_PREFIX,
-    PRODUCER_EVIDENCE_PATH,
-    JsonValue,
-    ProducerEvidence,
-)
-from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
-from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
+from riverhog_protocol.errors import NotFound
+from riverhog_protocol.paths import CollectionId
+from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from riverhog_protocol.storage_names import ArchiveStoreName
+from riverhog_provenance import BoundedSourceObserver, ObservationResult, StreamSource
 from time_formats import parse_utc_timestamp, utc_epoch_ns_now
 
+from riverhog_client.canonical_production import (
+    ProducerAttribution,
+    bind_produced_member,
+    member_materialization_decision,
+)
 from riverhog_client.client import ApiClient
 from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
@@ -56,8 +56,10 @@ COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES = 16
 @dataclass(frozen=True, slots=True)
 class ProducerFile:
     source: Path
-    path: str
-    provenance: Mapping[str, object] | None = None
+    artifact_id: ArtifactId
+    materialization_hint: tuple[str, ...] | None = None
+    allow_missing_materialization_hint: bool = False
+    observation: ObservationResult | None = None
 
     def __post_init__(self) -> None:
         supplied = self.source
@@ -65,11 +67,10 @@ class ProducerFile:
             raise ValueError(f"producer source must not be a symlink: {supplied}")
         resolved = supplied.resolve()
         object.__setattr__(self, "source", resolved)
-        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
+        object.__setattr__(self, "artifact_id", ArtifactId(self.artifact_id))
         if not resolved.is_file():
             raise ValueError(f"producer source must be a real regular file: {resolved}")
-        if self.provenance is not None:
-            object.__setattr__(self, "provenance", dict(self.provenance))
+        _validate_hint_decision(self.materialization_hint, self.allow_missing_materialization_hint)
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,14 +84,16 @@ class ProducerStream:
     without sharing its filesystem with the coordinator.
     """
 
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     sha256: str
     read_range: RangeReader
-    provenance: Mapping[str, object] | None = None
+    materialization_hint: tuple[str, ...] | None = None
+    allow_missing_materialization_hint: bool = False
+    observation: ObservationResult | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
+        object.__setattr__(self, "artifact_id", ArtifactId(self.artifact_id))
         if isinstance(self.bytes, bool) or not isinstance(self.bytes, int) or self.bytes < 0:
             raise ValueError("producer stream byte count must be non-negative")
         digest = self.sha256.casefold()
@@ -99,8 +102,7 @@ class ProducerStream:
         object.__setattr__(self, "sha256", digest)
         if not callable(self.read_range):
             raise ValueError("producer stream requires a range reader")
-        if self.provenance is not None:
-            object.__setattr__(self, "provenance", dict(self.provenance))
+        _validate_hint_decision(self.materialization_hint, self.allow_missing_materialization_hint)
 
 
 ProducerInput = ProducerFile | ProducerStream
@@ -110,7 +112,7 @@ ProducerInput = ProducerFile | ProducerStream
 class ProducerArtifactIdentity:
     """Exact artifact identity established by the producer's verification pass."""
 
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     sha256: str
 
@@ -133,10 +135,12 @@ class ProducerArtifactCustody:
 
 @dataclass(frozen=True, slots=True)
 class _Source:
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     sha256: str
-    provenance: dict[str, object]
+    materialization_hint: tuple[str, ...] | None
+    allow_missing_materialization_hint: bool
+    observation: ObservationResult | None = None
     content: builtins.bytes | None = None
     raw_parts: dict[str, object] | None = None
     raw_digest_spool: RawSourceHash | None = None
@@ -144,15 +148,17 @@ class _Source:
 
     def read_range(self, offset: int, size: int) -> builtins.bytes:
         if offset < 0 or size < 0 or offset + size > self.bytes:
-            raise RuntimeError(f"upload unit requested an invalid source range: {self.path}")
+            raise RuntimeError(f"upload unit requested an invalid source range: {self.artifact_id}")
         if self.content is not None:
             return self.content[offset : offset + size]
         if self.reader is not None:
             content = self.reader(offset, size)
             if len(content) != size:
-                raise RuntimeError(f"producer source returned an incomplete range: {self.path}")
+                raise RuntimeError(
+                    f"producer source returned an incomplete range: {self.artifact_id}"
+                )
             return content
-        raise RuntimeError(f"producer source has no readable content: {self.path}")
+        raise RuntimeError(f"producer source has no readable content: {self.artifact_id}")
 
     def close(self) -> None:
         if self.raw_digest_spool is not None:
@@ -183,12 +189,6 @@ class CollectionProducer:
         copy_to: Sequence[ArchiveStoreName] | None = None,
         description: CollectionDescription | None = None,
         tags: Sequence[CollectionTag] = (),
-        provenance_mode: Literal["captured", "omitted"] = "omitted",
-        provenance_omission_reason: str = (
-            "Producer did not receive host provenance; immutable producer evidence records "
-            "the source boundary."
-        ),
-        server_generated_provenance: bool = False,
     ) -> None:
         self.api = api
         self.producer_app = producer_app
@@ -200,12 +200,6 @@ class CollectionProducer:
         self.copy_to = tuple(copy_to) if copy_to is not None else None
         self.description = description
         self.tags = tuple(tags)
-        self.provenance_mode = provenance_mode
-        self.server_generated_provenance = server_generated_provenance
-        reason = provenance_omission_reason.strip()
-        if not reason:
-            raise ValueError("producer provenance omission reason must be visible")
-        self.provenance_omission_reason = reason
 
     def publish(
         self,
@@ -265,11 +259,6 @@ class CollectionProducer:
             description=self.description,
             tags=self.tags,
             event_context=event_context,
-            provenance_mode=(
-                "captured" if self.server_generated_provenance else self.provenance_mode
-            ),
-            server_generated_provenance=self.server_generated_provenance,
-            provenance_omission_reason=self.provenance_omission_reason,
             progress=progress,
         )
         try:
@@ -282,11 +271,7 @@ class CollectionProducer:
                     batch.clear()
             if batch:
                 producer.append_inputs(batch)
-            return producer.finish(
-                terminal_evidence={},
-                poll_seconds=poll_seconds,
-                timeout_seconds=timeout_seconds,
-            )
+            return producer.finish(poll_seconds=poll_seconds, timeout_seconds=timeout_seconds)
         finally:
             producer.stop()
 
@@ -316,38 +301,23 @@ class IncrementalCollectionProducer:
         description: CollectionDescription | None = None,
         tags: Sequence[CollectionTag] = (),
         event_context: Mapping[str, object] | None = None,
-        provenance_mode: Literal["captured", "omitted"] = "omitted",
-        server_generated_provenance: bool = False,
-        provenance_omission_reason: str = (
-            "Producer did not receive host provenance; immutable producer evidence records "
-            "the source boundary."
-        ),
         progress: ReadProgress | None = None,
     ) -> None:
-        reason = provenance_omission_reason.strip()
-        if not reason:
-            raise ValueError("producer provenance omission reason must be visible")
         self.api = api
         self.progress = progress
-        self.provenance_omission_reason = reason
-        self.provenance_mode = provenance_mode
-        self.server_generated_provenance = server_generated_provenance
-        if server_generated_provenance and provenance_mode != "captured":
-            raise ValueError("server-generated provenance requires captured upload mode")
-        evidence = ProducerEvidence(
+        construction_identity = hashlib.sha256(
+            (idempotency_key or source_event_id).encode("utf-8")
+        ).hexdigest()
+        self._attribution = ProducerAttribution(
             producer_app=producer_app,
             adapter_id=adapter_id,
             adapter_version=adapter_version,
             source_event_id=source_event_id,
             ingest_source=ingest_source,
-            source_context=cast(dict[str, JsonValue], dict(source_context or {})),
+            source_context=dict(source_context or {}),
+            construction_identity=construction_identity,
         )
-        self._producer_evidence = _content_source(
-            PRODUCER_EVIDENCE_PATH,
-            evidence.to_json_bytes(),
-            provenance={} if server_generated_provenance else _omitted(reason),
-        )
-        self._sources: dict[str, _Source] = {}
+        self._sources: dict[ArtifactId, _Source] = {}
         self._closed = False
         self._needs_upload_scan = True
         self._heartbeat_stop = threading.Event()
@@ -359,7 +329,7 @@ class IncrementalCollectionProducer:
             tags,
             create_or_resume=lambda first_batch, identity: (
                 api.create_or_resume_collection_upload_session(
-                    idempotency_key or evidence.sha256,
+                    idempotency_key or construction_identity,
                     ingest_source=ingest_source,
                     description=description,
                     tags=first_batch,
@@ -368,8 +338,6 @@ class IncrementalCollectionProducer:
                     use_cache=use_cache,
                     copy_to=copy_to,
                     event_context=event_context,
-                    provenance_mode=provenance_mode,
-                    provenance_omission_reason=(reason if provenance_mode == "omitted" else None),
                     custody_mode="custody-transfer",
                 )
             ),
@@ -382,6 +350,10 @@ class IncrementalCollectionProducer:
         self.collection_id: int = TypeAdapter(CollectionId).validate_python(
             session.get("collection_id")
         )
+        delivery_context_id = session.get("delivery_context_id")
+        if not isinstance(delivery_context_id, str):
+            raise RuntimeError("Riverhog upload session omitted its delivery context")
+        self.delivery_context_id = delivery_context_id
         if str(session.get("state") or "") == "finalized":
             self._finalized = _finalized_receipt(session)
             self._closed = True
@@ -426,63 +398,32 @@ class IncrementalCollectionProducer:
         inputs: Sequence[ProducerInput],
         *,
         provenance_journals: Mapping[str, bytes] | None = None,
-        expected_identities: Mapping[str, ProducerArtifactIdentity] | None = None,
+        expected_identities: Mapping[ArtifactId, ProducerArtifactIdentity] | None = None,
     ) -> tuple[ProducerArtifactCustody, ...]:
         if self._closed or self.constraints is None:
             raise RuntimeError("incremental collection producer is already closed")
         self._require_heartbeat()
         if not inputs:
             return ()
-        supplied_paths = [item.path for item in inputs]
-        if len(supplied_paths) != len(set(supplied_paths)):
-            raise ValueError("incremental producer input paths must be unique")
-        if any(path.startswith("riverhog/") for path in supplied_paths):
-            raise ValueError("producer source files may not use the Riverhog control namespace")
+        supplied_ids = [item.artifact_id for item in inputs]
+        if len(supplied_ids) != len(set(supplied_ids)):
+            raise ValueError("incremental producer artifact IDs must be unique")
         normalized_journals = {
             str(key): bytes(value) for key, value in (provenance_journals or {}).items()
         }
         expected = {
-            validate_canonical_relpath(path): identity
-            for path, identity in (expected_identities or {}).items()
+            ArtifactId(key): identity for key, identity in (expected_identities or {}).items()
         }
-        if expected and set(expected) != set(supplied_paths):
-            raise ValueError("expected producer identities must match the supplied paths")
+        if expected and set(expected) != set(supplied_ids):
+            raise ValueError("expected producer identities must match the supplied artifact IDs")
         self._stage_journals(normalized_journals)
         candidates: list[_Source] = []
         receipts: list[ProducerArtifactCustody] = []
         for item in inputs:
-            expected_identity = expected.get(item.path)
-            if self.server_generated_provenance and item.provenance is not None:
-                raise ValueError(
-                    "server-generated provenance cannot be mixed with producer bindings"
-                )
-            provenance = (
-                {}
-                if self.server_generated_provenance
-                else _provenance(
-                    item.provenance,
-                    default=_omitted(self.provenance_omission_reason),
-                )
-            )
-            if (
-                self.resumed
-                and expected_identity is not None
-                and expected_identity.bytes <= self.constraints.pack_member_bytes
-            ):
-                resumed_source = _Source(
-                    path=expected_identity.path,
-                    bytes=expected_identity.bytes,
-                    sha256=expected_identity.sha256,
-                    provenance=provenance,
-                )
-                resumed_receipts = self._append_sources([resumed_source])
-                receipts.extend(resumed_receipts)
-                if resumed_receipts:
-                    continue
+            expected_identity = expected.get(item.artifact_id)
             source = (
                 _hash_local_source(
                     item,
-                    provenance=provenance,
                     pack_member_bytes=self.constraints.pack_member_bytes,
                     raw_part_bytes=self.constraints.raw_part_plaintext_bytes,
                     progress=self.progress,
@@ -490,7 +431,6 @@ class IncrementalCollectionProducer:
                 if isinstance(item, ProducerFile)
                 else _verify_stream_source(
                     item,
-                    provenance=provenance,
                     pack_member_bytes=self.constraints.pack_member_bytes,
                     raw_part_bytes=self.constraints.raw_part_plaintext_bytes,
                     progress=self.progress,
@@ -499,55 +439,24 @@ class IncrementalCollectionProducer:
             if (
                 expected_identity is not None
                 and ProducerArtifactIdentity(
-                    source.path,
+                    source.artifact_id,
                     source.bytes,
                     source.sha256,
                 )
                 != expected_identity
             ):
-                raise ValueError(f"producer source differs from its expected identity: {item.path}")
+                raise ValueError(
+                    f"producer source differs from its expected identity: {item.artifact_id}"
+                )
             candidates.append(source)
         receipts.extend(self._append_sources(candidates))
         if self._needs_upload_scan:
             receipts.extend(self._upload_available())
         return tuple(receipts)
 
-    def append_derivation_evidence(
-        self, path: str, content: bytes
-    ) -> ProducerArtifactCustody | None:
-        """Append one bounded Riverhog derivation page after payload custody."""
-
-        canonical = validate_canonical_relpath(path)
-        if not canonical.startswith(
-            (
-                f"{DERIVATION_DISPOSITION_EVIDENCE_PREFIX}/",
-                f"{DERIVATION_OUTPUT_EVIDENCE_PREFIX}/",
-            )
-        ):
-            raise ValueError("derivation evidence path is outside its reserved namespace")
-        value = bytes(content)
-        source = _Source(
-            path=canonical,
-            bytes=len(value),
-            sha256=hashlib.sha256(value).hexdigest(),
-            content=value,
-            provenance={}
-            if self.server_generated_provenance
-            else _omitted(self.provenance_omission_reason),
-        )
-        receipts = self._append_sources([source])
-        immediate = next((item for item in receipts if item.artifact.path == canonical), None)
-        if immediate is not None:
-            return immediate
-        if self._needs_upload_scan:
-            receipts = self._upload_available()
-            return next((item for item in receipts if item.artifact.path == canonical), None)
-        return None
-
     def finish(
         self,
         *,
-        terminal_evidence: Mapping[str, bytes],
         provenance_journals: Mapping[str, bytes] | None = None,
         poll_seconds: float = 2.0,
         timeout_seconds: float = 24 * 60 * 60,
@@ -557,22 +466,9 @@ class IncrementalCollectionProducer:
         if self._closed or self.constraints is None:
             raise RuntimeError("incremental collection producer is already closed")
         self._require_heartbeat()
-        if terminal_evidence and set(terminal_evidence) != {DERIVATION_EVIDENCE_PATH}:
-            raise ValueError("terminal evidence must be the exact derivation document")
         self._stage_journals(
             {str(key): bytes(value) for key, value in (provenance_journals or {}).items()}
         )
-        if terminal_evidence:
-            derivation = _content_source(
-                DERIVATION_EVIDENCE_PATH,
-                bytes(terminal_evidence[DERIVATION_EVIDENCE_PATH]),
-                provenance=(
-                    {}
-                    if self.server_generated_provenance
-                    else _omitted(self.provenance_omission_reason)
-                ),
-            )
-            self._append_sources([derivation])
         if self._needs_upload_scan:
             self._upload_available()
         receipt = self.api.complete_collection_upload_session(self.collection_id)
@@ -620,17 +516,17 @@ class IncrementalCollectionProducer:
 
     def _append_sources(self, values: Sequence[_Source]) -> tuple[ProducerArtifactCustody, ...]:
         candidates = list(values)
-        if all(source.path != PRODUCER_EVIDENCE_PATH for source in candidates):
-            candidates.append(self._producer_evidence)
-        if len({source.path for source in candidates}) != len(candidates):
-            raise ValueError("incremental producer source paths must be unique")
+        if len({source.artifact_id for source in candidates}) != len(candidates):
+            raise ValueError("incremental producer artifact IDs must be unique")
         for source in candidates:
-            existing = self._sources.get(source.path)
+            existing = self._sources.get(source.artifact_id)
             if existing is not None and _registered_identity(existing) != _registered_identity(
                 source
             ):
-                raise RuntimeError(f"resumed producer artifact identity changed: {source.path}")
-            self._sources[source.path] = source
+                raise RuntimeError(
+                    f"resumed producer artifact identity changed: {source.artifact_id}"
+                )
+            self._sources[source.artifact_id] = source
         registration = [_source_registration(source) for source in candidates]
         constraints = self.constraints
         if constraints is None:
@@ -638,16 +534,60 @@ class IncrementalCollectionProducer:
         receipts: list[ProducerArtifactCustody] = []
         for start in range(0, len(registration), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
             source_batch = candidates[start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES]
-            registered = self.api.register_collection_upload_session_files(
+            registered = self.api.register_collection_upload_session_artifacts(
                 self.collection_id,
                 registration[start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES],
                 registration_constraints=constraints,
             )
             for source in source_batch:
                 _register_source_raw_digests(self.api, self.collection_id, source)
-            rows = registered.get("files")
+                try:
+                    accepted = self.api.get_collection_upload_session_artifact_provenance_binding(
+                        self.collection_id, source.artifact_id
+                    )
+                except NotFound:
+                    accepted = None
+                if accepted is None:
+                    observation = source.observation or BoundedSourceObserver().observe(
+                        StreamSource(
+                            _SequentialRangeReader(source),
+                            expected_length=source.bytes,
+                        )
+                    )
+                    bind_produced_member(
+                        self.api,
+                        collection_id=self.collection_id,
+                        member=ArtifactMemberIdentityDocument(
+                            artifact_id=source.artifact_id,
+                            bytes=str(source.bytes),
+                            sha256=source.sha256,
+                        ),
+                        observation=observation,
+                        delivery_context_id=self.delivery_context_id,
+                        attribution=self._attribution,
+                        materialization_hint=source.materialization_hint,
+                        allow_missing_materialization_hint=(
+                            source.allow_missing_materialization_hint
+                        ),
+                    )
+                else:
+                    if accepted.artifact_id != source.artifact_id:
+                        raise RuntimeError(
+                            "Riverhog returned another artifact's provenance binding"
+                        )
+                    self.api.set_collection_upload_session_materialization_decisions(
+                        self.collection_id,
+                        member_materialization_decision(
+                            artifact_id=source.artifact_id,
+                            materialization_hint=source.materialization_hint,
+                            allow_missing_materialization_hint=(
+                                source.allow_missing_materialization_hint
+                            ),
+                        ),
+                    )
+            rows = registered.get("artifacts")
             if not isinstance(rows, list):
-                raise RuntimeError("Riverhog returned invalid registered files")
+                raise RuntimeError("Riverhog returned invalid registered artifacts")
             receipts.extend(self._accept_registered_rows(iter(rows), expected=source_batch))
             volumes = registered.get("volumes")
             if isinstance(volumes, list) and volumes:
@@ -660,12 +600,14 @@ class IncrementalCollectionProducer:
         def content_for_unit(unit: CollectionUploadUnitWorkDocument) -> bytes:
             chunks: list[bytes] = []
             for row in unit.sources:
-                source = self._sources.get(row.path)
+                source = self._sources.get(row.artifact_id)
                 if source is None:
-                    raise RuntimeError(f"uncustodied producer source is unavailable: {row.path}")
+                    raise RuntimeError(
+                        f"uncustodied producer source is unavailable: {row.artifact_id}"
+                    )
                 if row.artifact_sha256 != source.sha256:
                     raise RuntimeError(
-                        f"Riverhog requested a changed producer artifact: {row.path}"
+                        f"Riverhog requested a changed producer artifact: {row.artifact_id}"
                     )
                 chunks.append(source.read_range(row.offset, row.bytes))
             return b"".join(chunks)
@@ -690,14 +632,14 @@ class IncrementalCollectionProducer:
         pending = list(self._sources.values())
         for start in range(0, len(pending), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
             source_batch = pending[start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES]
-            payload = self.api.register_collection_upload_session_files(
+            payload = self.api.register_collection_upload_session_artifacts(
                 self.collection_id,
                 [_source_registration(source) for source in source_batch],
                 registration_constraints=constraints,
             )
-            rows = payload.get("files")
+            rows = payload.get("artifacts")
             if not isinstance(rows, list):
-                raise RuntimeError("Riverhog returned invalid registered files")
+                raise RuntimeError("Riverhog returned invalid registered artifacts")
             receipts.extend(self._accept_registered_rows(iter(rows), expected=source_batch))
         return tuple(receipts)
 
@@ -707,27 +649,25 @@ class IncrementalCollectionProducer:
         *,
         expected: Sequence[_Source],
     ) -> tuple[ProducerArtifactCustody, ...]:
-        expected_by_path = {source.path: source for source in expected}
+        expected_by_id = {source.artifact_id: source for source in expected}
         receipts: list[ProducerArtifactCustody] = []
         for row in rows:
-            provenance = row.get("provenance")
-            if provenance is None and self.server_generated_provenance:
-                normalized_provenance: dict[str, Any] = {}
-            elif isinstance(provenance, Mapping):
-                normalized_provenance = dict(provenance)
-            else:
-                raise RuntimeError("Riverhog upload file has no provenance binding")
             source = _Source(
-                path=str(row.get("path") or ""),
+                artifact_id=ArtifactId(str(row.get("artifact_id") or "")),
                 bytes=int(row.get("bytes") or 0),
                 sha256=str(row.get("sha256") or ""),
-                provenance=normalized_provenance,
+                materialization_hint=None,
+                allow_missing_materialization_hint=True,
             )
-            expected_source = expected_by_path.pop(source.path, None)
+            expected_source = expected_by_id.pop(source.artifact_id, None)
             if expected_source is None:
-                raise RuntimeError(f"Riverhog returned an unexpected artifact: {source.path}")
-            if _registered_identity(expected_source) != _registered_identity(source):
-                raise RuntimeError(f"Riverhog changed a registered artifact: {source.path}")
+                raise RuntimeError(
+                    f"Riverhog returned an unexpected artifact: {source.artifact_id}"
+                )
+            if _source_identity(expected_source) != _source_identity(source):
+                raise RuntimeError(
+                    f"Riverhog changed a registered artifact: {source.artifact_id}"
+                )
             receipt_value = row.get("custody_receipt")
             if receipt_value is not None:
                 receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate(
@@ -735,9 +675,9 @@ class IncrementalCollectionProducer:
                 )
                 validate_collection_upload_artifact_custody_receipt(
                     self.collection_id,
-                    ImmutableFileIdentityDocument.model_validate(
+                    ArtifactMemberIdentityDocument.model_validate(
                         {
-                            "path": source.path,
+                            "artifact_id": source.artifact_id,
                             "bytes": str(source.bytes),
                             "sha256": source.sha256,
                         }
@@ -746,14 +686,16 @@ class IncrementalCollectionProducer:
                 )
                 receipts.append(
                     ProducerArtifactCustody(
-                        artifact=ProducerArtifactIdentity(source.path, source.bytes, source.sha256),
+                        artifact=ProducerArtifactIdentity(
+                            source.artifact_id, source.bytes, source.sha256
+                        ),
                         receipt=receipt,
                     )
                 )
-                owned = self._sources.pop(source.path, None)
+                owned = self._sources.pop(source.artifact_id, None)
                 if owned is not None:
                     owned.close()
-        if expected_by_path:
+        if expected_by_id:
             raise RuntimeError("Riverhog omitted requested registered artifacts")
         return tuple(receipts)
 
@@ -771,7 +713,6 @@ class IncrementalCollectionProducer:
 def _hash_local_source(
     item: ProducerFile,
     *,
-    provenance: dict[str, object],
     pack_member_bytes: int,
     raw_part_bytes: int,
     progress: ReadProgress | None,
@@ -783,14 +724,16 @@ def _hash_local_source(
 
     def read_local(start: int, size: int) -> bytes:
         before = item.source.stat()
-        _require_same_file(before, observed, path=item.path)
+        _require_same_file(before, observed, artifact_id=item.artifact_id)
         with item.source.open("rb") as stream:
             stream.seek(start)
             content = stream.read(size)
         after = item.source.stat()
-        _require_same_file(after, observed, path=item.path)
+        _require_same_file(after, observed, artifact_id=item.artifact_id)
         if len(content) != size:
-            raise RuntimeError(f"producer source returned an incomplete range: {item.path}")
+            raise RuntimeError(
+                f"producer source returned an incomplete range: {item.artifact_id}"
+            )
         return content
 
     def chunks() -> Iterator[bytes]:
@@ -801,12 +744,12 @@ def _hash_local_source(
             block_sha256s.append(hashlib.sha256(chunk).digest())
             offset += size
             if progress is not None:
-                progress(item.path, offset, expected)
+                progress(item.artifact_id, offset, expected)
             yield chunk
 
     if expected >= pack_member_bytes:
         manifest = hash_raw_source_chunks(
-            path=item.path,
+            artifact_id=item.artifact_id,
             chunks=chunks(),
             expected_bytes=expected,
             part_plaintext_bytes=raw_part_bytes,
@@ -825,33 +768,36 @@ def _hash_local_source(
         sha256 = digest.hexdigest()
         raw_parts = None
         raw_digest_spool = None
-    _require_same_file(item.source.stat(), observed, path=item.path)
+    _require_same_file(item.source.stat(), observed, artifact_id=item.artifact_id)
     return _Source(
-        path=item.path,
+        artifact_id=item.artifact_id,
         bytes=expected,
         sha256=sha256,
-        provenance=provenance,
+        materialization_hint=item.materialization_hint,
+        allow_missing_materialization_hint=item.allow_missing_materialization_hint,
+        observation=item.observation,
         raw_parts=raw_parts,
         raw_digest_spool=raw_digest_spool,
         reader=_VerifiedRangeReader(
             source=read_local,
-            path=item.path,
+            artifact_id=item.artifact_id,
             bytes=expected,
             block_sha256s=block_sha256s,
         ),
     )
 
 
-def _require_same_file(current: object, expected: object, *, path: str) -> None:
+def _require_same_file(current: object, expected: object, *, artifact_id: ArtifactId) -> None:
     for attribute in ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns"):
         if getattr(current, attribute) != getattr(expected, attribute):
-            raise RuntimeError(f"producer source changed during upload verification: {path}")
+            raise RuntimeError(
+                f"producer source changed during upload verification: {artifact_id}"
+            )
 
 
 def _verify_stream_source(
     item: ProducerStream,
     *,
-    provenance: dict[str, object],
     pack_member_bytes: int,
     raw_part_bytes: int,
     progress: ReadProgress | None,
@@ -865,16 +811,18 @@ def _verify_stream_source(
             size = min(_STREAM_VERIFY_BLOCK_BYTES, item.bytes - offset)
             chunk = item.read_range(offset, size)
             if len(chunk) != size:
-                raise RuntimeError(f"producer stream returned an incomplete range: {item.path}")
+                raise RuntimeError(
+                    f"producer stream returned an incomplete range: {item.artifact_id}"
+                )
             block_sha256s.append(hashlib.sha256(chunk).digest())
             offset += size
             if progress is not None:
-                progress(item.path, offset, item.bytes)
+                progress(item.artifact_id, offset, item.bytes)
             yield chunk
 
     if item.bytes >= pack_member_bytes:
         manifest = hash_raw_source_chunks(
-            path=item.path,
+            artifact_id=item.artifact_id,
             chunks=chunks(),
             expected_bytes=item.bytes,
             part_plaintext_bytes=raw_part_bytes,
@@ -894,18 +842,22 @@ def _verify_stream_source(
         raw_parts = None
         raw_digest_spool = None
     if sha256 != item.sha256:
-        raise RuntimeError(f"producer stream identity changed before upload: {item.path}")
+        raise RuntimeError(
+            f"producer stream identity changed before upload: {item.artifact_id}"
+        )
     verified_reader = _VerifiedRangeReader(
         source=item.read_range,
-        path=item.path,
+        artifact_id=item.artifact_id,
         bytes=item.bytes,
         block_sha256s=block_sha256s,
     )
     return _Source(
-        path=item.path,
+        artifact_id=item.artifact_id,
         bytes=item.bytes,
         sha256=item.sha256,
-        provenance=provenance,
+        materialization_hint=item.materialization_hint,
+        allow_missing_materialization_hint=item.allow_missing_materialization_hint,
+        observation=item.observation,
         raw_parts=raw_parts,
         raw_digest_spool=raw_digest_spool,
         reader=verified_reader,
@@ -948,13 +900,15 @@ class _DigestSpool:
 @dataclass(frozen=True, slots=True)
 class _VerifiedRangeReader:
     source: RangeReader
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     block_sha256s: _DigestSpool
 
     def __call__(self, offset: int, size: int) -> builtins.bytes:
         if offset < 0 or size < 0 or offset + size > self.bytes:
-            raise RuntimeError(f"producer source requested an invalid range: {self.path}")
+            raise RuntimeError(
+                f"producer source requested an invalid range: {self.artifact_id}"
+            )
         if size == 0:
             return b""
         first = offset // _STREAM_VERIFY_BLOCK_BYTES
@@ -966,11 +920,11 @@ class _VerifiedRangeReader:
             content = self.source(block_offset, block_size)
             if len(content) != block_size:
                 raise RuntimeError(
-                    f"producer stream returned an incomplete verified block: {self.path}"
+                    f"producer stream returned an incomplete verified block: {self.artifact_id}"
                 )
             if hashlib.sha256(content).digest() != self.block_sha256s.get(block):
                 raise RuntimeError(
-                    f"producer source changed during upload verification: {self.path}"
+                    f"producer source changed during upload verification: {self.artifact_id}"
                 )
             chunks.append(content)
         combined = b"".join(chunks)
@@ -981,37 +935,24 @@ class _VerifiedRangeReader:
         self.block_sha256s.close()
 
 
-def _content_source(
-    path: str,
-    content: bytes,
-    *,
-    provenance: dict[str, object],
-) -> _Source:
-    value = bytes(content)
-    return _Source(
-        path=validate_canonical_relpath(path),
-        bytes=len(value),
-        sha256=hashlib.sha256(value).hexdigest(),
-        provenance=dict(provenance),
-        content=value,
-    )
-
-
 def _source_identity(source: _Source) -> tuple[str, int, str]:
-    return source.path, source.bytes, source.sha256
+    return source.artifact_id, source.bytes, source.sha256
 
 
-def _registered_identity(source: _Source) -> tuple[str, int, str, str]:
-    return (*_source_identity(source), repr(sorted(source.provenance.items())))
+def _registered_identity(source: _Source) -> tuple[str, int, str, tuple[str, ...] | None, bool]:
+    return (
+        *_source_identity(source),
+        source.materialization_hint,
+        source.allow_missing_materialization_hint,
+    )
 
 
 def _source_registration(source: _Source) -> dict[str, object]:
     return {
-        "path": source.path,
+        "artifact_id": source.artifact_id,
         "bytes": str(source.bytes),
         "sha256": source.sha256,
         **({"raw_parts": source.raw_parts} if source.raw_parts is not None else {}),
-        **({"provenance": source.provenance} if source.provenance else {}),
     }
 
 
@@ -1027,39 +968,35 @@ def _register_source_raw_digests(
         api.register_collection_upload_session_raw_part_digests(
             collection_id,
             {
-                "path": source.path,
+                "artifact_id": source.artifact_id,
                 "first_part": first_part,
                 "sha256s": list(sha256s),
             },
         )
 
 
-def _omitted(reason: str) -> dict[str, object]:
-    return {"status": "omitted", "omission_reason": reason}
+def _validate_hint_decision(hint: tuple[str, ...] | None, allow_missing: bool) -> None:
+    if type(allow_missing) is not bool or (hint is None) != allow_missing:
+        raise ValueError("producer requires a hint or an explicit missing-hint decision")
+    if hint is not None:
+        MaterializationHintDocument(components=list(hint))
 
 
-def _provenance(
-    value: Mapping[str, object] | None,
-    *,
-    default: dict[str, object],
-) -> dict[str, object]:
-    if value is None:
-        return dict(default)
-    status = str(value.get("status") or "")
-    if status == "captured" and set(value) == {"status", "journal_id", "current_state_id"}:
-        journal_id = str(value.get("journal_id") or "")
-        current_state_id = str(value.get("current_state_id") or "")
-        if journal_id and current_state_id:
-            return {
-                "status": "captured",
-                "journal_id": journal_id,
-                "current_state_id": current_state_id,
-            }
-    if status == "omitted" and set(value) == {"status", "omission_reason"}:
-        reason = str(value.get("omission_reason") or "")
-        if reason and reason == reason.strip():
-            return {"status": "omitted", "omission_reason": reason}
-    raise ValueError("producer file provenance binding is invalid")
+class _SequentialRangeReader:
+    """A bounded observation reader over an already verified source."""
+
+    def __init__(self, source: _Source) -> None:
+        self._source = source
+        self._offset = 0
+
+    def read(self, size: int = -1, /) -> bytes:
+        remaining = self._source.bytes - self._offset
+        count = remaining if size < 0 else min(size, remaining)
+        if count == 0:
+            return b""
+        content = self._source.read_range(self._offset, count)
+        self._offset += count
+        return content
 
 
 def _finalized_receipt(payload: Mapping[str, Any]) -> ProducedCollection:

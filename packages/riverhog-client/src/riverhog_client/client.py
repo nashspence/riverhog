@@ -53,6 +53,7 @@ from riverhog_protocol import (
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
     CollectionArtifactProvenanceBindingBatchDocument,
+    CollectionArtifactProvenanceBindingDocument,
     CollectionDescription,
     CollectionId,
     CollectionIdParameter,
@@ -1264,6 +1265,19 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             json=document.model_dump(mode="json"),
         )
         return CollectionArtifactProvenanceBindingBatchDocument.model_validate(payload)
+
+    def get_collection_upload_session_artifact_provenance_binding(
+        self,
+        collection_id: CollectionId,
+        artifact_id: ArtifactId,
+    ) -> CollectionArtifactProvenanceBindingDocument:
+        payload = self._json(
+            "get_collection_upload_session_artifact_provenance_binding",
+            "GET",
+            f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/artifacts/"
+            f"{ArtifactId(artifact_id)}/provenance-binding",
+        )
+        return CollectionArtifactProvenanceBindingDocument.model_validate(payload)
 
     def set_collection_upload_session_materialization_decisions(
         self,
