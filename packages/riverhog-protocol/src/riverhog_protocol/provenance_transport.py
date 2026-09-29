@@ -5,7 +5,13 @@ from __future__ import annotations
 from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-from riverhog_provenance_contracts import EntryReference, ProvenanceId, ProvenanceJournalId
+from riverhog_provenance_contracts import (
+    PROFILE,
+    ContractCatalog,
+    EntryReference,
+    ProvenanceId,
+    ProvenanceJournalId,
+)
 
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
@@ -58,13 +64,35 @@ class CollectionArtifactProvenanceBindingBatchDocument(BaseModel):
         return self
 
 
+class MaterializationHintDocument(BaseModel):
+    """Exact core Occurrence advice supplied by the producing authority."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    components: list[str]
+
+    @model_validator(mode="after")
+    def validate_core_hint(self) -> Self:
+        ContractCatalog().validate(
+            PROFILE + "/materialization-hint.schema.json", self.model_dump(mode="json")
+        )
+        return self
+
+
 class ArtifactMaterializationDecisionDocument(BaseModel):
     """Publication policy for one preallocated collection member."""
 
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     artifact_id: ArtifactId
+    materialization_hint: MaterializationHintDocument | None = None
     allow_missing_materialization_hint: bool = False
+
+    @model_validator(mode="after")
+    def validate_choice(self) -> Self:
+        if (self.materialization_hint is None) != self.allow_missing_materialization_hint:
+            raise ValueError("exactly one materialization hint or explicit omission is required")
+        return self
 
 
 class ArtifactMaterializationDecisionBatchDocument(BaseModel):
@@ -95,6 +123,7 @@ class ArtifactMaterializationDecisionBatchDocument(BaseModel):
 __all__ = [
     "ArtifactMaterializationDecisionBatchDocument",
     "ArtifactMaterializationDecisionDocument",
+    "MaterializationHintDocument",
     "CollectionArtifactProvenanceBindingBatchDocument",
     "CollectionArtifactProvenanceBindingDocument",
     "JournalAnchorDocument",

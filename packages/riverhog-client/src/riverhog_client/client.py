@@ -46,18 +46,22 @@ from riverhog_protocol import (
     ArchiveCopyStoreSelectionDocument,
     ArchiveStoreName,
     ArchiveStoreSort,
+    ArtifactId,
+    ArtifactMaterializationDecisionBatchDocument,
+    ArtifactMemberIdentityDocument,
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
+    CollectionArtifactProvenanceBindingBatchDocument,
     CollectionDescription,
     CollectionId,
     CollectionIdParameter,
     CollectionSort,
     CollectionTag,
+    CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
+    CollectionUploadArtifactIn,
     CollectionUploadCustodyMode,
-    CollectionUploadFileBatchDocument,
-    CollectionUploadFileIn,
     CollectionUploadProvenanceJournalCreateDocument,
     CollectionUploadProvenanceJournalStatusDocument,
     CollectionUploadRawDigestBatchDocument,
@@ -70,16 +74,15 @@ from riverhog_protocol import (
     CollectionUploadVolumeId,
     CollectionUploadWorkBatchDocument,
     DownloadQuotaSort,
-    ImmutableFileIdentityDocument,
     PortableCollectionInventoryPage,
     ProcessingClaimId,
     ProvenanceSort,
     ProvenanceStatus,
+    RetrievalArtifactReferenceSetDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
     RetrievalCacheState,
     RetrievalCacheStoreName,
-    RetrievalFileReferenceSetDocument,
     SearchSort,
     SortOrder,
     validate_collection_upload_artifact_custody_receipt,
@@ -112,7 +115,6 @@ _TRANSIENT_HTTP_STATUS_CODES = {408, 425, 429, 500, 502, 503, 504}
 DownloadProgress = Callable[[int, int | None], None]
 
 type RestorePolicy = Literal["allow", "never"]
-type ProvenanceMode = Literal["captured", "omitted"]
 type CollectionUploadIdempotencyKey = Annotated[
     CanonicalVisibleText,
     Field(max_length=200),
@@ -130,6 +132,7 @@ _ARCHIVE_STORE_NAME: TypeAdapter[str] = TypeAdapter(ArchiveStoreName)
 _RETRIEVAL_CACHE_STORE_NAME: TypeAdapter[str] = TypeAdapter(RetrievalCacheStoreName)
 _COLLECTION_ID: TypeAdapter[int] = TypeAdapter(CollectionId)
 _COLLECTION_ID_PARAMETER: TypeAdapter[int] = TypeAdapter(CollectionIdParameter)
+_ARTIFACT_ID: TypeAdapter[str] = TypeAdapter(ArtifactId)
 _CANONICAL_RELPATH: TypeAdapter[str] = TypeAdapter(CanonicalRelPath)
 _MONTHLY_DOWNLOAD_QUOTA_BYTES: TypeAdapter[int] = TypeAdapter(MonthlyDownloadQuotaBytes)
 _PROCESSING_CLAIM_ID: TypeAdapter[str] = TypeAdapter(ProcessingClaimId)
@@ -319,7 +322,7 @@ def _validated_retrieval_plan_idempotency_key(
         raise BadRequest(str(exc)) from exc
 
 
-def _validated_collection_upload_file_response(
+def _validated_collection_upload_artifact_response(
     collection_id: int,
     payload: dict[str, Any],
     *,
@@ -327,21 +330,21 @@ def _validated_collection_upload_file_response(
 ) -> dict[str, Any]:
     try:
         if _COLLECTION_ID.validate_python(payload.get("collection_id")) != collection_id:
-            raise ValueError("collection upload file response differs from its request")
+            raise ValueError("collection upload artifact response differs from its request")
         if expected_state is not None and payload.get("state") != expected_state:
-            raise ValueError("collection upload file response has an impossible state")
-        rows = payload.get("files")
+            raise ValueError("collection upload artifact response has an impossible state")
+        rows = payload.get("artifacts")
         if not isinstance(rows, list):
-            raise ValueError("collection upload file response has no file inventory")
+            raise ValueError("collection upload artifact response has no inventory")
         for row in rows:
             if not isinstance(row, Mapping):
-                raise ValueError("collection upload file response contains an invalid row")
+                raise ValueError("collection upload artifact response contains an invalid row")
             receipt_value = row.get("custody_receipt")
             if receipt_value is None:
                 continue
-            artifact = ImmutableFileIdentityDocument.model_validate(
+            artifact = ArtifactMemberIdentityDocument.model_validate(
                 {
-                    "path": row.get("path"),
+                    "artifact_id": row.get("artifact_id"),
                     "bytes": row.get("bytes"),
                     "sha256": row.get("sha256"),
                 }
@@ -355,32 +358,12 @@ def _validated_collection_upload_file_response(
                 receipt,
             )
     except (TypeError, ValidationError, ValueError) as exc:
-        raise InvalidState("API returned an invalid collection upload file response") from exc
+        raise InvalidState("API returned an invalid collection upload artifact response") from exc
     return payload
 
 
 def _restore_policy(value: RestorePolicy) -> RestorePolicy:
     return cast(RestorePolicy, _one_of(value, frozenset({"allow", "never"}), "restore_policy"))
-
-
-def _provenance_choice(
-    mode: ProvenanceMode,
-    omission_reason: str | None,
-) -> tuple[ProvenanceMode, str | None]:
-    normalized_mode = cast(
-        ProvenanceMode,
-        _one_of(mode, frozenset({"captured", "omitted"}), "provenance_mode"),
-    )
-    if normalized_mode == "captured" and omission_reason is None:
-        return normalized_mode, None
-    if (
-        normalized_mode == "omitted"
-        and omission_reason is not None
-        and omission_reason
-        and omission_reason.strip() == omission_reason
-    ):
-        return normalized_mode, omission_reason
-    raise BadRequest("provenance_mode must be captured, or omitted with provenance_omission_reason")
 
 
 def _riverhog_application_access_payload(
@@ -429,22 +412,25 @@ def _timeout_seconds(env_name: str, default: float) -> float:
     return value
 
 
-def _file_selections_payload(
-    files: Sequence[tuple[int, str]],
+def _artifact_selections_payload(
+    artifacts: Sequence[tuple[int, str]],
 ) -> list[dict[str, object]]:
-    ordered = sorted(files, key=lambda item: (item[0], item[1].encode("utf-8")))
+    ordered = sorted(artifacts)
     try:
-        document = RetrievalFileReferenceSetDocument.model_validate(
+        document = RetrievalArtifactReferenceSetDocument.model_validate(
             {
-                "files": [
-                    {"collection_id": str(_collection_id(collection_id)), "path": path}
-                    for collection_id, path in ordered
+                "artifacts": [
+                    {
+                        "collection_id": str(_collection_id(collection_id)),
+                        "artifact_id": _ARTIFACT_ID.validate_python(artifact_id, strict=True),
+                    }
+                    for collection_id, artifact_id in ordered
                 ]
             }
         )
     except ValueError as exc:
         raise BadRequest(str(exc)) from exc
-    return [item.model_dump(mode="json") for item in document.files]
+    return [item.model_dump(mode="json") for item in document.artifacts]
 
 
 class _HttpApiClient:
@@ -811,7 +797,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
 
     def plan_retrieval(
         self,
-        files: Sequence[tuple[int, str]],
+        artifacts: Sequence[tuple[int, str]],
         *,
         idempotency_key: RetrievalPlanIdempotencyKey | None = None,
         lease_seconds: int | None = None,
@@ -819,7 +805,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
     ) -> dict[str, Any]:
         validated_restore_policy = _restore_policy(restore_policy)
         payload: dict[str, Any] = {
-            "files": _file_selections_payload(files),
+            "artifacts": _artifact_selections_payload(artifacts),
             "idempotency_key": _validated_retrieval_plan_idempotency_key(
                 secrets.token_hex(16) if idempotency_key is None else idempotency_key
             ),
@@ -847,7 +833,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             f"/v1/retrieval-plans/{quote(plan_id, safe='')}/advance",
         )
 
-    def list_retrieval_plan_files(
+    def list_retrieval_plan_artifacts(
         self,
         plan_id: str,
         *,
@@ -856,9 +842,9 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         page_size: int = 100,
     ) -> dict[str, Any]:
         return self._json(
-            "list_retrieval_plan_files",
+            "list_retrieval_plan_artifacts",
             "GET",
-            f"/v1/retrieval-plans/{quote(plan_id, safe='')}/files",
+            f"/v1/retrieval-plans/{quote(plan_id, safe='')}/artifacts",
             params={"start_ordinal": start_ordinal, "page_size": page_size},
             headers={"If-Match": quote_sha256_identity(_sha256_identity(plan_etag, "plan ETag"))},
         )
@@ -977,22 +963,22 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             f"{quote(object_id, safe='')}",
         )
 
-    def download_retrieval_file(
+    def download_retrieval_artifact(
         self,
         job_id: str,
         *,
         collection_id: CollectionId,
-        path: str,
+        artifact_id: ArtifactId,
         output: Path,
         expected_bytes: int,
         expected_sha256: str,
         progress: DownloadProgress | None = None,
     ) -> int:
         result = self._download(
-            "download_retrieval_file",
+            "download_retrieval_artifact",
             f"/v1/retrieval-jobs/{quote(job_id, safe='')}/content?"
             f"collection_id={str(_collection_id(collection_id))}&"
-            f"path={quote(_canonical_relpath(path), safe='')}",
+            f"artifact_id={quote(_ARTIFACT_ID.validate_python(artifact_id, strict=True), safe='')}",
             output,
             expected_bytes=expected_bytes,
             expected_sha256=expected_sha256,
@@ -1001,19 +987,19 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return int(result)
 
     @contextmanager
-    def stream_retrieval_file(
+    def stream_retrieval_artifact(
         self,
         job_id: str,
         *,
         collection_id: CollectionId,
-        path: str,
+        artifact_id: ArtifactId,
         expected_bytes: int,
         expected_sha256: str,
         start: int = 0,
         end: int | None = None,
         chunk_size: int = _DOWNLOAD_CHUNK_BYTES,
     ) -> Iterator[Iterator[bytes]]:
-        """Stream one verified retrieval file or byte range.
+        """Stream one verified retrieval artifact or byte range.
 
         The returned iterator must be consumed completely before leaving the
         context. Full-file reads are SHA-256 verified; range reads are bound to
@@ -1047,13 +1033,13 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         request_path = f"/v1/retrieval-jobs/{quote(job_id, safe='')}/content"
         params: dict[str, str | int] = {
             "collection_id": _collection_id(collection_id),
-            "path": _canonical_relpath(path),
+            "artifact_id": _ARTIFACT_ID.validate_python(artifact_id, strict=True),
         }
         try:
             with client.stream("GET", request_path, params=params, headers=headers) as response:
                 if not response.is_success:
                     response.read()
-                    self._raise_for_error("download_retrieval_file", response)
+                    self._raise_for_error("download_retrieval_artifact", response)
                 expected_status = 206 if partial else 200
                 if response.status_code != expected_status:
                     raise InvalidState(
@@ -1116,20 +1102,13 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         use_cache: bool | None = None,
         copy_to: Sequence[ArchiveStoreName] | None = None,
         event_context: Mapping[str, Any] | None = None,
-        provenance_mode: ProvenanceMode = "captured",
-        provenance_omission_reason: str | None = None,
         custody_mode: CollectionUploadCustodyMode = "producer-retained",
     ) -> dict[str, Any]:
-        provenance_mode, provenance_omission_reason = _provenance_choice(
-            provenance_mode,
-            provenance_omission_reason,
-        )
         payload: dict[str, Any] = {
             "idempotency_key": _validated_collection_upload_idempotency_key(idempotency_key),
             "initial_tag_set_identity": _sha256_identity(
                 initial_tag_set_identity, "initial collection tag-set identity"
             ),
-            "provenance_mode": provenance_mode,
         }
         normalized_custody_mode = _one_of(
             custody_mode,
@@ -1161,8 +1140,6 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             payload["copy_to"] = sorted(normalized_destinations)
         if event_context is not None:
             payload["event_context"] = dict(event_context)
-        if provenance_omission_reason is not None:
-            payload["provenance_omission_reason"] = provenance_omission_reason
         return self._json(
             "create_or_resume_collection_upload_session",
             "POST",
@@ -1183,22 +1160,22 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             json={"tags": _collection_tags(tags, allow_empty=False)},
         )
 
-    def register_collection_upload_session_files(
+    def register_collection_upload_session_artifacts(
         self,
         collection_id: CollectionId,
-        files: Sequence[CollectionUploadFileIn | Mapping[str, Any]],
+        artifacts: Sequence[CollectionUploadArtifactIn | Mapping[str, Any]],
         *,
         registration_constraints: CollectionUploadRegistrationConstraintsDocument
         | Mapping[str, Any],
     ) -> dict[str, Any]:
         try:
-            batch = CollectionUploadFileBatchDocument.model_validate(
+            batch = CollectionUploadArtifactBatchDocument.model_validate(
                 {
-                    "files": [
-                        file.model_dump(mode="json")
-                        if isinstance(file, CollectionUploadFileIn)
-                        else dict(file)
-                        for file in files
+                    "artifacts": [
+                        artifact.model_dump(mode="json")
+                        if isinstance(artifact, CollectionUploadArtifactIn)
+                        else dict(artifact)
+                        for artifact in artifacts
                     ]
                 }
             )
@@ -1221,18 +1198,18 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         except ValueError as exc:
             raise BadRequest(str(exc)) from exc
         normalized_collection_id = _collection_id(collection_id)
-        return _validated_collection_upload_file_response(
+        return _validated_collection_upload_artifact_response(
             normalized_collection_id,
             self._json(
-                "register_collection_upload_session_files",
+                "register_collection_upload_session_artifacts",
                 "POST",
-                f"/v1/collection-upload-sessions/{str(normalized_collection_id)}/files",
+                f"/v1/collection-upload-sessions/{str(normalized_collection_id)}/artifacts",
                 json=batch.model_dump(mode="json"),
             ),
             expected_state="open",
         )
 
-    def list_collection_upload_session_files(
+    def list_collection_upload_session_artifacts(
         self,
         collection_id: CollectionId,
         *,
@@ -1240,12 +1217,12 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         normalized_collection_id = _collection_id(collection_id)
-        return _validated_collection_upload_file_response(
+        return _validated_collection_upload_artifact_response(
             normalized_collection_id,
             self._json(
-                "list_collection_upload_session_files",
+                "list_collection_upload_session_artifacts",
                 "GET",
-                f"/v1/collection-upload-sessions/{str(normalized_collection_id)}/files",
+                f"/v1/collection-upload-sessions/{str(normalized_collection_id)}/artifacts",
                 params=_page_params(page_size=page_size, page_token=page_token),
             ),
         )
@@ -1270,6 +1247,40 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             json=document.model_dump(mode="json"),
         )
         return CollectionUploadRawDigestProgressDocument.model_validate(payload)
+
+    def bind_collection_upload_session_artifact_provenance(
+        self,
+        collection_id: CollectionId,
+        batch: CollectionArtifactProvenanceBindingBatchDocument | Mapping[str, Any],
+    ) -> CollectionArtifactProvenanceBindingBatchDocument:
+        try:
+            document = CollectionArtifactProvenanceBindingBatchDocument.model_validate(batch)
+        except ValidationError as exc:
+            raise BadRequest(str(exc)) from exc
+        payload = self._json(
+            "bind_collection_upload_session_artifact_provenance",
+            "POST",
+            f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/provenance/bindings",
+            json=document.model_dump(mode="json"),
+        )
+        return CollectionArtifactProvenanceBindingBatchDocument.model_validate(payload)
+
+    def set_collection_upload_session_materialization_decisions(
+        self,
+        collection_id: CollectionId,
+        batch: ArtifactMaterializationDecisionBatchDocument | Mapping[str, Any],
+    ) -> ArtifactMaterializationDecisionBatchDocument:
+        try:
+            document = ArtifactMaterializationDecisionBatchDocument.model_validate(batch)
+        except ValidationError as exc:
+            raise BadRequest(str(exc)) from exc
+        payload = self._json(
+            "set_collection_upload_session_materialization_decisions",
+            "POST",
+            f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/materialization-decisions",
+            json=document.model_dump(mode="json"),
+        )
+        return ArtifactMaterializationDecisionBatchDocument.model_validate(payload)
 
     def create_collection_upload_session_provenance_journal(
         self,

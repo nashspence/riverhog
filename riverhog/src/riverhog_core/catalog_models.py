@@ -654,7 +654,7 @@ class CollectionProvenanceJournalRecord(Base):
     )
 
     collection: Mapped[CollectionRecord] = relationship(back_populates="provenance_journals")
-    chunks: Mapped[list[CollectionProvenanceJournalChunkRecord]] = relationship(
+    segments: Mapped[list[CollectionProvenanceJournalSegmentRecord]] = relationship(
         back_populates="journal",
         cascade="all, delete-orphan",
         passive_deletes=True,
@@ -666,14 +666,18 @@ class CollectionProvenanceJournalRecord(Base):
     )
 
 
-class CollectionProvenanceJournalChunkRecord(Base):
-    __tablename__ = "collection_provenance_journal_chunks"
+class CollectionProvenanceJournalSegmentRecord(Base):
+    """Rebuildable location of an exact encrypted canonical journal segment."""
+
+    __tablename__ = "collection_provenance_journal_segments"
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     journal_id: Mapped[str] = mapped_column(String, primary_key=True)
-    ordinal: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
+    sequence: Mapped[int] = mapped_column(archive_sequence_type(), primary_key=True)
     byte_offset: Mapped[int] = mapped_column(BigInteger)
-    content: Mapped[bytes] = mapped_column(LargeBinary)
+    bytes: Mapped[int] = mapped_column(BigInteger)
+    sha256: Mapped[str] = mapped_column(String(64))
+    object_id: Mapped[str] = mapped_column(String)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -685,14 +689,21 @@ class CollectionProvenanceJournalChunkRecord(Base):
             ondelete="CASCADE",
         ),
         CheckConstraint(
-            _fixed_lowercase_integer_check("ordinal", 64),
-            name="ck_provenance_journal_chunks_ordinal",
+            _fixed_lowercase_integer_check("sequence", 64),
+            name="ck_provenance_journal_segments_sequence",
         ),
-        CheckConstraint("byte_offset >= 0", name="ck_provenance_journal_chunks_offset"),
-        CheckConstraint("length(content) > 0", name="ck_provenance_journal_chunks_content"),
+        CheckConstraint("byte_offset >= 0", name="ck_provenance_journal_segments_offset"),
+        CheckConstraint("bytes > 0", name="ck_provenance_journal_segments_bytes"),
+        CheckConstraint("length(sha256) = 64", name="ck_provenance_journal_segments_sha256"),
+        UniqueConstraint(
+            "collection_id",
+            "journal_id",
+            "byte_offset",
+            name="uq_provenance_journal_segment_offset",
+        ),
     )
 
-    journal: Mapped[CollectionProvenanceJournalRecord] = relationship(back_populates="chunks")
+    journal: Mapped[CollectionProvenanceJournalRecord] = relationship(back_populates="segments")
 
 
 class CollectionProvenanceJournalAgentRecord(Base):
@@ -2698,7 +2709,7 @@ class CollectionUploadRecord(Base):
         CheckConstraint(
             "catalog_phase IN ("
             "'artifact-set-identity','inventory-identity','collection','tags','artifacts','journals',"
-            "'provenance-relations','bindings','archive-objects','artifact-objects',"
+            "'bindings','provenance-segments','archive-objects','artifact-objects',"
             "'terminal','complete')",
             name="ck_collection_uploads_catalog_phase",
         ),
@@ -2994,9 +3005,8 @@ class CollectionUploadArtifactMaterializationDecisionRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    allow_missing_materialization_hint: Mapped[bool] = mapped_column(
-        Boolean, nullable=False
-    )
+    hint_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    allow_missing_materialization_hint: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -3006,6 +3016,11 @@ class CollectionUploadArtifactMaterializationDecisionRecord(Base):
                 "collection_upload_artifacts.artifact_id",
             ],
             ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            "(hint_json IS NULL AND allow_missing_materialization_hint) OR "
+            "(hint_json IS NOT NULL AND NOT allow_missing_materialization_hint)",
+            name="ck_upload_artifact_materialization_decision_choice",
         ),
     )
 

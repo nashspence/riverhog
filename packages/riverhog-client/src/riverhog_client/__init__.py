@@ -23,7 +23,6 @@ from riverhog_client.client import (
     ApplicationPermission,
     ApplicationResource,
     CollectionUploadIdempotencyKey,
-    ProvenanceMode,
     RestorePolicy,
     RetrievalPlanIdempotencyKey,
 )
@@ -77,7 +76,6 @@ __all__ = [
     "InvalidState",
     "NotFound",
     "RiverhogError",
-    "ProvenanceMode",
     "RetrievalPlanIdempotencyKey",
     "RestorePolicy",
     "ServiceUnavailable",

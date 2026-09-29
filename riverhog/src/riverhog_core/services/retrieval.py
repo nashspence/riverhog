@@ -7,21 +7,22 @@ import json
 import uuid
 from collections.abc import Iterator, Sequence
 from datetime import datetime, timedelta
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 from http_api_contracts import canonical_json_bytes, closed_literal_values
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
-    RETRIEVAL_FILE_BATCH_MAX,
-    ImmutableFileIdentityDocument,
-    PortableCollectionFile,
+    RETRIEVAL_ARTIFACT_BATCH_MAX,
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    PortableCollectionArtifact,
     PortableCollectionHeader,
     PortableCollectionInventoryAuthority,
     PortableCollectionInventoryPage,
+    RetrievalArtifactReferenceSetDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
     RetrievalCacheState,
-    RetrievalFileReferenceSetDocument,
     SortOrder,
 )
 from riverhog_protocol.errors import (
@@ -37,8 +38,6 @@ from riverhog_protocol.errors import (
 from riverhog_protocol.paths import (
     PathNormalizationError,
     normalize_collection_id,
-    relpath_sort_key,
-    validate_canonical_relpath,
 )
 from sqlalchemy import case, delete, exists, func, or_, select, update
 from sqlalchemy.orm import Session
@@ -60,11 +59,11 @@ from riverhog_core.browse import bounded_page, keyset_statement, validate_page_s
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     ArchiveCopyRetirementRecord,
-    CollectionArchiveCopyRecord,
     CollectionArchiveArtifactObjectRecord,
+    CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
-    CollectionDeletionRecord,
     CollectionArtifactRecord,
+    CollectionDeletionRecord,
     CollectionRecord,
     RetrievalCacheLeaseRecord,
     RetrievalCacheObjectRecord,
@@ -112,7 +111,7 @@ _RETRIEVAL_PLAN_INITIAL_COMMITMENT = hashlib.sha256(
     b"riverhog-retrieval-plan-segments/v1\x00"
 ).hexdigest()
 _RETRIEVAL_PLAN_INITIAL_FILE_COMMITMENT = hashlib.sha256(
-    b"riverhog-retrieval-plan-files/v1\x00"
+    b"riverhog-retrieval-plan-artifacts/v1\x00"
 ).hexdigest()
 
 
@@ -152,7 +151,7 @@ def _decode_inventory_cursor(cursor: str) -> tuple[int, str, str]:
             character not in "0123456789abcdef" for character in inventory_identity
         ):
             raise ValueError
-        after = validate_canonical_relpath(payload["after"])
+        after = ArtifactId(payload["after"])
     except (binascii.Error, TypeError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
         raise BadRequest("collection inventory cursor is invalid") from exc
     return collection_id, inventory_identity, after
@@ -215,56 +214,52 @@ class SqlAlchemyRetrievalService:
         principal: Principal | None = None,
     ) -> tuple[
         PortableCollectionHeader,
-        Iterator[PortableCollectionFile],
+        Iterator[PortableCollectionArtifact],
         str,
         int,
         int,
     ]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         if principal is not None and principal.has_artifact_scope:
-            raise NotFound(f"collection manifest not found: {normalized_id}")
+            raise NotFound(f"collection inventory not found: {normalized_id}")
         with read_snapshot(self._session_factory) as session:
             collection = session.get(CollectionRecord, normalized_id)
             if collection is None:
                 raise NotFound(f"collection not found: {normalized_id}")
             require_collection_access(session, principal, CATALOG_READ, normalized_id)
             header = PortableCollectionHeader.model_validate(
-                dict(
-                    collection=format_scalar("sequence63", normalized_id),
-                    artifact_set_identity=collection.artifact_set_identity,
-                    encryption_format=collection.encryption_format,
-                    passphrase_id=collection.passphrase_id,
-                    provenance_mode=cast(
-                        Literal["captured", "mixed", "omitted"],
-                        collection.provenance_mode,
-                    ),
-                    provenance_identity=collection.provenance_identity,
-                )
+                {
+                    "collection": format_scalar("sequence63", normalized_id),
+                    "artifact_set_identity": collection.artifact_set_identity,
+                    "encryption_format": collection.encryption_format,
+                    "passphrase_id": collection.passphrase_id,
+                    "provenance_identity": collection.provenance_identity,
+                }
             )
-            file_count = int(collection.file_count)
-            file_bytes = int(collection.file_bytes)
+            artifact_count = int(collection.artifact_count)
+            artifact_bytes = int(collection.artifact_bytes)
             inventory_identity = collection.inventory_identity
 
-        def files() -> Iterator[PortableCollectionFile]:
+        def artifacts() -> Iterator[PortableCollectionArtifact]:
             statement = (
                 select(
-                    CollectionArtifactRecord.path,
+                    CollectionArtifactRecord.artifact_id,
                     CollectionArtifactRecord.bytes,
                     CollectionArtifactRecord.sha256,
                 )
                 .where(CollectionArtifactRecord.collection_id == normalized_id)
-                .order_by(CollectionArtifactRecord.path_sort_key)
+                .order_by(CollectionArtifactRecord.artifact_id)
                 .execution_options(yield_per=100)
             )
             with read_snapshot(self._session_factory) as session:
-                for path, byte_count, sha256 in session.execute(statement).tuples():
-                    yield PortableCollectionFile(
-                        path=str(path),
+                for artifact_id, byte_count, sha256 in session.execute(statement).tuples():
+                    yield PortableCollectionArtifact(
+                        artifact_id=ArtifactId(str(artifact_id)),
                         bytes=int(byte_count),
                         sha256=str(sha256),
                     )
 
-        return header, files(), inventory_identity, file_count, file_bytes
+        return header, artifacts(), inventory_identity, artifact_count, artifact_bytes
 
     def collection_inventory_page(
         self,
@@ -275,13 +270,13 @@ class SqlAlchemyRetrievalService:
         expected_identity: str | None,
         principal: Principal | None = None,
     ) -> PortableCollectionInventoryPage:
-        """Read one bounded page from one immutable collection inventory."""
+        """Read one bounded ID-ordered page from an immutable collection inventory."""
 
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         if limit < 1 or limit > _INVENTORY_PAGE_LIMIT:
             raise BadRequest("collection inventory limit must be between 1 and 1000")
         if principal is not None and principal.has_artifact_scope:
-            raise NotFound(f"collection manifest not found: {normalized_id}")
+            raise NotFound(f"collection inventory not found: {normalized_id}")
 
         cursor_after: str | None = None
         cursor_identity: str | None = None
@@ -304,67 +299,61 @@ class SqlAlchemyRetrievalService:
                 raise PreconditionFailed("collection inventory cursor is stale")
 
             header = PortableCollectionHeader.model_validate(
-                dict(
-                    collection=format_scalar("sequence63", normalized_id),
-                    artifact_set_identity=collection.artifact_set_identity,
-                    encryption_format=collection.encryption_format,
-                    passphrase_id=collection.passphrase_id,
-                    provenance_mode=cast(
-                        Literal["captured", "mixed", "omitted"],
-                        collection.provenance_mode,
-                    ),
-                    provenance_identity=collection.provenance_identity,
-                )
+                {
+                    "collection": format_scalar("sequence63", normalized_id),
+                    "artifact_set_identity": collection.artifact_set_identity,
+                    "encryption_format": collection.encryption_format,
+                    "passphrase_id": collection.passphrase_id,
+                    "provenance_identity": collection.provenance_identity,
+                }
             )
-            file_count = int(collection.file_count)
-            file_bytes = int(collection.file_bytes)
+            artifact_count = int(collection.artifact_count)
+            artifact_bytes = int(collection.artifact_bytes)
             statement = (
                 select(
-                    CollectionArtifactRecord.path,
+                    CollectionArtifactRecord.artifact_id,
                     CollectionArtifactRecord.bytes,
                     CollectionArtifactRecord.sha256,
                 )
                 .where(CollectionArtifactRecord.collection_id == normalized_id)
-                .order_by(CollectionArtifactRecord.path_sort_key)
+                .order_by(CollectionArtifactRecord.artifact_id)
                 .limit(limit + 1)
             )
             if cursor_after is not None:
-                statement = statement.where(
-                    CollectionArtifactRecord.path_sort_key > relpath_sort_key(cursor_after)
-                )
+                statement = statement.where(CollectionArtifactRecord.artifact_id > cursor_after)
             rows = list(session.execute(statement).tuples())
 
         has_more = len(rows) > limit
         selected = rows[:limit]
-        files = [
-            ImmutableFileIdentityDocument.model_validate(
+        artifacts = [
+            ArtifactMemberIdentityDocument.model_validate(
                 {
-                    "path": str(path),
-                    "bytes": str(int(byte_count)),
+                    "artifact_id": str(artifact_id),
+                    "bytes": format_scalar("sequence63", int(byte_count)),
                     "sha256": str(sha256),
                 }
             )
-            for path, byte_count, sha256 in selected
+            for artifact_id, byte_count, sha256 in selected
         ]
         next_cursor = (
             _encode_inventory_cursor(
                 collection_id=normalized_id,
                 inventory_identity=inventory_identity,
-                after=files[-1].path,
+                after=str(artifacts[-1].artifact_id),
             )
-            if has_more and files
+            if has_more and artifacts
             else None
         )
         return PortableCollectionInventoryPage(
             authority=PortableCollectionInventoryAuthority.model_validate(
-                dict(
-                    header=header,
-                    inventory_identity=inventory_identity,
-                    file_count=format_scalar("nonnegative", file_count),
-                    file_bytes=format_scalar("nonnegative", file_bytes),
-                )
+                {
+                    "header": header,
+                    "inventory_identity": inventory_identity,
+                    "artifact_count": format_scalar("nonnegative", artifact_count),
+                    "artifact_bytes": format_scalar("nonnegative", artifact_bytes),
+                }
             ),
-            files=files,
+            artifacts=artifacts,
             next_cursor=next_cursor,
             complete=not has_more,
         )
@@ -614,14 +603,14 @@ class SqlAlchemyRetrievalService:
 
     def plan(
         self,
-        files: Sequence[tuple[int, str]],
+        artifacts: Sequence[tuple[int, str]],
         *,
         idempotency_key: str | None = None,
         lease: timedelta | None = None,
         restore_policy: str = "allow",
         principal: Principal | None = None,
     ) -> dict[str, object]:
-        normalized = _normalize_file_refs(files)
+        normalized = _normalize_artifact_refs(artifacts)
         normalized_idempotency_key = _normalize_plan_idempotency_key(
             uuid.uuid4().hex if idempotency_key is None else idempotency_key
         )
@@ -636,7 +625,10 @@ class SqlAlchemyRetrievalService:
         owner_principal_id = principal.id if principal is not None else ""
         owner_key_id = principal.key_id if principal is not None else None
         request_json = json.dumps(
-            [{"collection_id": collection_id, "path": path} for collection_id, path in normalized],
+            [
+                {"collection_id": collection_id, "artifact_id": artifact_id}
+                for collection_id, artifact_id in normalized
+            ],
             sort_keys=True,
             separators=(",", ":"),
         )
@@ -644,21 +636,21 @@ class SqlAlchemyRetrievalService:
             b"riverhog-retrieval-plan-request/v1\x00"
             + canonical_json_bytes(
                 {
-                    "files": json.loads(request_json),
+                    "artifacts": json.loads(request_json),
                     "lease_seconds": int(requested_lease.total_seconds()),
                     "restore_policy": normalized_restore_policy,
                 }
             )
         ).hexdigest()
         with session_scope(self._session_factory) as session:
-            for collection_id, path in normalized:
+            for collection_id, artifact_id in normalized:
                 require_collection_access(
                     session,
                     principal,
                     RETRIEVAL_MANAGE,
                     collection_id,
                 )
-                require_artifact_scope(session, principal, collection_id, path)
+                require_artifact_scope(session, principal, collection_id, artifact_id)
             existing = session.scalar(
                 select(RetrievalPlanRecord).where(
                     RetrievalPlanRecord.principal_id == owner_principal_id,
@@ -686,7 +678,7 @@ class SqlAlchemyRetrievalService:
                         expires_at=format_utc_timestamp(
                             now + self._config.retrieval_pending_timeout
                         ),
-                        file_commitment_sha256=_RETRIEVAL_PLAN_INITIAL_FILE_COMMITMENT,
+                        artifact_commitment_sha256=_RETRIEVAL_PLAN_INITIAL_FILE_COMMITMENT,
                         segment_commitment_sha256=_RETRIEVAL_PLAN_INITIAL_COMMITMENT,
                     )
                 )
@@ -731,7 +723,7 @@ class SqlAlchemyRetrievalService:
                 plan.failure = str(exc) or exc.__class__.__name__
             return _plan_payload(plan)
 
-    def list_plan_files(
+    def list_plan_artifacts(
         self,
         *,
         principal_id: str,
@@ -741,7 +733,7 @@ class SqlAlchemyRetrievalService:
         page_size: int,
         key_id: str | None = None,
     ) -> dict[str, object]:
-        if start_ordinal < 0 or start_ordinal > RETRIEVAL_FILE_BATCH_MAX:
+        if start_ordinal < 0 or start_ordinal > RETRIEVAL_ARTIFACT_BATCH_MAX:
             raise BadRequest("retrieval plan file ordinal is invalid")
         if page_size < 1 or page_size > _RETRIEVAL_PLAN_FILE_PAGE_MAX:
             raise BadRequest("retrieval plan file page size is invalid")
@@ -758,47 +750,49 @@ class SqlAlchemyRetrievalService:
                     select(RetrievalPlanArtifactRecord)
                     .where(
                         RetrievalPlanArtifactRecord.plan_id == plan_id,
-                        RetrievalPlanArtifactRecord.file_order >= start_ordinal,
+                        RetrievalPlanArtifactRecord.artifact_order >= start_ordinal,
                     )
-                    .order_by(RetrievalPlanArtifactRecord.file_order)
+                    .order_by(RetrievalPlanArtifactRecord.artifact_order)
                     .limit(page_size + 1)
                 )
             )
         selected = rows[:page_size]
         complete = len(rows) <= page_size
         return {
-            "format": "riverhog-retrieval-plan-files/v1",
+            "format": "riverhog-retrieval-plan-artifacts/v1",
             "plan_id": plan_id,
             "etag": etag,
             "start_ordinal": start_ordinal,
-            "next_ordinal": (selected[-1].file_order + 1 if selected and not complete else None),
+            "next_ordinal": (
+                selected[-1].artifact_order + 1 if selected and not complete else None
+            ),
             "complete": complete,
-            "files": [_plan_file_payload(current) for current in selected],
+            "artifacts": [_plan_artifact_payload(current) for current in selected],
         }
 
     def _advance_plan_record(self, session: Session, plan: RetrievalPlanRecord) -> None:
         requested = cast(list[dict[str, object]], json.loads(plan.request_json))
         remaining = _RETRIEVAL_PLAN_SEGMENT_BATCH
-        while remaining and plan.next_file_order < len(requested):
-            current_ref = requested[plan.next_file_order]
+        while remaining and plan.next_artifact_order < len(requested):
+            current_ref = requested[plan.next_artifact_order]
             collection_id = int(str(current_ref["collection_id"]))
-            path = str(current_ref["path"])
+            artifact_id = str(current_ref["artifact_id"])
             plan_file = session.get(
                 RetrievalPlanArtifactRecord,
-                (plan.id, plan.next_file_order),
+                (plan.id, plan.next_artifact_order),
             )
             if plan_file is None:
                 if session.get(CollectionDeletionRecord, collection_id) is not None:
                     raise Conflict(f"collection deletion is active: {collection_id}")
-                file_record = session.get(CollectionArtifactRecord, (collection_id, path))
+                file_record = session.get(CollectionArtifactRecord, (collection_id, artifact_id))
                 if file_record is None:
-                    raise NotFound(f"file not found: {collection_id}/{path}")
+                    raise NotFound(f"file not found: {collection_id}/{artifact_id}")
                 copy = self._select_copy(session, collection_id)
                 plan_file = RetrievalPlanArtifactRecord(
                     plan_id=plan.id,
-                    file_order=plan.next_file_order,
+                    artifact_order=plan.next_artifact_order,
                     collection_id=collection_id,
-                    path=path,
+                    artifact_id=artifact_id,
                     bytes=file_record.bytes,
                     sha256=file_record.sha256,
                     source_store=copy.store,
@@ -806,11 +800,11 @@ class SqlAlchemyRetrievalService:
                     requires_restore=False,
                 )
                 session.add(plan_file)
-                plan.file_commitment_sha256 = _chain_commitment(
-                    plan.file_commitment_sha256,
+                plan.artifact_commitment_sha256 = _chain_commitment(
+                    plan.artifact_commitment_sha256,
                     {
                         "collection_id": format_scalar("sequence63", collection_id),
-                        "path": path,
+                        "artifact_id": artifact_id,
                         "bytes": format_scalar("nonnegative", file_record.bytes),
                         "sha256": file_record.sha256,
                     },
@@ -823,15 +817,16 @@ class SqlAlchemyRetrievalService:
                     .where(
                         CollectionArchiveArtifactObjectRecord.collection_id == collection_id,
                         CollectionArchiveArtifactObjectRecord.store == plan_file.source_store,
-                        CollectionArchiveArtifactObjectRecord.path == path,
-                        CollectionArchiveArtifactObjectRecord.sequence >= plan.next_placement_sequence,
+                        CollectionArchiveArtifactObjectRecord.artifact_id == artifact_id,
+                        CollectionArchiveArtifactObjectRecord.sequence
+                        >= plan.next_placement_sequence,
                     )
                     .order_by(CollectionArchiveArtifactObjectRecord.sequence)
                     .limit(remaining + 1)
                 )
             )
             if not rows:
-                raise InvalidState(f"archive placement is missing: {collection_id}/{path}")
+                raise InvalidState(f"archive placement is missing: {collection_id}/{artifact_id}")
             selected = rows[:remaining]
             has_more = len(rows) > remaining
             object_by_identity: dict[tuple[int, str, str], RetrievalPlanObjectRecord] = {}
@@ -839,24 +834,24 @@ class SqlAlchemyRetrievalService:
                 select(RetrievalPlanPlacementRecord)
                 .where(
                     RetrievalPlanPlacementRecord.plan_id == plan.id,
-                    RetrievalPlanPlacementRecord.file_order == plan_file.file_order,
+                    RetrievalPlanPlacementRecord.artifact_order == plan_file.artifact_order,
                 )
                 .order_by(RetrievalPlanPlacementRecord.sequence.desc())
                 .limit(1)
             )
-            expected_file_offset = (
+            expected_artifact_offset = (
                 0
                 if previous_placement is None
-                else previous_placement.file_offset + previous_placement.bytes
+                else previous_placement.artifact_offset + previous_placement.bytes
             )
             previous_sequence: int | None = None
             for placement in selected:
                 if (
                     previous_sequence is not None and placement.sequence <= previous_sequence
-                ) or placement.file_offset != expected_file_offset:
+                ) or placement.artifact_offset != expected_artifact_offset:
                     raise InvalidState("retrieval plan placement order is not canonical")
                 previous_sequence = placement.sequence
-                expected_file_offset += placement.bytes
+                expected_artifact_offset += placement.bytes
                 identity = (collection_id, plan_file.source_store, placement.object_id)
                 planned_object = object_by_identity.get(identity)
                 if planned_object is None:
@@ -929,10 +924,10 @@ class SqlAlchemyRetrievalService:
                 session.add(
                     RetrievalPlanPlacementRecord(
                         plan_id=plan.id,
-                        file_order=plan_file.file_order,
+                        artifact_order=plan_file.artifact_order,
                         sequence=placement.sequence,
                         object_order=planned_object.object_order,
-                        file_offset=placement.file_offset,
+                        artifact_offset=placement.artifact_offset,
                         object_offset=placement.object_offset,
                         bytes=placement.bytes,
                         member=placement.member,
@@ -941,10 +936,10 @@ class SqlAlchemyRetrievalService:
                 plan.segment_commitment_sha256 = _chain_commitment(
                     plan.segment_commitment_sha256,
                     {
-                        "file_order": format_scalar("nonnegative", plan_file.file_order),
+                        "artifact_order": format_scalar("nonnegative", plan_file.artifact_order),
                         "sequence": str(placement.sequence),
                         "collection_id": format_scalar("sequence63", collection_id),
-                        "path": path,
+                        "artifact_id": artifact_id,
                         "object_order": str(planned_object.object_order),
                         "object_id": planned_object.object_id,
                         "kind": planned_object.kind,
@@ -955,7 +950,7 @@ class SqlAlchemyRetrievalService:
                         "sha256": planned_object.sha256,
                         "read_mode": planned_object.read_mode,
                         "cache_store": planned_object.cache_store,
-                        "file_offset": format_scalar("nonnegative", placement.file_offset),
+                        "artifact_offset": format_scalar("nonnegative", placement.artifact_offset),
                         "object_offset": format_scalar("nonnegative", placement.object_offset),
                         "bytes": format_scalar("nonnegative", placement.bytes),
                         "member": placement.member,
@@ -965,12 +960,12 @@ class SqlAlchemyRetrievalService:
                 remaining -= 1
 
             if not has_more:
-                if expected_file_offset != plan_file.bytes:
+                if expected_artifact_offset != plan_file.bytes:
                     raise InvalidState("retrieval plan placements do not cover the file")
-                plan.next_file_order += 1
+                plan.next_artifact_order += 1
                 plan.next_placement_sequence = 0
-        if plan.next_file_order >= len(requested):
-            self._seal_plan(plan, file_count=len(requested))
+        if plan.next_artifact_order >= len(requested):
+            self._seal_plan(plan, artifact_count=len(requested))
 
     def _placement_retrieval_bytes(
         self,
@@ -1006,7 +1001,7 @@ class SqlAlchemyRetrievalService:
             source,
             (
                 PackMemberRetrievalSource(
-                    path=plan_file.path,
+                    artifact_id=plan_file.artifact_id,
                     bytes=plan_file.bytes,
                     sha256=plan_file.sha256,
                     data_offset=placement.object_offset,
@@ -1016,15 +1011,15 @@ class SqlAlchemyRetrievalService:
         ).accounted_remote_bytes
 
     @staticmethod
-    def _seal_plan(plan: RetrievalPlanRecord, *, file_count: int) -> None:
+    def _seal_plan(plan: RetrievalPlanRecord, *, artifact_count: int) -> None:
         plan.etag = hashlib.sha256(
             canonical_json_bytes(
                 {
                     "format": "riverhog-retrieval-plan-authority/v1",
                     "lease_seconds": plan.lease_seconds,
                     "restore_policy": plan.restore_policy,
-                    "file_count": format_scalar("nonnegative", file_count),
-                    "file_identity": plan.file_commitment_sha256,
+                    "artifact_count": format_scalar("nonnegative", artifact_count),
+                    "artifact_identity": plan.artifact_commitment_sha256,
                     "segment_identity": plan.segment_commitment_sha256,
                     "object_count": str(plan.object_count),
                     "retrieval_bytes": str(plan.retrieval_bytes),
@@ -1115,7 +1110,7 @@ class SqlAlchemyRetrievalService:
                     type="retrieval.requested",
                     job=record,
                     details={
-                        "files": len(json.loads(plan.request_json)),
+                        "artifacts": len(json.loads(plan.request_json)),
                         "objects": plan.object_count,
                         "restore_required": requested,
                     },
@@ -1249,7 +1244,7 @@ class SqlAlchemyRetrievalService:
         principal_id: str,
         job_id: str,
         collection_id: int,
-        path: str,
+        artifact_id: str,
         offset: int = 0,
         size: int | None = None,
         key_id: str | None = None,
@@ -1265,7 +1260,7 @@ class SqlAlchemyRetrievalService:
                 select(RetrievalPlanArtifactRecord).where(
                     RetrievalPlanArtifactRecord.plan_id == job.plan_id,
                     RetrievalPlanArtifactRecord.collection_id == collection_id,
-                    RetrievalPlanArtifactRecord.path == path,
+                    RetrievalPlanArtifactRecord.artifact_id == artifact_id,
                 )
             )
             if plan_file is None:
@@ -1283,7 +1278,7 @@ class SqlAlchemyRetrievalService:
                     )
                     .where(
                         RetrievalPlanPlacementRecord.plan_id == job.plan_id,
-                        RetrievalPlanPlacementRecord.file_order == plan_file.file_order,
+                        RetrievalPlanPlacementRecord.artifact_order == plan_file.artifact_order,
                     )
                     .order_by(RetrievalPlanPlacementRecord.sequence)
                     .limit(2)
@@ -1303,7 +1298,7 @@ class SqlAlchemyRetrievalService:
             passphrase_id = collection.passphrase_id
             passphrase = self._config.archive_passphrase_for(passphrase_id)
             plan_id = job.plan_id
-            file_order = plan_file.file_order
+            artifact_order = plan_file.artifact_order
             source_store = plan_file.source_store
 
         kinds = {current.kind for _placement, current in planned}
@@ -1322,7 +1317,7 @@ class SqlAlchemyRetrievalService:
                 age_state_json=record.age_state_json,
             )
             member = PackMemberRetrievalSource(
-                path=path,
+                artifact_id=ArtifactId(artifact_id),
                 bytes=expected_bytes,
                 sha256=expected_sha256,
                 data_offset=placement.object_offset,
@@ -1347,9 +1342,9 @@ class SqlAlchemyRetrievalService:
         if kinds == {"segment"}:
             chunks = self._iter_raw_plan_range(
                 plan_id=plan_id,
-                file_order=file_order,
+                artifact_order=artifact_order,
                 source_store=source_store,
-                path=path,
+                artifact_id=artifact_id,
                 expected_bytes=expected_bytes,
                 expected_sha256=expected_sha256,
                 offset=offset,
@@ -1407,9 +1402,9 @@ class SqlAlchemyRetrievalService:
         self,
         *,
         plan_id: str,
-        file_order: int,
+        artifact_order: int,
         source_store: str,
-        path: str,
+        artifact_id: str,
         expected_bytes: int,
         expected_sha256: str,
         offset: int,
@@ -1441,12 +1436,12 @@ class SqlAlchemyRetrievalService:
                         )
                         .where(
                             RetrievalPlanPlacementRecord.plan_id == plan_id,
-                            RetrievalPlanPlacementRecord.file_order == file_order,
+                            RetrievalPlanPlacementRecord.artifact_order == artifact_order,
                             RetrievalPlanPlacementRecord.sequence >= next_sequence,
-                            RetrievalPlanPlacementRecord.file_offset
+                            RetrievalPlanPlacementRecord.artifact_offset
                             + RetrievalPlanPlacementRecord.bytes
                             > offset,
-                            RetrievalPlanPlacementRecord.file_offset < requested_end,
+                            RetrievalPlanPlacementRecord.artifact_offset < requested_end,
                         )
                         .order_by(RetrievalPlanPlacementRecord.sequence)
                         .limit(_RETRIEVAL_PLAN_SEGMENT_BATCH)
@@ -1455,7 +1450,7 @@ class SqlAlchemyRetrievalService:
             if not rows:
                 raise InvalidState("retrieval plan does not cover the requested file range")
             for placement, planned_object in rows:
-                volume_start = placement.file_offset
+                volume_start = placement.artifact_offset
                 volume_end = volume_start + placement.bytes
                 current_start = max(offset, volume_start)
                 current_end = min(requested_end, volume_end)
@@ -1469,11 +1464,11 @@ class SqlAlchemyRetrievalService:
                     volume_id=record.object_id,
                     object_path=record.object_path,
                     revision=record.revision,
-                    source_path=path,
-                    file_offset=placement.file_offset,
+                    artifact_id=artifact_id,
+                    artifact_offset=placement.artifact_offset,
                     plaintext_bytes=placement.bytes,
-                    file_bytes=expected_bytes,
-                    file_sha256=expected_sha256,
+                    artifact_bytes=expected_bytes,
+                    artifact_sha256=expected_sha256,
                     age_state_json=record.age_state_json,
                     parts=_stored_parts(record.archive_parts_json),
                 )
@@ -1550,7 +1545,7 @@ class SqlAlchemyRetrievalService:
         principal_id: str,
         job_id: str,
         collection_id: int,
-        path: str,
+        artifact_id: str,
         key_id: str | None = None,
     ) -> tuple[int, str]:
         with session_scope(self._session_factory) as session:
@@ -1564,7 +1559,7 @@ class SqlAlchemyRetrievalService:
                 select(RetrievalPlanArtifactRecord).where(
                     RetrievalPlanArtifactRecord.plan_id == job.plan_id,
                     RetrievalPlanArtifactRecord.collection_id == collection_id,
-                    RetrievalPlanArtifactRecord.path == path,
+                    RetrievalPlanArtifactRecord.artifact_id == artifact_id,
                 )
             )
             if plan_file is None:
@@ -2319,19 +2314,24 @@ def _stored_parts(content: str) -> tuple[StoredArchivePart, ...]:
         raise InvalidState("archive part receipt is invalid") from exc
 
 
-def _normalize_file_refs(files: Sequence[tuple[int, str]]) -> tuple[tuple[int, str], ...]:
+def _normalize_artifact_refs(
+    artifacts: Sequence[tuple[int, str]],
+) -> tuple[tuple[int, str], ...]:
     try:
-        document = RetrievalFileReferenceSetDocument.model_validate(
+        document = RetrievalArtifactReferenceSetDocument.model_validate(
             {
-                "files": [
-                    {"collection_id": format_scalar("sequence63", collection_id), "path": path}
-                    for collection_id, path in files
+                "artifacts": [
+                    {
+                        "collection_id": format_scalar("sequence63", collection_id),
+                        "artifact_id": artifact_id,
+                    }
+                    for collection_id, artifact_id in artifacts
                 ]
             }
         )
     except ValueError as exc:
         raise BadRequest(str(exc)) from exc
-    return tuple((item.collection_id, item.path) for item in document.files)
+    return tuple((item.collection_id, str(item.artifact_id)) for item in document.artifacts)
 
 
 def _normalize_restore_policy(value: str) -> str:
@@ -2702,7 +2702,7 @@ def _plan_payload(record: RetrievalPlanRecord) -> dict[str, object]:
         "lease_seconds": record.lease_seconds,
         "restore_policy": record.restore_policy,
         "requires_restore": record.requires_restore,
-        "file_count": len(json.loads(record.request_json)),
+        "artifact_count": len(json.loads(record.request_json)),
         "etag": record.etag,
     }
 
@@ -2714,10 +2714,10 @@ def _normalize_plan_idempotency_key(value: str) -> str:
     return normalized
 
 
-def _plan_file_payload(record: RetrievalPlanArtifactRecord) -> dict[str, object]:
+def _plan_artifact_payload(record: RetrievalPlanArtifactRecord) -> dict[str, object]:
     return {
         "collection_id": format_scalar("sequence63", record.collection_id),
-        "path": record.path,
+        "artifact_id": record.artifact_id,
         "bytes": format_scalar("nonnegative", record.bytes),
         "sha256": record.sha256,
         "requires_restore": record.requires_restore,
