@@ -8,15 +8,10 @@ from a_riverhog_macos_provenance_observer import (
     ACLCapture,
     DarwinFileSystemInfo,
     MacOSBackend,
-    MacOSFileStateObserver,
+    MacOSProvenanceObserver,
 )
-from riverhog_provenance import (
-    FileStateObservationRequest,
-    ObservationPolicy,
-    PayloadBindingRequest,
-    validate_graph_fragment,
-)
-from riverhog_provenance.model import NativeStat
+from riverhog_provenance import validate_graph_fragment
+from riverhog_provenance.native_capture import NativeCapturePolicy, NativeStat
 
 
 class FakeMacOSNative:
@@ -96,21 +91,30 @@ class FakeMacOSNative:
         }.get(name)
 
 
+def _observe(path: Path, host_id: str, *, native=None, policy=None):
+    observer = MacOSProvenanceObserver(native=native or FakeMacOSNative(), enforce_platform=False)
+    return observer.observe(observer.source(path, host_id=host_id, policy=policy))
+
+
+def _data(result):
+    return result.observation["profiles"][0]["data"]
+
+
 def test_mocked_macos_observation_contract(tmp_path: Path, urn_factory) -> None:
     payload = tmp_path / "photo.jpg"
     content = b"opaque image bytes; never parsed"
     payload.write_bytes(content)
-    result = MacOSFileStateObserver(native=FakeMacOSNative(), enforce_platform=False).observe(
-        FileStateObservationRequest(
-            path=payload,
-            lineage_id=urn_factory(),
-            host_id=urn_factory(),
-            payload_binding=PayloadBindingRequest(),
-        )
+    result = _observe(payload, urn_factory())
+    graph = result.graph_fragment()
+    validate_graph_fragment(graph)
+    assert (
+        result.observation["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
     )
-    validate_graph_fragment(result.graph_fragment())
-    rows = result.file_state["filesystem_metadata"]["native_metadata"]
-    kinds = {row["kind"] for row in rows}
+    assert result.observation["content"]["size_bytes"] == str(len(content))
+    assert graph["states"][0]["extent"] == {"kind": "whole_object"}
+    assert graph["locator_bindings"][0]["target"]["object_id"] == result.state_id
+    data = _data(result)
+    kinds = {row["kind"] for row in data["native_metadata"]}
     assert {
         "resource_fork",
         "finder_info",
@@ -120,10 +124,13 @@ def test_mocked_macos_observation_contract(tmp_path: Path, urn_factory) -> None:
         "sparse_map",
         "native_stat_field",
     }.issubset(kinds)
-    assert result.environment["operating_system"]["version"] == "26.6"
-    assert result.environment["filesystem"]["type"] == "apfs"
-    assert result.environment["filesystem"]["case_sensitive"] is True
-    assert result.capture["outcome"] == "success"
+    assert data["environment"]["operating_system"]["version"] == "26.6"
+    assert data["environment"]["filesystem"]["type"] == "apfs"
+    assert data["environment"]["filesystem"]["case_sensitive"] is True
+    assert graph["activities"][0]["outcome"] == "success"
+    assert result.observation["profiles"][0]["profile"]["schema_id"].endswith(
+        "/macos-native-capture.json"
+    )
 
 
 def test_mocked_large_resource_fork_is_digest_only(tmp_path: Path, urn_factory) -> None:
@@ -131,22 +138,13 @@ def test_mocked_large_resource_fork_is_digest_only(tmp_path: Path, urn_factory) 
     native.values[b"com.apple.ResourceFork"] = b"R" * 128
     payload = tmp_path / "movie.mov"
     payload.write_bytes(b"payload")
-    result = MacOSFileStateObserver(native=native, enforce_platform=False).observe(
-        FileStateObservationRequest(
-            path=payload,
-            lineage_id=urn_factory(),
-            host_id=urn_factory(),
-            policy=ObservationPolicy(
-                inline_native_value_bytes=16,
-                maximum_native_value_bytes=1024,
-            ),
-        )
+    result = _observe(
+        payload,
+        urn_factory(),
+        native=native,
+        policy=NativeCapturePolicy(inline_native_value_bytes=16, maximum_native_value_bytes=1024),
     )
-    fork = next(
-        row
-        for row in result.file_state["filesystem_metadata"]["native_metadata"]
-        if row["kind"] == "resource_fork"
-    )
+    fork = next(row for row in _data(result)["native_metadata"] if row["kind"] == "resource_fork")
     assert fork["capture_status"] == "digest_only"
     assert fork["value"]["byte_length"] == "128"
     validate_graph_fragment(result.graph_fragment())
@@ -232,13 +230,9 @@ class _EmptyVolumeTextMacOSNative(FakeMacOSNative):
 def test_macos_omits_unavailable_empty_volume_observations(tmp_path: Path, urn_factory) -> None:
     payload = tmp_path / "empty-volume-fields.dat"
     payload.write_bytes(b"payload")
-    result = MacOSFileStateObserver(
-        native=_EmptyVolumeTextMacOSNative(), enforce_platform=False
-    ).observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-
-    filesystem = result.environment["filesystem"]
+    result = _observe(payload, urn_factory(), native=_EmptyVolumeTextMacOSNative())
+    data = _data(result)
+    filesystem = data["environment"]["filesystem"]
     assert filesystem["type"] == "unknown"
     assert all(item["value"] for item in filesystem["volume_identifiers"])
     assert {item["scheme"] for item in filesystem["volume_identifiers"]} == {
@@ -246,7 +240,9 @@ def test_macos_omits_unavailable_empty_volume_observations(tmp_path: Path, urn_f
         "volume-uuid",
     }
     volume_context = next(
-        item for item in result.extensions if item["property"].endswith("/macos-volume-context")
+        item
+        for item in data["extension_details"]
+        if item["property"].endswith("/macos-volume-context")
     )
     assert volume_context["value"]["data"]["filesystem_type"] == "unknown"
     validate_graph_fragment(result.graph_fragment())
@@ -257,15 +253,10 @@ def test_macos_volume_attribute_failure_retains_fstatfs_context(
 ) -> None:
     payload = tmp_path / "volume-context.dat"
     payload.write_bytes(b"payload")
-    result = MacOSFileStateObserver(
-        native=_VolumeAttributesFailureMacOSNative(), enforce_platform=False
-    ).observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    assert result.environment["filesystem"]["type"] == "apfs"
-    assert result.capture["coverage"]["native_identifiers"] == "partial"
-    assert result.capture["outcome"] == "partial"
-    assert any(
-        item["code"] == "volume_attributes_unavailable" for item in result.capture["diagnostics"]
-    )
+    result = _observe(payload, urn_factory(), native=_VolumeAttributesFailureMacOSNative())
+    data = _data(result)
+    assert data["environment"]["filesystem"]["type"] == "apfs"
+    assert data["coverage"]["native_identifiers"] == "partial"
+    assert result.graph_fragment()["activities"][0]["outcome"] == "partial"
+    assert any(item["code"] == "volume_attributes_unavailable" for item in data["diagnostics"])
     validate_graph_fragment(result.graph_fragment())

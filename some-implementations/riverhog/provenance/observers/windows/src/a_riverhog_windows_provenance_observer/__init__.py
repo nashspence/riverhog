@@ -25,8 +25,22 @@ from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from a_riverhog_windows_provenance_contract_lib import CONTRACT_BINDING, PLATFORM_FAMILY
-from riverhog_provenance.common import (
-    DescriptorFileStateObserver,
+from riverhog_provenance.native_capture import (
+    DEFAULT_OBSERVER_AGENT_ID,
+    OBSERVER_NAMESPACE,
+    JsonObject,
+    LargeValueDisposition,
+    NativeCapture,
+    NativeCapturePolicy,
+    NativeCaptureRequest,
+    NativeExtensionDraft,
+    NativeObservationError,
+    NativeStat,
+    PathInput,
+    PlatformBackend,
+    SymlinkRefusedError,
+    UnsupportedFileTypeError,
+    UnsupportedPlatformError,
     bytes_value,
     diagnostic,
     digest_assertion,
@@ -39,23 +53,7 @@ from riverhog_provenance.common import (
     source,
     utc_offset_string,
 )
-from riverhog_provenance.constants import DEFAULT_OBSERVER_AGENT_ID, OBSERVER_NAMESPACE
-from riverhog_provenance.errors import (
-    NativeObservationError,
-    SymlinkRefusedError,
-    UnsupportedFileTypeError,
-    UnsupportedPlatformError,
-)
-from riverhog_provenance.interface import PlatformBackend
-from riverhog_provenance.model import (
-    ExtensionDraft,
-    FileStateObservationRequest,
-    JsonObject,
-    LargeValueDisposition,
-    NativeCollection,
-    NativeStat,
-    PathInput,
-)
+from riverhog_provenance.native_source import NativeFileObserver, NativeFileSource
 from riverhog_provenance.providers import ProvenanceObserverBinding
 from time_formats import format_utc_ns
 
@@ -972,7 +970,7 @@ class WindowsNativeAPI:
             self._close_handle(inspection)
 
     def open_regular_file(
-        self, path: str, request: FileStateObservationRequest
+        self, path: str, request: NativeCaptureRequest
     ) -> tuple[OpenedWindowsFile, list[JsonObject]]:
         diagnostics: list[JsonObject] = []
         path_info = self.inspect_path(
@@ -1461,9 +1459,7 @@ class WindowsNativeAPI:
                 raise NativeObservationError("BackupRead could not skip stream data")
             remaining -= len(chunk)
 
-    def backup_streams(
-        self, fd: int, request: FileStateObservationRequest
-    ) -> list[BackupStreamCapture]:
+    def backup_streams(self, fd: int, request: NativeCaptureRequest) -> list[BackupStreamCapture]:
         handle = self._handle_from_fd(fd)
         context = ctypes.c_void_p()
         streams: list[BackupStreamCapture] = []
@@ -1965,7 +1961,7 @@ class WindowsBackend(PlatformBackend):
         return bool(drive) or ntpath.isabs(tail)
 
     def open_readonly(
-        self, path: str | bytes, request: FileStateObservationRequest
+        self, path: str | bytes, request: NativeCaptureRequest
     ) -> tuple[int, list[JsonObject], bool]:
         if not isinstance(path, str):
             raise TypeError("Windows observer requires a Unicode path")
@@ -2057,9 +2053,9 @@ class WindowsBackend(PlatformBackend):
 
     def finalize_timestamps(
         self,
-        collection: NativeCollection,
+        collection: NativeCapture,
         final_stat: NativeStat,
-        request: FileStateObservationRequest,
+        request: NativeCaptureRequest,
     ) -> None:
         if not request.policy.include_access_time:
             return
@@ -2075,11 +2071,11 @@ class WindowsBackend(PlatformBackend):
         fd: int,
         path: str | bytes,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-    ) -> NativeCollection:
+        request: NativeCaptureRequest,
+    ) -> NativeCapture:
         if not isinstance(path, str):
             raise TypeError("Windows observer requires a Unicode path")
-        result = NativeCollection()
+        result = NativeCapture()
         result.timestamps = self._timestamps(stat, request)
         result.coverage.update(
             {
@@ -2135,7 +2131,7 @@ class WindowsBackend(PlatformBackend):
 
         result.environment = self._environment(stat, path, volume, request)
         result.extension_drafts.append(
-            ExtensionDraft(
+            NativeExtensionDraft(
                 subject_role="environment",
                 property="https://nashspence.github.io/riverhog/v1/provenance/observers/vocab/windows-volume-context",
                 value=_schema_value(
@@ -2148,7 +2144,7 @@ class WindowsBackend(PlatformBackend):
         return result
 
     @staticmethod
-    def _timestamps(stat: NativeStat, request: FileStateObservationRequest) -> list[JsonObject]:
+    def _timestamps(stat: NativeStat, request: NativeCaptureRequest) -> list[JsonObject]:
         values = [
             _filetime_observation(
                 "created",
@@ -2234,8 +2230,8 @@ class WindowsBackend(PlatformBackend):
     def _capture_security(
         self,
         fd: int,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         include_sacl = request.policy.capture_system_acl
         try:
@@ -2340,7 +2336,7 @@ class WindowsBackend(PlatformBackend):
         result.coverage["ownership"] = "complete" if capture.owner is not None else "partial"
 
     @staticmethod
-    def _security_failure(exc: OSError, result: NativeCollection) -> None:
+    def _security_failure(exc: OSError, result: NativeCapture) -> None:
         error = int(getattr(exc, "winerror", exc.errno or 0))
         result.coverage.update(
             {
@@ -2388,8 +2384,8 @@ class WindowsBackend(PlatformBackend):
     def _capture_backup_streams(
         self,
         fd: int,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         try:
             streams = self.api.backup_streams(fd, request)
@@ -2526,7 +2522,7 @@ class WindowsBackend(PlatformBackend):
         self,
         stream: BackupStreamCapture,
         *,
-        request: FileStateObservationRequest,
+        request: NativeCaptureRequest,
         kind: str,
         category: str,
         name: str,
@@ -2567,9 +2563,7 @@ class WindowsBackend(PlatformBackend):
             row["kind_uri"] = kind_uri
         return row
 
-    def _parse_ea_stream(
-        self, data: bytes, request: FileStateObservationRequest
-    ) -> list[JsonObject]:
+    def _parse_ea_stream(self, data: bytes, request: NativeCaptureRequest) -> list[JsonObject]:
         rows: list[JsonObject] = []
         position = 0
         agent_id = request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID
@@ -2654,8 +2648,8 @@ class WindowsBackend(PlatformBackend):
     @staticmethod
     def _capture_file_flags(
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         attributes = int(stat.extras.get("file_attributes", 0))
         data = {
@@ -2689,8 +2683,8 @@ class WindowsBackend(PlatformBackend):
         self,
         fd: int,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         try:
             observed = self.api.allocated_ranges(
@@ -2767,8 +2761,8 @@ class WindowsBackend(PlatformBackend):
         self,
         fd: int,
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         agent_id = request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID
         complete = True
@@ -2986,8 +2980,8 @@ class WindowsBackend(PlatformBackend):
     @staticmethod
     def _capture_native_stat(
         stat: NativeStat,
-        request: FileStateObservationRequest,
-        result: NativeCollection,
+        request: NativeCaptureRequest,
+        result: NativeCapture,
     ) -> None:
         data = {
             "volume_serial_number": str(int(stat.extras.get("volume_serial_number", 0))),
@@ -3048,7 +3042,7 @@ class WindowsBackend(PlatformBackend):
         stat: NativeStat,
         path: str,
         volume: WindowsVolumeInfo,
-        request: FileStateObservationRequest,
+        request: NativeCaptureRequest,
     ) -> JsonObject:
         os_info_raw = dict(self.api.os_information())
         host: JsonObject = {
@@ -3151,8 +3145,8 @@ class WindowsBackend(PlatformBackend):
         }
 
 
-class WindowsFileStateObserver(DescriptorFileStateObserver):
-    """Archive-level Riverhog provenance observer for Windows 11 25H2/26H1 and later."""
+class WindowsProvenanceObserver(NativeFileObserver):
+    """Canonical descriptor observation with the Windows native contract."""
 
     def __init__(
         self,
@@ -3160,7 +3154,20 @@ class WindowsFileStateObserver(DescriptorFileStateObserver):
         native: WindowsNativeAPI | Any | None = None,
         enforce_platform: bool = True,
     ) -> None:
-        super().__init__(WindowsBackend(native=native, enforce_platform=enforce_platform))
+        super().__init__(CONTRACT_BINDING, PLATFORM_FAMILY)
+        self.backend = WindowsBackend(native=native, enforce_platform=enforce_platform)
+
+    def source(
+        self, path: PathInput, *, host_id: str, policy: NativeCapturePolicy | None = None
+    ) -> NativeFileSource:
+        return NativeFileSource(
+            path,
+            backend=self.backend,
+            contract=CONTRACT_BINDING,
+            native_schema_id="https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-native-capture.json",
+            host_id=host_id,
+            policy=policy,
+        )
 
 
 OBSERVER_BINDING = ProvenanceObserverBinding(
@@ -3168,5 +3175,5 @@ OBSERVER_BINDING = ProvenanceObserverBinding(
     contract_provider="a-riverhog-windows-provenance-contract-lib",
     contract_id=CONTRACT_BINDING.contract_id,
     contract_sha256=CONTRACT_BINDING.contract_sha256,
-    factory=WindowsFileStateObserver,
+    factory=WindowsProvenanceObserver,
 )

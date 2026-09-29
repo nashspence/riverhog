@@ -1,95 +1,61 @@
 from __future__ import annotations
 
-import json
+import copy
+import hashlib
 from pathlib import Path
 
-import riverhog_provenance.schema as provenance_schema
-from a_riverhog_linux_provenance_observer import LinuxFileStateObserver
+import pytest
+from a_riverhog_linux_provenance_contract_lib import CONTRACT_BINDING
+from a_riverhog_linux_provenance_observer import LinuxProvenanceObserver
 from riverhog_provenance import (
-    FileStateObservationRequest,
+    create_journal,
+    parse_journal,
     validate_entry_document,
+    validate_graph,
     validate_graph_fragment,
+    validate_journal,
 )
-from riverhog_provenance.common import canonical_json
+from riverhog_provenance_contracts import ContractCatalog, canonical_document
 
 
-def test_assertion_entry_template_validates_at_schema_level(tmp_path: Path, urn_factory) -> None:
+def _result(tmp_path: Path, urn_factory):
     payload = tmp_path / "file"
     payload.write_bytes(b"abc")
-    result = LinuxFileStateObserver().observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    validate_graph_fragment(result.graph_fragment())
-    entry = result.make_assertion_entry(
-        journal_id=urn_factory(),
-        sequence=3,
-        previous_entry_id=urn_factory(),
-        previous_entry_json_sha256="0" * 64,
-        previous_sequence=2,
-    )
-    assert entry["entry_kind"] == "assertion"
-    assert entry["sequence"] == "3"
-    assert entry["body"] == result.assertion_body()
-    validate_entry_document(entry)
-    encoded = canonical_json(entry)
-    assert json.loads(encoded) == entry
+    observer = LinuxProvenanceObserver()
+    return observer.observe(observer.source(payload, host_id=urn_factory()))
 
 
-def test_schema_validators_are_reused(tmp_path: Path, urn_factory) -> None:
-    payload = tmp_path / "file"
-    payload.write_bytes(b"abc")
-    result = LinuxFileStateObserver().observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    entry = result.make_assertion_entry(
-        journal_id=urn_factory(),
-        sequence=3,
-        previous_entry_id=urn_factory(),
-        previous_entry_json_sha256="0" * 64,
-        previous_sequence=2,
-    )
-
-    provenance_schema._journal_entry_validator.cache_clear()
-    provenance_schema._graph_fragment_validator.cache_clear()
-    provenance_schema._observer_validators.cache_clear()
-    validate_entry_document(entry)
-    validate_entry_document(entry)
-    validate_graph_fragment(result.graph_fragment())
-    validate_graph_fragment(result.graph_fragment())
-
-    assert provenance_schema._journal_entry_validator.cache_info().misses == 1
-    assert provenance_schema._journal_entry_validator.cache_info().hits == 1
-    assert provenance_schema._graph_fragment_validator.cache_info().misses == 1
-    assert provenance_schema._graph_fragment_validator.cache_info().hits == 1
-    assert provenance_schema._observer_validators.cache_info().misses == 1
-    assert provenance_schema._observer_validators.cache_info().hits >= 1
+def test_native_graph_is_pinned_and_journaled(tmp_path: Path, urn_factory) -> None:
+    result = _result(tmp_path, urn_factory)
+    catalog = ContractCatalog((CONTRACT_BINDING,))
+    graph = result.graph_fragment()
+    validate_graph_fragment(graph)
+    validate_graph(graph, catalog=catalog)
+    raw = create_journal(graph, recorded_by_agent_id=result.observer_agent_id, catalog=catalog)
+    frame = parse_journal(raw)[0]
+    validate_entry_document(frame.document)
+    assert frame.document["body"]["assertions"] == graph
+    assert validate_journal(raw, catalog=catalog).journal_id == frame.document["journal_id"]
+    assert canonical_document(frame.document) == frame.json_bytes
 
 
 def test_observer_does_not_claim_payload_format(tmp_path: Path, urn_factory) -> None:
     payload = tmp_path / "misleading.jpg"
     payload.write_bytes(b"not actually a JPEG")
-    result = LinuxFileStateObserver().observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    content = result.file_state["content"]
-    assert set(content) == {"size_bytes", "digests"}
-    assert "format" not in result.file_state
+    observer = LinuxProvenanceObserver()
+    result = observer.observe(observer.source(payload, host_id=urn_factory()))
+    assert set(result.observation["content"]) == {"size_bytes", "digests"}
+    assert "format" not in result.observation
+    assert "format" not in result.artifact
 
 
-def test_policy_extension_is_digest_bound(tmp_path: Path, urn_factory) -> None:
-    import copy
-
-    import pytest
-
-    payload = tmp_path / "bound"
-    payload.write_bytes(b"bound")
-    result = LinuxFileStateObserver().observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    fragment = copy.deepcopy(result.graph_fragment())
-    policy = next(
-        item for item in fragment["extensions"] if item["property"].endswith("/observation-policy")
-    )
-    policy["value"]["data"]["hash_chunk_bytes"] += 1
-    with pytest.raises(ValueError, match="configuration digest"):
-        validate_graph_fragment(fragment)
+def test_pinned_native_profile_rejects_modified_contract_digest(
+    tmp_path: Path, urn_factory
+) -> None:
+    result = _result(tmp_path, urn_factory)
+    graph = copy.deepcopy(result.graph_fragment())
+    profile = graph["descriptions"][0]["profiles"][0]
+    assert profile["profile"]["contract_sha256"] == CONTRACT_BINDING.contract_sha256
+    profile["profile"]["contract_sha256"] = hashlib.sha256(b"wrong").hexdigest()
+    with pytest.raises(ValueError, match="profile|contract"):
+        validate_graph(graph, catalog=ContractCatalog((CONTRACT_BINDING,)))

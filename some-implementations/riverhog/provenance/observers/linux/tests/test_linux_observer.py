@@ -12,28 +12,37 @@ from a_riverhog_linux_provenance_observer import (
     FS_IOC_FSGETXATTR,
     FSXATTR_STRUCT_SIZE,
     LinuxBackend,
-    LinuxFileStateObserver,
+    LinuxProvenanceObserver,
     _portable_mount_field,
 )
-from riverhog_provenance import (
-    FileStateObservationRequest,
-    ObservationPolicy,
-    PayloadBindingRequest,
+from riverhog_provenance import ObservationRequest, validate_graph_fragment
+from riverhog_provenance.native_capture import (
+    NativeCapture,
+    NativeCapturePolicy,
+    NativeCaptureRequest,
+    NativeStat,
     SymlinkRefusedError,
-    UnstableFileError,
-    prepare_file_provenance,
-    validate_graph_fragment,
 )
-from riverhog_provenance.model import NativeCollection, NativeStat
 
 pytestmark = pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux only")
 
 
-def _observer() -> LinuxFileStateObserver:
-    return LinuxFileStateObserver()
+def _observer() -> LinuxProvenanceObserver:
+    return LinuxProvenanceObserver()
 
 
-def test_live_linux_observation_is_riverhog_provenance_valid(tmp_path: Path, urn_factory) -> None:
+def _observe(path: Path | bytes, host_id: str, *, policy: NativeCapturePolicy | None = None):
+    observer = _observer()
+    return observer.observe(observer.source(path, host_id=host_id, policy=policy))
+
+
+def _native_data(result):
+    return result.observation["profiles"][0]["data"]
+
+
+def test_live_linux_observation_is_canonical_and_measures_all_bytes(
+    tmp_path: Path, urn_factory
+) -> None:
     payload = tmp_path / "payload.bin"
     content = b"opaque primary bytes\x00\xff\n"
     payload.write_bytes(content)
@@ -43,71 +52,41 @@ def test_live_linux_observation_is_riverhog_provenance_valid(tmp_path: Path, urn
     except OSError:
         pass
 
-    result = _observer().observe(
-        FileStateObservationRequest(
-            path=payload,
-            lineage_id=urn_factory(),
-            host_id=urn_factory(),
-            payload_binding=PayloadBindingRequest(),
-            policy=ObservationPolicy(second_content_hash=True),
-        )
+    result = _observe(payload, urn_factory())
+    graph = result.graph_fragment()
+    validate_graph_fragment(graph)
+    assert graph["states"][0]["extent"] == {"kind": "whole_object"}
+    assert result.observation["content"] == {
+        "size_bytes": str(len(content)),
+        "digests": [{"algorithm": "sha-256", "value": hashlib.sha256(content).hexdigest()}],
+    }
+    assert result.observation["consistency"]["level"] == "verified_unchanged"
+    assert result.observation["profiles"][0]["profile"]["schema_id"].endswith(
+        "/linux-native-capture.json"
     )
-    fragment = result.graph_fragment()
-    validate_graph_fragment(fragment)
-
-    state = result.file_state
-    assert state["content"]["size_bytes"] == str(len(content))
-    assert state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
-    assert state["filesystem_metadata"]["access"]["posix_mode"] == "0644"
-    assert result.capture["consistency"] == "verified_unchanged"
-    assert result.capture["outcome"] == "success"
-    assert result.capture["coverage"]["content_fixity"] == "complete"
-    assert result.capture["coverage"]["basic_filesystem"] == "complete"
-    assert result.payload_binding is not None
+    assert _native_data(result)["access"]["posix_mode"] == "0644"
+    assert graph["activities"][0]["outcome"] == "success"
+    assert len(graph["locator_bindings"]) == 1
+    assert graph["locator_bindings"][0]["target"] == {
+        "object_id": result.state_id,
+        "object_type": "state",
+        "scope": "local",
+    }
+    assert "path" not in result.artifact
+    assert "path" not in result.occurrence
 
 
-def test_auto_linux_observation_uses_the_linux_abi_across_distributions(
-    tmp_path: Path, monkeypatch
-) -> None:
-    import a_riverhog_linux_provenance_observer as linux_module
-
-    payload = tmp_path / "container-payload"
-    payload.write_bytes(b"containerized Stove0 custody")
-    monkeypatch.setattr(
-        linux_module,
-        "_read_os_release",
-        lambda: {"ID": "debian", "NAME": "Debian GNU/Linux"},
-    )
-
-    prepared = prepare_file_provenance(
-        payload,
-        relative_path="container-payload",
-        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
-        agent_name="stove0-server",
-        agent_version="1.0.0",
-        observer=_observer(),
-    )
-
-    assert prepared.source == "captured"
-    assert prepared.binding.status == "captured"
-    assert prepared.binding.bytes == len(b"containerized Stove0 custody")
-
-
-def test_linux_non_utf8_filename_round_trips(tmp_path: Path, urn_factory) -> None:
-    directory = os.fsencode(tmp_path)
-    path = directory + b"/name-\xff.bin"
+def test_linux_raw_non_utf8_filename_is_preserved(tmp_path: Path, urn_factory) -> None:
+    path = os.fsencode(tmp_path) + b"/name-\xff.bin"
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:
         os.write(fd, b"data")
     finally:
         os.close(fd)
-    result = _observer().observe(
-        FileStateObservationRequest(path=path, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    locator = result.file_state["locator"]
-    assert locator["text_role"] == "display"
-    assert base64.b64decode(locator["bytes"]["data"]) == os.path.abspath(path)
-    validate_graph_fragment(result.graph_fragment())
+    result = _observe(path, urn_factory())
+    locator = result.graph_fragment()["locator_bindings"][0]["locator"]
+    assert locator["name"]["encoding"] == "posix-bytes"
+    assert base64.b64decode(locator["name"]["bytes"]["data"]) == os.path.abspath(path)
 
 
 def test_symlink_final_component_is_refused(tmp_path: Path, urn_factory) -> None:
@@ -116,134 +95,35 @@ def test_symlink_final_component_is_refused(tmp_path: Path, urn_factory) -> None
     link = tmp_path / "link"
     link.symlink_to(target)
     with pytest.raises(SymlinkRefusedError):
-        _observer().observe(
-            FileStateObservationRequest(path=link, lineage_id=urn_factory(), host_id=urn_factory())
-        )
-
-
-def test_replacement_binding_emits_unbind_and_bind(tmp_path: Path, urn_factory) -> None:
-    payload = tmp_path / "state.dat"
-    payload.write_bytes(b"state")
-    old_binding = urn_factory()
-    result = _observer().observe(
-        FileStateObservationRequest(
-            path=payload,
-            lineage_id=urn_factory(),
-            host_id=urn_factory(),
-            payload_binding=PayloadBindingRequest(replaces_binding_id=old_binding),
-        )
-    )
-    assert [item["operation"] for item in result.payload_bindings] == ["unbind", "bind"]
-    unbind, bind = result.payload_bindings
-    assert unbind["replaces_binding_id"] == old_binding
-    assert bind["replaces_binding_id"] == unbind["id"]
-    validate_graph_fragment(result.graph_fragment())
+        _observe(link, urn_factory())
 
 
 def test_regular_file_only(tmp_path: Path, urn_factory) -> None:
-    from riverhog_provenance import UnsupportedFileTypeError
+    from riverhog_provenance.native_capture import UnsupportedFileTypeError
 
     with pytest.raises(UnsupportedFileTypeError):
-        _observer().observe(
-            FileStateObservationRequest(
-                path=tmp_path, lineage_id=urn_factory(), host_id=urn_factory()
-            )
-        )
+        _observe(tmp_path, urn_factory())
 
 
-def test_locator_authority_is_environment_host_entity(tmp_path: Path, urn_factory) -> None:
-    payload = tmp_path / "authority.dat"
-    payload.write_bytes(b"authority")
-    stable_host_authority = urn_factory()
-    result = _observer().observe(
-        FileStateObservationRequest(
-            path=payload,
-            lineage_id=urn_factory(),
-            host_id=stable_host_authority,
-        )
+def test_native_policy_is_separate_from_canonical_observation_policy(
+    tmp_path: Path, urn_factory
+) -> None:
+    payload = tmp_path / "policy.dat"
+    payload.write_bytes(b"policy")
+    observer = _observer()
+    result = observer.observe(
+        observer.source(
+            payload, host_id=urn_factory(), policy=NativeCapturePolicy(capture_xattrs=False)
+        ),
+        ObservationRequest(),
     )
-    host = result.environment["host"]
-    assert result.file_state["locator"]["authority_id"] == host["id"]
-    mount_locator = result.environment["filesystem"].get("mount_locator")
-    if mount_locator is not None:
-        assert mount_locator["authority_id"] == host["id"]
-    assert host["id"] != stable_host_authority
-    assert {
-        item["value"] for item in host["identifiers"] if item["scheme"] == "riverhog-host-authority"
-    } == {stable_host_authority}
+    assert _native_data(result)["coverage"]["extended_attributes"] == "not_requested"
+    assert result.observation["coverage"][0]["status"] == "complete"
 
 
 def test_fsgetxattr_ioctl_uses_exact_linux_fsxattr_size() -> None:
-    # struct fsxattr is five u32 values followed by eight pad bytes.  The ioctl
-    # request embeds that exact 28-byte ABI size in bits 16..29.
     assert FSXATTR_STRUCT_SIZE == 28
     assert (FS_IOC_FSGETXATTR >> 16) & 0x3FFF == FSXATTR_STRUCT_SIZE
-
-
-def test_linux_acl_external_evidence_is_not_silently_empty(tmp_path: Path, urn_factory) -> None:
-    payload = tmp_path / "acl.dat"
-    payload.write_bytes(b"acl")
-    result = _observer().observe(
-        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
-    )
-    acl_rows = [
-        row
-        for row in result.file_state["filesystem_metadata"]["native_metadata"]
-        if row["kind"] == "acl" and row["source"]["api"] == "acl_get_fd(3)"
-    ]
-    if acl_rows:
-        assert int(acl_rows[0]["observed_byte_length"]) > 0
-        assert int(acl_rows[0]["value"]["byte_length"]) > 0
-
-
-def test_primary_read_length_mismatch_is_never_accepted_as_stable(
-    tmp_path: Path, urn_factory, monkeypatch
-) -> None:
-    import riverhog_provenance.common as common
-
-    payload = tmp_path / "short-read.dat"
-    payload.write_bytes(b"abcdef")
-    real_hash_fd = common.hash_fd
-
-    def short_hash(fd: int, *, chunk_bytes: int):
-        digest, _ = real_hash_fd(fd, chunk_bytes=chunk_bytes)
-        return digest, 5
-
-    monkeypatch.setattr(common, "hash_fd", short_hash)
-    with pytest.raises(UnstableFileError, match="primary_read_size"):
-        _observer().observe(
-            FileStateObservationRequest(
-                path=payload,
-                lineage_id=urn_factory(),
-                host_id=urn_factory(),
-            )
-        )
-
-
-def test_non_strict_mode_still_rejects_incomplete_content_fixity(
-    tmp_path: Path, urn_factory, monkeypatch
-) -> None:
-    import riverhog_provenance.common as common
-
-    payload = tmp_path / "partial-short-read.dat"
-    payload.write_bytes(b"abcdef")
-    real_hash_fd = common.hash_fd
-
-    def short_hash(fd: int, *, chunk_bytes: int):
-        digest, _ = real_hash_fd(fd, chunk_bytes=chunk_bytes)
-        return digest, 5
-
-    monkeypatch.setattr(common, "hash_fd", short_hash)
-    with pytest.raises(UnstableFileError, match="primary_read_size"):
-        _observer().observe(
-            FileStateObservationRequest(
-                path=payload,
-                lineage_id=urn_factory(),
-                host_id=urn_factory(),
-                policy=ObservationPolicy(strict_consistency=False),
-                payload_binding=PayloadBindingRequest(),
-            )
-        )
 
 
 class _ACLXattrOnlyNative:
@@ -260,18 +140,13 @@ class _ACLXattrOnlyNative:
 
 
 def test_acl_xattr_counts_as_access_control_evidence_without_libacl(urn_factory) -> None:
-    request = FileStateObservationRequest(
-        path="unused", lineage_id=urn_factory(), host_id=urn_factory()
-    )
-    backend = LinuxBackend(
-        native=_ACLXattrOnlyNative(),
-        enforce_platform=False,
-    )
-    collection = NativeCollection()
-    backend._capture_xattrs(0, request, collection)
-    backend._capture_acl(0, request, collection)
-    assert collection.coverage["access_control"] == "complete"
-    assert collection.native_metadata[0]["kind"] == "acl"
+    request = NativeCaptureRequest(host_id=urn_factory())
+    backend = LinuxBackend(native=_ACLXattrOnlyNative(), enforce_platform=False)
+    capture = NativeCapture()
+    backend._capture_xattrs(0, request, capture)
+    backend._capture_acl(0, request, capture)
+    assert capture.coverage["access_control"] == "complete"
+    assert capture.native_metadata[0]["kind"] == "acl"
 
 
 def test_mountinfo_surrogate_bytes_get_portable_lossless_display() -> None:
@@ -291,29 +166,21 @@ class _LargeXattrNative:
 
 
 def test_policy_not_retained_xattr_does_not_make_enumeration_partial(urn_factory) -> None:
-    request = FileStateObservationRequest(
-        path="unused",
-        lineage_id=urn_factory(),
+    request = NativeCaptureRequest(
         host_id=urn_factory(),
-        policy=ObservationPolicy(inline_native_value_bytes=4, maximum_native_value_bytes=8),
+        policy=NativeCapturePolicy(inline_native_value_bytes=4, maximum_native_value_bytes=8),
     )
-    backend = LinuxBackend(
-        native=_LargeXattrNative(),
-        enforce_platform=False,
-    )
-    collection = NativeCollection()
-    backend._capture_xattrs(0, request, collection)
-    assert collection.coverage["extended_attributes"] == "complete"
-    assert collection.native_metadata[0]["capture_status"] == "not_retained"
+    backend = LinuxBackend(native=_LargeXattrNative(), enforce_platform=False)
+    capture = NativeCapture()
+    backend._capture_xattrs(0, request, capture)
+    assert capture.coverage["extended_attributes"] == "complete"
+    assert capture.native_metadata[0]["capture_status"] == "not_retained"
 
 
 def test_unexpected_getflags_failure_is_partial_not_complete(urn_factory, monkeypatch) -> None:
     import a_riverhog_linux_provenance_observer as linux_module
 
-    backend = LinuxBackend(
-        native=_ACLXattrOnlyNative(),
-        enforce_platform=False,
-    )
+    backend = LinuxBackend(native=_ACLXattrOnlyNative(), enforce_platform=False)
     stat_snapshot = NativeStat(
         device=1,
         inode=2,
@@ -325,25 +192,29 @@ def test_unexpected_getflags_failure_is_partial_not_complete(urn_factory, monkey
         atime_ns=1,
         mtime_ns=2,
         ctime_ns=3,
-        extras={
-            "statx_available": True,
-            "statx_attributes": 0,
-            "statx_attributes_mask": 0,
-        },
+        extras={"statx_available": True, "statx_attributes": 0, "statx_attributes_mask": 0},
     )
 
     def denied(*args, **kwargs):
         raise OSError(errno.EACCES, os.strerror(errno.EACCES))
 
     monkeypatch.setattr(linux_module.fcntl, "ioctl", denied)
-    collection = NativeCollection()
+    capture = NativeCapture()
     backend._capture_file_flags(
-        0,
-        stat_snapshot,
-        request=FileStateObservationRequest(
-            path="unused", lineage_id=urn_factory(), host_id=urn_factory()
-        ),
-        result=collection,
+        0, stat_snapshot, request=NativeCaptureRequest(host_id=urn_factory()), result=capture
     )
-    assert collection.coverage["file_flags"] == "partial"
-    assert collection.diagnostics[0]["severity"] == "error"
+    assert capture.coverage["file_flags"] == "partial"
+    assert capture.diagnostics[0]["severity"] == "error"
+
+
+def test_native_metadata_budget_rejects_oversize_without_partial_assertion() -> None:
+    from riverhog_provenance.native_capture import (
+        BoundedNativeMetadata,
+        NativeObservationError,
+    )
+
+    rows = BoundedNativeMetadata(maximum_bytes=32)
+    rows.append({"kind": "a"})
+    with pytest.raises(NativeObservationError, match="bounded capture budget"):
+        rows.append({"value": "x" * 64})
+    assert rows == [{"kind": "a"}]

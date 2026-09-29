@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-native-capture.json",
+  "title": "windows native descriptor capture evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "object_kind": {
+      "const": "regular_file"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "timestamps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "access": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "native_identifiers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "native_metadata": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "extension_details": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "noatime_effective": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "object_kind",
+    "environment",
+    "timestamps",
+    "access",
+    "native_identifiers",
+    "native_metadata",
+    "coverage",
+    "diagnostics",
+    "extension_details",
+    "noatime_effective"
+  ]
+}
