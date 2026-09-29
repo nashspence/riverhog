@@ -218,3 +218,21 @@ def test_native_metadata_budget_rejects_oversize_without_partial_assertion() -> 
     with pytest.raises(NativeObservationError, match="bounded capture budget"):
         rows.append({"value": "x" * 64})
     assert rows == [{"kind": "a"}]
+
+
+def test_selected_provider_observes_native_file_with_exact_contract(
+    tmp_path: Path, urn_factory
+) -> None:
+    from riverhog_provenance import resolve_provenance_observer
+
+    payload = tmp_path / "selected.dat"
+    payload.write_bytes(b"selected")
+    selected = resolve_provenance_observer("a-riverhog-linux-provenance-observer")
+    result = selected.observe_native_file(payload, host_id=urn_factory())
+    detail = result.graph_fragment()["activities"][0]["details"][0]["data"]
+    assert detail["provider"] == selected.name
+    assert detail["contract"]["contract_sha256"] == selected.contract.contract_sha256
+    assert result.catalog.validate_profile(
+        result.observation["profiles"][0]["profile"],
+        result.observation["profiles"][0]["data"],
+    )

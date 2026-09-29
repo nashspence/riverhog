@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.metadata
+import os
 import re
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
@@ -21,6 +22,7 @@ from riverhog_provenance_contracts import (
 from .graph import validate_graph
 from .interface import ObservationSource, StateObserver
 from .model import ObservationRequest, ObservationResult
+from .native_capture import NativeCapturePolicy
 
 PROVENANCE_OBSERVER_ENTRY_POINT_GROUP = "riverhog.provenance-observers"
 PROVENANCE_OBSERVER_BINDING_FORMAT = "riverhog-provenance-observer-binding/v1"
@@ -92,6 +94,31 @@ class ResolvedProvenanceObserver:
             observer_reference=self.observer_reference(),
             validator=self._validator,
         )
+
+    def observe_native_file(
+        self,
+        path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+        *,
+        host_id: str,
+        native_policy: NativeCapturePolicy | None = None,
+        request: ObservationRequest | None = None,
+    ) -> ObservationResult:
+        """Run the selected native adapter and validate its exact provider binding."""
+
+        observer = self.binding.factory()
+        if not isinstance(observer, StateObserver):
+            raise TypeError("selected native observer does not implement StateObserver")
+        source_factory = getattr(observer, "source", None)
+        if not callable(source_factory):
+            raise TypeError("selected observer has no native file source adapter")
+        source = source_factory(path, host_id=host_id, policy=native_policy)
+        if not isinstance(source, ObservationSource):
+            raise TypeError("selected native adapter returned an invalid source")
+        return _ContractValidatedObserver(
+            observer,
+            observer_reference=self.observer_reference(),
+            validator=self._validator,
+        ).observe(source, request)
 
     def observer_reference(self) -> dict[str, object]:
         """Return the exact implementation and contract identity retained at capture."""
