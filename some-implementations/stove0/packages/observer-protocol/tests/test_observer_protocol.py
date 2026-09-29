@@ -9,12 +9,18 @@ import pytest
 import stove0_protocol
 from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
+    CollectionRootIdentityRef,
     ContentObservationRequest,
+    ContentObservationRequestPayload,
     JsonSchemaValidationProfile,
     ObserverContract,
     ObserverContractPayload,
+    ObserverContractSupport,
+    ObserverDescriptor,
+    ObserverDescriptorPayload,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
+    WorkArtifactSubject,
     validate_observation_request,
 )
 from stove0_protocol import models as shared_models
@@ -82,6 +88,81 @@ def test_observer_contract_models_are_importable_without_runtime_support() -> No
         "assert not loaded, sorted(loaded)\n"
     )
     subprocess.run([sys.executable, "-c", code], check=True)
+
+
+def test_observer_read_authority_is_explicit_and_contract_bound() -> None:
+    shared = {
+        "id": "fixture.observation/v1",
+        "options_schema": JsonSchemaValidationProfile.from_schema(
+            "fixture.options/v1", {"type": "object"}
+        ),
+        "facts_schema": JsonSchemaValidationProfile.from_schema(
+            "fixture.facts/v1", {"type": "object"}
+        ),
+        "facts_semantics": JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
+    }
+    payload = ObserverContract.seal(
+        ObserverContractPayload(**shared, read_actions=("read-inputs",))
+    )
+    provenance = ObserverContract.seal(
+        ObserverContractPayload(**shared, read_actions=("read-provenance",))
+    )
+    assert payload.contract_sha256 != provenance.contract_sha256
+    assert ObserverContractSupport.from_contract(provenance).read_actions == (
+        "read-provenance",
+    )
+    with pytest.raises(ValueError):
+        ObserverContractPayload(
+            **shared, read_actions=("read-inputs", "read-provenance")
+        )
+    descriptor = ObserverDescriptor.seal(
+        ObserverDescriptorPayload(
+            implementation_id="fixture-observer/v1",
+            implementation_version="1",
+            source_revision="fixture",
+            image_id="sha256:" + "a" * 64,
+            contracts=(ObserverContractSupport.from_contract(provenance),),
+        )
+    )
+    subject = WorkArtifactSubject(
+        id="b" * 64,
+        role="primary",
+        collection=CollectionRootIdentityRef(
+            collection_id="1",
+            archive_root_sha256="c" * 64,
+            content_identity="d" * 64,
+        ),
+        artifact_id="e" * 64,
+        bytes="1",
+        sha256="f" * 64,
+    )
+    correct = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id="1" * 64,
+            observer_registration_id="fixture",
+            observer_descriptor_sha256=descriptor.descriptor_sha256,
+            observer_contract_id=provenance.id,
+            observer_contract_sha256=provenance.contract_sha256,
+            read_actions=("read-provenance",),
+            subjects=(subject,),
+        )
+    )
+    assert validate_observation_request(correct, descriptor).read_actions == (
+        "read-provenance",
+    )
+    forged = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id=correct.work_id,
+            observer_registration_id=correct.observer_registration_id,
+            observer_descriptor_sha256=correct.observer_descriptor_sha256,
+            observer_contract_id=correct.observer_contract_id,
+            observer_contract_sha256=correct.observer_contract_sha256,
+            read_actions=("read-inputs",),
+            subjects=correct.subjects,
+        )
+    )
+    with pytest.raises(ValueError, match="read authority"):
+        validate_observation_request(forged, descriptor)
 
 
 def test_observer_author_surface_reuses_one_model_implementation() -> None:

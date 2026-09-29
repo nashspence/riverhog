@@ -159,6 +159,8 @@ class ContentObservationRuntime:
         subjects: Sequence[WorkArtifactSubject] | None = None,
         **kwargs: Any,
     ) -> ClaimedRetrieval:
+        if "read-inputs" not in self.request.read_actions:
+            raise PermissionError("observer request has no payload read authority")
         available = dict(self.subjects())
         selected = tuple(subjects or self.request.subjects)
         if len({subject.id for subject in selected}) != len(selected):

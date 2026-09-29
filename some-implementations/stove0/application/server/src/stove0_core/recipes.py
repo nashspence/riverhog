@@ -147,6 +147,7 @@ class RecipePlanner:
                             observer_descriptor_sha256=descriptor.descriptor_sha256,
                             observer_contract_id=support.contract_id,
                             observer_contract_sha256=support.contract_sha256,
+                            read_actions=support.read_actions,
                             subjects=batch,
                             options=use.options,
                             timeout_seconds=use.timeout_seconds,

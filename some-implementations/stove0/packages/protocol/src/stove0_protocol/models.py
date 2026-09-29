@@ -366,6 +366,9 @@ JSON_SCHEMA_ONLY_SEMANTIC_PROFILE = SemanticValidationProfile.seal(
 
 class ObserverContractPayload(Stove0ProtocolModel):
     id: SemanticId
+    read_actions: tuple[Literal["read-inputs", "read-provenance"], ...] = Field(
+        default=("read-inputs",), min_length=1, max_length=1
+    )
     options_schema: JsonSchemaValidationProfile
     facts_schema: JsonSchemaValidationProfile
     facts_semantics: SemanticValidationProfile
@@ -401,6 +404,9 @@ class ObserverContract(ObserverContractPayload):
 class ObserverContractSupport(Stove0ProtocolModel):
     contract_id: SemanticId
     contract_sha256: Sha256
+    read_actions: tuple[Literal["read-inputs", "read-provenance"], ...] = Field(
+        default=("read-inputs",), min_length=1, max_length=1
+    )
     options_schema: JsonSchemaValidationProfile
     facts_schema: JsonSchemaValidationProfile
     facts_semantics: SemanticValidationProfile
@@ -417,6 +423,7 @@ class ObserverContractSupport(Stove0ProtocolModel):
         return cls(
             contract_id=value.id,
             contract_sha256=value.contract_sha256,
+            read_actions=value.read_actions,
             options_schema=value.options_schema,
             facts_schema=value.facts_schema,
             facts_semantics=value.facts_semantics,
@@ -473,6 +480,9 @@ class ContentObservationRequestPayload(Stove0ProtocolModel):
     observer_descriptor_sha256: Sha256
     observer_contract_id: SemanticId
     observer_contract_sha256: Sha256
+    read_actions: tuple[Literal["read-inputs", "read-provenance"], ...] = Field(
+        default=("read-inputs",), min_length=1, max_length=1
+    )
     subjects: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
     options: dict[str, JsonValue] = Field(default_factory=dict)
     timeout_seconds: int = Field(default=300, ge=1, le=86400)
