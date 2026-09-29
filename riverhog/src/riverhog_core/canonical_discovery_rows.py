@@ -122,6 +122,8 @@ def core_edges(row: Mapping[str, Any]) -> tuple[CoreEdge, ...]:
             CoreEdge("context:" + item["role"], item["context_id"], "context")
             for item in row.get("contexts", ())
         )
+    if kind == "extension" and row["value"]["type"] == "reference":
+        edges.append(_edge_from_reference("value", row["value"]["value"]))
     return tuple(edges)
 
 

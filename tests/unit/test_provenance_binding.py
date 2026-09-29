@@ -4,6 +4,7 @@ import hashlib
 from io import BytesIO
 
 import pytest
+from riverhog_core.canonical_discovery_relevance import member_relevance, relevance_row_keys
 from riverhog_core.provenance_binding import verify_member_binding
 from riverhog_protocol.artifact_identity import ArtifactMemberIdentityDocument
 from riverhog_protocol.provenance_transport import (
@@ -145,3 +146,48 @@ def test_unhinted_canonical_binding_is_valid() -> None:
         ).materialization_hint
         is None
     )
+
+
+def test_member_discovery_relevance_does_not_import_unrelated_co_resident_facts() -> None:
+    member, binding, summary, context_id, _ = _bound()
+    recorder = summary.graph["agents"][0]["id"]
+    unrelated_context = assertion("context", recorder, kind="opaque")
+    unrelated = assertion(
+        "extension",
+        recorder,
+        subject=reference(unrelated_context["id"], "context"),
+        property="urn:test:unrelated",
+        value={"type": "text", "value": "sibling-only"},
+    )
+    updated = append_assertions(
+        b"".join(frame.encoded for frame in summary.frames),
+        {"contexts": [unrelated_context], "extensions": [unrelated]},
+        recorded_by_agent_id=recorder,
+    )
+    summary = validate_journal(updated)
+    binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+        {
+            "artifact_id": member.artifact_id,
+            "journal": summary.anchor,
+            "delivery_association_id": binding.delivery_association_id,
+        }
+    )
+    relevance = member_relevance(
+        member=member,
+        binding=binding,
+        primary=summary,
+        corpus={summary.journal_id: summary},
+        delivery_context_id=context_id,
+    )
+    assert (summary.journal_id, summary.journal_sha256, unrelated["assertion_id"]) not in relevance
+    assert (
+        summary.journal_id,
+        summary.journal_sha256,
+        unrelated_context["assertion_id"],
+    ) not in relevance
+    association = summary.graph_validation.objects[binding.delivery_association_id]
+    assert (
+        "member"
+        in relevance[(summary.journal_id, summary.journal_sha256, association["assertion_id"])]
+    )
+    assert any(scope == "member" for _, scope in relevance_row_keys(relevance))
