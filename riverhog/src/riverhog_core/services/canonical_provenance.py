@@ -9,6 +9,7 @@ from riverhog_canonical_json import format_scalar
 from riverhog_protocol import ArtifactId, CollectionArtifactProvenanceBindingDocument
 from riverhog_protocol.errors import NotFound
 from riverhog_protocol.paths import validate_collection_id
+from riverhog_provenance_contracts import ProvenanceJournalId
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from state_schema import read_snapshot
@@ -148,6 +149,51 @@ class SqlAlchemyCanonicalProvenanceService:
                 session, normalized_id, principal, permission=PROVENANCE_EXPORT
             )
         return self._archives.reader(normalized_id).journal_metadata(journal_id)
+
+    def list_journals(
+        self,
+        collection_id: int,
+        *,
+        page_size: int,
+        after_journal_id: ProvenanceJournalId | None,
+        principal: Principal,
+    ) -> dict[str, Any]:
+        normalized_id = validate_collection_id(collection_id)
+        if type(page_size) is not int or not 1 <= page_size <= 200:
+            raise ValueError("journal page size must be 1 to 200")
+        with read_snapshot(self._session_factory) as session:
+            collection = _authorized_collection(
+                session, normalized_id, principal, permission=PROVENANCE_EXPORT
+            )
+            root_identity = collection.archive_root_sha256
+        headers = self._archives.reader(normalized_id).iter_journal_headers()
+        rows: list[dict[str, str]] = []
+        for journal_id, byte_count, sha256 in headers:
+            if after_journal_id is not None and journal_id <= after_journal_id:
+                continue
+            rows.append(
+                {
+                    "journal_id": journal_id,
+                    "bytes": format_scalar("nonnegative", byte_count),
+                    "sha256": sha256,
+                }
+            )
+            if len(rows) > page_size:
+                break
+        more = len(rows) > page_size
+        selected = rows[:page_size]
+        with read_snapshot(self._session_factory) as session:
+            current = _authorized_collection(
+                session, normalized_id, principal, permission=PROVENANCE_EXPORT
+            )
+            if current.archive_root_sha256 != root_identity:
+                raise NotFound("collection archive root changed during provenance read")
+        return {
+            "collection_id": format_scalar("sequence63", normalized_id),
+            "archive_root_sha256": root_identity,
+            "journals": selected,
+            "next_journal_id": selected[-1]["journal_id"] if more else None,
+        }
 
     def iter_journal_range(
         self,

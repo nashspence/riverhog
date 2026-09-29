@@ -248,6 +248,28 @@ class CanonicalProvenanceArchiveReader:
             raise ProvenanceArchiveReadError("provenance journal is absent")
         return result
 
+    def iter_journal_headers(self) -> Iterator[tuple[str, int, str]]:
+        """Enumerate root-selected journal identities and fixity without payloads."""
+
+        self.scan()
+        previous: str | None = None
+        for document in self._descriptors():
+            if isinstance(document, ProvenanceTerminalDocument):
+                return
+            if document.payload.kind != "journal" or document.journal_id == previous:
+                continue
+            assert document.journal_id is not None
+            assert document.journal_bytes is not None
+            assert document.journal_sha256 is not None
+            previous = document.journal_id
+            yield previous, document.journal_bytes, document.journal_sha256
+
+    def iter_journal_ids(self) -> Iterator[str]:
+        """Enumerate the exact root-selected journal corpus without loading payloads."""
+
+        for journal_id, _bytes, _sha256 in self.iter_journal_headers():
+            yield journal_id
+
     def iter_bindings(self) -> Iterator[dict[str, object]]:
         """Stream exact member-ordered binding pages from the selected archive."""
 

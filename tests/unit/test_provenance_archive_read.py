@@ -119,6 +119,10 @@ def _archive() -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str,
 def test_root_bound_reader_streams_exact_journal_and_member_bindings() -> None:
     reader, _, journal_id, journal_text = _archive()
     assert reader.scan().volume_count == 3
+    assert list(reader.iter_journal_ids()) == [journal_id]
+    assert list(reader.iter_journal_headers()) == [
+        (journal_id, len(journal_text.encode()), hashlib.sha256(journal_text.encode()).hexdigest())
+    ]
     assert reader.journal_metadata(journal_id) == (
         len(journal_text.encode()),
         hashlib.sha256(journal_text.encode()).hexdigest(),
