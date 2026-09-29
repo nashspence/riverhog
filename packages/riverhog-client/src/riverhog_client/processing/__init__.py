@@ -4,6 +4,7 @@ from riverhog_client.processing.models import (
     DerivedCollectionReceipt,
     DerivedCollectionSpec,
 )
+from riverhog_client.processing.provenance import ClaimedProvenance, ProvenanceJournal
 from riverhog_client.processing.reader import (
     ClaimedCollectionApi,
     ClaimedCollectionReader,
@@ -28,6 +29,7 @@ __all__ = [
     "ClaimedArtifact",
     "ClaimedCollectionApi",
     "ClaimedCollectionReader",
+    "ClaimedProvenance",
     "ClaimedRetrieval",
     "ClaimedCollectionRuntime",
     "ClaimedCollectionRuntimeRegistry",
@@ -38,4 +40,5 @@ __all__ = [
     "IncrementalDerivedCollectionWriter",
     "Heartbeat",
     "ProcessingWorkspace",
+    "ProvenanceJournal",
 ]

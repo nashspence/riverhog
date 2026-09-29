@@ -16,6 +16,7 @@ from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
 
 from riverhog_client.processing.models import ClaimedArtifact
+from riverhog_client.processing.provenance import ClaimedProvenance
 
 Heartbeat = Callable[[], None]
 _TERMINAL_RETRIEVAL_STATES = frozenset({"completed", "expired", "failed", "canceled"})
@@ -25,6 +26,28 @@ RiverhogRestorePolicy = Literal["never", "allow"]
 
 class ClaimedCollectionApi(Protocol):
     def get_collection(self, collection_id: CollectionId) -> dict[str, Any]: ...
+
+    def get_collection_artifact_provenance(
+        self, collection_id: CollectionId, artifact_id: ArtifactId
+    ) -> dict[str, Any]: ...
+
+    def list_collection_provenance_journals(
+        self,
+        collection_id: CollectionId,
+        *,
+        page_size: int,
+        after_journal_id: str | None,
+        archive_root_sha256: str | None,
+    ) -> dict[str, Any]: ...
+
+    def stream_collection_provenance_journal(
+        self,
+        collection_id: CollectionId,
+        journal_id: str,
+        *,
+        expected_bytes: int,
+        expected_sha256: str,
+    ) -> AbstractContextManager[Iterator[bytes]]: ...
 
     def get_portable_collection_inventory(
         self,
@@ -164,6 +187,16 @@ class ClaimedCollectionReader:
                 if page.complete:
                     break
                 cursor = page.next_cursor
+
+    def provenance(self, artifact: ClaimedArtifact) -> ClaimedProvenance:
+        if artifact.root not in self.inputs:
+            raise PermissionError("artifact root is outside the processing claim")
+        return ClaimedProvenance(
+            self.api,
+            artifact=artifact,
+            verify_root=lambda: self._verify_root(artifact.root),
+            heartbeat=self.heartbeat or (lambda: None),
+        )
 
     def prepare(
         self,
