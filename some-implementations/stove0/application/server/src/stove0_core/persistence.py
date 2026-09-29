@@ -262,19 +262,19 @@ class _TargetOutputRow(_Base):
     )
     job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     output_id: Mapped[str] = mapped_column(String(160), primary_key=True)
-    output_path: Mapped[str] = mapped_column(String(4096), nullable=False)
+    artifact_id: Mapped[str] = mapped_column(String(64), nullable=False)
     document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     document_json: Mapped[str] = mapped_column(Text, nullable=False)
 
     __table_args__ = (
         CheckConstraint("length(output_id) >= 1", name="ck_stove0_target_outputs_id"),
-        CheckConstraint("length(output_path) >= 1", name="ck_stove0_target_outputs_path"),
+        CheckConstraint("length(artifact_id) = 64", name="ck_stove0_target_outputs_artifact_id"),
         CheckConstraint("document_bytes >= 0", name="ck_stove0_target_outputs_document_bytes"),
         Index(
-            "uq_stove0_target_outputs_path",
+            "uq_stove0_target_outputs_artifact_id",
             "work_id",
             "job_id",
-            "output_path",
+            "artifact_id",
             unique=True,
         ),
     )
@@ -1100,7 +1100,7 @@ class SqlAlchemyStateStore:
                         work_id=work_id,
                         job_id=job_id,
                         output_id=output.id,
-                        output_path=output.path,
+                        artifact_id=output.artifact_id,
                         document_bytes=_encoded_bytes(encoded),
                         document_json=encoded,
                     )
@@ -1382,11 +1382,13 @@ class SqlAlchemyStateStore:
             for row in session.scalars(statement):
                 yield OutputArtifact.model_validate_json(row.document_json)
 
-    def iter_target_outputs_by_path(self, work_id: str, job_id: str) -> Iterator[OutputArtifact]:
+    def iter_target_outputs_by_artifact_id(
+        self, work_id: str, job_id: str
+    ) -> Iterator[OutputArtifact]:
         statement = (
             select(_TargetOutputRow)
             .where(_TargetOutputRow.work_id == work_id, _TargetOutputRow.job_id == job_id)
-            .order_by(_TargetOutputRow.output_path)
+            .order_by(_TargetOutputRow.artifact_id)
             .execution_options(yield_per=100)
         )
         with read_snapshot(self.sessions) as session:
@@ -1463,12 +1465,12 @@ class SqlAlchemyStateStore:
                 for row in session.scalars(statement)
             )
 
-    def target_output_path_page(
+    def target_output_artifact_page(
         self,
         work_id: str,
         job_id: str,
         *,
-        after_path: str | None,
+        after_artifact_id: str | None,
         limit: int,
     ) -> tuple[OutputArtifact, ...]:
         if limit < 1:
@@ -1477,9 +1479,9 @@ class SqlAlchemyStateStore:
             _TargetOutputRow.work_id == work_id,
             _TargetOutputRow.job_id == job_id,
         )
-        if after_path is not None:
-            statement = statement.where(_TargetOutputRow.output_path > after_path)
-        statement = statement.order_by(_TargetOutputRow.output_path).limit(limit)
+        if after_artifact_id is not None:
+            statement = statement.where(_TargetOutputRow.artifact_id > after_artifact_id)
+        statement = statement.order_by(_TargetOutputRow.artifact_id).limit(limit)
         with self.sessions() as session:
             return tuple(
                 OutputArtifact.model_validate_json(row.document_json)

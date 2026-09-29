@@ -390,10 +390,9 @@ def _output_selection(record: WorkRecord, store: WorkStore) -> ArtifactSelection
                     id=item.id,
                     role=item.role,
                     collection=root,
-                    path=item.path,
+                    artifact_id=item.artifact_id,
                     bytes=str(item.bytes),
                     sha256=item.sha256,
-                    media_type=item.media_type,
                 )
             )
             for item in store.iter_target_outputs(record.work_id, status.production.job_id)

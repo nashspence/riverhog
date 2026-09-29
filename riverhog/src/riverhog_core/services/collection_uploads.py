@@ -2463,7 +2463,7 @@ class SqlAlchemyCollectionUploadService:
                     CollectionUploadCustodyObjectDocument(
                         volume_id=volume.object_id,
                         sealed_receipt_sha256=hashlib.sha256(
-                            volume.sealed_receipt_json.encode("utf-8")
+                            cast(str, volume.sealed_receipt_json).encode("utf-8")
                         ).hexdigest(),
                     )
                     for volume in volumes

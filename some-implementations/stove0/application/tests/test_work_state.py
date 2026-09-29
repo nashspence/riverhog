@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from unittest.mock import patch
 
@@ -96,6 +97,10 @@ def _sha(character: str) -> str:
     return character * 64
 
 
+def _member_id(label: str) -> str:
+    return hashlib.sha256(label.encode("utf-8")).hexdigest()
+
+
 def _root() -> CollectionRootIdentityRef:
     return CollectionRootIdentityRef(
         collection_id=str(1),
@@ -155,7 +160,7 @@ def _observation(
         id="source",
         role="fixture.source/v1",
         collection=_root(),
-        path="source/input.bin",
+        artifact_id=_member_id("source/input.bin"),
         bytes=str(12),
         sha256=_sha("4"),
     )
@@ -257,7 +262,7 @@ def _target_plan(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id=_member_id("source/input.bin"),
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -290,7 +295,7 @@ def _branch_decision(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id=_member_id("source/input.bin"),
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -404,7 +409,7 @@ def _queued_target_callback_execution(
             return ArtifactDispositionSetIdentity(
                 disposition_count=len(self.dispositions),
                 output_edge_count=len(self.edges),
-                output_artifact_count=len({item.output_path for item in self.edges}),
+                output_artifact_count=len({item.output_artifact_id for item in self.edges}),
                 sha256=_sha("e"),
             )
 
@@ -475,7 +480,7 @@ def test_target_callback_authority_seals_exact_production_and_is_idempotent() ->
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_member_id("output/result.bin"),
         bytes=str(12),
         sha256=_sha("5"),
     )
@@ -498,7 +503,7 @@ def test_target_production_seal_is_segmented_closes_declarations_and_replays() -
                 id=f"source-{ordinal}",
                 role="fixture.source/v1",
                 collection=_root(),
-                path=f"source/{ordinal}.bin",
+                artifact_id=_member_id(f"source/{ordinal}.bin"),
                 bytes=str(ordinal + 1),
                 sha256=_sha(str(ordinal + 1)),
             )
@@ -520,7 +525,7 @@ def test_target_production_seal_is_segmented_closes_declarations_and_replays() -
         OutputArtifact(
             id=f"output-{ordinal}",
             role="fixture.output/v1",
-            path=f"output/{ordinal}.bin",
+            artifact_id=_member_id(f"output/{ordinal}.bin"),
             bytes=str(source.bytes),
             sha256=_sha(str(ordinal + 4)),
         )
@@ -572,7 +577,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
                 id="a-request-first",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="z-collection-last.bin",
+                artifact_id=_member_id("z-collection-last.bin"),
                 bytes=str(1),
                 sha256=_sha("4"),
             ),
@@ -580,7 +585,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
                 id="z-request-last",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="a-collection-first.bin",
+                artifact_id=_member_id("a-collection-first.bin"),
                 bytes=str(1),
                 sha256=_sha("5"),
             ),
@@ -594,7 +599,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_member_id("output/result.bin"),
         bytes=str(2),
         sha256=_sha("6"),
     )
@@ -635,7 +640,7 @@ def test_target_callback_authority_rejects_unpermitted_disposition_and_stale_fen
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_member_id("output/result.bin"),
         bytes=str(12),
         sha256=_sha("5"),
     )
@@ -678,7 +683,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
                 id="source",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="source/input.bin",
+                artifact_id=_member_id("source/input.bin"),
                 bytes=str(12),
                 sha256=_sha("4"),
             ),
@@ -829,7 +834,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_member_id("output/result.bin"),
         bytes=str(12),
         sha256=_sha("5"),
     )
@@ -968,7 +973,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
     stale_output = OutputArtifact(
         id="result",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_member_id("output/result.bin"),
         bytes=str(1),
         sha256=_sha("1"),
     )
@@ -1480,7 +1485,7 @@ def test_sql_selection_restart_preserves_canonical_artifact_order(tmp_path: Path
                 id="a-request-first",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="z-collection-last.bin",
+                artifact_id=_member_id("z-collection-last.bin"),
                 bytes=str(1),
                 sha256=_sha("4"),
             ),
@@ -1488,7 +1493,7 @@ def test_sql_selection_restart_preserves_canonical_artifact_order(tmp_path: Path
                 id="z-request-last",
                 role="fixture.source/v1",
                 collection=_root(),
-                path="a-collection-first.bin",
+                artifact_id=_member_id("a-collection-first.bin"),
                 bytes=str(1),
                 sha256=_sha("5"),
             ),

@@ -698,28 +698,28 @@ class Stove0RiverhogClient:
             or authority.header.artifact_set_identity != output.artifact_set_identity
         ):
             raise RuntimeError("Riverhog output inventory changed during settlement")
-        files = tuple(file for file in page.files if not file.path.startswith("riverhog/"))
+        artifacts = page.artifacts
         declarations = (
-            self.state.target_output_path_page(
+            self.state.target_output_artifact_page(
                 record.work_id,
                 production.job_id,
-                after_path=checkpoint.output_path_cursor,
-                limit=len(files),
+                after_artifact_id=checkpoint.output_artifact_id_cursor,
+                limit=len(artifacts),
             )
-            if files
+            if artifacts
             else ()
         )
-        if len(declarations) != len(files):
+        if len(declarations) != len(artifacts):
             raise RuntimeError("Riverhog output collection differs from target production")
         digest = CheckpointSHA256.from_state(checkpoint.binding_hash_state)
         artifact_count = checkpoint.artifact_count
         total_bytes = checkpoint.total_bytes
-        output_path_cursor = checkpoint.output_path_cursor
-        for declared, file in zip(declarations, files, strict=True):
+        output_artifact_id_cursor = checkpoint.output_artifact_id_cursor
+        for declared, artifact in zip(declarations, artifacts, strict=True):
             if (
-                declared.path != file.path
-                or declared.bytes != file.bytes
-                or declared.sha256 != file.sha256
+                declared.artifact_id != artifact.artifact_id
+                or declared.bytes != artifact.bytes
+                or declared.sha256 != artifact.sha256
             ):
                 raise RuntimeError("Riverhog artifact differs from its target declaration")
             binding = TargetOutputBinding.model_validate(
@@ -727,10 +727,9 @@ class Stove0RiverhogClient:
                     output_id=declared.id,
                     role=declared.role,
                     collection=output,
-                    path=declared.path,
+                    artifact_id=declared.artifact_id,
                     bytes=str(declared.bytes),
                     sha256=declared.sha256,
-                    media_type=declared.media_type,
                 )
             )
             update_target_output_binding_commitment(
@@ -740,23 +739,23 @@ class Stove0RiverhogClient:
             )
             artifact_count += 1
             total_bytes += declared.bytes
-            output_path_cursor = declared.path
+            output_artifact_id_cursor = declared.artifact_id
         if not page.complete and page.next_cursor is None:
             raise RuntimeError("Riverhog output inventory ended without completion")
         next_checkpoint = TargetSettlementSealCheckpoint(
             inventory_identity=inventory_identity,
             inventory_cursor=page.next_cursor,
-            output_path_cursor=output_path_cursor,
+            output_artifact_id_cursor=output_artifact_id_cursor,
             binding_hash_state=digest.export_state(),
             artifact_count=artifact_count,
             total_bytes=total_bytes,
         )
         settlement: TargetSettlementAuthority | None = None
         if page.complete:
-            if self.state.target_output_path_page(
+            if self.state.target_output_artifact_page(
                 record.work_id,
                 production.job_id,
-                after_path=output_path_cursor,
+                after_artifact_id=output_artifact_id_cursor,
                 limit=1,
             ) or (
                 artifact_count != production.outputs.artifact_count
@@ -862,7 +861,7 @@ class Stove0RiverhogClient:
                     ArtifactDisposition(
                         input_collection_id=item.collection.collection_id,
                         input_archive_root_sha256=item.collection.archive_root_sha256,
-                        input_path=item.path,
+                        input_artifact_id=item.artifact_id,
                         status="effect-applied",
                         effect_receipt_sha256=receipt.receipt_sha256,
                     ).as_dict()
@@ -1039,7 +1038,7 @@ class Stove0RiverhogClient:
                             item.collection.archive_root_sha256,
                             item.collection.artifact_set_identity,
                         ),
-                        path=item.path,
+                        artifact_id=item.artifact_id,
                         bytes=item.bytes,
                         sha256=item.sha256,
                     )
@@ -1059,7 +1058,7 @@ class Stove0RiverhogClient:
                         ArtifactDisposition(
                             input_collection_id=item.collection.collection_id,
                             input_archive_root_sha256=item.collection.archive_root_sha256,
-                            input_path=item.path,
+                            input_artifact_id=item.artifact_id,
                             status="not-carried-forward",
                             code=preview.outcome.code,
                             message=preview.outcome.message,
@@ -1137,14 +1136,14 @@ class Stove0RiverhogClient:
                     identity = page.authority.inventory_identity
                 elif page.authority.inventory_identity != identity:
                     raise RuntimeError("no-output source inventory changed")
-                for item in page.files:
+                for item in page.artifacts:
                     yield CollectionArtifactIdentity(
                         collection=CollectionRootIdentity(
                             root.collection_id,
                             root.archive_root_sha256,
                             root.artifact_set_identity,
                         ),
-                        path=item.path,
+                        artifact_id=item.artifact_id,
                         bytes=item.bytes,
                         sha256=item.sha256,
                     ).as_dict()
@@ -1514,7 +1513,7 @@ def _artifact_identity(
             archive_root_sha256=value.collection.archive_root_sha256,
             artifact_set_identity=value.collection.artifact_set_identity,
         ),
-        path=value.path,
+        artifact_id=value.artifact_id,
         bytes=value.bytes,
         sha256=value.sha256,
     )
