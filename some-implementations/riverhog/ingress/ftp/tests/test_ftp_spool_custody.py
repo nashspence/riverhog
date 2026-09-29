@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import threading
@@ -22,6 +23,7 @@ from a_riverhog_ftp_spool_client.events import (
 )
 from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from riverhog_client.producer import ProducedCollection
+from riverhog_provenance.native_source import SOURCE_NAMING_VIEW_SCHEME
 
 from tests.provenance_observer import native_provenance_observer
 
@@ -1077,6 +1079,79 @@ def test_completed_metadata_sidecar_is_an_ordinary_member(
         ("captured.bin.xmp", b"<xmp>metadata</xmp>"),
     ]
     assert len({item[3] for item in _Producer.calls[0]["files"]}) == 2
+
+
+def test_completion_source_names_share_persisted_view_across_independent_observations(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(
+        update={
+            "close_mode": "explicit-flush",
+            "provenance": "capture",
+            "provenance_omission_reason": None,
+        }
+    )
+    config = base.model_copy(
+        update={
+            "host_id": "urn:uuid:00000000-0000-4000-8000-000000000522",
+            "provenance_observer": "fixture-observer",
+            "sources": (source,),
+        }
+    )
+    payload = source.root / "clip.mp4"
+    payload.parent.mkdir(parents=True)
+    payload.write_bytes(b"video")
+    sidecar = source.root / "clip.xmp"
+    sidecar.write_bytes(b"metadata")
+    handoff = CompletionHandoff(source.root, source.id)
+    handoff.complete(payload)
+    handoff.complete(sidecar)
+    _Producer.calls = []
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    adapter = FtpSpool(
+        object(),  # type: ignore[arg-type]
+        config,
+        provenance_observer_factory=native_provenance_observer,
+    )
+    assert adapter.flush(source.id)["completed"] == 1
+    graphs = {
+        filename: observation.graph_fragment()
+        for filename, _, observation, _ in _Producer.calls[0]["files"]
+    }
+    assert set(graphs) == {"clip.mp4", "clip.xmp"}
+    naming_contexts = []
+    for filename, graph in graphs.items():
+        context = next(
+            context
+            for context in graph["contexts"]
+            if any(
+                item["scheme"] == SOURCE_NAMING_VIEW_SCHEME
+                for item in context.get("identifiers", ())
+            )
+        )
+        naming_contexts.append(context)
+        source_locator = next(
+            row for row in graph["locator_bindings"] if row["context_id"] == context["id"]
+        )
+        assert (
+            base64.b64decode(source_locator["locator"]["name"]["bytes"]["data"])
+            == (source.root.resolve() / filename).as_posix().encode()
+        )
+        assert source_locator["evidence"][0]["basis"] == "process_record"
+        assert source_locator["locator"]["name"]["kind"] == "bytes"
+    assert naming_contexts[0]["id"] != naming_contexts[1]["id"]
+    assert naming_contexts[0]["identifiers"] == naming_contexts[1]["identifiers"]
+    restarted = FtpSpool(
+        object(),  # type: ignore[arg-type]
+        config,
+        provenance_observer_factory=native_provenance_observer,
+    )
+    with closing(restarted._open_state(source)) as connection:
+        stored = connection.execute(
+            "SELECT value FROM adapter_state WHERE key = 'naming_view_id'"
+        ).fetchone()[0]
+    assert stored == naming_contexts[0]["identifiers"][0]["value"]["text"]
 
 
 def test_custody_passes_are_serialized_across_protocol_and_polling_entrypoints(

@@ -1315,7 +1315,12 @@ class MacOSProvenanceObserver(NativeFileObserver):
         self.backend = MacOSBackend(native=native, enforce_platform=enforce_platform)
 
     def source(
-        self, path: PathInput, *, host_id: str, policy: NativeCapturePolicy | None = None
+        self,
+        path: PathInput,
+        *,
+        host_id: str,
+        naming_view_id: str | None = None,
+        policy: NativeCapturePolicy | None = None,
     ) -> NativeFileSource:
         return NativeFileSource(
             path,
@@ -1323,6 +1328,7 @@ class MacOSProvenanceObserver(NativeFileObserver):
             contract=CONTRACT_BINDING,
             native_schema_id="https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-native-capture.json",
             host_id=host_id,
+            naming_view_id=naming_view_id,
             policy=policy,
         )
 

@@ -38,6 +38,10 @@ from .native_capture import (
 )
 from .observer import BoundedSourceObserver
 
+SOURCE_NAMING_VIEW_SCHEME = (
+    "https://nashspence.github.io/riverhog/v1/provenance/identifiers/source-naming-view"
+)
+
 
 def _portable_native(value: Any) -> Any:
     """Retain exact wide numbers as tagged decimals within portable profile JSON."""
@@ -51,7 +55,7 @@ def _portable_native(value: Any) -> Any:
     return value
 
 
-def _filesystem_name(path: str | bytes, platform: str) -> dict[str, Any]:
+def filesystem_name(path: str | bytes, platform: str) -> dict[str, Any]:
     if platform == "windows":
         if not isinstance(path, str):
             raise ObservationError("Windows native pathname must be Unicode")
@@ -97,6 +101,7 @@ class NativeFileSource:
         contract: ProvenanceContractBinding,
         native_schema_id: str,
         host_id: str,
+        naming_view_id: str | None = None,
         policy: NativeCapturePolicy | None = None,
     ) -> None:
         self.path = path
@@ -104,6 +109,11 @@ class NativeFileSource:
         self.contract = contract
         self.native_schema_id = native_schema_id
         self.host_id = require_canonical_uuid_urn(host_id, "native host authority")
+        self.naming_view_id = (
+            require_canonical_uuid_urn(naming_view_id, "source naming view")
+            if naming_view_id is not None
+            else None
+        )
         self.policy = policy or NativeCapturePolicy()
         if native_schema_id not in contract.schemas:
             raise ValueError("native capture schema is absent from its pinned contract")
@@ -118,8 +128,17 @@ class NativeFileSource:
             host_id=self.host_id, observer_agent_id=observer_agent_id, policy=self.policy
         )
         context_id = new_id()
+        context_fields: dict[str, Any] = {"kind": "filesystem_namespace"}
+        if self.naming_view_id is not None:
+            context_fields["identifiers"] = [
+                {
+                    "scheme": SOURCE_NAMING_VIEW_SCHEME,
+                    "value": {"kind": "text", "text": self.naming_view_id},
+                    "scope": "global",
+                }
+            ]
         source_context = assertion(
-            "context", observer_agent_id, object_id=context_id, kind="filesystem_namespace"
+            "context", observer_agent_id, object_id=context_id, **context_fields
         )
         fd = -1
         try:
@@ -201,7 +220,7 @@ class NativeFileSource:
                         "kind": "filesystem_path",
                         "syntax": "windows" if backend.platform_family == "windows" else "posix",
                         "form": "absolute",
-                        "name": _filesystem_name(absolute, backend.platform_family),
+                        "name": filesystem_name(absolute, backend.platform_family),
                     },
                     "temporal_scope": {"kind": "instant", "at": opened_at},
                 }

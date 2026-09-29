@@ -23,6 +23,7 @@ from riverhog_provenance.native_capture import (
     NativeStat,
     SymlinkRefusedError,
 )
+from riverhog_provenance.native_source import SOURCE_NAMING_VIEW_SCHEME
 
 pytestmark = pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux only")
 
@@ -74,6 +75,34 @@ def test_live_linux_observation_is_canonical_and_measures_all_bytes(
     }
     assert "path" not in result.artifact
     assert "path" not in result.occurrence
+
+
+def test_distinct_native_contexts_can_carry_one_explicit_source_naming_view(
+    tmp_path: Path, urn_factory
+) -> None:
+    files = [tmp_path / "clip.mp4", tmp_path / "clip.xmp"]
+    for path in files:
+        path.write_bytes(b"opaque")
+    observer = _observer()
+    host_id = urn_factory()
+    view_id = urn_factory()
+    graphs = [
+        observer.observe(observer.source(path, host_id=host_id, naming_view_id=view_id))
+        .graph_fragment()
+        for path in files
+    ]
+    contexts = [graph["contexts"][0] for graph in graphs]
+    assert contexts[0]["id"] != contexts[1]["id"]
+    for context in contexts:
+        assert context["identifiers"] == [
+            {
+                "scheme": SOURCE_NAMING_VIEW_SCHEME,
+                "value": {"kind": "text", "text": view_id},
+                "scope": "global",
+            }
+        ]
+    unscoped = observer.observe(observer.source(files[0], host_id=host_id))
+    assert "identifiers" not in unscoped.graph_fragment()["contexts"][0]
 
 
 def test_linux_raw_non_utf8_filename_is_preserved(tmp_path: Path, urn_factory) -> None:

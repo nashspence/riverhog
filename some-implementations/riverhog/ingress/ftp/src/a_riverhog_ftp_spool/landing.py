@@ -32,9 +32,20 @@ from lifecycle_events import lifecycle_event
 from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
-from riverhog_provenance import ObservationResult
-from riverhog_provenance.native_source import NativeFileObserver
-from riverhog_provenance_contracts import ContractCatalog
+from riverhog_provenance import (
+    ObservationResult,
+    assertion,
+    evidence,
+    reference,
+    software_agent_id,
+    validate_graph,
+)
+from riverhog_provenance.native_source import (
+    SOURCE_NAMING_VIEW_SCHEME,
+    NativeFileObserver,
+    filesystem_name,
+)
+from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
 
 from a_riverhog_ftp_spool.completion import (
     CONTROL_DIR,
@@ -60,6 +71,9 @@ _MANIFEST = "claim.json"
 _RECEIPT = "receipt.json"
 _RECEIPTS_DIR = "receipts"
 _STATE_DB = "state.sqlite3"
+_COMPLETION_EVENT_SCHEME = (
+    "https://nashspence.github.io/riverhog/v1/provenance/identifiers/ftp-completion-event"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -155,6 +169,13 @@ class FtpSpool:
             if version not in {0, 3}:
                 raise FtpSpoolError("unsupported FTP spool operational-state revision")
             connection.executescript(FTP_OPERATIONAL_STATE_DDL)
+            naming_view_id = _state_value(connection, "naming_view_id")
+            if naming_view_id is None:
+                if connection.execute("SELECT 1 FROM claims LIMIT 1").fetchone() is not None:
+                    raise FtpSpoolError("FTP claims have no persisted source naming view identity")
+                _set_state_value(connection, "naming_view_id", f"urn:uuid:{uuid.uuid4()}")
+            else:
+                require_canonical_uuid_urn(naming_view_id, "FTP source naming view")
             event_generation = _state_value(connection, "event_generation")
             if event_generation is None:
                 count = int(
@@ -535,7 +556,11 @@ class FtpSpool:
             try:
                 artifact_id = secrets.token_hex(32)
                 observation = self._prepared_observation(
-                    source, path, claim_root=claim_root, artifact_id=artifact_id
+                    source,
+                    path,
+                    claim_root=claim_root,
+                    artifact_id=artifact_id,
+                    source_view_path=(path.resolve() == source.root.resolve() / relative_path),
                 )
                 manifest = {
                     "format": "a-riverhog-ftp-spool-claim/v1",
@@ -1205,7 +1230,11 @@ class FtpSpool:
             for discovered in discovery.files:
                 artifact_id = secrets.token_hex(32)
                 observation = self._prepared_observation(
-                    source, discovered.path, claim_root=claim_root, artifact_id=artifact_id
+                    source,
+                    discovered.path,
+                    claim_root=claim_root,
+                    artifact_id=artifact_id,
+                    completion_record=discovered.completion_record,
                 )
                 files.append(
                     {
@@ -1255,6 +1284,8 @@ class FtpSpool:
         *,
         claim_root: Path,
         artifact_id: str,
+        completion_record: CompletionRecord | None = None,
+        source_view_path: bool = False,
     ) -> dict[str, object] | None:
         if source.provenance == "omit":
             return None
@@ -1265,8 +1296,30 @@ class FtpSpool:
         )
         if observer is None:
             raise FtpSpoolError("configured provenance observer is unavailable")
-        observed = observer.observe(cast(Any, observer).source(path, host_id=self.config.host_id))
-        graph = canonical_json_bytes(observed.graph_fragment())
+        with closing(self._open_state(source)) as connection:
+            naming_view_id = _state_value(connection, "naming_view_id")
+        if naming_view_id is None:
+            raise FtpSpoolError("FTP source naming view identity is unavailable")
+        require_canonical_uuid_urn(naming_view_id, "FTP source naming view")
+        observed = observer.observe(
+            cast(Any, observer).source(
+                path,
+                host_id=self.config.host_id,
+                **({"naming_view_id": naming_view_id} if source_view_path else {}),
+            )
+        )
+        graph_value = observed.graph_fragment()
+        if completion_record is not None:
+            _record_completed_source_locator(
+                graph_value,
+                observed=observed,
+                source=source,
+                record=completion_record,
+                observed_path=path,
+                naming_view_id=naming_view_id,
+            )
+            validate_graph(graph_value, catalog=ContractCatalog((observer.contract_binding,)))
+        graph = canonical_json_bytes(graph_value)
         graph_path = f"provenance/observations/{artifact_id}.json"
         _write_atomic(claim_root / graph_path, graph)
         return {
@@ -1570,6 +1623,86 @@ def _claim_completion_record(
     if actual != expected:
         raise FtpSpoolError("FTP claim differs from its exact completion record")
     return record
+
+
+def _record_completed_source_locator(
+    graph: dict[str, Any],
+    *,
+    observed: ObservationResult,
+    source: SourceConfig,
+    record: CompletionRecord,
+    observed_path: Path,
+    naming_view_id: str,
+) -> None:
+    """Retain the listener's source name apart from its later custody locator."""
+
+    try:
+        verified = parse_completion_record(record.canonical_bytes())
+    except CompletionError as exc:
+        raise FtpSpoolError("FTP source locator has no valid completion record") from exc
+    if verified != record or record.source_id != source.id:
+        raise FtpSpoolError("FTP source locator belongs to another completion authority")
+    if observed_path.resolve() != (source.root / record.custody).resolve():
+        raise FtpSpoolError("FTP observation differs from completion custody")
+    _require_completion_identity(observed_path.stat(follow_symlinks=False), record)
+    agent_id = software_agent_id("a-riverhog-ftp-spool", "0.1.0")
+    graph.setdefault("agents", []).append(
+        assertion(
+            "agent",
+            agent_id,
+            object_id=agent_id,
+            kind="software",
+            name="a-riverhog-ftp-spool",
+            version="0.1.0",
+        )
+    )
+    context = assertion(
+        "context",
+        agent_id,
+        kind="filesystem_namespace",
+        identifiers=[
+            {
+                "scheme": SOURCE_NAMING_VIEW_SCHEME,
+                "value": {"kind": "text", "text": naming_view_id},
+                "scope": "global",
+            }
+        ],
+    )
+    graph.setdefault("contexts", []).append(context)
+    graph.setdefault("locator_bindings", []).append(
+        assertion(
+            "locator_binding",
+            agent_id,
+            evidence_items=[
+                evidence(
+                    agent_id,
+                    "process_record",
+                    method_uri=(
+                        "https://nashspence.github.io/riverhog/v1/provenance/"
+                        "methods/ftp-completion-handoff"
+                    ),
+                    source_identifier={
+                        "scheme": _COMPLETION_EVENT_SCHEME,
+                        "value": {"kind": "text", "text": record.event_id},
+                        "scope": "global",
+                    },
+                )
+            ],
+            target=reference(observed.state_id, "state"),
+            context_id=context["id"],
+            observation_id=observed.observation_id,
+            locator={
+                "kind": "filesystem_path",
+                "syntax": "posix",
+                "form": "absolute",
+                "name": filesystem_name(str(source.root.resolve() / record.path), "linux"),
+            },
+            temporal_scope={
+                "kind": "unknown",
+                "reason": "The FTP completion record has no source naming timestamp.",
+            },
+        )
+    )
 
 
 def _file_rows(manifest: Mapping[str, object]) -> list[dict[str, object]]:
