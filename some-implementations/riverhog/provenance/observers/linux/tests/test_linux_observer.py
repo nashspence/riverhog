@@ -15,7 +15,7 @@ from a_riverhog_linux_provenance_observer import (
     LinuxProvenanceObserver,
     _portable_mount_field,
 )
-from riverhog_provenance import ObservationRequest, validate_graph_fragment
+from riverhog_provenance import ObservationPolicy, ObservationRequest, validate_graph_fragment
 from riverhog_provenance.native_capture import (
     NativeCapture,
     NativeCapturePolicy,
@@ -236,3 +236,19 @@ def test_selected_provider_observes_native_file_with_exact_contract(
         result.observation["profiles"][0]["profile"],
         result.observation["profiles"][0]["data"],
     )
+
+
+def test_second_content_measurement_uses_canonical_observation_policy(
+    tmp_path: Path, urn_factory
+) -> None:
+    payload = tmp_path / "twice.bin"
+    payload.write_bytes(b"measure twice")
+    observer = _observer()
+    result = observer.observe(
+        observer.source(payload, host_id=urn_factory()),
+        ObservationRequest(policy=ObservationPolicy(second_content_hash=True)),
+    )
+    assert result.observation["consistency"]["level"] == "verified_unchanged"
+    assert result.graph_fragment()["activities"][0]["configuration"]["data"][
+        "second_content_hash"
+    ] is True
