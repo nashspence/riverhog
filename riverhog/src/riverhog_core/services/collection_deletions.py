@@ -31,21 +31,21 @@ from riverhog_core.catalog_models import (
     CollectionArchiveObjectRecord,
     CollectionDeletionRecord,
     CollectionDescriptionPublicationRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionMutableDocumentPublicationAttemptRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
     CollectionTagPublicationRecord,
     CollectionTagRecord,
     CollectionUploadCopyIntentRecord,
-    CollectionUploadFileRecord,
+    CollectionUploadArtifactRecord,
     CollectionUploadRecord,
     RetrievalCacheLeaseRecord,
     RetrievalCacheObjectRecord,
     RetrievalCacheStoreAccountingRecord,
     RetrievalJobObjectProgressRecord,
     RetrievalJobRecord,
-    RetrievalPlanFileRecord,
+    RetrievalPlanArtifactRecord,
     RetrievalPlanObjectRecord,
     RetrievalPlanPlacementRecord,
     RetrievalPlanRecord,
@@ -514,9 +514,9 @@ class SqlAlchemyCollectionDeletionService:
     def _delete_retrieval_references(self, collection_id: int) -> bool:
         with session_scope(self._session_factory) as session:
             plan_id = session.scalar(
-                select(RetrievalPlanFileRecord.plan_id)
-                .where(RetrievalPlanFileRecord.collection_id == collection_id)
-                .order_by(RetrievalPlanFileRecord.plan_id)
+                select(RetrievalPlanArtifactRecord.plan_id)
+                .where(RetrievalPlanArtifactRecord.collection_id == collection_id)
+                .order_by(RetrievalPlanArtifactRecord.plan_id)
                 .limit(1)
             )
             if plan_id is None:
@@ -565,14 +565,14 @@ class SqlAlchemyCollectionDeletionService:
                 return True
             file_rows = list(
                 session.scalars(
-                    select(RetrievalPlanFileRecord)
-                    .where(RetrievalPlanFileRecord.plan_id == plan_id)
+                    select(RetrievalPlanArtifactRecord)
+                    .where(RetrievalPlanArtifactRecord.plan_id == plan_id)
                     .order_by(
                         case(
-                            (RetrievalPlanFileRecord.collection_id == collection_id, 1),
+                            (RetrievalPlanArtifactRecord.collection_id == collection_id, 1),
                             else_=0,
                         ),
-                        RetrievalPlanFileRecord.file_order,
+                        RetrievalPlanArtifactRecord.file_order,
                     )
                     .limit(_CATALOG_DELETE_BATCH)
                 )
@@ -582,8 +582,8 @@ class SqlAlchemyCollectionDeletionService:
                     session.delete(file_row)
                 session.flush()
                 has_files = session.scalar(
-                    select(RetrievalPlanFileRecord.plan_id)
-                    .where(RetrievalPlanFileRecord.plan_id == plan_id)
+                    select(RetrievalPlanArtifactRecord.plan_id)
+                    .where(RetrievalPlanArtifactRecord.plan_id == plan_id)
                     .limit(1)
                 )
                 if has_files is None:
@@ -779,9 +779,9 @@ def _build_plan(
         )
     file_count, file_bytes = session.execute(
         select(
-            func.count(CollectionFileRecord.path),
-            func.coalesce(func.sum(CollectionFileRecord.bytes), 0),
-        ).where(CollectionFileRecord.collection_id == collection_id)
+            func.count(CollectionArtifactRecord.path),
+            func.coalesce(func.sum(CollectionArtifactRecord.bytes), 0),
+        ).where(CollectionArtifactRecord.collection_id == collection_id)
     ).one()
     aggregates = archive_copy_aggregates(session, collection_ids=[collection_id])
     archive_copies: list[dict[str, str | int]] = [
@@ -797,8 +797,8 @@ def _build_plan(
     upload = session.get(CollectionUploadRecord, collection_id)
     upload_file_count = int(
         session.scalar(
-            select(func.count(CollectionUploadFileRecord.path)).where(
-                CollectionUploadFileRecord.collection_id == collection_id
+            select(func.count(CollectionUploadArtifactRecord.path)).where(
+                CollectionUploadArtifactRecord.collection_id == collection_id
             )
         )
         or 0
@@ -874,11 +874,11 @@ def _active_blockers(
         session.scalars(
             select(RetrievalJobRecord.id)
             .join(
-                RetrievalPlanFileRecord,
-                RetrievalPlanFileRecord.plan_id == RetrievalJobRecord.plan_id,
+                RetrievalPlanArtifactRecord,
+                RetrievalPlanArtifactRecord.plan_id == RetrievalJobRecord.plan_id,
             )
             .where(
-                RetrievalPlanFileRecord.collection_id == collection_id,
+                RetrievalPlanArtifactRecord.collection_id == collection_id,
                 RetrievalJobRecord.state.in_(_ACTIVE_RETRIEVAL_STATES),
             )
             .order_by(RetrievalJobRecord.id)
@@ -895,9 +895,9 @@ def _active_blockers(
     active_plans = list(
         session.scalars(
             select(RetrievalPlanRecord.id)
-            .join(RetrievalPlanFileRecord)
+            .join(RetrievalPlanArtifactRecord)
             .where(
-                RetrievalPlanFileRecord.collection_id == collection_id,
+                RetrievalPlanArtifactRecord.collection_id == collection_id,
                 RetrievalPlanRecord.state.in_({"planning", "ready"}),
             )
             .order_by(RetrievalPlanRecord.id)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+
 from riverhog_protocol.pack_ingress import pack_upload_plan_sha256
 
 
@@ -13,7 +15,7 @@ def test_pack_plan_cardinality_is_defined_by_the_storage_plan() -> None:
             "final": index == 10_000,
             "sources": [
                 {
-                    "path": f"source/item-{index:05}.bin",
+                    "artifact_id": hashlib.sha256(f"source:{index}".encode()).hexdigest(),
                     "bytes": 1,
                     "sha256": "1" * 64,
                 }

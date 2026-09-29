@@ -7,29 +7,25 @@ from dataclasses import dataclass
 
 from riverhog_canonical_json import canonical_json_bytes as canonical_json_bytes
 
-from riverhog_protocol.paths import validate_canonical_relpath
+from riverhog_protocol.artifact_identity import ArtifactId
 
 PACK_UPLOAD_PLAN_FORMAT = "pack-upload-plan/v1"
-RESERVED_ARCHIVE_PREFIX = ".riverhog/"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _PACK_VOLUME_ID_RE = re.compile(r"pack-[0-9a-f]{64}")
 
 
 @dataclass(frozen=True, slots=True)
 class PackUnitSource:
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     sha256: str
 
     def __post_init__(self) -> None:
-        path = validate_canonical_relpath(self.path)
-        if path.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError(f"collection path uses reserved archive namespace: {path}")
+        object.__setattr__(self, "artifact_id", ArtifactId(self.artifact_id))
         if self.bytes < 0:
             raise ValueError("pack unit source bytes must be non-negative")
         if _SHA256_RE.fullmatch(self.sha256) is None:
             raise ValueError("pack unit source sha256 is invalid")
-        object.__setattr__(self, "path", path)
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,9 +52,9 @@ class PackUnitDescriptor:
             raise ValueError("pack unit source bytes do not match payload bytes")
         if _SHA256_RE.fullmatch(self.plan_sha256) is None:
             raise ValueError("pack unit plan sha256 is invalid")
-        paths = [source.path for source in self.sources]
-        if len(paths) != len(set(paths)):
-            raise ValueError("pack unit repeats a source path")
+        artifact_ids = [source.artifact_id for source in self.sources]
+        if len(artifact_ids) != len(set(artifact_ids)):
+            raise ValueError("pack unit repeats a source artifact ID")
 
     @property
     def plaintext_end(self) -> int:
@@ -88,7 +84,7 @@ def pack_upload_plan_sha256(
                 "final": current.final,
                 "sources": [
                     {
-                        "path": source.path,
+                        "artifact_id": str(source.artifact_id),
                         "bytes": source.bytes,
                         "sha256": source.sha256,
                     }
@@ -152,7 +148,7 @@ class PackUnitPayloadReader:
             digest.update(chunk)
             yield chunk
         if digest.hexdigest() != source.sha256:
-            raise ValueError(f"pack unit source sha256 mismatch: {source.path}")
+            raise ValueError(f"pack unit source sha256 mismatch: {source.artifact_id}")
         self._next_source += 1
 
     def finish(self) -> None:
@@ -207,22 +203,20 @@ def _source_rows(value: object) -> list[dict[str, object]]:
     seen: set[str] = set()
     for current in value:
         if not isinstance(current, Mapping) or set(current) != {
-            "path",
+            "artifact_id",
             "bytes",
             "sha256",
         }:
             raise ValueError("pack upload unit source must be a canonical mapping")
-        path = validate_canonical_relpath(current["path"])
-        if path.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError(f"collection path uses reserved archive namespace: {path}")
-        if path in seen:
-            raise ValueError(f"pack upload unit repeats source path: {path}")
+        artifact_id = ArtifactId(current["artifact_id"])
+        if artifact_id in seen:
+            raise ValueError(f"pack upload unit repeats source artifact ID: {artifact_id}")
         byte_count = _required_nonnegative_int(current, "bytes")
         sha256 = str(current.get("sha256", ""))
         if _SHA256_RE.fullmatch(sha256) is None:
             raise ValueError("pack upload unit source sha256 is invalid")
-        seen.add(path)
-        out.append({"path": path, "bytes": byte_count, "sha256": sha256})
+        seen.add(artifact_id)
+        out.append({"artifact_id": str(artifact_id), "bytes": byte_count, "sha256": sha256})
     return out
 
 

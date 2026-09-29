@@ -5,11 +5,11 @@
   "title": "Riverhog v1 authenticated archive-volume terminator",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "archive_generation", "archive_tree_sha256", "sequence", "kind"],
+  "required": ["format", "archive_generation", "artifact_set_sha256", "sequence", "kind"],
   "properties": {
     "format": {"const": "collection-archive-terminal/v1"},
     "archive_generation": {"$ref": "#/$defs/sha256"},
-    "archive_tree_sha256": {"$ref": "#/$defs/sha256"},
+    "artifact_set_sha256": {"$ref": "#/$defs/sha256"},
     "sequence": {"type": "string", "pattern": "^[0-9a-f]{64}$", "not": {"const": "0000000000000000000000000000000000000000000000000000000000000000"}},
     "kind": {"const": "terminal"}
   },

@@ -1,237 +1,469 @@
 from __future__ import annotations
 
+import copy
 import hashlib
-from pathlib import Path
+from dataclasses import replace
+from io import BytesIO
 
 import pytest
 from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    ConcurrentJournalChangeError,
+    ObservationRequest,
     ProvenanceValidationError,
+    append_assertions,
+    append_checkpoint,
+    append_correction,
     append_observation,
-    append_replacement_transformation,
-    create_derivative_journal,
-    create_derivative_journal_from_identity,
-    create_observation_journal,
+    assertion,
+    assertion_reference,
+    create_journal,
+    encode_entry,
+    external_reference,
+    new_id,
+    ordered_segment_commitment,
+    parse_journal,
+    reassemble_journal,
+    recover_complete_prefix,
+    reference,
+    segment_journal,
     validate_journal,
     validate_journal_chunks,
     validate_journal_set,
-    verify_payload_binding,
+    verify_delivery,
 )
-
-from tests.provenance_observer import native_provenance_observer
-
-
-def _payload(path: Path, content: bytes) -> Path:
-    path.write_bytes(content)
-    path.chmod(0o640)
-    return path
+from riverhog_provenance_contracts import PROFILE, canonical_document
 
 
-def test_observation_journal_binds_payload_and_continues_exact_prefix(
-    tmp_path: Path, urn_factory
-) -> None:
-    payload = _payload(tmp_path / "source.bin", b"source bytes")
-    original = create_observation_journal(
-        payload,
-        relative_path="source.bin",
-        host_id=urn_factory(),
-        agent_name="riverhog-client",
-        agent_version="0.1.0",
-        observer=native_provenance_observer(),
-    )
-    initial = validate_journal(original)
-    verify_payload_binding(
-        initial,
-        path="source.bin",
-        byte_count=len(b"source bytes"),
-        sha256=hashlib.sha256(b"source bytes").hexdigest(),
-    )
-
-    continued = append_observation(
-        original,
-        payload,
-        relative_path="staged/source.bin",
-        host_id=urn_factory(),
-        agent_name="stove0",
-        agent_version="0.1.0",
-        observer=native_provenance_observer(),
-    )
-    current = validate_journal(continued)
-
-    assert continued.startswith(original)
-    assert current.journal_id == initial.journal_id
-    assert current.primary_lineage_id == initial.primary_lineage_id
-    assert current.current_path == "staged/source.bin"
-    assert len(current.frames) == 3
-
-    transport_summary = validate_journal_chunks(
-        (continued[index : index + 97] for index in range(0, len(continued), 97)),
-        retain_frames=False,
-    )
-    assert transport_summary.frames == ()
-    assert transport_summary.entries == current.entries
-    assert transport_summary.tail.sha256 == current.tail.sha256
-    assert transport_summary.current_state_id == current.current_state_id
-
-
-def test_replacement_transformation_stays_in_the_same_lineage(tmp_path: Path, urn_factory) -> None:
-    source = _payload(tmp_path / "source.mov", b"source container")
-    journal = create_observation_journal(
-        source,
-        relative_path="source.mov",
-        host_id=urn_factory(),
-        agent_name="target-client",
-        agent_version="0.1.0",
-        observer=native_provenance_observer(),
-    )
-    initial = validate_journal(journal)
-    output = _payload(tmp_path / "source.mkv", b"transcoded container")
-
-    transformed = append_replacement_transformation(
-        journal,
-        output,
-        relative_path="source.mkv",
-        host_id=urn_factory(),
-        agent_name="target",
-        agent_version="0.1.0",
-        event_label="Canonical transcode",
-        started_at="2026-08-10T01:00:00Z",
-        ended_at="2026-08-10T01:01:00Z",
-        observer=native_provenance_observer(),
-    )
-    current = validate_journal(transformed)
-
-    assert transformed.startswith(journal)
-    assert current.primary_lineage_id == initial.primary_lineage_id
-    assert current.current_state_id != initial.current_state_id
-    assert current.current_path == "source.mkv"
-    assert current.current_sha256 == hashlib.sha256(b"transcoded container").hexdigest()
-
-
-def test_derivative_gets_a_new_lineage_with_exact_multi_input_references(
-    tmp_path: Path, urn_factory
-) -> None:
-    sources: list[bytes] = []
-    for name, content in (("video.mov", b"video"), ("captions.srt", b"captions")):
-        path = _payload(tmp_path / name, content)
-        sources.append(
-            create_observation_journal(
-                path,
-                relative_path=name,
-                host_id=urn_factory(),
-                agent_name="target-client",
-                agent_version="0.1.0",
-                observer=native_provenance_observer(),
-            )
-        )
-    output = _payload(tmp_path / "source-artifacts.tar.zst", b"artifacts")
-
-    derivative = create_derivative_journal(
-        output,
-        relative_path="video/source-artifacts.tar.zst",
-        source_journals=sources,
-        host_id=urn_factory(),
-        agent_name="target",
-        agent_version="0.1.0",
-        event_label="Preserve source artifacts",
-        started_at="2026-08-10T01:00:00Z",
-        ended_at="2026-08-10T01:01:00Z",
-        observer=native_provenance_observer(),
-        derivation_kind="aggregation",
-    )
-    summaries = validate_journal_set(
-        {
-            **{validate_journal(item).journal_id: item for item in sources},
-            validate_journal(derivative).journal_id: derivative,
-        }
-    )
-    current = validate_journal(derivative)
-
-    assert current.primary_lineage_id not in {
-        validate_journal(item).primary_lineage_id for item in sources
-    }
-    assert len(current.external_states) == 2
-    assert set(summaries) == {
-        current.journal_id,
-        *(validate_journal(item).journal_id for item in sources),
-    }
-
-
-def test_identity_derivative_binds_stream_without_rereading_payload(
-    tmp_path: Path, urn_factory
-) -> None:
-    source_path = _payload(tmp_path / "source.bin", b"source")
-    source = create_observation_journal(
-        source_path,
-        relative_path="source.bin",
-        host_id=urn_factory(),
-        agent_name="riverhog-client",
-        agent_version="0.1.0",
-        observer=native_provenance_observer(),
-    )
-    output = b"generated range-readable output"
-    journal_id = urn_factory()
-
-    derivative = create_derivative_journal_from_identity(
-        relative_path="derived/output.bin",
-        byte_count=len(output),
-        sha256=hashlib.sha256(output).hexdigest(),
-        source_journals=(source,),
-        agent_name="fixture-target",
-        agent_version="0.1.0",
-        event_label="fixture.operation/v1",
-        started_at="2026-08-10T01:00:00Z",
-        ended_at="2026-08-10T01:01:00Z",
-        journal_id=journal_id,
-    )
-    summary = validate_journal(derivative)
-
-    assert summary.journal_id == journal_id
-    assert summary.current_path == "derived/output.bin"
-    assert summary.current_bytes == len(output)
-    assert summary.current_sha256 == hashlib.sha256(output).hexdigest()
-    source_summary = validate_journal(source)
-    assert len(summary.external_states) == 1
-    assert summary.external_states[0].journal_id == source_summary.journal_id
-    validate_journal_set(
-        {
-            source_summary.journal_id: source,
-            journal_id: derivative,
-        }
+def extension(who, target, value="test"):
+    return assertion(
+        "extension",
+        who,
+        subject=reference(target, "artifact"),
+        property="urn:test:property",
+        value={"type": "text", "value": value},
     )
 
 
-def test_payload_binding_mismatch_is_rejected(tmp_path: Path, urn_factory) -> None:
-    payload = _payload(tmp_path / "source.bin", b"source bytes")
-    summary = validate_journal(
-        create_observation_journal(
-            payload,
-            relative_path="source.bin",
-            host_id=urn_factory(),
-            agent_name="riverhog-client",
-            agent_version="0.1.0",
-            observer=native_provenance_observer(),
-        )
+def appended(journal, who, catalog):
+    summary = validate_journal(journal, catalog=catalog)
+    row = extension(who, summary.graph["artifacts"][0]["id"])
+    return append_assertions(
+        journal, {"extensions": [row]}, recorded_by_agent_id=who, catalog=catalog
+    ), row
+
+
+def test_journal_has_no_global_current_path_or_payload(journal, catalog):
+    summary = validate_journal(journal, catalog=catalog)
+    assert len(summary.states) == 1
+    assert summary.delivery_associations == ()
+    assert not hasattr(summary, "current_state_id")
+    catalog.validate(PROFILE + "/materialized.schema.json", summary.materialize())
+
+
+@pytest.mark.parametrize("chunk_size", [1, 2, 3, 7, 127, 4096])
+def test_streaming_frames_survive_arbitrary_octet_boundaries(journal, catalog, chunk_size):
+    chunks = (journal[i : i + chunk_size] for i in range(0, len(journal), chunk_size))
+    assert (
+        validate_journal_chunks(chunks, catalog=catalog).journal_sha256
+        == hashlib.sha256(journal).hexdigest()
     )
 
-    with pytest.raises(ProvenanceValidationError, match="does not bind"):
-        verify_payload_binding(
-            summary,
-            path="source.bin",
-            byte_count=len(b"different"),
-            sha256=hashlib.sha256(b"different").hexdigest(),
-        )
+
+def test_exact_bytes_and_predecessor_hashes_are_preserved(journal, who, catalog):
+    result, _ = appended(journal, who, catalog)
+    assert result.startswith(journal)
+    frames = parse_journal(result)
+    assert frames[1].document["previous_entry"] == frames[0].reference
+    assert frames[0].sha256 == hashlib.sha256(journal[1:-1]).hexdigest()
+    assert len(validate_journal(result, catalog=catalog).frames) == 2
 
 
-def test_noncanonical_or_truncated_journal_is_rejected(tmp_path: Path, urn_factory) -> None:
-    payload = _payload(tmp_path / "source.bin", b"source bytes")
-    journal = create_observation_journal(
-        payload,
-        relative_path="source.bin",
-        host_id=urn_factory(),
-        agent_name="riverhog-client",
-        agent_version="0.1.0",
-        observer=native_provenance_observer(),
-    )
-
+@pytest.mark.parametrize(
+    "mutation",
+    ["sequence", "digest", "journal", "entry-reuse", "recorder", "timestamp", "assertion-reuse"],
+)
+def test_entry_graph_and_chain_corruptions_are_rejected(journal, who, catalog, mutation):
+    raw, row = appended(journal, who, catalog)
+    frames = parse_journal(raw)
+    doc = frames[-1].document
+    if mutation == "sequence":
+        doc["sequence"] = "3"
+    elif mutation == "digest":
+        doc["previous_entry"]["json_sha256"] = "0" * 64
+    elif mutation == "journal":
+        doc["journal_id"] = new_id()
+    elif mutation == "entry-reuse":
+        doc["id"] = frames[0].document["id"]
+    elif mutation == "recorder":
+        doc["recorded_by_agent_id"] = new_id()
+    elif mutation == "timestamp":
+        doc["recorded_at"] = "2026-02-30T00:00:00Z"
+    else:
+        doc["body"]["assertions"]["extensions"][0]["assertion_id"] = frames[0].document["body"][
+            "assertions"
+        ]["artifacts"][0]["assertion_id"]
+    broken = journal + b"\x1e" + canonical_document(doc) + b"\n"
     with pytest.raises(ProvenanceValidationError):
-        validate_journal(journal.rstrip(b"\n"))
+        validate_journal(broken, catalog=catalog)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        b"",
+        b"{}\n",
+        b"\xef\xbb\xbf\x1e{}\n",
+        b"\x1e{}",
+        b"\x1e{}\n ",
+        b"\x1e{\x1e}\n",
+        b'\x1e{"x":1,"x":2}\n',
+        b'\x1e{ "x":1}\n',
+    ],
+)
+def test_invalid_framing_or_noncanonical_json_is_rejected(raw, catalog):
+    with pytest.raises((ProvenanceValidationError, ValueError)):
+        validate_journal(raw, catalog=catalog)
+
+
+def test_torn_final_frame_requires_explicit_recovery(journal, who, catalog):
+    raw, _ = appended(journal, who, catalog)
+    torn = raw[:-19]
+    with pytest.raises(ProvenanceValidationError):
+        validate_journal(torn, catalog=catalog)
+    recovered = recover_complete_prefix(torn, catalog=catalog)
+    assert recovered.complete_prefix == journal
+    assert recovered.incomplete_tail == torn[len(journal) :]
+
+
+def test_recovery_never_skips_a_malformed_complete_entry(journal, catalog):
+    with pytest.raises(ProvenanceValidationError):
+        recover_complete_prefix(journal + b'\x1e{"bad":true}\n\x1e{', catalog=catalog)
+
+
+def test_checkpoint_commits_framed_prefix_not_just_json(journal, who, catalog):
+    raw = append_checkpoint(
+        journal, recorded_by_agent_id=who, purpose="urn:test:handoff", catalog=catalog
+    )
+    body = parse_journal(raw)[-1].document["body"]
+    assert body["prefix_sha256"] == hashlib.sha256(journal).hexdigest()
+    assert body["prefix_bytes"] == str(len(journal))
+    assert body["covered_through"] == parse_journal(journal)[-1].reference
+
+
+def test_checkpoint_tampering_fails(journal, who, catalog):
+    raw = append_checkpoint(
+        journal, recorded_by_agent_id=who, purpose="urn:test:handoff", catalog=catalog
+    )
+    doc = parse_journal(raw)[-1].document
+    doc["body"]["prefix_bytes"] = "1"
+    with pytest.raises(ProvenanceValidationError, match="checkpoint prefix"):
+        validate_journal(journal + encode_entry(doc, catalog=catalog), catalog=catalog)
+
+
+def test_clean_truncation_requires_external_tail_anchor(journal, who, catalog):
+    extended, _ = appended(journal, who, catalog)
+    anchor = validate_journal(extended, catalog=catalog).anchor
+    validate_journal(
+        journal, catalog=catalog
+    )  # self-consistent but not complete relative to anchor
+    with pytest.raises(ProvenanceValidationError, match="expected anchored"):
+        validate_journal(journal, catalog=catalog, expected_anchor=anchor)
+    earlier = validate_journal(journal, catalog=catalog).anchor
+    validate_journal(extended, catalog=catalog, expected_anchor=earlier)
+    with pytest.raises(ProvenanceValidationError, match="exact tail"):
+        validate_journal(
+            extended, catalog=catalog, expected_anchor=earlier, require_exact_tail=True
+        )
+
+
+def test_compare_and_append_rejects_stale_expected_tail(journal, who, catalog):
+    longer, _ = appended(journal, who, catalog)
+    expected = validate_journal(journal, catalog=catalog).tail.reference
+    with pytest.raises(ConcurrentJournalChangeError):
+        append_assertions(
+            longer,
+            {
+                "extensions": [
+                    extension(
+                        who, validate_journal(journal, catalog=catalog).graph["artifacts"][0]["id"]
+                    )
+                ]
+            },
+            recorded_by_agent_id=who,
+            expected_tail=expected,
+            catalog=catalog,
+        )
+
+
+def test_late_recording_does_not_reorder_history_or_require_monotonic_wall_clock(
+    journal, who, catalog
+):
+    value = extension(who, validate_journal(journal, catalog=catalog).graph["artifacts"][0]["id"])
+    raw = append_assertions(
+        journal,
+        {"extensions": [value]},
+        recorded_by_agent_id=who,
+        recorded_at="2001-01-01T00:00:00Z",
+        catalog=catalog,
+    )
+    assert validate_journal(raw, catalog=catalog).tail.document["sequence"] == "1"
+
+
+def test_correction_retires_assertion_not_artifact_state(journal, who, catalog):
+    old = validate_journal(journal, catalog=catalog)
+    agent = old.graph["agents"][0]
+    corrected = copy.deepcopy(agent)
+    corrected["assertion_id"] = new_id()
+    corrected["name"] = "Corrected label"
+    raw = append_correction(
+        journal,
+        [assertion_reference(old, agent["assertion_id"])],
+        reason="spelling",
+        recorded_by_agent_id=who,
+        assertions={"agents": [corrected]},
+        catalog=catalog,
+    )
+    new = validate_journal(raw, catalog=catalog)
+    assert agent["assertion_id"] in new.retracted_assertion_ids
+    assert [s["id"] for s in new.states] == [s["id"] for s in old.states]
+    assert new.graph["agents"][0]["name"] == "Corrected label"
+    assert raw.startswith(journal)
+
+
+def test_correction_cannot_leave_dangling_local_references(journal, who, catalog):
+    old = validate_journal(journal, catalog=catalog)
+    with pytest.raises(ProvenanceValidationError, match="unresolved local"):
+        append_correction(
+            journal,
+            [assertion_reference(old, old.graph["states"][0]["assertion_id"])],
+            reason="must also retire dependents",
+            recorded_by_agent_id=who,
+            catalog=catalog,
+        )
+
+
+def test_retracted_assertion_id_cannot_be_reused(journal, who, catalog):
+    first, row = appended(journal, who, catalog)
+    summary = validate_journal(first, catalog=catalog)
+    second = append_correction(
+        first,
+        [assertion_reference(summary, row["assertion_id"])],
+        reason="unsupported",
+        recorded_by_agent_id=who,
+        catalog=catalog,
+    )
+    with pytest.raises(ProvenanceValidationError, match="cannot be reused"):
+        append_assertions(second, {"extensions": [row]}, recorded_by_agent_id=who, catalog=catalog)
+    with pytest.raises(ProvenanceValidationError, match="already retired"):
+        append_correction(
+            second,
+            [assertion_reference(summary, row["assertion_id"])],
+            reason="again",
+            recorded_by_agent_id=who,
+            catalog=catalog,
+        )
+
+
+def test_state_identity_cannot_be_redefined_in_a_correction(journal, who, catalog):
+    old = validate_journal(journal, catalog=catalog)
+    state = old.graph["states"][0]
+    new = copy.deepcopy(state)
+    new["assertion_id"] = new_id()
+    new["extent"] = {"kind": "unknown", "reason": "changed assertion"}
+    with pytest.raises(ProvenanceValidationError, match="immutable referent"):
+        append_correction(
+            journal,
+            [assertion_reference(old, state["assertion_id"])],
+            reason="not a valid correction",
+            recorded_by_agent_id=who,
+            assertions={"states": [new]},
+            catalog=catalog,
+        )
+
+
+def test_reobservation_same_artifact_and_occurrence_has_new_state(journal, observation, catalog):
+    result = BoundedSourceObserver(catalog=catalog).observe(
+        BytesSource(b"new primary content"),
+        ObservationRequest(artifact=observation.artifact, occurrence=observation.occurrence),
+    )
+    raw = append_observation(journal, result, catalog=catalog)
+    summary = validate_journal(raw, catalog=catalog)
+    assert len(summary.states) == 2
+    assert len(summary.graph["occurrences"]) == 1
+    assert len(summary.graph["artifacts"]) == 1
+    assert "relations" not in summary.graph  # an edit is not inferred
+
+
+def test_external_references_pin_assertion_and_exact_entry(journal, who, catalog):
+    first = validate_journal(journal, catalog=catalog)
+    other = BoundedSourceObserver(catalog=catalog).observe(BytesSource(b"derivative"))
+    g = other.graph_fragment()
+    g["relations"] = [
+        assertion(
+            "derivation",
+            who,
+            used_state=external_reference(first, first.states[0]["id"]),
+            generated_state=reference(other.state_id, "state"),
+            kind="transformation",
+        )
+    ]
+    second = create_journal(g, recorded_by_agent_id=who, catalog=catalog)
+    assert validate_journal(second, catalog=catalog).graph_validation.external_references
+    assert not validate_journal_set([journal, second], catalog=catalog).unresolved_references
+    with pytest.raises(ProvenanceValidationError, match="unresolved external"):
+        validate_journal_set([second], catalog=catalog)
+    assert validate_journal_set(
+        [second], catalog=catalog, require_all_references=False
+    ).unresolved_references
+
+
+def test_foreign_comparison_is_rechecked_when_evidence_becomes_available(journal, who, catalog):
+    first = validate_journal(journal, catalog=catalog)
+    other = BoundedSourceObserver(catalog=catalog).observe(BytesSource(b"different"))
+    g = other.graph_fragment()
+    g["relations"] = [
+        assertion(
+            "content_comparison",
+            who,
+            left_description=external_reference(first, first.graph["descriptions"][0]["id"]),
+            right_description=reference(other.observation_id, "observation"),
+            result="matching_fixity",
+            algorithm="sha-256",
+        )
+    ]
+    second = create_journal(g, recorded_by_agent_id=who, catalog=catalog)
+    assert validate_journal(second, catalog=catalog).findings
+    with pytest.raises(ProvenanceValidationError, match="foreign content"):
+        validate_journal_set([journal, second], catalog=catalog)
+
+
+def test_independent_writers_must_not_reuse_journal_id(journal, who, catalog):
+    left, _ = appended(journal, who, catalog)
+    right, _ = appended(journal, who, catalog)
+    with pytest.raises(ProvenanceValidationError, match="divergent writers"):
+        validate_journal_set([left, right], catalog=catalog)
+    assert len(validate_journal_set([journal, left], catalog=catalog).journals) == 1
+
+
+def test_fork_anchors_a_prefix_and_keeps_an_independent_chain(journal, who, catalog):
+    parent = validate_journal(journal, catalog=catalog)
+    child = create_journal(
+        {"agents": parent.graph["agents"]},
+        recorded_by_agent_id=who,
+        forked_from=parent.anchor,
+        catalog=catalog,
+    )
+    assert validate_journal(child, catalog=catalog).journal_id != parent.journal_id
+    validate_journal_set([journal, child], catalog=catalog)
+    with pytest.raises(ProvenanceValidationError, match="fork prefix"):
+        validate_journal_set([child], catalog=catalog)
+
+
+def test_aggregate_detects_cross_journal_derivation_cycle(journal, who, catalog):
+    a0 = validate_journal(journal, catalog=catalog)
+    b = BoundedSourceObserver(catalog=catalog).observe(BytesSource(b"b"))
+    bg = b.graph_fragment()
+    bg["relations"] = [
+        assertion(
+            "derivation",
+            who,
+            used_state=external_reference(a0, a0.states[0]["id"]),
+            generated_state=reference(b.state_id, "state"),
+            kind="copy",
+        )
+    ]
+    braw = create_journal(bg, recorded_by_agent_id=who, catalog=catalog)
+    b0 = validate_journal(braw, catalog=catalog)
+    araw = append_assertions(
+        journal,
+        {
+            "relations": [
+                assertion(
+                    "derivation",
+                    who,
+                    used_state=external_reference(b0, b.state_id),
+                    generated_state=reference(a0.states[0]["id"], "state"),
+                    kind="copy",
+                )
+            ]
+        },
+        recorded_by_agent_id=who,
+        catalog=catalog,
+    )
+    with pytest.raises(ProvenanceValidationError, match="cycle"):
+        validate_journal_set([araw, braw], catalog=catalog)
+
+
+def test_segmented_transport_has_no_logical_paths(journal, catalog):
+    segments = segment_journal(journal, maximum_segment_bytes=97, catalog=catalog)
+    assert len(segments) > 1
+    assert reassemble_journal(segments, catalog=catalog) == journal
+    assert all("path" not in s.descriptor() for s in segments)
+    assert ordered_segment_commitment(
+        s.descriptor() for s in segments
+    ) != ordered_segment_commitment(s.descriptor() for s in reversed(segments))
+
+
+@pytest.mark.parametrize("mutation", ["order", "gap", "corrupt", "missing", "identity"])
+def test_segment_integrity_is_checked(journal, catalog, mutation):
+    segments = list(segment_journal(journal, maximum_segment_bytes=100, catalog=catalog))
+    if mutation == "order":
+        segments.reverse()
+    elif mutation == "gap":
+        segments[1] = replace(segments[1], offset=101)
+    elif mutation == "corrupt":
+        segments[0] = replace(segments[0], content=b"X" + segments[0].content[1:])
+    elif mutation == "missing":
+        segments.pop()
+    else:
+        segments[0] = replace(segments[0], object_id=new_id())
+    with pytest.raises(ProvenanceValidationError):
+        reassemble_journal(segments, catalog=catalog)
+
+
+def test_delivery_is_scoped_and_verifies_only_primary_bytes(journal, who, catalog):
+    old = validate_journal(journal, catalog=catalog)
+    context = assertion("context", who, kind="delivery", label="one transfer envelope")
+    delivery = assertion(
+        "delivery_association",
+        who,
+        delivery_context_id=context["id"],
+        slot={"kind": "text", "text": "opaque slot identifier"},
+        role="urn:test:payload",
+        state=reference(old.states[0]["id"], "state"),
+        verification_observation_id=old.graph["descriptions"][0]["id"],
+    )
+    raw = append_assertions(
+        journal,
+        {"contexts": [context], "delivery_associations": [delivery]},
+        recorded_by_agent_id=who,
+        catalog=catalog,
+    )
+    result = verify_delivery(
+        validate_journal(raw, catalog=catalog),
+        delivery["id"],
+        BytesIO(b"opaque primary bytes\x00\xff"),
+    )
+    assert result["scope"] == "primary_bytes_only"
+    with pytest.raises(ProvenanceValidationError):
+        verify_delivery(
+            validate_journal(raw, catalog=catalog),
+            delivery["id"],
+            BytesIO(b"opaque primary bytes\x00\xfe"),
+        )
+
+
+def test_assertion_identity_is_immutable_across_journals_even_for_labels(journal, who, catalog):
+    graph = validate_journal(journal, catalog=catalog).graph
+    graph["agents"][0]["name"] = "Different claim under the same assertion identity"
+    other = create_journal(graph, recorded_by_agent_id=who, catalog=catalog)
+    with pytest.raises(ProvenanceValidationError, match="assertion identity redefined"):
+        validate_journal_set([journal, other], catalog=catalog)
+
+
+def test_verbatim_assertion_replication_is_not_redefinition(journal, who, catalog):
+    graph = validate_journal(journal, catalog=catalog).graph
+    other = create_journal(graph, recorded_by_agent_id=who, catalog=catalog)
+    validate_journal_set([journal, other], catalog=catalog)

@@ -20,7 +20,7 @@ from riverhog_core.app_permissions import CATALOG_READ, Principal
 from riverhog_core.artifact_access import artifact_scope_filter
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
-from riverhog_core.catalog_models import CollectionFileRecord
+from riverhog_core.catalog_models import CollectionArtifactRecord
 from riverhog_core.collection_access import collection_access_filter, require_collection_access
 from riverhog_core.runtime_config import RuntimeConfig
 
@@ -163,25 +163,25 @@ def _search_statement(
         principal=principal,
     )
     statement = select(
-        CollectionFileRecord.collection_id,
-        CollectionFileRecord.path,
-        CollectionFileRecord.path_sort_key,
-        CollectionFileRecord.bytes,
-        CollectionFileRecord.sha256,
+        CollectionArtifactRecord.collection_id,
+        CollectionArtifactRecord.path,
+        CollectionArtifactRecord.path_sort_key,
+        CollectionArtifactRecord.bytes,
+        CollectionArtifactRecord.sha256,
     ).where(*filters)
     return normalized_collection, query, filters, statement, _key_columns(sort)
 
 
 def _key_columns(sort: str) -> tuple[Any, ...]:
     if sort in {"file_ref", "collection_id"}:
-        return CollectionFileRecord.collection_id, CollectionFileRecord.path_sort_key
+        return CollectionArtifactRecord.collection_id, CollectionArtifactRecord.path_sort_key
     if sort == "path":
-        return CollectionFileRecord.path_sort_key, CollectionFileRecord.collection_id
+        return CollectionArtifactRecord.path_sort_key, CollectionArtifactRecord.collection_id
     if sort == "bytes":
         return (
-            CollectionFileRecord.bytes,
-            CollectionFileRecord.collection_id,
-            CollectionFileRecord.path_sort_key,
+            CollectionArtifactRecord.bytes,
+            CollectionArtifactRecord.collection_id,
+            CollectionArtifactRecord.path_sort_key,
         )
     raise BadRequest(f"sort must be one of {', '.join(sorted(_SORT_FIELDS))}")
 
@@ -207,23 +207,23 @@ def _search_filters(
         except PathNormalizationError as exc:
             raise BadRequest(str(exc)) from exc
     filters: list[ColumnElement[bool]] = [
-        collection_access_filter(CollectionFileRecord.collection_id, principal, CATALOG_READ)
+        collection_access_filter(CollectionArtifactRecord.collection_id, principal, CATALOG_READ)
     ]
     filters.append(
         artifact_scope_filter(
-            CollectionFileRecord.collection_id,
-            CollectionFileRecord.path,
+            CollectionArtifactRecord.collection_id,
+            CollectionArtifactRecord.path,
             principal,
         )
     )
     query = q.strip() if q is not None else None
     if query:
         filters.append(
-            CollectionFileRecord.search_text.like(
+            CollectionArtifactRecord.search_text.like(
                 _like_pattern(text_search_key(query)),
                 escape="\\",
             )
         )
     if normalized_collection is not None:
-        filters.append(CollectionFileRecord.collection_id == normalized_collection)
+        filters.append(CollectionArtifactRecord.collection_id == normalized_collection)
     return normalized_collection, query, filters

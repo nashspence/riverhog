@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/profile-reference.schema.json",
+  "title": "Sealed metadata profile reference",
+  "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/profileReference"
+}

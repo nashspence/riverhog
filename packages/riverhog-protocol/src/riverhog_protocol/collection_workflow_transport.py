@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from riverhog_canonical_json import format_scalar, scalar_schema
 from time_formats import CanonicalUtcTimestamp
 
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
     ArtifactDispositionOutput,
@@ -42,7 +43,7 @@ from riverhog_protocol.no_output_settlement import (
     NoOutputSettlement,
 )
 from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
-from riverhog_protocol.paths import CanonicalRelPath, CollectionId
+from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.principal_ids import ApplicationName, PrincipalId
 
 SHA256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
@@ -135,7 +136,7 @@ def _validate_opaque_document(
 class CollectionRootIdentityDocument(RiverhogWorkflowDocument):
     collection_id: CollectionId
     archive_root_sha256: SHA256
-    content_identity: SHA256
+    artifact_set_identity: SHA256
 
     @model_validator(mode="after")
     def validate_identity(self) -> Self:
@@ -145,7 +146,7 @@ class CollectionRootIdentityDocument(RiverhogWorkflowDocument):
 
 class CollectionArtifactIdentityDocument(RiverhogWorkflowDocument):
     collection: CollectionRootIdentityDocument
-    path: CanonicalRelPath
+    artifact_id: ArtifactId
     bytes: NonnegativeDecimal
     sha256: SHA256
 
@@ -400,7 +401,7 @@ class ExternalEffectSettlementDocument(RiverhogWorkflowDocument):
 class ArtifactDispositionInputDocument(RiverhogWorkflowDocument):
     collection_id: CollectionId
     archive_root_sha256: SHA256
-    path: CanonicalRelPath
+    artifact_id: ArtifactId
 
 
 class ArtifactDispositionFailureDocument(RiverhogWorkflowDocument):
@@ -519,7 +520,7 @@ class ArtifactDispositionDocument(RiverhogWorkflowDocument):
 
 class ArtifactDispositionOutputDocument(RiverhogWorkflowDocument):
     input: ArtifactDispositionInputDocument
-    output_path: CanonicalRelPath
+    output_artifact_id: ArtifactId
 
     @model_validator(mode="after")
     def validate_output(self) -> Self:

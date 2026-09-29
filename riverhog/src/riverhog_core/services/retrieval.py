@@ -61,17 +61,17 @@ from riverhog_core.catalog_db import SessionFactory, make_session_factory, sessi
 from riverhog_core.catalog_models import (
     ArchiveCopyRetirementRecord,
     CollectionArchiveCopyRecord,
-    CollectionArchiveFileObjectRecord,
+    CollectionArchiveArtifactObjectRecord,
     CollectionArchiveObjectRecord,
     CollectionDeletionRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
     RetrievalCacheLeaseRecord,
     RetrievalCacheObjectRecord,
     RetrievalCacheStoreAccountingRecord,
     RetrievalJobObjectProgressRecord,
     RetrievalJobRecord,
-    RetrievalPlanFileRecord,
+    RetrievalPlanArtifactRecord,
     RetrievalPlanObjectRecord,
     RetrievalPlanPlacementRecord,
     RetrievalPlanRecord,
@@ -248,12 +248,12 @@ class SqlAlchemyRetrievalService:
         def files() -> Iterator[PortableCollectionFile]:
             statement = (
                 select(
-                    CollectionFileRecord.path,
-                    CollectionFileRecord.bytes,
-                    CollectionFileRecord.sha256,
+                    CollectionArtifactRecord.path,
+                    CollectionArtifactRecord.bytes,
+                    CollectionArtifactRecord.sha256,
                 )
-                .where(CollectionFileRecord.collection_id == normalized_id)
-                .order_by(CollectionFileRecord.path_sort_key)
+                .where(CollectionArtifactRecord.collection_id == normalized_id)
+                .order_by(CollectionArtifactRecord.path_sort_key)
                 .execution_options(yield_per=100)
             )
             with read_snapshot(self._session_factory) as session:
@@ -320,17 +320,17 @@ class SqlAlchemyRetrievalService:
             file_bytes = int(collection.file_bytes)
             statement = (
                 select(
-                    CollectionFileRecord.path,
-                    CollectionFileRecord.bytes,
-                    CollectionFileRecord.sha256,
+                    CollectionArtifactRecord.path,
+                    CollectionArtifactRecord.bytes,
+                    CollectionArtifactRecord.sha256,
                 )
-                .where(CollectionFileRecord.collection_id == normalized_id)
-                .order_by(CollectionFileRecord.path_sort_key)
+                .where(CollectionArtifactRecord.collection_id == normalized_id)
+                .order_by(CollectionArtifactRecord.path_sort_key)
                 .limit(limit + 1)
             )
             if cursor_after is not None:
                 statement = statement.where(
-                    CollectionFileRecord.path_sort_key > relpath_sort_key(cursor_after)
+                    CollectionArtifactRecord.path_sort_key > relpath_sort_key(cursor_after)
                 )
             rows = list(session.execute(statement).tuples())
 
@@ -755,12 +755,12 @@ class SqlAlchemyRetrievalService:
                 raise PreconditionFailed("retrieval plan identity changed")
             rows = list(
                 session.scalars(
-                    select(RetrievalPlanFileRecord)
+                    select(RetrievalPlanArtifactRecord)
                     .where(
-                        RetrievalPlanFileRecord.plan_id == plan_id,
-                        RetrievalPlanFileRecord.file_order >= start_ordinal,
+                        RetrievalPlanArtifactRecord.plan_id == plan_id,
+                        RetrievalPlanArtifactRecord.file_order >= start_ordinal,
                     )
-                    .order_by(RetrievalPlanFileRecord.file_order)
+                    .order_by(RetrievalPlanArtifactRecord.file_order)
                     .limit(page_size + 1)
                 )
             )
@@ -784,17 +784,17 @@ class SqlAlchemyRetrievalService:
             collection_id = int(str(current_ref["collection_id"]))
             path = str(current_ref["path"])
             plan_file = session.get(
-                RetrievalPlanFileRecord,
+                RetrievalPlanArtifactRecord,
                 (plan.id, plan.next_file_order),
             )
             if plan_file is None:
                 if session.get(CollectionDeletionRecord, collection_id) is not None:
                     raise Conflict(f"collection deletion is active: {collection_id}")
-                file_record = session.get(CollectionFileRecord, (collection_id, path))
+                file_record = session.get(CollectionArtifactRecord, (collection_id, path))
                 if file_record is None:
                     raise NotFound(f"file not found: {collection_id}/{path}")
                 copy = self._select_copy(session, collection_id)
-                plan_file = RetrievalPlanFileRecord(
+                plan_file = RetrievalPlanArtifactRecord(
                     plan_id=plan.id,
                     file_order=plan.next_file_order,
                     collection_id=collection_id,
@@ -819,14 +819,14 @@ class SqlAlchemyRetrievalService:
 
             rows = list(
                 session.scalars(
-                    select(CollectionArchiveFileObjectRecord)
+                    select(CollectionArchiveArtifactObjectRecord)
                     .where(
-                        CollectionArchiveFileObjectRecord.collection_id == collection_id,
-                        CollectionArchiveFileObjectRecord.store == plan_file.source_store,
-                        CollectionArchiveFileObjectRecord.path == path,
-                        CollectionArchiveFileObjectRecord.sequence >= plan.next_placement_sequence,
+                        CollectionArchiveArtifactObjectRecord.collection_id == collection_id,
+                        CollectionArchiveArtifactObjectRecord.store == plan_file.source_store,
+                        CollectionArchiveArtifactObjectRecord.path == path,
+                        CollectionArchiveArtifactObjectRecord.sequence >= plan.next_placement_sequence,
                     )
-                    .order_by(CollectionArchiveFileObjectRecord.sequence)
+                    .order_by(CollectionArchiveArtifactObjectRecord.sequence)
                     .limit(remaining + 1)
                 )
             )
@@ -977,8 +977,8 @@ class SqlAlchemyRetrievalService:
         session: Session,
         *,
         planned_object: RetrievalPlanObjectRecord,
-        plan_file: RetrievalPlanFileRecord,
-        placement: CollectionArchiveFileObjectRecord,
+        plan_file: RetrievalPlanArtifactRecord,
+        placement: CollectionArchiveArtifactObjectRecord,
     ) -> int:
         if planned_object.read_mode != "immediate":
             return 0
@@ -1262,10 +1262,10 @@ class SqlAlchemyRetrievalService:
             if job.state != "ready":
                 raise InvalidState("retrieval job is not ready")
             plan_file = session.scalar(
-                select(RetrievalPlanFileRecord).where(
-                    RetrievalPlanFileRecord.plan_id == job.plan_id,
-                    RetrievalPlanFileRecord.collection_id == collection_id,
-                    RetrievalPlanFileRecord.path == path,
+                select(RetrievalPlanArtifactRecord).where(
+                    RetrievalPlanArtifactRecord.plan_id == job.plan_id,
+                    RetrievalPlanArtifactRecord.collection_id == collection_id,
+                    RetrievalPlanArtifactRecord.path == path,
                 )
             )
             if plan_file is None:
@@ -1561,10 +1561,10 @@ class SqlAlchemyRetrievalService:
             if job.state != "ready":
                 raise InvalidState("retrieval job is not ready")
             plan_file = session.scalar(
-                select(RetrievalPlanFileRecord).where(
-                    RetrievalPlanFileRecord.plan_id == job.plan_id,
-                    RetrievalPlanFileRecord.collection_id == collection_id,
-                    RetrievalPlanFileRecord.path == path,
+                select(RetrievalPlanArtifactRecord).where(
+                    RetrievalPlanArtifactRecord.plan_id == job.plan_id,
+                    RetrievalPlanArtifactRecord.collection_id == collection_id,
+                    RetrievalPlanArtifactRecord.path == path,
                 )
             )
             if plan_file is None:
@@ -2714,7 +2714,7 @@ def _normalize_plan_idempotency_key(value: str) -> str:
     return normalized
 
 
-def _plan_file_payload(record: RetrievalPlanFileRecord) -> dict[str, object]:
+def _plan_file_payload(record: RetrievalPlanArtifactRecord) -> dict[str, object]:
     return {
         "collection_id": format_scalar("sequence63", record.collection_id),
         "path": record.path,

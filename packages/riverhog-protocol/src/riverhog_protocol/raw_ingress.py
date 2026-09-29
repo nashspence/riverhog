@@ -7,7 +7,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from riverhog_protocol.paths import validate_canonical_relpath
+from riverhog_protocol.artifact_identity import ArtifactId
 
 RAW_SOURCE_DIGEST_SUMMARY_FORMAT = "raw-source-digest-summary/v1"
 RAW_SOURCE_DIGEST_BATCH_MAX = 1024
@@ -71,7 +71,7 @@ def _advance_part_commitment(state: bytes, number: int, value: str) -> bytes:
 class RawSourceDigestSummary:
     """Small exact authority for an arbitrarily large raw source."""
 
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     sha256: str
     part_plaintext_bytes: int
@@ -80,7 +80,7 @@ class RawSourceDigestSummary:
     format: str = RAW_SOURCE_DIGEST_SUMMARY_FORMAT
 
     def __post_init__(self) -> None:
-        validate_canonical_relpath(self.path)
+        object.__setattr__(self, "artifact_id", ArtifactId(self.artifact_id))
         expected_parts = _part_count(self.bytes, self.part_plaintext_bytes)
         if self.part_count != expected_parts:
             raise ValueError("raw source digest part count is invalid")

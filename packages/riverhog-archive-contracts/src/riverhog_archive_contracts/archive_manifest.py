@@ -23,7 +23,7 @@ from riverhog_canonical_json import (
 COLLECTION_ARCHIVE_MANIFEST_FORMAT = "collection-archive-manifest/v1"
 COLLECTION_ARCHIVE_VOLUME_FORMAT = "collection-archive-volume/v1"
 COLLECTION_ARCHIVE_TERMINAL_FORMAT = "collection-archive-terminal/v1"
-ARCHIVE_PACK_FILES_MAX = 50_000
+ARCHIVE_PACK_ARTIFACTS_MAX = 50_000
 ARCHIVE_VOLUME_PARTS_MAX = 1024
 ARCHIVE_ROOT_DOCUMENT_BYTES_MAX = 64 * 1024
 ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX = 1024 * 1024
@@ -132,29 +132,29 @@ def _base64(value: object, label: str) -> str:
 
 
 @dataclass(frozen=True, slots=True)
-class CollectionTreeIdentity:
-    files: int
+class CollectionArtifactSetIdentity:
+    count: int
     bytes: int
     sha256: str
 
     def __post_init__(self) -> None:
-        _positive_int(self.files, "archive tree files")
-        _nonnegative_int(self.bytes, "archive tree bytes")
-        _sha256(self.sha256, "archive tree sha256")
+        _positive_int(self.count, "archive artifact count")
+        _nonnegative_int(self.bytes, "archive artifact bytes")
+        _sha256(self.sha256, "archive artifact-set sha256")
 
     @classmethod
-    def from_mapping(cls, value: object) -> CollectionTreeIdentity:
-        row = _mapping(value, {"files", "bytes", "sha256"}, "archive tree")
-        files = _exact_count(row["files"], "archive tree files", positive=True)
+    def from_mapping(cls, value: object) -> CollectionArtifactSetIdentity:
+        row = _mapping(value, {"count", "bytes", "sha256"}, "archive artifact set")
+        count = _exact_count(row["count"], "archive artifact count", positive=True)
         return cls(
-            files=files,
-            bytes=_exact_count(row["bytes"], "archive tree bytes"),
-            sha256=_sha256(row["sha256"], "archive tree sha256"),
+            count=count,
+            bytes=_exact_count(row["bytes"], "archive artifact bytes"),
+            sha256=_sha256(row["sha256"], "archive artifact-set sha256"),
         )
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "files": format_scalar("nonnegative", self.files),
+            "count": format_scalar("nonnegative", self.count),
             "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
         }
@@ -315,67 +315,61 @@ def _validate_parts(
 
 
 @dataclass(frozen=True, slots=True)
-class ArchiveFileIdentity:
-    path: str
+class ArchiveArtifactIdentity:
+    artifact_id: str
     bytes: int
     sha256: str
 
     def __post_init__(self) -> None:
-        path = _relative_path(self.path, "archive file path")
-        if path.startswith(".riverhog/"):
-            raise ArchiveManifestError("archive file path is reserved")
-        _nonnegative_int(self.bytes, "archive file bytes")
-        _sha256(self.sha256, "archive file sha256")
+        _sha256(self.artifact_id, "archive artifact ID")
+        if _nonnegative_int(self.bytes, "archive artifact bytes") >= 1 << 63:
+            raise ArchiveManifestError("archive artifact exceeds the observation domain")
+        _sha256(self.sha256, "archive artifact sha256")
 
 
 @dataclass(frozen=True, slots=True)
-class SegmentFilePlacement:
-    path: str
+class SegmentArtifactPlacement:
+    artifact_id: str
     offset: int
     bytes: int
-    file_bytes: int
+    artifact_bytes: int
     sha256: str
 
     def __post_init__(self) -> None:
-        path = _relative_path(self.path, "archive segment source path")
-        if path.startswith(".riverhog/"):
-            raise ArchiveManifestError("archive segment source path is reserved")
+        _sha256(self.artifact_id, "archive segment artifact ID")
         offset = _nonnegative_int(self.offset, "archive segment file offset")
         byte_count = _nonnegative_int(self.bytes, "archive segment bytes")
-        file_bytes = _nonnegative_int(self.file_bytes, "archive segment file bytes")
-        if offset + byte_count > file_bytes:
+        artifact_bytes = _nonnegative_int(self.artifact_bytes, "archive segment artifact bytes")
+        if artifact_bytes >= 1 << 63 or offset + byte_count > artifact_bytes:
             raise ArchiveManifestError("archive segment placement is invalid")
-        _sha256(self.sha256, "archive segment file sha256")
+        _sha256(self.sha256, "archive segment artifact sha256")
 
     @classmethod
-    def from_mapping(cls, value: object, *, plaintext_bytes: int) -> SegmentFilePlacement:
+    def from_mapping(cls, value: object, *, plaintext_bytes: int) -> SegmentArtifactPlacement:
         row = _mapping(
             value,
-            {"path", "offset", "bytes", "file_bytes", "sha256"},
-            "archive segment file",
+            {"artifact_id", "offset", "bytes", "artifact_bytes", "sha256"},
+            "archive segment artifact",
         )
-        path = _relative_path(row["path"], "archive segment source path")
-        if path.startswith(".riverhog/"):
-            raise ArchiveManifestError("archive segment source path is reserved")
         offset = _exact_count(row["offset"], "archive segment file offset")
         byte_count = _exact_count(row["bytes"], "archive segment bytes")
-        file_bytes = _exact_count(row["file_bytes"], "archive segment file bytes")
-        if byte_count != plaintext_bytes or offset + byte_count > file_bytes:
+        artifact_bytes = _exact_count(row["artifact_bytes"], "archive segment artifact bytes")
+        if byte_count != plaintext_bytes or offset + byte_count > artifact_bytes:
             raise ArchiveManifestError("archive segment placement is invalid")
         return cls(
-            path=path,
+            artifact_id=_sha256(row["artifact_id"], "archive segment artifact ID"),
             offset=offset,
             bytes=byte_count,
-            file_bytes=file_bytes,
-            sha256=_sha256(row["sha256"], "archive segment file sha256"),
+            artifact_bytes=artifact_bytes,
+            sha256=_sha256(row["sha256"], "archive segment artifact sha256"),
         )
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "path": self.path,
+            "artifact_id": self.artifact_id,
             "offset": format_scalar("nonnegative", self.offset),
             "bytes": format_scalar("nonnegative", self.bytes),
-            "file_bytes": format_scalar("nonnegative", self.file_bytes),
+            "artifact_bytes": format_scalar("nonnegative", self.artifact_bytes),
             "sha256": self.sha256,
         }
 
@@ -385,7 +379,7 @@ class PackArchiveVolume:
     id: str
     sequence: int
     path: str
-    files: int
+    artifacts: int
     source_bytes: int
     plaintext_bytes: int
     age_state: AgeUploadState
@@ -400,8 +394,8 @@ class PackArchiveVolume:
             raise ArchiveManifestError("archive volume identity is not canonical")
         if self.path != f"volumes/{self.id}.tar.age":
             raise ArchiveManifestError("archive volume path is not canonical")
-        if _positive_int(self.files, "archive pack files") > ARCHIVE_PACK_FILES_MAX:
-            raise ArchiveManifestError("archive pack files exceed the volume limit")
+        if _positive_int(self.artifacts, "archive pack artifacts") > ARCHIVE_PACK_ARTIFACTS_MAX:
+            raise ArchiveManifestError("archive pack artifacts exceed the volume limit")
         _nonnegative_int(self.source_bytes, "archive pack source bytes")
         plaintext_bytes = _nonnegative_int(self.plaintext_bytes, "archive volume bytes")
         if not isinstance(self.age_state, AgeUploadState):
@@ -418,7 +412,7 @@ class PackArchiveVolume:
             "sequence": format_archive_sequence(self.sequence),
             "kind": self.kind,
             "path": self.path,
-            "files": self.files,
+            "artifacts": self.artifacts,
             "source_bytes": format_scalar("nonnegative", self.source_bytes),
             "plaintext_bytes": format_scalar("nonnegative", self.plaintext_bytes),
             "age_state": self.age_state.to_mapping(),
@@ -435,7 +429,7 @@ class SegmentArchiveVolume:
     path: str
     plaintext_bytes: int
     age_state: AgeUploadState
-    file: SegmentFilePlacement
+    artifact: SegmentArtifactPlacement
     parts: tuple[StoredPartIdentity, ...]
     kind: Literal["segment"] = "segment"
 
@@ -450,17 +444,24 @@ class SegmentArchiveVolume:
             raise ArchiveManifestError("archive age state is invalid")
         if self.age_state.plaintext_size != plaintext_bytes:
             raise ArchiveManifestError("archive age state plaintext size does not match volume")
-        if not isinstance(self.file, SegmentFilePlacement) or self.file.bytes != plaintext_bytes:
+        if (
+            not isinstance(self.artifact, SegmentArtifactPlacement)
+            or self.artifact.bytes != plaintext_bytes
+        ):
             raise ArchiveManifestError("archive segment placement is invalid")
         _validate_parts(self.parts, plaintext_bytes=plaintext_bytes)
 
     @property
-    def source_file(self) -> ArchiveFileIdentity:
-        return ArchiveFileIdentity(self.file.path, self.file.file_bytes, self.file.sha256)
+    def source_artifact(self) -> ArchiveArtifactIdentity:
+        return ArchiveArtifactIdentity(
+            self.artifact.artifact_id,
+            self.artifact.artifact_bytes,
+            self.artifact.sha256,
+        )
 
     @property
     def file_offset(self) -> int:
-        return self.file.offset
+        return self.artifact.offset
 
     def to_mapping(self) -> dict[str, object]:
         return {
@@ -470,7 +471,7 @@ class SegmentArchiveVolume:
             "path": self.path,
             "plaintext_bytes": format_scalar("nonnegative", self.plaintext_bytes),
             "age_state": self.age_state.to_mapping(),
-            "file": self.file.to_mapping(),
+            "artifact": self.artifact.to_mapping(),
             "parts": [part.to_mapping() for part in self.parts],
         }
 
@@ -483,7 +484,7 @@ class CollectionArchiveVolumeDocument:
     """One bounded independently recoverable archive-volume description."""
 
     archive_generation: str
-    archive_tree_sha256: str
+    artifact_set_sha256: str
     volume: ArchiveVolume
     format: str = COLLECTION_ARCHIVE_VOLUME_FORMAT
 
@@ -491,7 +492,7 @@ class CollectionArchiveVolumeDocument:
         if self.format != COLLECTION_ARCHIVE_VOLUME_FORMAT:
             raise ArchiveManifestError("collection archive volume format is unsupported")
         _sha256(self.archive_generation, "collection archive generation")
-        _sha256(self.archive_tree_sha256, "collection archive volume tree sha256")
+        _sha256(self.artifact_set_sha256, "collection archive volume artifact-set sha256")
         if not isinstance(self.volume, (PackArchiveVolume, SegmentArchiveVolume)):
             raise ArchiveManifestError("collection archive volume is invalid")
 
@@ -499,7 +500,7 @@ class CollectionArchiveVolumeDocument:
     def from_mapping(cls, value: object) -> CollectionArchiveVolumeDocument:
         row = _mapping(
             value,
-            {"format", "archive_generation", "archive_tree_sha256", "volume"},
+            {"format", "archive_generation", "artifact_set_sha256", "volume"},
             "collection archive volume",
         )
         if row["format"] != COLLECTION_ARCHIVE_VOLUME_FORMAT:
@@ -510,8 +511,8 @@ class CollectionArchiveVolumeDocument:
         sequence = parse_archive_sequence(raw.get("sequence"), "archive volume sequence")
         return cls(
             archive_generation=_sha256(row["archive_generation"], "collection archive generation"),
-            archive_tree_sha256=_sha256(
-                row["archive_tree_sha256"], "collection archive volume tree sha256"
+            artifact_set_sha256=_sha256(
+                row["artifact_set_sha256"], "collection archive volume artifact-set sha256"
             ),
             volume=_volume(raw, expected_sequence=sequence),
         )
@@ -534,7 +535,7 @@ class CollectionArchiveVolumeDocument:
         return {
             "format": self.format,
             "archive_generation": self.archive_generation,
-            "archive_tree_sha256": self.archive_tree_sha256,
+            "artifact_set_sha256": self.artifact_set_sha256,
             "volume": self.volume.to_mapping(),
         }
 
@@ -550,7 +551,7 @@ class CollectionArchiveTerminalDocument:
     """Authenticated end marker at the next deterministic sequence path."""
 
     archive_generation: str
-    archive_tree_sha256: str
+    artifact_set_sha256: str
     sequence: int
     kind: Literal["terminal"] = "terminal"
     format: str = COLLECTION_ARCHIVE_TERMINAL_FORMAT
@@ -559,7 +560,7 @@ class CollectionArchiveTerminalDocument:
         if self.format != COLLECTION_ARCHIVE_TERMINAL_FORMAT or self.kind != "terminal":
             raise ArchiveManifestError("collection archive terminal format is unsupported")
         _sha256(self.archive_generation, "collection archive generation")
-        _sha256(self.archive_tree_sha256, "collection archive terminal tree sha256")
+        _sha256(self.artifact_set_sha256, "collection archive terminal artifact-set sha256")
         _positive_int(self.sequence, "collection archive terminal sequence")
         format_archive_sequence(self.sequence)
 
@@ -567,13 +568,13 @@ class CollectionArchiveTerminalDocument:
     def from_mapping(cls, value: object) -> CollectionArchiveTerminalDocument:
         row = _mapping(
             value,
-            {"format", "archive_generation", "archive_tree_sha256", "sequence", "kind"},
+            {"format", "archive_generation", "artifact_set_sha256", "sequence", "kind"},
             "collection archive terminal",
         )
         return cls(
             archive_generation=_sha256(row["archive_generation"], "collection archive generation"),
-            archive_tree_sha256=_sha256(
-                row["archive_tree_sha256"], "collection archive terminal tree sha256"
+            artifact_set_sha256=_sha256(
+                row["artifact_set_sha256"], "collection archive terminal artifact-set sha256"
             ),
             sequence=parse_archive_sequence(
                 row["sequence"], "collection archive terminal sequence"
@@ -600,7 +601,7 @@ class CollectionArchiveTerminalDocument:
         return {
             "format": self.format,
             "archive_generation": self.archive_generation,
-            "archive_tree_sha256": self.archive_tree_sha256,
+            "artifact_set_sha256": self.artifact_set_sha256,
             "sequence": format_archive_sequence(self.sequence),
             "kind": self.kind,
         }
@@ -670,7 +671,7 @@ def _volume(value: object, *, expected_sequence: int) -> ArchiveVolume:
             "sequence",
             "kind",
             "path",
-            "files",
+            "artifacts",
             "source_bytes",
             "plaintext_bytes",
             "age_state",
@@ -686,7 +687,7 @@ def _volume(value: object, *, expected_sequence: int) -> ArchiveVolume:
             "path",
             "plaintext_bytes",
             "age_state",
-            "file",
+            "artifact",
             "parts",
         }
         if kind == "segment"
@@ -714,7 +715,7 @@ def _volume(value: object, *, expected_sequence: int) -> ArchiveVolume:
             id=volume_id,
             sequence=sequence,
             path=path,
-            files=_bounded_pack_files(row["files"]),
+            artifacts=_bounded_pack_artifacts(row["artifacts"]),
             source_bytes=_exact_count(row["source_bytes"], "archive pack source bytes"),
             plaintext_bytes=plaintext_bytes,
             age_state=age_state,
@@ -728,16 +729,18 @@ def _volume(value: object, *, expected_sequence: int) -> ArchiveVolume:
         path=path,
         plaintext_bytes=plaintext_bytes,
         age_state=age_state,
-        file=SegmentFilePlacement.from_mapping(row["file"], plaintext_bytes=plaintext_bytes),
+        artifact=SegmentArtifactPlacement.from_mapping(
+            row["artifact"], plaintext_bytes=plaintext_bytes
+        ),
         parts=parts,
     )
 
 
-def _bounded_pack_files(value: object) -> int:
-    files = _positive_int(value, "archive pack files")
-    if files > ARCHIVE_PACK_FILES_MAX:
-        raise ArchiveManifestError("archive pack files exceed the volume limit")
-    return files
+def _bounded_pack_artifacts(value: object) -> int:
+    artifacts = _positive_int(value, "archive pack artifacts")
+    if artifacts > ARCHIVE_PACK_ARTIFACTS_MAX:
+        raise ArchiveManifestError("archive pack artifacts exceed the volume limit")
+    return artifacts
 
 
 @dataclass(frozen=True, slots=True)
@@ -823,29 +826,30 @@ class ArchiveProvenanceIdentity:
 @dataclass(frozen=True, slots=True)
 class CollectionArchiveManifest:
     archive_generation: str
-    tree: CollectionTreeIdentity
+    artifact_set: CollectionArtifactSetIdentity
     ordered_volume_sha256: str
-    provenance: ArchiveProvenanceIdentity | None = None
+    provenance: ArchiveProvenanceIdentity
     format: str = COLLECTION_ARCHIVE_MANIFEST_FORMAT
 
     def __post_init__(self) -> None:
         if self.format != COLLECTION_ARCHIVE_MANIFEST_FORMAT:
             raise ArchiveManifestError("collection archive manifest format is unsupported")
         _sha256(self.archive_generation, "collection archive generation")
-        if not isinstance(self.tree, CollectionTreeIdentity):
-            raise ArchiveManifestError("collection archive tree is invalid")
+        if not isinstance(self.artifact_set, CollectionArtifactSetIdentity):
+            raise ArchiveManifestError("collection archive artifact set is invalid")
         _sha256(self.ordered_volume_sha256, "ordered archive volume sha256")
-        if self.provenance is not None and not isinstance(
-            self.provenance, ArchiveProvenanceIdentity
-        ):
+        if not isinstance(self.provenance, ArchiveProvenanceIdentity):
             raise ArchiveManifestError("collection archive provenance is invalid")
 
     @classmethod
     def from_mapping(cls, value: object) -> CollectionArchiveManifest:
         if not isinstance(value, Mapping):
             raise ArchiveManifestError("collection archive manifest is not a mapping")
-        expected = {"format", "archive_generation", "storage_profile", "tree", "volume_sequence"}
-        if set(value) not in (expected, expected | {"provenance"}):
+        expected = {
+            "format", "archive_generation", "storage_profile", "artifact_set",
+            "volume_sequence", "provenance",
+        }
+        if set(value) != expected:
             raise ArchiveManifestError("collection archive manifest fields are invalid")
         if value.get("format") != COLLECTION_ARCHIVE_MANIFEST_FORMAT:
             raise ArchiveManifestError("collection archive manifest format is unsupported")
@@ -861,20 +865,15 @@ class CollectionArchiveManifest:
             {"sha256"},
             "archive volume sequence",
         )
-        provenance = (
-            ArchiveProvenanceIdentity.from_mapping(value["provenance"])
-            if "provenance" in value
-            else None
-        )
         return cls(
             archive_generation=_sha256(
                 value["archive_generation"], "collection archive generation"
             ),
-            tree=CollectionTreeIdentity.from_mapping(value.get("tree")),
+            artifact_set=CollectionArtifactSetIdentity.from_mapping(value.get("artifact_set")),
             ordered_volume_sha256=_sha256(
                 volume_sequence["sha256"], "ordered archive volume sha256"
             ),
-            provenance=provenance,
+            provenance=ArchiveProvenanceIdentity.from_mapping(value["provenance"]),
         )
 
     @classmethod
@@ -892,16 +891,16 @@ class CollectionArchiveManifest:
         return manifest
 
     @property
-    def files(self) -> int:
-        return self.tree.files
+    def artifacts(self) -> int:
+        return self.artifact_set.count
 
     @property
     def bytes(self) -> int:
-        return self.tree.bytes
+        return self.artifact_set.bytes
 
     @property
-    def tree_sha256(self) -> str:
-        return self.tree.sha256
+    def artifact_set_sha256(self) -> str:
+        return self.artifact_set.sha256
 
     def to_mapping(self) -> dict[str, object]:
         value: dict[str, object] = {
@@ -913,13 +912,12 @@ class CollectionArchiveManifest:
                 "part_digest": PART_DIGEST_FORMAT,
                 "selective_read": SELECTIVE_READ_FORMAT,
             },
-            "tree": self.tree.to_mapping(),
+            "artifact_set": self.artifact_set.to_mapping(),
             "volume_sequence": {
                 "sha256": self.ordered_volume_sha256,
             },
         }
-        if self.provenance is not None:
-            value["provenance"] = self.provenance.to_mapping()
+        value["provenance"] = self.provenance.to_mapping()
         return value
 
     def to_json_bytes(self) -> builtins.bytes:

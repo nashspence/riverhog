@@ -1,0 +1,293 @@
+{
+  "format": "riverhog-provenance-invariant-index/v1",
+  "scope": "Selected normative application invariants and regression witnesses; not a machine-checked proof of historical truth or exhaustive PROV semantics.",
+  "invariants": [
+    {
+      "id": "ID-01",
+      "requirement": "assertion, referent, entry and journal identities are separate",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_observation_and_state_and_assertion_are_different_identities"
+      ]
+    },
+    {
+      "id": "ID-02",
+      "requirement": "fixed state aspects cannot be changed by correction",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_state_identity_cannot_be_redefined_in_a_correction"
+      ]
+    },
+    {
+      "id": "ID-03",
+      "requirement": "assertions are immutable across supplied documentary histories",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_assertion_identity_is_immutable_across_journals_even_for_labels"
+      ]
+    },
+    {
+      "id": "ID-04",
+      "requirement": "matching fixity does not collapse state identity or infer specialization",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_two_states_can_have_identical_primary_bytes_without_collapsing"
+      ]
+    },
+    {
+      "id": "HISTORY-01",
+      "requirement": "initial observation implies neither origin nor filesystem",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_first_known_observation_does_not_imply_an_origin"
+      ]
+    },
+    {
+      "id": "HISTORY-02",
+      "requirement": "historical states need not have known bytes, paths or captures",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_historical_entity_requires_neither_content_path_nor_capture"
+      ]
+    },
+    {
+      "id": "CAPTURE-01",
+      "requirement": "capture uses the state and does not generate it",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_capture_does_not_generate_subject_state"
+      ]
+    },
+    {
+      "id": "CAPTURE-02",
+      "requirement": "capture configuration is an exact profile and committed value",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_policy_configuration_cannot_change_without_updating_its_commitment"
+      ]
+    },
+    {
+      "id": "CAPTURE-03",
+      "requirement": "observer selection does not depend on association array order",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_result_observer_is_not_selected_by_array_order"
+      ]
+    },
+    {
+      "id": "GRAPH-01",
+      "requirement": "local references resolve with their declared types",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_type_confused_references_fail"
+      ]
+    },
+    {
+      "id": "GRAPH-02",
+      "requirement": "derivation is acyclic without relying on array order",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_derivation_cycle_rejected_without_using_array_order"
+      ]
+    },
+    {
+      "id": "GRAPH-03",
+      "requirement": "unavailable process identity is not fabricated",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_unknown_process_derivation_does_not_require_a_fabricated_activity"
+      ]
+    },
+    {
+      "id": "GRAPH-04",
+      "requirement": "conflicting documentary content is retained without latest-wins selection",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_conflicting_reported_content_is_retained_as_a_finding"
+      ]
+    },
+    {
+      "id": "TIME-01",
+      "requirement": "UTC instants have valid calendar values",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_impossible_or_noncanonical_instants_fail"
+      ]
+    },
+    {
+      "id": "TIME-02",
+      "requirement": "application comparisons preserve nanosecond ordering",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_nanosecond_order_is_not_rounded_to_postgres_microseconds"
+      ]
+    },
+    {
+      "id": "NATIVE-01",
+      "requirement": "source-qualified names are exact; display strings do not create new identities",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_native_names_preserve_binary_evidence_and_ignore_display_for_identity"
+      ]
+    },
+    {
+      "id": "NATIVE-02",
+      "requirement": "base64 padding bits and lengths are canonical",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_noncanonical_base64_padding_bits_are_rejected"
+      ]
+    },
+    {
+      "id": "PROFILE-01",
+      "requirement": "unknown exact contracts remain explicitly unverified",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_unknown_profile_is_explicitly_unverified_not_silently_valid"
+      ]
+    },
+    {
+      "id": "PROFILE-02",
+      "requirement": "unknown data is not interpreted by lookalike core keys",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_unknown_profiles_are_not_interpreted_using_lookalike_core_keys"
+      ]
+    },
+    {
+      "id": "PROFILE-03",
+      "requirement": "filesystem profiles do not imply filesystems for pathless occurrences",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_filesystem_profile_is_not_attached_to_pathless_stream_occurrence"
+      ]
+    },
+    {
+      "id": "LOCATOR-01",
+      "requirement": "bindings are plural and contextual without changing state identity",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_locators_are_plural_contextual_and_do_not_change_state"
+      ]
+    },
+    {
+      "id": "LOCATOR-02",
+      "requirement": "typed filesystem paths require a filesystem naming context",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_filesystem_path_is_only_valid_in_filesystem_namespace"
+      ]
+    },
+    {
+      "id": "LOCATOR-03",
+      "requirement": "ending one binding does not invalidate the artifact",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_ending_one_binding_does_not_invalidate_artifact"
+      ]
+    },
+    {
+      "id": "CUSTODY-01",
+      "requirement": "custody and availability remain separate occurrence-qualified claims",
+      "tests": [
+        "riverhog-provenance:test_graph.py:test_custody_and_availability_are_occurrence_scoped"
+      ]
+    },
+    {
+      "id": "JOURNAL-01",
+      "requirement": "raw canonical framing is checked before normalization",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_invalid_framing_or_noncanonical_json_is_rejected"
+      ]
+    },
+    {
+      "id": "JOURNAL-02",
+      "requirement": "predecessors commit exact preceding JSON bytes",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_exact_bytes_and_predecessor_hashes_are_preserved"
+      ]
+    },
+    {
+      "id": "JOURNAL-03",
+      "requirement": "checkpoint commitments include framed prefix bytes",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_checkpoint_commits_framed_prefix_not_just_json"
+      ]
+    },
+    {
+      "id": "JOURNAL-04",
+      "requirement": "clean truncation is only detectable relative to an external anchor",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_clean_truncation_requires_external_tail_anchor"
+      ]
+    },
+    {
+      "id": "JOURNAL-05",
+      "requirement": "torn tails require explicit recovery and are not conformant input",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_torn_final_frame_requires_explicit_recovery"
+      ]
+    },
+    {
+      "id": "CORRECTION-01",
+      "requirement": "correction retires claims rather than artifact states",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_correction_retires_assertion_not_artifact_state"
+      ]
+    },
+    {
+      "id": "CORRECTION-02",
+      "requirement": "retired assertion IDs cannot be reused or retracted twice",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_retracted_assertion_id_cannot_be_reused"
+      ]
+    },
+    {
+      "id": "CORRECTION-03",
+      "requirement": "the post-correction effective graph cannot contain dangling locals",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_correction_cannot_leave_dangling_local_references"
+      ]
+    },
+    {
+      "id": "FOREIGN-01",
+      "requirement": "foreign references pin exact assertion and entry",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_external_references_pin_assertion_and_exact_entry"
+      ]
+    },
+    {
+      "id": "FOREIGN-02",
+      "requirement": "resolved comparison evidence is checked rather than trusted by label",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_foreign_comparison_is_rechecked_when_evidence_becomes_available"
+      ]
+    },
+    {
+      "id": "FOREIGN-03",
+      "requirement": "cross-journal derivation cycles are rejected",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_aggregate_detects_cross_journal_derivation_cycle"
+      ]
+    },
+    {
+      "id": "WRITER-01",
+      "requirement": "independent divergent writers require distinct journal identities",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_independent_writers_must_not_reuse_journal_id"
+      ]
+    },
+    {
+      "id": "DELIVERY-01",
+      "requirement": "verification selects one scoped association and checks primary bytes only",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_delivery_is_scoped_and_verifies_only_primary_bytes"
+      ]
+    },
+    {
+      "id": "TRANSPORT-01",
+      "requirement": "journal octet segmentation does not require paths",
+      "tests": [
+        "riverhog-provenance:test_journal.py:test_segmented_transport_has_no_logical_paths"
+      ]
+    },
+    {
+      "id": "PROVIDER-01",
+      "requirement": "provider discovery must not execute unselected plugins",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_listing_provider_metadata_does_not_execute_plugins"
+      ]
+    },
+    {
+      "id": "PROVIDER-02",
+      "requirement": "selected observer and contract must agree on pack digest",
+      "tests": [
+        "riverhog-provenance:test_profiles_providers.py:test_provider_pack_digest_mismatch_fails_before_capture"
+      ]
+    },
+    {
+      "id": "ALIGNMENT-01",
+      "requirement": "OWL alignment does not silently strengthen continuity membership",
+      "tests": [
+        "riverhog-provenance:test_formal_examples.py:test_alignment_does_not_infer_specialization_from_membership"
+      ]
+    }
+  ]
+}

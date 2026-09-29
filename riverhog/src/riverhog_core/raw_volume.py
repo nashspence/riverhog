@@ -5,10 +5,10 @@ import re
 from collections.abc import Sequence
 
 from riverhog_age import CHUNK_SIZE, AgeAlignedUnitPlan, ResumableAgeScryptSession
-from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
-from riverhog_protocol.paths import validate_canonical_relpath
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.pack_ingress import canonical_json_bytes
 
-from riverhog_core.domain.archive import ArchiveFile, RawVolumePlan
+from riverhog_core.domain.archive import ArchiveArtifact, RawVolumePlan
 
 RAW_VOLUME_PLAN_FORMAT = "raw-volume-plan/v1"
 DEFAULT_RAW_VOLUME_PLAINTEXT_BYTES = 16 * 1024 * 1024 * 1024
@@ -17,7 +17,7 @@ _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
 def plan_raw_volumes(
-    files: Sequence[ArchiveFile],
+    artifacts: Sequence[ArchiveArtifact],
     *,
     starting_sequence: int,
     max_plaintext_bytes: int = DEFAULT_RAW_VOLUME_PLAINTEXT_BYTES,
@@ -30,26 +30,28 @@ def plan_raw_volumes(
         raise ValueError("raw volume plaintext limit must be positive")
     plans: list[RawVolumePlan] = []
     seen: set[str] = set()
-    for current in sorted(files, key=lambda value: validate_canonical_relpath(value.path)):
-        path = validate_canonical_relpath(current.path)
-        if path.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError(f"collection path uses reserved archive namespace: {path}")
-        if path in seen:
-            raise ValueError(f"duplicate collection archive path: {path}")
-        if current.bytes < 0 or _SHA256_RE.fullmatch(current.sha256) is None:
-            raise ValueError(f"collection archive file identity is invalid: {path}")
-        seen.add(path)
+    for current in sorted(artifacts, key=lambda value: value.artifact_id):
+        artifact_id = str(ArtifactId(current.artifact_id))
+        if artifact_id in seen:
+            raise ValueError(f"duplicate collection artifact ID: {artifact_id}")
+        if (
+            current.bytes < 0
+            or current.bytes >= 1 << 63
+            or _SHA256_RE.fullmatch(current.sha256) is None
+        ):
+            raise ValueError(f"collection archive artifact identity is invalid: {artifact_id}")
+        seen.add(artifact_id)
         offset = 0
         if current.bytes == 0:
             plans.append(
                 RawVolumePlan(
                     volume_id=f"segment-{starting_sequence + len(plans):064x}",
                     sequence=starting_sequence + len(plans),
-                    source_path=path,
-                    file_offset=0,
+                    artifact_id=artifact_id,
+                    artifact_offset=0,
                     plaintext_bytes=0,
-                    file_bytes=0,
-                    file_sha256=current.sha256,
+                    artifact_bytes=0,
+                    artifact_sha256=current.sha256,
                 )
             )
             continue
@@ -62,11 +64,11 @@ def plan_raw_volumes(
                 RawVolumePlan(
                     volume_id=f"segment-{sequence:064x}",
                     sequence=sequence,
-                    source_path=path,
-                    file_offset=offset,
+                    artifact_id=artifact_id,
+                    artifact_offset=offset,
                     plaintext_bytes=length,
-                    file_bytes=current.bytes,
-                    file_sha256=current.sha256,
+                    artifact_bytes=current.bytes,
+                    artifact_sha256=current.sha256,
                 )
             )
             offset += length
@@ -78,11 +80,11 @@ def raw_volume_plan_payload(plan: RawVolumePlan) -> dict[str, object]:
         "format": RAW_VOLUME_PLAN_FORMAT,
         "volume_id": plan.volume_id,
         "sequence": plan.sequence,
-        "source_path": plan.source_path,
-        "file_offset": plan.file_offset,
+        "artifact_id": plan.artifact_id,
+        "artifact_offset": plan.artifact_offset,
         "plaintext_bytes": plan.plaintext_bytes,
-        "file_bytes": plan.file_bytes,
-        "file_sha256": plan.file_sha256,
+        "artifact_bytes": plan.artifact_bytes,
+        "artifact_sha256": plan.artifact_sha256,
     }
 
 
@@ -103,11 +105,11 @@ def parse_raw_volume_plan(content: bytes | str) -> RawVolumePlan:
         "format",
         "volume_id",
         "sequence",
-        "source_path",
-        "file_offset",
+        "artifact_id",
+        "artifact_offset",
         "plaintext_bytes",
-        "file_bytes",
-        "file_sha256",
+        "artifact_bytes",
+        "artifact_sha256",
     }
     if set(payload) != expected:
         raise ValueError("raw volume plan fields are invalid")
@@ -115,25 +117,31 @@ def parse_raw_volume_plan(content: bytes | str) -> RawVolumePlan:
     volume_id = str(payload.get("volume_id", ""))
     if sequence >= 1 << 256 or volume_id != f"segment-{sequence:064x}":
         raise ValueError("raw volume plan identity is invalid")
-    source_path = validate_canonical_relpath(payload.get("source_path"))
-    if source_path.startswith(RESERVED_ARCHIVE_PREFIX):
-        raise ValueError("raw volume source uses the reserved archive namespace")
-    file_offset = _canonical_nonnegative_int(payload.get("file_offset"), label="file offset")
+    artifact_id = str(ArtifactId(str(payload.get("artifact_id", ""))))
+    artifact_offset = _canonical_nonnegative_int(
+        payload.get("artifact_offset"), label="artifact offset"
+    )
     plaintext_bytes = _canonical_nonnegative_int(
         payload.get("plaintext_bytes"), label="plaintext bytes"
     )
-    file_bytes = _canonical_nonnegative_int(payload.get("file_bytes"), label="file bytes")
-    file_sha256 = str(payload.get("file_sha256", ""))
-    if file_offset + plaintext_bytes > file_bytes or _SHA256_RE.fullmatch(file_sha256) is None:
-        raise ValueError("raw volume file identity is invalid")
+    artifact_bytes = _canonical_nonnegative_int(
+        payload.get("artifact_bytes"), label="artifact bytes"
+    )
+    artifact_sha256 = str(payload.get("artifact_sha256", ""))
+    if (
+        artifact_bytes >= 1 << 63
+        or artifact_offset + plaintext_bytes > artifact_bytes
+        or _SHA256_RE.fullmatch(artifact_sha256) is None
+    ):
+        raise ValueError("raw volume artifact identity is invalid")
     return RawVolumePlan(
         volume_id=volume_id,
         sequence=sequence,
-        source_path=source_path,
-        file_offset=file_offset,
+        artifact_id=artifact_id,
+        artifact_offset=artifact_offset,
         plaintext_bytes=plaintext_bytes,
-        file_bytes=file_bytes,
-        file_sha256=file_sha256,
+        artifact_bytes=artifact_bytes,
+        artifact_sha256=artifact_sha256,
     )
 
 

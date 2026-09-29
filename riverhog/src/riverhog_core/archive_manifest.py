@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 from collections.abc import Mapping, Sequence
@@ -21,42 +20,43 @@ from riverhog_archive_contracts import (
     ordered_archive_volume_commitment,
 )
 from riverhog_canonical_json import format_scalar
-from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX
+from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdentityDocument
+from riverhog_protocol.manifest import artifact_set_identity
 from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     PackVolumePlan,
     RawVolumePlan,
     SealedPackVolume,
     SealedProvenanceObject,
     SealedRawVolume,
     StoredArchivePart,
-    VerifiedRawFile,
+    VerifiedRawArtifact,
 )
-from riverhog_core.raw_verification import raw_file_ordered_volume_commitment
+from riverhog_core.raw_verification import raw_artifact_ordered_volume_commitment
 
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
-class CollectionTreeIdentity(TypedDict):
-    files: int
+class CollectionArtifactSetIdentity(TypedDict):
+    count: int
     bytes: int
     sha256: str
 
 
 def validate_collection_archive_plan(
     *,
-    files: Sequence[ArchiveFile],
+    artifacts: Sequence[ArchiveArtifact],
     packs: Sequence[PackVolumePlan],
     raw_volumes: Sequence[RawVolumePlan | SealedRawVolume] = (),
-) -> tuple[ArchiveFile, ...]:
-    """Require volume plans to cover the exact immutable collection tree once."""
+) -> tuple[ArchiveArtifact, ...]:
+    """Require volume plans to cover the exact opaque member set once."""
 
-    normalized_files = _normalized_files(files)
-    expected_by_path = {current.path: current for current in normalized_files}
+    normalized_artifacts = _normalized_artifacts(artifacts)
+    expected_by_id = {current.artifact_id: current for current in normalized_artifacts}
     coverage: dict[str, list[tuple[int, int, str]]] = {
-        current.path: [] for current in normalized_files
+        current.artifact_id: [] for current in normalized_artifacts
     }
     plans = sorted((*packs, *raw_volumes), key=lambda current: current.sequence)
     if [current.sequence for current in plans] != list(range(len(plans))):
@@ -66,86 +66,91 @@ def validate_collection_archive_plan(
 
     for pack_plan in packs:
         for member in pack_plan.members:
-            expected = expected_by_path.get(member.path)
+            expected = expected_by_id.get(member.artifact_id)
             if (
                 expected is None
                 or expected.bytes != member.bytes
                 or expected.sha256 != member.sha256
             ):
                 raise ValueError(
-                    f"pack plan does not match collection file identity: {member.path}"
+                    f"pack plan does not match collection artifact: {member.artifact_id}"
                 )
-            coverage[member.path].append((0, member.bytes, pack_plan.volume_id))
+            coverage[member.artifact_id].append((0, member.bytes, pack_plan.volume_id))
 
     for raw_plan in raw_volumes:
-        source_path = validate_canonical_relpath(raw_plan.source_path)
-        expected = expected_by_path.get(source_path)
+        artifact_id = str(ArtifactId(raw_plan.artifact_id))
+        expected = expected_by_id.get(artifact_id)
         if expected is None:
-            raise ValueError(f"raw volume references an unknown collection path: {source_path}")
-        if raw_plan.file_offset < 0 or raw_plan.plaintext_bytes < 0:
+            raise ValueError(f"raw volume references an unknown artifact: {artifact_id}")
+        if raw_plan.artifact_offset < 0 or raw_plan.plaintext_bytes < 0:
             raise ValueError("raw volume placement is invalid")
-        if raw_plan.file_bytes != expected.bytes or raw_plan.file_sha256 != expected.sha256:
-            raise ValueError(f"raw volume file identity mismatch: {source_path}")
-        if raw_plan.file_offset + raw_plan.plaintext_bytes > expected.bytes:
-            raise ValueError(f"raw volume exceeds its collection file: {source_path}")
-        coverage[source_path].append(
-            (raw_plan.file_offset, raw_plan.plaintext_bytes, raw_plan.volume_id)
+        if raw_plan.artifact_bytes != expected.bytes or raw_plan.artifact_sha256 != expected.sha256:
+            raise ValueError(f"raw volume artifact identity mismatch: {artifact_id}")
+        if raw_plan.artifact_offset + raw_plan.plaintext_bytes > expected.bytes:
+            raise ValueError(f"raw volume exceeds its artifact: {artifact_id}")
+        coverage[artifact_id].append(
+            (raw_plan.artifact_offset, raw_plan.plaintext_bytes, raw_plan.volume_id)
         )
 
-    _validate_file_coverage(normalized_files, coverage)
-    return normalized_files
+    _validate_artifact_coverage(normalized_artifacts, coverage)
+    return normalized_artifacts
 
 
 def build_collection_archive_authority(
     *,
     archive_generation: str,
-    files: Sequence[ArchiveFile],
+    artifacts: Sequence[ArchiveArtifact],
     packs: Sequence[tuple[PackVolumePlan, SealedPackVolume]],
     raw_volumes: Sequence[SealedRawVolume] = (),
-    verified_raw_files: Sequence[VerifiedRawFile] = (),
-    provenance_identity: str | None = None,
+    verified_raw_artifacts: Sequence[VerifiedRawArtifact] = (),
+    provenance_identity: str,
     provenance_objects: Sequence[SealedProvenanceObject] = (),
 ) -> tuple[bytes, tuple[CollectionArchiveVolumeDocument, ...]]:
-    normalized_files = validate_collection_archive_plan(
-        files=files,
+    normalized_artifacts = validate_collection_archive_plan(
+        artifacts=artifacts,
         packs=tuple(plan for plan, _receipt in packs),
         raw_volumes=raw_volumes,
     )
-    expected_by_path = {current.path: current for current in normalized_files}
+    expected_by_id = {current.artifact_id: current for current in normalized_artifacts}
     volume_rows: list[dict[str, object]] = []
 
     for plan, pack_receipt in packs:
         _validate_pack_receipt(plan, pack_receipt)
         volume_rows.append(_pack_volume_row(plan, pack_receipt))
 
-    verified_by_path = _verified_raw_files(verified_raw_files)
-    raw_by_path: dict[str, list[SealedRawVolume]] = {}
+    verified_by_id = _verified_raw_artifacts(verified_raw_artifacts)
+    raw_by_id: dict[str, list[SealedRawVolume]] = {}
     for current in raw_volumes:
-        raw_by_path.setdefault(validate_canonical_relpath(current.source_path), []).append(current)
-    if set(raw_by_path) != set(verified_by_path):
-        raise ValueError("every raw file must be verified exactly once before root publication")
-    for path, verified in verified_by_path.items():
-        expected = expected_by_path.get(path)
+        raw_by_id.setdefault(str(ArtifactId(current.artifact_id)), []).append(current)
+    if set(raw_by_id) != set(verified_by_id):
+        raise ValueError("every raw artifact must be verified before root publication")
+    for artifact_id, verified in verified_by_id.items():
+        expected = expected_by_id.get(artifact_id)
         if (
             expected is None
             or verified.bytes != expected.bytes
             or verified.sha256 != expected.sha256
             or verified.ordered_volume_sha256
-            != raw_file_ordered_volume_commitment(file=expected, volumes=raw_by_path[path])
+            != raw_artifact_ordered_volume_commitment(
+                artifact=expected, volumes=raw_by_id[artifact_id]
+            )
         ):
-            raise ValueError(f"raw file verification does not match sealed volumes: {path}")
+            raise ValueError(f"raw artifact verification differs: {artifact_id}")
 
     for raw_receipt in raw_volumes:
-        source_path = validate_canonical_relpath(raw_receipt.source_path)
-        expected = expected_by_path.get(source_path)
+        artifact_id = str(ArtifactId(raw_receipt.artifact_id))
+        expected = expected_by_id.get(artifact_id)
         if expected is None:
-            raise ValueError(f"raw volume references an unknown collection path: {source_path}")
-        if raw_receipt.file_offset < 0 or raw_receipt.plaintext_bytes < 0:
+            raise ValueError(f"raw volume references an unknown artifact: {artifact_id}")
+        if raw_receipt.artifact_offset < 0 or raw_receipt.plaintext_bytes < 0:
             raise ValueError("raw volume placement is invalid")
-        if raw_receipt.file_bytes != expected.bytes or raw_receipt.file_sha256 != expected.sha256:
-            raise ValueError(f"raw volume file identity mismatch: {source_path}")
-        if raw_receipt.file_offset + raw_receipt.plaintext_bytes > expected.bytes:
-            raise ValueError(f"raw volume exceeds its collection file: {source_path}")
+        if (
+            raw_receipt.artifact_bytes != expected.bytes
+            or raw_receipt.artifact_sha256 != expected.sha256
+        ):
+            raise ValueError(f"raw volume artifact identity mismatch: {artifact_id}")
+        if raw_receipt.artifact_offset + raw_receipt.plaintext_bytes > expected.bytes:
+            raise ValueError(f"raw volume exceeds its artifact: {artifact_id}")
         _validate_part_receipts(
             raw_receipt.parts,
             plaintext_bytes=raw_receipt.plaintext_bytes,
@@ -162,23 +167,23 @@ def build_collection_archive_authority(
     if len({str(row["path"]) for row in volume_rows}) != len(volume_rows):
         raise ValueError("archive volume paths must be unique")
 
-    tree = collection_tree_identity(normalized_files)
+    artifact_set = collection_artifact_set_identity(normalized_artifacts)
     documents = tuple(
         _archive_volume_document(
             archive_generation=archive_generation,
-            tree_sha256=str(tree["sha256"]),
+            artifact_set_sha256=artifact_set["sha256"],
             row=row,
         )
         for row in volume_rows
     )
     terminal = build_collection_archive_terminal_document(
         archive_generation=archive_generation,
-        tree_sha256=str(tree["sha256"]),
+        artifact_set_sha256=artifact_set["sha256"],
         sequence=len(documents),
     )
     manifest = build_collection_archive_root_manifest(
         archive_generation=archive_generation,
-        tree=tree,
+        artifact_set=artifact_set,
         ordered_volume_sha256=ordered_archive_volume_commitment((*documents, terminal)),
         provenance_identity=provenance_identity,
         provenance_objects=provenance_objects,
@@ -189,14 +194,14 @@ def build_collection_archive_authority(
 def build_collection_archive_terminal_document(
     *,
     archive_generation: str,
-    tree_sha256: str,
+    artifact_set_sha256: str,
     sequence: int,
 ) -> CollectionArchiveTerminalDocument:
     return CollectionArchiveTerminalDocument.from_mapping(
         {
             "format": COLLECTION_ARCHIVE_TERMINAL_FORMAT,
             "archive_generation": archive_generation,
-            "archive_tree_sha256": tree_sha256,
+            "artifact_set_sha256": artifact_set_sha256,
             "sequence": format_archive_sequence(sequence),
             "kind": "terminal",
         }
@@ -206,14 +211,14 @@ def build_collection_archive_terminal_document(
 def build_collection_archive_volume_document(
     *,
     archive_generation: str,
-    tree_sha256: str,
+    artifact_set_sha256: str,
     plan: PackVolumePlan | None,
     receipt: SealedPackVolume | SealedRawVolume,
 ) -> CollectionArchiveVolumeDocument:
     """Build one independently bounded archive-volume authority document."""
 
-    if _SHA256_RE.fullmatch(tree_sha256) is None:
-        raise ValueError("archive tree identity is invalid")
+    if _SHA256_RE.fullmatch(artifact_set_sha256) is None:
+        raise ValueError("archive artifact-set identity is invalid")
     if isinstance(receipt, SealedPackVolume):
         if plan is None:
             raise ValueError("sealed pack volume requires its canonical plan")
@@ -226,7 +231,7 @@ def build_collection_archive_volume_document(
         row = _raw_volume_row(receipt)
     return _archive_volume_document(
         archive_generation=archive_generation,
-        tree_sha256=tree_sha256,
+        artifact_set_sha256=artifact_set_sha256,
         row=row,
     )
 
@@ -234,17 +239,21 @@ def build_collection_archive_volume_document(
 def build_collection_archive_root_manifest(
     *,
     archive_generation: str,
-    tree: CollectionTreeIdentity,
+    artifact_set: CollectionArtifactSetIdentity,
     ordered_volume_sha256: str,
-    provenance_identity: str | None = None,
+    provenance_identity: str,
     provenance_objects: Sequence[SealedProvenanceObject] = (),
 ) -> bytes:
     """Build the small immutable root after every referenced object is durable."""
 
     if _SHA256_RE.fullmatch(archive_generation) is None:
         raise ValueError("archive generation is invalid")
-    if tree["files"] < 1 or tree["bytes"] < 0 or _SHA256_RE.fullmatch(tree["sha256"]) is None:
-        raise ValueError("archive tree identity is invalid")
+    if (
+        artifact_set["count"] < 1
+        or artifact_set["bytes"] < 0
+        or _SHA256_RE.fullmatch(artifact_set["sha256"]) is None
+    ):
+        raise ValueError("archive artifact-set identity is invalid")
     if _SHA256_RE.fullmatch(ordered_volume_sha256) is None:
         raise ValueError("archive ordered volume commitment is invalid")
     payload: dict[str, object] = {
@@ -256,32 +265,31 @@ def build_collection_archive_root_manifest(
             "part_digest": "sha256",
             "selective_read": SELECTIVE_READ_FORMAT,
         },
-        "tree": {
-            "files": format_scalar("nonnegative", tree["files"]),
-            "bytes": format_scalar("nonnegative", tree["bytes"]),
-            "sha256": tree["sha256"],
+        "artifact_set": {
+            "count": format_scalar("nonnegative", artifact_set["count"]),
+            "bytes": format_scalar("nonnegative", artifact_set["bytes"]),
+            "sha256": artifact_set["sha256"],
         },
         "volume_sequence": {
             "sha256": ordered_volume_sha256,
         },
     }
-    if provenance_identity is not None:
-        if _SHA256_RE.fullmatch(provenance_identity) is None:
-            raise ValueError("archive provenance identity is invalid")
-        roots = [item for item in provenance_objects if item.kind == "provenance-root"]
-        if len(provenance_objects) != 1 or len(roots) != 1:
-            raise ValueError("archive provenance requires exactly one small root")
-        payload["provenance"] = {
-            "identity": provenance_identity,
-            "root": _provenance_object_row(roots[0]),
-        }
+    if _SHA256_RE.fullmatch(provenance_identity) is None:
+        raise ValueError("archive provenance identity is invalid")
+    roots = [item for item in provenance_objects if item.kind == "provenance-root"]
+    if len(provenance_objects) != 1 or len(roots) != 1:
+        raise ValueError("archive provenance requires exactly one small root")
+    payload["provenance"] = {
+        "identity": provenance_identity,
+        "root": _provenance_object_row(roots[0]),
+    }
     return CollectionArchiveManifest.from_mapping(payload).to_json_bytes()
 
 
 def _archive_volume_document(
     *,
     archive_generation: str,
-    tree_sha256: str,
+    artifact_set_sha256: str,
     row: Mapping[str, object],
 ) -> CollectionArchiveVolumeDocument:
     volume = dict(row)
@@ -292,7 +300,7 @@ def _archive_volume_document(
         {
             "format": COLLECTION_ARCHIVE_VOLUME_FORMAT,
             "archive_generation": archive_generation,
-            "archive_tree_sha256": tree_sha256,
+            "artifact_set_sha256": artifact_set_sha256,
             "volume": volume,
         }
     )
@@ -301,19 +309,19 @@ def _archive_volume_document(
 def build_collection_archive_manifest(
     *,
     archive_generation: str,
-    files: Sequence[ArchiveFile],
+    artifacts: Sequence[ArchiveArtifact],
     packs: Sequence[tuple[PackVolumePlan, SealedPackVolume]],
     raw_volumes: Sequence[SealedRawVolume] = (),
-    verified_raw_files: Sequence[VerifiedRawFile] = (),
-    provenance_identity: str | None = None,
+    verified_raw_artifacts: Sequence[VerifiedRawArtifact] = (),
+    provenance_identity: str,
     provenance_objects: Sequence[SealedProvenanceObject] = (),
 ) -> bytes:
     manifest, _documents = build_collection_archive_authority(
         archive_generation=archive_generation,
-        files=files,
+        artifacts=artifacts,
         packs=packs,
         raw_volumes=raw_volumes,
-        verified_raw_files=verified_raw_files,
+        verified_raw_artifacts=verified_raw_artifacts,
         provenance_identity=provenance_identity,
         provenance_objects=provenance_objects,
     )
@@ -332,14 +340,25 @@ def _provenance_object_row(item: SealedProvenanceObject) -> dict[str, object]:
     }
 
 
-def collection_tree_identity(files: Sequence[ArchiveFile]) -> CollectionTreeIdentity:
-    normalized = _normalized_files(files)
-    digest = hashlib.sha256()
-    byte_count = 0
-    for current in normalized:
-        digest.update(f"{current.path}\t{current.bytes}\t{current.sha256}\n".encode())
-        byte_count += current.bytes
-    return {"files": len(normalized), "bytes": byte_count, "sha256": digest.hexdigest()}
+def collection_artifact_set_identity(
+    artifacts: Sequence[ArchiveArtifact],
+) -> CollectionArtifactSetIdentity:
+    normalized = _normalized_artifacts(artifacts)
+    identity = artifact_set_identity(
+        ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": current.artifact_id,
+                "bytes": format_scalar("nonnegative", current.bytes),
+                "sha256": current.sha256,
+            }
+        )
+        for current in normalized
+    )
+    return {
+        "count": len(normalized),
+        "bytes": sum(current.bytes for current in normalized),
+        "sha256": identity,
+    }
 
 
 def _pack_volume_row(plan: PackVolumePlan, receipt: SealedPackVolume) -> dict[str, object]:
@@ -351,7 +370,7 @@ def _pack_volume_row(plan: PackVolumePlan, receipt: SealedPackVolume) -> dict[st
         "sequence": receipt.sequence,
         "kind": "pack",
         "path": expected_path,
-        "files": receipt.files,
+        "artifacts": receipt.artifacts,
         "source_bytes": format_scalar("nonnegative", receipt.source_bytes),
         "plaintext_bytes": format_scalar("nonnegative", receipt.plaintext_bytes),
         "age_state": _age_state_row(
@@ -364,9 +383,7 @@ def _pack_volume_row(plan: PackVolumePlan, receipt: SealedPackVolume) -> dict[st
 
 
 def _raw_volume_row(receipt: SealedRawVolume) -> dict[str, object]:
-    source_path = validate_canonical_relpath(receipt.source_path)
-    if source_path.startswith(RESERVED_ARCHIVE_PREFIX):
-        raise ValueError("raw volume source uses the reserved archive namespace")
+    artifact_id = str(ArtifactId(receipt.artifact_id))
     expected_path = f"volumes/{receipt.volume_id}.bin.age"
     if validate_canonical_relpath(receipt.relative_path) != expected_path:
         raise ValueError("sealed raw receipt path is not canonical")
@@ -381,12 +398,12 @@ def _raw_volume_row(receipt: SealedRawVolume) -> dict[str, object]:
         "age_state": _age_state_row(
             receipt.age_state_json, plaintext_bytes=receipt.plaintext_bytes
         ),
-        "file": {
-            "path": source_path,
-            "offset": format_scalar("nonnegative", receipt.file_offset),
+        "artifact": {
+            "artifact_id": artifact_id,
+            "offset": format_scalar("nonnegative", receipt.artifact_offset),
             "bytes": format_scalar("nonnegative", receipt.plaintext_bytes),
-            "file_bytes": format_scalar("nonnegative", receipt.file_bytes),
-            "sha256": receipt.file_sha256,
+            "artifact_bytes": format_scalar("nonnegative", receipt.artifact_bytes),
+            "sha256": receipt.artifact_sha256,
         },
         "parts": [_part_row(current) for current in receipt.parts],
     }
@@ -430,7 +447,7 @@ def _validate_pack_receipt(plan: PackVolumePlan, receipt: SealedPackVolume) -> N
         or receipt.volume_id != f"pack-{receipt.sequence:064x}"
     ):
         raise ValueError("sealed pack receipt does not match its plan")
-    if receipt.files != len(plan.members):
+    if receipt.artifacts != len(plan.members):
         raise ValueError("sealed pack receipt file count mismatch")
     if receipt.source_bytes != sum(current.bytes for current in plan.members):
         raise ValueError("sealed pack receipt source byte count mismatch")
@@ -465,42 +482,44 @@ def _validate_part_receipts(
         raise ValueError("sealed archive volume parts do not cover its plaintext")
 
 
-def _validate_file_coverage(
-    files: Sequence[ArchiveFile],
+def _validate_artifact_coverage(
+    artifacts: Sequence[ArchiveArtifact],
     coverage: Mapping[str, list[tuple[int, int, str]]],
 ) -> None:
-    for current in files:
-        ranges = sorted(coverage[current.path])
+    for current in artifacts:
+        ranges = sorted(coverage[current.artifact_id])
         if not ranges:
-            raise ValueError(f"collection archive file has no volume placement: {current.path}")
+            raise ValueError(f"collection artifact has no volume placement: {current.artifact_id}")
         expected_offset = 0
         for offset, byte_count, _volume_id in ranges:
             if offset != expected_offset or byte_count < 0:
                 raise ValueError(
-                    f"collection archive file placements are not contiguous: {current.path}"
+                    f"collection artifact placements are not contiguous: {current.artifact_id}"
                 )
             expected_offset += byte_count
         if expected_offset != current.bytes:
-            raise ValueError(f"collection archive file placements do not cover it: {current.path}")
+            raise ValueError(
+                f"collection artifact placements do not cover it: {current.artifact_id}"
+            )
 
 
-def _verified_raw_files(
-    files: Sequence[VerifiedRawFile],
-) -> dict[str, VerifiedRawFile]:
-    out: dict[str, VerifiedRawFile] = {}
-    for current in files:
-        path = validate_canonical_relpath(current.path)
-        if path.startswith(RESERVED_ARCHIVE_PREFIX) or path in out:
-            raise ValueError("raw file verification path is invalid")
+def _verified_raw_artifacts(
+    artifacts: Sequence[VerifiedRawArtifact],
+) -> dict[str, VerifiedRawArtifact]:
+    out: dict[str, VerifiedRawArtifact] = {}
+    for current in artifacts:
+        artifact_id = str(ArtifactId(current.artifact_id))
+        if artifact_id in out:
+            raise ValueError("duplicate raw artifact verification")
         if (
             current.bytes < 0
             or _SHA256_RE.fullmatch(current.sha256) is None
             or _SHA256_RE.fullmatch(current.ordered_volume_sha256) is None
             or not current.verified_at
         ):
-            raise ValueError("raw file verification identity is invalid")
-        out[path] = VerifiedRawFile(
-            path=path,
+            raise ValueError("raw artifact verification identity is invalid")
+        out[artifact_id] = VerifiedRawArtifact(
+            artifact_id=artifact_id,
             bytes=current.bytes,
             sha256=current.sha256,
             ordered_volume_sha256=current.ordered_volume_sha256,
@@ -509,19 +528,23 @@ def _verified_raw_files(
     return out
 
 
-def _normalized_files(files: Sequence[ArchiveFile]) -> tuple[ArchiveFile, ...]:
-    out: list[ArchiveFile] = []
+def _normalized_artifacts(artifacts: Sequence[ArchiveArtifact]) -> tuple[ArchiveArtifact, ...]:
+    out: list[ArchiveArtifact] = []
     seen: set[str] = set()
-    for current in files:
-        path = validate_canonical_relpath(current.path)
-        if path.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError(f"collection path uses reserved archive namespace: {path}")
-        if path in seen:
-            raise ValueError(f"duplicate collection archive path: {path}")
-        if current.bytes < 0 or _SHA256_RE.fullmatch(current.sha256) is None:
-            raise ValueError(f"collection archive file identity is invalid: {path}")
-        seen.add(path)
-        out.append(ArchiveFile(path=path, bytes=current.bytes, sha256=current.sha256))
+    for current in artifacts:
+        artifact_id = str(ArtifactId(current.artifact_id))
+        if artifact_id in seen:
+            raise ValueError(f"duplicate collection artifact ID: {artifact_id}")
+        if (
+            current.bytes < 0
+            or current.bytes >= 1 << 63
+            or _SHA256_RE.fullmatch(current.sha256) is None
+        ):
+            raise ValueError(f"collection archive artifact identity is invalid: {artifact_id}")
+        seen.add(artifact_id)
+        out.append(
+            ArchiveArtifact(artifact_id=artifact_id, bytes=current.bytes, sha256=current.sha256)
+        )
     if not out:
-        raise ValueError("collection archive requires at least one file")
-    return tuple(sorted(out, key=lambda current: current.path))
+        raise ValueError("collection archive requires at least one artifact")
+    return tuple(sorted(out, key=lambda current: current.artifact_id))

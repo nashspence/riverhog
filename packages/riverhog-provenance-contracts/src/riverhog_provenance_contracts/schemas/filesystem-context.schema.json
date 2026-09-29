@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/profiles/filesystem-context.schema.json",
+  "title": "Filesystem source namespace description",
+  "description": "Optional observed characteristics of a filesystem naming context. No local OS, mount path, volume UUID or physical host is mandatory.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "filesystem_type": {
+      "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+    },
+    "identifiers": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "case_behavior": {
+      "type": "string",
+      "enum": [
+        "sensitive",
+        "insensitive",
+        "mixed",
+        "unknown"
+      ]
+    },
+    "normalization_behavior": {
+      "type": "string",
+      "enum": [
+        "preserved",
+        "normalized",
+        "mixed",
+        "unknown"
+      ]
+    },
+    "block_size_bytes": {
+      "allOf": [
+        {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural"
+        }
+      ],
+      "not": {
+        "const": "0"
+      }
+    },
+    "capacity_bytes": {
+      "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural"
+    }
+  },
+  "required": [],
+  "minProperties": 1
+}

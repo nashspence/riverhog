@@ -102,7 +102,7 @@ def test_successful_disposition_cannot_hide_an_omission() -> None:
         ArtifactDisposition(
             11,
             SHA_A,
-            "camera/a.mov",
+            SHA_B,
             "preserved",
             code="ignored",
             message="not allowed",

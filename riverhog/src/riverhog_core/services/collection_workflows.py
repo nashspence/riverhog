@@ -85,7 +85,7 @@ from riverhog_core.catalog_db import SessionFactory, make_session_factory, sessi
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectRecord,
     CollectionDeletionRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
     CollectionUploadRecord,
 )
@@ -1521,7 +1521,7 @@ class SqlAlchemyCollectionWorkflowService:
             ):
                 raise Conflict("derived collection was not created by the sealed output intent")
             evidence = session.get(
-                CollectionFileRecord,
+                CollectionArtifactRecord,
                 (output.id, DERIVATION_EVIDENCE_PATH),
             )
             if evidence is None or evidence.sha256 != document.sha256:
@@ -3538,7 +3538,7 @@ def _verify_dispositions(
     if output.file_count != disposition_set.output_artifact_count + evidence_pages + 2:
         raise Conflict("derivation output paths do not match the derived collection artifacts")
     source = aliased(CollectionProcessingClaimArtifactRecord)
-    successor = aliased(CollectionFileRecord)
+    successor = aliased(CollectionArtifactRecord)
     changed_preservation = session.scalar(
         select(CollectionProcessingDispositionRecord.path)
         .join(
@@ -3767,15 +3767,15 @@ def _require_retirement_coverage(
         )
         .where(
             disposition.claim_id.in_(required_claims),
-            disposition.collection_id == CollectionFileRecord.collection_id,
-            disposition.path == CollectionFileRecord.path,
-            artifact.bytes == CollectionFileRecord.bytes,
-            artifact.sha256 == CollectionFileRecord.sha256,
+            disposition.collection_id == CollectionArtifactRecord.collection_id,
+            disposition.path == CollectionArtifactRecord.path,
+            artifact.bytes == CollectionArtifactRecord.bytes,
+            artifact.sha256 == CollectionArtifactRecord.sha256,
             child_input.archive_root_sha256 == parent_input.archive_root_sha256,
             child_input.content_identity == parent_input.content_identity,
             child_claim.state.in_(("settled", "retiring", "released")),
         )
-        .correlate(CollectionFileRecord, parent_input)
+        .correlate(CollectionArtifactRecord, parent_input)
     )
     receipt = CollectionProcessingEffectSettlementRecord
     verified_effect = (
@@ -3804,16 +3804,16 @@ def _require_retirement_coverage(
     retained = matching.where(disposition.retain_required.is_(True)).exists()
     safe = matching.where(or_(material, applied, approved_loss)).exists()
     obligations = (
-        select(CollectionFileRecord.collection_id, CollectionFileRecord.path)
+        select(CollectionArtifactRecord.collection_id, CollectionArtifactRecord.path)
         .join(
             parent_input,
             and_(
                 parent_input.claim_id == claim.id,
-                parent_input.collection_id == CollectionFileRecord.collection_id,
+                parent_input.collection_id == CollectionArtifactRecord.collection_id,
             ),
         )
-        .where(_is_retirement_obligation(CollectionFileRecord))
-        .order_by(CollectionFileRecord.collection_id, CollectionFileRecord.path_sort_key)
+        .where(_is_retirement_obligation(CollectionArtifactRecord))
+        .order_by(CollectionArtifactRecord.collection_id, CollectionArtifactRecord.path_sort_key)
     )
     veto = session.execute(obligations.where(retained).limit(1)).first()
     if veto is not None:
@@ -3859,7 +3859,7 @@ def _validate_claim_artifacts(
         if root != artifact.collection:
             raise Conflict("artifact scope is outside the exact claim roots")
         current = session.get(
-            CollectionFileRecord,
+            CollectionArtifactRecord,
             (artifact.collection.collection_id, artifact.path),
         )
         if current is None or current.bytes != artifact.bytes or current.sha256 != artifact.sha256:
@@ -3909,12 +3909,12 @@ def _collection_payload_paths(session: Session, collection_id: int) -> tuple[str
     return tuple(
         path
         for path in session.scalars(
-            select(CollectionFileRecord.path)
+            select(CollectionArtifactRecord.path)
             .where(
-                CollectionFileRecord.collection_id == collection_id,
-                _is_retirement_obligation(CollectionFileRecord),
+                CollectionArtifactRecord.collection_id == collection_id,
+                _is_retirement_obligation(CollectionArtifactRecord),
             )
-            .order_by(CollectionFileRecord.path_sort_key)
+            .order_by(CollectionArtifactRecord.path_sort_key)
         )
     )
 

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/profiles/execution-environment.schema.json",
+  "title": "Observer execution environment description",
+  "description": "Optional evidence about where a process ran, never evidence of how a remote subject was stored. Native identifiers are scoped to explicit contexts or agents.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "operating_system": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "version": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "build": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "architecture": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    },
+    "kernel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "version": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "build": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "architecture": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "version": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "build": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "architecture": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "version": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "build": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "architecture": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    }
+  },
+  "required": [],
+  "minProperties": 1
+}

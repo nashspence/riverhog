@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/profiles/filesystem-observation.schema.json",
+  "title": "Normalized filesystem observations",
+  "description": "Applies only to an actually observed regular filesystem object. Raw xattrs, ACLs, native streams, forks and structures use the shared observation.metadata typed evidence contract; coverage is declared on the observation, not duplicated here.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "object_kind": {
+      "const": "regular_file"
+    },
+    "timestamps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "created",
+              "content_modified",
+              "metadata_changed",
+              "accessed",
+              "backed_up",
+              "added",
+              "other"
+            ]
+          },
+          "kind_uri": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/uri"
+          },
+          "value_status": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "assumed",
+              "unresolved"
+            ]
+          },
+          "value": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/time"
+          },
+          "resolution_ns": {
+            "allOf": [
+              {
+                "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural"
+              }
+            ],
+            "not": {
+              "const": "0"
+            }
+          },
+          "source": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/source"
+          },
+          "raw": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/typedValue"
+              },
+              "unit_uri": {
+                "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/uri"
+              },
+              "epoch": {
+                "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/time"
+              }
+            },
+            "required": [
+              "value",
+              "unit_uri"
+            ]
+          },
+          "conversion_method_uri": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/uri"
+          },
+          "assumption": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/nonempty"
+          }
+        },
+        "required": [
+          "kind",
+          "value_status",
+          "source"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "other"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "kind_uri"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "value_status": {
+                  "enum": [
+                    "exact",
+                    "assumed"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "value",
+                "resolution_ns"
+              ]
+            },
+            "else": {
+              "required": [
+                "raw"
+              ],
+              "not": {
+                "required": [
+                  "value"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "value_status": {
+                  "const": "assumed"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "assumption",
+                "conversion_method_uri"
+              ]
+            }
+          }
+        ]
+      },
+      "uniqueItems": true
+    },
+    "principals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "user",
+              "group",
+              "other"
+            ]
+          },
+          "kind_uri": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/uri"
+          },
+          "identifier": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+          },
+          "display_name": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/name"
+          },
+          "source": {
+            "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/source"
+          }
+        },
+        "required": [
+          "kind",
+          "identifier",
+          "source"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "other"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "kind_uri"
+              ]
+            }
+          }
+        ]
+      },
+      "uniqueItems": true
+    },
+    "native_identifiers": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/identifier"
+      },
+      "uniqueItems": true
+    },
+    "posix_mode": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "octal": {
+          "type": "string",
+          "pattern": "^[0-7]{4}(?![\\s\\S])"
+        },
+        "source": {
+          "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/source"
+        }
+      },
+      "required": [
+        "octal",
+        "source"
+      ]
+    }
+  },
+  "required": [
+    "object_kind"
+  ]
+}

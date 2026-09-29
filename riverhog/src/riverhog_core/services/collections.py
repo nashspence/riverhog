@@ -26,7 +26,7 @@ from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionDescriptionPublicationRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
     CollectionTagPublicationRecord,
@@ -400,8 +400,8 @@ def _collection_list_filters(
                 CollectionTagRecord.tag_sha256 == CollectionTagMembershipRecord.tag_sha256,
             )
             .where(CollectionTagRecord.search_text.like(pattern, escape="\\")),
-            select(CollectionFileRecord.collection_id.label("collection_id")).where(
-                CollectionFileRecord.path_search_text.like(pattern, escape="\\")
+            select(CollectionArtifactRecord.collection_id.label("collection_id")).where(
+                CollectionArtifactRecord.path_search_text.like(pattern, escape="\\")
             ),
         ).subquery()
         filters.append(CollectionRecord.id.in_(select(matching_ids.c.collection_id)))

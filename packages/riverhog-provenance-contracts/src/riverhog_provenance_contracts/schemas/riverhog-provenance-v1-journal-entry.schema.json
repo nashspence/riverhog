@@ -1,0 +1,3130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json",
+  "title": "Riverhog provenance journal entry",
+  "description": "Path-independent opaque-artifact provenance. Hard-cut current contract; package and wire versions are unchanged.",
+  "$ref": "#/$defs/journalEntry",
+  "$defs": {
+    "string": {
+      "type": "string",
+      "pattern": "^[^\\u0000\\uD800-\\uDFFF]*(?![\\s\\S])"
+    },
+    "nonempty": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/string"
+        }
+      ],
+      "minLength": 1
+    },
+    "uri": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:[^\\s\\u0000-\\u0020\\u007F\\uD800-\\uDFFF]+(?![\\s\\S])",
+      "format": "uri"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\\s\\S])"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    },
+    "natural": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])"
+    },
+    "integer": {
+      "type": "string",
+      "pattern": "^(?:0|-?[1-9][0-9]*)(?![\\s\\S])"
+    },
+    "decimal": {
+      "type": "string",
+      "pattern": "^(?:0|-?(?:[1-9][0-9]*(?:\\.[0-9]*[1-9])?|0\\.[0-9]*[1-9]))(?![\\s\\S])"
+    },
+    "time": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,9})?Z(?![\\s\\S])",
+      "format": "date-time",
+      "description": "UTC instant, no leap-second spellings; calendar validity and nanosecond ordering are application constraints."
+    },
+    "json": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/json"
+          }
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/json"
+          }
+        }
+      ],
+      "description": "Null-free portable JSON; exact fractional or wider numeric values use typed decimal/integer strings. No floats in opaque profile JSON."
+    },
+    "bytes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "encoding": {
+          "const": "base64"
+        },
+        "data": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?(?![\\s\\S])"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/natural"
+        }
+      },
+      "required": [
+        "encoding",
+        "data",
+        "byte_length"
+      ]
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sha-256",
+            "sha-512",
+            "other"
+          ]
+        },
+        "algorithm_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "value": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha-256"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/sha256"
+              }
+            },
+            "not": {
+              "required": [
+                "algorithm_uri"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "sha-512"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{128}(?![\\s\\S])"
+              }
+            },
+            "not": {
+              "required": [
+                "algorithm_uri"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "algorithm": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "algorithm_uri"
+            ]
+          }
+        }
+      ]
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "size_bytes": {
+          "$ref": "#/$defs/natural"
+        },
+        "digests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/digest"
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": {
+            "properties": {
+              "algorithm": {
+                "const": "sha-256"
+              }
+            },
+            "required": [
+              "algorithm"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      },
+      "required": [
+        "size_bytes",
+        "digests"
+      ],
+      "description": "Only the bounded primary byte sequence. Native streams, forks, attributes and metadata do not enter this digest."
+    },
+    "entryReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "sequence": {
+          "$ref": "#/$defs/natural"
+        },
+        "json_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "entry_id",
+        "sequence",
+        "json_sha256"
+      ]
+    },
+    "journalAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "journal_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "through": {
+          "$ref": "#/$defs/entryReference"
+        },
+        "prefix_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "prefix_bytes": {
+          "$ref": "#/$defs/natural"
+        }
+      },
+      "required": [
+        "journal_id",
+        "through",
+        "prefix_sha256",
+        "prefix_bytes"
+      ]
+    },
+    "objectType": {
+      "type": "string",
+      "enum": [
+        "artifact",
+        "occurrence",
+        "state",
+        "agent",
+        "context",
+        "activity",
+        "observation",
+        "reported_description",
+        "usage",
+        "generation",
+        "invalidation",
+        "derivation",
+        "specialization",
+        "continuity",
+        "content_comparison",
+        "locator_binding",
+        "locator_binding_end",
+        "delivery_association",
+        "custody_assertion",
+        "availability_assertion",
+        "journal_subject",
+        "extension"
+      ]
+    },
+    "localReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "const": "local"
+        },
+        "object_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "object_type": {
+          "$ref": "#/$defs/objectType"
+        }
+      },
+      "required": [
+        "scope",
+        "object_id",
+        "object_type"
+      ]
+    },
+    "externalReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "const": "external"
+        },
+        "journal_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "entry": {
+          "$ref": "#/$defs/entryReference"
+        },
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "object_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "object_type": {
+          "$ref": "#/$defs/objectType"
+        }
+      },
+      "required": [
+        "scope",
+        "journal_id",
+        "entry",
+        "assertion_id",
+        "object_id",
+        "object_type"
+      ],
+      "description": "A reference to an exact assertion in an immutable foreign entry. It does not import or independently authenticate that assertion."
+    },
+    "reference": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localReference"
+        },
+        {
+          "$ref": "#/$defs/externalReference"
+        }
+      ]
+    },
+    "identifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scheme": {
+          "$ref": "#/$defs/uri"
+        },
+        "value": {
+          "$ref": "#/$defs/name"
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "global",
+            "context"
+          ]
+        },
+        "authority_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      },
+      "required": [
+        "scheme",
+        "value",
+        "scope"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "context"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "authority_id"
+            ]
+          }
+        }
+      ]
+    },
+    "name": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/textName"
+        },
+        {
+          "$ref": "#/$defs/byteName"
+        }
+      ]
+    },
+    "textName": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "text"
+        },
+        "text": {
+          "$ref": "#/$defs/string"
+        }
+      },
+      "required": [
+        "kind",
+        "text"
+      ]
+    },
+    "byteName": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "bytes"
+        },
+        "bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "encoding": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "display": {
+          "$ref": "#/$defs/string"
+        }
+      },
+      "required": [
+        "kind",
+        "bytes",
+        "encoding"
+      ],
+      "description": "Exact source units, including non-Unicode path or name sequences. Display text is never identity."
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "direct_measurement",
+            "process_record",
+            "imported_record",
+            "attestation",
+            "inference",
+            "identity_assignment",
+            "unknown"
+          ]
+        },
+        "asserted_by_agent_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "method_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "source": {
+          "$ref": "#/$defs/reference"
+        },
+        "source_identifier": {
+          "$ref": "#/$defs/identifier"
+        },
+        "note": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unspecified"
+          ]
+        }
+      },
+      "required": [
+        "basis",
+        "asserted_by_agent_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "type": "string",
+                "enum": [
+                  "inference",
+                  "unknown",
+                  "attestation"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "note"
+            ]
+          }
+        }
+      ]
+    },
+    "evidenceList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "profileReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_id": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "contract_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schema_id": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "contract_id",
+        "contract_sha256",
+        "schema_id"
+      ]
+    },
+    "profileValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/profileReference"
+        },
+        "data": {
+          "$ref": "#/$defs/json"
+        }
+      },
+      "required": [
+        "profile",
+        "data"
+      ]
+    },
+    "bytesValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "bytes"
+        },
+        "value": {
+          "$ref": "#/$defs/bytes"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "textValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "value": {
+          "$ref": "#/$defs/string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "integerValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "integer"
+        },
+        "value": {
+          "$ref": "#/$defs/integer"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "decimalValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "decimal"
+        },
+        "value": {
+          "$ref": "#/$defs/decimal"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "booleanValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "boolean"
+        },
+        "value": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "timestampValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "timestamp"
+        },
+        "value": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "uriValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "uri"
+        },
+        "value": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "referenceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "reference"
+        },
+        "value": {
+          "$ref": "#/$defs/reference"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "jsonValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "json"
+        },
+        "value": {
+          "$ref": "#/$defs/profileValue"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "digestValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "digest"
+        },
+        "value": {
+          "$ref": "#/$defs/content"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "typedValue": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/bytesValue"
+        },
+        {
+          "$ref": "#/$defs/textValue"
+        },
+        {
+          "$ref": "#/$defs/integerValue"
+        },
+        {
+          "$ref": "#/$defs/decimalValue"
+        },
+        {
+          "$ref": "#/$defs/booleanValue"
+        },
+        {
+          "$ref": "#/$defs/timestampValue"
+        },
+        {
+          "$ref": "#/$defs/uriValue"
+        },
+        {
+          "$ref": "#/$defs/referenceValue"
+        },
+        {
+          "$ref": "#/$defs/jsonValue"
+        },
+        {
+          "$ref": "#/$defs/digestValue"
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interface": {
+          "$ref": "#/$defs/uri"
+        },
+        "field": {
+          "$ref": "#/$defs/name"
+        },
+        "context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "method": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "interface",
+        "field"
+      ]
+    },
+    "interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/typedValue"
+        },
+        "asserted_by_agent_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "method_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "note": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "value",
+        "asserted_by_agent_id",
+        "method_uri"
+      ]
+    },
+    "nativeRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "$ref": "#/$defs/uri"
+        },
+        "category": {
+          "$ref": "#/$defs/uri"
+        },
+        "namespace": {
+          "$ref": "#/$defs/uri"
+        },
+        "name": {
+          "$ref": "#/$defs/name"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "captured",
+            "digest_only",
+            "withheld",
+            "unreadable",
+            "not_retained"
+          ]
+        },
+        "value": {
+          "$ref": "#/$defs/typedValue"
+        },
+        "observed_byte_length": {
+          "$ref": "#/$defs/natural"
+        },
+        "interpretations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/interpretation"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": [
+            "public",
+            "internal",
+            "personal",
+            "secret",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "profile_id",
+        "category",
+        "name",
+        "source",
+        "status",
+        "sensitivity"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "captured",
+                  "digest_only"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "value"
+              ]
+            },
+            "required": [
+              "reason"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "digest_only"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/digestValue"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "captured"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "not": {
+                  "$ref": "#/$defs/digestValue"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "$ref": "#/$defs/uri"
+        },
+        "category": {
+          "$ref": "#/$defs/uri"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "failed",
+            "not_exposed",
+            "not_applicable",
+            "not_requested",
+            "withheld",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "profile_id",
+        "category",
+        "status"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "not": {
+                  "const": "complete"
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
+    },
+    "timeExtent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/instantExtent"
+        },
+        {
+          "$ref": "#/$defs/intervalExtent"
+        },
+        {
+          "$ref": "#/$defs/unknownTimeExtent"
+        }
+      ]
+    },
+    "instantExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "instant"
+        },
+        "at": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "kind",
+        "at"
+      ]
+    },
+    "intervalExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "interval"
+        },
+        "start": {
+          "$ref": "#/$defs/time"
+        },
+        "end": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "start"
+          ]
+        },
+        {
+          "required": [
+            "end"
+          ]
+        }
+      ],
+      "description": "Known bounds only, [start,end) when both exist. Omitted bound is unknown, not infinity."
+    },
+    "unknownTimeExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "unknown"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "kind",
+        "reason"
+      ]
+    },
+    "association": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "role": {
+          "$ref": "#/$defs/uri"
+        },
+        "plan_uri": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "agent_id",
+        "role"
+      ]
+    },
+    "contextRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "source",
+            "destination",
+            "execution",
+            "recording",
+            "other"
+          ]
+        },
+        "role_uri": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "context_id",
+        "role"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "role_uri"
+            ]
+          }
+        }
+      ]
+    },
+    "consistency": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "immutable_snapshot",
+            "verified_unchanged",
+            "one_pass",
+            "best_effort",
+            "unknown"
+          ]
+        },
+        "method_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "snapshot_identifier": {
+          "$ref": "#/$defs/identifier"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "level",
+        "method_uri"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "immutable_snapshot"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "snapshot_identifier"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "verified_unchanged"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "checks"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "one_pass",
+                  "best_effort",
+                  "unknown"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "limitations"
+            ]
+          }
+        }
+      ]
+    },
+    "extent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/wholeExtent"
+        },
+        {
+          "$ref": "#/$defs/emissionExtent"
+        },
+        {
+          "$ref": "#/$defs/segmentExtent"
+        },
+        {
+          "$ref": "#/$defs/unknownExtent"
+        }
+      ]
+    },
+    "wholeExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "whole_object"
+        }
+      },
+      "required": [
+        "kind"
+      ]
+    },
+    "emissionExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "complete_emission"
+        },
+        "boundary_policy_uri": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "kind",
+        "boundary_policy_uri"
+      ]
+    },
+    "segmentExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "segment"
+        },
+        "boundary_policy_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "start_boundary": {
+          "$ref": "#/$defs/typedValue"
+        },
+        "end_boundary": {
+          "$ref": "#/$defs/typedValue"
+        }
+      },
+      "required": [
+        "kind",
+        "boundary_policy_uri",
+        "start_boundary",
+        "end_boundary"
+      ]
+    },
+    "unknownExtent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "unknown"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "kind",
+        "reason"
+      ]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bounded": {
+          "const": true
+        },
+        "repeatable": {
+          "type": "boolean"
+        },
+        "seekable": {
+          "type": "boolean"
+        },
+        "stable_version_selection": {
+          "type": "boolean"
+        },
+        "native_metadata": {
+          "type": "boolean"
+        },
+        "persistent_designator": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "bounded",
+        "repeatable",
+        "seekable",
+        "stable_version_selection",
+        "native_metadata",
+        "persistent_designator"
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "artifact"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "continuity_policy_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "label": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "continuity_policy_uri"
+      ],
+      "description": "Governed continuity identity, not a path or digest and not an automatic PROV specialization assertion."
+    },
+    "occurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "occurrence"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "filesystem_object",
+            "object_store_object",
+            "repository_object",
+            "database_value",
+            "stream_emission",
+            "opaque"
+          ]
+        },
+        "source_context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "materialization_hint": {
+          "$ref": "#/$defs/materializationHint"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "artifact_id",
+        "kind"
+      ],
+      "description": "A contextual instance/exposure. Membership is an attributed continuity judgment; multiple retained replicas have distinct occurrence identities. materialization_hint is optional descriptive advice under this occurrence assertion, not a fixed identity aspect; corrections use normal assertion retraction/replacement."
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "state"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "occurrence_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "extent": {
+          "$ref": "#/$defs/extent"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "occurrence_id",
+        "extent"
+      ],
+      "description": "Fixed aspects of an occurrence. Descriptions carry observed or reported values; addresses do not define state identity."
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "agent"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "software",
+            "person",
+            "organization",
+            "responsible_device"
+          ]
+        },
+        "name": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "version": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "kind"
+      ],
+      "description": "A responsible agent. A host or service is not automatically an agent."
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "context"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "filesystem_namespace",
+            "object_service",
+            "repository",
+            "database",
+            "stream_session",
+            "execution_environment",
+            "delivery",
+            "recordkeeping",
+            "opaque"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/profileValue"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "metadata": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nativeRecord"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "kind"
+      ],
+      "description": "A described context, not necessarily a physical host. Source, execution and recordkeeping are independent activity roles."
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "activity"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "observation",
+            "creation",
+            "transformation",
+            "copy",
+            "transfer",
+            "materialization",
+            "metadata_update",
+            "rename",
+            "removal",
+            "custody_change",
+            "recording",
+            "unknown",
+            "other"
+          ]
+        },
+        "kind_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "started_at": {
+          "$ref": "#/$defs/time"
+        },
+        "ended_at": {
+          "$ref": "#/$defs/time"
+        },
+        "associations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/association"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contextRole"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "plan_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "success",
+            "partial",
+            "failed",
+            "unknown"
+          ]
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/profileValue"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "configuration": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/profileValue"
+            }
+          ],
+          "properties": {
+            "data": {
+              "type": "object"
+            }
+          }
+        },
+        "configuration_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "kind",
+        "associations",
+        "outcome"
+      ],
+      "description": "",
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "configuration"
+            ]
+          },
+          "then": {
+            "required": [
+              "configuration_sha256"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "configuration_sha256"
+            ]
+          },
+          "then": {
+            "required": [
+              "configuration"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind_uri"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "observation"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "started_at",
+              "ended_at",
+              "plan_uri"
+            ]
+          }
+        }
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "observation"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "state": {
+          "$ref": "#/$defs/reference"
+        },
+        "content": {
+          "$ref": "#/$defs/content"
+        },
+        "source_context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "metadata": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nativeRecord"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/profileValue"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/coverage"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "note": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "capture_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "address_status": {
+          "type": "string",
+          "enum": [
+            "known",
+            "not_observed",
+            "not_exposed",
+            "withheld",
+            "unknown"
+          ]
+        },
+        "consistency": {
+          "$ref": "#/$defs/consistency"
+        },
+        "capabilities": {
+          "$ref": "#/$defs/capabilities"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "state",
+        "content",
+        "capture_id",
+        "coverage",
+        "consistency",
+        "address_status",
+        "capabilities"
+      ],
+      "description": "An immutable observation record generated by capture, not the observed state itself. Direct primary-content measurement requires complete size/SHA-256."
+    },
+    "reportedDescription": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "reported_description"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "state": {
+          "$ref": "#/$defs/reference"
+        },
+        "content": {
+          "$ref": "#/$defs/content"
+        },
+        "source_context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "metadata": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nativeRecord"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/profileValue"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/coverage"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "note": {
+          "$ref": "#/$defs/nonempty"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "state"
+      ],
+      "description": "A historical or imported assertion. Missing content, source location, context or generation event remains unknown; no synthetic capture is required."
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "usage"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "state": {
+          "$ref": "#/$defs/reference"
+        },
+        "role": {
+          "$ref": "#/$defs/uri"
+        },
+        "at": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "activity_id",
+        "state",
+        "role"
+      ],
+      "description": ""
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "generation"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "state": {
+          "$ref": "#/$defs/reference"
+        },
+        "at": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "activity_id",
+        "state"
+      ],
+      "description": ""
+    },
+    "invalidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "invalidation"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "state": {
+          "$ref": "#/$defs/reference"
+        },
+        "at": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "activity_id",
+        "state"
+      ],
+      "description": "Invalidates only the specified occurrence state, not its artifact, replicas or provenance records."
+    },
+    "derivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "derivation"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "used_state": {
+          "$ref": "#/$defs/reference"
+        },
+        "generated_state": {
+          "$ref": "#/$defs/reference"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "revision",
+            "transformation",
+            "copy",
+            "transfer",
+            "metadata_change",
+            "aggregation",
+            "extraction",
+            "other"
+          ]
+        },
+        "kind_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "usage_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "generation_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "used_state",
+        "generated_state",
+        "kind"
+      ],
+      "description": "",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind_uri"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "activity_id"
+            ]
+          },
+          "then": {
+            "required": [
+              "usage_id",
+              "generation_id"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "usage_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "generation_id"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "specialization": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "specialization"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "specific": {
+          "$ref": "#/$defs/reference"
+        },
+        "general": {
+          "$ref": "#/$defs/reference"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "specific",
+        "general"
+      ],
+      "description": "Explicit PROV specialization claim; never inferred from lineage membership, paths or fixity."
+    },
+    "continuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "continuity"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "earlier_state": {
+          "$ref": "#/$defs/reference"
+        },
+        "later_state": {
+          "$ref": "#/$defs/reference"
+        },
+        "policy_uri": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "earlier_state",
+        "later_state",
+        "policy_uri"
+      ],
+      "description": "An attributed continuity judgment, not necessarily a change or a derivation."
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "content_comparison"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "left_description": {
+          "$ref": "#/$defs/reference"
+        },
+        "right_description": {
+          "$ref": "#/$defs/reference"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "matching_fixity",
+            "different",
+            "indeterminate"
+          ]
+        },
+        "algorithm": {
+          "const": "sha-256"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "left_description",
+        "right_description",
+        "result",
+        "algorithm"
+      ],
+      "description": "Comparison of cited primary-content descriptions only. Matching digests do not establish identity, direction or metadata equality."
+    },
+    "filesystemLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "filesystem_path"
+        },
+        "syntax": {
+          "type": "string",
+          "enum": [
+            "posix",
+            "windows"
+          ]
+        },
+        "form": {
+          "type": "string",
+          "enum": [
+            "absolute",
+            "relative"
+          ]
+        },
+        "name": {
+          "$ref": "#/$defs/name"
+        }
+      },
+      "required": [
+        "kind",
+        "syntax",
+        "form",
+        "name"
+      ]
+    },
+    "objectLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "object_key"
+        },
+        "key": {
+          "$ref": "#/$defs/name"
+        },
+        "version": {
+          "$ref": "#/$defs/name"
+        }
+      },
+      "required": [
+        "kind",
+        "key"
+      ]
+    },
+    "repositoryLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "repository_id"
+        },
+        "identifier": {
+          "$ref": "#/$defs/name"
+        },
+        "version": {
+          "$ref": "#/$defs/name"
+        }
+      },
+      "required": [
+        "kind",
+        "identifier"
+      ]
+    },
+    "databaseLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "database_selector"
+        },
+        "selector": {
+          "$ref": "#/$defs/profileValue"
+        }
+      },
+      "required": [
+        "kind",
+        "selector"
+      ]
+    },
+    "uriLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "uri"
+        },
+        "uri": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "kind",
+        "uri"
+      ]
+    },
+    "opaqueLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "opaque"
+        },
+        "scheme_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "value": {
+          "$ref": "#/$defs/name"
+        }
+      },
+      "required": [
+        "kind",
+        "scheme_uri",
+        "value"
+      ]
+    },
+    "locator": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/filesystemLocator"
+        },
+        {
+          "$ref": "#/$defs/objectLocator"
+        },
+        {
+          "$ref": "#/$defs/repositoryLocator"
+        },
+        {
+          "$ref": "#/$defs/databaseLocator"
+        },
+        {
+          "$ref": "#/$defs/uriLocator"
+        },
+        {
+          "$ref": "#/$defs/opaqueLocator"
+        }
+      ]
+    },
+    "locatorBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "locator_binding"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "target": {
+          "$ref": "#/$defs/reference"
+        },
+        "context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "locator": {
+          "$ref": "#/$defs/locator"
+        },
+        "temporal_scope": {
+          "$ref": "#/$defs/timeExtent"
+        },
+        "observation_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "target",
+        "context_id",
+        "locator",
+        "temporal_scope"
+      ],
+      "description": "Optional, plural, contextual designation. Missing interval endpoints do not imply perpetual validity; no global current-path register exists."
+    },
+    "locatorBindingEnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "locator_binding_end"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "binding_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "at": {
+          "$ref": "#/$defs/time"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "binding_id",
+        "at"
+      ],
+      "description": "Evidence that one specifically identified binding ceased. It does not invalidate the payload or other aliases."
+    },
+    "deliveryAssociation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "delivery_association"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "delivery_context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "slot": {
+          "$ref": "#/$defs/name"
+        },
+        "role": {
+          "$ref": "#/$defs/uri"
+        },
+        "state": {
+          "$ref": "#/$defs/reference"
+        },
+        "verification_observation_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "delivery_context_id",
+        "slot",
+        "role",
+        "state",
+        "verification_observation_id"
+      ],
+      "description": "Association to a supplied payload slot within a delivery instance; the slot is opaque, not a path. Verifies primary bytes, not every native attribute."
+    },
+    "custodyAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "custody_assertion"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "target": {
+          "$ref": "#/$defs/reference"
+        },
+        "custodian_agent_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "role": {
+          "$ref": "#/$defs/uri"
+        },
+        "context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "temporal_scope": {
+          "$ref": "#/$defs/timeExtent"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "target",
+        "custodian_agent_id",
+        "role",
+        "temporal_scope"
+      ],
+      "description": ""
+    },
+    "availabilityAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "availability_assertion"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "occurrence": {
+          "$ref": "#/$defs/reference"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "available",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "temporal_scope": {
+          "$ref": "#/$defs/timeExtent"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "occurrence",
+        "status",
+        "temporal_scope"
+      ],
+      "description": "Availability is scoped to an occurrence. Absence of a locator or a successful destination copy is not proof of source removal."
+    },
+    "journalSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "journal_subject"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "journal_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "artifact": {
+          "$ref": "#/$defs/reference"
+        },
+        "role": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "journal_id",
+        "artifact",
+        "role"
+      ],
+      "description": "What a journal describes, independent of where the journal or payload is stored."
+    },
+    "extension": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "extension"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "subject": {
+          "$ref": "#/$defs/reference"
+        },
+        "property": {
+          "$ref": "#/$defs/uri"
+        },
+        "value": {
+          "$ref": "#/$defs/typedValue"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "id",
+        "type",
+        "evidence",
+        "subject",
+        "property",
+        "value"
+      ],
+      "description": "Attributed URI-named extension. Does not override the core and must not interpret primary media/document bytes in this profile."
+    },
+    "graphFragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "occurrences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/occurrence"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "agents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/agent"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/context"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/activity"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "descriptions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/observation"
+              },
+              {
+                "$ref": "#/$defs/reportedDescription"
+              }
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/usage"
+              },
+              {
+                "$ref": "#/$defs/generation"
+              },
+              {
+                "$ref": "#/$defs/invalidation"
+              },
+              {
+                "$ref": "#/$defs/derivation"
+              },
+              {
+                "$ref": "#/$defs/specialization"
+              },
+              {
+                "$ref": "#/$defs/continuity"
+              },
+              {
+                "$ref": "#/$defs/comparison"
+              }
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "locator_bindings": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/locatorBinding"
+              },
+              {
+                "$ref": "#/$defs/locatorBindingEnd"
+              }
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "delivery_associations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/deliveryAssociation"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "custody_assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/custodyAssertion"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "availability_assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/availabilityAssertion"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "journal_subjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/journalSubject"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extension"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [],
+      "minProperties": 1,
+      "description": "Atomic sets of attributable assertions. Array and append order imply neither causality nor event chronology."
+    },
+    "journalPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "serialization": {
+          "const": "application/json-seq"
+        },
+        "entry_encoding": {
+          "const": "RFC8785"
+        },
+        "hash_algorithm": {
+          "const": "sha-256"
+        },
+        "writer_policy": {
+          "const": "single_writer"
+        },
+        "policy_uri": {
+          "$ref": "#/$defs/uri"
+        },
+        "forked_from": {
+          "$ref": "#/$defs/journalAnchor"
+        }
+      },
+      "required": [
+        "id",
+        "serialization",
+        "entry_encoding",
+        "hash_algorithm",
+        "writer_policy",
+        "policy_uri"
+      ]
+    },
+    "initBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "journal": {
+          "$ref": "#/$defs/journalPolicy"
+        },
+        "assertions": {
+          "$ref": "#/$defs/graphFragment"
+        }
+      },
+      "required": [
+        "journal",
+        "assertions"
+      ]
+    },
+    "assertionBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "$ref": "#/$defs/graphFragment"
+        }
+      },
+      "required": [
+        "assertions"
+      ]
+    },
+    "assertionReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "$ref": "#/$defs/entryReference"
+        },
+        "assertion_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      },
+      "required": [
+        "entry",
+        "assertion_id"
+      ]
+    },
+    "correctionBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/nonempty"
+        },
+        "retracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assertionReference"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "assertions": {
+          "$ref": "#/$defs/graphFragment"
+        }
+      },
+      "required": [
+        "reason",
+        "retracts"
+      ],
+      "description": "Monotonic retraction of specific prior assertions, with optional atomic replacements bearing new assertion IDs. Does not denote artifact change or reactivate retracted assertions."
+    },
+    "checkpointBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "covered_through": {
+          "$ref": "#/$defs/entryReference"
+        },
+        "prefix_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "prefix_bytes": {
+          "$ref": "#/$defs/natural"
+        },
+        "purpose": {
+          "$ref": "#/$defs/uri"
+        }
+      },
+      "required": [
+        "covered_through",
+        "prefix_sha256",
+        "prefix_bytes",
+        "purpose"
+      ]
+    },
+    "journalEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "const": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json"
+        },
+        "profile": {
+          "const": "https://nashspence.github.io/riverhog/v1/provenance"
+        },
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "type": {
+          "const": "riverhog_provenance_journal_entry"
+        },
+        "journal_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "sequence": {
+          "$ref": "#/$defs/natural"
+        },
+        "recorded_at": {
+          "$ref": "#/$defs/time"
+        },
+        "recorded_by_agent_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "recording_context_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "entry_kind": {
+          "type": "string",
+          "enum": [
+            "journal_init",
+            "assertion",
+            "correction",
+            "checkpoint"
+          ]
+        },
+        "previous_entry": {
+          "$ref": "#/$defs/entryReference"
+        },
+        "body": {
+          "type": "object"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonempty"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "$schema",
+        "profile",
+        "schema_version",
+        "id",
+        "type",
+        "journal_id",
+        "sequence",
+        "recorded_at",
+        "recorded_by_agent_id",
+        "entry_kind",
+        "body"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "entry_kind": {
+                "const": "journal_init"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "$ref": "#/$defs/initBody"
+              },
+              "sequence": {
+                "const": "0"
+              }
+            },
+            "not": {
+              "required": [
+                "previous_entry"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "entry_kind": {
+                "const": "assertion"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "$ref": "#/$defs/assertionBody"
+              },
+              "sequence": {
+                "not": {
+                  "const": "0"
+                }
+              }
+            },
+            "required": [
+              "previous_entry"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "entry_kind": {
+                "const": "correction"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "$ref": "#/$defs/correctionBody"
+              },
+              "sequence": {
+                "not": {
+                  "const": "0"
+                }
+              }
+            },
+            "required": [
+              "previous_entry"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "entry_kind": {
+                "const": "checkpoint"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "$ref": "#/$defs/checkpointBody"
+              },
+              "sequence": {
+                "not": {
+                  "const": "0"
+                }
+              }
+            },
+            "required": [
+              "previous_entry"
+            ]
+          }
+        }
+      ]
+    },
+    "materializationHint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/string"
+              },
+              {
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
+                "not": {
+                  "enum": [
+                    ".",
+                    ".."
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "components"
+      ],
+      "description": "Optional attributed recommendation for human-facing materialization, not identity, an observed locator, an authoritative destination or a source relationship. Components are ordered relative Unicode labels; consumers validate and escape for their actual destination. No case or Unicode normalization is implied."
+    }
+  }
+}

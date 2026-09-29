@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import builtins
 import secrets
 
 from riverhog_protocol import (
@@ -12,8 +11,7 @@ from riverhog_protocol import (
     MAX_COLLECTION_TAG_REVISION,
     collection_tag_set_identity,
 )
-from riverhog_protocol.collection_upload_transport import collection_upload_path_order_key
-from riverhog_protocol.paths import relpath_search_key, relpath_sort_key, text_search_key
+from riverhog_protocol.paths import text_search_key
 from sqlalchemy import (
     BigInteger,
     Boolean,
@@ -149,11 +147,10 @@ class CollectionRecord(Base):
     archive_generation: Mapped[str] = mapped_column(
         String(64), nullable=False, default=lambda: secrets.token_hex(32)
     )
-    content_identity: Mapped[str] = mapped_column(String(64))
+    artifact_set_identity: Mapped[str] = mapped_column(String(64))
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
-    provenance_mode: Mapped[str] = mapped_column(String, default="omitted")
-    provenance_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    provenance_identity: Mapped[str] = mapped_column(String(64), nullable=False)
     inventory_identity: Mapped[str] = mapped_column(String(64))
     archive_root_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     catalog_revision: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
@@ -209,9 +206,9 @@ class CollectionRecord(Base):
         default=True,
         server_default=text("true"),
     )
-    file_count: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
-    file_bytes: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
-    files: Mapped[list[CollectionFileRecord]] = relationship(
+    artifact_count: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
+    artifact_bytes: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
+    artifacts: Mapped[list[CollectionArtifactRecord]] = relationship(
         back_populates="collection",
         cascade="all, delete-orphan",
         passive_deletes=True,
@@ -241,8 +238,8 @@ class CollectionRecord(Base):
         Index("ix_collections_encryption_format", "encryption_format", "id"),
         Index("ix_collections_passphrase_id", "passphrase_id", "id"),
         Index("ix_collections_created_at_id", "created_at", "id"),
-        Index("ix_collections_file_count_id", "file_count", "id"),
-        Index("ix_collections_file_bytes_id", "file_bytes", "id"),
+        Index("ix_collections_artifact_count_id", "artifact_count", "id"),
+        Index("ix_collections_artifact_bytes_id", "artifact_bytes", "id"),
         Index(
             "ix_collections_search_trgm",
             "search_text",
@@ -255,18 +252,16 @@ class CollectionRecord(Base):
             postgresql_using="gin",
             postgresql_ops={"description_search": "gin_trgm_ops"},
         ),
-        CheckConstraint("file_count >= 0", name="ck_collections_file_count"),
-        CheckConstraint("file_bytes >= 0", name="ck_collections_file_bytes"),
+        CheckConstraint("artifact_count >= 0", name="ck_collections_artifact_count"),
+        CheckConstraint("artifact_bytes >= 0", name="ck_collections_artifact_bytes"),
         CheckConstraint(
-            "provenance_mode IN ('captured','mixed','omitted')",
-            name="ck_collections_provenance_mode",
-        ),
-        CheckConstraint(
-            "provenance_mode IN ('captured','mixed') AND provenance_identity IS NOT NULL OR "
-            "provenance_mode = 'omitted' AND provenance_identity IS NULL",
+            _fixed_lowercase_integer_check("provenance_identity", 64),
             name="ck_collections_provenance_identity",
         ),
-        CheckConstraint("length(content_identity) = 64", name="ck_collections_content_identity"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("artifact_set_identity", 64),
+            name="ck_collections_artifact_set_identity",
+        ),
         CheckConstraint(
             "length(inventory_identity) = 64", name="ck_collections_inventory_identity"
         ),
@@ -595,33 +590,13 @@ class ArchiveCopyRetirementRecord(Base):
     )
 
 
-class CollectionFileRecord(Base):
-    __tablename__ = "collection_files"
+class CollectionArtifactRecord(Base):
+    __tablename__ = "collection_artifacts"
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
-    provenance_status: Mapped[str] = mapped_column(
-        String,
-        default="missing",
-        server_default=text("'missing'"),
-    )
-    path_sort_key: Mapped[builtins.bytes] = mapped_column(
-        LargeBinary,
-        default=lambda context: relpath_sort_key(str(context.get_current_parameters()["path"])),
-    )
-    search_text: Mapped[str] = mapped_column(
-        String,
-        default=lambda context: (
-            f"{context.get_current_parameters()['collection_id']}/"
-            f"{relpath_search_key(str(context.get_current_parameters()['path']))}"
-        ),
-    )
-    path_search_text: Mapped[str] = mapped_column(
-        String,
-        default=lambda context: relpath_search_key(str(context.get_current_parameters()["path"])),
-    )
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -629,46 +604,30 @@ class CollectionFileRecord(Base):
             ["collections.id"],
             ondelete="CASCADE",
         ),
-        CheckConstraint("bytes >= 0", name="ck_collection_files_bytes"),
-        CheckConstraint("length(sha256) = 64", name="ck_collection_files_sha256"),
         CheckConstraint(
-            "provenance_status IN ('captured','omitted','missing')",
-            name="ck_collection_files_provenance_status",
+            "bytes >= 0 AND bytes < 9223372036854775808", name="ck_collection_artifacts_bytes"
         ),
-        Index("ix_collection_files_path", "path_sort_key", "collection_id"),
-        Index(
-            "ix_collection_files_collection_path",
-            "collection_id",
-            "path_sort_key",
+        CheckConstraint(
+            _fixed_lowercase_integer_check("artifact_id", 64), name="ck_collection_artifacts_id"
         ),
-        Index("ix_collection_files_bytes", "bytes", "collection_id", "path_sort_key"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("sha256", 64), name="ck_collection_artifacts_sha256"
+        ),
         Index(
-            "ix_collection_files_collection_bytes",
+            "ix_collection_artifacts_collection_bytes",
             "collection_id",
             "bytes",
-            "path_sort_key",
+            "artifact_id",
         ),
         Index(
-            "ix_collection_files_collection_provenance",
+            "ix_collection_artifacts_digest",
             "collection_id",
-            "provenance_status",
-            "path_sort_key",
-        ),
-        Index(
-            "ix_collection_files_search_trgm",
-            "search_text",
-            postgresql_using="gin",
-            postgresql_ops={"search_text": "gin_trgm_ops"},
-        ),
-        Index(
-            "ix_collection_files_path_search_trgm",
-            "path_search_text",
-            postgresql_using="gin",
-            postgresql_ops={"path_search_text": "gin_trgm_ops"},
+            "sha256",
+            "artifact_id",
         ),
     )
 
-    collection: Mapped[CollectionRecord] = relationship(back_populates="files")
+    collection: Mapped[CollectionRecord] = relationship(back_populates="artifacts")
 
 
 class CollectionProvenanceJournalRecord(Base):
@@ -681,12 +640,9 @@ class CollectionProvenanceJournalRecord(Base):
     entries: Mapped[int] = mapped_column(BigInteger)
     agent_count: Mapped[int] = mapped_column(BigInteger)
     entity_counts_json: Mapped[str] = mapped_column(Text)
-    current_state_id: Mapped[str] = mapped_column(String)
-    current_entry_id: Mapped[str] = mapped_column(String)
-    current_entry_json_sha256: Mapped[str] = mapped_column(String(64))
-    current_path: Mapped[str] = mapped_column(String)
-    current_bytes: Mapped[int] = mapped_column(BigInteger)
-    current_sha256: Mapped[str] = mapped_column(String(64))
+    terminal_entry_id: Mapped[str] = mapped_column(String)
+    terminal_sequence: Mapped[int] = mapped_column(BigInteger)
+    terminal_json_sha256: Mapped[str] = mapped_column(String(64))
 
     __table_args__ = (
         ForeignKeyConstraint(["collection_id"], ["collections.id"], ondelete="CASCADE"),
@@ -694,7 +650,7 @@ class CollectionProvenanceJournalRecord(Base):
         CheckConstraint("bytes >= 0", name="ck_provenance_journals_bytes"),
         CheckConstraint("entries >= 0", name="ck_provenance_journals_entries"),
         CheckConstraint("agent_count >= 0", name="ck_provenance_journals_agent_count"),
-        CheckConstraint("current_bytes >= 0", name="ck_provenance_journals_current_bytes"),
+        CheckConstraint("terminal_sequence >= 0", name="ck_provenance_journals_terminal_sequence"),
         CheckConstraint("length(sha256) = 64", name="ck_provenance_journals_sha256"),
     )
 
@@ -940,20 +896,23 @@ class CollectionProvenanceExternalStateReferenceRecord(Base):
     )
 
 
-class CollectionFileProvenanceRecord(Base):
-    __tablename__ = "collection_file_provenance"
+class CollectionArtifactProvenanceRecord(Base):
+    __tablename__ = "collection_artifact_provenance"
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
-    status: Mapped[str] = mapped_column(String)
-    journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    current_state_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    omission_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, nullable=False)
+    through_entry_id: Mapped[str] = mapped_column(String, nullable=False)
+    through_sequence: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    through_json_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    prefix_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    prefix_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    delivery_association_id: Mapped[str] = mapped_column(String, nullable=False)
 
     __table_args__ = (
         ForeignKeyConstraint(
-            ["collection_id", "path"],
-            ["collection_files.collection_id", "collection_files.path"],
+            ["collection_id", "artifact_id"],
+            ["collection_artifacts.collection_id", "collection_artifacts.artifact_id"],
             ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
@@ -964,16 +923,16 @@ class CollectionFileProvenanceRecord(Base):
             ],
             ondelete="CASCADE",
         ),
-        Index("ix_collection_file_provenance_journal", "collection_id", "journal_id"),
+        Index("ix_collection_artifact_provenance_journal", "collection_id", "journal_id"),
         CheckConstraint(
-            "status IN ('captured','omitted')",
-            name="ck_collection_file_provenance_status",
+            "through_sequence >= 0 AND prefix_bytes > 0",
+            name="ck_collection_artifact_provenance_anchor_extent",
         ),
         CheckConstraint(
-            "status = 'captured' AND journal_id IS NOT NULL AND current_state_id IS NOT NULL "
-            "AND omission_reason IS NULL OR status = 'omitted' AND journal_id IS NULL "
-            "AND current_state_id IS NULL AND omission_reason IS NOT NULL",
-            name="ck_collection_file_provenance_binding",
+            _fixed_lowercase_integer_check("through_json_sha256", 64)
+            + " AND "
+            + _fixed_lowercase_integer_check("prefix_sha256", 64),
+            name="ck_collection_artifact_provenance_hashes",
         ),
     )
 
@@ -1490,22 +1449,22 @@ class CollectionArchiveObjectRecord(Base):
     )
 
     copy: Mapped[CollectionArchiveCopyRecord] = relationship(back_populates="objects")
-    placements: Mapped[list[CollectionArchiveFileObjectRecord]] = relationship(
+    placements: Mapped[list[CollectionArchiveArtifactObjectRecord]] = relationship(
         back_populates="object",
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
 
 
-class CollectionArchiveFileObjectRecord(Base):
-    __tablename__ = "collection_archive_file_objects"
+class CollectionArchiveArtifactObjectRecord(Base):
+    __tablename__ = "collection_archive_artifact_objects"
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     sequence: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     object_id: Mapped[str] = mapped_column(String)
-    file_offset: Mapped[int] = mapped_column(BigInteger)
+    artifact_offset: Mapped[int] = mapped_column(BigInteger)
     object_offset: Mapped[int] = mapped_column(BigInteger, default=0)
     bytes: Mapped[int] = mapped_column(BigInteger)
     member: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -1521,20 +1480,20 @@ class CollectionArchiveFileObjectRecord(Base):
             ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
-            ["collection_id", "path"],
-            ["collection_files.collection_id", "collection_files.path"],
+            ["collection_id", "artifact_id"],
+            ["collection_artifacts.collection_id", "collection_artifacts.artifact_id"],
             ondelete="CASCADE",
         ),
         Index(
-            "idx_collection_archive_file_objects_object",
+            "idx_collection_archive_artifact_objects_object",
             "collection_id",
             "store",
             "object_id",
         ),
-        CheckConstraint("sequence >= 0", name="ck_archive_file_objects_sequence"),
-        CheckConstraint("file_offset >= 0", name="ck_archive_file_objects_file_offset"),
-        CheckConstraint("object_offset >= 0", name="ck_archive_file_objects_object_offset"),
-        CheckConstraint("bytes >= 0", name="ck_archive_file_objects_bytes"),
+        CheckConstraint("sequence >= 0", name="ck_archive_artifact_objects_sequence"),
+        CheckConstraint("artifact_offset >= 0", name="ck_archive_artifact_objects_offset"),
+        CheckConstraint("object_offset >= 0", name="ck_archive_artifact_objects_object_offset"),
+        CheckConstraint("bytes >= 0", name="ck_archive_artifact_objects_bytes"),
     )
 
     object: Mapped[CollectionArchiveObjectRecord] = relationship(back_populates="placements")
@@ -1698,7 +1657,8 @@ class CatalogEventRecord(Base):
     occurred_at: Mapped[str] = mapped_column(String)
     inventory_identity: Mapped[str] = mapped_column(String(64))
     archive_root_sha256: Mapped[str] = mapped_column(String(64))
-    content_identity: Mapped[str] = mapped_column(String(64))
+    artifact_set_identity: Mapped[str] = mapped_column(String(64))
+    provenance_identity: Mapped[str] = mapped_column(String(64))
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     description_revision: Mapped[int] = mapped_column(BigInteger, nullable=False)
     description_identity: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -1985,12 +1945,12 @@ class RetrievalPlanRecord(Base):
     ready_at: Mapped[str | None] = mapped_column(String, nullable=True)
     expires_at: Mapped[str] = mapped_column(String)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
-    next_file_order: Mapped[int] = mapped_column(Integer, default=0)
+    next_artifact_order: Mapped[int] = mapped_column(Integer, default=0)
     next_placement_sequence: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
     object_count: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
     retrieval_bytes: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
     requires_restore: Mapped[bool] = mapped_column(Boolean, default=False)
-    file_commitment_sha256: Mapped[str] = mapped_column(String(64))
+    artifact_commitment_sha256: Mapped[str] = mapped_column(String(64))
     segment_commitment_sha256: Mapped[str] = mapped_column(String(64))
     etag: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
@@ -2011,10 +1971,10 @@ class RetrievalPlanRecord(Base):
             "restore_policy IN ('allow','never')",
             name="ck_retrieval_plans_restore_policy",
         ),
-        CheckConstraint("next_file_order >= 0", name="ck_retrieval_plans_file_order"),
+        CheckConstraint("next_artifact_order >= 0", name="ck_retrieval_plans_artifact_order"),
     )
 
-    files: Mapped[list[RetrievalPlanFileRecord]] = relationship(
+    artifacts: Mapped[list[RetrievalPlanArtifactRecord]] = relationship(
         back_populates="plan",
         cascade="all, delete-orphan",
     )
@@ -2025,13 +1985,13 @@ class RetrievalPlanRecord(Base):
     jobs: Mapped[list[RetrievalJobRecord]] = relationship(back_populates="plan")
 
 
-class RetrievalPlanFileRecord(Base):
-    __tablename__ = "retrieval_plan_files"
+class RetrievalPlanArtifactRecord(Base):
+    __tablename__ = "retrieval_plan_artifacts"
 
     plan_id: Mapped[str] = mapped_column(String, primary_key=True)
-    file_order: Mapped[int] = mapped_column(Integer, primary_key=True)
+    artifact_order: Mapped[int] = mapped_column(Integer, primary_key=True)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE)
-    path: Mapped[str] = mapped_column(String)
+    artifact_id: Mapped[str] = mapped_column(String(64))
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
     source_store: Mapped[str] = mapped_column(String)
@@ -2045,16 +2005,16 @@ class RetrievalPlanFileRecord(Base):
         ),
         ForeignKeyConstraint(["plan_id"], ["retrieval_plans.id"], ondelete="CASCADE"),
         ForeignKeyConstraint(
-            ["collection_id", "path"],
-            ["collection_files.collection_id", "collection_files.path"],
+            ["collection_id", "artifact_id"],
+            ["collection_artifacts.collection_id", "collection_artifacts.artifact_id"],
         ),
-        UniqueConstraint("plan_id", "collection_id", "path"),
-        Index("ix_retrieval_plan_files_collection", "collection_id", "plan_id"),
-        CheckConstraint("file_order >= 0", name="ck_retrieval_plan_files_order"),
-        CheckConstraint("bytes >= 0", name="ck_retrieval_plan_files_bytes"),
+        UniqueConstraint("plan_id", "collection_id", "artifact_id"),
+        Index("ix_retrieval_plan_artifacts_collection", "collection_id", "plan_id"),
+        CheckConstraint("artifact_order >= 0", name="ck_retrieval_plan_artifacts_order"),
+        CheckConstraint("bytes >= 0", name="ck_retrieval_plan_artifacts_bytes"),
     )
 
-    plan: Mapped[RetrievalPlanRecord] = relationship(back_populates="files")
+    plan: Mapped[RetrievalPlanRecord] = relationship(back_populates="artifacts")
 
 
 class RetrievalPlanObjectRecord(Base):
@@ -2116,18 +2076,18 @@ class RetrievalPlanPlacementRecord(Base):
     __tablename__ = "retrieval_plan_placements"
 
     plan_id: Mapped[str] = mapped_column(String, primary_key=True)
-    file_order: Mapped[int] = mapped_column(Integer, primary_key=True)
+    artifact_order: Mapped[int] = mapped_column(Integer, primary_key=True)
     sequence: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
     object_order: Mapped[int] = mapped_column(authority_ordinal_type())
-    file_offset: Mapped[int] = mapped_column(BigInteger)
+    artifact_offset: Mapped[int] = mapped_column(BigInteger)
     object_offset: Mapped[int] = mapped_column(BigInteger)
     bytes: Mapped[int] = mapped_column(BigInteger)
     member: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
-            ["plan_id", "file_order"],
-            ["retrieval_plan_files.plan_id", "retrieval_plan_files.file_order"],
+            ["plan_id", "artifact_order"],
+            ["retrieval_plan_artifacts.plan_id", "retrieval_plan_artifacts.artifact_order"],
             ondelete="CASCADE",
         ),
         ForeignKeyConstraint(
@@ -2135,7 +2095,9 @@ class RetrievalPlanPlacementRecord(Base):
             ["retrieval_plan_objects.plan_id", "retrieval_plan_objects.object_order"],
         ),
         Index("ix_retrieval_plan_placements_object", "plan_id", "object_order"),
-        CheckConstraint("file_offset >= 0", name="ck_retrieval_plan_placements_file_offset"),
+        CheckConstraint(
+            "artifact_offset >= 0", name="ck_retrieval_plan_placements_artifact_offset"
+        ),
         CheckConstraint("object_offset >= 0", name="ck_retrieval_plan_placements_object_offset"),
         CheckConstraint("bytes >= 0", name="ck_retrieval_plan_placements_bytes"),
     )
@@ -2561,8 +2523,6 @@ class CollectionUploadRecord(Base):
     tag_set_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     tag_head_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     tag_publication_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
-    provenance_mode: Mapped[str] = mapped_column(String)
-    provenance_omission_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     provenance_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
@@ -2588,12 +2548,10 @@ class CollectionUploadRecord(Base):
     archive_failure: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_storage_prefix: Mapped[str] = mapped_column(String)
     planner_checkpoint_json: Mapped[str] = mapped_column(Text)
-    archive_tree_next_file_order: Mapped[int] = mapped_column(
+    archive_tree_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
-    archive_tree_after_path_sort_key: Mapped[bytes | None] = mapped_column(
-        LargeBinary, nullable=True
-    )
+    archive_tree_after_artifact_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_tree_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     archive_tree_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_volume_next_sequence: Mapped[int] = mapped_column(
@@ -2602,7 +2560,7 @@ class CollectionUploadRecord(Base):
     archive_volume_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     archive_ordered_volume_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_terminal_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
-    provenance_validation_next_file_order: Mapped[int] = mapped_column(
+    provenance_validation_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
     provenance_closure_validated: Mapped[bool] = mapped_column(
@@ -2614,11 +2572,11 @@ class CollectionUploadRecord(Base):
     derivative_provenance_cursor_json: Mapped[str] = mapped_column(
         Text, default="{}", server_default=text("'{}'")
     )
-    provenance_archive_next_file_order: Mapped[int] = mapped_column(
+    provenance_archive_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
-    provenance_archive_after_path_sort_key: Mapped[bytes | None] = mapped_column(
-        LargeBinary, nullable=True
+    provenance_archive_after_artifact_id: Mapped[str | None] = mapped_column(
+        String(64), nullable=True
     )
     provenance_archive_last_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
     provenance_archive_current_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -2636,30 +2594,30 @@ class CollectionUploadRecord(Base):
     provenance_archive_root_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     final_authority_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     catalog_phase: Mapped[str] = mapped_column(
-        String, default="content-identity", server_default=text("'content-identity'")
+        String, default="artifact-set-identity", server_default=text("'artifact-set-identity'")
     )
     catalog_cursor_json: Mapped[str] = mapped_column(
         Text, default="{}", server_default=text("'{}'")
     )
     catalog_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
-    catalog_content_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    catalog_artifact_set_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     catalog_inventory_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    file_count: Mapped[int] = mapped_column(
+    artifact_count: Mapped[int] = mapped_column(
         BigInteger,
         default=0,
         server_default=text("0"),
     )
-    file_bytes: Mapped[int] = mapped_column(
+    artifact_bytes: Mapped[int] = mapped_column(
         BigInteger,
         default=0,
         server_default=text("0"),
     )
-    custodied_file_count: Mapped[int] = mapped_column(
+    custodied_artifact_count: Mapped[int] = mapped_column(
         BigInteger,
         default=0,
         server_default=text("0"),
     )
-    custodied_file_bytes: Mapped[int] = mapped_column(
+    custodied_artifact_bytes: Mapped[int] = mapped_column(
         BigInteger,
         default=0,
         server_default=text("0"),
@@ -2676,7 +2634,7 @@ class CollectionUploadRecord(Base):
         ),
     )
 
-    files: Mapped[list[CollectionUploadFileRecord]] = relationship(
+    artifacts: Mapped[list[CollectionUploadArtifactRecord]] = relationship(
         back_populates="upload",
         cascade="all, delete-orphan",
     )
@@ -2708,17 +2666,17 @@ class CollectionUploadRecord(Base):
         ),
         Index("ix_collection_uploads_opened_at", "opened_at", "collection_id"),
         Index("ix_collection_uploads_state", "state", "collection_id"),
-        Index("ix_collection_uploads_file_count", "file_count", "collection_id"),
-        Index("ix_collection_uploads_file_bytes", "file_bytes", "collection_id"),
+        Index("ix_collection_uploads_artifact_count", "artifact_count", "collection_id"),
+        Index("ix_collection_uploads_artifact_bytes", "artifact_bytes", "collection_id"),
         Index(
             "ix_collection_uploads_search_trgm",
             "search_text",
             postgresql_using="gin",
             postgresql_ops={"search_text": "gin_trgm_ops"},
         ),
-        CheckConstraint("file_count >= 0", name="ck_collection_uploads_file_count"),
+        CheckConstraint("artifact_count >= 0", name="ck_collection_uploads_artifact_count"),
         CheckConstraint(
-            "archive_tree_next_file_order >= 0",
+            "archive_tree_next_artifact_order >= 0",
             name="ck_collection_uploads_tree_progress",
         ),
         CheckConstraint(
@@ -2726,30 +2684,30 @@ class CollectionUploadRecord(Base):
             name="ck_collection_uploads_volume_progress",
         ),
         CheckConstraint(
-            "provenance_validation_next_file_order >= 0 AND "
-            "provenance_archive_next_file_order >= 0 AND "
+            "provenance_validation_next_artifact_order >= 0 AND "
+            "provenance_archive_next_artifact_order >= 0 AND "
             "provenance_archive_current_journal_offset >= 0 AND "
             f"{_fixed_lowercase_integer_check('provenance_archive_next_sequence', 64)}",
             name="ck_collection_uploads_provenance_progress",
         ),
         CheckConstraint(
             "catalog_phase IN ("
-            "'content-identity','inventory-identity','collection','tags','files','journals',"
-            "'provenance-relations','bindings','archive-objects','file-objects',"
+            "'artifact-set-identity','inventory-identity','collection','tags','artifacts','journals',"
+            "'provenance-relations','bindings','archive-objects','artifact-objects',"
             "'terminal','complete')",
             name="ck_collection_uploads_catalog_phase",
         ),
-        CheckConstraint("file_bytes >= 0", name="ck_collection_uploads_file_bytes"),
+        CheckConstraint("artifact_bytes >= 0", name="ck_collection_uploads_artifact_bytes"),
         CheckConstraint(
-            "custodied_file_count >= 0 AND custodied_file_count <= file_count",
-            name="ck_collection_uploads_custodied_file_count",
+            "custodied_artifact_count >= 0 AND custodied_artifact_count <= artifact_count",
+            name="ck_collection_uploads_custodied_artifact_count",
         ),
         CheckConstraint(
-            "custodied_file_bytes >= 0 AND custodied_file_bytes <= file_bytes",
-            name="ck_collection_uploads_custodied_file_bytes",
+            "custodied_artifact_bytes >= 0 AND custodied_artifact_bytes <= artifact_bytes",
+            name="ck_collection_uploads_custodied_artifact_bytes",
         ),
         CheckConstraint(
-            "custodied_file_count > 0 OR custodied_file_bytes = 0",
+            "custodied_artifact_count > 0 OR custodied_artifact_bytes = 0",
             name="ck_collection_uploads_empty_custody",
         ),
         CheckConstraint(
@@ -2763,10 +2721,6 @@ class CollectionUploadRecord(Base):
         CheckConstraint(
             "custody_mode IN ('producer-retained','custody-transfer')",
             name="ck_collection_uploads_custody_mode",
-        ),
-        CheckConstraint(
-            "provenance_mode IN ('captured','omitted')",
-            name="ck_collection_uploads_provenance_mode",
         ),
         CheckConstraint(
             "derivative_provenance_state IN ("
@@ -2904,22 +2858,12 @@ class CollectionUploadTagNodeReferenceRecord(Base):
     )
 
 
-class CollectionUploadFileRecord(Base):
-    __tablename__ = "collection_upload_files"
+class CollectionUploadArtifactRecord(Base):
+    __tablename__ = "collection_upload_artifacts"
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
-    path_sort_key: Mapped[bytes] = mapped_column(
-        LargeBinary,
-        default=lambda context: relpath_sort_key(str(context.get_current_parameters()["path"])),
-    )
-    semantic_order_rank: Mapped[int] = mapped_column(
-        Integer,
-        default=lambda context: collection_upload_path_order_key(
-            str(context.get_current_parameters()["path"])
-        )[0],
-    )
-    file_order: Mapped[int] = mapped_column(Integer)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    artifact_order: Mapped[int] = mapped_column(BigInteger)
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
     raw_part_plaintext_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
@@ -2931,10 +2875,6 @@ class CollectionUploadFileRecord(Base):
         server_default=text("0"),
     )
     raw_part_commitment_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    provenance_status: Mapped[str] = mapped_column(String)
-    provenance_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    provenance_current_state_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    provenance_omission_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     custodied_at: Mapped[str | None] = mapped_column(String, nullable=True)
     custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
@@ -2944,53 +2884,101 @@ class CollectionUploadFileRecord(Base):
             ["collection_uploads.collection_id"],
             ondelete="CASCADE",
         ),
-        Index("idx_collection_upload_files_collection_order", "collection_id", "file_order"),
+        Index("idx_collection_upload_artifacts_collection_id", "collection_id", "artifact_id"),
         Index(
-            "idx_collection_upload_files_collection_path",
+            "ux_collection_upload_artifacts_order",
             "collection_id",
-            "path_sort_key",
-        ),
-        Index(
-            "idx_collection_upload_files_semantic_order",
-            "collection_id",
-            "semantic_order_rank",
-            "path_sort_key",
-        ),
-        Index(
-            "ux_collection_upload_files_order",
-            "collection_id",
-            "file_order",
+            "artifact_order",
             unique=True,
         ),
-        CheckConstraint("file_order >= 0", name="ck_collection_upload_files_order"),
+        CheckConstraint("artifact_order >= 0", name="ck_collection_upload_artifacts_order"),
         CheckConstraint(
-            "semantic_order_rank >= 0 AND semantic_order_rank <= 2",
-            name="ck_collection_upload_files_semantic_order_rank",
+            "bytes >= 0 AND bytes < 9223372036854775808",
+            name="ck_collection_upload_artifacts_bytes",
         ),
-        CheckConstraint("bytes >= 0", name="ck_collection_upload_files_bytes"),
-        CheckConstraint("raw_parts_accepted >= 0", name="ck_collection_upload_files_raw_parts"),
-        CheckConstraint("length(sha256) = 64", name="ck_collection_upload_files_sha256"),
+        CheckConstraint("raw_parts_accepted >= 0", name="ck_collection_upload_artifacts_raw_parts"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("artifact_id", 64),
+            name="ck_collection_upload_artifacts_id",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("sha256", 64),
+            name="ck_collection_upload_artifacts_sha256",
+        ),
     )
 
-    upload: Mapped[CollectionUploadRecord] = relationship(back_populates="files")
+    upload: Mapped[CollectionUploadRecord] = relationship(back_populates="artifacts")
 
 
 class CollectionUploadRawPartDigestRecord(Base):
     __tablename__ = "collection_upload_raw_part_digests"
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    path: Mapped[str] = mapped_column(String, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     part_number: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     sha256: Mapped[str] = mapped_column(String(64))
 
     __table_args__ = (
         ForeignKeyConstraint(
-            ["collection_id", "path"],
-            ["collection_upload_files.collection_id", "collection_upload_files.path"],
+            ["collection_id", "artifact_id"],
+            [
+                "collection_upload_artifacts.collection_id",
+                "collection_upload_artifacts.artifact_id",
+            ],
             ondelete="CASCADE",
         ),
         CheckConstraint("part_number >= 0", name="ck_upload_raw_part_digest_number"),
         CheckConstraint("length(sha256) = 64", name="ck_upload_raw_part_digest_sha256"),
+    )
+
+
+class CollectionUploadArtifactProvenanceBindingRecord(Base):
+    """Exact primary snapshot and delivery association for a staged member."""
+
+    __tablename__ = "collection_upload_artifact_provenance_bindings"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, nullable=False)
+    through_entry_id: Mapped[str] = mapped_column(String, nullable=False)
+    through_sequence: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    through_json_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    prefix_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    prefix_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    delivery_association_id: Mapped[str] = mapped_column(String, nullable=False)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "artifact_id"],
+            [
+                "collection_upload_artifacts.collection_id",
+                "collection_upload_artifacts.artifact_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        Index(
+            "ix_collection_upload_artifact_provenance_journal",
+            "collection_id",
+            "journal_id",
+        ),
+        CheckConstraint(
+            "through_sequence >= 0 AND prefix_bytes > 0",
+            name="ck_upload_artifact_provenance_anchor_extent",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("through_json_sha256", 64)
+            + " AND "
+            + _fixed_lowercase_integer_check("prefix_sha256", 64),
+            name="ck_upload_artifact_provenance_hashes",
+        ),
     )
 
 
@@ -3020,15 +3008,9 @@ class CollectionUploadProvenanceJournalRecord(Base):
     primary_lineage_id: Mapped[str | None] = mapped_column(String, nullable=True)
     entity_counts_json: Mapped[str] = mapped_column(Text, default="{}", server_default=text("'{}'"))
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
-    current_state_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    current_entry_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    current_entry_json_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    current_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    current_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
-    current_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    generated_output_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    generation_after_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    generation_after_state_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    terminal_entry_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    terminal_sequence: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    terminal_json_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -3058,8 +3040,8 @@ class CollectionUploadProvenanceJournalRecord(Base):
             name="ck_upload_provenance_journals_state",
         ),
         CheckConstraint(
-            "current_bytes IS NULL OR current_bytes >= 0",
-            name="ck_upload_provenance_journals_current_bytes",
+            "terminal_sequence IS NULL OR terminal_sequence >= 0",
+            name="ck_upload_provenance_journals_terminal_sequence",
         ),
         CheckConstraint("length(sha256) = 64", name="ck_upload_provenance_journals_sha256"),
     )

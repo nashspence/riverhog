@@ -7,22 +7,20 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import Protocol
 
 from riverhog_age import UploadState, iter_decrypt_age_scrypt
-from riverhog_protocol.pack_ingress import (
-    RESERVED_ARCHIVE_PREFIX,
-    canonical_json_bytes,
-)
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_protocol.raw_ingress import RawSourceDigestSummary
 
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     SealedRawVolume,
     StoredArchivePart,
-    VerifiedRawFile,
+    VerifiedRawArtifact,
 )
 
-RAW_FILE_VOLUME_SEQUENCE_FORMAT = "raw-file-volume-sequence/v1"
-RAW_FILE_VERIFICATION_FORMAT = "raw-file-verification/v1"
+RAW_ARTIFACT_VOLUME_SEQUENCE_FORMAT = "raw-artifact-volume-sequence/v1"
+RAW_ARTIFACT_VERIFICATION_FORMAT = "raw-artifact-verification/v1"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
@@ -30,20 +28,20 @@ class _Digest(Protocol):
     def update(self, data: bytes) -> object: ...
 
 
-def raw_file_ordered_volume_commitment(
+def raw_artifact_ordered_volume_commitment(
     *,
-    file: ArchiveFile,
+    artifact: ArchiveArtifact,
     volumes: Iterable[SealedRawVolume],
 ) -> str:
-    """Commit one file's exact ordered volume sequence with bounded working memory."""
+    """Commit one artifact's exact ordered volume sequence with bounded working memory."""
 
-    normalized = _normalized_raw_file(file)
+    normalized = _normalized_raw_artifact(artifact)
     digest = hashlib.sha256()
     header = canonical_json_bytes(
         {
-            "format": RAW_FILE_VOLUME_SEQUENCE_FORMAT,
-            "file": {
-                "path": normalized.path,
+            "format": RAW_ARTIFACT_VOLUME_SEQUENCE_FORMAT,
+            "artifact": {
+                "artifact_id": normalized.artifact_id,
                 "bytes": normalized.bytes,
                 "sha256": normalized.sha256,
             },
@@ -56,7 +54,7 @@ def raw_file_ordered_volume_commitment(
     volume_count = 0
     for volume in volumes:
         _validate_raw_volume(
-            file=normalized,
+            artifact=normalized,
             volume=volume,
             expected_offset=expected_offset,
             previous_sequence=previous_sequence,
@@ -68,21 +66,19 @@ def raw_file_ordered_volume_commitment(
         previous_sequence = volume.sequence
         volume_count += 1
     if volume_count < 1 or expected_offset != normalized.bytes:
-        raise ValueError("sealed raw volume sequence does not cover the requested file")
+        raise ValueError("sealed raw volume sequence does not cover the requested artifact")
     return digest.hexdigest()
 
 
-def raw_file_verification_payload(receipt: VerifiedRawFile) -> dict[str, object]:
-    path = validate_canonical_relpath(receipt.path)
-    if path.startswith(RESERVED_ARCHIVE_PREFIX):
-        raise ValueError("raw verification path uses the reserved archive namespace")
+def raw_artifact_verification_payload(receipt: VerifiedRawArtifact) -> dict[str, object]:
+    artifact_id = str(ArtifactId(receipt.artifact_id))
     if receipt.bytes < 0 or _SHA256_RE.fullmatch(receipt.sha256) is None:
-        raise ValueError("raw verification file identity is invalid")
+        raise ValueError("raw verification artifact identity is invalid")
     if _SHA256_RE.fullmatch(receipt.ordered_volume_sha256) is None or not receipt.verified_at:
         raise ValueError("raw verification receipt identity is invalid")
     return {
-        "format": RAW_FILE_VERIFICATION_FORMAT,
-        "path": path,
+        "format": RAW_ARTIFACT_VERIFICATION_FORMAT,
+        "artifact_id": artifact_id,
         "bytes": receipt.bytes,
         "sha256": receipt.sha256,
         "ordered_volume_sha256": receipt.ordered_volume_sha256,
@@ -90,82 +86,82 @@ def raw_file_verification_payload(receipt: VerifiedRawFile) -> dict[str, object]
     }
 
 
-def verify_raw_file_from_digest_summary(
+def verify_raw_artifact_from_digest_summary(
     *,
-    file: ArchiveFile,
+    artifact: ArchiveArtifact,
     volumes: Iterable[SealedRawVolume],
     summary: RawSourceDigestSummary,
     verified_at: str,
-) -> VerifiedRawFile:
-    """Verify a raw file without downloading the newly written archive objects.
+) -> VerifiedRawArtifact:
+    """Verify a raw artifact without downloading the newly written archive objects.
 
-    The official client computes the flat file digest and an ordered commitment over
+    The official client computes the flat artifact digest and an ordered commitment over
     fixed-size part digests in one source pass. RawVolumeUploader verifies each received
     part against the bounded registered rows before committing it. This function binds the
-    sealed logical file to its exact volume sequence without reading storage again.
+    sealed logical artifact to its exact volume sequence without reading storage again.
     """
 
-    normalized_file = _normalized_raw_file(file)
+    normalized_artifact = _normalized_raw_artifact(artifact)
     if not verified_at:
         raise ValueError("raw verification timestamp is required")
     if (
-        summary.path != normalized_file.path
-        or summary.bytes != normalized_file.bytes
-        or summary.sha256 != normalized_file.sha256
+        summary.artifact_id != normalized_artifact.artifact_id
+        or summary.bytes != normalized_artifact.bytes
+        or summary.sha256 != normalized_artifact.sha256
     ):
-        raise ValueError("raw source digest summary does not match the file")
-    return VerifiedRawFile(
-        path=normalized_file.path,
-        bytes=normalized_file.bytes,
-        sha256=normalized_file.sha256,
-        ordered_volume_sha256=raw_file_ordered_volume_commitment(
-            file=normalized_file,
+        raise ValueError("raw source digest summary does not match the artifact")
+    return VerifiedRawArtifact(
+        artifact_id=normalized_artifact.artifact_id,
+        bytes=normalized_artifact.bytes,
+        sha256=normalized_artifact.sha256,
+        ordered_volume_sha256=raw_artifact_ordered_volume_commitment(
+            artifact=normalized_artifact,
             volumes=volumes,
         ),
         verified_at=verified_at,
     )
 
 
-def verify_raw_file(
+def verify_raw_artifact(
     *,
-    file: ArchiveFile,
+    artifact: ArchiveArtifact,
     volumes: Sequence[SealedRawVolume],
     passphrase: str,
     read_ciphertext_chunks: Callable[[str], Iterable[bytes]],
     verified_at: str,
-) -> VerifiedRawFile:
-    """Re-read sealed raw volumes, stream-decrypt, and verify the flat file SHA-256.
+) -> VerifiedRawArtifact:
+    """Re-read sealed raw volumes, stream-decrypt, and verify the flat artifact SHA-256.
 
     Pack members are verified before their containing archive part is committed. A large
-    file spans resumable upload parts, so its registered flat SHA-256 is instead verified by
+    artifact spans resumable upload parts, so its registered flat SHA-256 is instead verified by
     this bounded-memory read before the immutable root may be published.
     """
 
-    normalized_file = _normalized_raw_file(file)
+    normalized_artifact = _normalized_raw_artifact(artifact)
     if not passphrase or not verified_at:
         raise ValueError("raw verification requires a passphrase and verification timestamp")
     sequence_digest = hashlib.sha256()
     header = canonical_json_bytes(
         {
-            "format": RAW_FILE_VOLUME_SEQUENCE_FORMAT,
-            "file": {
-                "path": normalized_file.path,
-                "bytes": normalized_file.bytes,
-                "sha256": normalized_file.sha256,
+            "format": RAW_ARTIFACT_VOLUME_SEQUENCE_FORMAT,
+            "artifact": {
+                "artifact_id": normalized_artifact.artifact_id,
+                "bytes": normalized_artifact.bytes,
+                "sha256": normalized_artifact.sha256,
             },
         }
     )
     sequence_digest.update(len(header).to_bytes(8, "big"))
     sequence_digest.update(header)
-    file_digest = hashlib.sha256()
-    file_bytes = 0
+    artifact_digest = hashlib.sha256()
+    artifact_bytes = 0
     previous_sequence = -1
     volume_count = 0
     for volume in volumes:
         _validate_raw_volume(
-            file=normalized_file,
+            artifact=normalized_artifact,
             volume=volume,
-            expected_offset=file_bytes,
+            expected_offset=artifact_bytes,
             previous_sequence=previous_sequence,
         )
         encoded = canonical_json_bytes(_volume_identity(volume))
@@ -179,59 +175,59 @@ def verify_raw_file(
         segment_bytes = _consume_verified_plaintext_parts(
             plaintext,
             volume.parts,
-            file_digest=file_digest,
+            artifact_digest=artifact_digest,
         )
         if segment_bytes != volume.plaintext_bytes:
             raise ValueError("decrypted raw volume byte count mismatch")
-        file_bytes += segment_bytes
+        artifact_bytes += segment_bytes
         previous_sequence = volume.sequence
         volume_count += 1
     if (
         volume_count < 1
-        or file_bytes != normalized_file.bytes
-        or file_digest.hexdigest() != normalized_file.sha256
+        or artifact_bytes != normalized_artifact.bytes
+        or artifact_digest.hexdigest() != normalized_artifact.sha256
     ):
-        raise ValueError(f"sealed raw file verification failed: {normalized_file.path}")
-    return VerifiedRawFile(
-        path=normalized_file.path,
-        bytes=normalized_file.bytes,
-        sha256=normalized_file.sha256,
+        raise ValueError(
+            f"sealed raw artifact verification failed: {normalized_artifact.artifact_id}"
+        )
+    return VerifiedRawArtifact(
+        artifact_id=normalized_artifact.artifact_id,
+        bytes=normalized_artifact.bytes,
+        sha256=normalized_artifact.sha256,
         ordered_volume_sha256=sequence_digest.hexdigest(),
         verified_at=verified_at,
     )
 
 
-def _normalized_raw_file(file: ArchiveFile) -> ArchiveFile:
-    path = validate_canonical_relpath(file.path)
-    if path.startswith(RESERVED_ARCHIVE_PREFIX):
-        raise ValueError("raw file uses the reserved archive namespace")
-    if file.bytes < 0 or _SHA256_RE.fullmatch(file.sha256) is None:
-        raise ValueError("raw file identity is invalid")
-    return ArchiveFile(path=path, bytes=file.bytes, sha256=file.sha256)
+def _normalized_raw_artifact(artifact: ArchiveArtifact) -> ArchiveArtifact:
+    artifact_id = str(ArtifactId(artifact.artifact_id))
+    if artifact.bytes < 0 or _SHA256_RE.fullmatch(artifact.sha256) is None:
+        raise ValueError("raw artifact identity is invalid")
+    return ArchiveArtifact(artifact_id=artifact_id, bytes=artifact.bytes, sha256=artifact.sha256)
 
 
 def _validate_raw_volume(
     *,
-    file: ArchiveFile,
+    artifact: ArchiveArtifact,
     volume: SealedRawVolume,
     expected_offset: int,
     previous_sequence: int,
 ) -> None:
-    source_path = validate_canonical_relpath(volume.source_path)
+    artifact_id = str(ArtifactId(volume.artifact_id))
     expected_relative_path = f"volumes/{volume.volume_id}.bin.age"
     relative_path = validate_canonical_relpath(volume.relative_path)
     if (
-        source_path != file.path
-        or volume.file_bytes != file.bytes
-        or volume.file_sha256 != file.sha256
-        or volume.file_offset != expected_offset
+        artifact_id != artifact.artifact_id
+        or volume.artifact_bytes != artifact.bytes
+        or volume.artifact_sha256 != artifact.sha256
+        or volume.artifact_offset != expected_offset
         or volume.plaintext_bytes < 0
         or volume.sequence <= previous_sequence
         or volume.sequence >= 1 << 256
         or volume.volume_id != f"segment-{volume.sequence:064x}"
         or relative_path != expected_relative_path
     ):
-        raise ValueError("sealed raw volumes do not form the requested file")
+        raise ValueError("sealed raw volumes do not form the requested artifact")
     state = UploadState.from_json_bytes(volume.age_state_json)
     if state.plaintext_size != volume.plaintext_bytes:
         raise ValueError("raw volume age state plaintext size mismatch")
@@ -243,7 +239,7 @@ def _volume_identity(volume: SealedRawVolume) -> dict[str, object]:
         "id": volume.volume_id,
         "sequence": volume.sequence,
         "path": validate_canonical_relpath(volume.relative_path),
-        "file_offset": volume.file_offset,
+        "artifact_offset": volume.artifact_offset,
         "plaintext_bytes": volume.plaintext_bytes,
         "age_state": json.loads(UploadState.from_json_bytes(volume.age_state_json).to_json_bytes()),
         "parts": [_part_identity(current_part) for current_part in volume.parts],
@@ -322,7 +318,7 @@ def _consume_verified_plaintext_parts(
     chunks: Iterable[bytes],
     parts: Sequence[StoredArchivePart],
     *,
-    file_digest: _Digest,
+    artifact_digest: _Digest,
 ) -> int:
     source = iter(chunks)
     buffer = bytearray()
@@ -346,7 +342,7 @@ def _consume_verified_plaintext_parts(
             remaining -= take
             total += take
             digest.update(current)
-            file_digest.update(current)
+            artifact_digest.update(current)
         if digest.hexdigest() != part.plaintext_sha256:
             raise ValueError("raw plaintext part sha256 mismatch")
     if buffer:

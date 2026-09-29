@@ -24,12 +24,12 @@ from riverhog_core.archive_manifest import (
     collection_tree_identity,
 )
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     PackVolumePlan,
     SealedPackVolume,
     SealedProvenanceObject,
     SealedRawVolume,
-    VerifiedRawFile,
+    VerifiedRawArtifact,
 )
 from riverhog_core.ports.archive_objects import ImmutableArchiveObjectStore
 
@@ -94,10 +94,10 @@ class ArchiveRootPublisher:
         *,
         archive_generation: str,
         archive_storage_prefix: str,
-        files: Sequence[ArchiveFile],
+        files: Sequence[ArchiveArtifact],
         packs: Sequence[tuple[PackVolumePlan, SealedPackVolume]],
         raw_volumes: Sequence[SealedRawVolume] = (),
-        verified_raw_files: Sequence[VerifiedRawFile] = (),
+        verified_raw_files: Sequence[VerifiedRawArtifact] = (),
         provenance_identity: str | None = None,
         provenance_objects: Sequence[SealedProvenanceObject] = (),
     ) -> SealedArchiveRoot:
