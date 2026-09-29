@@ -14,6 +14,7 @@ from riverhog_protocol import (
     PortableCollectionInventoryPage,
 )
 from riverhog_protocol.lifecycle_events import RiverhogEventPage
+from riverhog_provenance_contracts import ProvenanceJournalId
 
 from riverhog_core.app_permissions import ApplicationAccess, Principal
 from riverhog_core.domain.models import (
@@ -112,6 +113,14 @@ class ProvenanceService(Protocol):
         *,
         principal: Principal,
     ) -> tuple[int, str]: ...
+    def list_journals(
+        self,
+        collection_id: int,
+        *,
+        page_size: int,
+        after_journal_id: ProvenanceJournalId | None,
+        principal: Principal,
+    ) -> JsonObject: ...
     def iter_journal_range(
         self,
         collection_id: int,
