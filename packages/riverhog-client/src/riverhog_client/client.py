@@ -77,8 +77,6 @@ from riverhog_protocol import (
     DownloadQuotaSort,
     PortableCollectionInventoryPage,
     ProcessingClaimId,
-    ProvenanceSort,
-    ProvenanceStatus,
     RetrievalArtifactReferenceSetDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
@@ -99,9 +97,6 @@ from riverhog_protocol.errors import (
     error_type_for_code,
 )
 from riverhog_protocol.lifecycle_events import LifecycleEventCursor, RiverhogEventPage
-from riverhog_protocol.paths import (
-    CanonicalRelPath,
-)
 from riverhog_provenance_contracts import ProvenanceJournalId
 
 from riverhog_client._file_download import verified_download
@@ -134,7 +129,6 @@ _RETRIEVAL_CACHE_STORE_NAME: TypeAdapter[str] = TypeAdapter(RetrievalCacheStoreN
 _COLLECTION_ID: TypeAdapter[int] = TypeAdapter(CollectionId)
 _COLLECTION_ID_PARAMETER: TypeAdapter[int] = TypeAdapter(CollectionIdParameter)
 _ARTIFACT_ID: TypeAdapter[str] = TypeAdapter(ArtifactId)
-_CANONICAL_RELPATH: TypeAdapter[str] = TypeAdapter(CanonicalRelPath)
 _MONTHLY_DOWNLOAD_QUOTA_BYTES: TypeAdapter[int] = TypeAdapter(MonthlyDownloadQuotaBytes)
 _PROCESSING_CLAIM_ID: TypeAdapter[str] = TypeAdapter(ProcessingClaimId)
 _COLLECTION_UPLOAD_VOLUME_ID: TypeAdapter[str] = TypeAdapter(CollectionUploadVolumeId)
@@ -148,8 +142,6 @@ _RETRIEVAL_CACHE_SORTS = closed_literal_values(RetrievalCacheSort)
 _RETRIEVAL_CACHE_STATES = closed_literal_values(RetrievalCacheState)
 _RETRIEVAL_CACHE_PROTECTIONS = closed_literal_values(RetrievalCacheProtection)
 _SEARCH_SORTS = closed_literal_values(SearchSort)
-_PROVENANCE_SORTS = closed_literal_values(ProvenanceSort)
-_PROVENANCE_STATUSES = closed_literal_values(ProvenanceStatus)
 _ARCHIVE_STORE_SORTS = closed_literal_values(ArchiveStoreSort)
 _APPLICATION_SORTS = closed_literal_values(ApplicationSort)
 _APPLICATION_KEY_SORTS = closed_literal_values(ApplicationKeySort)
@@ -286,11 +278,12 @@ def _provenance_journal_id(value: ProvenanceJournalId) -> str:
         raise BadRequest(str(exc)) from exc
 
 
-def _canonical_relpath(value: str) -> str:
-    try:
-        return _CANONICAL_RELPATH.validate_python(value, strict=True)
-    except ValidationError as exc:
-        raise BadRequest("collection path must be canonical") from exc
+def _archive_root_headers(archive_root_sha256: str | None) -> dict[str, str]:
+    if archive_root_sha256 is None:
+        return {}
+    return {
+        "If-Match": quote_sha256_identity(_sha256_identity(archive_root_sha256, "archive root"))
+    }
 
 
 def _validated_collection_upload_idempotency_key(
@@ -1662,69 +1655,64 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params=_page_params(page_size=page_size, page_token=page_token),
         )
 
-    def list_collection_provenance(
+    def list_collection_artifact_provenance(
         self,
         collection_id: CollectionId,
         *,
-        page_size: int = 25,
-        page_token: str | None = None,
-        q: str | None = None,
-        status: ProvenanceStatus | None = None,
-        sort: ProvenanceSort = "path",
-        order: SortOrder = "asc",
+        page_size: int = 50,
+        after_artifact_id: ArtifactId | None = None,
+        archive_root_sha256: str | None = None,
     ) -> dict[str, Any]:
-        params: dict[str, object] = {
-            "page_size": page_size,
-            "sort": _one_of(
-                sort,
-                _PROVENANCE_SORTS,
-                "provenance sort",
-            ),
-            "order": _one_of(order, _SORT_ORDERS, "sort order"),
-        }
-        if page_token is not None:
-            params["page_token"] = page_token
-        if q is not None:
-            params["q"] = q
-        if status:
-            params["status"] = _one_of(
-                status,
-                _PROVENANCE_STATUSES,
-                "provenance status",
+        if not 1 <= page_size <= 200:
+            raise ValueError("artifact provenance page size must be 1 to 200")
+        if after_artifact_id is not None and archive_root_sha256 is None:
+            raise ValueError("artifact provenance continuation requires an archive root")
+        params: dict[str, object] = {"page_size": page_size}
+        if after_artifact_id is not None:
+            params["after_artifact_id"] = _ARTIFACT_ID.validate_python(
+                after_artifact_id, strict=True
             )
         return self._json(
-            "list_collection_provenance",
+            "list_collection_artifact_provenance",
             "GET",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/files",
+            f"/v1/collections/{_collection_id(collection_id)}/provenance/artifacts",
             params=params,
+            headers=_archive_root_headers(archive_root_sha256),
         )
 
-    def get_collection_file_provenance(
+    def get_collection_artifact_provenance(
         self,
         collection_id: CollectionId,
-        path: str,
+        artifact_id: ArtifactId,
     ) -> dict[str, Any]:
         return self._json(
-            "get_collection_file_provenance",
+            "get_collection_artifact_provenance",
             "GET",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/files/"
-            f"{quote(_canonical_relpath(path), safe='/')}",
+            f"/v1/collections/{_collection_id(collection_id)}/provenance/artifacts/"
+            f"{_ARTIFACT_ID.validate_python(artifact_id, strict=True)}",
         )
 
-    def trace_collection_file_provenance(
+    def list_collection_provenance_journals(
         self,
         collection_id: CollectionId,
-        path: str,
         *,
-        page_size: int = 25,
-        page_token: str | None = None,
+        page_size: int = 50,
+        after_journal_id: ProvenanceJournalId | None = None,
+        archive_root_sha256: str | None = None,
     ) -> dict[str, Any]:
+        if not 1 <= page_size <= 200:
+            raise ValueError("provenance journal page size must be 1 to 200")
+        if after_journal_id is not None and archive_root_sha256 is None:
+            raise ValueError("provenance journal continuation requires an archive root")
+        params: dict[str, object] = {"page_size": page_size}
+        if after_journal_id is not None:
+            params["after_journal_id"] = _provenance_journal_id(after_journal_id)
         return self._json(
-            "trace_collection_file_provenance",
+            "list_collection_provenance_journals",
             "GET",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/trace/"
-            f"{quote(_canonical_relpath(path), safe='/')}",
-            params=_page_params(page_size=page_size, page_token=page_token),
+            f"/v1/collections/{_collection_id(collection_id)}/provenance/journals",
+            params=params,
+            headers=_archive_root_headers(archive_root_sha256),
         )
 
     @contextmanager
@@ -1951,54 +1939,6 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         os.replace(partial, destination)
         checkpoint.unlink(missing_ok=True)
         return byte_count, sha256
-
-    def list_collection_provenance_journal_agents(
-        self,
-        collection_id: CollectionId,
-        journal_id: ProvenanceJournalId,
-        *,
-        page_size: int = 25,
-        page_token: str | None = None,
-    ) -> dict[str, Any]:
-        try:
-            canonical_journal_id = _PROVENANCE_JOURNAL_ID.validate_python(
-                journal_id,
-                strict=True,
-            )
-        except ValidationError as exc:
-            raise BadRequest(str(exc)) from exc
-        return self._json(
-            "list_collection_provenance_journal_agents",
-            "GET",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/journals/"
-            f"{quote(canonical_journal_id, safe='')}/agents",
-            params=_page_params(page_size=page_size, page_token=page_token),
-        )
-
-    def request_collection_provenance_verification(
-        self, collection_id: CollectionId
-    ) -> dict[str, Any]:
-        return self._json(
-            "request_collection_provenance_verification",
-            "POST",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/verification",
-        )
-
-    def get_collection_provenance_verification(self, collection_id: CollectionId) -> dict[str, Any]:
-        return self._json(
-            "get_collection_provenance_verification",
-            "GET",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/verification",
-        )
-
-    def cancel_collection_provenance_verification(
-        self, collection_id: CollectionId
-    ) -> dict[str, Any]:
-        return self._json(
-            "cancel_collection_provenance_verification",
-            "DELETE",
-            f"/v1/collections/{_collection_id(collection_id)}/provenance/verification",
-        )
 
     def plan_collection_deletion(
         self,

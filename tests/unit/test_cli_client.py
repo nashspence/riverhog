@@ -998,43 +998,47 @@ def test_collection_upload_unit_uses_the_canonical_content_contract() -> None:
 
 def test_provenance_client_methods_use_the_collection_scoped_contract() -> None:
     client = RecordingClient()
+    artifact_id = "a" * 64
+    journal_id = "urn:uuid:12345678-1234-4234-8234-123456789abc"
 
-    client.list_collection_provenance(
-        42,
-        q="movie",
-        status="captured",
-        sort="bytes",
-        order="desc",
+    client.list_collection_artifact_provenance(42)
+    client.list_collection_artifact_provenance(
+        42, after_artifact_id=artifact_id, archive_root_sha256="b" * 64
     )
-    client.get_collection_file_provenance(42, "media/movie.mov")
-    client.trace_collection_file_provenance(42, "media/movie.mov")
-    client.request_collection_provenance_verification(42)
-    client.get_collection_provenance_verification(42)
-    client.cancel_collection_provenance_verification(42)
+    client.get_collection_artifact_provenance(42, artifact_id)
+    client.list_collection_provenance_journals(42)
+    client.list_collection_provenance_journals(
+        42, after_journal_id=journal_id, archive_root_sha256="b" * 64
+    )
 
     assert client.calls == [
         (
             "GET",
-            "/v1/collections/42/provenance/files",
-            {
-                "params": {
-                    "page_size": 25,
-                    "sort": "bytes",
-                    "order": "desc",
-                    "q": "movie",
-                    "status": "captured",
-                }
-            },
+            "/v1/collections/42/provenance/artifacts",
+            {"params": {"page_size": 50}, "headers": {}},
         ),
-        ("GET", "/v1/collections/42/provenance/files/media/movie.mov", {}),
         (
             "GET",
-            "/v1/collections/42/provenance/trace/media/movie.mov",
-            {"params": {"page_size": 25}},
+            "/v1/collections/42/provenance/artifacts",
+            {
+                "params": {"page_size": 50, "after_artifact_id": artifact_id},
+                "headers": {"If-Match": '"' + "b" * 64 + '"'},
+            },
         ),
-        ("POST", "/v1/collections/42/provenance/verification", {}),
-        ("GET", "/v1/collections/42/provenance/verification", {}),
-        ("DELETE", "/v1/collections/42/provenance/verification", {}),
+        ("GET", f"/v1/collections/42/provenance/artifacts/{artifact_id}", {}),
+        (
+            "GET",
+            "/v1/collections/42/provenance/journals",
+            {"params": {"page_size": 50}, "headers": {}},
+        ),
+        (
+            "GET",
+            "/v1/collections/42/provenance/journals",
+            {
+                "params": {"page_size": 50, "after_journal_id": journal_id},
+                "headers": {"If-Match": '"' + "b" * 64 + '"'},
+            },
+        ),
     ]
 
 
@@ -1050,8 +1054,14 @@ def test_client_rejects_nonpositive_collection_identities(collection_id: object)
 def test_provenance_client_rejects_noncanonical_read_identities() -> None:
     client = RecordingClient()
 
-    with pytest.raises(BadRequest):
-        client.get_collection_file_provenance(42, "media/../movie.mov")
+    with pytest.raises(ValueError):
+        client.get_collection_artifact_provenance(42, "media/../movie.mov")
+    with pytest.raises(ValueError):
+        client.list_collection_artifact_provenance(42, after_artifact_id="a" * 64)
+    with pytest.raises(ValueError):
+        client.list_collection_provenance_journals(
+            42, after_journal_id="urn:uuid:12345678-1234-4234-8234-123456789abc"
+        )
     with pytest.raises(BadRequest):
         with client.stream_collection_provenance_journal(42, "journal-1"):
             pass
