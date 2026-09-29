@@ -6,17 +6,18 @@ import fcntl
 import hashlib
 import json
 import os
+import secrets
 import shutil
 import sqlite3
 import stat
 import threading
 import uuid
 from bisect import bisect_right
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from contextlib import closing
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from pathlib import Path, PurePosixPath
+from typing import Any, cast
 
 from a_riverhog_ftp_spool_client.events import (
     ATTEMPT_FAILED,
@@ -31,13 +32,9 @@ from lifecycle_events import lifecycle_event
 from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
-from riverhog_provenance import (
-    SIDECAR_SUFFIX,
-    ArchiveFileProvenanceRecord,
-    FileStateObserverFactory,
-    canonical_sidecar_path,
-    prepare_file_provenance,
-)
+from riverhog_provenance import ObservationResult
+from riverhog_provenance.native_source import NativeFileObserver
+from riverhog_provenance_contracts import ContractCatalog
 
 from a_riverhog_ftp_spool.completion import (
     CONTROL_DIR,
@@ -126,7 +123,7 @@ class FtpSpool:
         api: ApiClient,
         config: FtpSpoolConfig,
         *,
-        provenance_observer_factory: FileStateObserverFactory | None = None,
+        provenance_observer_factory: Callable[[], NativeFileObserver] | None = None,
     ) -> None:
         self.api = api
         self.config = config
@@ -484,8 +481,6 @@ class FtpSpool:
         source_event_id: str,
         expected_bytes: int,
         expected_sha256: str,
-        provenance: Mapping[str, object] | None = None,
-        provenance_journals: Mapping[str, bytes] | None = None,
     ) -> ProducedCollection:
         """Claim one protocol-complete file and reconcile it to a receipt."""
 
@@ -497,8 +492,6 @@ class FtpSpool:
                 source_event_id=source_event_id,
                 expected_bytes=expected_bytes,
                 expected_sha256=expected_sha256,
-                provenance=provenance,
-                provenance_journals=provenance_journals,
             )
 
     def _accept_completed_file(
@@ -510,8 +503,6 @@ class FtpSpool:
         source_event_id: str,
         expected_bytes: int,
         expected_sha256: str,
-        provenance: Mapping[str, object] | None = None,
-        provenance_journals: Mapping[str, bytes] | None = None,
     ) -> ProducedCollection:
 
         identity = _completed_claim_identity(
@@ -542,12 +533,10 @@ class FtpSpool:
         if not claim_root.exists():
             claim_root.mkdir(mode=0o700, parents=True)
             try:
-                journals = dict(provenance_journals or {})
-                if provenance is None:
-                    binding, captured = self._prepared_provenance(source, path, relative_path)
-                    journals.update(captured)
-                else:
-                    binding = dict(provenance)
+                artifact_id = secrets.token_hex(32)
+                observation = self._prepared_observation(
+                    source, path, claim_root=claim_root, artifact_id=artifact_id
+                )
                 manifest = {
                     "format": "a-riverhog-ftp-spool-claim/v1",
                     "claim_id": identity,
@@ -556,15 +545,15 @@ class FtpSpool:
                     "files": [
                         {
                             "path": relative_path,
+                            "artifact_id": artifact_id,
                             "bytes": observed.st_size,
                             "sha256": expected_sha256,
                             "device": observed.st_dev,
                             "inode": observed.st_ino,
                             "original": str(path.resolve()),
-                            "provenance": binding,
+                            "observation": observation,
                         }
                     ],
-                    "journals": self._persist_journals(claim_root, journals),
                 }
                 _write_json(claim_root / _MANIFEST, manifest)
                 self._register_claim(source, manifest)
@@ -1097,9 +1086,6 @@ class FtpSpool:
                     ):
                         next_offset = record_end
                         continue
-                    if record.path.endswith(SIDECAR_SUFFIX):
-                        next_offset = record_end
-                        continue
                     if record.path in selected_paths:
                         next_offset = record_start
                         break
@@ -1216,24 +1202,22 @@ class FtpSpool:
         claim_root.mkdir(mode=0o700, parents=True)
         try:
             files: list[dict[str, object]] = []
-            journals: dict[str, bytes] = {}
             for discovered in discovery.files:
-                binding, captured = self._prepared_provenance(
-                    source,
-                    discovered.path,
-                    discovered.relative,
+                artifact_id = secrets.token_hex(32)
+                observation = self._prepared_observation(
+                    source, discovered.path, claim_root=claim_root, artifact_id=artifact_id
                 )
-                journals.update(_merge_journals(journals, captured))
                 files.append(
                     {
                         "path": discovered.relative,
+                        "artifact_id": artifact_id,
                         "bytes": discovered.observed.st_size,
                         "sha256": _sha256_path(discovered.path),
                         "device": discovered.observed.st_dev,
                         "inode": discovered.observed.st_ino,
                         "original": str(discovered.path.resolve()),
                         "completion_record": discovered.completion_record.payload(),
-                        "provenance": binding,
+                        "observation": observation,
                     }
                 )
             manifest = {
@@ -1243,7 +1227,6 @@ class FtpSpool:
                 "source": source.id,
                 "completion_event_ids": [row.event_identity for row in discovery.files],
                 "files": files,
-                "journals": self._persist_journals(claim_root, journals),
             }
             _write_json(claim_root / _MANIFEST, manifest)
             ordinal = self._register_claim(
@@ -1265,40 +1248,67 @@ class FtpSpool:
             discovery.sweep_complete,
         )
 
-    def _prepared_provenance(
+    def _prepared_observation(
         self,
         source: SourceConfig,
         path: Path,
-        relative: str,
-    ) -> tuple[dict[str, object], dict[str, bytes]]:
+        *,
+        claim_root: Path,
+        artifact_id: str,
+    ) -> dict[str, object] | None:
+        if source.provenance == "omit":
+            return None
         observer = (
             self._provenance_observer_factory()
             if self._provenance_observer_factory is not None
             else None
         )
-        if source.provenance == "capture" and observer is None:
+        if observer is None:
             raise FtpSpoolError("configured provenance observer is unavailable")
-        prepared = prepare_file_provenance(
-            path,
-            relative_path=relative,
-            host_id=self.config.host_id,
-            agent_name="a-riverhog-ftp-spool",
-            agent_version="1.0.0",
-            observer=observer,
-            omit_reason=(
-                source.provenance_omission_reason if source.provenance == "omit" else None
-            ),
-        )
-        return _portable_binding(prepared.binding), prepared.journals
+        observed = observer.observe(cast(Any, observer).source(path, host_id=self.config.host_id))
+        graph = canonical_json_bytes(observed.graph_fragment())
+        graph_path = f"provenance/observations/{artifact_id}.json"
+        _write_atomic(claim_root / graph_path, graph)
+        return {
+            "graph_path": graph_path,
+            "graph_bytes": len(graph),
+            "graph_sha256": hashlib.sha256(graph).hexdigest(),
+            "observation_id": observed.observation_id,
+            "observer_agent_id": observed.observer_agent_id,
+            "contract_sha256": observer.contract_binding.contract_sha256,
+        }
 
-    def _persist_journals(self, claim_root: Path, journals: Mapping[str, bytes]) -> dict[str, str]:
-        result: dict[str, str] = {}
-        root = claim_root / "provenance" / "journals"
-        for journal_id, content in sorted(journals.items()):
-            name = hashlib.sha256(journal_id.encode()).hexdigest() + ".json-seq"
-            _write_atomic(root / name, bytes(content))
-            result[journal_id] = f"provenance/journals/{name}"
-        return result
+    def _load_observation(
+        self, claim_root: Path, row: Mapping[str, object]
+    ) -> ObservationResult | None:
+        details = row.get("observation")
+        if details is None:
+            return None
+        if not isinstance(details, Mapping):
+            raise FtpSpoolError("FTP claim observation is invalid")
+        observer = (
+            self._provenance_observer_factory()
+            if self._provenance_observer_factory is not None
+            else None
+        )
+        if observer is None or observer.contract_binding.contract_sha256 != details.get(
+            "contract_sha256"
+        ):
+            raise FtpSpoolError("FTP claim observer contract is unavailable")
+        expected_path = f"provenance/observations/{row['artifact_id']}.json"
+        if details.get("graph_path") != expected_path:
+            raise FtpSpoolError("FTP claim observation path is invalid")
+        raw = (claim_root / expected_path).read_bytes()
+        if len(raw) != details.get("graph_bytes") or hashlib.sha256(raw).hexdigest() != details.get(
+            "graph_sha256"
+        ):
+            raise FtpSpoolError("FTP claim observation bytes changed")
+        return ObservationResult.from_graph(
+            json.loads(raw),
+            observation_id=str(details["observation_id"]),
+            observer_agent_id=str(details["observer_agent_id"]),
+            catalog=ContractCatalog((observer.contract_binding,)),
+        )
 
     def _reconcile_claim(self, source: SourceConfig, claim_root: Path) -> dict[str, object]:
         manifest = _read_manifest(claim_root)
@@ -1330,12 +1340,6 @@ class FtpSpool:
             _require_identity(current, row, relative)
             if _sha256_path(destination) != row["sha256"]:
                 raise SourceChanged(f"claimed payload digest changed: {relative}")
-            sidecar = canonical_sidecar_path(original)
-            if sidecar.is_file():
-                sidecar_root = claim_root / "provenance" / "source-sidecars"
-                sidecar_destination = sidecar_root / relative
-                sidecar_destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                os.rename(sidecar, sidecar_destination)
         self._record_claim_event(source, manifest, event_type=CUSTODY_READY)
         return manifest
 
@@ -1361,7 +1365,7 @@ class FtpSpool:
         if (
             state.collection_id != receipt.collection_id
             or state.archive_root_sha256 != receipt.archive_root_sha256
-            or state.content_identity != receipt.content_identity
+            or state.artifact_set_identity != receipt.artifact_set_identity
             or state.riverhog_receipt != receipt.receipt
         ):
             raise ClaimCollision("FTP publication differs from its durable receipt")
@@ -1372,7 +1376,7 @@ class FtpSpool:
             details={
                 "collection_id": str(receipt.collection_id),
                 "archive_root_sha256": receipt.archive_root_sha256,
-                "content_identity": receipt.content_identity,
+                "artifact_set_identity": receipt.artifact_set_identity,
             },
         )
 
@@ -1390,16 +1394,13 @@ class FtpSpool:
         manifest = self._reconcile_claim(source, claim_root)
         files = tuple(
             ProducerFile(
-                claim_root / "payload" / str(row["path"]),
-                str(row["path"]),
-                provenance=_producer_provenance(row),
+                source=claim_root / "payload" / str(row["path"]),
+                artifact_id=str(row["artifact_id"]),
+                materialization_hint=PurePosixPath(str(row["path"])).parts,
+                observation=self._load_observation(claim_root, row),
             )
             for row in _file_rows(manifest)
         )
-        journals = {
-            journal_id: (claim_root / relative).read_bytes()
-            for journal_id, relative in _mapping(manifest.get("journals"), "claim journals").items()
-        }
         producer = CollectionProducer(
             self.api,
             producer_app="a-riverhog-ftp-spool/v1",
@@ -1409,17 +1410,11 @@ class FtpSpool:
             archive_store=source.archive_store,
             description=source.description,
             tags=source.tags,
-            provenance_mode="captured" if source.provenance == "capture" else "omitted",
-            provenance_omission_reason=(
-                source.provenance_omission_reason
-                or "Protocol source explicitly omitted host provenance."
-            ),
         )
         receipt = producer.publish(
             files,
             source_event_id=str(manifest["source_event_id"]),
             source_context={"adapter": "ftp", "source": source.id},
-            provenance_journals=journals.items(),
             idempotency_key=str(manifest["claim_id"]),
             event_context={"adapter": "ftp", "source": source.id},
         )
@@ -1429,7 +1424,7 @@ class FtpSpool:
             "source_event_id": str(manifest["source_event_id"]),
             "collection_id": str(receipt.collection_id),
             "archive_root_sha256": receipt.archive_root_sha256,
-            "content_identity": receipt.content_identity,
+            "artifact_set_identity": receipt.artifact_set_identity,
             "riverhog_receipt": receipt.receipt,
         }
         _write_json(claim_root / _RECEIPT, receipt_payload)
@@ -1450,7 +1445,7 @@ class FtpSpool:
         return ProducedCollection(
             collection_id=payload.collection_id,
             archive_root_sha256=payload.archive_root_sha256,
-            content_identity=payload.content_identity,
+            artifact_set_identity=payload.artifact_set_identity,
             receipt=payload.riverhog_receipt,
         )
 
@@ -1500,17 +1495,6 @@ def _completed_claim_identity(
         )
     )
     return hashlib.sha256(payload.encode()).hexdigest()
-
-
-def _merge_journals(
-    existing: Mapping[str, bytes], additional: Mapping[str, bytes]
-) -> dict[str, bytes]:
-    result = dict(additional)
-    for journal_id, content in result.items():
-        previous = existing.get(journal_id)
-        if previous is not None and previous != content:
-            raise ClaimCollision(f"provenance journal identity collision: {journal_id}")
-    return result
 
 
 def _sha256_path(path: Path) -> str:
@@ -1595,64 +1579,6 @@ def _file_rows(manifest: Mapping[str, object]) -> list[dict[str, object]]:
     if any(not isinstance(item, dict) for item in value):
         raise FtpSpoolError("FTP spool claim file entry is invalid")
     return [dict(item) for item in value]
-
-
-def _mapping(value: object, label: str) -> dict[str, Any]:
-    if not isinstance(value, Mapping):
-        raise FtpSpoolError(f"{label} must be an object")
-    return {str(key): item for key, item in value.items()}
-
-
-def _producer_provenance(file_row: Mapping[str, object]) -> dict[str, object]:
-    """Project a portable binding after verifying its immutable file identity."""
-
-    binding = _mapping(file_row.get("provenance"), "claim provenance")
-    status = str(binding.get("status") or "")
-    expected = {"path", "bytes", "sha256", "status"}
-    if status == "captured":
-        expected |= {"journal_id", "current_state_id"}
-    elif status == "omitted":
-        expected.add("omission_reason")
-    else:
-        raise FtpSpoolError("claim provenance status is invalid")
-    if set(binding) != expected:
-        raise FtpSpoolError("claim provenance binding has unexpected fields")
-    identity = (
-        str(binding["path"]),
-        int(str(binding["bytes"])),
-        str(binding["sha256"]),
-    )
-    declared = (
-        str(file_row["path"]),
-        int(str(file_row["bytes"])),
-        str(file_row["sha256"]),
-    )
-    if identity != declared:
-        raise FtpSpoolError("claim provenance binding differs from its payload")
-    if status == "captured":
-        return {
-            "status": "captured",
-            "journal_id": str(binding["journal_id"]),
-            "current_state_id": str(binding["current_state_id"]),
-        }
-    return {
-        "status": "omitted",
-        "omission_reason": str(binding["omission_reason"]),
-    }
-
-
-def _portable_binding(value: ArchiveFileProvenanceRecord) -> dict[str, object]:
-    row: dict[str, object] = {
-        "path": value.path,
-        "bytes": value.bytes,
-        "sha256": value.sha256,
-        "status": value.status,
-    }
-    if value.status == "captured":
-        row.update(journal_id=value.journal_id, current_state_id=value.current_state_id)
-    else:
-        row["omission_reason"] = value.omission_reason
-    return row
 
 
 def _event_cursor(source_id: str, generation: str, sequence: int) -> str:

@@ -11,7 +11,7 @@ from typing import Literal, Self
 from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from riverhog_protocol import CollectionDescription, CollectionTag
-from riverhog_provenance.common import require_urn_uuid
+from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 CloseMode = Literal["stable", "explicit-flush"]
 ProvenanceMode = Literal["capture", "omit"]
@@ -85,7 +85,7 @@ class _FtpSpoolPolicy(ConfigModel):
     def provenance_authority(self) -> Self:
         captures = any(source.provenance == "capture" for source in self.sources)
         if captures:
-            require_urn_uuid(self.host_id, "host_id")
+            require_canonical_uuid_urn(self.host_id, "host_id")
             if self.provenance_observer is None:
                 raise ValueError("captured provenance requires an explicit observer provider")
         elif self.provenance_observer is not None:

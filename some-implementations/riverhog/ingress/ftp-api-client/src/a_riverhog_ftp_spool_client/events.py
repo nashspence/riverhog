@@ -45,7 +45,7 @@ class AttemptFailedPayload(FtpEventPayload):
 class ClaimPublishedPayload(FtpEventPayload):
     collection_id: str = Field(pattern=r"^[1-9][0-9]*$")
     archive_root_sha256: Sha256
-    content_identity: Sha256
+    artifact_set_identity: Sha256
 
 
 class FtpEvent(LifecycleEvent):

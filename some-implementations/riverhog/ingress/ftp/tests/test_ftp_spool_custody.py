@@ -13,7 +13,7 @@ import a_riverhog_ftp_spool.landing as landing
 import pytest
 from a_riverhog_ftp_spool.completion import CompletionHandoff, completion_log_path
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
-from a_riverhog_ftp_spool.landing import FtpEventCursorChanged, FtpSpool
+from a_riverhog_ftp_spool.landing import FtpEventCursorChanged, FtpSpool, FtpSpoolError
 from a_riverhog_ftp_spool_client.events import (
     ATTEMPT_FAILED,
     CLAIM_PUBLISHED,
@@ -22,7 +22,6 @@ from a_riverhog_ftp_spool_client.events import (
 )
 from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from riverhog_client.producer import ProducedCollection
-from riverhog_provenance import canonical_sidecar_path, create_observation_journal
 
 from tests.provenance_observer import native_provenance_observer
 
@@ -63,7 +62,13 @@ class _Producer:
         self.__class__.calls.append(
             {
                 "files": [
-                    (item.path, item.source.read_bytes(), item.provenance) for item in materialized
+                    (
+                        "/".join(item.materialization_hint or ()),
+                        item.source.read_bytes(),
+                        item.observation,
+                        item.artifact_id,
+                    )
+                    for item in materialized
                 ],
                 "kwargs": kwargs,
                 "producer": self.kwargs,
@@ -75,7 +80,7 @@ class _Producer:
         return ProducedCollection(
             collection_id=41,
             archive_root_sha256="a" * 64,
-            content_identity="b" * 64,
+            artifact_set_identity="b" * 64,
             receipt={"state": "finalized"},
         )
 
@@ -91,7 +96,7 @@ class _ControlledProducer:
 
     def publish(self, files: object, **_kwargs: object) -> ProducedCollection:
         materialized = tuple(files)  # type: ignore[arg-type]
-        path = str(materialized[0].path)
+        path = "/".join(materialized[0].materialization_hint or ())
         self.__class__.calls.append(path)
         if not self.__class__.available or path in self.__class__.permanently_failing_paths:
             raise ConnectionError(f"publication unavailable for {path}")
@@ -99,7 +104,7 @@ class _ControlledProducer:
         return ProducedCollection(
             collection_id=len(self.__class__.successes),
             archive_root_sha256="a" * 64,
-            content_identity="b" * 64,
+            artifact_set_identity="b" * 64,
             receipt={"state": "finalized"},
         )
 
@@ -132,17 +137,15 @@ def _completion_event_rows(adapter: FtpSpool, source: SourceConfig) -> list[tupl
         ]
 
 
-def test_v1_claim_fixture_retains_payload_and_portable_provenance_identity() -> None:
+def test_v1_claim_fixture_retains_payload_and_opaque_member_identity() -> None:
     fixture_root = REPO_ROOT / "tests/fixtures/state/v1_0001/a-riverhog-ftp-spool"
     manifest = json.loads((fixture_root / "claim.json").read_text(encoding="utf-8"))
     payload = (fixture_root / "payload.bin").read_bytes()
 
     assert landing._read_manifest(fixture_root) == manifest
     assert hashlib.sha256(payload).hexdigest() == manifest["files"][0]["sha256"]
-    assert landing._producer_provenance(manifest["files"][0]) == {
-        "status": "omitted",
-        "omission_reason": "Fixture intentionally has no host provenance.",
-    }
+    assert manifest["files"][0]["artifact_id"] == "a" * 64
+    assert "observation" not in manifest["files"][0]
 
 
 def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
@@ -246,7 +249,7 @@ def test_lifecycle_feed_is_bounded_source_fenced_and_replays_exact_claim_events(
     assert published.events[0].subject == claim_id
     assert published.events[0].payload.collection_id == "41"
     assert published.events[0].payload.archive_root_sha256 == "a" * 64
-    assert published.events[0].payload.content_identity == "b" * 64
+    assert published.events[0].payload.artifact_set_identity == "b" * 64
     assert restarted.run_once()["completed"] == 0
     assert restarted.event_page(source.id, after=published.next_cursor, limit=100).events == []
 
@@ -926,16 +929,8 @@ def test_explicit_flush_is_the_same_bounded_claim_and_receipt_path(
 
     assert adapter.run_once()["completed"] == 0
     assert adapter.flush(source.id)["completed"] == 1
-    assert _Producer.calls[0]["files"] == [
-        (
-            "current.bin",
-            b"current",
-            {
-                "status": "omitted",
-                "omission_reason": "Fixture intentionally has no host provenance.",
-            },
-        )
-    ]
+    assert [item[:3] for item in _Producer.calls[0]["files"]] == [("current.bin", b"current", None)]
+    assert len(_Producer.calls[0]["files"][0][3]) == 64
 
 
 def test_explicit_flush_marker_and_pass_are_one_serialized_operation(
@@ -1017,23 +1012,17 @@ def test_captured_provenance_is_identity_checked_and_projected_for_the_producer(
     ).flush(source.id)
 
     assert result["completed"] == 1
-    provenance = _Producer.calls[0]["files"][0][2]
-    assert provenance["status"] == "captured"
-    assert set(provenance) == {"status", "journal_id", "current_state_id"}
-    assert _Producer.calls[0]["kwargs"]["provenance_journals"]
+    observation = _Producer.calls[0]["files"][0][2]
+    assert observation is not None
+    assert observation.graph_fragment()["locator_bindings"]
+    assert len(_Producer.calls[0]["files"][0][3]) == 64
+    assert "provenance_journals" not in _Producer.calls[0]["kwargs"]
 
 
-def test_completed_portable_sidecar_follows_payload_into_claim(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-) -> None:
+def test_captured_observation_cannot_change_before_publication(tmp_path: Path) -> None:
     base = _config(tmp_path)
     source = base.sources[0].model_copy(
-        update={
-            "close_mode": "explicit-flush",
-            "provenance": "capture",
-            "provenance_omission_reason": None,
-        }
+        update={"provenance": "capture", "provenance_omission_reason": None}
     )
     config = base.model_copy(
         update={
@@ -1042,38 +1031,52 @@ def test_completed_portable_sidecar_follows_payload_into_claim(
             "sources": (source,),
         }
     )
-    payload = source.root / "captured.bin"
-    payload.parent.mkdir(parents=True)
-    payload.write_bytes(b"captured with its original provenance")
-    journal = create_observation_journal(
-        payload,
-        relative_path="captured.bin",
-        host_id=config.host_id,
-        agent_name="source-client",
-        agent_version="1.0.0",
-        observer=native_provenance_observer(),
-    )
-    sidecar = canonical_sidecar_path(payload)
-    sidecar.write_bytes(journal)
-    handoff = CompletionHandoff(source.root, source.id)
-    handoff.complete(sidecar)
-    handoff.complete(payload)
-    _Producer.calls = []
-    monkeypatch.setattr("a_riverhog_ftp_spool.landing.CollectionProducer", _Producer)
-
-    result = FtpSpool(
+    adapter = FtpSpool(
         object(),  # type: ignore[arg-type]
         config,
         provenance_observer_factory=native_provenance_observer,
-    ).flush(source.id)
+    )
+    payload = source.root / "capture.bin"
+    payload.write_bytes(b"stable source evidence")
+    claim_root = source.root / ".a-riverhog-ftp-spool" / "claims" / "fixture"
+    artifact_id = "a" * 64
+    details = adapter._prepared_observation(
+        source, payload, claim_root=claim_root, artifact_id=artifact_id
+    )
+    assert details is not None
+    row = {"artifact_id": artifact_id, "observation": details}
+    assert adapter._load_observation(claim_root, row) is not None
+    (claim_root / str(details["graph_path"])).write_bytes(b"{}")
+    with pytest.raises(FtpSpoolError, match="observation bytes changed"):
+        adapter._load_observation(claim_root, row)
+
+
+def test_completed_metadata_sidecar_is_an_ordinary_member(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"close_mode": "explicit-flush"})
+    config = base.model_copy(update={"sources": (source,)})
+    payload = source.root / "captured.bin"
+    payload.parent.mkdir(parents=True)
+    payload.write_bytes(b"captured with metadata")
+    sidecar = source.root / "captured.bin.xmp"
+    sidecar.write_bytes(b"<xmp>metadata</xmp>")
+    handoff = CompletionHandoff(source.root, source.id)
+    handoff.complete(payload)
+    handoff.complete(sidecar)
+    _Producer.calls = []
+    monkeypatch.setattr("a_riverhog_ftp_spool.landing.CollectionProducer", _Producer)
+
+    result = FtpSpool(object(), config).flush(source.id)  # type: ignore[arg-type]
 
     assert result["completed"] == 1
-    assert [item[:2] for item in _Producer.calls[0]["files"]] == [
-        ("captured.bin", b"captured with its original provenance")
+    assert sorted(item[:2] for item in _Producer.calls[0]["files"]) == [
+        ("captured.bin", b"captured with metadata"),
+        ("captured.bin.xmp", b"<xmp>metadata</xmp>"),
     ]
-    assert [
-        content for _journal_id, content in _Producer.calls[0]["kwargs"]["provenance_journals"]
-    ] == [journal]
+    assert len({item[3] for item in _Producer.calls[0]["files"]}) == 2
 
 
 def test_custody_passes_are_serialized_across_protocol_and_polling_entrypoints(
@@ -1120,13 +1123,6 @@ def test_custody_passes_are_serialized_across_protocol_and_polling_entrypoints(
             source_event_id=f"event-{index}",
             expected_bytes=len(content),
             expected_sha256=digest,
-            provenance={
-                "path": payload.name,
-                "bytes": len(content),
-                "sha256": digest,
-                "status": "omitted",
-                "omission_reason": "Fixture intentionally has no host provenance.",
-            },
         )
 
     with ThreadPoolExecutor(max_workers=2) as executor:

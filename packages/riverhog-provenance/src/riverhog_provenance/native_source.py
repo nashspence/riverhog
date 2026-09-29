@@ -263,7 +263,6 @@ class NativeFileSource:
             }
         )
 
-
     def _native_extensions(
         self,
         collection: NativeCapture,
@@ -318,6 +317,10 @@ class NativeFileObserver:
         self._contract = contract
         self.platform_family = platform_family
         self._observer = BoundedSourceObserver(catalog=ContractCatalog((contract,)))
+
+    @property
+    def contract_binding(self) -> ProvenanceContractBinding:
+        return self._contract
 
     def observe(
         self, source: ObservationSource, request: ObservationRequest | None = None
