@@ -22,6 +22,7 @@ from stove0_observer_protocol import (
     ContentObservationResult,
     ObserverDescriptor,
     ObserverRuntimeAuthority,
+    validate_observation_request,
 )
 from stove0_protocol import (
     ArtifactSelection,
@@ -724,6 +725,7 @@ class Stove0Coordinator:
         descriptor = self.observers.descriptor(request.observer_registration_id)
         if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
             raise RuntimeError("configured observer descriptor changed after request sealing")
+        validate_observation_request(request, descriptor)
         authority = self.riverhog.observation_authority(record.claim, request)
         result = self.observers.observe(
             request.observer_registration_id,
@@ -757,6 +759,7 @@ class Stove0Coordinator:
             descriptor = self.observers.descriptor(request.observer_registration_id)
             if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
                 raise RuntimeError("configured observer descriptor changed during tree planning")
+            validate_observation_request(request, descriptor)
             authority = self.riverhog.observation_authority(parent.claim, request)
             result = self.observers.observe(
                 request.observer_registration_id,

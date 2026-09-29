@@ -15,6 +15,7 @@ from stove0_observer_protocol import (
     ContentObservationInvocation,
     ContentObservationRequest,
     ObserverRuntimeAuthority,
+    validate_observation_request,
 )
 from stove0_protocol import (
     BranchSetDecision,
@@ -202,6 +203,7 @@ class WorkflowPreviewService:
                 raise RuntimeError(
                     "configured observer descriptor changed after preview request sealing"
                 )
+            validate_observation_request(observation_request, descriptor)
             authority = self.riverhog.observation_authority(claim, observation_request)
             result = self.observers.observe(
                 observation_request.observer_registration_id,

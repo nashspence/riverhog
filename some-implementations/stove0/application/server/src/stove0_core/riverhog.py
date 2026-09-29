@@ -497,7 +497,7 @@ class Stove0RiverhogClient:
         capability = self._capability(
             claim,
             audience=audience,
-            actions=("read-inputs",),
+            actions=request.read_actions,
             # Observation subjects are semantically ordered by their request-scoped
             # IDs.  Capability scope is a different, generic Riverhog authority and
             # must be projected into immutable collection-artifact order.

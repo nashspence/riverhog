@@ -93,6 +93,8 @@ def validate_observation_request(
     support = descriptor.support_for(request.observer_contract_id)
     if support.contract_sha256 != request.observer_contract_sha256:
         raise ValueError("observer contract differs from the sealed request")
+    if request.read_actions != support.read_actions:
+        raise ValueError("observer read authority differs from the advertised contract")
     if request.maximum_result_bytes > support.maximum_result_bytes:
         raise ValueError("observation request exceeds the observer contract result limit")
     try:
