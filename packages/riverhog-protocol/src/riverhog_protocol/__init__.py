@@ -47,6 +47,12 @@ __all__ = [
     "error_type_for_code",
 ]
 
+from riverhog_protocol.artifact_identity import (
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    derive_artifact_id,
+    new_artifact_id,
+)
 from riverhog_protocol.catalog_sync import (
     CATALOG_SYNC_CURSOR_BYTES_MAX,
     CATALOG_SYNC_FORMAT,
@@ -106,12 +112,11 @@ from riverhog_protocol.collection_tags import (
     validate_collection_tag,
 )
 from riverhog_protocol.collection_upload_transport import (
-    CapturedFileProvenanceBinding,
+    CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
+    CollectionUploadArtifactIn,
     CollectionUploadCustodyMode,
     CollectionUploadCustodyObjectDocument,
-    CollectionUploadFileBatchDocument,
-    CollectionUploadFileIn,
     CollectionUploadProvenanceJournalCreateDocument,
     CollectionUploadProvenanceJournalState,
     CollectionUploadProvenanceJournalStatusDocument,
@@ -129,9 +134,6 @@ from riverhog_protocol.collection_upload_transport import (
     CollectionUploadVolumeKind,
     CollectionUploadVolumeSummaryDocument,
     CollectionUploadWorkBatchDocument,
-    FileProvenanceBinding,
-    OmittedFileProvenanceBinding,
-    collection_upload_path_order_key,
     collection_upload_raw_digest_summary,
     validate_collection_upload_artifact_custody_receipt,
     validate_collection_upload_batch_against_registration_constraints,
@@ -184,7 +186,6 @@ from riverhog_protocol.collection_workflows import (
     derivation_evidence_page_path,
 )
 from riverhog_protocol.derivation_evidence import verify_derivation_evidence
-from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
 from riverhog_protocol.lifecycle_events import (
     COLLECTION_FINALIZED,
     COLLECTION_WAKE_EVENT_TYPES,
@@ -223,8 +224,8 @@ from riverhog_protocol.paths import CollectionId, CollectionIdParameter, validat
 from riverhog_protocol.portable_collection import (
     PORTABLE_COLLECTION_FORMAT,
     PORTABLE_COLLECTION_INVENTORY_PAGE_FORMAT,
+    PortableCollectionArtifact,
     PortableCollectionError,
-    PortableCollectionFile,
     PortableCollectionHeader,
     PortableCollectionIdentityBuilder,
     PortableCollectionInventoryAuthority,
@@ -232,9 +233,14 @@ from riverhog_protocol.portable_collection import (
     portable_collection_inventory_identity,
 )
 from riverhog_protocol.principal_ids import PrincipalId, validate_principal_id
+from riverhog_protocol.provenance_transport import (
+    CollectionArtifactProvenanceBindingBatchDocument,
+    CollectionArtifactProvenanceBindingDocument,
+    JournalAnchorDocument,
+)
 from riverhog_protocol.retrieval_transport import (
-    RetrievalFileReferenceDocument,
-    RetrievalFileReferenceSetDocument,
+    RetrievalArtifactReferenceDocument,
+    RetrievalArtifactReferenceSetDocument,
 )
 from riverhog_protocol.storage_names import (
     ArchiveCopyStoreSelectionDocument,
@@ -243,11 +249,11 @@ from riverhog_protocol.storage_names import (
     validate_archive_store_name,
 )
 from riverhog_protocol.transport import (
-    COLLECTION_UPLOAD_FILE_BATCH_MAX,
+    COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
     COLLECTION_UPLOAD_UNIT_SOURCE_MAX,
     COLLECTION_UPLOAD_WORK_BATCH_MAX,
-    RETRIEVAL_FILE_BATCH_MAX,
+    RETRIEVAL_ARTIFACT_BATCH_MAX,
 )
 
 __all__ += [
@@ -304,12 +310,15 @@ __all__ += [
     "encode_collection_tag_node",
     "validate_collection_tag",
     "ArtifactDisposition",
-    "CapturedFileProvenanceBinding",
-    "CollectionUploadFileBatchDocument",
+    "ArtifactId",
+    "ArtifactMemberIdentityDocument",
+    "CollectionArtifactProvenanceBindingBatchDocument",
+    "CollectionArtifactProvenanceBindingDocument",
+    "CollectionUploadArtifactBatchDocument",
     "CollectionUploadArtifactCustodyReceiptDocument",
     "CollectionUploadCustodyMode",
     "CollectionUploadCustodyObjectDocument",
-    "CollectionUploadFileIn",
+    "CollectionUploadArtifactIn",
     "CollectionUploadRawDigestBatchDocument",
     "CollectionUploadRawDigestProgressDocument",
     "CollectionUploadProvenanceJournalCreateDocument",
@@ -340,15 +349,13 @@ __all__ += [
     "DERIVATION_OUTPUT_EVIDENCE_PREFIX",
     "DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH",
     "OperationIdentity",
-    "FileProvenanceBinding",
-    "ImmutableFileIdentityDocument",
-    "OmittedFileProvenanceBinding",
+    "JournalAnchorDocument",
     "PRODUCER_EVIDENCE_PATH",
     "ProducerEvidence",
     "ProcessingClaimSort",
     "RecipeIdentity",
-    "RetrievalFileReferenceDocument",
-    "RetrievalFileReferenceSetDocument",
+    "RetrievalArtifactReferenceDocument",
+    "RetrievalArtifactReferenceSetDocument",
     "TransformIntent",
     "ArchiveStoreName",
     "OutputCollectionPolicy",
@@ -356,7 +363,8 @@ __all__ += [
     "ArchiveCopyStoreSelectionDocument",
     "collection_upload_raw_digest_summary",
     "derivation_evidence_page_path",
-    "collection_upload_path_order_key",
+    "derive_artifact_id",
+    "new_artifact_id",
     "validate_collection_upload_artifact_custody_receipt",
     "validate_collection_upload_batch_against_registration_constraints",
     "validate_archive_store_name",
@@ -364,15 +372,15 @@ __all__ += [
     "verify_derivation_evidence",
     "canonical_json_bytes",
     "canonical_json_sha256",
-    "COLLECTION_UPLOAD_FILE_BATCH_MAX",
+    "COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX",
     "COLLECTION_UPLOAD_UNIT_SOURCE_MAX",
     "COLLECTION_UPLOAD_WORK_BATCH_MAX",
     "COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX",
-    "RETRIEVAL_FILE_BATCH_MAX",
+    "RETRIEVAL_ARTIFACT_BATCH_MAX",
     "PORTABLE_COLLECTION_FORMAT",
     "PORTABLE_COLLECTION_INVENTORY_PAGE_FORMAT",
     "PortableCollectionError",
-    "PortableCollectionFile",
+    "PortableCollectionArtifact",
     "PortableCollectionHeader",
     "PortableCollectionInventoryAuthority",
     "PortableCollectionIdentityBuilder",

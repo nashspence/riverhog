@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "riverhog-provenance-root/v1"
+    },
+    "id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "ordered_segments_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "required": [
+    "format",
+    "id",
+    "segments",
+    "ordered_segments_sha256"
+  ],
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\\s\\S])"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    }
+  }
+}

@@ -31,7 +31,7 @@ from riverhog_core.catalog_models import (
     CollectionTagPublicationRecord,
     RetrievalJobObjectProgressRecord,
     RetrievalJobRecord,
-    RetrievalPlanFileRecord,
+    RetrievalPlanArtifactRecord,
     RetrievalPlanObjectRecord,
     RetrievalPlanPlacementRecord,
     RetrievalPlanRecord,
@@ -463,9 +463,9 @@ class SqlAlchemyArchiveCopyRetirementService:
                     continue
                 files = list(
                     session.scalars(
-                        select(RetrievalPlanFileRecord)
-                        .where(RetrievalPlanFileRecord.plan_id == plan_id)
-                        .order_by(RetrievalPlanFileRecord.file_order)
+                        select(RetrievalPlanArtifactRecord)
+                        .where(RetrievalPlanArtifactRecord.plan_id == plan_id)
+                        .order_by(RetrievalPlanArtifactRecord.file_order)
                         .limit(_RETRIEVAL_CLEANUP_BATCH)
                     )
                 )

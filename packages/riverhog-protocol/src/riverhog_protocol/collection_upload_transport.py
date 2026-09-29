@@ -6,7 +6,6 @@ import hashlib
 from collections.abc import Sequence
 from typing import Annotated, Literal, Self
 
-from http_api_contracts import CanonicalVisibleText
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -16,30 +15,22 @@ from pydantic import (
     model_validator,
 )
 from riverhog_canonical_json import format_scalar
-from riverhog_provenance_contracts import (
-    ProvenanceJournalId,
-    ProvenanceJournalStateReference,
-    ProvenanceStateId,
-)
+from riverhog_provenance_contracts import ProvenanceJournalId
 
+from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdentityDocument
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
     canonical_json_bytes,
     canonical_json_sha256,
 )
 from riverhog_protocol.exact_scalar import NonnegativeDecimal, Sequence256Hex
-from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
-from riverhog_protocol.paths import (
-    CollectionId,
-    validate_canonical_relpath,
-    validate_collection_id,
-)
+from riverhog_protocol.paths import CollectionId, validate_collection_id
+from riverhog_protocol.provenance_transport import JournalAnchorDocument
 from riverhog_protocol.raw_ingress import (
     RAW_SOURCE_DIGEST_BATCH_MAX,
     RawSourceDigestSummary,
 )
 from riverhog_protocol.transport import (
-    COLLECTION_UPLOAD_FILE_BATCH_MAX,
+    COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
     COLLECTION_UPLOAD_UNIT_SOURCE_MAX,
     COLLECTION_UPLOAD_WORK_BATCH_MAX,
 )
@@ -56,39 +47,8 @@ CollectionUploadUnitState = Literal["pending", "committed"]
 CollectionUploadProvenanceJournalState = Literal["accepting", "validating", "sealed", "failed"]
 
 
-def collection_upload_path_order_key(path: str) -> tuple[int, bytes]:
-    """Order v1 payload, Riverhog control evidence, and terminal derivation.
-
-    Transform artifacts may finalize incrementally in arbitrary path ranges.
-    Riverhog-owned control evidence follows all payload artifacts, while the
-    collection derivation remains the unique terminal member because it binds
-    the complete output and generic evidence authorities.
-    """
-
-    canonical = validate_canonical_relpath(path)
-    rank = 2 if canonical == DERIVATION_EVIDENCE_PATH else int(canonical.startswith("riverhog/"))
-    return (rank, canonical.encode("utf-8"))
-
-
 class CollectionUploadDocument(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-
-
-class CapturedFileProvenanceBinding(ProvenanceJournalStateReference):
-    status: Literal["captured"]
-    journal_id: ProvenanceJournalId
-    current_state_id: ProvenanceStateId
-
-
-class OmittedFileProvenanceBinding(CollectionUploadDocument):
-    status: Literal["omitted"]
-    omission_reason: CanonicalVisibleText
-
-
-FileProvenanceBinding = Annotated[
-    CapturedFileProvenanceBinding | OmittedFileProvenanceBinding,
-    Field(discriminator="status"),
-]
 
 
 class CollectionUploadRawPartsIn(CollectionUploadDocument):
@@ -100,7 +60,7 @@ class CollectionUploadRawPartsIn(CollectionUploadDocument):
 class CollectionUploadRawDigestBatchDocument(CollectionUploadDocument):
     """One append-only bounded slice of a registered raw source digest sequence."""
 
-    path: str
+    artifact_id: ArtifactId
     first_part: NonnegativeDecimal
     sha256s: list[Sha256] = Field(
         min_length=1,
@@ -114,22 +74,11 @@ class CollectionUploadRawDigestBatchDocument(CollectionUploadDocument):
         },
     )
 
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
-
-
 class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
-    path: str
+    artifact_id: ArtifactId
     accepted_parts: NonnegativeDecimal
     expected_parts: NonnegativeDecimal = Field(ge=1)
     complete: bool
-
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
 
     @model_validator(mode="after")
     def validate_completion(self) -> Self:
@@ -152,10 +101,7 @@ class CollectionUploadProvenanceJournalStatusDocument(CollectionUploadDocument):
     sha256: Sha256
     accepted_bytes: NonnegativeDecimal
     failure: str | None = None
-    current_state_id: ProvenanceStateId | None = None
-    current_path: str | None = None
-    current_bytes: NonnegativeDecimal | None = None
-    current_sha256: Sha256 | None = None
+    anchor: JournalAnchorDocument | None = None
 
     @model_validator(mode="after")
     def validate_progress(self) -> Self:
@@ -163,17 +109,13 @@ class CollectionUploadProvenanceJournalStatusDocument(CollectionUploadDocument):
             raise ValueError("accepted provenance bytes exceed the declared authority")
         if self.state in {"validating", "sealed"} and self.accepted_bytes != self.bytes:
             raise ValueError("closed provenance content is incomplete")
-        summary = (
-            self.current_state_id,
-            self.current_path,
-            self.current_bytes,
-            self.current_sha256,
-        )
         if self.state == "sealed":
-            if any(value is None for value in summary) or self.failure is not None:
-                raise ValueError("sealed provenance journal requires its current state")
-        elif any(value is not None for value in summary):
-            raise ValueError("unsealed provenance journal cannot expose a current state")
+            if self.anchor is None or self.failure is not None:
+                raise ValueError("sealed provenance journal requires its exact anchor")
+            if self.anchor.journal_id != self.journal_id:
+                raise ValueError("sealed provenance journal anchor has another journal ID")
+        elif self.anchor is not None:
+            raise ValueError("unsealed provenance journal cannot expose an anchor")
         if (self.state == "failed") != (self.failure is not None):
             raise ValueError("provenance journal failure differs from its state")
         return self
@@ -189,16 +131,10 @@ class CollectionUploadRegistrationConstraintsDocument(CollectionUploadDocument):
 class CollectionUploadUnitSourceDocument(CollectionUploadDocument):
     """One exact source range supplied in a server-planned upload unit."""
 
-    path: str
+    artifact_id: ArtifactId
     offset: NonnegativeDecimal
     bytes: NonnegativeDecimal
     artifact_sha256: Sha256
-
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
-
 
 class CollectionUploadUnitDocument(CollectionUploadDocument):
     """Protocol-owned identity of one server-planned plaintext upload unit."""
@@ -221,7 +157,7 @@ class CollectionUploadUnitDocument(CollectionUploadDocument):
     def validate_sources(self) -> Self:
         if sum(source.bytes for source in self.sources) != self.payload_bytes:
             raise ValueError("upload unit source bytes differ from its payload bytes")
-        identities = [(source.path, source.offset) for source in self.sources]
+        identities = [(source.artifact_id, source.offset) for source in self.sources]
         if len(identities) != len(set(identities)):
             raise ValueError("upload unit source ranges must be unique")
         return self
@@ -291,15 +227,14 @@ class CollectionUploadWorkBatchDocument(CollectionUploadDocument):
         return self
 
 
-class CollectionUploadFileIn(ImmutableFileIdentityDocument):
+class CollectionUploadArtifactIn(ArtifactMemberIdentityDocument):
     raw_parts: CollectionUploadRawPartsIn | None = None
-    provenance: FileProvenanceBinding | None = None
 
 
-class CollectionUploadFileBatchDocument(CollectionUploadDocument):
-    files: list[CollectionUploadFileIn] = Field(
+class CollectionUploadArtifactBatchDocument(CollectionUploadDocument):
+    artifacts: list[CollectionUploadArtifactIn] = Field(
         min_length=1,
-        max_length=COLLECTION_UPLOAD_FILE_BATCH_MAX,
+        max_length=COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
@@ -310,10 +245,10 @@ class CollectionUploadFileBatchDocument(CollectionUploadDocument):
     )
 
     @model_validator(mode="after")
-    def validate_unique_file_paths(self) -> Self:
-        paths = [item.path for item in self.files]
-        if len(paths) != len(set(paths)):
-            raise ValueError("collection upload file paths must be unique")
+    def validate_unique_artifact_ids(self) -> Self:
+        artifact_ids = [item.artifact_id for item in self.artifacts]
+        if len(artifact_ids) != len(set(artifact_ids)):
+            raise ValueError("collection upload artifact IDs must be unique")
         return self
 
 
@@ -327,7 +262,7 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
 
     format: Literal["riverhog-artifact-custody-receipt/v1"] = "riverhog-artifact-custody-receipt/v1"
     collection_id: CollectionId
-    path: str
+    artifact_id: ArtifactId
     bytes: NonnegativeDecimal
     sha256: Sha256
     archive_object_count: NonnegativeDecimal = Field(ge=1)
@@ -338,11 +273,6 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
     @classmethod
     def canonical_collection_id(cls, value: int) -> int:
         return validate_collection_id(value)
-
-    @field_validator("path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
 
     @model_validator(mode="after")
     def validate_receipt(self) -> Self:
@@ -356,7 +286,7 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
         cls,
         *,
         collection_id: int,
-        path: str,
+        artifact_id: ArtifactId,
         bytes: int,
         sha256: str,
         archive_objects: Sequence[CollectionUploadCustodyObjectDocument],
@@ -377,7 +307,7 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
         payload = {
             "format": "riverhog-artifact-custody-receipt/v1",
             "collection_id": format_scalar("sequence63", validate_collection_id(collection_id)),
-            "path": path,
+            "artifact_id": str(artifact_id),
             "bytes": format_scalar("nonnegative", bytes),
             "sha256": sha256,
             "archive_object_count": format_scalar("nonnegative", count),
@@ -388,7 +318,7 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
 
 def validate_collection_upload_artifact_custody_receipt(
     collection_id: int,
-    artifact: ImmutableFileIdentityDocument,
+    artifact: ArtifactMemberIdentityDocument,
     receipt: CollectionUploadArtifactCustodyReceiptDocument,
 ) -> CollectionUploadArtifactCustodyReceiptDocument:
     """Bind one safe-release receipt to its exact session artifact."""
@@ -396,42 +326,46 @@ def validate_collection_upload_artifact_custody_receipt(
     expected_collection_id = validate_collection_id(collection_id)
     if (
         receipt.collection_id != expected_collection_id
-        or receipt.path != artifact.path
+        or receipt.artifact_id != artifact.artifact_id
         or receipt.bytes != artifact.bytes
         or receipt.sha256 != artifact.sha256
     ):
-        raise ValueError("artifact custody receipt differs from its upload file identity")
+        raise ValueError("artifact custody receipt differs from its upload member identity")
     return receipt
 
 
 def validate_collection_upload_batch_against_registration_constraints(
-    batch: CollectionUploadFileBatchDocument,
+    batch: CollectionUploadArtifactBatchDocument,
     constraints: CollectionUploadRegistrationConstraintsDocument,
-) -> CollectionUploadFileBatchDocument:
+) -> CollectionUploadArtifactBatchDocument:
     """Validate registration identities against server-issued constraints."""
 
-    for item in batch.files:
+    for item in batch.artifacts:
         collection_upload_raw_digest_summary(item, constraints)
     return batch
 
 
 def collection_upload_raw_digest_summary(
-    item: CollectionUploadFileIn,
+    item: CollectionUploadArtifactIn,
     constraints: CollectionUploadRegistrationConstraintsDocument,
 ) -> RawSourceDigestSummary | None:
-    """Return the bounded raw digest authority required for one large file."""
+    """Return the bounded raw digest authority required for one large member."""
 
     raw = item.raw_parts
     if item.bytes < constraints.pack_member_bytes:
         if raw is not None:
-            raise ValueError(f"raw part digests are only valid for large file: {item.path}")
+            raise ValueError(
+                f"raw part digests are only valid for large member: {item.artifact_id}"
+            )
         return None
     if raw is None:
-        raise ValueError(f"raw part digests are required for large file: {item.path}")
+        raise ValueError(f"raw part digests are required for large member: {item.artifact_id}")
     if raw.part_plaintext_bytes != constraints.raw_part_plaintext_bytes:
-        raise ValueError(f"raw part digest policy does not match the session: {item.path}")
+        raise ValueError(
+            f"raw part digest policy does not match the session: {item.artifact_id}"
+        )
     return RawSourceDigestSummary(
-        path=item.path,
+        artifact_id=item.artifact_id,
         bytes=item.bytes,
         sha256=item.sha256,
         part_plaintext_bytes=raw.part_plaintext_bytes,
@@ -441,9 +375,8 @@ def collection_upload_raw_digest_summary(
 
 
 __all__ = [
-    "CapturedFileProvenanceBinding",
-    "CollectionUploadFileBatchDocument",
-    "CollectionUploadFileIn",
+    "CollectionUploadArtifactBatchDocument",
+    "CollectionUploadArtifactIn",
     "CollectionUploadArtifactCustodyReceiptDocument",
     "CollectionUploadCustodyMode",
     "CollectionUploadCustodyObjectDocument",
@@ -464,10 +397,7 @@ __all__ = [
     "CollectionUploadVolumeId",
     "CollectionUploadVolumeKind",
     "CollectionUploadVolumeSummaryDocument",
-    "FileProvenanceBinding",
-    "OmittedFileProvenanceBinding",
     "collection_upload_raw_digest_summary",
-    "collection_upload_path_order_key",
     "validate_collection_upload_artifact_custody_receipt",
     "validate_collection_upload_batch_against_registration_constraints",
 ]

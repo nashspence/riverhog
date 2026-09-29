@@ -10,13 +10,13 @@ from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_core.archive_manifest import build_collection_archive_manifest
 from riverhog_core.archive_root import SealedArchiveRoot
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     PackVolumePlan,
     SealedPackVolume,
     SealedProvenanceObject,
     SealedRawVolume,
     StoredArchivePart,
-    VerifiedRawFile,
+    VerifiedRawArtifact,
 )
 from riverhog_core.ports.retrieval_cache import RetrievalCacheReceipt
 
@@ -98,10 +98,10 @@ def build_archive_catalog_projection(
     store: str,
     archive_storage_prefix: str,
     root: SealedArchiveRoot,
-    files: Sequence[ArchiveFile],
+    files: Sequence[ArchiveArtifact],
     packs: Sequence[tuple[PackVolumePlan, SealedPackVolume]],
     raw_volumes: Sequence[SealedRawVolume] = (),
-    verified_raw_files: Sequence[VerifiedRawFile] = (),
+    verified_raw_files: Sequence[VerifiedRawArtifact] = (),
     provenance_identity: str | None = None,
     provenance_objects: Sequence[SealedProvenanceObject] = (),
     validate_manifest: bool = True,

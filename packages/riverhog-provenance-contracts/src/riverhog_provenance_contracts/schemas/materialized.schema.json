@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/materialized.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "riverhog-provenance-materialized/v1"
+    },
+    "journal": {
+      "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/journalAnchor"
+    },
+    "effective_assertions": {
+      "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/graphFragment"
+    },
+    "retracted_assertion_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/uuid"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "unresolved_external_references": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/externalReference"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "unresolved_profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/profileReference"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "format",
+    "journal",
+    "effective_assertions",
+    "retracted_assertion_ids",
+    "unresolved_external_references",
+    "unresolved_profiles"
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "format": "riverhog-provenance-materialized/v1",
+  "journal": {
+    "journal_id": "urn:uuid:ad0b7c3b-fac2-5493-940b-e1870c8900c3",
+    "through": {
+      "entry_id": "urn:uuid:6acd32f0-71c9-5efe-af69-26710210fdba",
+      "sequence": "0",
+      "json_sha256": "f0e7303454cc4554fb7272af231832dc9f8f20339846984c8ef045ecc9cdcb28"
+    },
+    "prefix_sha256": "6c9e171e05d991abeaf2acd8aad21daf4cdfe2cfea52331e40687a25bd06b170",
+    "prefix_bytes": "6124"
+  },
+  "effective_assertions": {
+    "activities": [
+      {
+        "assertion_id": "urn:uuid:a8844f1b-2658-5368-84b4-c3005a1bdbb8",
+        "associations": [
+          {
+            "agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "role": "https://nashspence.github.io/riverhog/v1/provenance/roles/observer"
+          }
+        ],
+        "configuration": {
+          "data": {
+            "hash_chunk_bytes": "8388608",
+            "include_sha512": false,
+            "maximum_content_bytes": "9223372036854775807",
+            "second_content_hash": false
+          },
+          "profile": {
+            "contract_id": "https://nashspence.github.io/riverhog/v1/provenance",
+            "contract_sha256": "8fb75de6c0eae617df0824b42711bcd87ecdcd27aa0828d24daf4ba8850c0f71",
+            "schema_id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json"
+          }
+        },
+        "configuration_sha256": "538d8905da160c6a5228a7b45ce5710d120e5f73259dab1a8f97e1b2765b93ae",
+        "ended_at": "2026-09-28T12:00:00.000000017Z",
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "direct_measurement",
+            "method_uri": "https://nashspence.github.io/riverhog/v1/provenance/plans/opaque-bounded-source-observation"
+          }
+        ],
+        "id": "urn:uuid:81d0bd52-2a41-588f-9669-0a5a4f38218e",
+        "kind": "observation",
+        "outcome": "success",
+        "plan_uri": "https://nashspence.github.io/riverhog/v1/provenance/plans/opaque-bounded-source-observation",
+        "started_at": "2026-09-28T12:00:00.000000016Z",
+        "type": "activity"
+      }
+    ],
+    "agents": [
+      {
+        "assertion_id": "urn:uuid:f426c20d-3dd9-57dd-bc86-40fdf046fe20",
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "identity_assignment"
+          }
+        ],
+        "id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+        "kind": "software",
+        "name": "riverhog-provenance",
+        "type": "agent",
+        "version": "0.1.0"
+      }
+    ],
+    "artifacts": [
+      {
+        "assertion_id": "urn:uuid:84aad94c-4566-5cf3-82cc-416995c22e45",
+        "continuity_policy_uri": "https://nashspence.github.io/riverhog/v1/provenance/policies/assigned-continuity",
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "identity_assignment"
+          }
+        ],
+        "id": "urn:uuid:4ff70084-0669-5b71-b3b9-74dcb5e34f3c",
+        "type": "artifact"
+      }
+    ],
+    "descriptions": [
+      {
+        "address_status": "not_exposed",
+        "assertion_id": "urn:uuid:f9bbfcc8-e4e6-505d-aeef-a88cc57c629e",
+        "capabilities": {
+          "bounded": true,
+          "native_metadata": false,
+          "persistent_designator": false,
+          "repeatable": true,
+          "seekable": true,
+          "stable_version_selection": true
+        },
+        "capture_id": "urn:uuid:81d0bd52-2a41-588f-9669-0a5a4f38218e",
+        "consistency": {
+          "level": "immutable_snapshot",
+          "method_uri": "https://nashspence.github.io/riverhog/v1/provenance/methods/immutable-python-bytes",
+          "snapshot_identifier": {
+            "scheme": "https://nashspence.github.io/riverhog/v1/provenance/identifiers/in-memory-source-instance",
+            "scope": "global",
+            "value": {
+              "kind": "text",
+              "text": "urn:uuid:40df8670-83b7-5f6c-bdd0-d581d803eaa6"
+            }
+          }
+        },
+        "content": {
+          "digests": [
+            {
+              "algorithm": "sha-256",
+              "value": "549db655993c812eeaa5da63135cca0b85a22f433bb4e2a195450f8ea13d4c37"
+            }
+          ],
+          "size_bytes": "18"
+        },
+        "coverage": [
+          {
+            "category": "https://nashspence.github.io/riverhog/v1/provenance/coverage/primary_content",
+            "profile_id": "https://nashspence.github.io/riverhog/v1/provenance",
+            "status": "complete"
+          }
+        ],
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "direct_measurement",
+            "method_uri": "https://nashspence.github.io/riverhog/v1/provenance/plans/opaque-bounded-source-observation"
+          }
+        ],
+        "id": "urn:uuid:2d54bee3-dc9b-5f3d-bca9-86eefae5409c",
+        "state": {
+          "object_id": "urn:uuid:de506bdc-139b-5be3-98e6-9144ddb2ca30",
+          "object_type": "state",
+          "scope": "local"
+        },
+        "type": "observation"
+      }
+    ],
+    "occurrences": [
+      {
+        "artifact_id": "urn:uuid:4ff70084-0669-5b71-b3b9-74dcb5e34f3c",
+        "assertion_id": "urn:uuid:ca5e53b7-e71d-58f9-a920-4cd98fffb9c1",
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "identity_assignment"
+          }
+        ],
+        "id": "urn:uuid:f3aea85c-ca32-5e46-a066-8d005c0b3534",
+        "kind": "opaque",
+        "type": "occurrence"
+      }
+    ],
+    "relations": [
+      {
+        "assertion_id": "urn:uuid:04200952-3a5c-5740-b69b-0b907ef65208",
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "attestation",
+            "note": "Synthetic independently recorded derivative."
+          }
+        ],
+        "generated_state": {
+          "object_id": "urn:uuid:de506bdc-139b-5be3-98e6-9144ddb2ca30",
+          "object_type": "state",
+          "scope": "local"
+        },
+        "id": "urn:uuid:8bc962eb-69d3-52e2-a460-9a66c85cba0a",
+        "kind": "transformation",
+        "type": "derivation",
+        "used_state": {
+          "assertion_id": "urn:uuid:74144f61-79f3-5b25-8b23-be677f9867e6",
+          "entry": {
+            "entry_id": "urn:uuid:048c43cc-8b72-590d-8c98-1a02b4c2c4e8",
+            "json_sha256": "1f64eb8d57787176f1f429c43e85034d2579d057da968c1fe93dbde69c215871",
+            "sequence": "2"
+          },
+          "journal_id": "urn:uuid:b6367f21-6b52-50df-8797-21dfd9a7c5a6",
+          "object_id": "urn:uuid:2abec118-87f8-5c9c-9bd1-276603c56825",
+          "object_type": "state",
+          "scope": "external"
+        }
+      }
+    ],
+    "states": [
+      {
+        "assertion_id": "urn:uuid:8efef99e-6521-5546-bac2-a78824a23263",
+        "evidence": [
+          {
+            "asserted_by_agent_id": "urn:uuid:5f4679ce-75fe-5e1d-affa-78c842cf818f",
+            "basis": "identity_assignment"
+          }
+        ],
+        "extent": {
+          "kind": "whole_object"
+        },
+        "id": "urn:uuid:de506bdc-139b-5be3-98e6-9144ddb2ca30",
+        "occurrence_id": "urn:uuid:f3aea85c-ca32-5e46-a066-8d005c0b3534",
+        "type": "state"
+      }
+    ]
+  },
+  "retracted_assertion_ids": [],
+  "unresolved_external_references": [
+    {
+      "assertion_id": "urn:uuid:74144f61-79f3-5b25-8b23-be677f9867e6",
+      "entry": {
+        "entry_id": "urn:uuid:048c43cc-8b72-590d-8c98-1a02b4c2c4e8",
+        "json_sha256": "1f64eb8d57787176f1f429c43e85034d2579d057da968c1fe93dbde69c215871",
+        "sequence": "2"
+      },
+      "journal_id": "urn:uuid:b6367f21-6b52-50df-8797-21dfd9a7c5a6",
+      "object_id": "urn:uuid:2abec118-87f8-5c9c-9bd1-276603c56825",
+      "object_type": "state",
+      "scope": "external"
+    }
+  ],
+  "unresolved_profiles": []
+}

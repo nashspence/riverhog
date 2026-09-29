@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/graph-fragment.schema.json",
+  "title": "Provenance graph fragment",
+  "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/graphFragment"
+}

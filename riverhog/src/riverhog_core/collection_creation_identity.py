@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Annotated, Literal, Self
 
-from http_api_contracts import CanonicalVisibleText
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 from riverhog_protocol import (
     CollectionDescription,
@@ -29,18 +28,7 @@ class CollectionUploadCreationIdentityPayload(BaseModel):
     use_cache: bool
     copy_to: list[ArchiveStoreName]
     event_context: dict[str, JsonValue] | None = None
-    provenance_mode: Literal["captured", "omitted"]
-    provenance_omission_reason: CanonicalVisibleText | None = None
     custody_mode: CollectionUploadCustodyMode
-
-    @model_validator(mode="after")
-    def validate_provenance_choice(self) -> Self:
-        if self.provenance_mode == "captured":
-            if self.provenance_omission_reason is not None:
-                raise ValueError("captured provenance cannot have an omission reason")
-        elif self.provenance_omission_reason is None:
-            raise ValueError("omitted provenance requires an omission reason")
-        return self
 
 
 class CollectionUploadCreationIdentityDocument(CollectionUploadCreationIdentityPayload):

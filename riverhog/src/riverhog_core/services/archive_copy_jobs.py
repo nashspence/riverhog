@@ -38,7 +38,7 @@ from riverhog_core.catalog_models import (
     ArchiveCopyJobRecord,
     ArchiveCopyObjectUploadRecord,
     CollectionArchiveCopyRecord,
-    CollectionArchiveFileObjectRecord,
+    CollectionArchiveArtifactObjectRecord,
     CollectionArchiveObjectRecord,
     CollectionRecord,
     CollectionUploadCopyIntentRecord,
@@ -1732,7 +1732,7 @@ class SqlAlchemyArchiveCopyJobService:
             )
             for placement in source.placements:
                 copied_record.placements.append(
-                    CollectionArchiveFileObjectRecord(
+                    CollectionArchiveArtifactObjectRecord(
                         collection_id=collection_id,
                         store=destination_store,
                         path=placement.path,

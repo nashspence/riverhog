@@ -6,8 +6,8 @@ from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
 
 
 @dataclass(frozen=True, slots=True)
-class ArchiveFile:
-    path: str
+class ArchiveArtifact:
+    artifact_id: str
     bytes: int
     sha256: str
 
@@ -27,7 +27,7 @@ class SealedProvenanceObject:
 
 @dataclass(frozen=True, slots=True)
 class PackMemberPlan:
-    path: str
+    artifact_id: str
     bytes: int
     sha256: str
     unit: int
@@ -49,7 +49,7 @@ class PackUploadUnitPlan:
     unit: int
     plaintext_start: int
     plaintext_end: int
-    sources: tuple[ArchiveFile, ...]
+    sources: tuple[ArchiveArtifact, ...]
     padding: PackPaddingPlan | None = None
     includes_index: bool = False
     includes_end_markers: bool = False
@@ -85,11 +85,11 @@ class PackVolumePlan:
 class RawVolumePlan:
     volume_id: str
     sequence: int
-    source_path: str
-    file_offset: int
+    artifact_id: str
+    artifact_offset: int
     plaintext_bytes: int
-    file_bytes: int
-    file_sha256: str
+    artifact_bytes: int
+    artifact_sha256: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,7 +107,7 @@ class SealedPackVolume:
     volume_id: str
     sequence: int
     relative_path: str
-    files: int
+    artifacts: int
     source_bytes: int
     plaintext_bytes: int
     age_state_json: str
@@ -124,8 +124,8 @@ class SealedPackVolume:
 
 
 @dataclass(frozen=True, slots=True)
-class VerifiedRawFile:
-    path: str
+class VerifiedRawArtifact:
+    artifact_id: str
     bytes: int
     sha256: str
     ordered_volume_sha256: str
@@ -137,11 +137,11 @@ class SealedRawVolume:
     volume_id: str
     sequence: int
     relative_path: str
-    source_path: str
-    file_offset: int
+    artifact_id: str
+    artifact_offset: int
     plaintext_bytes: int
-    file_bytes: int
-    file_sha256: str
+    artifact_bytes: int
+    artifact_sha256: str
     age_state_json: str
     parts: tuple[StoredArchivePart, ...]
     revision: str | None

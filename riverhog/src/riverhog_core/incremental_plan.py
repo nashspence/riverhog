@@ -5,79 +5,64 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from riverhog_canonical_json import format_scalar, parse_scalar, require_canonical_json
-from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
-from riverhog_protocol.paths import validate_canonical_relpath
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.pack_ingress import canonical_json_bytes
 
-from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.collection_plan import CollectionVolumePolicy
-from riverhog_core.domain.archive import ArchiveFile, PackVolumePlan, RawVolumePlan
+from riverhog_core.domain.archive import ArchiveArtifact, PackVolumePlan, RawVolumePlan
 from riverhog_core.pack_volume import plan_pack_volume
 from riverhog_core.raw_volume import plan_raw_volumes
 
 INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_FORMAT = "incremental-volume-planner-checkpoint/v1"
-_SHA256_RE = re.compile(r"[0-9a-f]{64}")
-_CONTENT_IDENTITY_PREFIX = b'{"files":['
-_CONTENT_IDENTITY_SUFFIX = b'],"format":"riverhog-collection-content/v1"}'
+_SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 
 
 @dataclass(frozen=True, slots=True)
-class OrderedArchiveFile:
+class OrderedArchiveArtifact:
     order: int
-    file: ArchiveFile
+    artifact: ArchiveArtifact
 
 
 @dataclass(frozen=True, slots=True)
 class IncrementalVolumePlannerCheckpoint:
     policy: CollectionVolumePolicy
-    content_hash_state: str
-    next_file_order: int = 0
+    next_artifact_order: int = 0
     next_sequence: int = 0
-    files_seen: int = 0
+    artifacts_seen: int = 0
     bytes_seen: int = 0
-    pending_pack_files: tuple[ArchiveFile, ...] = ()
+    pending_pack_artifacts: tuple[ArchiveArtifact, ...] = ()
     closed: bool = False
-    content_identity: str | None = None
 
     def __post_init__(self) -> None:
         if (
             min(
-                self.next_file_order,
+                self.next_artifact_order,
                 self.next_sequence,
-                self.files_seen,
+                self.artifacts_seen,
                 self.bytes_seen,
             )
             < 0
         ):
             raise ValueError("incremental planner counters must be non-negative")
-        if self.next_file_order != self.files_seen:
-            raise ValueError("incremental planner file order does not match files seen")
+        if self.next_artifact_order != self.artifacts_seen:
+            raise ValueError("incremental planner order differs from accepted count")
         format_scalar("sequence256", self.next_sequence)
-        if len(self.pending_pack_files) > self.policy.pack_files:
-            raise ValueError("incremental planner pending pack exceeds its file limit")
+        if len(self.pending_pack_artifacts) > self.policy.pack_artifacts:
+            raise ValueError("incremental planner pending pack exceeds its artifact limit")
         pending_bytes = 0
         seen: set[str] = set()
-        for current in self.pending_pack_files:
-            normalized = _normalized_file(current)
-            if normalized.path in seen:
-                raise ValueError("incremental planner repeats a pending path")
+        for current in self.pending_pack_artifacts:
+            normalized = _normalized_artifact(current)
+            if normalized.artifact_id in seen:
+                raise ValueError("incremental planner repeats a pending artifact")
             if normalized.bytes >= self.policy.pack_member_bytes:
-                raise ValueError("incremental planner pending file is outside pack policy")
-            seen.add(normalized.path)
+                raise ValueError("incremental planner pending artifact is outside pack policy")
+            seen.add(normalized.artifact_id)
             pending_bytes += normalized.bytes
         if pending_bytes > self.policy.pack_source_bytes:
             raise ValueError("incremental planner pending pack exceeds its byte limit")
-        if self.closed and self.pending_pack_files:
-            raise ValueError("closed incremental planner cannot retain pending files")
-        try:
-            digest = CheckpointSHA256.from_state(self.content_hash_state)
-        except ValueError as exc:
-            raise ValueError("incremental planner content hash state is invalid") from exc
-        if self.closed:
-            expected_identity = digest.copy().update(_CONTENT_IDENTITY_SUFFIX).hexdigest()
-            if self.content_identity != expected_identity:
-                raise ValueError("closed incremental planner content identity is invalid")
-        elif self.content_identity is not None:
-            raise ValueError("open incremental planner cannot have a content identity")
+        if self.closed and self.pending_pack_artifacts:
+            raise ValueError("closed incremental planner cannot retain pending artifacts")
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,43 +80,37 @@ def new_incremental_volume_planner(
     *,
     policy: CollectionVolumePolicy | None = None,
 ) -> IncrementalVolumePlannerCheckpoint:
-    digest = CheckpointSHA256(_CONTENT_IDENTITY_PREFIX)
-    return IncrementalVolumePlannerCheckpoint(
-        policy=policy or CollectionVolumePolicy(),
-        content_hash_state=digest.export_state(),
-    )
+    return IncrementalVolumePlannerCheckpoint(policy=policy or CollectionVolumePolicy())
 
 
-def normalize_ordered_archive_file(
-    value: OrderedArchiveFile,
-) -> OrderedArchiveFile:
+def normalize_ordered_archive_artifact(
+    value: OrderedArchiveArtifact,
+) -> OrderedArchiveArtifact:
     if value.order < 0:
-        raise ValueError("incremental planner file order must be non-negative")
-    return OrderedArchiveFile(order=value.order, file=_normalized_file(value.file))
+        raise ValueError("incremental planner artifact order must be non-negative")
+    return OrderedArchiveArtifact(order=value.order, artifact=_normalized_artifact(value.artifact))
 
 
 def advance_incremental_volume_plan(
     checkpoint: IncrementalVolumePlannerCheckpoint,
-    files: Sequence[OrderedArchiveFile],
+    artifacts: Sequence[OrderedArchiveArtifact],
     *,
     final: bool = False,
 ) -> IncrementalVolumePlanBatch:
-    """Advance bounded collection planning without retaining the whole file set.
+    """Advance bounded physical volume planning without retaining all members.
 
-    The caller must persist the returned checkpoint and every emitted immutable volume plan in
-    one database transaction. Input file rows are ordered registration records; a unique
-    ``(collection_id, path)`` database constraint remains the collection-wide duplicate guard.
+    The caller persists the checkpoint and emitted plans with accepted registration rows.
+    This cursor does not commit member identity: a separate ID-ordered catalog scan does.
     """
 
     if checkpoint.closed:
         raise ValueError("incremental volume planner is already closed")
-    pending = list(checkpoint.pending_pack_files)
+    pending = list(checkpoint.pending_pack_artifacts)
     pending_bytes = sum(current.bytes for current in pending)
-    next_order = checkpoint.next_file_order
+    next_order = checkpoint.next_artifact_order
     next_sequence = checkpoint.next_sequence
-    files_seen = checkpoint.files_seen
+    artifacts_seen = checkpoint.artifacts_seen
     bytes_seen = checkpoint.bytes_seen
-    content_digest = CheckpointSHA256.from_state(checkpoint.content_hash_state)
     packs: list[PackVolumePlan] = []
     raw_volumes: list[RawVolumePlan] = []
 
@@ -151,17 +130,14 @@ def advance_incremental_volume_plan(
         pending = []
         pending_bytes = 0
 
-    for raw_ordered in files:
-        ordered = normalize_ordered_archive_file(raw_ordered)
+    for raw_ordered in artifacts:
+        ordered = normalize_ordered_archive_artifact(raw_ordered)
         if ordered.order != next_order:
-            raise ValueError("incremental planner file order is not contiguous")
-        current = _normalized_file(ordered.file)
-        if files_seen:
-            content_digest.update(b",")
-        content_digest.update(_content_identity_member_bytes(current))
+            raise ValueError("incremental planner artifact order is not contiguous")
+        current = _normalized_artifact(ordered.artifact)
         if current.bytes < checkpoint.policy.pack_member_bytes:
             if pending and (
-                len(pending) >= checkpoint.policy.pack_files
+                len(pending) >= checkpoint.policy.pack_artifacts
                 or pending_bytes + current.bytes > checkpoint.policy.pack_source_bytes
             ):
                 flush_pack()
@@ -177,24 +153,19 @@ def advance_incremental_volume_plan(
             raw_volumes.extend(planned)
             next_sequence += len(planned)
         next_order += 1
-        files_seen += 1
+        artifacts_seen += 1
         bytes_seen += current.bytes
 
     if final:
         flush_pack()
-    content_identity = (
-        content_digest.copy().update(_CONTENT_IDENTITY_SUFFIX).hexdigest() if final else None
-    )
     next_checkpoint = IncrementalVolumePlannerCheckpoint(
         policy=checkpoint.policy,
-        content_hash_state=content_digest.export_state(),
-        next_file_order=next_order,
+        next_artifact_order=next_order,
         next_sequence=next_sequence,
-        files_seen=files_seen,
+        artifacts_seen=artifacts_seen,
         bytes_seen=bytes_seen,
-        pending_pack_files=tuple(pending),
+        pending_pack_artifacts=tuple(pending),
         closed=final,
-        content_identity=content_identity,
     )
     emitted: list[PackVolumePlan | RawVolumePlan] = [*packs, *raw_volumes]
     emitted.sort(key=lambda current: current.sequence)
@@ -216,33 +187,29 @@ def incremental_volume_planner_checkpoint_payload(
 ) -> dict[str, object]:
     IncrementalVolumePlannerCheckpoint(
         policy=checkpoint.policy,
-        content_hash_state=checkpoint.content_hash_state,
-        next_file_order=checkpoint.next_file_order,
+        next_artifact_order=checkpoint.next_artifact_order,
         next_sequence=checkpoint.next_sequence,
-        files_seen=checkpoint.files_seen,
+        artifacts_seen=checkpoint.artifacts_seen,
         bytes_seen=checkpoint.bytes_seen,
-        pending_pack_files=checkpoint.pending_pack_files,
+        pending_pack_artifacts=checkpoint.pending_pack_artifacts,
         closed=checkpoint.closed,
-        content_identity=checkpoint.content_identity,
     )
     return {
         "format": INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_FORMAT,
         "policy": _policy_payload(checkpoint.policy),
-        "content_hash_state": checkpoint.content_hash_state,
-        "next_file_order": format_scalar("nonnegative", checkpoint.next_file_order),
+        "next_artifact_order": format_scalar("nonnegative", checkpoint.next_artifact_order),
         "next_sequence": format_scalar("sequence256", checkpoint.next_sequence),
-        "files_seen": format_scalar("nonnegative", checkpoint.files_seen),
+        "artifacts_seen": format_scalar("nonnegative", checkpoint.artifacts_seen),
         "bytes_seen": format_scalar("nonnegative", checkpoint.bytes_seen),
-        "pending_pack_files": [
+        "pending_pack_artifacts": [
             {
-                "path": current.path,
+                "artifact_id": current.artifact_id,
                 "bytes": format_scalar("nonnegative", current.bytes),
                 "sha256": current.sha256,
             }
-            for current in checkpoint.pending_pack_files
+            for current in checkpoint.pending_pack_artifacts
         ],
         "closed": checkpoint.closed,
-        "content_identity": checkpoint.content_identity,
     }
 
 
@@ -264,14 +231,12 @@ def parse_incremental_volume_planner_checkpoint(
     expected = {
         "format",
         "policy",
-        "content_hash_state",
-        "next_file_order",
+        "next_artifact_order",
         "next_sequence",
-        "files_seen",
+        "artifacts_seen",
         "bytes_seen",
-        "pending_pack_files",
+        "pending_pack_artifacts",
         "closed",
-        "content_identity",
     }
     if (
         not isinstance(payload, dict)
@@ -280,17 +245,17 @@ def parse_incremental_volume_planner_checkpoint(
     ):
         raise ValueError("incremental volume planner checkpoint format mismatch")
     policy = _parse_policy(payload.get("policy"))
-    raw_pending = payload.get("pending_pack_files")
+    raw_pending = payload.get("pending_pack_artifacts")
     if not isinstance(raw_pending, list):
-        raise ValueError("incremental planner pending files must be a list")
-    pending: list[ArchiveFile] = []
+        raise ValueError("incremental planner pending artifacts must be a list")
+    pending: list[ArchiveArtifact] = []
     for raw in raw_pending:
-        if not isinstance(raw, dict) or set(raw) != {"path", "bytes", "sha256"}:
-            raise ValueError("incremental planner pending file is invalid")
+        if not isinstance(raw, dict) or set(raw) != {"artifact_id", "bytes", "sha256"}:
+            raise ValueError("incremental planner pending artifact is invalid")
         pending.append(
-            _normalized_file(
-                ArchiveFile(
-                    path=str(raw.get("path", "")),
+            _normalized_artifact(
+                ArchiveArtifact(
+                    artifact_id=str(raw.get("artifact_id", "")),
                     bytes=parse_scalar("nonnegative", raw.get("bytes")),
                     sha256=str(raw.get("sha256", "")),
                 )
@@ -301,49 +266,33 @@ def parse_incremental_volume_planner_checkpoint(
         raise ValueError("incremental planner closed flag must be boolean")
     checkpoint = IncrementalVolumePlannerCheckpoint(
         policy=policy,
-        content_hash_state=str(payload.get("content_hash_state", "")),
-        next_file_order=parse_scalar("nonnegative", payload.get("next_file_order")),
+        next_artifact_order=parse_scalar("nonnegative", payload.get("next_artifact_order")),
         next_sequence=parse_scalar("sequence256", payload.get("next_sequence")),
-        files_seen=parse_scalar("nonnegative", payload.get("files_seen")),
+        artifacts_seen=parse_scalar("nonnegative", payload.get("artifacts_seen")),
         bytes_seen=parse_scalar("nonnegative", payload.get("bytes_seen")),
-        pending_pack_files=tuple(pending),
+        pending_pack_artifacts=tuple(pending),
         closed=closed,
-        content_identity=(
-            str(payload["content_identity"])
-            if payload.get("content_identity") is not None
-            else None
-        ),
     )
     if incremental_volume_planner_checkpoint_bytes(checkpoint) != canonical_json_bytes(payload):
         raise ValueError("incremental planner checkpoint is not canonical")
     return checkpoint
 
 
-def _normalized_file(file: ArchiveFile) -> ArchiveFile:
-    path = validate_canonical_relpath(file.path)
-    if path.startswith(RESERVED_ARCHIVE_PREFIX):
-        raise ValueError("incremental planner file uses the reserved archive namespace")
-    if file.bytes < 0 or _SHA256_RE.fullmatch(file.sha256) is None:
-        raise ValueError("incremental planner file identity is invalid")
-    return ArchiveFile(path=path, bytes=file.bytes, sha256=file.sha256)
-
-
-def _content_identity_member_bytes(file: ArchiveFile) -> bytes:
-    # Match riverhog_protocol.manifest exactly.  The checkpoint encoding is private,
-    # while the completed digest remains the existing public collection identity.
-    return canonical_json_bytes(
-        {
-            "path": file.path,
-            "bytes": format_scalar("nonnegative", file.bytes),
-            "sha256": file.sha256,
-        }
-    )
+def _normalized_artifact(artifact: ArchiveArtifact) -> ArchiveArtifact:
+    artifact_id = str(ArtifactId(artifact.artifact_id))
+    if (
+        artifact.bytes < 0
+        or artifact.bytes >= 1 << 63
+        or _SHA256_RE.fullmatch(artifact.sha256) is None
+    ):
+        raise ValueError("incremental planner artifact identity is invalid")
+    return ArchiveArtifact(artifact_id=artifact_id, bytes=artifact.bytes, sha256=artifact.sha256)
 
 
 def _policy_payload(policy: CollectionVolumePolicy) -> dict[str, int | str]:
     return {
         "pack_source_bytes": format_scalar("nonnegative", policy.pack_source_bytes),
-        "pack_files": policy.pack_files,
+        "pack_artifacts": policy.pack_artifacts,
         "pack_member_bytes": format_scalar("nonnegative", policy.pack_member_bytes),
         "pack_part_plaintext_bytes": format_scalar("nonnegative", policy.pack_part_plaintext_bytes),
         "raw_volume_plaintext_bytes": format_scalar(
@@ -356,7 +305,7 @@ def _policy_payload(policy: CollectionVolumePolicy) -> dict[str, int | str]:
 def _parse_policy(value: object) -> CollectionVolumePolicy:
     expected = {
         "pack_source_bytes",
-        "pack_files",
+        "pack_artifacts",
         "pack_member_bytes",
         "pack_part_plaintext_bytes",
         "raw_volume_plaintext_bytes",
@@ -366,7 +315,7 @@ def _parse_policy(value: object) -> CollectionVolumePolicy:
         raise ValueError("incremental planner policy is invalid")
     return CollectionVolumePolicy(
         pack_source_bytes=_positive_scalar(value.get("pack_source_bytes"), "pack source bytes"),
-        pack_files=_positive(value.get("pack_files"), "pack files"),
+        pack_artifacts=_positive(value.get("pack_artifacts"), "pack artifacts"),
         pack_member_bytes=_positive_scalar(value.get("pack_member_bytes"), "pack member bytes"),
         pack_part_plaintext_bytes=_positive_scalar(
             value.get("pack_part_plaintext_bytes"), "pack part plaintext bytes"

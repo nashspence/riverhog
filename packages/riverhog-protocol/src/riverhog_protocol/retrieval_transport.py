@@ -6,23 +6,24 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from riverhog_protocol.paths import CanonicalRelPath, CollectionId
-from riverhog_protocol.transport import RETRIEVAL_FILE_BATCH_MAX
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.paths import CollectionId
+from riverhog_protocol.transport import RETRIEVAL_ARTIFACT_BATCH_MAX
 
 
 class RetrievalTransportDocument(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
 
-class RetrievalFileReferenceDocument(RetrievalTransportDocument):
+class RetrievalArtifactReferenceDocument(RetrievalTransportDocument):
     collection_id: CollectionId
-    path: CanonicalRelPath
+    artifact_id: ArtifactId
 
 
-class RetrievalFileReferenceSetDocument(RetrievalTransportDocument):
-    files: list[RetrievalFileReferenceDocument] = Field(
+class RetrievalArtifactReferenceSetDocument(RetrievalTransportDocument):
+    artifacts: list[RetrievalArtifactReferenceDocument] = Field(
         min_length=1,
-        max_length=RETRIEVAL_FILE_BATCH_MAX,
+        max_length=RETRIEVAL_ARTIFACT_BATCH_MAX,
         json_schema_extra={
             "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
@@ -34,16 +35,16 @@ class RetrievalFileReferenceSetDocument(RetrievalTransportDocument):
 
     @model_validator(mode="after")
     def validate_exact_reference_set(self) -> Self:
-        identities = [(item.collection_id, item.path) for item in self.files]
+        identities = [(item.collection_id, item.artifact_id) for item in self.artifacts]
         if len(identities) != len(set(identities)):
-            raise ValueError("retrieval file references must be unique")
-        canonical = sorted(identities, key=lambda item: (item[0], item[1].encode("utf-8")))
+            raise ValueError("retrieval artifact references must be unique")
+        canonical = sorted(identities)
         if identities != canonical:
-            raise ValueError("retrieval file references must be in canonical order")
+            raise ValueError("retrieval artifact references must be in canonical order")
         return self
 
 
 __all__ = [
-    "RetrievalFileReferenceDocument",
-    "RetrievalFileReferenceSetDocument",
+    "RetrievalArtifactReferenceDocument",
+    "RetrievalArtifactReferenceSetDocument",
 ]

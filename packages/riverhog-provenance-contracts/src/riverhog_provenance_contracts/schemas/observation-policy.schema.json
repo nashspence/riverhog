@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json",
+  "title": "Bounded-source observation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "hash_chunk_bytes": {
+      "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural"
+    },
+    "maximum_content_bytes": {
+      "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural"
+    },
+    "second_content_hash": {
+      "type": "boolean"
+    },
+    "include_sha512": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "hash_chunk_bytes",
+    "maximum_content_bytes",
+    "second_content_hash",
+    "include_sha512"
+  ]
+}

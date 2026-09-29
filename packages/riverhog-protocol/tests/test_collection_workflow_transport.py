@@ -28,11 +28,11 @@ def test_transport_acceptance_matches_canonical_root_and_artifact_contracts() ->
     root = {
         "collection_id": "17",
         "archive_root_sha256": "1" * 64,
-        "content_identity": "2" * 64,
+        "artifact_set_identity": "2" * 64,
     }
     artifact = {
         "collection": root,
-        "path": "camera/clip.mp4",
+        "artifact_id": "4" * 64,
         "bytes": "42",
         "sha256": "3" * 64,
     }
@@ -45,7 +45,7 @@ def test_transport_acceptance_matches_canonical_root_and_artifact_contracts() ->
         == CollectionArtifactIdentity.from_mapping(artifact).as_dict()
     )
 
-    invalid = {**artifact, "path": "camera/../clip.mp4"}
+    invalid = {**artifact, "artifact_id": "camera/../clip.mp4"}
     with pytest.raises(ValueError):
         CollectionArtifactIdentity.from_mapping(invalid)
     with pytest.raises(ValidationError):
@@ -153,7 +153,7 @@ def test_structural_workflow_relationships_match_their_published_schema() -> Non
     input_identity = {
         "collection_id": "17",
         "archive_root_sha256": "1" * 64,
-        "path": "camera/clip.mp4",
+        "artifact_id": "4" * 64,
     }
     transformed = {
         "input": input_identity,
@@ -164,9 +164,9 @@ def test_structural_workflow_relationships_match_their_published_schema() -> Non
     assert ArtifactDispositionDocument.model_validate(transformed).status == "transformed"
     disposition_validator.validate(transformed)
 
-    output = {"input": input_identity, "output_path": "archive/clip.mkv"}
-    assert ArtifactDispositionOutputDocument.model_validate(output).output_path == (
-        "archive/clip.mkv"
+    output = {"input": input_identity, "output_artifact_id": "5" * 64}
+    assert ArtifactDispositionOutputDocument.model_validate(output).output_artifact_id == (
+        "5" * 64
     )
 
     plan = {

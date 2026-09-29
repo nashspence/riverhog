@@ -21,11 +21,8 @@ from riverhog_canonical_json import (
     parse_scalar,
 )
 
-from riverhog_protocol.paths import (
-    CollectionId,
-    validate_canonical_relpath,
-    validate_collection_id,
-)
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.paths import CollectionId, validate_collection_id
 
 PRODUCER_EVIDENCE_FORMAT: Literal["riverhog-collection-producer/v1"] = (
     "riverhog-collection-producer/v1"
@@ -145,7 +142,7 @@ class CollectionRootIdentity:
 
     collection_id: CollectionId
     archive_root_sha256: str
-    content_identity: str
+    artifact_set_identity: str
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "collection_id", validate_collection_id(self.collection_id))
@@ -156,60 +153,60 @@ class CollectionRootIdentity:
         )
         object.__setattr__(
             self,
-            "content_identity",
-            _sha256(self.content_identity, "collection content identity"),
+            "artifact_set_identity",
+            _sha256(self.artifact_set_identity, "collection artifact-set identity"),
         )
 
     def as_dict(self) -> dict[str, object]:
         return {
             "collection_id": format_scalar("sequence63", self.collection_id),
             "archive_root_sha256": self.archive_root_sha256,
-            "content_identity": self.content_identity,
+            "artifact_set_identity": self.artifact_set_identity,
         }
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> CollectionRootIdentity:
-        if set(value) != {"collection_id", "archive_root_sha256", "content_identity"}:
+        if set(value) != {"collection_id", "archive_root_sha256", "artifact_set_identity"}:
             raise ValueError("collection root identity fields are invalid")
         return cls(
             collection_id=parse_scalar("sequence63", value.get("collection_id")),
             archive_root_sha256=str(value.get("archive_root_sha256") or ""),
-            content_identity=str(value.get("content_identity") or ""),
+            artifact_set_identity=str(value.get("artifact_set_identity") or ""),
         )
 
 
 @dataclass(frozen=True, order=True, slots=True)
 class CollectionArtifactIdentity:
-    """One exact immutable logical file within a finalized collection root."""
+    """One exact opaque member within a finalized collection root."""
 
     collection: CollectionRootIdentity
-    path: str
+    artifact_id: ArtifactId
     bytes: int
     sha256: str
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
+        object.__setattr__(self, "artifact_id", ArtifactId(self.artifact_id))
         object.__setattr__(self, "bytes", _uint(self.bytes, "artifact bytes"))
         object.__setattr__(self, "sha256", _sha256(self.sha256, "artifact identity"))
 
     def as_dict(self) -> dict[str, object]:
         return {
             "collection": self.collection.as_dict(),
-            "path": self.path,
+            "artifact_id": str(self.artifact_id),
             "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
         }
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> CollectionArtifactIdentity:
-        if set(value) != {"collection", "path", "bytes", "sha256"}:
+        if set(value) != {"collection", "artifact_id", "bytes", "sha256"}:
             raise ValueError("collection artifact identity fields are invalid")
         collection = value.get("collection")
         if not isinstance(collection, Mapping):
             raise ValueError("collection artifact identity has no collection root")
         return cls(
             collection=CollectionRootIdentity.from_mapping(collection),
-            path=str(value.get("path") or ""),
+            artifact_id=ArtifactId(str(value.get("artifact_id") or "")),
             bytes=parse_scalar("nonnegative", value.get("bytes")),
             sha256=str(value.get("sha256") or ""),
         )
@@ -680,7 +677,7 @@ class ArtifactDiscardApproval:
 class ArtifactDisposition:
     input_collection_id: CollectionId
     input_archive_root_sha256: str
-    input_path: str
+    input_artifact_id: ArtifactId
     status: DispositionState
     code: str | None = None
     message: str | None = None
@@ -699,7 +696,7 @@ class ArtifactDisposition:
             "input_archive_root_sha256",
             _sha256(self.input_archive_root_sha256, "input archive-root identity"),
         )
-        object.__setattr__(self, "input_path", validate_canonical_relpath(self.input_path))
+        object.__setattr__(self, "input_artifact_id", ArtifactId(self.input_artifact_id))
         state = str(self.status)
         if state not in _DISPOSITION_STATES:
             raise ValueError("artifact disposition state is invalid")
@@ -739,7 +736,7 @@ class ArtifactDisposition:
             "input": {
                 "collection_id": format_scalar("sequence63", self.input_collection_id),
                 "archive_root_sha256": self.input_archive_root_sha256,
-                "path": self.input_path,
+                "artifact_id": str(self.input_artifact_id),
             },
             "status": self.status,
         }
@@ -772,7 +769,7 @@ class ArtifactDisposition:
         if not isinstance(input_value, Mapping) or set(input_value) != {
             "collection_id",
             "archive_root_sha256",
-            "path",
+            "artifact_id",
         }:
             raise ValueError("artifact disposition input fields are invalid")
         failure = value.get("failure")
@@ -798,7 +795,7 @@ class ArtifactDisposition:
         return cls(
             input_collection_id=parse_scalar("sequence63", input_value.get("collection_id")),
             input_archive_root_sha256=str(input_value.get("archive_root_sha256") or ""),
-            input_path=str(input_value.get("path") or ""),
+            input_artifact_id=ArtifactId(str(input_value.get("artifact_id") or "")),
             status=cast(DispositionState, status),
             code=code,
             message=message,
@@ -820,8 +817,8 @@ class ArtifactDispositionOutput:
 
     input_collection_id: CollectionId
     input_archive_root_sha256: str
-    input_path: str
-    output_path: str
+    input_artifact_id: ArtifactId
+    output_artifact_id: ArtifactId
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -834,35 +831,35 @@ class ArtifactDispositionOutput:
             "input_archive_root_sha256",
             _sha256(self.input_archive_root_sha256, "input archive-root identity"),
         )
-        object.__setattr__(self, "input_path", validate_canonical_relpath(self.input_path))
-        object.__setattr__(self, "output_path", validate_canonical_relpath(self.output_path))
+        object.__setattr__(self, "input_artifact_id", ArtifactId(self.input_artifact_id))
+        object.__setattr__(self, "output_artifact_id", ArtifactId(self.output_artifact_id))
 
     def as_dict(self) -> dict[str, object]:
         return {
             "input": {
                 "collection_id": format_scalar("sequence63", self.input_collection_id),
                 "archive_root_sha256": self.input_archive_root_sha256,
-                "path": self.input_path,
+                "artifact_id": str(self.input_artifact_id),
             },
-            "output_path": self.output_path,
+            "output_artifact_id": str(self.output_artifact_id),
         }
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> ArtifactDispositionOutput:
-        if set(value) != {"input", "output_path"}:
+        if set(value) != {"input", "output_artifact_id"}:
             raise ValueError("artifact disposition output fields are invalid")
         input_value = value.get("input")
         if not isinstance(input_value, Mapping) or set(input_value) != {
             "collection_id",
             "archive_root_sha256",
-            "path",
+            "artifact_id",
         }:
             raise ValueError("artifact disposition output input fields are invalid")
         return cls(
             input_collection_id=parse_scalar("sequence63", input_value.get("collection_id")),
             input_archive_root_sha256=str(input_value.get("archive_root_sha256") or ""),
-            input_path=str(input_value.get("path") or ""),
-            output_path=str(value.get("output_path") or ""),
+            input_artifact_id=ArtifactId(str(input_value.get("artifact_id") or "")),
+            output_artifact_id=ArtifactId(str(value.get("output_artifact_id") or "")),
         )
 
 

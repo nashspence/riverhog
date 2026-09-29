@@ -5,7 +5,7 @@
   "title": "Riverhog v1 immutable collection archive root",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "archive_generation", "storage_profile", "tree", "volume_sequence"],
+  "required": ["format", "archive_generation", "storage_profile", "artifact_set", "volume_sequence", "provenance"],
   "properties": {
     "format": {"const": "collection-archive-manifest/v1"},
     "archive_generation": {"$ref": "#/$defs/sha256"},
@@ -20,7 +20,7 @@
         "selective_read": {"const": "age-chunk-range/v1"}
       }
     },
-    "tree": {"$ref": "#/$defs/tree"},
+    "artifact_set": {"$ref": "#/$defs/artifact_set"},
     "volume_sequence": {
       "type": "object",
       "additionalProperties": false,
@@ -35,12 +35,12 @@
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "nonnegative_count": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])"},
     "positive_count": {"type": "string", "pattern": "^[1-9][0-9]*(?![\\s\\S])"},
-    "tree": {
+    "artifact_set": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["files", "bytes", "sha256"],
+      "required": ["count", "bytes", "sha256"],
       "properties": {
-        "files": {"$ref": "#/$defs/positive_count"},
+        "count": {"$ref": "#/$defs/positive_count"},
         "bytes": {"$ref": "#/$defs/nonnegative_count"},
         "sha256": {"$ref": "#/$defs/sha256"}
       }

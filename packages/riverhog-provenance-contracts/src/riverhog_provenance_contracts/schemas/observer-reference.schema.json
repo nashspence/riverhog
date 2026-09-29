@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/profiles/observer-reference.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "provider",
+    "observer_id",
+    "contract"
+  ],
+  "properties": {
+    "format": {
+      "const": "riverhog-provenance-observer-reference/v1"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observer_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "distribution": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "provider",
+        "contract_id",
+        "contract_sha256"
+      ],
+      "properties": {
+        "format": {
+          "const": "riverhog-provenance-contract-reference/v1"
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        }
+      }
+    }
+  },
+  "dependentRequired": {
+    "distribution": [
+      "version"
+    ],
+    "version": [
+      "distribution"
+    ]
+  }
+}

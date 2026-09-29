@@ -7,7 +7,10 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from dataclasses import replace
 
 from riverhog_age import CHUNK_SIZE
-from riverhog_archive_contracts import ARCHIVE_PACK_FILES_MAX
+from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
+from riverhog_canonical_json import format_scalar
+from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdentityDocument
+from riverhog_protocol.manifest import artifact_set_identity
 from riverhog_protocol.pack_ingress import (
     PackUnitDescriptor,
     PackUnitPayloadReader,
@@ -15,11 +18,10 @@ from riverhog_protocol.pack_ingress import (
     canonical_json_bytes,
     pack_upload_plan_sha256,
 )
-from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_protocol.transport import COLLECTION_UPLOAD_UNIT_SOURCE_MAX
 
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     PackMemberPlan,
     PackPaddingPlan,
     PackUploadUnitPlan,
@@ -30,9 +32,8 @@ PACK_INDEX_FORMAT = "riverhog-pack-index/v1"
 PACK_VOLUME_PLAN_FORMAT = "pack-volume-plan/v1"
 PACK_INDEX_PATH = ".riverhog/pack-index.json"
 PACK_PADDING_PREFIX = ".riverhog/padding/"
-RESERVED_ARCHIVE_PREFIX = ".riverhog/"
 DEFAULT_PACK_SOURCE_BYTES = 32 * 1024 * 1024
-DEFAULT_PACK_FILES = ARCHIVE_PACK_FILES_MAX
+DEFAULT_PACK_ARTIFACTS = ARCHIVE_PACK_ARTIFACTS_MAX
 DEFAULT_PACK_MEMBER_BYTES = 16 * 1024 * 1024
 DEFAULT_PART_PLAINTEXT_BYTES = 64 * 1024 * 1024
 _TAR_BLOCK_SIZE = 512
@@ -40,26 +41,32 @@ _TAR_USTAR_SIZE_MAX = int("7" * 11, 8)
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
+def _member_storage_path(artifact_id: str) -> str:
+    """Physical tar placement, derived from opaque identity only."""
+
+    return f"artifacts/{ArtifactId(artifact_id)}"
+
+
 def plan_pack_volumes(
-    files: Sequence[ArchiveFile],
+    artifacts: Sequence[ArchiveArtifact],
     *,
     source_bytes_per_volume: int = DEFAULT_PACK_SOURCE_BYTES,
-    files_per_volume: int = DEFAULT_PACK_FILES,
+    artifacts_per_volume: int = DEFAULT_PACK_ARTIFACTS,
     max_member_bytes: int = DEFAULT_PACK_MEMBER_BYTES,
     part_plaintext_bytes: int = DEFAULT_PART_PLAINTEXT_BYTES,
 ) -> tuple[PackVolumePlan, ...]:
-    normalized = _normalized_files(files, max_member_bytes=max_member_bytes)
+    normalized = _normalized_artifacts(artifacts, max_member_bytes=max_member_bytes)
     if source_bytes_per_volume <= 0:
         raise ValueError("pack source byte target must be positive")
-    if files_per_volume <= 0:
-        raise ValueError("pack file limit must be positive")
+    if artifacts_per_volume <= 0:
+        raise ValueError("pack artifact limit must be positive")
 
     volumes: list[PackVolumePlan] = []
-    pending: list[ArchiveFile] = []
+    pending: list[ArchiveArtifact] = []
     pending_bytes = 0
     for current in normalized:
         if pending and (
-            len(pending) >= files_per_volume
+            len(pending) >= artifacts_per_volume
             or pending_bytes + current.bytes > source_bytes_per_volume
         ):
             volumes.append(
@@ -87,7 +94,7 @@ def plan_pack_volumes(
 
 
 def plan_pack_volume(
-    files: Sequence[ArchiveFile],
+    artifacts: Sequence[ArchiveArtifact],
     *,
     sequence: int,
     max_member_bytes: int = DEFAULT_PACK_MEMBER_BYTES,
@@ -95,9 +102,9 @@ def plan_pack_volume(
 ) -> PackVolumePlan:
     """Plan the canonical sealed v1 pack layout for finalized members."""
 
-    normalized = _normalized_files(files, max_member_bytes=max_member_bytes)
-    if len(normalized) > ARCHIVE_PACK_FILES_MAX:
-        raise ValueError("pack files exceed the archive-volume limit")
+    normalized = _normalized_artifacts(artifacts, max_member_bytes=max_member_bytes)
+    if len(normalized) > ARCHIVE_PACK_ARTIFACTS_MAX:
+        raise ValueError("pack artifacts exceed the archive-volume limit")
     if sequence < 0:
         raise ValueError("pack sequence must be non-negative")
     if part_plaintext_bytes < 1:
@@ -110,19 +117,19 @@ def plan_pack_volume(
     volume_id = f"pack-{sequence:064x}"
     members: list[PackMemberPlan] = []
     units: list[PackUploadUnitPlan] = []
-    unit_sources: list[ArchiveFile] = []
+    unit_sources: list[ArchiveArtifact] = []
     unit_start = 0
     cursor = 0
     unit_index = 0
 
-    for file_index, current in enumerate(normalized):
-        header = _tar_header(current.path, current.bytes)
+    for artifact_index, current in enumerate(normalized):
+        header = _tar_header(_member_storage_path(current.artifact_id), current.bytes)
         header_offset = cursor
         data_offset = header_offset + len(header)
         end_offset = data_offset + current.bytes + _tar_padding(current.bytes)
         members.append(
             PackMemberPlan(
-                path=current.path,
+                artifact_id=current.artifact_id,
                 bytes=current.bytes,
                 sha256=current.sha256,
                 unit=unit_index,
@@ -134,8 +141,8 @@ def plan_pack_volume(
         cursor = end_offset
         unit_sources.append(current)
 
-        has_more_files = file_index < len(normalized) - 1
-        if has_more_files and (
+        has_more_artifacts = artifact_index < len(normalized) - 1
+        if has_more_artifacts and (
             cursor - unit_start >= part_plaintext_bytes
             or len(unit_sources) >= COLLECTION_UPLOAD_UNIT_SOURCE_MAX
         ):
@@ -213,8 +220,8 @@ def pack_volume_plan_payload(plan: PackVolumePlan) -> dict[str, object]:
         "plaintext_bytes": plan.plaintext_bytes,
         "index_sha256": plan.index_sha256,
         "plan_sha256": plan.plan_sha256,
-        "files": [
-            {"path": current.path, "bytes": current.bytes, "sha256": current.sha256}
+        "artifacts": [
+            {"artifact_id": current.artifact_id, "bytes": current.bytes, "sha256": current.sha256}
             for current in plan.members
         ],
     }
@@ -244,7 +251,7 @@ def parse_pack_volume_plan(content: bytes | str) -> PackVolumePlan:
         "plaintext_bytes",
         "index_sha256",
         "plan_sha256",
-        "files",
+        "artifacts",
     }
     if set(payload) != expected_keys:
         raise ValueError("pack volume plan fields are invalid")
@@ -258,22 +265,22 @@ def parse_pack_volume_plan(content: bytes | str) -> PackVolumePlan:
     part_plaintext_bytes = _canonical_positive_int(
         payload.get("part_plaintext_bytes"), label="pack part plaintext bytes"
     )
-    raw_files = payload.get("files")
-    if not isinstance(raw_files, list) or not raw_files:
-        raise ValueError("pack volume plan files must be a non-empty list")
-    files: list[ArchiveFile] = []
-    for raw in raw_files:
-        if not isinstance(raw, dict) or set(raw) != {"path", "bytes", "sha256"}:
-            raise ValueError("pack volume plan file is invalid")
-        files.append(
-            ArchiveFile(
-                path=str(raw.get("path", "")),
-                bytes=_canonical_nonnegative_int(raw.get("bytes"), label="file bytes"),
+    raw_artifacts = payload.get("artifacts")
+    if not isinstance(raw_artifacts, list) or not raw_artifacts:
+        raise ValueError("pack volume plan artifacts must be a non-empty list")
+    artifacts: list[ArchiveArtifact] = []
+    for raw in raw_artifacts:
+        if not isinstance(raw, dict) or set(raw) != {"artifact_id", "bytes", "sha256"}:
+            raise ValueError("pack volume plan artifact is invalid")
+        artifacts.append(
+            ArchiveArtifact(
+                artifact_id=str(raw.get("artifact_id", "")),
+                bytes=_canonical_nonnegative_int(raw.get("bytes"), label="artifact bytes"),
                 sha256=str(raw.get("sha256", "")),
             )
         )
     rebuilt = plan_pack_volume(
-        files,
+        artifacts,
         sequence=sequence,
         max_member_bytes=max_member_bytes,
         part_plaintext_bytes=part_plaintext_bytes,
@@ -298,7 +305,11 @@ def pack_unit_descriptors(plan: PackVolumePlan) -> tuple[PackUnitDescriptor, ...
             plaintext_bytes=current.plaintext_bytes,
             final=current.final,
             sources=tuple(
-                PackUnitSource(path=source.path, bytes=source.bytes, sha256=source.sha256)
+                PackUnitSource(
+                    artifact_id=ArtifactId(source.artifact_id),
+                    bytes=source.bytes,
+                    sha256=source.sha256,
+                )
                 for source in current.sources
             ),
             plan_sha256=plan.plan_sha256,
@@ -315,7 +326,7 @@ def iter_render_pack_upload_unit(
     """Yield one deterministic tar unit while validating every source stream."""
 
     unit = _require_unit(plan, unit_number)
-    members = {current.path: current for current in plan.members}
+    members = {current.artifact_id: current for current in plan.members}
     absolute_cursor = unit.plaintext_start
     emitted = 0
 
@@ -326,29 +337,29 @@ def iter_render_pack_upload_unit(
             yield data
 
     for source in unit.sources:
-        member = members[source.path]
+        member = members[source.artifact_id]
         if member.unit != unit.unit or member.header_offset != absolute_cursor:
             raise RuntimeError("pack member offsets do not match their upload unit")
-        header = _tar_header(source.path, source.bytes)
+        header = _tar_header(_member_storage_path(source.artifact_id), source.bytes)
         yield from emit(header)
         absolute_cursor += len(header)
         if absolute_cursor != member.data_offset:
             raise RuntimeError("pack member data offset is inconsistent")
         byte_count = 0
         digest = hashlib.sha256()
-        for chunk in read_source_chunks(source.path):
+        for chunk in read_source_chunks(source.artifact_id):
             data = bytes(chunk)
             if not data:
                 continue
             byte_count += len(data)
             if byte_count > source.bytes:
-                raise ValueError(f"pack source is longer than declared: {source.path}")
+                raise ValueError(f"pack source is longer than declared: {source.artifact_id}")
             digest.update(data)
             yield from emit(data)
         if byte_count != source.bytes:
-            raise ValueError(f"pack source byte count mismatch: {source.path}")
+            raise ValueError(f"pack source byte count mismatch: {source.artifact_id}")
         if digest.hexdigest() != source.sha256:
-            raise ValueError(f"pack source sha256 mismatch: {source.path}")
+            raise ValueError(f"pack source sha256 mismatch: {source.artifact_id}")
         absolute_cursor += source.bytes
         padding = _tar_padding(source.bytes)
         if padding:
@@ -394,39 +405,37 @@ def iter_render_pack_upload_unit_payload(
 ) -> Iterator[bytes]:
     descriptor = pack_unit_descriptors(plan)[unit_number]
     reader = PackUnitPayloadReader(descriptor, payload_chunks)
-    source_by_path = {source.path: source for source in descriptor.sources}
+    source_by_id = {source.artifact_id: source for source in descriptor.sources}
 
-    def read(path: str) -> Iterator[bytes]:
-        return reader.iter_source(source_by_path[path])
+    def read(artifact_id: str) -> Iterator[bytes]:
+        return reader.iter_source(source_by_id[ArtifactId(artifact_id)])
 
     yield from iter_render_pack_upload_unit(plan, unit_number, read)
     reader.finish()
 
 
-def _normalized_files(
-    files: Sequence[ArchiveFile],
+def _normalized_artifacts(
+    artifacts: Sequence[ArchiveArtifact],
     *,
     max_member_bytes: int,
-) -> tuple[ArchiveFile, ...]:
+) -> tuple[ArchiveArtifact, ...]:
     if max_member_bytes <= 0:
         raise ValueError("pack member byte limit must be positive")
-    out: list[ArchiveFile] = []
+    out: list[ArchiveArtifact] = []
     seen: set[str] = set()
-    for current in files:
-        path = validate_canonical_relpath(current.path)
-        if path.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError(f"collection path uses reserved archive namespace: {path}")
-        if path in seen:
-            raise ValueError(f"duplicate collection archive path: {path}")
+    for current in artifacts:
+        artifact_id = str(ArtifactId(current.artifact_id))
+        if artifact_id in seen:
+            raise ValueError(f"duplicate collection artifact ID: {artifact_id}")
         if current.bytes < 0 or current.bytes >= max_member_bytes:
-            raise ValueError(f"file is outside the pack member size policy: {path}")
+            raise ValueError(f"artifact is outside the pack member size policy: {artifact_id}")
         if _SHA256_RE.fullmatch(current.sha256) is None:
-            raise ValueError(f"collection archive file sha256 is invalid: {path}")
-        seen.add(path)
-        out.append(replace(current, path=path))
+            raise ValueError(f"collection archive artifact sha256 is invalid: {artifact_id}")
+        seen.add(artifact_id)
+        out.append(replace(current, artifact_id=artifact_id))
     if not out:
-        raise ValueError("pack volume requires at least one file")
-    return tuple(sorted(out, key=lambda current: current.path))
+        raise ValueError("pack volume requires at least one artifact")
+    return tuple(sorted(out, key=lambda current: current.artifact_id))
 
 
 def _pack_index_bytes(
@@ -435,15 +444,23 @@ def _pack_index_bytes(
     sequence: int,
     members: Sequence[PackMemberPlan],
 ) -> bytes:
-    tree_digest = hashlib.sha256()
+    members_identity = artifact_set_identity(
+        ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": current.artifact_id,
+                "bytes": format_scalar("nonnegative", current.bytes),
+                "sha256": current.sha256,
+            }
+        )
+        for current in members
+    )
     total_bytes = 0
     rows: list[dict[str, object]] = []
     for current in members:
         total_bytes += current.bytes
-        tree_digest.update(f"{current.path}\t{current.bytes}\t{current.sha256}\n".encode())
         rows.append(
             {
-                "path": current.path,
+                "artifact_id": current.artifact_id,
                 "bytes": current.bytes,
                 "sha256": current.sha256,
                 "unit": current.unit,
@@ -455,12 +472,12 @@ def _pack_index_bytes(
         {
             "format": PACK_INDEX_FORMAT,
             "volume": {"id": volume_id, "sequence": sequence},
-            "tree": {
-                "files": len(members),
+            "artifact_set": {
+                "count": len(members),
                 "bytes": total_bytes,
-                "sha256": tree_digest.hexdigest(),
+                "sha256": members_identity,
             },
-            "files": rows,
+            "artifacts": rows,
         }
     )
 
@@ -503,7 +520,7 @@ def _unit_row(unit: PackUploadUnitPlan) -> dict[str, object]:
         "plaintext_bytes": unit.plaintext_bytes,
         "final": unit.final,
         "sources": [
-            {"path": source.path, "bytes": source.bytes, "sha256": source.sha256}
+            {"artifact_id": source.artifact_id, "bytes": source.bytes, "sha256": source.sha256}
             for source in unit.sources
         ],
     }

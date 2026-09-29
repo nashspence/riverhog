@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "riverhog-provenance-bindings/v1"
+    },
+    "delivery_context_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "associations": {
+      "type": "array",
+      "items": {
+        "$ref": "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/deliveryAssociation"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "format",
+    "delivery_context_id",
+    "associations"
+  ],
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\\s\\S])"
+    }
+  }
+}

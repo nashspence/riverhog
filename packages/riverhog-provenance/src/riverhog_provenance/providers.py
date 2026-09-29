@@ -10,19 +10,22 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 from riverhog_provenance_contracts import (
+    PROFILE,
     PROVENANCE_CONTRACT_ENTRY_POINT_GROUP,
     SHA256_PATTERN,
+    ContractCatalog,
     ProvenanceContractBinding,
+    profile_reference,
 )
 
-from .interface import FileStateObserver
-from .model import FileStateObservationRequest, FileStateObservationResult
-from .schema import compile_observer_contract_validator
+from .graph import validate_graph
+from .interface import ObservationSource, StateObserver
+from .model import ObservationRequest, ObservationResult
 
 PROVENANCE_OBSERVER_ENTRY_POINT_GROUP = "riverhog.provenance-observers"
 PROVENANCE_OBSERVER_BINDING_FORMAT = "riverhog-provenance-observer-binding/v1"
-PROVENANCE_OBSERVER_REFERENCE_FORMAT = "riverhog-provenance-observer-some-implementations/v1"
-type FileStateObserverFactory = Callable[[], FileStateObserver]
+PROVENANCE_OBSERVER_REFERENCE_FORMAT = "riverhog-provenance-observer-reference/v1"
+type StateObserverFactory = Callable[[], StateObserver]
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,7 +36,7 @@ class ProvenanceObserverBinding:
     contract_provider: str
     contract_id: str
     contract_sha256: str
-    factory: FileStateObserverFactory
+    factory: StateObserverFactory
     format: str = PROVENANCE_OBSERVER_BINDING_FORMAT
 
     def __post_init__(self) -> None:
@@ -80,9 +83,9 @@ class ResolvedProvenanceObserver:
     contract: ProvenanceContractBinding
     _validator: Callable[[Mapping[str, Any]], None] = field(repr=False)
 
-    def create(self) -> FileStateObserver:
+    def create(self) -> StateObserver:
         observer = self.binding.factory()
-        if not isinstance(observer, FileStateObserver):
+        if not isinstance(observer, StateObserver):
             raise TypeError(f"provenance observer factory returned an invalid object: {self.name}")
         return _ContractValidatedObserver(
             observer,
@@ -121,7 +124,7 @@ class ResolvedProvenanceObserver:
 class _ContractValidatedObserver:
     def __init__(
         self,
-        observer: FileStateObserver,
+        observer: StateObserver,
         *,
         observer_reference: Mapping[str, object],
         validator: Callable[[Mapping[str, Any]], None],
@@ -129,26 +132,25 @@ class _ContractValidatedObserver:
         self._observer = observer
         self._observer_reference = dict(observer_reference)
         self._validator = validator
-        self.platform_family = observer.platform_family
 
-    def observe(self, request: FileStateObservationRequest) -> FileStateObservationResult:
-        result = self._observer.observe(request)
-        if not isinstance(result, FileStateObservationResult):
+    def observe(
+        self, source: ObservationSource, request: ObservationRequest | None = None
+    ) -> ObservationResult:
+        result = self._observer.observe(source, request)
+        if not isinstance(result, ObservationResult):
             raise TypeError("provenance observer returned an invalid observation result")
-        capture = dict(result.capture)
-        detail = dict(capture.get("detail", {}))
-        detail["provenance_observer"] = dict(self._observer_reference)
-        capture["detail"] = detail
-        accepted = FileStateObservationResult(
-            file_state=result.file_state,
-            capture=capture,
-            environment=result.environment,
-            agents=result.agents,
-            payload_bindings=result.payload_bindings,
-            extensions=result.extensions,
+        graph = result.graph_fragment()
+        capture = next(row for row in graph["activities"] if row["id"] == result.capture_id)
+        capture.setdefault("details", []).append(
+            {
+                "profile": profile_reference(PROFILE + "/profiles/observer-reference.schema.json"),
+                "data": dict(self._observer_reference),
+            }
         )
-        self._validator(accepted.graph_fragment())
-        return accepted
+        self._validator(graph)
+        return ObservationResult.from_graph(
+            graph, observation_id=result.observation_id, observer_agent_id=result.observer_agent_id
+        )
 
 
 def _entry_points(group: str) -> tuple[importlib.metadata.EntryPoint, ...]:
@@ -212,17 +214,22 @@ def resolve_provenance_observer(name: str) -> ResolvedProvenanceObserver:
         raise ValueError("provenance observer and contract provider identities disagree")
     for schema in contract.schemas.values():
         Draft202012Validator.check_schema(schema)
+    catalog = ContractCatalog((contract,))
+
+    def validator(graph: Mapping[str, Any]) -> None:
+        validate_graph(graph, catalog=catalog)
+
     return ResolvedProvenanceObserver(
         name=name,
         metadata=_metadata(observer_entry_point),
         binding=binding,
         contract=contract,
-        _validator=compile_observer_contract_validator(contract.schemas),
+        _validator=validator,
     )
 
 
 __all__ = [
-    "FileStateObserverFactory",
+    "StateObserverFactory",
     "PROVENANCE_OBSERVER_BINDING_FORMAT",
     "PROVENANCE_OBSERVER_ENTRY_POINT_GROUP",
     "PROVENANCE_OBSERVER_REFERENCE_FORMAT",

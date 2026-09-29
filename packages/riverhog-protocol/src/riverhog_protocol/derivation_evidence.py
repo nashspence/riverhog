@@ -44,7 +44,7 @@ def verify_derivation_evidence(
             disposition = ArtifactDisposition.from_mapping(
                 disposition_document.model_dump(mode="json", exclude_none=True)
             )
-            disposition_key = (disposition.input_collection_id, disposition.input_path)
+            disposition_key = (disposition.input_collection_id, disposition.input_artifact_id)
             if last_disposition is not None and disposition_key <= last_disposition:
                 raise ValueError("derivation dispositions are not canonically ordered")
             disposition_digest.update(canonical_json_bytes(disposition.as_dict()) + b"\n")
@@ -57,7 +57,7 @@ def verify_derivation_evidence(
     output_edge_count = 0
     output_artifact_count = 0
     last_output: tuple[str, int, str] | None = None
-    last_output_path: str | None = None
+    last_output_artifact_id: str | None = None
     output_terminal = False
     for content in output_pages:
         if output_terminal:
@@ -69,12 +69,16 @@ def verify_derivation_evidence(
             raise ValueError("derivation output evidence is not contiguous")
         for output_document in output_page.outputs:
             output = ArtifactDispositionOutput.from_mapping(output_document.model_dump(mode="json"))
-            output_key = (output.output_path, output.input_collection_id, output.input_path)
+            output_key = (
+                output.output_artifact_id,
+                output.input_collection_id,
+                output.input_artifact_id,
+            )
             if last_output is not None and output_key <= last_output:
                 raise ValueError("derivation output edges are not canonically ordered")
-            if output.output_path != last_output_path:
+            if output.output_artifact_id != last_output_artifact_id:
                 output_artifact_count += 1
-                last_output_path = output.output_path
+                last_output_artifact_id = output.output_artifact_id
             output_digest.update(canonical_json_bytes(output.as_dict()) + b"\n")
             last_output = output_key
             output_edge_count += 1

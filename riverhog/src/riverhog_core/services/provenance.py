@@ -24,7 +24,7 @@ from riverhog_provenance import (
     PROVENANCE_BINDING_SEGMENT_FILES_MAX,
     PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    ArchiveFileProvenanceRecord,
+    ArchiveArtifactProvenanceRecord,
     ProvenancePayloadIdentity,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
@@ -56,8 +56,8 @@ from riverhog_core.artifact_access import artifact_scope_filter, require_artifac
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
-    CollectionFileProvenanceRecord,
-    CollectionFileRecord,
+    CollectionArtifactProvenanceRecord,
+    CollectionArtifactRecord,
     CollectionProvenanceEntityRecord,
     CollectionProvenanceExternalStateReferenceRecord,
     CollectionProvenanceJournalAgentRecord,
@@ -683,16 +683,16 @@ def _advance_verification_metadata(
     files = int(
         session.scalar(
             select(func.count())
-            .select_from(CollectionFileRecord)
-            .where(CollectionFileRecord.collection_id == collection_id)
+            .select_from(CollectionArtifactRecord)
+            .where(CollectionArtifactRecord.collection_id == collection_id)
         )
         or 0
     )
     bindings = int(
         session.scalar(
             select(func.count())
-            .select_from(CollectionFileProvenanceRecord)
-            .where(CollectionFileProvenanceRecord.collection_id == collection_id)
+            .select_from(CollectionArtifactProvenanceRecord)
+            .where(CollectionArtifactProvenanceRecord.collection_id == collection_id)
         )
         or 0
     )
@@ -721,17 +721,17 @@ def _advance_verification_metadata(
         or 0
     )
     mismatch = session.scalar(
-        select(CollectionFileRecord.path)
+        select(CollectionArtifactRecord.path)
         .outerjoin(
-            CollectionFileProvenanceRecord,
-            (CollectionFileProvenanceRecord.collection_id == CollectionFileRecord.collection_id)
-            & (CollectionFileProvenanceRecord.path == CollectionFileRecord.path),
+            CollectionArtifactProvenanceRecord,
+            (CollectionArtifactProvenanceRecord.collection_id == CollectionArtifactRecord.collection_id)
+            & (CollectionArtifactProvenanceRecord.path == CollectionArtifactRecord.path),
         )
         .where(
-            CollectionFileRecord.collection_id == collection_id,
-            CollectionFileRecord.provenance_status
+            CollectionArtifactRecord.collection_id == collection_id,
+            CollectionArtifactRecord.provenance_status
             != func.coalesce(
-                CollectionFileProvenanceRecord.status,
+                CollectionArtifactProvenanceRecord.status,
                 "omitted" if collection.provenance_mode == "omitted" else "missing",
             ),
         )
@@ -750,10 +750,10 @@ def _advance_verification_metadata(
     }
     if collection.provenance_mode == "omitted":
         nonomitted = session.scalar(
-            select(CollectionFileProvenanceRecord.path)
+            select(CollectionArtifactProvenanceRecord.path)
             .where(
-                CollectionFileProvenanceRecord.collection_id == collection_id,
-                CollectionFileProvenanceRecord.status != "omitted",
+                CollectionArtifactProvenanceRecord.collection_id == collection_id,
+                CollectionArtifactProvenanceRecord.status != "omitted",
             )
             .limit(1)
         )
@@ -782,21 +782,21 @@ def _verification_binding_rows(
     *,
     after_path: str | None,
     limit: int,
-) -> list[tuple[CollectionFileRecord, CollectionFileProvenanceRecord]]:
+) -> list[tuple[CollectionArtifactRecord, CollectionArtifactProvenanceRecord]]:
     statement = (
-        select(CollectionFileRecord, CollectionFileProvenanceRecord)
+        select(CollectionArtifactRecord, CollectionArtifactProvenanceRecord)
         .join(
-            CollectionFileProvenanceRecord,
-            (CollectionFileProvenanceRecord.collection_id == CollectionFileRecord.collection_id)
-            & (CollectionFileProvenanceRecord.path == CollectionFileRecord.path),
+            CollectionArtifactProvenanceRecord,
+            (CollectionArtifactProvenanceRecord.collection_id == CollectionArtifactRecord.collection_id)
+            & (CollectionArtifactProvenanceRecord.path == CollectionArtifactRecord.path),
         )
-        .where(CollectionFileRecord.collection_id == collection_id)
-        .order_by(CollectionFileRecord.path_sort_key)
+        .where(CollectionArtifactRecord.collection_id == collection_id)
+        .order_by(CollectionArtifactRecord.path_sort_key)
         .limit(limit)
     )
     if after_path is not None:
         statement = statement.where(
-            CollectionFileRecord.path_sort_key > relpath_sort_key(after_path)
+            CollectionArtifactRecord.path_sort_key > relpath_sort_key(after_path)
         )
     return list(session.execute(statement).tuples())
 
@@ -838,10 +838,10 @@ def _advance_verification_tree(
 
 
 def _file_binding(
-    file: CollectionFileRecord,
-    binding: CollectionFileProvenanceRecord,
-) -> ArchiveFileProvenanceRecord:
-    return ArchiveFileProvenanceRecord(
+    file: CollectionArtifactRecord,
+    binding: CollectionArtifactProvenanceRecord,
+) -> ArchiveArtifactProvenanceRecord:
+    return ArchiveArtifactProvenanceRecord(
         path=file.path,
         bytes=file.bytes,
         sha256=file.sha256,
@@ -1527,18 +1527,18 @@ def _advance_verification_reachability(
     if stage == "seed":
         after = checkpoint.get("reachability_after_journal_id")
         seed_statement = (
-            select(CollectionFileProvenanceRecord.journal_id)
+            select(CollectionArtifactProvenanceRecord.journal_id)
             .where(
-                CollectionFileProvenanceRecord.collection_id == record.collection_id,
-                CollectionFileProvenanceRecord.status == "captured",
-                CollectionFileProvenanceRecord.journal_id.is_not(None),
+                CollectionArtifactProvenanceRecord.collection_id == record.collection_id,
+                CollectionArtifactProvenanceRecord.status == "captured",
+                CollectionArtifactProvenanceRecord.journal_id.is_not(None),
             )
             .distinct()
-            .order_by(CollectionFileProvenanceRecord.journal_id)
+            .order_by(CollectionArtifactProvenanceRecord.journal_id)
             .limit(512)
         )
         if isinstance(after, str):
-            seed_statement = seed_statement.where(CollectionFileProvenanceRecord.journal_id > after)
+            seed_statement = seed_statement.where(CollectionArtifactProvenanceRecord.journal_id > after)
         journal_ids = [str(value) for value in session.scalars(seed_statement)]
         if journal_ids:
             for journal_id in journal_ids:
@@ -1762,7 +1762,7 @@ def _binding_volume_document(
     tree_sha256: str,
     sequence: int,
     first_file_order: int,
-    bindings: list[ArchiveFileProvenanceRecord],
+    bindings: list[ArchiveArtifactProvenanceRecord],
 ) -> ProvenanceVolumeDocument:
     payload = binding_segment_bytes(
         first_file_order=first_file_order,
@@ -1783,7 +1783,7 @@ def _binding_volume_document(
     )
 
 
-def _binding_mapping(binding: ArchiveFileProvenanceRecord) -> dict[str, object]:
+def _binding_mapping(binding: ArchiveArtifactProvenanceRecord) -> dict[str, object]:
     value: dict[str, object] = {
         "path": binding.path,
         "bytes": binding.bytes,
@@ -1903,42 +1903,42 @@ def _provenance_file_statement(
     order: str,
 ) -> tuple[Any, tuple[Any, ...]]:
     joined = (
-        select(CollectionFileRecord, CollectionFileProvenanceRecord)
+        select(CollectionArtifactRecord, CollectionArtifactProvenanceRecord)
         .outerjoin(
-            CollectionFileProvenanceRecord,
-            (CollectionFileProvenanceRecord.collection_id == CollectionFileRecord.collection_id)
-            & (CollectionFileProvenanceRecord.path == CollectionFileRecord.path),
+            CollectionArtifactProvenanceRecord,
+            (CollectionArtifactProvenanceRecord.collection_id == CollectionArtifactRecord.collection_id)
+            & (CollectionArtifactProvenanceRecord.path == CollectionArtifactRecord.path),
         )
-        .where(CollectionFileRecord.collection_id == collection_id)
+        .where(CollectionArtifactRecord.collection_id == collection_id)
     )
     joined = joined.where(
         artifact_scope_filter(
-            CollectionFileRecord.collection_id,
-            CollectionFileRecord.path,
+            CollectionArtifactRecord.collection_id,
+            CollectionArtifactRecord.path,
             principal,
         )
     )
     if q:
         joined = joined.where(
-            CollectionFileRecord.path_search_text.like(
+            CollectionArtifactRecord.path_search_text.like(
                 _like_pattern(text_search_key(q)),
                 escape="\\",
             )
         )
-    effective_status = CollectionFileRecord.provenance_status
+    effective_status = CollectionArtifactRecord.provenance_status
     if status is not None:
         joined = joined.where(effective_status == status)
     sort_column = {
-        "path": CollectionFileRecord.path_sort_key,
-        "bytes": CollectionFileRecord.bytes,
+        "path": CollectionArtifactRecord.path_sort_key,
+        "bytes": CollectionArtifactRecord.bytes,
         "status": effective_status,
     }[sort]
-    key_columns = tuple(dict.fromkeys((sort_column, CollectionFileRecord.path_sort_key)))
+    key_columns = tuple(dict.fromkeys((sort_column, CollectionArtifactRecord.path_sort_key)))
     return joined, key_columns
 
 
 def _provenance_file_position(
-    file: CollectionFileRecord,
+    file: CollectionArtifactRecord,
     *,
     sort: str,
 ) -> tuple[BrowseScalar, ...]:
@@ -1978,15 +1978,15 @@ def _shown_file(
     collection = _authorized_collection(session, collection_id, principal)
     require_artifact_scope(session, principal, collection_id, path)
     row = session.execute(
-        select(CollectionFileRecord, CollectionFileProvenanceRecord)
+        select(CollectionArtifactRecord, CollectionArtifactProvenanceRecord)
         .outerjoin(
-            CollectionFileProvenanceRecord,
-            (CollectionFileProvenanceRecord.collection_id == CollectionFileRecord.collection_id)
-            & (CollectionFileProvenanceRecord.path == CollectionFileRecord.path),
+            CollectionArtifactProvenanceRecord,
+            (CollectionArtifactProvenanceRecord.collection_id == CollectionArtifactRecord.collection_id)
+            & (CollectionArtifactProvenanceRecord.path == CollectionArtifactRecord.path),
         )
         .where(
-            CollectionFileRecord.collection_id == collection_id,
-            CollectionFileRecord.path == path,
+            CollectionArtifactRecord.collection_id == collection_id,
+            CollectionArtifactRecord.path == path,
         )
     ).one_or_none()
     if row is None:
@@ -2153,15 +2153,15 @@ def _journal_is_in_artifact_scope(
     if not principal.has_artifact_scope:
         return True
     reachable = _reachable_journals(
-        select(CollectionFileProvenanceRecord.journal_id.label("journal_id"))
+        select(CollectionArtifactProvenanceRecord.journal_id.label("journal_id"))
         .where(
-            CollectionFileProvenanceRecord.collection_id == collection_id,
+            CollectionArtifactProvenanceRecord.collection_id == collection_id,
             artifact_scope_filter(
-                CollectionFileProvenanceRecord.collection_id,
-                CollectionFileProvenanceRecord.path,
+                CollectionArtifactProvenanceRecord.collection_id,
+                CollectionArtifactProvenanceRecord.path,
                 principal,
             ),
-            CollectionFileProvenanceRecord.journal_id.is_not(None),
+            CollectionArtifactProvenanceRecord.journal_id.is_not(None),
         )
         .distinct(),
         collection_id=collection_id,
@@ -2176,8 +2176,8 @@ def _journal_is_in_artifact_scope(
 
 
 def _file_payload(
-    file: CollectionFileRecord,
-    binding: CollectionFileProvenanceRecord | None,
+    file: CollectionArtifactRecord,
+    binding: CollectionArtifactProvenanceRecord | None,
     collection: CollectionRecord,
 ) -> dict[str, Any]:
     effective_status = (

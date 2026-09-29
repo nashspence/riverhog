@@ -19,12 +19,12 @@ from riverhog_protocol.derivation_evidence import verify_derivation_evidence
 
 def _fixture() -> tuple[list[bytes], list[bytes], ArtifactDispositionSetIdentity]:
     dispositions = [
-        ArtifactDisposition(1, "a" * 64, "camera/a.mov", "transformed"),
-        ArtifactDisposition(1, "a" * 64, "camera/b.mov", "transformed"),
+        ArtifactDisposition(1, "a" * 64, "1" * 64, "transformed"),
+        ArtifactDisposition(1, "a" * 64, "2" * 64, "transformed"),
     ]
     outputs = [
-        ArtifactDispositionOutput(1, "a" * 64, "camera/a.mov", "derived/a.mkv"),
-        ArtifactDispositionOutput(1, "a" * 64, "camera/b.mov", "derived/b.mkv"),
+        ArtifactDispositionOutput(1, "a" * 64, "1" * 64, "3" * 64),
+        ArtifactDispositionOutput(1, "a" * 64, "2" * 64, "4" * 64),
     ]
     disposition_digest = hashlib.sha256()
     for item in dispositions:

@@ -1,1613 +1,743 @@
+"""Pure append-only RFC 7464 journal operations, independent of payload storage.
+
+A caller owns durable writes and writer arbitration. These functions return
+validated bytes; no filename, global current state, database or filesystem is
+assumed. Exact existing prefixes are never reserialized.
+"""
+
 from __future__ import annotations
 
+import copy
 import hashlib
-import json
-import uuid
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
-from riverhog_canonical_json import (
-    CanonicalJsonError,
-    format_scalar,
-    parse_scalar,
-    require_canonical_json,
+from riverhog_provenance_contracts import (
+    ENTRY_SCHEMA,
+    PROFILE,
+    ContractCatalog,
+    canonical_document,
+    decode_document,
+    require_canonical_uuid_urn,
 )
 
-from .common import (
-    canonical_json,
-    digest_assertion,
-    locator_from_path,
-    new_urn_uuid,
-    require_urn_uuid,
-    utc_now,
+from .common import fingerprint, new_id, utc_now
+from .constants import JOURNAL_POLICY, PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+from .errors import ConcurrentJournalChangeError, ProvenanceValidationError
+from .graph import (
+    IDENTITY_TYPES,
+    GraphValidation,
+    _acyclic,
+    graph_from_assertions,
+    iter_assertions,
+    time_ns,
+    validate_graph,
 )
-from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
-from .interface import FileStateObserver
-from .model import FileStateObservationRequest, ObservationPolicy, PayloadBindingRequest
-from .schema import validate_entry_document
 
-RS = b"\x1e"
-LF = b"\n"
-PROVENANCE_JOURNAL_ENTRY_BYTES_MAX = 8 * 1024 * 1024
-JOURNAL_TYPE = "riverhog_provenance_journal_entry"
-PRIMARY_PAYLOAD_ROLE = "co_resident_primary_payload"
-SOFTWARE_AGENT_NAMESPACE = uuid.UUID("f5b76bbb-6a8b-4a25-9907-c3a8ae0a864c")
-
-JsonObject = dict[str, Any]
-
-
-class ProvenanceValidationError(ValueError):
-    """A provenance journal or set does not satisfy the Riverhog v1 contract."""
+RS, LF = b"\x1e", b"\n"
 
 
 @dataclass(frozen=True, slots=True)
 class JournalFrame:
-    sequence: int
     json_bytes: bytes
-    document: JsonObject
-    sha256: str
+
+    @property
+    def document(self) -> dict[str, Any]:
+        return decode_document(self.json_bytes)
+
+    @property
+    def encoded(self) -> bytes:
+        return RS + self.json_bytes + LF
+
+    @property
+    def sha256(self) -> str:
+        return hashlib.sha256(self.json_bytes).hexdigest()
+
+    @property
+    def reference(self) -> dict[str, str]:
+        document = self.document
+        return {
+            "entry_id": document["id"],
+            "sequence": document["sequence"],
+            "json_sha256": self.sha256,
+        }
 
 
-@dataclass(frozen=True, slots=True)
-class ExternalStateReference:
-    journal_id: str
-    entry_id: str
-    entry_json_sha256: str
-    state_id: str
+def iter_journal_frames(
+    chunks: Iterable[bytes], *, max_entry_bytes: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+) -> Iterator[JournalFrame]:
+    """Bounded frame parser, including hostile chunk boundaries and torn tails."""
+    if type(max_entry_bytes) is not int or max_entry_bytes < 1:
+        raise ValueError("max_entry_bytes must be positive")
+    buffer = bytearray()
+    started = False
+    seen = False
+    for chunk in chunks:
+        if type(chunk) is not bytes:
+            raise TypeError("journal chunks must be bytes")
+        offset = 0
+        while offset < len(chunk):
+            if not started:
+                if chunk[offset : offset + 1] != RS:
+                    raise ProvenanceValidationError("bytes outside RFC 7464 frames")
+                started = True
+                offset += 1
+                continue
+            stop = chunk.find(LF, offset)
+            end = len(chunk) if stop == -1 else stop
+            piece = chunk[offset:end]
+            if RS in piece:
+                raise ProvenanceValidationError("unframed record separator before line feed")
+            if len(buffer) + len(piece) > max_entry_bytes:
+                raise ProvenanceValidationError("journal entry exceeds the admission byte limit")
+            buffer.extend(piece)
+            offset = end
+            if stop != -1:
+                raw = bytes(buffer)
+                try:
+                    decode_document(raw)
+                except (ValueError, TypeError) as exc:
+                    raise ProvenanceValidationError(str(exc)) from exc
+                yield JournalFrame(raw)
+                seen = True
+                buffer.clear()
+                started = False
+                offset += 1
+    if started:
+        raise ProvenanceValidationError("incomplete final journal frame")
+    if not seen:
+        raise ProvenanceValidationError("journal is empty")
+
+
+def parse_journal(raw: bytes) -> tuple[JournalFrame, ...]:
+    return tuple(iter_journal_frames((raw,)))
+
+
+def encode_entry(document: Mapping[str, Any], *, catalog: ContractCatalog | None = None) -> bytes:
+    selected = catalog or ContractCatalog()
+    selected.validate(ENTRY_SCHEMA, dict(document))
+    raw = canonical_document(document)
+    if len(raw) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
+        raise ProvenanceValidationError("journal entry exceeds the admission byte limit")
+    return RS + raw + LF
+
+
+def _body_assertions(document: Mapping[str, Any]) -> dict[str, Any]:
+    return cast(dict[str, Any], document["body"].get("assertions", {}))
+
+
+def _identity_signature(row: Mapping[str, Any]) -> bytes:
+    """Fixed referent aspects cannot be redefined under the guise of correction."""
+    kind = row["type"]
+    fields = {
+        "artifact": ("continuity_policy_uri",),
+        "occurrence": ("artifact_id", "kind", "source_context_id"),
+        "state": ("occurrence_id", "extent"),
+        "context": ("kind",),
+        "agent": ("kind",),
+    }.get(kind)
+    if fields is None:
+        value = {k: v for k, v in row.items() if k not in ("assertion_id", "evidence")}
+    else:
+        value = {"id": row["id"], "type": kind, **{k: row[k] for k in fields if k in row}}
+    return canonical_document(value)
 
 
 @dataclass(frozen=True, slots=True)
 class JournalSummary:
     journal_id: str
-    primary_lineage_id: str
     frames: tuple[JournalFrame, ...]
-    entries: int
-    tail_frame: JournalFrame
+    graph_validation: GraphValidation
+    retracted_assertion_ids: frozenset[str]
     journal_sha256: str
-    current_binding_id: str
-    current_state_id: str
-    current_path: str
-    current_bytes: int
-    current_sha256: str
-    agent_ids: frozenset[str]
-    external_states: tuple[ExternalStateReference, ...]
+    journal_bytes: int
 
     @property
     def tail(self) -> JournalFrame:
-        return self.tail_frame
+        return self.frames[-1]
 
+    @property
+    def graph(self) -> dict[str, Any]:
+        return self.graph_validation.graph
 
-@dataclass(frozen=True, slots=True)
-class IncrementalJournalEntry:
-    """Bounded semantic projection of one independently validated journal entry."""
+    @property
+    def anchor(self) -> dict[str, Any]:
+        return {
+            "journal_id": self.journal_id,
+            "through": self.tail.reference,
+            "prefix_sha256": self.journal_sha256,
+            "prefix_bytes": str(self.journal_bytes),
+        }
 
-    frame: JournalFrame
-    journal_id: str
-    primary_lineage_id: str | None
-    agents: tuple[str, ...]
-    events: tuple[str, ...]
-    states: tuple[tuple[str, str], ...]
-    entities: tuple[tuple[str, str, str], ...]
-    entity_counts: tuple[tuple[str, int], ...]
-    bindings: tuple[tuple[str, str, str], ...]
-    external_states: tuple[ExternalStateReference, ...]
+    @property
+    def states(self) -> tuple[dict[str, Any], ...]:
+        return tuple(self.graph.get("states", []))
 
+    @property
+    def delivery_associations(self) -> tuple[dict[str, Any], ...]:
+        return tuple(self.graph.get("delivery_associations", []))
 
-@dataclass(frozen=True, slots=True)
-class DerivativeJournalSeed:
-    """Stable authority needed to extend one server-generated derivative journal."""
+    @property
+    def findings(self) -> tuple[str, ...]:
+        return self.graph_validation.findings
 
-    journal_id: str
-    recorded_by_agent_id: str
-    state_id: str
-    activity_id: str
-    current_entry_id: str
-    current_entry_json_sha256: str
-    previous_entry_id: str
-    previous_entry_json_sha256: str
-    next_sequence: int
-
-
-def validate_incremental_journal_entry(
-    encoded: bytes,
-    *,
-    sequence: int,
-    journal_id: str,
-    previous_entry_id: str | None,
-    previous_json_sha256: str | None,
-) -> IncrementalJournalEntry:
-    """Validate and project one RFC 7464 entry without retaining journal-wide state."""
-
-    if not encoded.startswith(RS):
-        raise ProvenanceValidationError("journal entry has no RFC 7464 record separator")
-    frame = _journal_frame(sequence, encoded[1:])
-    document = frame.document
-    try:
-        validate_entry_document(document)
-    except ValueError as exc:
-        raise ProvenanceValidationError(
-            f"journal entry {sequence} fails the Riverhog v1 schema: {exc}"
-        ) from exc
-    if (
-        document.get("$schema") != PROVENANCE_ENTRY_SCHEMA
-        or document.get("profile") != PROVENANCE_PROFILE
-        or document.get("type") != JOURNAL_TYPE
-        or document.get("sequence") != format_scalar("sequence63", sequence)
-        or document.get("journal_id") != journal_id
-    ):
-        raise ProvenanceValidationError(f"journal entry {sequence} authority is invalid")
-    if sequence == 0:
-        if document.get("entry_kind") != "journal_init":
-            raise ProvenanceValidationError("journal sequence zero must initialize the journal")
-        if previous_entry_id is not None or previous_json_sha256 is not None:
-            raise ProvenanceValidationError("journal initialization unexpectedly has a predecessor")
-    elif document.get("previous_entry") != {
-        "entry_id": previous_entry_id,
-        "sequence": format_scalar("sequence63", sequence - 1),
-        "json_sha256": previous_json_sha256,
-    }:
-        raise ProvenanceValidationError(
-            f"journal entry {sequence} does not commit to its exact predecessor"
-        )
-    assertions = _entry_assertions(document)
-    primary_lineage_id: str | None = None
-    if sequence == 0:
-        body = document.get("body")
-        journal = body.get("journal") if isinstance(body, dict) else None
-        if not isinstance(journal, dict):
-            raise ProvenanceValidationError("journal initialization has no policy")
-        primary_lineage_id = _required_string(journal, "primary_lineage_id")
-    agents = tuple(
-        sorted({_required_string(item, "id") for item in _object_rows(assertions, "agents")})
-    )
-    events = tuple(
-        sorted(
-            {
-                _required_string(item, "id")
-                for category in ("captures", "activities")
-                for item in _object_rows(assertions, category)
-            }
-        )
-    )
-    state_documents: dict[str, str] = {}
-    for item in _object_rows(assertions, "states"):
-        state_id = _required_string(item, "id")
-        encoded_state = canonical_json(item).decode("utf-8")
-        previous_state = state_documents.get(state_id)
-        if previous_state is not None and previous_state != encoded_state:
-            raise ProvenanceValidationError(f"journal redefines state {state_id}")
-        state_documents[state_id] = encoded_state
-    states = tuple(sorted(state_documents.items()))
-    entity_documents: dict[tuple[str, str], str] = {}
-    entity_counts = {
-        key: len(values) for key, values in assertions.items() if isinstance(values, list)
-    }
-    for entity_type in (
-        "agents",
-        "lineages",
-        "states",
-        "environments",
-        "captures",
-        "activities",
-        "relations",
-        "payload_bindings",
-        "extensions",
-    ):
-        rows = _object_rows(assertions, entity_type)
-        for item in rows:
-            entity_id = _required_string(item, "id")
-            entity_documents[(entity_type, entity_id)] = canonical_json(item).decode("utf-8")
-            if entity_type == "activities":
-                evidence = item.get("evidence", [])
-                if isinstance(evidence, list):
-                    for evidence_item in evidence:
-                        if isinstance(evidence_item, dict) and isinstance(
-                            evidence_item.get("id"), str
-                        ):
-                            evidence_id = str(evidence_item["id"])
-                            entity_documents[("evidence", evidence_id)] = canonical_json(
-                                evidence_item
-                            ).decode("utf-8")
-    bindings: list[tuple[str, str, str]] = []
-    for item in _object_rows(assertions, "payload_bindings"):
-        role = _required_string(item, "role")
-        operation = str(item.get("operation") or "")
-        if operation not in {"bind", "unbind"}:
-            raise ProvenanceValidationError("payload binding operation is invalid")
-        bindings.append((role, operation, canonical_json(item).decode("utf-8")))
-    external_states = {
-        (
-            item.journal_id,
-            item.entry_id,
-            item.entry_json_sha256,
-            item.state_id,
-        ): item
-        for item in _external_state_references(assertions)
-    }
-    return IncrementalJournalEntry(
-        frame=frame,
-        journal_id=journal_id,
-        primary_lineage_id=primary_lineage_id,
-        agents=agents,
-        events=events,
-        states=states,
-        entities=tuple(
-            (entity_type, entity_id, document)
-            for (entity_type, entity_id), document in sorted(entity_documents.items())
-        ),
-        entity_counts=tuple(sorted(entity_counts.items())),
-        bindings=tuple(bindings),
-        external_states=tuple(external_states[key] for key in sorted(external_states)),
-    )
-
-
-def resolve_incremental_journal_current_state(
-    *,
-    primary_lineage_id: str,
-    binding_json: str,
-    state_json: str,
-) -> tuple[str, str, int, str]:
-    """Resolve the terminal primary binding from persisted bounded semantic facts."""
-
-    binding = json.loads(binding_json)
-    state = json.loads(state_json)
-    reference = binding.get("state") if isinstance(binding, dict) else None
-    if not isinstance(reference, dict) or reference.get("scope") != "local":
-        raise ProvenanceValidationError("current primary payload binding is not local")
-    state_id = _required_string(reference, "id")
-    if not isinstance(state, dict) or state.get("id") != state_id:
-        raise ProvenanceValidationError("current primary payload state is not asserted")
-    if state.get("lineage_id") != primary_lineage_id:
-        raise ProvenanceValidationError("current payload state is outside the primary lineage")
-    locator = binding.get("relative_payload_locator")
-    if not isinstance(locator, dict):
-        raise ProvenanceValidationError("current payload binding has no relative locator")
-    byte_count, sha256 = _state_content_identity(state)
-    return state_id, _required_string(locator, "text"), byte_count, sha256
-
-
-def software_agent_id(name: str) -> str:
-    normalized = name.strip()
-    if not normalized:
-        raise ValueError("software agent name must not be empty")
-    return f"urn:uuid:{uuid.uuid5(SOFTWARE_AGENT_NAMESPACE, normalized)}"
-
-
-def software_agent(name: str, version: str) -> JsonObject:
-    if not version.strip():
-        raise ValueError("software agent version must not be empty")
-    return {
-        "id": software_agent_id(name),
-        "type": "software",
-        "name": name,
-        "version": version,
-        "vendor": "Riverhog",
-    }
-
-
-def encode_entry(document: Mapping[str, Any]) -> bytes:
-    return RS + canonical_json(document) + LF
-
-
-def journal_sha256(content: bytes) -> str:
-    return hashlib.sha256(content).hexdigest()
-
-
-def _journal_frame(physical_sequence: int, chunk: bytes) -> JournalFrame:
-    if len(chunk) + 1 > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
-        raise ProvenanceValidationError(
-            f"journal entry {physical_sequence} exceeds its bounded record contract"
-        )
-    if not chunk.endswith(LF):
-        raise ProvenanceValidationError(f"journal entry {physical_sequence} has no terminating LF")
-    json_bytes = chunk[:-1]
-    if not json_bytes or json_bytes != json_bytes.strip():
-        raise ProvenanceValidationError(
-            f"journal entry {physical_sequence} has non-canonical outer whitespace"
-        )
-    try:
-        document = require_canonical_json(json_bytes)
-    except CanonicalJsonError as exc:
-        raise ProvenanceValidationError(
-            f"journal entry {physical_sequence} is not strict JSON: {exc}"
-        ) from exc
-    if not isinstance(document, dict):
-        raise ProvenanceValidationError(f"journal entry {physical_sequence} must be a JSON object")
-    return JournalFrame(
-        sequence=physical_sequence,
-        json_bytes=json_bytes,
-        document=document,
-        sha256=hashlib.sha256(json_bytes).hexdigest(),
-    )
-
-
-def iter_journal_frames(chunks: Iterable[bytes]) -> Iterator[JournalFrame]:
-    """Parse an RFC 7464 journal incrementally without retaining its complete body."""
-
-    buffer = bytearray()
-    started = False
-    sequence = 0
-    for source in chunks:
-        chunk = bytes(source)
-        if not chunk:
-            continue
-        buffer.extend(chunk)
-        if not started:
-            if buffer[0] != RS[0]:
-                raise ProvenanceValidationError(
-                    "journal must begin with an RFC 7464 record separator"
-                )
-            del buffer[:1]
-            started = True
-        while (separator := buffer.find(RS)) >= 0:
-            yield _journal_frame(sequence, bytes(buffer[:separator]))
-            sequence += 1
-            del buffer[: separator + 1]
-        if len(buffer) + 1 > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
-            raise ProvenanceValidationError(
-                f"journal entry {sequence} exceeds its bounded record contract"
-            )
-    if not started:
-        raise ProvenanceValidationError("journal must begin with an RFC 7464 record separator")
-    if buffer:
-        yield _journal_frame(sequence, bytes(buffer))
-        sequence += 1
-    if sequence == 0:
-        raise ProvenanceValidationError("journal must contain at least one entry")
-
-
-def parse_journal(content: bytes) -> tuple[JournalFrame, ...]:
-    frames: list[JournalFrame] = []
-    frames.extend(iter_journal_frames((content,)))
-    return tuple(frames)
-
-
-def validate_journal(content: bytes) -> JournalSummary:
-    return validate_journal_chunks((content,))
+    def materialize(self) -> dict[str, Any]:
+        return {
+            "format": "riverhog-provenance-materialized/v1",
+            "journal": self.anchor,
+            "effective_assertions": self.graph,
+            "retracted_assertion_ids": sorted(self.retracted_assertion_ids),
+            "unresolved_external_references": list(self.graph_validation.external_references),
+            "unresolved_profiles": list(self.graph_validation.unresolved_profiles),
+        }
 
 
 def validate_journal_chunks(
     chunks: Iterable[bytes],
     *,
-    retain_frames: bool = True,
+    catalog: ContractCatalog | None = None,
+    require_profiles: bool = True,
+    expected_anchor: Mapping[str, Any] | None = None,
+    require_exact_tail: bool = False,
 ) -> JournalSummary:
-    """Validate one journal from bounded transport/storage chunks."""
-
-    digest = hashlib.sha256()
-
-    def measured() -> Iterator[bytes]:
-        for source in chunks:
-            chunk = bytes(source)
-            digest.update(chunk)
-            yield chunk
-
-    retained_frames: list[JournalFrame] = []
-    states: dict[str, JsonObject] = {}
-    agents: set[str] = set()
-    establishing_events: set[str] = set()
-    active_bindings: dict[str, JsonObject] = {}
-    external_states: dict[tuple[str, str, str, str], ExternalStateReference] = {}
+    selected = catalog or ContractCatalog()
+    frames: list[JournalFrame] = []
+    ledger: dict[str, tuple[str, dict[str, Any], JournalFrame]] = {}
+    active: dict[str, tuple[str, dict[str, Any]]] = {}
+    retired: set[str] = set()
+    entity_history: dict[str, bytes] = {}
     entry_ids: set[str] = set()
     journal_id: str | None = None
-    primary_lineage_id = ""
-    previous_frame: JournalFrame | None = None
-    tail_frame: JournalFrame | None = None
-    entries = 0
-
-    for index, frame in enumerate(iter_journal_frames(measured())):
-        if retain_frames:
-            retained_frames.append(frame)
+    prefix = hashlib.sha256()
+    byte_count = 0
+    graph_validation: GraphValidation | None = None
+    matched_anchor = False
+    for sequence, frame in enumerate(iter_journal_frames(chunks)):
         document = frame.document
         try:
-            validate_entry_document(document)
-        except ValueError as exc:
-            raise ProvenanceValidationError(
-                f"journal entry {index} fails the Riverhog v1 schema: {exc}"
-            ) from exc
-        if document.get("$schema") != PROVENANCE_ENTRY_SCHEMA:
-            raise ProvenanceValidationError(f"journal entry {index} uses another schema")
-        if document.get("profile") != PROVENANCE_PROFILE:
-            raise ProvenanceValidationError(f"journal entry {index} uses another profile")
-        if document.get("type") != JOURNAL_TYPE:
-            raise ProvenanceValidationError(f"journal entry {index} has another type")
-        if document.get("sequence") != format_scalar("sequence63", index):
-            raise ProvenanceValidationError(
-                f"journal entry {index} sequence does not match physical order"
-            )
-        if index == 0:
-            journal_id = _required_string(document, "journal_id")
-            if document.get("entry_kind") != "journal_init":
-                raise ProvenanceValidationError("journal sequence zero must initialize the journal")
-        if document.get("journal_id") != journal_id:
-            raise ProvenanceValidationError(f"journal entry {index} changes journal identity")
-
-        entry_id = _required_string(document, "id")
-        if entry_id in entry_ids:
-            raise ProvenanceValidationError(f"journal repeats entry identity {entry_id}")
-        entry_ids.add(entry_id)
-        if index:
-            previous = document.get("previous_entry")
-            prior = previous_frame
-            assert prior is not None
-            if previous != {
-                "entry_id": _required_string(prior.document, "id"),
-                "sequence": format_scalar("sequence63", index - 1),
-                "json_sha256": prior.sha256,
-            }:
+            selected.validate(ENTRY_SCHEMA, document)
+            time_ns(document["recorded_at"])
+        except (ValueError, TypeError) as exc:
+            raise ProvenanceValidationError(f"entry {sequence}: {exc}") from exc
+        if int(document["sequence"]) != sequence:
+            raise ProvenanceValidationError("noncontiguous journal sequence")
+        if document["id"] in entry_ids:
+            raise ProvenanceValidationError("entry identity reused")
+        entry_ids.add(document["id"])
+        if journal_id is None:
+            journal_id = document["journal_id"]
+            if (
+                document["entry_kind"] != "journal_init"
+                or document["body"]["journal"]["id"] != journal_id
+            ):
+                raise ProvenanceValidationError("first entry must initialize this journal")
+            parent = document["body"]["journal"].get("forked_from")
+            if parent and parent["journal_id"] == journal_id:
                 raise ProvenanceValidationError(
-                    f"journal entry {index} does not commit to its exact predecessor"
+                    "independent journal fork requires a distinct journal identity"
                 )
-
-        assertions = _entry_assertions(document)
-        if index == 0:
-            body = document.get("body")
-            journal = body.get("journal") if isinstance(body, dict) else None
-            if not isinstance(journal, dict):
-                raise ProvenanceValidationError("journal initialization has no policy")
-            primary_lineage_id = _required_string(journal, "primary_lineage_id")
-
-        for agent in _object_rows(assertions, "agents"):
-            agents.add(_required_string(agent, "id"))
-        for category in ("captures", "activities"):
-            for event in _object_rows(assertions, category):
-                establishing_events.add(_required_string(event, "id"))
-        for state in _object_rows(assertions, "states"):
-            state_id = _required_string(state, "id")
-            previous_state = states.get(state_id)
-            if previous_state is not None and previous_state != state:
-                raise ProvenanceValidationError(f"journal redefines state {state_id}")
-            states[state_id] = state
-        for binding in _object_rows(assertions, "payload_bindings"):
-            role = _required_string(binding, "role")
-            operation = binding.get("operation")
-            if operation == "unbind":
-                active_bindings.pop(role, None)
-            elif operation == "bind":
-                established_by = binding.get("established_by_capture_id") or binding.get(
-                    "established_by_activity_id"
+        else:
+            if document["journal_id"] != journal_id or document["entry_kind"] == "journal_init":
+                raise ProvenanceValidationError("journal identity or initialization changed")
+            if document["previous_entry"] != frames[-1].reference:
+                raise ProvenanceValidationError(
+                    "predecessor does not match exact previous JSON text"
                 )
-                if not isinstance(established_by, str) or not established_by:
+        kind, body = document["entry_kind"], document["body"]
+        if kind == "checkpoint":
+            if body["covered_through"] != frames[-1].reference:
+                raise ProvenanceValidationError(
+                    "checkpoint must cover the immediately preceding entry"
+                )
+            if (
+                body["prefix_sha256"] != prefix.hexdigest()
+                or int(body["prefix_bytes"]) != byte_count
+            ):
+                raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
+        if kind == "correction":
+            target_ids = [target["assertion_id"] for target in body["retracts"]]
+            if len(set(target_ids)) != len(target_ids):
+                raise ProvenanceValidationError("duplicate correction target")
+            for target in body["retracts"]:
+                identity = target["assertion_id"]
+                prior = ledger.get(identity)
+                if prior is None or prior[2].reference != target["entry"]:
                     raise ProvenanceValidationError(
-                        "payload binding has no capture or activity authority"
+                        "correction target has no exact earlier assertion"
                     )
-                if established_by not in establishing_events:
+                if identity not in active:
                     raise ProvenanceValidationError(
-                        "payload binding references an absent capture or activity"
+                        "correction cannot reactivate or retract an already retired assertion"
                     )
-                bound_state = binding.get("state")
-                if (
-                    not isinstance(bound_state, dict)
-                    or bound_state.get("scope") != "local"
-                    or bound_state.get("id") not in states
-                ):
-                    raise ProvenanceValidationError(
-                        "payload binding references an absent local state"
-                    )
-                active_bindings[role] = binding
-        for reference in _external_state_references(assertions):
-            key = (
-                reference.journal_id,
-                reference.entry_id,
-                reference.entry_json_sha256,
-                reference.state_id,
-            )
-            external_states[key] = reference
-        previous_frame = frame
-        tail_frame = frame
-        entries = index + 1
-
-    if journal_id is None or tail_frame is None:
-        raise ProvenanceValidationError("journal must contain at least one entry")
-
-    primary = active_bindings.get(PRIMARY_PAYLOAD_ROLE)
-    if primary is None:
-        raise ProvenanceValidationError("journal has no current primary payload binding")
-    state_reference = primary.get("state")
-    if not isinstance(state_reference, dict) or state_reference.get("scope") != "local":
-        raise ProvenanceValidationError("current primary payload binding is not local")
-    current_state_id = _required_string(state_reference, "id")
-    current_state = states.get(current_state_id)
-    if current_state is None:
-        raise ProvenanceValidationError("current primary payload state is not asserted")
-    if current_state.get("lineage_id") != primary_lineage_id:
-        raise ProvenanceValidationError("current payload state is outside the primary lineage")
-    locator = primary.get("relative_payload_locator")
-    if not isinstance(locator, dict):
-        raise ProvenanceValidationError("current payload binding has no relative locator")
-    current_path = _required_string(locator, "text")
-    current_bytes, current_sha256 = _state_content_identity(current_state)
-    return JournalSummary(
-        journal_id=journal_id,
-        primary_lineage_id=primary_lineage_id,
-        frames=tuple(retained_frames),
-        entries=entries,
-        tail_frame=tail_frame,
-        journal_sha256=digest.hexdigest(),
-        current_binding_id=_required_string(primary, "id"),
-        current_state_id=current_state_id,
-        current_path=current_path,
-        current_bytes=current_bytes,
-        current_sha256=current_sha256,
-        agent_ids=frozenset(agents),
-        external_states=tuple(external_states.values()),
-    )
-
-
-def validate_journal_set(journals: Mapping[str, bytes]) -> dict[str, JournalSummary]:
-    summaries: dict[str, JournalSummary] = {}
-    for declared_id, content in sorted(journals.items()):
-        summary = validate_journal(content)
-        if summary.journal_id != declared_id:
+                del active[identity]
+                retired.add(identity)
+        for category, row in iter_assertions(_body_assertions(document)):
+            assertion_id, object_id = row["assertion_id"], row["id"]
+            if assertion_id in ledger:
+                raise ProvenanceValidationError(
+                    "assertion identities cannot be reused, including after correction"
+                )
+            signature = _identity_signature(row)
+            if object_id in entity_history and entity_history[object_id] != signature:
+                raise ProvenanceValidationError(
+                    "an immutable referent or record was redefined; mint a distinct identity"
+                )
+            entity_history[object_id] = signature
+            ledger[assertion_id] = category, copy.deepcopy(row), frame
+            active[assertion_id] = category, copy.deepcopy(row)
+        if entry_ids & (ledger.keys() | entity_history.keys()):
             raise ProvenanceValidationError(
-                f"journal key {declared_id} does not match {summary.journal_id}"
+                "entry, assertion and referent identities must be distinct"
             )
-        summaries[declared_id] = summary
-    for summary in summaries.values():
-        for reference in summary.external_states:
-            target = summaries.get(reference.journal_id)
-            if target is None:
-                raise ProvenanceValidationError(
-                    f"journal {summary.journal_id} has an unresolved ancestor "
-                    f"{reference.journal_id}"
-                )
-            frame = next(
-                (item for item in target.frames if item.document.get("id") == reference.entry_id),
-                None,
+        if journal_id in ledger or journal_id in entity_history or journal_id in entry_ids:
+            raise ProvenanceValidationError(
+                "journal identity cannot also identify a graph object or entry"
             )
-            if frame is None or frame.sha256 != reference.entry_json_sha256:
-                raise ProvenanceValidationError(
-                    f"journal {summary.journal_id} has an invalid external entry commitment"
-                )
-            states = {
-                _required_string(state, "id")
-                for current in target.frames
-                for state in _object_rows(_entry_assertions(current.document), "states")
+        graph = graph_from_assertions(active.values())
+        graph_validation = validate_graph(
+            graph, catalog=selected, journal_id=journal_id, require_profiles=require_profiles
+        )
+        objects = graph_validation.objects
+        recorder = objects.get(document["recorded_by_agent_id"])
+        if recorder is None or recorder["type"] != "agent":
+            raise ProvenanceValidationError("entry recorder must resolve to an effective agent")
+        if "recording_context_id" in document:
+            context = objects.get(document["recording_context_id"])
+            if context is None or context["type"] != "context":
+                raise ProvenanceValidationError("recording context does not resolve")
+        frames.append(frame)
+        prefix.update(frame.encoded)
+        byte_count += len(frame.encoded)
+        if expected_anchor and document["id"] == expected_anchor["through"]["entry_id"]:
+            candidate = {
+                "journal_id": journal_id,
+                "through": frame.reference,
+                "prefix_sha256": prefix.hexdigest(),
+                "prefix_bytes": str(byte_count),
             }
-            if reference.state_id not in states:
-                raise ProvenanceValidationError(
-                    f"journal {summary.journal_id} references an absent external state"
-                )
-    return summaries
-
-
-def verify_payload_binding(
-    summary: JournalSummary,
-    *,
-    path: str,
-    byte_count: int,
-    sha256: str,
-) -> None:
-    if (
-        summary.current_path != path
-        or summary.current_bytes != byte_count
-        or summary.current_sha256 != sha256
+            if candidate != dict(expected_anchor):
+                raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
+            matched_anchor = True
+    if not frames or graph_validation is None or journal_id is None:
+        raise ProvenanceValidationError("journal is empty")
+    if expected_anchor and not matched_anchor:
+        raise ProvenanceValidationError("journal does not contain the expected anchored prefix")
+    if require_exact_tail and (
+        expected_anchor is None or frames[-1].reference != expected_anchor["through"]
     ):
-        raise ProvenanceValidationError(
-            "current provenance state does not bind to the payload path, size, and SHA-256"
-        )
+        raise ProvenanceValidationError("an exact tail anchor was required")
+    return JournalSummary(
+        journal_id,
+        tuple(frames),
+        graph_validation,
+        frozenset(retired),
+        prefix.hexdigest(),
+        byte_count,
+    )
 
 
-def create_observation_journal(
-    path: Path,
+def validate_journal(raw: bytes, **options: Any) -> JournalSummary:
+    return validate_journal_chunks((raw,), **options)
+
+
+def _entry(
     *,
-    relative_path: str,
-    host_id: str,
-    agent_name: str,
-    agent_version: str,
-    observer: FileStateObserver,
-    policy: ObservationPolicy | None = None,
-) -> bytes:
-    journal_id = new_urn_uuid()
-    lineage_id = new_urn_uuid()
-    agent = software_agent(agent_name, agent_version)
-    init: JsonObject = {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
+    journal_id: str,
+    recorder_id: str,
+    kind: str,
+    body: Mapping[str, Any],
+    sequence: int = 0,
+    previous: Mapping[str, str] | None = None,
+    entry_id: str | None = None,
+    recorded_at: str | None = None,
+    recording_context_id: str | None = None,
+) -> dict[str, Any]:
+    value: dict[str, Any] = {
+        "$schema": ENTRY_SCHEMA,
+        "profile": PROFILE,
         "schema_version": "1.0.0",
-        "id": new_urn_uuid(),
-        "type": JOURNAL_TYPE,
+        "id": entry_id or new_id(),
+        "type": "riverhog_provenance_journal_entry",
         "journal_id": journal_id,
-        "sequence": "0",
-        "recorded_at": utc_now(),
-        "recorded_by_agent_id": agent["id"],
-        "entry_kind": "journal_init",
-        "body": {
-            "journal": {
-                "primary_lineage_id": lineage_id,
-                "scope": "primary_lineage_with_related_provenance",
-                "serialization": "rfc7464_json_text_sequence",
-                "entry_digest_algorithm": "sha-256",
-                "entry_digest_coverage": "json_text_octets_excluding_framing",
-                "state_representation": "full_snapshot",
-                "payload_semantics": "opaque_bytes",
-                "correction_model": "monotonic_entry_supersession",
-                "retention_intent": "permanent_archival",
-                "label": relative_path,
-            },
-            "assertions": {
-                "agents": [agent],
-                "lineages": [
-                    {
-                        "id": lineage_id,
-                        "type": "file_lineage",
-                        "continuity_basis": "repository_tracking",
-                        "asserted_by_agent_id": agent["id"],
-                        "label": relative_path,
-                    }
-                ],
-            },
-        },
+        "sequence": str(sequence),
+        "recorded_at": recorded_at or utc_now(),
+        "recorded_by_agent_id": recorder_id,
+        "entry_kind": kind,
+        "body": copy.deepcopy(dict(body)),
     }
-    init_json = canonical_json(init)
-    observation = observer.observe(
-        FileStateObservationRequest(
-            path=path,
-            lineage_id=lineage_id,
-            host_id=host_id,
-            observer_agent_id=str(agent["id"]),
-            payload_binding=PayloadBindingRequest(relative_path=relative_path),
-            policy=policy or ObservationPolicy(),
+    if previous is not None:
+        value["previous_entry"] = dict(previous)
+    if recording_context_id is not None:
+        value["recording_context_id"] = recording_context_id
+    return value
+
+
+def create_journal(
+    assertions: Mapping[str, Any],
+    *,
+    recorded_by_agent_id: str,
+    journal_id: str | None = None,
+    policy_uri: str = JOURNAL_POLICY,
+    forked_from: Mapping[str, Any] | None = None,
+    recorded_at: str | None = None,
+    catalog: ContractCatalog | None = None,
+) -> bytes:
+    identity = journal_id or new_id()
+    require_canonical_uuid_urn(identity)
+    policy: dict[str, Any] = {
+        "id": identity,
+        "serialization": "application/json-seq",
+        "entry_encoding": "RFC8785",
+        "hash_algorithm": "sha-256",
+        "writer_policy": "single_writer",
+        "policy_uri": policy_uri,
+    }
+    if forked_from is not None:
+        policy["forked_from"] = dict(forked_from)
+    document = _entry(
+        journal_id=identity,
+        recorder_id=recorded_by_agent_id,
+        kind="journal_init",
+        body={"journal": policy, "assertions": dict(assertions)},
+        recorded_at=recorded_at,
+    )
+    raw = encode_entry(document, catalog=catalog)
+    validate_journal(raw, catalog=catalog)
+    return raw
+
+
+def _append(
+    raw: bytes,
+    body: Mapping[str, Any],
+    *,
+    kind: str,
+    recorded_by_agent_id: str,
+    expected_tail: Mapping[str, Any] | None,
+    recorded_at: str | None,
+    catalog: ContractCatalog | None,
+) -> bytes:
+    summary = validate_journal(raw, catalog=catalog)
+    if expected_tail is not None and dict(expected_tail) != summary.tail.reference:
+        raise ConcurrentJournalChangeError(
+            "expected predecessor differs from supplied journal tail"
         )
+    document = _entry(
+        journal_id=summary.journal_id,
+        recorder_id=recorded_by_agent_id,
+        kind=kind,
+        body=body,
+        sequence=len(summary.frames),
+        previous=summary.tail.reference,
+        recorded_at=recorded_at,
     )
-    assertion = observation.make_assertion_entry(
-        journal_id=journal_id,
-        sequence=1,
-        previous_entry_id=str(init["id"]),
-        previous_entry_json_sha256=hashlib.sha256(init_json).hexdigest(),
-        recorded_by_agent_id=str(agent["id"]),
-        omit_object_ids=(str(agent["id"]),),
+    appended = raw + encode_entry(document, catalog=catalog)
+    validate_journal(appended, catalog=catalog)
+    return appended
+
+
+def append_assertions(
+    raw: bytes,
+    assertions: Mapping[str, Any],
+    *,
+    recorded_by_agent_id: str,
+    expected_tail: Mapping[str, Any] | None = None,
+    recorded_at: str | None = None,
+    catalog: ContractCatalog | None = None,
+) -> bytes:
+    return _append(
+        raw,
+        {"assertions": dict(assertions)},
+        kind="assertion",
+        recorded_by_agent_id=recorded_by_agent_id,
+        expected_tail=expected_tail,
+        recorded_at=recorded_at,
+        catalog=catalog,
     )
-    content = encode_entry(init) + encode_entry(assertion)
-    validate_journal(content)
-    return content
+
+
+def append_correction(
+    raw: bytes,
+    retracts: Iterable[Mapping[str, Any]],
+    *,
+    reason: str,
+    recorded_by_agent_id: str,
+    assertions: Mapping[str, Any] | None = None,
+    expected_tail: Mapping[str, Any] | None = None,
+    recorded_at: str | None = None,
+    catalog: ContractCatalog | None = None,
+) -> bytes:
+    body: dict[str, Any] = {"reason": reason, "retracts": [dict(item) for item in retracts]}
+    if assertions is not None:
+        body["assertions"] = dict(assertions)
+    return _append(
+        raw,
+        body,
+        kind="correction",
+        recorded_by_agent_id=recorded_by_agent_id,
+        expected_tail=expected_tail,
+        recorded_at=recorded_at,
+        catalog=catalog,
+    )
+
+
+def append_checkpoint(
+    raw: bytes, *, recorded_by_agent_id: str, purpose: str, catalog: ContractCatalog | None = None
+) -> bytes:
+    summary = validate_journal(raw, catalog=catalog)
+    return _append(
+        raw,
+        {
+            "covered_through": summary.tail.reference,
+            "prefix_sha256": summary.journal_sha256,
+            "prefix_bytes": str(summary.journal_bytes),
+            "purpose": purpose,
+        },
+        kind="checkpoint",
+        recorded_by_agent_id=recorded_by_agent_id,
+        expected_tail=summary.tail.reference,
+        recorded_at=None,
+        catalog=catalog,
+    )
+
+
+def assertion_reference(summary: JournalSummary, assertion_id: str) -> dict[str, Any]:
+    for frame in summary.frames:
+        for _, row in iter_assertions(_body_assertions(frame.document)):
+            if row["assertion_id"] == assertion_id:
+                return {"entry": frame.reference, "assertion_id": assertion_id}
+    raise KeyError(assertion_id)
+
+
+def external_reference(summary: JournalSummary, object_id: str) -> dict[str, Any]:
+    effective = summary.graph_validation.objects.get(object_id)
+    if effective is None:
+        raise KeyError(object_id)
+    origin = assertion_reference(summary, effective["assertion_id"])
+    return {
+        "scope": "external",
+        "journal_id": summary.journal_id,
+        **origin,
+        "object_id": object_id,
+        "object_type": effective["type"],
+    }
+
+
+@dataclass(frozen=True, slots=True)
+class JournalSetValidation:
+    journals: tuple[JournalSummary, ...]
+    unresolved_references: tuple[dict[str, Any], ...]
+    findings: tuple[str, ...]
+
+
+def validate_journal_set(
+    journals: Iterable[bytes],
+    *,
+    catalog: ContractCatalog | None = None,
+    require_all_references: bool = True,
+    require_profiles: bool = True,
+) -> JournalSetValidation:
+    """Resolve exact foreign assertions; do not silently import effective graphs."""
+    summaries: dict[str, JournalSummary] = {}
+    for raw in journals:
+        journal = validate_journal(raw, catalog=catalog, require_profiles=require_profiles)
+        old = summaries.get(journal.journal_id)
+        if old:
+            short, long = sorted((old, journal), key=lambda item: len(item.frames))
+            if short.frames != long.frames[: len(short.frames)]:
+                raise ProvenanceValidationError(
+                    "divergent writers reused the same journal identity"
+                )
+            summaries[journal.journal_id] = long
+        else:
+            summaries[journal.journal_id] = journal
+    # Identity immutability applies to the full supplied documentary history,
+    # including retired statements, not only its effective graph.
+    assertion_history: dict[str, bytes] = {}
+    referent_history: dict[str, bytes] = {}
+    entry_history: dict[str, bytes] = {}
+    for summary in summaries.values():
+        for frame in summary.frames:
+            entry_id = frame.document["id"]
+            old_entry = entry_history.setdefault(entry_id, frame.json_bytes)
+            if old_entry != frame.json_bytes:
+                raise ProvenanceValidationError("entry identity reused across journals")
+            for _, row in iter_assertions(_body_assertions(frame.document)):
+                value = canonical_document(row)
+                prior = assertion_history.setdefault(row["assertion_id"], value)
+                if prior != value:
+                    raise ProvenanceValidationError("assertion identity redefined across journals")
+                signature = _identity_signature(row)
+                previous = referent_history.setdefault(row["id"], signature)
+                if previous != signature:
+                    raise ProvenanceValidationError(
+                        "immutable referent redefined across documentary histories"
+                    )
+    domains = [set(summaries), set(entry_history), set(assertion_history), set(referent_history)]
+    if any(left & right for i, left in enumerate(domains) for right in domains[i + 1 :]):
+        raise ProvenanceValidationError(
+            "journal/entry/assertion/referent identity domains overlap across journals"
+        )
+    unresolved: list[dict[str, Any]] = []
+    findings: list[str] = []
+    resolved: dict[bytes, dict[str, Any]] = {}
+    derivations: list[tuple[str, str]] = []
+    specializations: list[tuple[str, str]] = []
+    signatures: dict[str, bytes] = {}
+    for summary in summaries.values():
+        for row in summary.graph_validation.objects.values():
+            signature = _identity_signature(row)
+            if row["id"] in signatures and signatures[row["id"]] != signature:
+                raise ProvenanceValidationError(
+                    "conflicting immutable entity definitions across journals"
+                )
+            signatures[row["id"]] = signature
+            if row["type"] == "derivation":
+                derivations.append(
+                    (row["used_state"]["object_id"], row["generated_state"]["object_id"])
+                )
+            elif row["type"] == "specialization":
+                specializations.append((row["specific"]["object_id"], row["general"]["object_id"]))
+        for reference in summary.graph_validation.external_references:
+            target = summaries.get(reference["journal_id"])
+            if target is None:
+                unresolved.append(reference)
+                continue
+            matches = [f for f in target.frames if f.reference == reference["entry"]]
+            if len(matches) != 1:
+                raise ProvenanceValidationError("foreign entry anchor is not present exactly")
+            rows = [
+                row
+                for _, row in iter_assertions(_body_assertions(matches[0].document))
+                if row["assertion_id"] == reference["assertion_id"]
+            ]
+            if (
+                len(rows) != 1
+                or rows[0]["id"] != reference["object_id"]
+                or rows[0]["type"] != reference["object_type"]
+            ):
+                raise ProvenanceValidationError(
+                    "foreign reference does not match the anchored assertion"
+                )
+            resolved[canonical_document(reference)] = rows[0]
+            if reference["assertion_id"] in target.retracted_assertion_ids:
+                findings.append(
+                    f"{reference['assertion_id']}: referenced historical assertion is retracted "
+                    "at supplied foreign tail"
+                )
+        parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+        if parent:
+            target = summaries.get(parent["journal_id"])
+            if target is None:
+                if require_all_references:
+                    raise ProvenanceValidationError("fork prefix anchor could not be resolved")
+                findings.append("unresolved journal fork prefix anchor")
+            else:
+                raw = b"".join(frame.encoded for frame in target.frames)
+                validate_journal(
+                    raw, catalog=catalog, expected_anchor=parent, require_profiles=require_profiles
+                )
+    if unresolved and require_all_references:
+        raise ProvenanceValidationError("unresolved external journal references")
+    for summary in summaries.values():
+        objects = summary.graph_validation.objects
+        for row in objects.values():
+            if row["type"] != "content_comparison":
+                continue
+            descriptions = []
+            for key in ("left_description", "right_description"):
+                ref = row[key]
+                descriptions.append(
+                    objects.get(ref["object_id"])
+                    if ref["scope"] == "local"
+                    else resolved.get(canonical_document(ref))
+                )
+            if any(item is None for item in descriptions):
+                continue
+            if any(item is None or "content" not in item for item in descriptions):
+                if row["result"] != "indeterminate":
+                    raise ProvenanceValidationError(
+                        "resolved comparison lacks complete cited fixity"
+                    )
+                continue
+            left_description, right_description = descriptions
+            assert left_description is not None and right_description is not None
+            same = fingerprint(left_description["content"]) == fingerprint(
+                right_description["content"]
+            )
+            if (row["result"] == "matching_fixity" and not same) or (
+                row["result"] == "different" and same
+            ):
+                raise ProvenanceValidationError(
+                    "comparison contradicts resolved foreign content evidence"
+                )
+    _acyclic(derivations, "cross-journal derivation")
+    _acyclic(specializations, "cross-journal specialization")
+    return JournalSetValidation(tuple(summaries.values()), tuple(unresolved), tuple(findings))
+
+
+@dataclass(frozen=True, slots=True)
+class RecoveryResult:
+    complete_prefix: bytes
+    incomplete_tail: bytes
+    prefix_validation: JournalSummary
+
+
+def recover_complete_prefix(
+    raw: bytes, *, catalog: ContractCatalog | None = None
+) -> RecoveryResult:
+    """Explicitly return an untrusted torn tail; never mark the whole input valid."""
+    last_lf = raw.rfind(LF)
+    if last_lf < 0:
+        raise ProvenanceValidationError("no complete journal prefix")
+    prefix, tail = raw[: last_lf + 1], raw[last_lf + 1 :]
+    summary = validate_journal(prefix, catalog=catalog)
+    if tail and (not tail.startswith(RS) or RS in tail[1:]):
+        raise ProvenanceValidationError("tail is not one incomplete RFC 7464 frame")
+    if len(tail) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 1:
+        raise ProvenanceValidationError("incomplete tail exceeds the frame limit")
+    return RecoveryResult(prefix, tail, summary)
 
 
 def append_observation(
-    content: bytes,
-    path: Path,
+    raw: bytes,
+    result: Any,
     *,
-    relative_path: str,
-    host_id: str,
-    agent_name: str,
-    agent_version: str,
-    observer: FileStateObserver,
-    policy: ObservationPolicy | None = None,
+    expected_tail: Mapping[str, Any] | None = None,
+    catalog: ContractCatalog | None = None,
 ) -> bytes:
-    summary = validate_journal(content)
-    agent = software_agent(agent_name, agent_version)
-    observation = observer.observe(
-        FileStateObservationRequest(
-            path=path,
-            lineage_id=summary.primary_lineage_id,
-            host_id=host_id,
-            observer_agent_id=str(agent["id"]),
-            payload_binding=PayloadBindingRequest(
-                relative_path=relative_path,
-                replaces_binding_id=summary.current_binding_id,
-            ),
-            policy=policy or ObservationPolicy(),
-        )
-    )
-    omit = (str(agent["id"]),) if agent["id"] in summary.agent_ids else ()
-    assertions = observation.graph_fragment(omit_object_ids=omit)
-    if agent["id"] not in summary.agent_ids:
-        assertions["agents"] = [agent]
-    entry = _assertion_entry(
-        summary,
-        assertions=assertions,
-        recorded_by_agent_id=str(agent["id"]),
-        recording_environment_id=str(observation.environment["id"]),
-    )
-    candidate = content + encode_entry(entry)
-    validate_journal(candidate)
-    return candidate
+    """Append a result, omitting only identical already-declared identity objects.
 
-
-def append_replacement_transformation(
-    content: bytes,
-    output_path: Path,
-    *,
-    relative_path: str,
-    host_id: str,
-    agent_name: str,
-    agent_version: str,
-    event_label: str,
-    started_at: str,
-    ended_at: str,
-    observer: FileStateObserver,
-    evidence: Sequence[Mapping[str, Any]] = (),
-    policy: ObservationPolicy | None = None,
-) -> bytes:
-    summary = validate_journal(content)
-    agent = software_agent(agent_name, agent_version)
-    observation = observer.observe(
-        FileStateObservationRequest(
-            path=output_path,
-            lineage_id=summary.primary_lineage_id,
-            host_id=host_id,
-            observer_agent_id=str(agent["id"]),
-            payload_binding=PayloadBindingRequest(
-                relative_path=relative_path,
-                replaces_binding_id=summary.current_binding_id,
-            ),
-            policy=policy or ObservationPolicy(),
-        )
-    )
-    activity_id = new_urn_uuid()
-    generated_state_id = str(observation.file_state["id"])
-    assertions = observation.graph_fragment(omit_object_ids=(str(agent["id"]),))
-    if agent["id"] not in summary.agent_ids:
-        assertions["agents"] = [agent]
-    activity: JsonObject = {
-        "id": activity_id,
-        "type": "file_state_transition",
-        "event_type": "transformation",
-        "event_label": event_label,
-        "time": {"status": "exact", "started_at": started_at, "ended_at": ended_at},
-        "environment_id": observation.environment["id"],
-        "associations": [
-            {
-                "agent_id": agent["id"],
-                "role": "executing_software",
-                "plan_id": PROVENANCE_PROFILE,
-            }
-        ],
-        "outcome": "success",
-    }
-    activity["evidence"] = (
-        [dict(item) for item in evidence]
-        if evidence
-        else [
-            {
-                "id": new_urn_uuid(),
-                "basis": "direct_process_record",
-                "asserted_by_agent_id": agent["id"],
-                "confidence": "high",
-                "description": "Recorded by the software that performed the transformation.",
-            }
-        ]
-    )
-    assertions["activities"] = [activity]
-    assertions["relations"] = [
-        {
-            "id": new_urn_uuid(),
-            "type": "usage",
-            "activity_id": activity_id,
-            "state": {"id": summary.current_state_id, "scope": "local"},
-            "role": "source",
-        },
-        {
-            "id": new_urn_uuid(),
-            "type": "generation",
-            "activity_id": activity_id,
-            "state": {"id": generated_state_id, "scope": "local"},
-            "role": "replacement",
-        },
-        {
-            "id": new_urn_uuid(),
-            "type": "derivation",
-            "activity_id": activity_id,
-            "used_state": {"id": summary.current_state_id, "scope": "local"},
-            "generated_state": {"id": generated_state_id, "scope": "local"},
-            "derivation_kind": "transformation",
-        },
-    ]
-    entry = _assertion_entry(
-        summary,
-        assertions=assertions,
-        recorded_by_agent_id=str(agent["id"]),
-        recording_environment_id=str(observation.environment["id"]),
-    )
-    candidate = content + encode_entry(entry)
-    validate_journal(candidate)
-    return candidate
-
-
-def current_state_reference(content: bytes) -> ExternalStateReference:
-    """Commit to the exact entry that asserts a journal's current state."""
-
-    summary = validate_journal(content)
-    for frame in reversed(summary.frames):
-        if any(
-            state.get("id") == summary.current_state_id
-            for state in _object_rows(_entry_assertions(frame.document), "states")
-        ):
-            return ExternalStateReference(
-                journal_id=summary.journal_id,
-                entry_id=_required_string(frame.document, "id"),
-                entry_json_sha256=frame.sha256,
-                state_id=summary.current_state_id,
-            )
-    raise ProvenanceValidationError("current state has no asserting journal entry")
-
-
-def create_derivative_journal(
-    output_path: Path,
-    *,
-    relative_path: str,
-    source_journals: Sequence[bytes],
-    host_id: str,
-    agent_name: str,
-    agent_version: str,
-    event_label: str,
-    started_at: str,
-    ended_at: str,
-    observer: FileStateObserver,
-    derivation_kind: str = "transformation",
-    evidence: Sequence[Mapping[str, Any]] = (),
-    policy: ObservationPolicy | None = None,
-) -> bytes:
-    """Create a new lineage that commits to every contributing source state."""
-
-    allowed_kinds = {
-        "revision",
-        "transformation",
-        "copy",
-        "metadata_change",
-        "relocation",
-        "aggregation",
-        "extraction",
-    }
-    if derivation_kind not in allowed_kinds:
-        raise ProvenanceValidationError("unsupported derivative kind")
-    if not source_journals:
-        raise ProvenanceValidationError("a derivative requires at least one source journal")
-
-    references = [current_state_reference(content) for content in source_journals]
-    if len({(item.journal_id, item.state_id) for item in references}) != len(references):
-        raise ProvenanceValidationError("a derivative source state must not be repeated")
-
-    content = create_observation_journal(
-        output_path,
-        relative_path=relative_path,
-        host_id=host_id,
-        agent_name=agent_name,
-        agent_version=agent_version,
-        observer=observer,
-        policy=policy,
-    )
-    summary = validate_journal(content)
-    agent = software_agent(agent_name, agent_version)
-    state_frame = next(
-        frame
-        for frame in reversed(summary.frames)
-        if any(
-            state.get("id") == summary.current_state_id
-            for state in _object_rows(_entry_assertions(frame.document), "states")
-        )
-    )
-    environment_id = _required_string(state_frame.document, "recording_environment_id")
-    activity_id = new_urn_uuid()
-    activity: JsonObject = {
-        "id": activity_id,
-        "type": "file_state_transition",
-        "event_type": "transformation",
-        "event_label": event_label,
-        "time": {"status": "exact", "started_at": started_at, "ended_at": ended_at},
-        "environment_id": environment_id,
-        "associations": [
-            {
-                "agent_id": agent["id"],
-                "role": "executing_software",
-                "plan_id": PROVENANCE_PROFILE,
-            }
-        ],
-        "outcome": "success",
-        "evidence": (
-            [dict(item) for item in evidence]
-            if evidence
-            else [
-                {
-                    "id": new_urn_uuid(),
-                    "basis": "direct_process_record",
-                    "asserted_by_agent_id": agent["id"],
-                    "confidence": "high",
-                    "description": "Recorded by the software that produced the derivative.",
-                }
-            ]
-        ),
-    }
-    local_state = {"id": summary.current_state_id, "scope": "local"}
-    relations: list[JsonObject] = [
-        {
-            "id": new_urn_uuid(),
-            "type": "generation",
-            "activity_id": activity_id,
-            "state": local_state,
-            "role": "derivative",
-        }
-    ]
-    for reference in references:
-        external_state: JsonObject = {
-            "id": reference.state_id,
-            "scope": "external",
-            "journal_id": reference.journal_id,
-            "entry_id": reference.entry_id,
-            "entry_json_sha256": reference.entry_json_sha256,
-        }
-        relations.extend(
-            [
-                {
-                    "id": new_urn_uuid(),
-                    "type": "usage",
-                    "activity_id": activity_id,
-                    "state": external_state,
-                    "role": "source",
-                },
-                {
-                    "id": new_urn_uuid(),
-                    "type": "derivation",
-                    "activity_id": activity_id,
-                    "used_state": external_state,
-                    "generated_state": local_state,
-                    "derivation_kind": derivation_kind,
-                },
-            ]
-        )
-    entry = _assertion_entry(
-        summary,
-        assertions={"activities": [activity], "relations": relations},
-        recorded_by_agent_id=str(agent["id"]),
-        recording_environment_id=environment_id,
-    )
-    candidate = content + encode_entry(entry)
-    validate_journal(candidate)
-    return candidate
-
-
-def create_derivative_journal_from_identity(
-    *,
-    relative_path: str,
-    byte_count: int,
-    sha256: str,
-    source_journals: Sequence[bytes],
-    agent_name: str,
-    agent_version: str,
-    event_label: str,
-    started_at: str,
-    ended_at: str,
-    journal_id: str | None = None,
-    derivation_kind: str = "transformation",
-    evidence: Sequence[Mapping[str, Any]] = (),
-) -> bytes:
-    """Create a derivative history from an already verified output identity.
-
-    This is the publication-boundary counterpart to :func:`create_derivative_journal`.
-    It records the exact logical payload identity and transform relationship without
-    rereading a file or claiming a host-filesystem observation.  That makes the same
-    provenance contract usable for regular files and verified range-readable streams.
+    New observations, activities, bindings and attributed evidence are not
+    coalesced merely because their payload digests happen to match.
     """
+    from .model import ObservationResult
 
-    allowed_kinds = {
-        "revision",
-        "transformation",
-        "copy",
-        "metadata_change",
-        "relocation",
-        "aggregation",
-        "extraction",
-    }
-    if derivation_kind not in allowed_kinds:
-        raise ProvenanceValidationError("unsupported derivative kind")
-    if isinstance(byte_count, bool) or byte_count < 0:
-        raise ProvenanceValidationError("derivative byte count must be non-negative")
-    normalized_sha256 = sha256.casefold()
-    if len(normalized_sha256) != 64 or any(
-        character not in "0123456789abcdef" for character in normalized_sha256
-    ):
-        raise ProvenanceValidationError("derivative SHA-256 is invalid")
-    if not relative_path or relative_path.startswith("/"):
-        raise ProvenanceValidationError("derivative payload path must be relative")
-    if not source_journals:
-        raise ProvenanceValidationError("a derivative requires at least one source journal")
-
-    references = [current_state_reference(content) for content in source_journals]
-    if len({(item.journal_id, item.state_id) for item in references}) != len(references):
-        raise ProvenanceValidationError("a derivative source state must not be repeated")
-
-    resolved_journal_id = require_urn_uuid(
-        journal_id or new_urn_uuid(),
-        "journal_id",
-    )
-    lineage_id = new_urn_uuid()
-    agent = software_agent(agent_name, agent_version)
-    init: JsonObject = {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
-        "schema_version": "1.0.0",
-        "id": new_urn_uuid(),
-        "type": JOURNAL_TYPE,
-        "journal_id": resolved_journal_id,
-        "sequence": "0",
-        "recorded_at": utc_now(),
-        "recorded_by_agent_id": agent["id"],
-        "entry_kind": "journal_init",
-        "body": {
-            "journal": {
-                "primary_lineage_id": lineage_id,
-                "scope": "primary_lineage_with_related_provenance",
-                "serialization": "rfc7464_json_text_sequence",
-                "entry_digest_algorithm": "sha-256",
-                "entry_digest_coverage": "json_text_octets_excluding_framing",
-                "state_representation": "full_snapshot",
-                "payload_semantics": "opaque_bytes",
-                "correction_model": "monotonic_entry_supersession",
-                "retention_intent": "permanent_archival",
-                "label": relative_path,
-            },
-            "assertions": {
-                "agents": [agent],
-                "lineages": [
-                    {
-                        "id": lineage_id,
-                        "type": "file_lineage",
-                        "continuity_basis": "repository_tracking",
-                        "asserted_by_agent_id": agent["id"],
-                        "label": relative_path,
-                    }
-                ],
-            },
-        },
-    }
-    init_json = canonical_json(init)
-    state_id = new_urn_uuid()
-    state: JsonObject = {
-        "id": state_id,
-        "type": "regular_file_state",
-        "lineage_id": lineage_id,
-        "locator": locator_from_path(relative_path, kind="relative"),
-        "content": {
-            "size_bytes": format_scalar("sequence63", byte_count),
-            "digests": [
-                digest_assertion(
-                    normalized_sha256,
-                    agent_id=str(agent["id"]),
-                    purpose="fixity",
+    if not isinstance(result, ObservationResult):
+        raise TypeError("result must be an ObservationResult")
+    summary = validate_journal(raw, catalog=catalog)
+    existing = summary.graph_validation.objects
+    retained: list[tuple[str, dict[str, Any]]] = []
+    for category, row in iter_assertions(result.graph_fragment()):
+        old = existing.get(row["id"])
+        if old is None:
+            retained.append((category, row))
+        elif row["type"] in IDENTITY_TYPES:
+            left = {k: v for k, v in row.items() if k != "assertion_id"}
+            right = {k: v for k, v in old.items() if k != "assertion_id"}
+            if left != right:
+                raise ProvenanceValidationError(
+                    "identity descriptions differ; an explicit correction or new identity "
+                    "is required"
                 )
-            ],
-        },
-        "filesystem_metadata": {
-            "timestamps": [],
-            "native_identifiers": [],
-            "native_metadata": [],
-        },
-        "notes": [
-            "Exact payload identity verified by the publishing transform; no additional "
-            "host-filesystem snapshot was asserted."
-        ],
-    }
-    activity_id = new_urn_uuid()
-    activity: JsonObject = {
-        "id": activity_id,
-        "type": "file_state_transition",
-        "event_type": "transformation",
-        "event_label": event_label,
-        "time": {"status": "exact", "started_at": started_at, "ended_at": ended_at},
-        "associations": [
-            {
-                "agent_id": agent["id"],
-                "role": "executing_software",
-                "plan_id": PROVENANCE_PROFILE,
-            }
-        ],
-        "outcome": "success",
-        "evidence": (
-            [dict(item) for item in evidence]
-            if evidence
-            else [
-                {
-                    "id": new_urn_uuid(),
-                    "basis": "direct_process_record",
-                    "asserted_by_agent_id": agent["id"],
-                    "confidence": "high",
-                    "description": (
-                        "Recorded by the publication runtime that verified and committed "
-                        "the derivative."
-                    ),
-                }
-            ]
-        ),
-    }
-    local_state = {"id": state_id, "scope": "local"}
-    relations: list[JsonObject] = [
-        {
-            "id": new_urn_uuid(),
-            "type": "generation",
-            "activity_id": activity_id,
-            "state": local_state,
-            "role": "derivative",
-        }
-    ]
-    for reference in references:
-        external_state: JsonObject = {
-            "id": reference.state_id,
-            "scope": "external",
-            "journal_id": reference.journal_id,
-            "entry_id": reference.entry_id,
-            "entry_json_sha256": reference.entry_json_sha256,
-        }
-        relations.extend(
-            [
-                {
-                    "id": new_urn_uuid(),
-                    "type": "usage",
-                    "activity_id": activity_id,
-                    "state": external_state,
-                    "role": "source",
-                },
-                {
-                    "id": new_urn_uuid(),
-                    "type": "derivation",
-                    "activity_id": activity_id,
-                    "used_state": external_state,
-                    "generated_state": local_state,
-                    "derivation_kind": derivation_kind,
-                },
-            ]
-        )
-    assertion: JsonObject = {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
-        "schema_version": "1.0.0",
-        "id": new_urn_uuid(),
-        "type": JOURNAL_TYPE,
-        "journal_id": resolved_journal_id,
-        "sequence": "1",
-        "recorded_at": utc_now(),
-        "recorded_by_agent_id": agent["id"],
-        "entry_kind": "assertion",
-        "previous_entry": {
-            "entry_id": init["id"],
-            "sequence": "0",
-            "json_sha256": hashlib.sha256(init_json).hexdigest(),
-        },
-        "body": {
-            "assertions": {
-                "states": [state],
-                "activities": [activity],
-                "relations": relations,
-                "payload_bindings": [
-                    {
-                        "id": new_urn_uuid(),
-                        "type": "payload_binding",
-                        "operation": "bind",
-                        "role": PRIMARY_PAYLOAD_ROLE,
-                        "state": local_state,
-                        "relative_payload_locator": locator_from_path(
-                            relative_path,
-                            kind="relative",
-                        ),
-                        "established_by_activity_id": activity_id,
-                        "basis": "size_and_sha256",
-                        "asserted_by_agent_id": agent["id"],
-                    }
-                ],
-            }
-        },
-    }
-    content = encode_entry(init) + encode_entry(assertion)
-    validate_journal(content)
-    return content
-
-
-def create_derivative_journal_seed(
-    *,
-    relative_path: str,
-    byte_count: int,
-    sha256: str,
-    agent_name: str,
-    agent_version: str,
-    event_label: str,
-    started_at: str,
-    ended_at: str,
-    journal_id: str,
-) -> tuple[bytes, DerivativeJournalSeed]:
-    """Create the bounded source-independent prefix of a derivative journal.
-
-    Source commitments are appended separately in bounded entries.  All generated
-    identities are deterministic from the journal identity, making interrupted
-    construction safely replayable without freezing any construction checkpoint in
-    the provenance wire format.
-    """
-
-    normalized_journal_id = require_urn_uuid(journal_id, "journal_id")
-    if isinstance(byte_count, bool) or byte_count < 0:
-        raise ProvenanceValidationError("derivative byte count must be non-negative")
-    normalized_sha256 = sha256.casefold()
-    if len(normalized_sha256) != 64 or any(
-        character not in "0123456789abcdef" for character in normalized_sha256
-    ):
-        raise ProvenanceValidationError("derivative SHA-256 is invalid")
-    if not relative_path or relative_path.startswith("/"):
-        raise ProvenanceValidationError("derivative payload path must be relative")
-
-    namespace = uuid.UUID(normalized_journal_id.removeprefix("urn:uuid:"))
-
-    def identity(label: str) -> str:
-        return f"urn:uuid:{uuid.uuid5(namespace, label)}"
-
-    lineage_id = identity("lineage")
-    state_id = identity("state")
-    activity_id = identity("activity")
-    agent = software_agent(agent_name, agent_version)
-    init: JsonObject = {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
-        "schema_version": "1.0.0",
-        "id": identity("entry:0"),
-        "type": JOURNAL_TYPE,
-        "journal_id": normalized_journal_id,
-        "sequence": "0",
-        "recorded_at": started_at,
-        "recorded_by_agent_id": agent["id"],
-        "entry_kind": "journal_init",
-        "body": {
-            "journal": {
-                "primary_lineage_id": lineage_id,
-                "scope": "primary_lineage_with_related_provenance",
-                "serialization": "rfc7464_json_text_sequence",
-                "entry_digest_algorithm": "sha-256",
-                "entry_digest_coverage": "json_text_octets_excluding_framing",
-                "state_representation": "full_snapshot",
-                "payload_semantics": "opaque_bytes",
-                "correction_model": "monotonic_entry_supersession",
-                "retention_intent": "permanent_archival",
-                "label": relative_path,
-            },
-            "assertions": {
-                "agents": [agent],
-                "lineages": [
-                    {
-                        "id": lineage_id,
-                        "type": "file_lineage",
-                        "continuity_basis": "repository_tracking",
-                        "asserted_by_agent_id": agent["id"],
-                        "label": relative_path,
-                    }
-                ],
-            },
-        },
-    }
-    init_json = canonical_json(init)
-    local_state: JsonObject = {"id": state_id, "scope": "local"}
-    state: JsonObject = {
-        "id": state_id,
-        "type": "regular_file_state",
-        "lineage_id": lineage_id,
-        "locator": locator_from_path(relative_path, kind="relative"),
-        "content": {
-            "size_bytes": format_scalar("sequence63", byte_count),
-            "digests": [
-                digest_assertion(
-                    normalized_sha256,
-                    agent_id=str(agent["id"]),
-                    purpose="fixity",
-                )
-            ],
-        },
-        "filesystem_metadata": {
-            "timestamps": [],
-            "native_identifiers": [],
-            "native_metadata": [],
-        },
-        "notes": [
-            "Exact payload identity verified at Riverhog's publication boundary; "
-            "no host-filesystem snapshot was asserted."
-        ],
-    }
-    activity: JsonObject = {
-        "id": activity_id,
-        "type": "file_state_transition",
-        "event_type": "transformation",
-        "event_label": event_label,
-        "time": {"status": "exact", "started_at": started_at, "ended_at": ended_at},
-        "associations": [
-            {
-                "agent_id": agent["id"],
-                "role": "executing_software",
-                "plan_id": PROVENANCE_PROFILE,
-            }
-        ],
-        "outcome": "success",
-        "evidence": [
-            {
-                "id": identity("evidence"),
-                "basis": "direct_process_record",
-                "asserted_by_agent_id": agent["id"],
-                "confidence": "high",
-                "description": (
-                    "Riverhog generated this derivative assertion from the sealed "
-                    "collection-work disposition set."
-                ),
-            }
-        ],
-    }
-    assertion: JsonObject = {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
-        "schema_version": "1.0.0",
-        "id": identity("entry:1"),
-        "type": JOURNAL_TYPE,
-        "journal_id": normalized_journal_id,
-        "sequence": "1",
-        "recorded_at": ended_at,
-        "recorded_by_agent_id": agent["id"],
-        "entry_kind": "assertion",
-        "previous_entry": {
-            "entry_id": init["id"],
-            "sequence": "0",
-            "json_sha256": hashlib.sha256(init_json).hexdigest(),
-        },
-        "body": {
-            "assertions": {
-                "states": [state],
-                "activities": [activity],
-                "relations": [
-                    {
-                        "id": identity("generation"),
-                        "type": "generation",
-                        "activity_id": activity_id,
-                        "state": local_state,
-                        "role": "derivative",
-                    }
-                ],
-                "payload_bindings": [
-                    {
-                        "id": identity("binding"),
-                        "type": "payload_binding",
-                        "operation": "bind",
-                        "role": PRIMARY_PAYLOAD_ROLE,
-                        "state": local_state,
-                        "relative_payload_locator": locator_from_path(
-                            relative_path, kind="relative"
-                        ),
-                        "established_by_activity_id": activity_id,
-                        "basis": "size_and_sha256",
-                        "asserted_by_agent_id": agent["id"],
-                    }
-                ],
-            }
-        },
-    }
-    assertion_json = canonical_json(assertion)
-    content = encode_entry(init) + encode_entry(assertion)
-    for sequence, encoded in enumerate((encode_entry(init), encode_entry(assertion))):
-        validate_incremental_journal_entry(
-            encoded,
-            sequence=sequence,
-            journal_id=normalized_journal_id,
-            previous_entry_id=(None if sequence == 0 else str(init["id"])),
-            previous_json_sha256=(None if sequence == 0 else hashlib.sha256(init_json).hexdigest()),
-        )
-    return content, DerivativeJournalSeed(
-        journal_id=normalized_journal_id,
-        recorded_by_agent_id=str(agent["id"]),
-        state_id=state_id,
-        activity_id=activity_id,
-        current_entry_id=str(assertion["id"]),
-        current_entry_json_sha256=hashlib.sha256(assertion_json).hexdigest(),
-        previous_entry_id=str(assertion["id"]),
-        previous_entry_json_sha256=hashlib.sha256(assertion_json).hexdigest(),
-        next_sequence=2,
-    )
-
-
-def create_derivative_source_entry(
-    *,
-    seed: DerivativeJournalSeed,
-    references: Sequence[ExternalStateReference],
-    sequence: int,
-    previous_entry_id: str,
-    previous_entry_json_sha256: str,
-    recorded_at: str,
-) -> bytes:
-    """Encode one bounded, replay-stable slice of derivative source commitments."""
-
-    if not references:
-        raise ProvenanceValidationError("a derivative source entry must not be empty")
-    if len({(item.journal_id, item.state_id) for item in references}) != len(references):
-        raise ProvenanceValidationError("a derivative source state must not be repeated")
-    namespace = uuid.UUID(seed.journal_id.removeprefix("urn:uuid:"))
-
-    def identity(label: str) -> str:
-        return f"urn:uuid:{uuid.uuid5(namespace, label)}"
-
-    local_state: JsonObject = {"id": seed.state_id, "scope": "local"}
-    relations: list[JsonObject] = []
-    for reference in references:
-        key = (
-            f"{reference.journal_id}:{reference.entry_id}:"
-            f"{reference.entry_json_sha256}:{reference.state_id}"
-        )
-        external_state: JsonObject = {
-            "id": reference.state_id,
-            "scope": "external",
-            "journal_id": reference.journal_id,
-            "entry_id": reference.entry_id,
-            "entry_json_sha256": reference.entry_json_sha256,
-        }
-        relations.extend(
-            (
-                {
-                    "id": identity(f"usage:{key}"),
-                    "type": "usage",
-                    "activity_id": seed.activity_id,
-                    "state": external_state,
-                    "role": "source",
-                },
-                {
-                    "id": identity(f"derivation:{key}"),
-                    "type": "derivation",
-                    "activity_id": seed.activity_id,
-                    "used_state": external_state,
-                    "generated_state": local_state,
-                    "derivation_kind": "transformation",
-                },
+        else:
+            raise ProvenanceValidationError(
+                "observation result reuses an existing non-identity object"
             )
-        )
-    document: JsonObject = {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
-        "schema_version": "1.0.0",
-        "id": identity(f"entry:{sequence}"),
-        "type": JOURNAL_TYPE,
-        "journal_id": seed.journal_id,
-        "sequence": format_scalar("sequence63", sequence),
-        "recorded_at": recorded_at,
-        "recorded_by_agent_id": seed.recorded_by_agent_id,
-        "entry_kind": "assertion",
-        "previous_entry": {
-            "entry_id": previous_entry_id,
-            "sequence": format_scalar("sequence63", sequence - 1),
-            "json_sha256": previous_entry_json_sha256,
-        },
-        "body": {"assertions": {"relations": relations}},
-    }
-    encoded = encode_entry(document)
-    validate_incremental_journal_entry(
-        encoded,
-        sequence=sequence,
-        journal_id=seed.journal_id,
-        previous_entry_id=previous_entry_id,
-        previous_json_sha256=previous_entry_json_sha256,
+    return append_assertions(
+        raw,
+        graph_from_assertions(retained),
+        recorded_by_agent_id=result.observer_agent_id,
+        expected_tail=expected_tail,
+        catalog=catalog,
     )
-    return encoded
-
-
-def _assertion_entry(
-    summary: JournalSummary,
-    *,
-    assertions: Mapping[str, Any],
-    recorded_by_agent_id: str,
-    recording_environment_id: str,
-) -> JsonObject:
-    return {
-        "$schema": PROVENANCE_ENTRY_SCHEMA,
-        "profile": PROVENANCE_PROFILE,
-        "schema_version": "1.0.0",
-        "id": new_urn_uuid(),
-        "type": JOURNAL_TYPE,
-        "journal_id": summary.journal_id,
-        "sequence": format_scalar("sequence63", summary.entries),
-        "recorded_at": utc_now(),
-        "recorded_by_agent_id": recorded_by_agent_id,
-        "recording_environment_id": recording_environment_id,
-        "entry_kind": "assertion",
-        "previous_entry": {
-            "entry_id": _required_string(summary.tail.document, "id"),
-            "sequence": format_scalar("sequence63", summary.tail.sequence),
-            "json_sha256": summary.tail.sha256,
-        },
-        "body": {"assertions": dict(assertions)},
-    }
-
-
-def _required_string(value: Mapping[str, Any], key: str) -> str:
-    current = value.get(key)
-    if not isinstance(current, str) or not current:
-        raise ProvenanceValidationError(f"required string {key!r} is absent")
-    return current
-
-
-def _entry_assertions(document: Mapping[str, Any]) -> Mapping[str, Any]:
-    body = document.get("body")
-    if not isinstance(body, dict):
-        return {}
-    if document.get("entry_kind") == "correction":
-        replacement = body.get("replacement")
-        return replacement if isinstance(replacement, dict) else {}
-    assertions = body.get("assertions")
-    return assertions if isinstance(assertions, dict) else {}
-
-
-def _object_rows(assertions: Mapping[str, Any], key: str) -> tuple[JsonObject, ...]:
-    rows = assertions.get(key)
-    if not isinstance(rows, list):
-        return ()
-    return tuple(item for item in rows if isinstance(item, dict))
-
-
-def _state_content_identity(state: Mapping[str, Any]) -> tuple[int, str]:
-    content = state.get("content")
-    if not isinstance(content, dict):
-        raise ProvenanceValidationError("file state has no content identity")
-    try:
-        byte_count = parse_scalar("sequence63", content.get("size_bytes"))
-    except CanonicalJsonError as exc:
-        raise ProvenanceValidationError("file state has an invalid byte count") from exc
-    digests = content.get("digests")
-    if not isinstance(digests, list):
-        raise ProvenanceValidationError("file state has no digest list")
-    sha256 = next(
-        (
-            item.get("value")
-            for item in digests
-            if isinstance(item, dict)
-            and item.get("algorithm") == "sha-256"
-            and item.get("encoding") == "hex"
-            and item.get("purpose") == "fixity"
-        ),
-        None,
-    )
-    if not isinstance(sha256, str) or len(sha256) != 64:
-        raise ProvenanceValidationError("file state has no SHA-256 fixity digest")
-    return byte_count, sha256
-
-
-def _walk_json(value: Any) -> Iterable[Mapping[str, Any]]:
-    if isinstance(value, dict):
-        yield value
-        for child in value.values():
-            yield from _walk_json(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from _walk_json(child)
-
-
-def _external_state_references(
-    assertions: Mapping[str, Any],
-) -> tuple[ExternalStateReference, ...]:
-    references: list[ExternalStateReference] = []
-    for item in _walk_json(assertions):
-        if item.get("scope") != "external":
-            continue
-        try:
-            references.append(
-                ExternalStateReference(
-                    journal_id=_required_string(item, "journal_id"),
-                    entry_id=_required_string(item, "entry_id"),
-                    entry_json_sha256=_required_string(item, "entry_json_sha256"),
-                    state_id=_required_string(item, "id"),
-                )
-            )
-        except ProvenanceValidationError:
-            continue
-    return tuple(references)
-
-
-__all__ = [
-    "DerivativeJournalSeed",
-    "ExternalStateReference",
-    "JournalFrame",
-    "JournalSummary",
-    "IncrementalJournalEntry",
-    "PROVENANCE_JOURNAL_ENTRY_BYTES_MAX",
-    "ProvenanceValidationError",
-    "append_observation",
-    "append_replacement_transformation",
-    "create_observation_journal",
-    "create_derivative_journal_seed",
-    "create_derivative_source_entry",
-    "encode_entry",
-    "journal_sha256",
-    "parse_journal",
-    "software_agent",
-    "software_agent_id",
-    "validate_journal",
-    "validate_incremental_journal_entry",
-    "resolve_incremental_journal_current_state",
-    "validate_journal_set",
-    "verify_payload_binding",
-]
