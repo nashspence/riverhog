@@ -11,12 +11,12 @@ import base64
 import hashlib
 import uuid
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, cast
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_provenance import JournalSummary
 from riverhog_provenance_contracts import core_contract
-from sqlalchemy import func, select
+from sqlalchemy import Table, func, select
 from sqlalchemy.orm import Session
 from time_formats import utc_timestamp_now
 
@@ -421,7 +421,7 @@ def _dataset_sha256(session: Session, build_id: str) -> str:
 
     digest = hashlib.sha256(b"riverhog-canonical-discovery-dataset/v1\n")
     for model in _DATASET_TABLES:
-        table = model.__table__
+        table = cast(Table, model.__table__)
         columns = [column for column in table.columns if column.name != "build_id"]
         keys = [column for column in table.primary_key.columns if column.name != "build_id"]
         statement = (

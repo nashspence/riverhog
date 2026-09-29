@@ -162,7 +162,7 @@ def member_relevance(
                 if "activity_id" in row:
                     activities.add(row["activity_id"])
                 for relation_id in (row.get("usage_id"), row.get("generation_id")):
-                    relation = objects.get(relation_id)
+                    relation = objects.get(relation_id) if isinstance(relation_id, str) else None
                     if relation is not None:
                         mark(summary, relation, scope)
                 target, source = resolve_state(summary, row["used_state"])

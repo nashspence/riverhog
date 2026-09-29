@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import hashlib
 import json
 from collections.abc import Mapping, Sequence
@@ -94,7 +95,7 @@ class FFprobeArtifactFacts(_Model):
     def validate_report(self) -> Self:
         try:
             raw = base64.b64decode(self.report_base64, validate=True)
-        except (ValueError, base64.binascii.Error) as exc:
+        except (ValueError, binascii.Error) as exc:
             raise ValueError("FFprobe report is not canonical base64") from exc
         if (
             len(raw) != self.report_bytes

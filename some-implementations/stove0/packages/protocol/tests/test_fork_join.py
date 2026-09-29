@@ -54,7 +54,7 @@ def root(number: int, label: str | None = None) -> CollectionRootIdentityRef:
 def artifact(
     artifact_id: str,
     collection: CollectionRootIdentityRef,
-    path: str,
+    member_label: str,
     *,
     role: str = "source.primary/v1",
     byte_count: int = 10,
@@ -63,9 +63,9 @@ def artifact(
         id=artifact_id,
         role=role,
         collection=collection,
-        path=path,
+        artifact_id=digest(f"member:{collection.collection_id}:{member_label}"),
         bytes=str(byte_count),
-        sha256=digest(f"artifact:{collection.collection_id}:{path}:{byte_count}"),
+        sha256=digest(f"artifact:{collection.collection_id}:{member_label}:{byte_count}"),
     )
 
 
@@ -87,7 +87,7 @@ def test_selection_order_projects_directly_to_riverhog_artifact_order() -> None:
                 archive_root_sha256=item.collection.archive_root_sha256,
                 artifact_set_identity=item.collection.artifact_set_identity,
             ),
-            path=item.path,
+            artifact_id=item.artifact_id,
             bytes=item.bytes,
             sha256=item.sha256,
         )
@@ -95,10 +95,8 @@ def test_selection_order_projects_directly_to_riverhog_artifact_order() -> None:
     )
 
     assert projected == tuple(sorted(projected))
-    assert [item.id for item in selection.artifacts] == [
-        "middle-id",
-        "z-id-sorts-last",
-        "a-id-sorts-first",
+    assert [item.artifact_id for item in selection.artifacts] == [
+        item.artifact_id for item in projected
     ]
 
 
@@ -424,9 +422,9 @@ def test_branch_selections_may_overlap_without_partition_semantics() -> None:
     _, selections, branches = branch_set_fixture()
     audio = selections[branches["audio"].artifact_selection.selection_sha256]
     video = selections[branches["video"].artifact_selection.selection_sha256]
-    audio_paths = {(item.collection.collection_id, item.path) for item in audio.artifacts}
-    video_paths = {(item.collection.collection_id, item.path) for item in video.artifacts}
-    assert audio_paths & video_paths == {(1, "source/shared.mov")}
+    audio_members = {(item.collection.collection_id, item.artifact_id) for item in audio.artifacts}
+    video_members = {(item.collection.collection_id, item.artifact_id) for item in video.artifacts}
+    assert audio_members & video_members == {(1, digest("member:1:source/shared.mov"))}
 
 
 def test_child_work_inputs_are_exactly_selection_roots() -> None:

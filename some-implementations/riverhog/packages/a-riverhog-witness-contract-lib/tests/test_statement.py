@@ -9,7 +9,7 @@ def _descriptor(*, description: str | None = None, revision: str = "1") -> Catal
     return CatalogSyncDescriptor(
         collection_id="42",
         archive_root_sha256="a" * 64,
-        content_identity="b" * 64,
+        artifact_set_identity="b" * 64,
         description=description,
         description_revision=0 if description is None else 1,
         description_identity="c" * 64,
@@ -30,15 +30,15 @@ def test_statement_is_canonical_and_ignores_mutable_catalog_fields() -> None:
         b"a-riverhog-collection-witness/v1\n"
         b'{"archive_root_sha256":"'
         + b"a" * 64
-        + b'","collection_id":"42","content_identity":"'
+        + b'","artifact_set_identity":"'
         + b"b" * 64
-        + b'","format":"a-riverhog-collection-witness/v1","source_identity":"'
+        + b'","collection_id":"42","format":"a-riverhog-collection-witness/v1","source_identity":"'
         + b"e" * 64
         + b'"}\n'
     )
     assert CollectionWitnessStatement.parse(raw) == first
     assert (
-        first.sha256().hex() == "d6801d31ae6d035a3af71df2671b0b681f4c82be47b89bdbcce49d3fdf84c8e3"
+        first.sha256().hex() == "92731c470ae2ce8b0a172f3b9ed54d52a6a3e614d764dec2eb7f4f02f4ca2611"
     )
 
 
@@ -50,14 +50,14 @@ def test_statement_rejects_wrong_authority_and_noncanonical_bytes() -> None:
             source_identity="E" * 64,
             collection_id=42,
             archive_root_sha256="a" * 64,
-            content_identity="b" * 64,
+            artifact_set_identity="b" * 64,
         )
     with pytest.raises(ValueError):
         CollectionWitnessStatement(
             source_identity="e" * 64,
             collection_id=0,
             archive_root_sha256="a" * 64,
-            content_identity="b" * 64,
+            artifact_set_identity="b" * 64,
         )
     with pytest.raises(ValueError):
         CollectionWitnessStatement.parse(raw.replace(b'"42"', b'"042"'))

@@ -24,7 +24,7 @@ _FIELDS = frozenset(
         "source_identity",
         "collection_id",
         "archive_root_sha256",
-        "content_identity",
+        "artifact_set_identity",
     }
 )
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -42,12 +42,12 @@ class CollectionWitnessStatement:
     source_identity: str
     collection_id: int
     archive_root_sha256: str
-    content_identity: str
+    artifact_set_identity: str
 
     def __post_init__(self) -> None:
         _require_sha256("source_identity", self.source_identity)
         _require_sha256("archive_root_sha256", self.archive_root_sha256)
-        _require_sha256("content_identity", self.content_identity)
+        _require_sha256("artifact_set_identity", self.artifact_set_identity)
         if (
             isinstance(self.collection_id, bool)
             or not isinstance(self.collection_id, int)
@@ -61,7 +61,7 @@ class CollectionWitnessStatement:
             source_identity=source_identity,
             collection_id=descriptor.collection_id,
             archive_root_sha256=descriptor.archive_root_sha256,
-            content_identity=descriptor.content_identity,
+            artifact_set_identity=descriptor.artifact_set_identity,
         )
 
     def serialize(self) -> bytes:
@@ -70,7 +70,7 @@ class CollectionWitnessStatement:
             "source_identity": self.source_identity,
             "collection_id": format_scalar("sequence63", self.collection_id),
             "archive_root_sha256": self.archive_root_sha256,
-            "content_identity": self.content_identity,
+            "artifact_set_identity": self.artifact_set_identity,
         }
         return _PREFIX + canonical_json_bytes(document) + b"\n"
 
@@ -91,18 +91,18 @@ class CollectionWitnessStatement:
         collection_id = parse_scalar("sequence63", document["collection_id"])
         source_identity = document["source_identity"]
         archive_root_sha256 = document["archive_root_sha256"]
-        content_identity = document["content_identity"]
+        artifact_set_identity = document["artifact_set_identity"]
         if (
             not isinstance(source_identity, str)
             or not isinstance(archive_root_sha256, str)
-            or not isinstance(content_identity, str)
+            or not isinstance(artifact_set_identity, str)
         ):
             raise ValueError("collection witness statement identity fields must be text")
         statement = cls(
             source_identity=source_identity,
             collection_id=collection_id,
             archive_root_sha256=archive_root_sha256,
-            content_identity=content_identity,
+            artifact_set_identity=artifact_set_identity,
         )
         if statement.serialize() != raw:
             raise ValueError("collection witness statement is not canonical")

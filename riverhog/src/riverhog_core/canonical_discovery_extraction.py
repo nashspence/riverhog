@@ -164,7 +164,8 @@ def predicate_matches(posting: ScalarPosting, predicate: ValuePredicate) -> bool
     if predicate.operator == "equals":
         if type(posting.value) is not type(predicate.value):
             return False
-        if type(posting.value) is str and predicate.text_mode == "ascii-fold":
+        if isinstance(posting.value, str) and predicate.text_mode == "ascii-fold":
+            assert isinstance(predicate.value, str)
             return ascii_fold(posting.value) == ascii_fold(predicate.value)
         return posting.value == predicate.value
     if type(posting.value) is not str:
@@ -189,7 +190,7 @@ def assertion_clause_matches(
     if clause.assertion_state != "any" and clause.assertion_state != assertion_state:
         return None
     postings = tuple(assertion_postings(row))
-    groups = (postings,)
+    groups: tuple[tuple[ScalarPosting, ...], ...] = (postings,)
     if clause.profile is not None:
         groups = tuple(
             tuple(

@@ -86,7 +86,7 @@ def _artifact_key(artifact: WorkArtifactSubject) -> tuple[int, str, str, str, in
         artifact.collection.collection_id,
         artifact.collection.archive_root_sha256,
         artifact.collection.artifact_set_identity,
-        artifact.path,
+        artifact.artifact_id,
         artifact.bytes,
         artifact.sha256,
         artifact.id,
@@ -131,7 +131,7 @@ class ArtifactSelection(Stove0ProtocolModel):
         ids = [item.id for item in value]
         if len(ids) != len(set(ids)):
             raise ValueError("selection artifact IDs must be unique")
-        exact = [(_root_key(item.collection), item.path) for item in value]
+        exact = [(_root_key(item.collection), item.artifact_id) for item in value]
         if len(exact) != len(set(exact)):
             raise ValueError("selection cannot repeat an exact collection artifact")
         roots: dict[int, CollectionRootIdentityRef] = {}
