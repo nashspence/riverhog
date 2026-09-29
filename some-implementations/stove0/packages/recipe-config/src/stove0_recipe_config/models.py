@@ -21,19 +21,18 @@ class RecipeModel(BaseModel):
 
 
 class ArtifactRule(RecipeModel):
-    """Classify one path; first matching rule wins."""
+    """Assign a role from accepted facts; the first matching rule wins."""
 
-    glob: str = "*"
     role: SemanticId = "stove0.source/v1"
-    media_type: str | None = None
+    when: tuple[FactPredicate, ...] = ()
 
 
 class ArtifactAssociation(RecipeModel):
-    """Associate classified artifacts without assigning device meaning to Stove0."""
+    """Declared role association resolved from accepted relation evidence."""
 
     primary_role: SemanticId
     associated_roles: tuple[SemanticId, ...] = Field(min_length=1)
-    path_identity: Literal["same-parent-stem"] = "same-parent-stem"
+    sources: tuple[AssociationEvidenceSource, ...] = Field(min_length=1)
 
     @field_validator("associated_roles")
     @classmethod
@@ -47,7 +46,6 @@ class ObserverUse(RecipeModel):
     registration_id: str
     contract_id: SemanticId
     contract_sha256: Sha256
-    artifact_rules: tuple[ArtifactRule, ...] = (ArtifactRule(),)
     options: dict[str, JsonValue] = Field(default_factory=dict)
     timeout_seconds: int = Field(default=300, ge=1, le=86400)
     maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
@@ -79,6 +77,34 @@ class FactPredicate(RecipeModel):
             )
         if self.operator == "exists" and not isinstance(self.value, bool):
             raise ValueError("exists predicates require a boolean value")
+        return self
+
+
+class AssociationEvidenceSource(RecipeModel):
+    """One ordered factual relation source, with no path interpretation."""
+
+    observation_contract_id: SemanticId
+    observation_contract_sha256: Sha256
+    records_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
+    associated_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
+    primary_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
+    endpoint_mode: Literal["subject-id", "exact-endpoint"]
+    endpoint_observation_contract_id: SemanticId | None = None
+    endpoint_records_pointer: str = Field(default="/artifacts", pattern=_JSON_POINTER_PATTERN)
+    endpoint_subject_pointer: str = Field(default="/subject_id", pattern=_JSON_POINTER_PATTERN)
+    endpoint_pointers: tuple[str, ...] = ("/state", "/occurrence")
+    primary_partition_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    associated_partition_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    status_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    required: tuple[FactPredicate, ...] = ()
+    expected_options: dict[str, JsonValue] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def valid_endpoint_binding(self) -> Self:
+        if (self.endpoint_mode == "exact-endpoint") != (
+            self.endpoint_observation_contract_id is not None
+        ):
+            raise ValueError("exact relation endpoints require their selected observer contract")
         return self
 
 
