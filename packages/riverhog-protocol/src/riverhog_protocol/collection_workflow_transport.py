@@ -52,7 +52,7 @@ SemanticId = Annotated[
     str,
     Field(pattern=r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$"),
 ]
-CapabilityAction = Literal["read-inputs", "write-output"]
+CapabilityAction = Literal["read-inputs", "read-provenance", "write-output"]
 
 WORK_DOCUMENT_MAX_BYTES = 4 * 1024 * 1024
 CONTROLLER_EVIDENCE_MAX_BYTES = 16 * 1024 * 1024
