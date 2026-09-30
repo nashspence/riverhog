@@ -23,7 +23,16 @@ class ListCollectionArtifactProvenanceOut(RiverhogModel):
     archive_root_sha256: Sha256
     artifact_set_identity: Sha256
     provenance_identity: Sha256
-    artifacts: list[ArtifactMemberIdentityDocument] = Field(max_length=200)
+    artifacts: list[ArtifactMemberIdentityDocument] = Field(
+        max_length=200,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-collection-artifact-provenance-page",
+                "progression": "archive-root-bound-artifact-id",
+            }
+        },
+    )
     next_artifact_id: ArtifactId | None = None
 
 
@@ -43,7 +52,16 @@ class ProvenanceJournalSummaryOut(RiverhogModel):
 class ListCollectionProvenanceJournalsOut(RiverhogModel):
     collection_id: CollectionId
     archive_root_sha256: Sha256
-    journals: list[ProvenanceJournalSummaryOut] = Field(max_length=200)
+    journals: list[ProvenanceJournalSummaryOut] = Field(
+        max_length=200,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-collection-journal-page",
+                "progression": "archive-root-bound-journal-id",
+            }
+        },
+    )
     next_journal_id: ProvenanceJournalId | None = None
 
 
