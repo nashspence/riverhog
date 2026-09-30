@@ -309,6 +309,7 @@ class OpusTargetService(PersistentTargetService):
                         xmp_output = OutputArtifact.model_validate(
                             dict(
                                 id=xmp_output_id,
+                                describes_output_id=output_id,
                                 role=METADATA_XMP_ROLE,
                                 artifact_id=_member_id(
                                     request.declaration.plan.plan_sha256, xmp_output_id

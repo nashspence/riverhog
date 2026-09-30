@@ -24,7 +24,8 @@ class CompletionRecords:
             "CREATE TABLE records (kind TEXT PRIMARY KEY, size TEXT, sha256 TEXT, path TEXT)"
         )
         self._db.execute(
-            "CREATE TABLE outputs (artifact_id TEXT PRIMARY KEY, value BLOB, imports BLOB)"
+            "CREATE TABLE outputs (artifact_id TEXT PRIMARY KEY, output_id TEXT UNIQUE, "
+            "state BLOB UNIQUE, value BLOB, imports BLOB)"
         )
 
     def __enter__(self) -> Self:
@@ -57,15 +58,32 @@ class CompletionRecords:
     def add_output(self, output: Mapping[str, Any], imports: Mapping[str, Any]) -> None:
         try:
             self._db.execute(
-                "INSERT INTO outputs VALUES (?, ?, ?)",
+                "INSERT INTO outputs VALUES (?, ?, ?, ?, ?)",
                 (
                     output["artifact_id"],
+                    output["output_id"],
+                    canonical_json_bytes(output["state"]),
                     canonical_json_bytes(dict(output)),
                     canonical_json_bytes(dict(imports)),
                 ),
             )
         except sqlite3.IntegrityError as exc:
             raise ValueError("duplicate completion output artifact") from exc
+
+    @property
+    def output_count(self) -> int:
+        return int(self._db.execute("SELECT count(*) FROM outputs").fetchone()[0])
+
+    def output_for_key(self, output_id: str) -> dict[str, Any]:
+        row = self._db.execute(
+            "SELECT value FROM outputs WHERE output_id = ?", (output_id,)
+        ).fetchone()
+        if row is None:
+            raise ValueError("accepted operation refers to an unproduced output key")
+        value = require_canonical_json(row[0])
+        if not isinstance(value, dict):
+            raise ValueError("completion output is not an exact object")
+        return value
 
     def output_rows(self, *, imports: bool = False) -> Iterator[dict[str, Any]]:
         column = "imports" if imports else "value"

@@ -26,6 +26,7 @@ from stove0_target_protocol import (
     OutputSourceEdge,
     TargetCallbackAccess,
     TargetInputPage,
+    TargetOutputPage,
     TargetProductionAuthority,
     TargetProductionAuthorityPayload,
     TargetProductionSealResponse,
@@ -46,6 +47,7 @@ from stove0_core.work_state import (
 CallbackAction = Literal[
     "inputs:read",
     "outputs:declare",
+    "outputs:read",
     "dispositions:declare",
     "source-edges:declare",
     "production:seal",
@@ -135,6 +137,7 @@ class TargetCallbackAuthority:
                 "dispositions:declare",
                 "inputs:read",
                 "outputs:declare",
+                "outputs:read",
                 "production:seal",
                 "source-edges:declare",
             ),
@@ -184,6 +187,40 @@ class TargetCallbackAuthority:
                 )
                 for item in artifacts
             ),
+        )
+
+    def output_page(
+        self,
+        token: str,
+        *,
+        job_id: str,
+        production_sha256: str,
+        after_id: str | None,
+        limit: int,
+    ) -> TargetOutputPage:
+        record, _ = self._authorize(token, action="outputs:read", job_id=job_id)
+        if limit < 1 or limit > 256:
+            raise ValueError("target output page limit must be between 1 and 256")
+        seal = self.store.load_target_production_seal(record.work_id, job_id)
+        if (
+            seal is None
+            or seal.state != "sealed"
+            or seal.production is None
+            or seal.production.production_sha256 != production_sha256
+        ):
+            raise ValueError("output traversal requires the exact sealed production authority")
+        artifacts = self.store.target_output_page(
+            record.work_id, job_id, after_id=after_id, limit=limit
+        )
+        # No mutable declarations remain after sealing. A full page may require
+        # one final empty step, whose terminal is checked against the commitment.
+        complete = len(artifacts) < limit
+        return TargetOutputPage(
+            production_sha256=production_sha256,
+            after_id=after_id,
+            next_after_id=None if complete else artifacts[-1].id,
+            complete=complete,
+            artifacts=artifacts,
         )
 
     def declare_output(self, token: str, *, job_id: str, output: OutputArtifact) -> None:
@@ -379,6 +416,15 @@ class TargetCallbackAuthority:
         counts = {item.role: item.count for item in checkpoint.output_roles}
         count = checkpoint.output_count
         for output in page:
+            for related_id in (output.describes_output_id, output.reconstructs_output_id):
+                if (
+                    related_id is not None
+                    and self.store.load_target_output(
+                        record.work_id, _target_job_id(record), related_id
+                    )
+                    is None
+                ):
+                    raise ValueError("target output relationship names an unproduced output")
             update_output_artifact_commitment(digest, ordinal=count, artifact=output)
             counts[output.role] = counts.get(output.role, 0) + 1
             count += 1

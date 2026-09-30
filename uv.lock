@@ -3499,24 +3499,30 @@ name = "stove0-target-support"
 version = "0.1.0"
 source = { editable = "some-implementations/stove0/packages/target-support" }
 dependencies = [
+    { name = "a-riverhog-direct-relations-contract-lib" },
     { name = "http-api-contracts" },
     { name = "jsonschema" },
     { name = "pydantic" },
+    { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
+    { name = "riverhog-provenance" },
     { name = "stove0-target-client" },
     { name = "stove0-target-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "a-riverhog-direct-relations-contract-lib", editable = "some-implementations/riverhog/provenance/contracts/direct-relations" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "jsonschema", specifier = ">=4.25,<5.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
+    { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
     { name = "stove0-target-client", editable = "some-implementations/stove0/packages/target-client" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
 ]

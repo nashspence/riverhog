@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Callable, Iterator, Mapping
 from typing import Any, Literal, TypeVar
 from urllib.parse import quote
@@ -21,6 +22,8 @@ from stove0_target_protocol import (
     InputDispositionDeclaration,
     OperationContract,
     OutputArtifact,
+    OutputArtifactRoleCount,
+    OutputArtifactSetIdentity,
     OutputSourceEdge,
     Sha256,
     TargetCallbackAccess,
@@ -29,9 +32,12 @@ from stove0_target_protocol import (
     TargetInputPage,
     TargetJobRequest,
     TargetJobStatus,
+    TargetOutputPage,
     TargetPreflightRequest,
     TargetPreflightResponse,
+    TargetProductionAuthority,
     TargetProductionSealResponse,
+    update_output_artifact_commitment,
     validate_preflight_response_against_request,
     validate_status_against_request,
 )
@@ -232,6 +238,70 @@ class TargetCallbackClient:
             TargetInputPage,
             params={} if continuation is None else {"continuation": continuation},
         )
+
+    def get_target_execution_outputs(
+        self,
+        job_id: str,
+        *,
+        production_sha256: str,
+        after_id: str | None = None,
+    ) -> TargetOutputPage:
+        job = _JOB_ID.validate_python(job_id)
+        identity = _JOB_ID.validate_python(production_sha256)
+        path = f"/v1/target-executions/{quote(job, safe='')}/outputs"
+        params = {"production_sha256": identity}
+        if after_id is not None:
+            params["after_id"] = after_id
+        return self._request("GET", path, TargetOutputPage, params=params)
+
+    def iter_outputs(self, production: TargetProductionAuthority) -> Iterator[OutputArtifact]:
+        """Reject missing, replaced, reordered or duplicated sealed declarations."""
+        after_id = None
+        digest = hashlib.sha256()
+        count = 0
+        total_bytes = 0
+        roles: dict[str, int] = {}
+        while True:
+            page = self.get_target_execution_outputs(
+                production.job_id,
+                production_sha256=production.production_sha256,
+                after_id=after_id,
+            )
+            if page.production_sha256 != production.production_sha256 or page.after_id != after_id:
+                raise TargetProtocolError(
+                    "Stove0 target-output authority or continuation changed",
+                    failure_kind="invalid_response",
+                )
+            for artifact in page.artifacts:
+                update_output_artifact_commitment(digest, ordinal=count, artifact=artifact)
+                count += 1
+                total_bytes += artifact.bytes
+                roles[artifact.role] = roles.get(artifact.role, 0) + 1
+                if count > production.outputs.artifact_count:
+                    raise TargetProtocolError(
+                        "Stove0 target-output traversal exceeds sealed coverage",
+                        failure_kind="invalid_response",
+                    )
+                yield artifact
+            if page.complete:
+                actual = OutputArtifactSetIdentity.model_validate(
+                    {
+                        "artifact_count": count,
+                        "total_bytes": str(total_bytes),
+                        "roles": tuple(
+                            OutputArtifactRoleCount(role=role, count=count)
+                            for role, count in sorted(roles.items())
+                        ),
+                        "sha256": digest.hexdigest(),
+                    }
+                )
+                if actual != production.outputs:
+                    raise TargetProtocolError(
+                        "Stove0 target-output traversal differs from sealed production",
+                        failure_kind="invalid_response",
+                    )
+                return
+            after_id = page.next_after_id
 
     def declare_target_execution_output(
         self, job_id: str, output: OutputArtifact

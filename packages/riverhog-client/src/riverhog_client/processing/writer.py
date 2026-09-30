@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import replace
 from tempfile import TemporaryFile
 from typing import Any, cast
@@ -36,6 +36,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_provenance import (
     external_reference,
     selected_delivery_occurrence,
+    software_agent_id,
     validate_journal_chunks,
 )
 
@@ -53,6 +54,8 @@ from riverhog_client.producer import (
     ProducerArtifactIdentity,
     ProducerInput,
 )
+
+type CompletionAssertions = Callable[[CompletionRecords, str, str], Iterable[Mapping[str, Any]]]
 
 
 def _sha256(value: str, label: str) -> str:
@@ -311,6 +314,7 @@ class IncrementalDerivedCollectionWriter:
         execution_sha256: str,
         disposition_set: ArtifactDispositionSetIdentity,
         completion_records: Iterable[CompletionRecord],
+        completion_assertions: CompletionAssertions | None = None,
         poll_seconds: float = 2.0,
         timeout_seconds: float = 24 * 60 * 60,
     ) -> DerivedCollectionReceipt:
@@ -328,7 +332,9 @@ class IncrementalDerivedCollectionWriter:
             controller_evidence_sha256=self.controller_evidence_sha256,
             disposition_set=disposition_set,
         )
-        self._seal_completion(execution_sha256, disposition_set, completion_records)
+        self._seal_completion(
+            execution_sha256, disposition_set, completion_records, completion_assertions
+        )
         produced = self.producer.finish(
             poll_seconds=poll_seconds,
             timeout_seconds=timeout_seconds,
@@ -345,6 +351,7 @@ class IncrementalDerivedCollectionWriter:
         execution_sha256: str,
         disposition: ArtifactDispositionSetIdentity,
         supplied: Iterable[CompletionRecord],
+        completion_assertions: CompletionAssertions | None,
     ) -> None:
         session = self.api.get_collection_upload_session(self.producer.collection_id)
         if session["state"] == "finalized":
@@ -397,6 +404,15 @@ class IncrementalDerivedCollectionWriter:
                     records=records.records(),
                     journal_id=recording.journal_id,
                     recorded_at=recording.recorded_at,
+                    late_assertions=(
+                        completion_assertions(
+                            records,
+                            recording.journal_id,
+                            software_agent_id(self.producer_app, self.producer_version),
+                        )
+                        if completion_assertions is not None
+                        else ()
+                    ),
                     execution_sha256=execution_sha256,
                     output_bindings_sha256=records.record("output-bindings").sha256,
                     input_history_bindings_sha256=records.record("input-history-bindings").sha256,
@@ -459,7 +475,7 @@ class IncrementalDerivedCollectionWriter:
                     member_role=COLLECTION_MEMBER_ROLE,
                 )
                 output_id = validate_member_completion_requirement(
-                    summary.graph,
+                    summary.graph_validation.view,
                     delivery_context_id=self.producer.delivery_context_id,
                     state_id=state["id"],
                     requirement=self.requirement,

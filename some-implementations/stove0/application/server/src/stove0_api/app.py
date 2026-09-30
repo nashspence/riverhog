@@ -106,6 +106,7 @@ from stove0_target_protocol import (
     OutputSourceEdge,
     TargetCallbackAcknowledgement,
     TargetInputPage,
+    TargetOutputPage,
     TargetProductionSealResponse,
 )
 from time_formats import utc_timestamp_now
@@ -422,6 +423,35 @@ def create_app(
                 detail=str(exc),
                 headers={"WWW-Authenticate": "Bearer"},
             ) from exc
+
+    @app.get(
+        "/v1/target-executions/{job_id}/outputs",
+        response_model=TargetOutputPage,
+        operation_id="get_target_execution_outputs",
+        tags=["target-executions"],
+        openapi_extra={
+            **operation_interface("client-only-primitive"),
+            **exact_authority_page_operation(
+                authority="target-production-authority",
+                authority_parameter="production_sha256",
+                cursor_parameter="after_id",
+                fixed_limit=256,
+            ),
+        },
+    )
+    def get_target_execution_outputs(
+        job_id: str,
+        production_sha256: str,
+        after_id: str | None = None,
+        token: str = Depends(_bearer),
+    ) -> TargetOutputPage:
+        return _target_callback(composition).output_page(
+            token,
+            job_id=job_id,
+            production_sha256=production_sha256,
+            after_id=after_id,
+            limit=256,
+        )
 
     @app.put(
         "/v1/target-executions/{job_id}/outputs/{artifact_id}",

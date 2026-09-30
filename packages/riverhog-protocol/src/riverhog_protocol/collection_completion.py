@@ -23,6 +23,7 @@ COMPLETION_REQUIRED_RECORD_KINDS = (
     "invocation",
     "output-bindings",
     "target-execution",
+    "target-output-declarations",
     "target-result",
 )
 

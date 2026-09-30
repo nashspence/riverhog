@@ -330,6 +330,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             output_id=_output_id("metadata-xmp", item.derived_from),
                             plan_sha256=request.declaration.plan.plan_sha256,
                             role=METADATA_XMP_ROLE,
+                            describes_output_id=video.id,
                         )
                         outputs.append(xmp_output)
                         bundle_relative = f"video/{item.input_artifact_id}/source-artifacts.tar.zst"
@@ -352,6 +353,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             ),
                             plan_sha256=request.declaration.plan.plan_sha256,
                             role=SOURCE_ARTIFACT_ROLE,
+                            reconstructs_output_id=video.id,
                         )
                         outputs.append(source_artifact)
                         video_decision = publication_decisions.decision_for(video.id)
@@ -495,11 +497,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         output_id: str,
         plan_sha256: str,
         role: str,
+        describes_output_id: str | None = None,
+        reconstructs_output_id: str | None = None,
     ) -> OutputArtifact:
         size, sha256 = file_identity(source)
         return OutputArtifact.model_validate(
             dict(
                 id=output_id,
+                describes_output_id=describes_output_id,
+                reconstructs_output_id=reconstructs_output_id,
                 role=role,
                 artifact_id=_member_id(plan_sha256, output_id),
                 bytes=str(size),
