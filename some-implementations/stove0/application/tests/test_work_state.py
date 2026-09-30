@@ -1606,3 +1606,113 @@ def test_sql_branch_set_admission_rolls_back_every_document_on_child_conflict(
     assert parent.branch_set_plan is None
     selection = decision.selections[0]
     assert store.load_selection(selection.selection_sha256) is None
+
+
+def test_sealed_output_pages_bind_exact_relationships_and_current_fence() -> None:
+    store, service, record, _operation, callbacks, access = _queued_target_callback_execution()
+    assert record.controller_evidence is not None
+    job_id = record.controller_evidence.execution_envelope.execution_envelope_sha256
+    source = callbacks.input_page(
+        access.token, job_id=job_id, continuation=None, limit=1
+    ).artifacts[0]
+    outputs = tuple(
+        OutputArtifact.model_validate(
+            {
+                "id": key,
+                "role": "fixture.output/v1",
+                "artifact_id": _member_id(key),
+                "bytes": "1",
+                "sha256": _sha("5"),
+                **relations,
+            }
+        )
+        for key, relations in (
+            ("bundle", {"reconstructs_output_id": "media"}),
+            ("media", {}),
+            ("xmp", {"describes_output_id": "media"}),
+        )
+    )
+    for output in outputs:
+        callbacks.declare_output(access.token, job_id=job_id, output=output)
+        callbacks.declare_source_edge(
+            access.token,
+            job_id=job_id,
+            edge=OutputSourceEdge(output_id=output.id, input_id=source.id),
+        )
+    callbacks.declare_disposition(
+        access.token,
+        job_id=job_id,
+        disposition=InputDispositionDeclaration(
+            input_id=source.id,
+            status="transformed",
+        ),
+    )
+    with pytest.raises(ValueError, match="exact sealed"):
+        callbacks.output_page(
+            access.token,
+            job_id=job_id,
+            production_sha256=_sha("f"),
+            after_id=None,
+            limit=1,
+        )
+    production = _seal_production(callbacks, access.token, job_id)
+    after_id = None
+    recovered = []
+    while True:
+        page = callbacks.output_page(
+            access.token,
+            job_id=job_id,
+            production_sha256=production.production_sha256,
+            after_id=after_id,
+            limit=1,
+        )
+        assert page.after_id == after_id
+        assert page.production_sha256 == production.production_sha256
+        recovered.extend(page.artifacts)
+        if page.complete:
+            break
+        after_id = page.next_after_id
+    assert tuple(recovered) == outputs
+    assert production.outputs == OutputArtifactSetIdentity.seal(tuple(recovered))
+    with pytest.raises(ValueError, match="exact sealed"):
+        callbacks.output_page(
+            access.token,
+            job_id=job_id,
+            production_sha256=_sha("f"),
+            after_id=None,
+            limit=1,
+        )
+    current = store.load(record.work_id)
+    assert current is not None
+    service.fail(
+        record.work_id,
+        failure=WorkFailure(code="fixture-revoked", message="revoked", retryable=False),
+        expected_revision=current.revision,
+    )
+    with pytest.raises(PermissionError, match="stale"):
+        callbacks.output_page(
+            access.token,
+            job_id=job_id,
+            production_sha256=production.production_sha256,
+            after_id="media",
+            limit=1,
+        )
+
+
+def test_sealed_production_rejects_relationship_to_unproduced_output() -> None:
+    _store, _service, record, _operation, callbacks, access = _queued_target_callback_execution()
+    assert record.controller_evidence is not None
+    job_id = record.controller_evidence.execution_envelope.execution_envelope_sha256
+    output = OutputArtifact.model_validate(
+        {
+            "id": "metadata",
+            "role": "fixture.output/v1",
+            "artifact_id": _member_id("metadata"),
+            "bytes": "1",
+            "sha256": _sha("5"),
+            "describes_output_id": "missing-output",
+        }
+    )
+    callbacks.declare_output(access.token, job_id=job_id, output=output)
+    with pytest.raises(ValueError, match="unproduced"):
+        _seal_production(callbacks, access.token, job_id)

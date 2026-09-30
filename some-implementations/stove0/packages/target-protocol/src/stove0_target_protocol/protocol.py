@@ -844,6 +844,16 @@ class TargetPreRootResult(TargetProtocolModel):
     production: TargetProductionAuthority
     execution_evidence: TargetExecutionEvidence
 
+    @model_validator(mode="after")
+    def exact_pre_root_bindings(self) -> Self:
+        if (
+            self.production.job_id != self.job_id
+            or self.production.plan_sha256 != self.plan_sha256
+            or self.execution_evidence.plan_sha256 != self.plan_sha256
+        ):
+            raise ValueError("pre-root result differs from its sealed production or plan")
+        return self
+
 
 class OutputCollectionRef(TargetProtocolModel):
     collection_id: CollectionId
