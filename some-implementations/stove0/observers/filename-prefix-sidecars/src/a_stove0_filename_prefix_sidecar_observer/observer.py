@@ -61,39 +61,50 @@ class FilenamePrefixSidecarObserver:
         builder = ContentObservationResultBuilder(self._descriptor, request)
         try:
             question = FilenameQuestion.model_validate_json(canonical_json_bytes(request.options))
-            predecessor = runtime.open_evidence(question.provenance_slot)
-            if (
-                predecessor.request.observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id
-                or predecessor.request.observer_contract_sha256
-                != CORE_PROVENANCE_OBSERVER_CONTRACT.contract_sha256
-                or predecessor.request.read_actions != ("read-provenance",)
-                or predecessor.request.subjects != request.subjects
-                or CoreProvenanceOptions.model_validate_json(
-                    canonical_json_bytes(predecessor.request.options)
-                ).predicates
-                or predecessor.result.facts_schema != CORE_PROVENANCE_OBSERVER_CONTRACT.facts_schema
-                or predecessor.result.facts is None
-            ):
-                raise ValueError("filename question requires complete accepted core locator facts")
-            facts = validate_core_provenance_facts(
-                predecessor.result.facts,
-                predecessor.request.subjects,
-                predecessor.request.options,
-            )
-            locators = {
-                row.subject_id: tuple(
-                    LocatorEvidence(
-                        subject_id=row.subject_id,
-                        locator=locator.locator,
-                        context_endpoint=locator.context_endpoint.model_dump(mode="json"),
-                        context_identifiers=locator.context_identifiers,
-                        context_support=locator.context_support.model_dump(mode="json"),
-                        locator_support=locator.locator_support.model_dump(mode="json"),
-                    )
-                    for locator in row.locators
+            locators: dict[str, tuple[LocatorEvidence, ...]] = {}
+            predecessor_ids: list[dict[str, str]] = []
+            for slot in question.provenance_slots:
+                predecessor = runtime.open_evidence(slot)
+                if (
+                    predecessor.request.observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id
+                    or predecessor.request.observer_contract_sha256
+                    != CORE_PROVENANCE_OBSERVER_CONTRACT.contract_sha256
+                    or predecessor.request.read_actions != ("read-provenance",)
+                    or CoreProvenanceOptions.model_validate_json(
+                        canonical_json_bytes(predecessor.request.options)
+                    ).predicates
+                    or predecessor.result.facts_schema
+                    != CORE_PROVENANCE_OBSERVER_CONTRACT.facts_schema
+                    or predecessor.result.facts is None
+                ):
+                    raise ValueError("filename question requires accepted core locator facts")
+                facts = validate_core_provenance_facts(
+                    predecessor.result.facts,
+                    predecessor.request.subjects,
+                    predecessor.request.options,
                 )
-                for row in facts.artifacts
-            }
+                predecessor_ids.append(
+                    {
+                        "request_id": predecessor.request.request_id,
+                        "result_sha256": predecessor.result.result_sha256,
+                    }
+                )
+                for row in facts.artifacts:
+                    if row.subject_id in locators:
+                        raise ValueError("core locator evidence repeats a selected subject")
+                    locators[row.subject_id] = tuple(
+                        LocatorEvidence(
+                            subject_id=row.subject_id,
+                            locator=locator.locator,
+                            context_endpoint=locator.context_endpoint.model_dump(mode="json"),
+                            context_identifiers=locator.context_identifiers,
+                            context_support=locator.context_support.model_dump(mode="json"),
+                            locator_support=locator.locator_support.model_dump(mode="json"),
+                        )
+                        for locator in row.locators
+                    )
+            if set(locators) != {subject.id for subject in request.subjects}:
+                raise ValueError("core locator evidence does not cover the selected subjects")
             statuses, candidates = compare_filenames(
                 locators,
                 primary_ids=question.primary_ids,
@@ -101,8 +112,7 @@ class FilenamePrefixSidecarObserver:
                 sidecar_suffix=question.sidecar_suffix,
             )
             document = {
-                "provenance_request_id": predecessor.request.request_id,
-                "provenance_result_sha256": predecessor.result.result_sha256,
+                "provenance_results": sorted(predecessor_ids, key=lambda item: item["request_id"]),
                 "statuses": [
                     {
                         "subject_id": row.subject_id,

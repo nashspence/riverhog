@@ -18,6 +18,7 @@ from stove0_observer_protocol import (
     ContentObservationRequest,
     ContentObservationRequestPayload,
     ContentObservationResult,
+    ObservationEvidenceSlot,
     canonical_json_bytes,
 )
 from stove0_protocol import (
@@ -122,21 +123,86 @@ class RecipePlanner:
             )
         )
 
-    def observation_requests(self, work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
+    def observation_requests(
+        self,
+        work: WorkIdentity,
+        observations: tuple[ContentObservationEvidence, ...] = (),
+    ) -> tuple[ContentObservationRequest, ...]:
         if isinstance(work.fork_join, JoinWorkBinding):
             return ()
         recipe = self._recipe(work)
         requests: list[ContentObservationRequest] = []
         inventory = self._inventory(work)
+        completed = {item.request.observer_registration_id for item in observations}
+        for item in observations:
+            if item.request.work_id != work.work_id or item.result.state != "observed":
+                raise ValueError("recipe stage predecessor is not an accepted observation")
         for use in recipe.observers:
+            if use.registration_id in completed or not set(use.after) <= completed:
+                continue
             descriptor = self.observers.descriptor(use.registration_id)
             support = descriptor.support_for(use.contract_id)
             if support.contract_sha256 != use.contract_sha256:
                 raise RuntimeError("observer supports another revision of the recipe contract")
-            subjects = _subjects(inventory)
+            classified = _subjects(inventory, recipe.artifact_rules, observations=observations)
+            subjects = (
+                tuple(item for item in classified if item.role in set(use.subject_roles))
+                if use.subject_roles
+                else _subjects(inventory)
+            )
             if not subjects:
                 continue
+            options = deepcopy(use.options)
+            for partition in use.partitions:
+                if _json_pointer(options, partition.pointer)[0]:
+                    raise ValueError("recipe observer question already sets a generated partition")
+                _json_pointer_set(
+                    options,
+                    partition.pointer,
+                    [item.id for item in subjects if item.role in set(partition.roles)],
+                )
+            predecessor_items = tuple(
+                item
+                for item in observations
+                if item.request.observer_registration_id in use.evidence_from
+                and {subject.id for subject in item.request.subjects}
+                <= {subject.id for subject in subjects}
+            )
+            slots = tuple(
+                ObservationEvidenceSlot(
+                    slot="evidence." + item.request.request_id,
+                    request_id=item.request.request_id,
+                    result_sha256=item.result.result_sha256,
+                    observer_contract_id=item.request.observer_contract_id,
+                )
+                for item in sorted(predecessor_items, key=lambda item: item.request.request_id)
+            )
+            if use.evidence_from:
+                for predecessor in use.evidence_from:
+                    covered = {
+                        subject.id
+                        for item in predecessor_items
+                        if item.request.observer_registration_id == predecessor
+                        for subject in item.request.subjects
+                    }
+                    if covered != {subject.id for subject in subjects}:
+                        raise ValueError("recipe observation lacks complete predecessor evidence")
+                assert use.evidence_slots_pointer is not None
+                if _json_pointer(options, use.evidence_slots_pointer)[0]:
+                    raise ValueError("recipe observer question already sets evidence slots")
+                _json_pointer_set(
+                    options, use.evidence_slots_pointer, [item.slot for item in slots]
+                )
+            elif support.read_actions == ("read-evidence",):
+                raise ValueError("read-evidence stage requires declared accepted predecessors")
+            elif use.evidence_slots_pointer is not None:
+                raise ValueError("non-evidence stage declares evidence slots")
             batch_size = support.preferred_subject_batch_size
+            if use.partitions or use.evidence_from:
+                # A relation question must see its entire exact candidate scope.
+                # The descriptor's preferred batch size is operational advice,
+                # never a limit on a collection or a completeness claim.
+                batch_size = len(subjects)
             for offset in range(0, len(subjects), batch_size):
                 # Batching is an implementation preference for operational
                 # efficiency, never a request, collection, or workflow limit.
@@ -151,7 +217,8 @@ class RecipePlanner:
                             observer_contract_sha256=support.contract_sha256,
                             read_actions=support.read_actions,
                             subjects=batch,
-                            options=use.options,
+                            evidence_slots=slots or None,
+                            options=options,
                             timeout_seconds=use.timeout_seconds,
                             maximum_result_bytes=use.maximum_result_bytes,
                             retrieval_policy=use.retrieval_policy,
@@ -316,7 +383,7 @@ class RecipePlanner:
         selected: list[tuple[RecipeBranch, ArtifactSelection, tuple[WorkInputGroup, ...]]] = []
         for route in recipe.routes:
             artifacts, groups = _route_artifacts(
-                _subjects(inventory, route.artifact_rules, observations=evidence),
+                _subjects(inventory, recipe.artifact_rules, observations=evidence),
                 route=route,
                 associations=recipe.artifact_associations,
                 observations=evidence,

@@ -1338,7 +1338,7 @@ class Stove0WorkService:
         expected_revision: int,
     ) -> WorkRecord:
         record = self._load(work_id, expected_revision)
-        if record.phase not in {"claimed", "observing"} or record.claim is None:
+        if record.phase not in {"claimed", "observing", "planning"} or record.claim is None:
             raise Stove0StateError(f"work cannot begin observations from {record.phase}")
         normalized = tuple(sorted(requests, key=lambda item: item.request_id))
         if not normalized:
@@ -1362,12 +1362,26 @@ class Stove0WorkService:
                 for subject in request.subjects
             ):
                 raise ValueError("observation request references an input outside the work")
-        if record.observation_requests and record.observation_requests != normalized:
-            raise Stove0StateError("observation request set is already sealed")
+        existing_ids = {item.request_id for item in record.observation_requests}
+        completed_ids = {item.request_id for item in record.observation_results}
+        if record.phase == "observing":
+            if record.observation_requests != normalized:
+                raise Stove0StateError("observation stage request set is already sealed")
+            combined = normalized
+        else:
+            if record.phase == "planning" and completed_ids != existing_ids:
+                raise Stove0StateError("prior observation stage is incomplete")
+            if existing_ids & {item.request_id for item in normalized}:
+                raise Stove0StateError("new observation stage repeats an accepted request")
+            combined = tuple(
+                sorted(
+                    (*record.observation_requests, *normalized), key=lambda item: item.request_id
+                )
+            )
         return self._replace(
             record,
             phase="observing",
-            observation_requests=normalized,
+            observation_requests=combined,
         )
 
     def record_observation(

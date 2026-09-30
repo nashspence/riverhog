@@ -42,14 +42,57 @@ class ArtifactAssociation(RecipeModel):
         return value
 
 
+class ObservationPartition(RecipeModel):
+    """Copy the exact subject IDs assigned a role into an observer question."""
+
+    pointer: str = Field(min_length=1, pattern=_JSON_POINTER_PATTERN)
+    roles: tuple[SemanticId, ...] = Field(min_length=1)
+
+    @field_validator("roles")
+    @classmethod
+    def canonical_roles(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if value != tuple(sorted(set(value))):
+            raise ValueError("observation partition roles must be unique and ordered")
+        return value
+
+
 class ObserverUse(RecipeModel):
     registration_id: str
     contract_id: SemanticId
     contract_sha256: Sha256
     options: dict[str, JsonValue] = Field(default_factory=dict)
+    after: tuple[str, ...] = ()
+    evidence_from: tuple[str, ...] = ()
+    evidence_slots_pointer: str | None = Field(
+        default=None, min_length=1, pattern=_JSON_POINTER_PATTERN
+    )
+    subject_roles: tuple[SemanticId, ...] = ()
+    partitions: tuple[ObservationPartition, ...] = ()
     timeout_seconds: int = Field(default=300, ge=1, le=86400)
     maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
     retrieval_policy: Literal["available-only", "allow"] = "available-only"
+
+    @model_validator(mode="after")
+    def staged_question(self) -> Self:
+        for label, values in (
+            ("observation predecessors", self.after),
+            ("forwarded evidence", self.evidence_from),
+            ("selected subject roles", self.subject_roles),
+        ):
+            if values != tuple(sorted(set(values))):
+                raise ValueError(f"{label} must be unique and ordered")
+        if not set(self.evidence_from) <= set(self.after):
+            raise ValueError("forwarded evidence must be a declared predecessor")
+        if bool(self.evidence_from) != (self.evidence_slots_pointer is not None):
+            raise ValueError("forwarded evidence needs one declared slot option")
+        pointers = [item.pointer for item in self.partitions]
+        if self.evidence_slots_pointer is not None:
+            pointers.append(self.evidence_slots_pointer)
+        if len(pointers) != len(set(pointers)):
+            raise ValueError("generated observation option pointers must be unique")
+        if self.partitions and not self.subject_roles:
+            raise ValueError("role partitions require selected subject roles")
+        return self
 
 
 class ArtifactFactBinding(RecipeModel):
@@ -142,7 +185,6 @@ class OperationProjection(RecipeModel):
 class _RecipeRouteBase(RecipeModel):
     id: SemanticId
     when: tuple[FactPredicate, ...] = ()
-    artifact_rules: tuple[ArtifactRule, ...] = (ArtifactRule(),)
     primary_role: SemanticId | None = None
     associated_roles: tuple[SemanticId, ...] = ()
     intent: dict[str, JsonValue] = Field(default_factory=dict)
@@ -284,6 +326,7 @@ class RecipeDefinition(RecipeModel):
     id: SemanticId
     revision: NonnegativeDecimal = Field(ge=1)
     event_input_closure: Literal["single-finalized-collection"] = "single-finalized-collection"
+    artifact_rules: tuple[ArtifactRule, ...] = (ArtifactRule(),)
     artifact_associations: tuple[ArtifactAssociation, ...] = ()
     observers: tuple[ObserverUse, ...] = ()
     routes: tuple[RecipeBranch, ...] = Field(min_length=1)
@@ -301,13 +344,55 @@ class RecipeDefinition(RecipeModel):
 
     @model_validator(mode="after")
     def canonical_members(self) -> Self:
+        stages = {item.registration_id: item for item in self.observers}
+        if len(stages) != len(self.observers):
+            raise ValueError("recipe observation registrations must be unique")
+        contracts = {item.contract_id: item.registration_id for item in self.observers}
+        if len(contracts) != len(self.observers):
+            raise ValueError("recipe observation contracts must be selected exactly once")
+        completed: set[str] = set()
+        while len(completed) < len(stages):
+            ready = {
+                key
+                for key, item in stages.items()
+                if key not in completed and set(item.after) <= completed
+            }
+            if not ready:
+                raise ValueError("recipe observation stages contain a cycle or unknown predecessor")
+            completed.update(ready)
+        for use in self.observers:
+            if use.registration_id in use.after:
+                raise ValueError("observation stage cannot depend on itself")
+            if use.partitions:
+                roles = [role for item in use.partitions for role in item.roles]
+                if len(roles) != len(set(roles)) or set(roles) != set(use.subject_roles):
+                    raise ValueError("observation partitions must cover selected roles exactly")
+            if use.subject_roles:
+                ancestors = set(use.after)
+                pending = list(use.after)
+                while pending:
+                    predecessor = pending.pop()
+                    for earlier in stages[predecessor].after:
+                        if earlier not in ancestors:
+                            ancestors.add(earlier)
+                            pending.append(earlier)
+                required = {
+                    contracts.get(predicate.observation_contract_id)
+                    for rule in self.artifact_rules
+                    for predicate in rule.when
+                }
+                if None in required or not required <= ancestors:
+                    raise ValueError("role-selected observation lacks its classification stages")
         association_roles = [item.primary_role for item in self.artifact_associations]
         if association_roles != sorted(association_roles) or len(association_roles) != len(
             set(association_roles)
         ):
             raise ValueError("artifact associations must be unique and ordered by primary role")
         associations = {item.primary_role: item for item in self.artifact_associations}
-        observer_contracts = {item.contract_id for item in self.observers}
+        observer_contracts = set(contracts)
+        for rule in self.artifact_rules:
+            if any(item.observation_contract_id not in observer_contracts for item in rule.when):
+                raise ValueError("artifact role rule references an undeclared observation")
         for route in self.routes:
             if isinstance(route, RecipeRoute):
                 undeclared = set(route.forward_observation_contract_ids) - observer_contracts
@@ -575,6 +660,7 @@ __all__ = [
     "AssociationEvidenceSource",
     "FactCondition",
     "FactPredicate",
+    "ObservationPartition",
     "ObserverUse",
     "OperationProjection",
     "RecipeBranch",
