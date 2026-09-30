@@ -532,6 +532,48 @@ CREATE INDEX ix_collection_processing_claims_owner_work_id ON collection_process
 
 CREATE INDEX ix_collection_processing_claims_work ON collection_processing_claims (work_id, consumer_app);
 
+CREATE TABLE collection_provenance_index_generations (
+	build_id VARCHAR(36) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	archive_generation VARCHAR(64) NOT NULL,
+	archive_root_sha256 VARCHAR(64) NOT NULL,
+	provenance_identity VARCHAR(64) NOT NULL,
+	core_contract_sha256 VARCHAR(64) NOT NULL,
+	extraction_contract_sha256 VARCHAR(64) NOT NULL,
+	dataset_sha256 VARCHAR(64),
+	generation_id VARCHAR(64),
+	complete BOOLEAN NOT NULL,
+	expected_epoch BIGINT NOT NULL,
+	created_at VARCHAR NOT NULL,
+	completed_at VARCHAR,
+	PRIMARY KEY (build_id),
+	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_generation_epoch CHECK (expected_epoch >= 1),
+	CONSTRAINT ck_provenance_index_generation_complete CHECK (complete = false OR dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL),
+	CONSTRAINT ck_sha256_a31549d68f2cf907 CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_38d95a1c5333b85a CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_2186884c8f926f01 CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_28b6df56427a7530 CHECK (length(core_contract_sha256) = 64 AND lower(core_contract_sha256) = core_contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(core_contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_9057b9dbd8d2d5aa CHECK (length(extraction_contract_sha256) = 64 AND lower(extraction_contract_sha256) = extraction_contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(extraction_contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_05a8fa01de862d85 CHECK (dataset_sha256 IS NULL OR length(dataset_sha256) = 64 AND lower(dataset_sha256) = dataset_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dataset_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_generations_generation_id_hex CHECK (generation_id IS NULL OR length(generation_id) = 64 AND lower(generation_id) = generation_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_generations_collection ON collection_provenance_index_generations (collection_id, complete);
+
+CREATE TABLE collection_provenance_index_state (
+	collection_id BIGINT NOT NULL,
+	epoch BIGINT NOT NULL,
+	active_build_id VARCHAR(36),
+	pending_build_id VARCHAR(36),
+	phase VARCHAR NOT NULL,
+	failure TEXT,
+	PRIMARY KEY (collection_id),
+	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_state_epoch CHECK (epoch >= 1),
+	CONSTRAINT ck_provenance_index_state_phase CHECK (phase IN ('indexing','ready','failed'))
+);
+
 CREATE TABLE collection_provenance_journals (
 	collection_id BIGINT NOT NULL,
 	journal_id VARCHAR NOT NULL,
@@ -776,7 +818,7 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_artifact_order >= 0),
 	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_artifact_order >= 0 AND provenance_archive_next_artifact_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','terminal','complete')),
+	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','index','terminal','complete')),
 	CONSTRAINT ck_collection_uploads_artifact_bytes CHECK (artifact_bytes >= 0),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_count CHECK (payload_sealed_artifact_count >= 0 AND payload_sealed_artifact_count <= artifact_count),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_bytes CHECK (payload_sealed_artifact_bytes >= 0 AND payload_sealed_artifact_bytes <= artifact_bytes),
@@ -1378,6 +1420,43 @@ CREATE TABLE collection_provenance_external_state_references (
 
 CREATE INDEX ix_collection_provenance_external_state_references_target ON collection_provenance_external_state_references (collection_id, to_journal_id);
 
+CREATE TABLE collection_provenance_index_members (
+	build_id VARCHAR(36) NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	bytes BIGINT NOT NULL,
+	sha256 VARCHAR(64) NOT NULL,
+	journal_id VARCHAR(45) NOT NULL,
+	prefix_sha256 VARCHAR(64) NOT NULL,
+	delivery_association_id VARCHAR(45) NOT NULL,
+	PRIMARY KEY (build_id, artifact_id),
+	FOREIGN KEY(build_id) REFERENCES collection_provenance_index_generations (build_id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_member_bytes CHECK (bytes >= 0),
+	CONSTRAINT ck_collection_provenance_index_members_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_members_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_members_prefix_sha256_hex CHECK (length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_member_digest ON collection_provenance_index_members (build_id, sha256);
+
+CREATE TABLE collection_provenance_index_snapshots (
+	build_id VARCHAR(36) NOT NULL,
+	journal_id VARCHAR(45) NOT NULL,
+	prefix_sha256 VARCHAR(64) NOT NULL,
+	prefix_bytes BIGINT NOT NULL,
+	through_entry_id VARCHAR(45) NOT NULL,
+	through_sequence BIGINT NOT NULL,
+	through_json_sha256 VARCHAR(64) NOT NULL,
+	assertion_count BIGINT NOT NULL,
+	PRIMARY KEY (build_id, journal_id, prefix_sha256),
+	FOREIGN KEY(build_id) REFERENCES collection_provenance_index_generations (build_id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_snapshot_bytes CHECK (prefix_bytes > 0),
+	CONSTRAINT ck_provenance_index_snapshot_assertions CHECK (assertion_count >= 0),
+	CONSTRAINT ck_collection_provenance_index_snapshots_prefix_sha256_hex CHECK (length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_773ccd413216bc02 CHECK (length(through_json_sha256) = 64 AND lower(through_json_sha256) = through_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(through_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_snapshots_journal ON collection_provenance_index_snapshots (journal_id, prefix_sha256);
+
 CREATE TABLE collection_provenance_journal_agents (
 	collection_id BIGINT NOT NULL,
 	journal_id VARCHAR NOT NULL,
@@ -1821,6 +1900,23 @@ CREATE TABLE collection_processing_consideration_subjects (
 	CONSTRAINT ck_collection_processing_consideration_subjects_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+CREATE TABLE collection_provenance_index_entries (
+	build_id VARCHAR(36) NOT NULL,
+	journal_id VARCHAR(45) NOT NULL,
+	prefix_sha256 VARCHAR(64) NOT NULL,
+	sequence BIGINT NOT NULL,
+	entry_id VARCHAR(45) NOT NULL,
+	json_sha256 VARCHAR(64) NOT NULL,
+	entry_kind VARCHAR NOT NULL,
+	PRIMARY KEY (build_id, journal_id, prefix_sha256, sequence),
+	FOREIGN KEY(build_id, journal_id, prefix_sha256) REFERENCES collection_provenance_index_snapshots (build_id, journal_id, prefix_sha256) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_entry_sequence CHECK (sequence >= 0),
+	CONSTRAINT ck_collection_provenance_index_entries_prefix_sha256_hex CHECK (length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_entries_json_sha256_hex CHECK (length(json_sha256) = 64 AND lower(json_sha256) = json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_entries_identity ON collection_provenance_index_entries (build_id, entry_id);
+
 CREATE TABLE collection_tag_node_gc (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
@@ -1868,7 +1964,7 @@ CREATE TABLE collection_upload_artifact_materialization_decisions (
 	allow_missing_materialization_hint BOOLEAN NOT NULL,
 	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK ((hint_json IS NULL AND allow_missing_materialization_hint) OR (hint_json IS NOT NULL AND NOT allow_missing_materialization_hint)),
+	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK (hint_json IS NULL AND allow_missing_materialization_hint OR hint_json IS NOT NULL AND NOT allow_missing_materialization_hint),
 	CONSTRAINT ck_sha256_fb5e4ae93fbc40f2 CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
@@ -2050,6 +2146,33 @@ CREATE TABLE collection_processing_dispositions (
 
 CREATE UNIQUE INDEX ix_processing_dispositions_order ON collection_processing_dispositions (claim_id, disposition_order);
 
+CREATE TABLE collection_provenance_index_assertions (
+	build_id VARCHAR(36) NOT NULL,
+	row_key VARCHAR(64) NOT NULL,
+	journal_id VARCHAR(45) NOT NULL,
+	prefix_sha256 VARCHAR(64) NOT NULL,
+	sequence BIGINT NOT NULL,
+	entry_id VARCHAR(45) NOT NULL,
+	assertion_id VARCHAR(45) NOT NULL,
+	referent_id VARCHAR(45) NOT NULL,
+	kind VARCHAR(160) NOT NULL,
+	assertion_state VARCHAR NOT NULL,
+	assertion_sha256 VARCHAR(64) NOT NULL,
+	canonical_json BYTEA NOT NULL,
+	PRIMARY KEY (build_id, row_key),
+	FOREIGN KEY(build_id, journal_id, prefix_sha256, sequence) REFERENCES collection_provenance_index_entries (build_id, journal_id, prefix_sha256, sequence) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_assertion_state CHECK (assertion_state IN ('effective','retracted')),
+	CONSTRAINT ck_collection_provenance_index_assertions_row_key_hex CHECK (length(row_key) = 64 AND lower(row_key) = row_key AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(row_key, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_assertions_prefix_sha256_hex CHECK (length(prefix_sha256) = 64 AND lower(prefix_sha256) = prefix_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prefix_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_a8279d5d6a0dd0a0 CHECK (length(assertion_sha256) = 64 AND lower(assertion_sha256) = assertion_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(assertion_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_assertion_identity ON collection_provenance_index_assertions (build_id, assertion_id);
+
+CREATE INDEX ix_provenance_index_assertion_kind ON collection_provenance_index_assertions (build_id, kind, assertion_state);
+
+CREATE INDEX ix_provenance_index_assertion_referent ON collection_provenance_index_assertions (build_id, referent_id);
+
 CREATE TABLE retrieval_cache_leases (
 	owner VARCHAR NOT NULL,
 	source_store VARCHAR NOT NULL,
@@ -2116,5 +2239,94 @@ CREATE TABLE collection_processing_disposition_outputs (
 CREATE UNIQUE INDEX ix_processing_disposition_outputs_order ON collection_processing_disposition_outputs (claim_id, output_order);
 
 CREATE INDEX ix_processing_disposition_outputs_source ON collection_processing_disposition_outputs (claim_id, input_collection_id, input_artifact_id, output_artifact_id);
+
+CREATE TABLE collection_provenance_index_edges (
+	build_id VARCHAR(36) NOT NULL,
+	row_key VARCHAR(64) NOT NULL,
+	ordinal INTEGER NOT NULL,
+	role VARCHAR(80) NOT NULL,
+	target_id VARCHAR(45) NOT NULL,
+	target_type VARCHAR(80) NOT NULL,
+	target_scope VARCHAR(16) NOT NULL,
+	exact_foreign_reference_json BYTEA,
+	PRIMARY KEY (build_id, row_key, ordinal),
+	FOREIGN KEY(build_id, row_key) REFERENCES collection_provenance_index_assertions (build_id, row_key) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_provenance_index_edges_row_key_hex CHECK (length(row_key) = 64 AND lower(row_key) = row_key AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(row_key, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_edge_target ON collection_provenance_index_edges (build_id, target_id, role);
+
+CREATE TABLE collection_provenance_index_memberships (
+	build_id VARCHAR(36) NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
+	row_key VARCHAR(64) NOT NULL,
+	scope VARCHAR(24) NOT NULL,
+	PRIMARY KEY (build_id, artifact_id, row_key, scope),
+	FOREIGN KEY(build_id, artifact_id) REFERENCES collection_provenance_index_members (build_id, artifact_id) ON DELETE CASCADE,
+	FOREIGN KEY(build_id, row_key) REFERENCES collection_provenance_index_assertions (build_id, row_key) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_membership_scope CHECK (scope IN ('member','input-history','collection','recorded-history')),
+	CONSTRAINT ck_collection_provenance_index_memberships_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_memberships_row_key_hex CHECK (length(row_key) = 64 AND lower(row_key) = row_key AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(row_key, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_membership_row ON collection_provenance_index_memberships (build_id, row_key, scope);
+
+CREATE TABLE collection_provenance_index_profiles (
+	build_id VARCHAR(36) NOT NULL,
+	row_key VARCHAR(64) NOT NULL,
+	pointer VARCHAR(4096) NOT NULL,
+	contract_id VARCHAR(1024) NOT NULL,
+	contract_sha256 VARCHAR(64) NOT NULL,
+	schema_id VARCHAR(1024) NOT NULL,
+	PRIMARY KEY (build_id, row_key, pointer),
+	FOREIGN KEY(build_id, row_key) REFERENCES collection_provenance_index_assertions (build_id, row_key) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_provenance_index_profiles_row_key_hex CHECK (length(row_key) = 64 AND lower(row_key) = row_key AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(row_key, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_provenance_index_profiles_contract_sha256_hex CHECK (length(contract_sha256) = 64 AND lower(contract_sha256) = contract_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(contract_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_profile_pin ON collection_provenance_index_profiles (build_id, contract_sha256, schema_id);
+
+CREATE TABLE collection_provenance_index_values (
+	build_id VARCHAR(36) NOT NULL,
+	row_key VARCHAR(64) NOT NULL,
+	ordinal INTEGER NOT NULL,
+	pointer VARCHAR(4096) NOT NULL,
+	representation VARCHAR(32) NOT NULL,
+	scalar_type VARCHAR(16) NOT NULL,
+	source_value_sha256 VARCHAR(64) NOT NULL,
+	exact_json BYTEA NOT NULL,
+	text_value TEXT,
+	folded_text TEXT,
+	PRIMARY KEY (build_id, row_key, ordinal),
+	FOREIGN KEY(build_id, row_key) REFERENCES collection_provenance_index_assertions (build_id, row_key) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_value_ordinal CHECK (ordinal >= 0),
+	CONSTRAINT ck_provenance_index_value_representation CHECK (representation IN ('json-scalar','declared-text','byte-escape','exact-bytes')),
+	CONSTRAINT ck_provenance_index_value_type CHECK (scalar_type IN ('string','integer','boolean','null')),
+	CONSTRAINT ck_collection_provenance_index_values_row_key_hex CHECK (length(row_key) = 64 AND lower(row_key) = row_key AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(row_key, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_779c8bf1303b33c1 CHECK (length(source_value_sha256) = 64 AND lower(source_value_sha256) = source_value_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_value_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_value_pointer ON collection_provenance_index_values (build_id, pointer, representation);
+
+CREATE INDEX ix_provenance_index_value_type ON collection_provenance_index_values (build_id, scalar_type, source_value_sha256);
+
+CREATE TABLE collection_provenance_index_text_chunks (
+	build_id VARCHAR(36) NOT NULL,
+	row_key VARCHAR(64) NOT NULL,
+	value_ordinal INTEGER NOT NULL,
+	chunk_ordinal INTEGER NOT NULL,
+	codepoint_offset BIGINT NOT NULL,
+	text_chunk TEXT NOT NULL,
+	folded_chunk TEXT NOT NULL,
+	PRIMARY KEY (build_id, row_key, value_ordinal, chunk_ordinal),
+	FOREIGN KEY(build_id, row_key, value_ordinal) REFERENCES collection_provenance_index_values (build_id, row_key, ordinal) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_index_text_ordinal CHECK (chunk_ordinal >= 0),
+	CONSTRAINT ck_provenance_index_text_offset CHECK (codepoint_offset >= 0),
+	CONSTRAINT ck_collection_provenance_index_text_chunks_row_key_hex CHECK (length(row_key) = 64 AND lower(row_key) = row_key AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(row_key, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_provenance_index_folded_trgm ON collection_provenance_index_text_chunks USING gin (folded_chunk gin_trgm_ops);
+
+CREATE INDEX ix_provenance_index_text_trgm ON collection_provenance_index_text_chunks USING gin (text_chunk gin_trgm_ops);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

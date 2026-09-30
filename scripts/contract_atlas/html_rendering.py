@@ -321,26 +321,42 @@ def _reference_links(
             for key, child in value.items():
                 child_pointer = f"{pointer}/{_token(str(key))}"
                 if key == "$ref":
-                    if not isinstance(child, str) or not child.startswith("#/"):
+                    if not isinstance(child, str):
                         raise ContractAtlasError(
                             f"unsupported normative reference: {child_pointer}"
                         )
                     candidates: list[str] = []
-                    base = pointer
-                    while base.startswith("/external_contract/"):
-                        target = base + child[1:]
-                        try:
-                            _at(closure, target)
-                        except ContractAtlasError:
-                            pass
-                        else:
-                            candidates.append(target)
-                        base = base.rsplit("/", 1)[0]
-                    if http_application is not None:
+                    if child.startswith("#/"):
+                        base = pointer
+                        while base.startswith("/external_contract/"):
+                            target = base + child[1:]
+                            try:
+                                _at(closure, target)
+                            except ContractAtlasError:
+                                pass
+                            else:
+                                candidates.append(target)
+                            base = base.rsplit("/", 1)[0]
+                        if http_application is not None:
+                            target = (
+                                "/external_contract/http_openapi/"
+                                + _token(http_application)
+                                + child[1:]
+                            )
+                            try:
+                                _at(closure, target)
+                            except ContractAtlasError:
+                                pass
+                            else:
+                                candidates.append(target)
+                    elif "://" in child:
+                        document_id, _, fragment = child.partition("#")
+                        if fragment and not fragment.startswith("/"):
+                            raise ContractAtlasError(
+                                f"unsupported normative reference: {child_pointer}"
+                            )
                         target = (
-                            "/external_contract/http_openapi/"
-                            + _token(http_application)
-                            + child[1:]
+                            "/external_contract/protocol_schemas/" + _token(document_id) + fragment
                         )
                         try:
                             _at(closure, target)
@@ -348,6 +364,10 @@ def _reference_links(
                             pass
                         else:
                             candidates.append(target)
+                    else:
+                        raise ContractAtlasError(
+                            f"unsupported normative reference: {child_pointer}"
+                        )
                     if len(candidates) != 1:
                         raise ContractAtlasError(
                             f"normative reference has {len(candidates)} possible targets: "

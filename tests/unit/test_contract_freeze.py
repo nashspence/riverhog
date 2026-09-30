@@ -224,7 +224,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert all(roles[point["owner"]] == "reusable_library" for point in extension_points)
     assert all(
-        roles[provider["distribution"]] == "component"
+        roles[provider["distribution"]] in {"component", "reusable_library"}
         for point in extension_points
         for provider in point["providers"]
     )
@@ -267,6 +267,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "stove0",
         "a-stove0-exiftool-observer",
         "a-stove0-ffprobe-observer",
+        "a-stove0-filename-prefix-sidecar-observer",
+        "a-stove0-magic-observer",
         "a-stove0-riverhog-provenance-observer",
         "a-review0-nvenc-av1-opus-sampler",
         "a-stove0-nvenc-av1-opus-target",
@@ -989,8 +991,8 @@ def test_python_public_import_paths_and_special_methods_are_exact_units() -> Non
     assert "riverhog_client.processing.CapabilityApiClient.__getattr__" in surfaces
     assert "riverhog_storage_adapter_support.FramedContent.__iter__" in surfaces
     assert "stove0_operator_contracts.Stove0EventData.__getitem__" in surfaces
-    assert "enum_values" in surfaces["riverhog_provenance.LargeValueDisposition"]["contract"]
-    assert "riverhog_provenance.LargeValueDisposition.__str__" in surfaces
+    assert surfaces["riverhog_provenance.ObservationResult"]["contract"]["kind"] == "class"
+    assert "riverhog_provenance.ObservationResult.graph_fragment" in surfaces
 
 
 @pytest.mark.parametrize(

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import json
 import sqlite3
 import tomllib
 from contextlib import closing
@@ -83,29 +84,43 @@ def test_a_riverhog_cli_current_v1_fixture_restarts_with_selection_and_retrieval
     status = local_state_schema(database).upgrade()
     with closing(_connect(database)) as connection:
         collection = connection.execute(
-            "SELECT inventory_identity, remote_deleted "
+            "SELECT archive_root_sha256, inventory_identity, artifact_set_identity, "
+            "provenance_identity, layout_mode, remote_unavailable "
             "FROM desired_collections WHERE collection_id = 1"
         ).fetchone()
-        file = connection.execute(
-            "SELECT path, bytes, sha256 FROM desired_files WHERE collection_id = 1"
+        artifact = connection.execute(
+            "SELECT artifact_id, bytes, sha256, destination_json, primary_bytes, "
+            "primary_sha256 FROM desired_artifacts WHERE collection_id = 1"
+        ).fetchone()
+        journal = connection.execute(
+            "SELECT journal_id, bytes, sha256 FROM desired_journals WHERE collection_id = 1"
         ).fetchone()
         retrieval = connection.execute(
             "SELECT state FROM retrieval_jobs WHERE id = 'fixture-retrieval'"
         ).fetchone()
-        retrieval_file = connection.execute(
-            "SELECT collection_id, path, bytes, sha256 FROM retrieval_job_files "
+        retrieval_artifact = connection.execute(
+            "SELECT collection_id, artifact_id, bytes, sha256 FROM retrieval_job_artifacts "
             "WHERE retrieval_job_id = 'fixture-retrieval' ORDER BY ordinal"
         ).fetchone()
 
     assert status.condition == "current"
     assert collection is not None
-    assert tuple(collection) == ("b" * 64, 0)
-    assert file is not None
-    assert tuple(file) == ("notes/fixture.txt", 12, "a" * 64)
+    assert tuple(collection) == ("d" * 64, "b" * 64, "c" * 64, "9" * 64, "declared-hints", 0)
+    assert artifact is not None
+    assert tuple(artifact) == (
+        "e" * 64,
+        12,
+        "a" * 64,
+        json.dumps(["notes", "fixture.txt"]),
+        128,
+        "f" * 64,
+    )
+    assert journal is not None
+    assert tuple(journal) == ("urn:uuid:11111111-1111-4111-8111-111111111111", 128, "f" * 64)
     assert retrieval is not None
     assert tuple(retrieval) == ("ready",)
-    assert retrieval_file is not None
-    assert tuple(retrieval_file) == (1, "notes/fixture.txt", 12, "a" * 64)
+    assert retrieval_artifact is not None
+    assert tuple(retrieval_artifact) == (1, "e" * 64, 12, "a" * 64)
 
 
 def test_a_riverhog_event_relay_current_v1_fixture_restarts_with_source_cursor(
