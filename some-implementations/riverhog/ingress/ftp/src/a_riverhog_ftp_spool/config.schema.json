@@ -83,28 +83,6 @@
           "title": "Max Files",
           "type": "integer"
         },
-        "provenance": {
-          "default": "capture",
-          "enum": [
-            "capture",
-            "omit"
-          ],
-          "title": "Provenance",
-          "type": "string"
-        },
-        "provenance_omission_reason": {
-          "anyOf": [
-            {
-              "maxLength": 1000,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Provenance Omission Reason"
-        },
         "root": {
           "format": "path",
           "title": "Root",
@@ -187,18 +165,10 @@
       "type": "number"
     },
     "provenance_observer": {
-      "anyOf": [
-        {
-          "maxLength": 255,
-          "minLength": 1,
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Provenance Observer"
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Provenance Observer",
+      "type": "string"
     },
     "riverhog_base_url": {
       "maxLength": 2048,
@@ -223,6 +193,7 @@
   "required": [
     "host_id",
     "riverhog_base_url",
+    "provenance_observer",
     "sources",
     "riverhog_token_file",
     "api_token_file"

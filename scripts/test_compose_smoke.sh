@@ -255,6 +255,7 @@ riverhog_base_url: http://app:8000
 riverhog_token_file: /run/secrets/riverhog_token
 api_token_file: /run/secrets/api_token
 allow_insecure_http: true
+provenance_observer: a-riverhog-linux-provenance-observer
 poll_seconds: 0.25
 pending_claim_capacity: 16
 claim_attempt_budget: 8
@@ -270,8 +271,6 @@ sources:
     max_bytes: ${smoke_max_bytes}
     description: FTP exact-event compose qualification
     tags: []
-    provenance: omit
-    provenance_omission_reason: The FTP producer cannot observe the source host filesystem.
 EOF
 chmod 0640 "${adapter_config}"
 

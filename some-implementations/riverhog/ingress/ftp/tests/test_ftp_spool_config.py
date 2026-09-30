@@ -159,10 +159,11 @@ def test_supplied_compose_is_ftp_only_bounded_and_unprivileged() -> None:
 
 def test_completion_failure_work_and_capacity_are_explicit(tmp_path: Path) -> None:
     config = FtpSpoolConfig(
-        host_id="test-host",
+        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
         api_token="adapter-token",
+        provenance_observer="a-riverhog-linux-provenance-observer",
         completion_failure_capacity=23,
         completion_failure_attempt_budget=7,
         sources=(
@@ -170,8 +171,6 @@ def test_completion_failure_work_and_capacity_are_explicit(tmp_path: Path) -> No
                 id="ftp",
                 root=tmp_path / "ftp",
                 ingest_source="ftp:test",
-                provenance="omit",
-                provenance_omission_reason="Fixture intentionally omits provenance.",
             ),
         ),
     )
@@ -209,9 +208,7 @@ def test_supplied_configuration_is_current_and_secret_injected(
     assert source.description == "Example FTP intake"
     assert source.tags == ("source:ftp",)
     assert source.close_mode == "stable"
-    assert source.provenance_omission_reason == (
-        "The FTP producer cannot observe the source host filesystem."
-    )
+    assert config.provenance_observer == "a-riverhog-linux-provenance-observer"
     assert source.max_bytes > 0 and source.max_files > 0
 
 
@@ -271,7 +268,7 @@ def test_capture_requires_one_explicit_connected_observer_provider(tmp_path: Pat
         "sources": (source,),
     }
 
-    with pytest.raises(ValueError, match="explicit observer provider"):
+    with pytest.raises(ValueError, match="provenance_observer"):
         FtpSpoolConfig(**values)
 
     config = FtpSpoolConfig(provenance_observer="a-riverhog-linux-provenance-observer", **values)
@@ -284,23 +281,3 @@ def test_capture_requires_one_explicit_connected_observer_provider(tmp_path: Pat
         )
     finally:
         composition.api.close()
-
-
-def test_omission_does_not_accept_an_unused_observer_setting(tmp_path: Path) -> None:
-    source = SourceConfig(
-        id="ftp",
-        root=tmp_path / "ftp",
-        ingest_source="ftp:fixture",
-        provenance="omit",
-        provenance_omission_reason="Fixture explicitly omits provenance.",
-    )
-
-    with pytest.raises(ValueError, match="observer is unused"):
-        FtpSpoolConfig(
-            host_id="fixture",
-            riverhog_base_url="https://riverhog.invalid",
-            riverhog_token="riverhog-token",
-            api_token="adapter-token",
-            provenance_observer="a-riverhog-linux-provenance-observer",
-            sources=(source,),
-        )

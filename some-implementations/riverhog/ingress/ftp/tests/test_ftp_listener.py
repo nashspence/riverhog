@@ -95,10 +95,11 @@ def test_completion_authority_rejects_duplicate_json_members_before_decode() -> 
 
 def _adapter_config(root: Path) -> FtpSpoolConfig:
     return FtpSpoolConfig(
-        host_id="test-host",
+        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
         api_token="adapter-token",
+        provenance_observer="a-riverhog-linux-provenance-observer",
         sources=(
             SourceConfig(
                 id="camera-a",
@@ -106,8 +107,6 @@ def _adapter_config(root: Path) -> FtpSpoolConfig:
                 ingest_source="ftp:camera-a",
                 max_files=10,
                 max_bytes=1024 * 1024,
-                provenance="omit",
-                provenance_omission_reason="Fixture intentionally omits host provenance.",
             ),
         ),
     )

@@ -31,7 +31,6 @@ class SourceStatus(BaseModel):
     close_mode: Literal["stable", "explicit-flush"]
     max_files: int = Field(ge=1)
     max_bytes: int = Field(ge=1)
-    provenance: Literal["capture", "omit"]
     pending_claim_capacity: int = Field(ge=1)
     completion_failures: int = Field(ge=0)
     completion_failure_capacity: int = Field(ge=1)
@@ -42,7 +41,7 @@ class FtpSpoolStatus(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
     format: Literal["a-riverhog-ftp-spool-status/v1"]
-    provenance_observer: str | None
+    provenance_observer: str
     sources: list[SourceStatus] = Field(max_length=100)
     page_size: int = Field(ge=1, le=100)
     next_page_token: BrowsePageToken | None

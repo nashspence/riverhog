@@ -38,7 +38,7 @@ class _Adapter:
         assert (page_size, page_token) == (25, None)
         return {
             "format": "a-riverhog-ftp-spool-status/v1",
-            "provenance_observer": None,
+            "provenance_observer": "fixture-observer",
             "sources": [
                 {
                     "id": "camera-a",
@@ -48,7 +48,6 @@ class _Adapter:
                     "close_mode": "stable",
                     "max_files": 10,
                     "max_bytes": 1048576,
-                    "provenance": "omit",
                     "pending_claim_capacity": 128,
                     "completion_failures": 0,
                     "completion_failure_capacity": 128,
@@ -84,13 +83,12 @@ def _composition(tmp_path: Path) -> FtpSpoolComposition:
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
         api_token="adapter-token",
+        provenance_observer="fixture-observer",
         sources=(
             SourceConfig(
                 id="camera-a",
                 root=tmp_path / "landing",
                 ingest_source="ftp:camera-a",
-                provenance="omit",
-                provenance_omission_reason="Fixture has no host provenance.",
             ),
         ),
     )
@@ -162,7 +160,7 @@ def test_management_api_and_client_share_versioned_routes(tmp_path: Path) -> Non
                 200,
                 json={
                     "format": "a-riverhog-ftp-spool-status/v1",
-                    "provenance_observer": None,
+                    "provenance_observer": "fixture-observer",
                     "sources": [],
                     "page_size": 17,
                     "next_page_token": None,

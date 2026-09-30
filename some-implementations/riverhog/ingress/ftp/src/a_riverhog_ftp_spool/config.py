@@ -14,7 +14,6 @@ from riverhog_protocol import CollectionDescription, CollectionTag
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 CloseMode = Literal["stable", "explicit-flush"]
-ProvenanceMode = Literal["capture", "omit"]
 
 
 class ConfigModel(BaseModel):
@@ -33,8 +32,6 @@ class SourceConfig(ConfigModel):
     close_mode: CloseMode = "stable"
     max_files: int = Field(default=1000, ge=1)
     max_bytes: int = Field(default=100 * 1024**3, ge=1)
-    provenance: ProvenanceMode = "capture"
-    provenance_omission_reason: str | None = Field(default=None, max_length=1000)
 
     @field_validator("root")
     @classmethod
@@ -48,12 +45,6 @@ class SourceConfig(ConfigModel):
     def complete_policy(self) -> Self:
         if len(self.tags) != len(set(self.tags)):
             raise ValueError("FTP spool source tags must be unique")
-        if self.provenance == "omit":
-            reason = (self.provenance_omission_reason or "").strip()
-            if not reason or reason != self.provenance_omission_reason:
-                raise ValueError("omitted provenance requires a visible canonical reason")
-        elif self.provenance_omission_reason is not None:
-            raise ValueError("capture mode cannot declare a provenance omission reason")
         return self
 
 
@@ -61,7 +52,7 @@ class _FtpSpoolPolicy(ConfigModel):
     host_id: str = Field(min_length=1, max_length=255)
     riverhog_base_url: str = Field(min_length=1, max_length=2048)
     allow_insecure_http: bool = False
-    provenance_observer: str | None = Field(default=None, min_length=1, max_length=255)
+    provenance_observer: str = Field(min_length=1, max_length=255)
     sources: tuple[SourceConfig, ...] = Field(min_length=1)
     poll_seconds: float = Field(default=5.0, ge=0.1, le=3600)
     pending_claim_capacity: int = Field(default=128, ge=1)
@@ -83,13 +74,7 @@ class _FtpSpoolPolicy(ConfigModel):
 
     @model_validator(mode="after")
     def provenance_authority(self) -> Self:
-        captures = any(source.provenance == "capture" for source in self.sources)
-        if captures:
-            require_canonical_uuid_urn(self.host_id, "host_id")
-            if self.provenance_observer is None:
-                raise ValueError("captured provenance requires an explicit observer provider")
-        elif self.provenance_observer is not None:
-            raise ValueError("provenance observer is unused when every source omits provenance")
+        require_canonical_uuid_urn(self.host_id, "host_id")
         return self
 
     def source(self, source_id: str) -> SourceConfig:

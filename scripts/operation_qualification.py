@@ -97,7 +97,7 @@ class _AdapterContractService:
     def status(self) -> dict[str, object]:
         return {
             "format": "a-riverhog-ftp-spool-status/v1",
-            "provenance_observer": None,
+            "provenance_observer": "a-riverhog-linux-provenance-observer",
             "sources": [],
             "page_size": 25,
             "next_page_token": None,
@@ -155,17 +155,16 @@ def create_stove0_contract_app() -> FastAPI:
 
 def create_adapter_contract_app() -> FastAPI:
     config = FtpSpoolConfig(
-        host_id="qualification-host",
+        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-qualification-token",
         api_token="adapter-qualification-token",
+        provenance_observer="a-riverhog-linux-provenance-observer",
         sources=(
             SourceConfig(
                 id="qualification-source",
                 root=Path("/tmp/riverhog-operation-qualification"),
                 ingest_source="ftp:qualification",
-                provenance="omit",
-                provenance_omission_reason="Synthetic operation contract fixture.",
             ),
         ),
     )
