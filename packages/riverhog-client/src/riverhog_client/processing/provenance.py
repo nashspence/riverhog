@@ -196,6 +196,10 @@ class ClaimedProvenance:
         with self.stream_journal(selected, end=end) as chunks:
             yield from chunks
 
+    def journal_prefix(self, journal_id: str, byte_count: int) -> Iterator[bytes]:
+        """Read an exact selected dependency from the claim-pinned archive."""
+        yield from self._read_journal(journal_id, byte_count)
+
     @contextmanager
     def history_closure(self, *, extent: str) -> Iterator[MemberHistoryClosure]:
         """Retain exact history without borrowing other collections' live authority."""

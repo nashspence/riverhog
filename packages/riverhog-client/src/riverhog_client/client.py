@@ -36,6 +36,7 @@ from riverhog_application_access import (
 )
 from riverhog_archive_contracts import (
     PAGE_BYTES_MAX,
+    RecordSetRef,
     SourceMemberHistoryBindingProof,
     provenance_structure_identity,
     provenance_structure_object_path,
@@ -95,6 +96,11 @@ from riverhog_protocol import (
     SortOrder,
     validate_collection_upload_artifact_custody_receipt,
     validate_collection_upload_batch_against_registration_constraints,
+)
+from riverhog_protocol.collection_completion import (
+    CollectionCompletionRecordingDocument,
+    CollectionCompletionRecordingRequestDocument,
+    CollectionCompletionRequirementDocument,
 )
 from riverhog_protocol.errors import (
     BadRequest,
@@ -1163,6 +1169,74 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             json={"tags": _collection_tags(tags, allow_empty=False)},
         )
 
+    def set_collection_upload_session_member_history_inputs(
+        self, collection_id: CollectionId, artifact_id: ArtifactId, authority: RecordSetRef
+    ) -> RecordSetRef:
+        accepted = RecordSetRef.from_mapping(
+            self._json(
+                "set_collection_upload_session_member_history_inputs",
+                "PUT",
+                f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/provenance/artifacts/"
+                f"{ArtifactId(artifact_id)}/history-inputs",
+                json=authority.to_mapping(),
+            )
+        )
+        if accepted != authority:
+            raise HashMismatch("construction accepted another input-history extent")
+        return accepted
+
+    def get_collection_upload_session_member_history_inputs(
+        self,
+        collection_id: CollectionId,
+        artifact_id: ArtifactId,
+    ) -> RecordSetRef:
+        return RecordSetRef.from_mapping(
+            self._json(
+                "get_collection_upload_session_member_history_inputs",
+                "GET",
+                f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/provenance/artifacts/"
+                f"{ArtifactId(artifact_id)}/history-inputs",
+            )
+        )
+
+    def set_collection_upload_session_completion_requirement(
+        self,
+        collection_id: CollectionId,
+        requirement: CollectionCompletionRequirementDocument,
+    ) -> CollectionCompletionRequirementDocument:
+        accepted = CollectionCompletionRequirementDocument.model_validate(
+            self._json(
+                "set_collection_upload_session_completion_requirement",
+                "PUT",
+                f"/v1/collection-upload-sessions/{_collection_id(collection_id)}"
+                "/provenance/completion-requirement",
+                json=requirement.model_dump(mode="json"),
+            )
+        )
+        if accepted != requirement:
+            raise HashMismatch("construction accepted another completion requirement")
+        return accepted
+
+    def reserve_collection_upload_session_completion_recording(
+        self,
+        collection_id: CollectionId,
+        request: CollectionCompletionRecordingRequestDocument,
+    ) -> CollectionCompletionRecordingDocument:
+        accepted = CollectionCompletionRecordingDocument.model_validate(
+            self._json(
+                "reserve_collection_upload_session_completion_recording",
+                "POST",
+                f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/provenance/completion-recording",
+                json=request.model_dump(mode="json"),
+            )
+        )
+        if (accepted.requirement_sha256, accepted.records_sha256) != (
+            request.requirement_sha256,
+            request.records_sha256,
+        ):
+            raise HashMismatch("construction substituted its accepted recording preimages")
+        return accepted
+
     def register_collection_upload_session_artifacts(
         self,
         collection_id: CollectionId,
@@ -1346,7 +1420,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         *,
         byte_count: int,
         sha256: str,
-        root_role: Literal["operation"] | None = None,
+        selection_role: Literal["completion", "history-dependency"] | None = None,
     ) -> CollectionUploadProvenanceJournalStatusDocument:
         canonical_journal_id = _provenance_journal_id(journal_id)
         if isinstance(byte_count, bool) or byte_count < 1:
@@ -1361,7 +1435,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                     {
                         "bytes": str(byte_count),
                         "sha256": _sha256_identity(sha256, "provenance SHA-256"),
-                        "root_role": root_role,
+                        "selection_role": selection_role,
                     }
                 ).model_dump(mode="json", exclude_none=True),
             )
@@ -1497,44 +1571,39 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         content: Iterable[bytes],
         byte_count: int,
         sha256: str,
-        root_role: Literal["operation"] | None = None,
+        selection_role: Literal["completion", "history-dependency"] | None = None,
     ) -> CollectionUploadProvenanceJournalStatusDocument:
         status = self.create_collection_upload_session_provenance_journal(
             collection_id,
             journal_id,
             byte_count=byte_count,
             sha256=sha256,
-            root_role=root_role,
+            selection_role=selection_role,
         )
-        skip = status.accepted_bytes
-        offset = 0
+        remaining_skip = status.accepted_bytes
+        offset = status.accepted_bytes
+        received = 0
         buffer = bytearray()
         for source in content:
-            buffer.extend(bytes(source))
+            source = bytes(source)
+            received += len(source)
+            dropped = min(remaining_skip, len(source))
+            remaining_skip -= dropped
+            buffer.extend(source[dropped:])
             while len(buffer) >= 1024 * 1024:
                 current = bytes(buffer[: 1024 * 1024])
                 del buffer[: 1024 * 1024]
-                if offset + len(current) > skip:
-                    start = max(0, skip - offset)
-                    status = self.append_collection_upload_session_provenance_journal(
-                        collection_id,
-                        journal_id,
-                        offset=offset + start,
-                        content=current[start:],
-                    )
+                status = self.append_collection_upload_session_provenance_journal(
+                    collection_id, journal_id, offset=offset, content=current
+                )
                 offset += len(current)
         if buffer:
             current = bytes(buffer)
-            if offset + len(current) > skip:
-                start = max(0, skip - offset)
-                status = self.append_collection_upload_session_provenance_journal(
-                    collection_id,
-                    journal_id,
-                    offset=offset + start,
-                    content=current[start:],
-                )
+            status = self.append_collection_upload_session_provenance_journal(
+                collection_id, journal_id, offset=offset, content=current
+            )
             offset += len(current)
-        if offset != byte_count or status.accepted_bytes != byte_count:
+        if received != byte_count or remaining_skip or status.accepted_bytes != byte_count:
             raise BadRequest("provenance content differs from its declared byte count")
         status = self.seal_collection_upload_session_provenance_journal(
             collection_id,

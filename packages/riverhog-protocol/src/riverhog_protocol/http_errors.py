@@ -30,6 +30,10 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
             "length_required",
         ),
         "bind_collection_upload_session_member_histories": ("conflict", "not_found"),
+        "set_collection_upload_session_completion_requirement": ("conflict", "not_found"),
+        "set_collection_upload_session_member_history_inputs": ("conflict", "not_found"),
+        "get_collection_upload_session_member_history_inputs": ("not_found",),
+        "reserve_collection_upload_session_completion_recording": ("conflict", "not_found"),
         "get_collection_upload_session_artifact_provenance_binding": ("not_found",),
         "set_collection_upload_session_materialization_decisions": (
             "conflict",

@@ -2,20 +2,52 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+import hashlib
+from collections.abc import Iterable, Iterator, Mapping, Sequence
+from dataclasses import replace
 from typing import Any, cast
 
+from riverhog_archive_contracts import (
+    HistoryJournalAnchor,
+    MemberHistoryBuilder,
+    MemberHistoryPrimary,
+)
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_protocol import ArtifactId
+from riverhog_protocol.collection_completion import (
+    COMPLETION_REQUIRED_RECORD_KINDS,
+    CollectionCompletionRecordingRequestDocument,
+    CollectionCompletionRequirementDocument,
+)
+from riverhog_protocol.collection_production_provenance import (
+    COLLECTION_MEMBER_ROLE,
+    validate_member_completion_requirement,
+)
+from riverhog_protocol.collection_record_preimages import (
+    canonical_record_sequence,
+    completion_record_inventory_sha256,
+)
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionDerivation,
     JsonValue,
     canonical_json_sha256,
 )
+from riverhog_provenance import (
+    external_reference,
+    selected_delivery_occurrence,
+    validate_journal,
+    validate_journal_chunks,
+)
 
+from riverhog_client.canonical_completion import CompletionRecord, build_completion_journal
+from riverhog_client.completion_records import CompletionRecords
+from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_client.processing.models import (
     DerivedCollectionReceipt,
     DerivedCollectionSpec,
 )
+from riverhog_client.processing.provenance import ClaimedProvenance
 from riverhog_client.producer import (
     IncrementalCollectionProducer,
     ProducerArtifactCustody,
@@ -89,6 +121,10 @@ class DerivedCollectionWriter:
         self,
         outputs: Sequence[ProducerInput],
         *,
+        identities: Mapping[ArtifactId, ProducerArtifactIdentity],
+        source_histories: Mapping[ArtifactId, Iterable[ClaimedProvenance]],
+        history_extent: str,
+        completion_records: Iterable[CompletionRecord],
         execution_envelope_sha256: str,
         execution_sha256: str,
         disposition_set: ArtifactDispositionSetIdentity,
@@ -96,74 +132,45 @@ class DerivedCollectionWriter:
         poll_seconds: float = 2.0,
         timeout_seconds: float = 24 * 60 * 60,
     ) -> DerivedCollectionReceipt:
-        normalized_outputs = tuple(outputs)
-        if not normalized_outputs:
-            raise ValueError("successful collection transform must produce output artifacts")
-        output_ids = {current.artifact_id for current in normalized_outputs}
-        if len(output_ids) != len(normalized_outputs):
-            raise ValueError("derived collection output artifact IDs must be unique")
-        if disposition_set.output_artifact_count != len(normalized_outputs):
-            raise ValueError("sealed disposition identity differs from derived outputs")
-        derivation = CollectionDerivation(
-            execution_id=self.execution_id,
+        if not outputs or len({value.artifact_id for value in outputs}) != len(outputs):
+            raise ValueError("derived outputs must be nonempty and unique")
+        if {value.artifact_id for value in outputs} != set(identities) or set(identities) != set(
+            source_histories
+        ):
+            raise ValueError("derived output declarations lack exact input-history correspondence")
+        writer = IncrementalDerivedCollectionWriter(
+            self.api,
+            spec=self.spec,
             claim_id=self.claim_id,
             fence=self.fence,
-            recipe=self.spec.recipe,
-            operation=self.spec.operation,
-            input_set_sha256=self.input_set_sha256,
-            artifact_set_sha256=self.artifact_set_sha256,
-            execution_envelope_sha256=_sha256(
-                execution_envelope_sha256,
-                "execution envelope identity",
-            ),
-            execution_sha256=_sha256(execution_sha256, "execution evidence identity"),
-            controller_evidence=cast(dict[str, JsonValue], self.controller_evidence),
-            controller_evidence_sha256=self.controller_evidence_sha256,
-            disposition_set=disposition_set,
-        )
-        producer = IncrementalCollectionProducer(
-            self.api,
+            work_id=self.work_id,
+            execution_id=self.execution_id,
+            controller_evidence=self.controller_evidence,
             producer_app=self.producer_app,
-            adapter_id="riverhog-derived-collection/v1",
-            adapter_version=self.producer_version,
-            ingest_source=f"processing:{self.execution_id}",
-            source_event_id=self.execution_id,
-            source_context={
-                **dict(source_context or {}),
-                "claim_id": self.claim_id,
-                "fence": self.fence,
-                "work_id": self.work_id,
-                "execution_id": self.execution_id,
-                "execution_envelope_sha256": derivation.execution_envelope_sha256,
-                "execution_sha256": derivation.execution_sha256,
-                "derivation": derivation.as_dict(),
-            },
-            idempotency_key=self.execution_id,
-            archive_store=self.spec.output_policy.archive_store,
-            use_cache=self.spec.output_policy.use_cache,
-            copy_to=self.spec.output_policy.copy_to,
-            tags=self.spec.output_policy.tags,
-            event_context={
-                "initiator": {
-                    "app": self.producer_app,
-                    "claim_id": self.claim_id,
-                    "fence": self.fence,
-                    "work_id": self.work_id,
-                    "execution_id": self.execution_id,
-                }
-            },
+            producer_version=self.producer_version,
+            execution_envelope_sha256=execution_envelope_sha256,
+            source_context=source_context,
         )
-        producer.append_inputs(normalized_outputs)
-        receipt = producer.finish(
-            poll_seconds=poll_seconds,
-            timeout_seconds=timeout_seconds,
-        )
-        return DerivedCollectionReceipt(
-            collection_id=receipt.collection_id,
-            archive_root_sha256=receipt.archive_root_sha256,
-            artifact_set_identity=receipt.artifact_set_identity,
-            derivation=derivation,
-        )
+        try:
+            for output in outputs:
+                if output.output_id is None:
+                    raise ValueError("derived output has no accepted semantic output key")
+                writer.append(
+                    output,
+                    identity=identities[output.artifact_id],
+                    output_id=output.output_id,
+                    source_histories=source_histories[output.artifact_id],
+                    history_extent=history_extent,
+                )
+            return writer.finish(
+                execution_sha256=execution_sha256,
+                disposition_set=disposition_set,
+                completion_records=completion_records,
+                poll_seconds=poll_seconds,
+                timeout_seconds=timeout_seconds,
+            )
+        finally:
+            writer.stop()
 
 
 class IncrementalDerivedCollectionWriter:
@@ -184,6 +191,9 @@ class IncrementalDerivedCollectionWriter:
         execution_envelope_sha256: str,
         source_context: Mapping[str, object] | None = None,
     ) -> None:
+        self.api = api
+        self.producer_app = producer_app
+        self.producer_version = producer_version
         self.spec = spec
         self.claim_id = claim_id
         self.fence = fence
@@ -203,12 +213,19 @@ class IncrementalDerivedCollectionWriter:
             raise ValueError("incremental writer output policy differs from the sealed claim")
         self.input_set_sha256 = plan.inputs.sha256
         self.artifact_set_sha256 = plan.artifacts.sha256
+        self.requirement = CollectionCompletionRequirementDocument(
+            execution_id=self.execution_id,
+            execution_envelope_sha256=self.execution_envelope_sha256,
+            controller_evidence_sha256=self.controller_evidence_sha256,
+            record_kinds=COMPLETION_REQUIRED_RECORD_KINDS,
+        )
         self.producer = IncrementalCollectionProducer(
             api,
             producer_app=producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=producer_version,
             ingest_source=f"processing:{self.execution_id}",
+            completion_requirement=self.requirement,
             source_event_id=self.execution_id,
             source_context={
                 **dict(source_context or {}),
@@ -245,19 +262,56 @@ class IncrementalDerivedCollectionWriter:
         source: ProducerInput,
         *,
         identity: ProducerArtifactIdentity,
+        output_id: str,
+        source_histories: Iterable[ClaimedProvenance],
+        history_extent: str,
     ) -> tuple[ProducerArtifactCustody, ...]:
         if source.artifact_id != identity.artifact_id:
             raise ValueError("incremental transform source artifact differs from its identity")
-        return self.producer.append_inputs(
-            [source],
-            expected_identities={identity.artifact_id: identity},
+        transfer = CanonicalHistoryTransfer(self.api, self.producer.collection_id)
+        # This bounded per-output declaration is provided by the selected target;
+        # neither workspace names nor provenance lookup choose its causal inputs.
+        imports = tuple(transfer.accept(value, extent=history_extent) for value in source_histories)
+        if not imports:
+            raise ValueError("a derived output requires explicitly selected input history")
+        source = replace(
+            source,
+            output_id=output_id,
+            causal_input_states=tuple(imported.input_state for imported in imports),
         )
+        receipts = self.producer.append_inputs(
+            [source], expected_identities={identity.artifact_id: identity}
+        )
+        primary = self.api.get_collection_upload_session_artifact_provenance_binding(
+            self.producer.collection_id, identity.artifact_id
+        )
+        with MemberHistoryBuilder(
+            artifact_id=str(identity.artifact_id),
+            bytes=identity.bytes,
+            sha256=identity.sha256,
+            primary=MemberHistoryPrimary(
+                HistoryJournalAnchor.from_mapping(primary.journal.model_dump(mode="json")),
+                primary.delivery_association_id,
+            ),
+        ) as builder:
+            for imported in imports:
+                builder.add_import(imported)
+            _, history = builder.seal()
+            for page in builder.pages(history.imports):
+                self.api.stage_collection_upload_session_history_structure(
+                    self.producer.collection_id, page.to_json_bytes()
+                )
+            self.api.set_collection_upload_session_member_history_inputs(
+                self.producer.collection_id, identity.artifact_id, history.imports
+            )
+        return (*receipts, *self.producer.reconcile_custody())
 
     def finish(
         self,
         *,
         execution_sha256: str,
         disposition_set: ArtifactDispositionSetIdentity,
+        completion_records: Iterable[CompletionRecord],
         poll_seconds: float = 2.0,
         timeout_seconds: float = 24 * 60 * 60,
     ) -> DerivedCollectionReceipt:
@@ -275,6 +329,7 @@ class IncrementalDerivedCollectionWriter:
             controller_evidence_sha256=self.controller_evidence_sha256,
             disposition_set=disposition_set,
         )
+        self._seal_completion(execution_sha256, disposition_set, completion_records)
         produced = self.producer.finish(
             poll_seconds=poll_seconds,
             timeout_seconds=timeout_seconds,
@@ -285,6 +340,150 @@ class IncrementalDerivedCollectionWriter:
             artifact_set_identity=produced.artifact_set_identity,
             derivation=derivation,
         )
+
+    def _seal_completion(
+        self,
+        execution_sha256: str,
+        disposition: ArtifactDispositionSetIdentity,
+        supplied: Iterable[CompletionRecord],
+    ) -> None:
+        session = self.api.get_collection_upload_session(self.producer.collection_id)
+        if session["state"] == "finalized":
+            return
+        with CompletionRecords() as records:
+            for record in supplied:
+                retained = records.add(record.kind, record.read())
+                if (retained.bytes, retained.sha256) != (record.bytes, record.sha256):
+                    raise ValueError("sealed operation preimage changed before completion")
+            records.add("controller", (canonical_json_bytes(self.controller_evidence),))
+            records.add(
+                "accepted-construction",
+                (
+                    canonical_json_bytes(
+                        {
+                            "format": "riverhog-execution-construction/v1",
+                            "collection_id": str(self.producer.collection_id),
+                            "construction_identity_sha256": session["construction_identity_sha256"],
+                            "delivery_context_id": self.producer.delivery_context_id,
+                            "completion_requirement": self.requirement.model_dump(mode="json"),
+                        }
+                    ),
+                ),
+            )
+            records.add("disposition-identity", (canonical_json_bytes(disposition.as_dict()),))
+            records.add(
+                "disposition-pages", canonical_record_sequence(self._disposition_pages(disposition))
+            )
+            self._record_output_bindings(records)
+            records.add("output-bindings", canonical_record_sequence(records.output_rows()))
+            records.add(
+                "input-history-bindings",
+                canonical_record_sequence(records.output_rows(imports=True)),
+            )
+            if records.record("target-execution").sha256 != execution_sha256:
+                raise ValueError("target execution digest lacks its exact sealed preimage")
+            recording = self.api.reserve_collection_upload_session_completion_recording(
+                self.producer.collection_id,
+                CollectionCompletionRecordingRequestDocument(
+                    requirement_sha256=self.requirement.identity,
+                    records_sha256=completion_record_inventory_sha256(
+                        (record.kind, record.sha256, record.bytes) for record in records.records()
+                    ),
+                ),
+            )
+            raw = build_completion_journal(
+                requirement=self.requirement,
+                records=records.records(),
+                journal_id=recording.journal_id,
+                recorded_at=recording.recorded_at,
+                execution_sha256=execution_sha256,
+                output_bindings_sha256=records.record("output-bindings").sha256,
+                input_history_bindings_sha256=records.record("input-history-bindings").sha256,
+                disposition_set_sha256=disposition.sha256,
+                producer_app=self.producer_app,
+                producer_version=self.producer_version,
+            )
+            summary = validate_journal(raw, require_profiles=False)
+            self.api.upload_collection_upload_session_provenance_journal(
+                self.producer.collection_id,
+                summary.journal_id,
+                content=(raw,),
+                byte_count=len(raw),
+                sha256=hashlib.sha256(raw).hexdigest(),
+                selection_role="completion",
+            )
+
+    def _disposition_pages(
+        self, identity: ArtifactDispositionSetIdentity
+    ) -> Iterator[Mapping[str, Any]]:
+        for kind, read in (
+            ("dispositions", self.api.list_processing_claim_dispositions),
+            ("outputs", self.api.list_processing_claim_disposition_outputs),
+        ):
+            ordinal = 0
+            while True:
+                page = read(self.claim_id, identity_sha256=identity.sha256, start_ordinal=ordinal)
+                yield {"kind": kind, "page": page.model_dump(mode="json")}
+                if page.next_ordinal is None:
+                    break
+                if page.next_ordinal <= ordinal:
+                    raise ValueError("disposition continuation does not advance")
+                ordinal = page.next_ordinal
+
+    def _record_output_bindings(self, records: CompletionRecords) -> None:
+        token = None
+        while True:
+            page = self.api.list_collection_upload_session_artifacts(
+                self.producer.collection_id, page_size=100, page_token=token
+            )
+            for member in page["artifacts"]:
+                artifact_id = ArtifactId(member["artifact_id"])
+                primary = self.api.get_collection_upload_session_artifact_provenance_binding(
+                    self.producer.collection_id, artifact_id
+                )
+                with self.api.stream_collection_upload_session_provenance_journal(
+                    self.producer.collection_id, primary.journal.journal_id
+                ) as chunks:
+                    summary = validate_journal_chunks(
+                        chunks,
+                        expected_anchor=primary.journal.model_dump(mode="json"),
+                        require_exact_tail=True,
+                        require_profiles=False,
+                    )
+                state, _ = selected_delivery_occurrence(
+                    summary,
+                    binding=primary.model_dump(mode="json"),
+                    artifact_id=str(artifact_id),
+                    byte_count=int(member["bytes"]),
+                    sha256=member["sha256"],
+                    member_role=COLLECTION_MEMBER_ROLE,
+                )
+                output_id = validate_member_completion_requirement(
+                    summary.graph,
+                    delivery_context_id=self.producer.delivery_context_id,
+                    state_id=state["id"],
+                    requirement=self.requirement,
+                )
+                imports = self.api.get_collection_upload_session_member_history_inputs(
+                    self.producer.collection_id, artifact_id
+                )
+                records.add_output(
+                    {
+                        "artifact_id": str(artifact_id),
+                        "bytes": str(member["bytes"]),
+                        "sha256": member["sha256"],
+                        "output_id": output_id,
+                        "primary": {
+                            "journal": primary.journal.model_dump(mode="json"),
+                            "delivery_association_id": primary.delivery_association_id,
+                        },
+                        "state": external_reference(summary, state["id"]),
+                    },
+                    {"artifact_id": str(artifact_id), "imports": imports.to_mapping()},
+                )
+            token = page.get("next_page_token")
+            if token is None:
+                return
 
 
 __all__ = ["DerivedCollectionWriter", "IncrementalDerivedCollectionWriter"]

@@ -26,9 +26,10 @@ from review0_sampler_protocol import (
     SamplerResult,
     SamplerWindow,
 )
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ProducerFile
 from riverhog_client.processing import ProcessingWorkspace
-from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
+from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
 from stove0_protocol import JsonSchemaValidationProfile, OciImageId
 from stove0_target_support import (
@@ -261,7 +262,9 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                     for index, window in enumerate(sample_plan.windows, start=1)
                 )
                 artifacts: list[OutputArtifact] = []
-                publication = execution.open_collection_publication()
+                publication = execution.open_collection_publication(
+                    implementation=self.descriptor()
+                )
                 samples: list[dict[str, object]] = []
                 sampler_requests: list[SamplerRequest] = []
                 sampler_results: list[SamplerResult] = []
@@ -404,14 +407,16 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                 declared = tuple(sorted(artifacts, key=lambda item: item.id))
                 for artifact, _claimed in execution.iter_inputs():
                     execution.declare_disposition(artifact.id, "transformed")
-                execution_sha256 = _execution_sha256(
+                execution_preimage = _execution_preimage(
                     request.declaration.plan.plan_sha256,
                     sampler_result_sha256,
                     declared,
                 )
+                execution_sha256 = hashlib.sha256(execution_preimage).hexdigest()
                 return publication.finish_success(
                     operation=REVIEW_MATERIALIZE_OPERATION,
                     execution_sha256=execution_sha256,
+                    execution_preimage=execution_preimage,
                     attempt=attempt,
                     runtime_evidence={
                         "sampler_descriptor_sha256": descriptor.descriptor_sha256,
@@ -477,13 +482,21 @@ def _require_sampler_success(result: SamplerResult) -> None:
 
 
 def _execution_sha256(
+    plan_sha256: str, sampler_result_sha256: str, outputs: Sequence[OutputArtifact]
+) -> str:
+    return hashlib.sha256(
+        _execution_preimage(plan_sha256, sampler_result_sha256, outputs)
+    ).hexdigest()
+
+
+def _execution_preimage(
     plan_sha256: str,
     sampler_result_sha256: str,
     outputs: Sequence[OutputArtifact],
-) -> str:
+) -> bytes:
     """Identify exact review execution semantics independently of an attempt."""
 
-    return canonical_json_sha256(
+    return canonical_json_bytes(
         {
             "format": "review0-execution/v1",
             "plan_sha256": plan_sha256,

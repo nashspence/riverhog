@@ -163,6 +163,7 @@ def _process_archive_maintenance(
                 requested_cache_reconciliations,
             )
     progressed += container.collection_uploads.process_due_provenance_journal_validations(limit=1)
+    progressed += container.collection_uploads.process_due_custody_receipts(limit=1)
     progressed += container.catalog_sync.reap_expired_history()
     progressed += container.collection_uploads.process_due_finalizations(limit=1)
     progressed += container.collection_uploads.reap_expired_custody_transfers(limit=100)

@@ -790,6 +790,20 @@ class TargetExecutionEvidence(TargetProtocolModel):
     runtime: dict[str, JsonValue] = Field(default_factory=dict)
 
 
+class TargetPreRootResult(TargetProtocolModel):
+    """Successful sealed production/evidence preceding any archive-root publication."""
+
+    format: Literal["stove0-target-pre-root-result/v1"] = "stove0-target-pre-root-result/v1"
+    protocol: Literal["stove0-transform-target/v1"] = TRANSFORM_TARGET_PROTOCOL
+    job_id: Sha256
+    state: Literal["succeeded"] = "succeeded"
+    attempt: int = Field(ge=1)
+    request_sha256: Sha256
+    plan_sha256: Sha256
+    production: TargetProductionAuthority
+    execution_evidence: TargetExecutionEvidence
+
+
 class OutputCollectionRef(TargetProtocolModel):
     collection_id: CollectionId
     archive_root_sha256: Sha256
@@ -1193,6 +1207,7 @@ __all__ = [
     "TargetDescriptor",
     "TargetDescriptorPayload",
     "TargetExecutionEvidence",
+    "TargetPreRootResult",
     "TargetFailure",
     "TargetInapplicable",
     "TargetCallbackAccess",

@@ -31,6 +31,7 @@ from riverhog_protocol import (
     validate_collection_upload_artifact_custody_receipt,
 )
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKERS_MAX
+from riverhog_provenance_contracts import ProvenanceJournalId
 from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.archive import ArchiveCopyOut
@@ -709,6 +710,8 @@ class CollectionUploadSessionOut(RiverhogModel):
     tag_count: int = Field(ge=0, strict=True)
     provenance_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     delivery_context_id: str
+    construction_identity_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    completion_journal_id: ProvenanceJournalId | None = None
     artifact_set_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_root_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_store: ArchiveStoreName

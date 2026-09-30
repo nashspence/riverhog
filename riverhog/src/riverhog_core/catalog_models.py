@@ -2541,7 +2541,10 @@ class CollectionUploadRecord(Base):
     tag_head_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     tag_publication_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     provenance_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    operation_journal_id: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    completion_requirement_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    completion_journal_id: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    completion_recorded_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    completion_records_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
     initiated_by_principal_id: Mapped[str] = mapped_column(String, default="riverhog")
@@ -2999,8 +3002,13 @@ class CollectionUploadArtifactProvenanceBindingRecord(Base):
     prefix_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     prefix_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     delivery_association_id: Mapped[str] = mapped_column(String, nullable=False)
+    completion_output_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    history_imports_ref_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
+        UniqueConstraint(
+            "collection_id", "completion_output_id", name="uq_upload_completion_output"
+        ),
         ForeignKeyConstraint(
             ["collection_id", "artifact_id"],
             [
@@ -3137,6 +3145,9 @@ class CollectionUploadProvenanceJournalRecord(Base):
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
     state: Mapped[str] = mapped_column(String, default="accepting")
+    history_dependency: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=text("false")
+    )
     accepted_bytes: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
     next_chunk_ordinal: Mapped[int] = mapped_column(
         authority_ordinal_type(),
@@ -3231,6 +3242,34 @@ class CollectionUploadProvenanceJournalChunkRecord(Base):
     )
 
     journal: Mapped[CollectionUploadProvenanceJournalRecord] = relationship(back_populates="chunks")
+
+
+class CollectionUploadProvenanceCustodyObjectRecord(Base):
+    """Resumable encrypted journal custody, shared by early receipts and final corpus."""
+
+    __tablename__ = "collection_upload_provenance_custody_objects"
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
+    byte_offset: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    plaintext_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    plaintext_sha256: Mapped[str] = mapped_column(String(64), primary_key=True)
+    relative_path: Mapped[str] = mapped_column(String, nullable=False)
+    receipt_json: Mapped[str] = mapped_column(Text, nullable=False)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "journal_id"],
+            [
+                "collection_upload_provenance_journals.collection_id",
+                "collection_upload_provenance_journals.journal_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            "byte_offset >= 0 AND plaintext_bytes > 0 AND plaintext_bytes <= 8388608",
+            name="ck_provenance_custody_segment_extent",
+        ),
+        Index("ix_provenance_custody_objects_path", "collection_id", "relative_path"),
+    )
 
 
 class CollectionUploadProvenanceSourceRecord(Base):

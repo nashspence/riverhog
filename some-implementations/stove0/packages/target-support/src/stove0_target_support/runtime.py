@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import hashlib
 import time
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Self, cast
 
 from pydantic import JsonValue
+from riverhog_archive_contracts import BOUND_HISTORY_EXTENT
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_client.canonical_completion import CompletionRecord
 from riverhog_client.processing import (
     ClaimedArtifact,
     ClaimedCollectionRuntime,
@@ -39,9 +43,11 @@ from stove0_target_protocol import (
     OutputArtifact,
     OutputCollectionRef,
     OutputSourceEdge,
+    TargetDescriptor,
     TargetExecutionEvidence,
     TargetJobRequest,
     TargetJobStatus,
+    TargetPreRootResult,
     TargetProgress,
     validate_status_against_request,
 )
@@ -58,7 +64,9 @@ class TargetCollectionPublication:
         self,
         execution: TargetExecutionRuntime,
         writer: IncrementalDerivedCollectionWriter,
+        implementation: TargetDescriptor,
     ) -> None:
+        self.implementation = implementation
         self.execution = execution
         self.writer = writer
         self._local_files: dict[str, Path] = {}
@@ -74,28 +82,28 @@ class TargetCollectionPublication:
             raise ValueError(f"target output artifact ID does not match its source: {artifact.id}")
         if isinstance(source, ProducerFile):
             self._local_files[artifact.artifact_id] = source.source
+        selected = tuple(derived_from)
+        sources = self.execution.resolve_input_ids(selected)
+        # Callback declarations precede custody so restart can finish from
+        # accepted keys/edges after the target releases disposable files.
+        self.execution._input_client.declare_target_execution_output(
+            self.execution.job_id, artifact
+        )
+        for input_id in selected:
+            self.execution._input_client.declare_target_execution_source_edge(
+                self.execution.job_id, OutputSourceEdge(output_id=artifact.id, input_id=input_id)
+            )
         runtime = cast(CollectionTransformRuntime, self.execution.runtime)
         receipts = runtime.append_incremental_output(
             self.writer,
             source,
             identity=ProducerArtifactIdentity(
-                artifact_id=artifact.artifact_id,
-                bytes=artifact.bytes,
-                sha256=artifact.sha256,
+                artifact.artifact_id, artifact.bytes, artifact.sha256
             ),
+            output_id=artifact.id,
+            inputs=sources,
+            history_extent=BOUND_HISTORY_EXTENT,
         )
-        self.execution._input_client.declare_target_execution_output(
-            self.execution.job_id, artifact
-        )
-        source_count = 0
-        for input_id in derived_from:
-            self.execution._input_client.declare_target_execution_source_edge(
-                self.execution.job_id,
-                OutputSourceEdge(output_id=artifact.id, input_id=input_id),
-            )
-            source_count += 1
-        if source_count == 0:
-            raise ValueError("target output source references must be nonempty")
         self._release_custodied_files(receipts)
         return receipts
 
@@ -104,6 +112,7 @@ class TargetCollectionPublication:
         *,
         operation: OperationContract,
         execution_sha256: str,
+        execution_preimage: bytes,
         attempt: int = 1,
         runtime_evidence: Mapping[str, object] | None = None,
         **kwargs: Any,
@@ -121,10 +130,53 @@ class TargetCollectionPublication:
             raise RuntimeError("Stove0 sealed no target production authority")
         disposition_set = production.riverhog_disposition_set
         runtime = cast(CollectionTransformRuntime, self.execution.runtime)
+        if hashlib.sha256(execution_preimage).hexdigest() != execution_sha256:
+            raise ValueError("target execution digest differs from its sealed preimage")
+        plan = self.execution.request.declaration.plan
+        evidence = TargetExecutionEvidence(
+            target_descriptor_sha256=plan.target_descriptor_sha256,
+            operation_contract_sha256=plan.operation_contract_sha256,
+            plan_sha256=plan.plan_sha256,
+            execution_sha256=execution_sha256,
+            runtime=cast(dict[str, JsonValue], dict(runtime_evidence or {})),
+        )
+        pre_root = TargetPreRootResult(
+            job_id=self.execution.job_id,
+            attempt=attempt,
+            request_sha256=self.execution.request.request_sha256,
+            plan_sha256=plan.plan_sha256,
+            production=production,
+            execution_evidence=evidence,
+        )
+        completion_records = (
+            CompletionRecord.from_bytes(
+                "invocation",
+                canonical_json_bytes(
+                    self.execution.request.declaration.model_dump(
+                        mode="json", by_alias=True, exclude_none=True
+                    )
+                ),
+            ),
+            CompletionRecord.from_bytes(
+                "implementation",
+                canonical_json_bytes(
+                    {
+                        "descriptor": self.implementation.model_dump(mode="json", by_alias=True),
+                        "operation": operation.model_dump(mode="json", by_alias=True),
+                    }
+                ),
+            ),
+            CompletionRecord.from_bytes("target-execution", execution_preimage),
+            CompletionRecord.from_bytes(
+                "target-result",
+                canonical_json_bytes(pre_root.model_dump(mode="json", by_alias=True)),
+            ),
+        )
         receipt = runtime.finish_incremental_publication(
             self.writer,
             execution_sha256=execution_sha256,
             disposition_set=disposition_set,
+            completion_records=completion_records,
             **kwargs,
         )
         self._release_all_files()
@@ -152,13 +204,7 @@ class TargetCollectionPublication:
             ),
             production=production,
             output_collection=output_collection,
-            execution_evidence=TargetExecutionEvidence(
-                target_descriptor_sha256=plan.target_descriptor_sha256,
-                operation_contract_sha256=plan.operation_contract_sha256,
-                plan_sha256=plan.plan_sha256,
-                execution_sha256=execution_sha256,
-                runtime=cast(dict[str, JsonValue], dict(runtime_evidence or {})),
-            ),
+            execution_evidence=evidence,
             derivation=receipt.derivation.as_dict(),
         )
         validate_status_against_request(status, self.execution.request, operation)
@@ -387,10 +433,16 @@ class TargetExecutionRuntime:
     def open_collection_publication(
         self,
         *,
+        implementation: TargetDescriptor,
         source_context: Mapping[str, object] | None = None,
     ) -> TargetCollectionPublication:
         if not isinstance(self.runtime, CollectionTransformRuntime):
             raise RuntimeError("external-effect execution cannot publish a Riverhog collection")
+        if (
+            implementation.descriptor_sha256
+            != self.request.declaration.plan.target_descriptor_sha256
+        ):
+            raise ValueError("publication implementation differs from the sealed target plan")
         writer = self.runtime.open_incremental_publication(
             execution_envelope_sha256=(
                 self.request.declaration.controller_evidence.execution_envelope.execution_envelope_sha256
@@ -401,7 +453,7 @@ class TargetExecutionRuntime:
                 "target_request_sha256": self.request.request_sha256,
             },
         )
-        return TargetCollectionPublication(self, writer)
+        return TargetCollectionPublication(self, writer, implementation)
 
     def effect_success(
         self,

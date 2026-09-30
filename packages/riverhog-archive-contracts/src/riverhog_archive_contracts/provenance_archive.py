@@ -95,7 +95,7 @@ class ProvenancePayload:
 
     @property
     def path(self) -> str:
-        return f"provenance/payloads/volume-{format_archive_sequence(self.sequence)}.bin.age"
+        return provenance_payload_object_path(self.sha256)
 
     def to_mapping(self) -> dict[str, object]:
         return {
@@ -104,7 +104,6 @@ class ProvenancePayload:
             "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
         }
-
     @classmethod
     def from_mapping(cls, row: object, *, sequence: int) -> ProvenancePayload:
         if not isinstance(row, dict) or set(row) != {"kind", "path", "bytes", "sha256"}:
@@ -118,6 +117,11 @@ class ProvenancePayload:
         if row["path"] != payload.path:
             raise ProvenanceArchiveError("provenance payload path is not canonical")
         return payload
+
+
+def provenance_payload_object_path(sha256: str) -> str:
+    identity = _sha256(sha256, "provenance payload")
+    return f"provenance/payloads/{identity[:2]}/{identity}.bin.age"
 
 
 @dataclass(frozen=True, slots=True)

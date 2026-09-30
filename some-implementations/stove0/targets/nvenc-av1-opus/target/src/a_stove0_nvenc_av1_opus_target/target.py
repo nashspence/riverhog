@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.metadata
 import os
 import shutil
@@ -31,6 +32,7 @@ from a_stove0_media_archive_lib import (
     seal_publication_plan,
     sibling_hint,
 )
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ProducerFile
 from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
@@ -242,7 +244,9 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     artifact.id: (artifact, claimed) for artifact, claimed in resolved
                 }
                 outputs: list[OutputArtifact] = []
-                publication = execution.open_collection_publication()
+                publication = execution.open_collection_publication(
+                    implementation=self.descriptor()
+                )
                 for item in projection.items:
                     check()
                     artifact, claimed = resolved_by_id[item.input_artifact_id]
@@ -433,13 +437,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 publication_decisions.require_exact_outputs(tuple(item.id for item in declared))
                 for input_id in sorted(resolved_by_id):
                     execution.declare_disposition(input_id, "transformed")
-                execution_sha256 = _execution_sha256(
+                execution_preimage = _execution_preimage(
                     request.declaration.plan.plan_sha256,
                     declared,
                 )
+                execution_sha256 = hashlib.sha256(execution_preimage).hexdigest()
                 return publication.finish_success(
                     operation=AV1_OPUS_ARCHIVE_OPERATION,
                     execution_sha256=execution_sha256,
+                    execution_preimage=execution_preimage,
                     attempt=attempt,
                     runtime_evidence={
                         "ffmpeg": tool_version(self.ffmpeg),
@@ -502,13 +508,17 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         )
 
 
-def _execution_sha256(
+def _execution_sha256(plan_sha256: str, outputs: Sequence[OutputArtifact]) -> str:
+    return hashlib.sha256(_execution_preimage(plan_sha256, outputs)).hexdigest()
+
+
+def _execution_preimage(
     plan_sha256: str,
     outputs: Sequence[OutputArtifact],
-) -> str:
+) -> bytes:
     """Identify exact AV1/Opus execution semantics independently of an attempt."""
 
-    return canonical_json_sha256(
+    return canonical_json_bytes(
         {
             "format": "a-stove0-nvenc-av1-opus-target-execution/v1",
             "plan_sha256": plan_sha256,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Self
 
@@ -385,10 +385,19 @@ class CollectionTransformRuntime:
         source: ProducerInput,
         *,
         identity: ProducerArtifactIdentity,
+        output_id: str,
+        inputs: Iterable[ClaimedArtifact],
+        history_extent: str,
     ) -> tuple[ProducerArtifactCustody, ...]:
         if writer is not self._incremental_writer:
             raise ValueError("incremental writer does not belong to this transform runtime")
-        return writer.append(source, identity=identity)
+        return writer.append(
+            source,
+            identity=identity,
+            output_id=output_id,
+            source_histories=(self.reader.provenance(value) for value in inputs),
+            history_extent=history_extent,
+        )
 
     def finish_incremental_publication(
         self,
