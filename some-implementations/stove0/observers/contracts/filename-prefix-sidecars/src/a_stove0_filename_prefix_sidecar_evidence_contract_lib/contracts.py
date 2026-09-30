@@ -41,7 +41,7 @@ class FilenameQuestion(_Model):
     provenance_slots: tuple[str, ...] = Field(min_length=1)
     primary_ids: tuple[str, ...] = Field(min_length=1)
     sidecar_ids: tuple[str, ...] = Field(min_length=1)
-    sidecar_suffix: str
+    sidecar_suffixes: tuple[str, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
     def canonical_question(self) -> Self:
@@ -51,7 +51,14 @@ class FilenameQuestion(_Model):
             or set(self.primary_ids) & set(self.sidecar_ids)
             or self.provenance_slots != tuple(sorted(set(self.provenance_slots)))
             or any(not slot or len(slot) > 160 for slot in self.provenance_slots)
-            or _SUFFIX.fullmatch(self.sidecar_suffix) is None
+            or self.sidecar_suffixes != tuple(sorted(set(self.sidecar_suffixes)))
+            or any(_SUFFIX.fullmatch(suffix) is None for suffix in self.sidecar_suffixes)
+            or any(
+                other.endswith(suffix)
+                for suffix in self.sidecar_suffixes
+                for other in self.sidecar_suffixes
+                if suffix != other
+            )
         ):
             raise ValueError("filename partitions or sidecar suffix are invalid")
         return self
@@ -184,7 +191,7 @@ _SAMPLE_OPTIONS = {
     "provenance_slots": ["core"],
     "primary_ids": ["sample"],
     "sidecar_ids": ["sidecar"],
-    "sidecar_suffix": ".xmp",
+    "sidecar_suffixes": [".XMP", ".xmp"],
 }
 _SAMPLE_SIDECAR = {**_SAMPLE_SUBJECT, "id": "sidecar", "artifact_id": "e" * 64}
 FILENAME_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate(

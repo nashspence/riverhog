@@ -520,36 +520,181 @@ recipes:
   observers:
   - registration_id: exiftool
     contract_id: stove0.media.metadata/v1
-    contract_sha256: 6bd7dab32a7857f706ca10316f9fcc3d1faa8d9a8459b8058d187d77c3675119
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*'
-      role: stove0.media.source/v1
+    contract_sha256: 23bae2a55c65c7bb88defe8fca3ca37d655e82f803dc75d24d189c2a90ec9b8b
+    subject_batch_size: 1
     retrieval_policy: allow
+  - registration_id: ffprobe-streams
+    contract_id: stove0.ffprobe.streams/v1
+    contract_sha256: 030964d80e5155aa0689f8d88fb8482d99d8e8ea3fad139fceefb46efbf90aa0
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    maximum_result_bytes: 4194304
+    retrieval_policy: allow
+  - registration_id: canonical-provenance
+    contract_id: stove0.riverhog-provenance/v1
+    contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+    options:
+      predicates:
+      - https://nashspence.github.io/riverhog/v1/provenance/relations/describes
+  - registration_id: canonical-hint
+    contract_id: stove0.riverhog-materialization-hint/v1
+    contract_sha256: 883a79452b904542c32cee8f46d1ac123e01646d4668096469340c4af23e1e50
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+  - registration_id: filename-prefix-sidecars
+    contract_id: stove0.filename-prefix-sidecars/v1
+    contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+    after:
+    - canonical-provenance
+    - exiftool
+    evidence_from:
+    - canonical-provenance
+    evidence_slots_pointer: /provenance_slots
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+    partitions:
+    - pointer: /primary_ids
+      roles:
+      - stove0.media.source/v1
+    - pointer: /sidecar_ids
+      roles:
+      - stove0.media.xmp-source/v1
+    options:
+      sidecar_suffixes:
+      - .XMP
+      - .xmp
+    maximum_result_bytes: 4194304
   routes:
   - id: archive-audio
     kind: operation
     operation_id: stove0.media.audio-archive/v1
     target_registration_id: opus
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*'
-      role: stove0.media.source/v1
     intent:
       bitrate_kbps: 128
       codec: opus
       container: opus
     input_retrieval_policy: allow
+    primary_role: stove0.media.source/v1
+    associated_roles:
+    - stove0.media.xmp-source/v1
+    forward_observation_contract_ids:
+    - stove0.media.metadata/v1
+    - stove0.riverhog-materialization-hint/v1
+    target_options:
+      allow_missing_materialization_hint: true
+    when:
+    - observation_contract_id: stove0.ffprobe.streams/v1
+      artifact_roles:
+      - stove0.media.source/v1
+      artifact_facts:
+        records_pointer: /artifacts
+        artifact_id_pointer: /artifact_id
+      pointer: /has_audio
+      operator: equals
+      value: true
+    - observation_contract_id: stove0.ffprobe.streams/v1
+      artifact_roles:
+      - stove0.media.source/v1
+      artifact_facts:
+        records_pointer: /artifacts
+        artifact_id_pointer: /artifact_id
+      pointer: /has_non_attached_video
+      operator: equals
+      value: false
+  artifact_rules:
+  - role: stove0.media.xmp-source/v1
+    when:
+    - &id002
+      observation_contract_id: stove0.media.metadata/v1
+      artifact_roles:
+      - stove0.media.xmp-source/v1
+      artifact_facts:
+        records_pointer: /artifacts
+        artifact_id_pointer: /artifact_id
+      pointer: /value
+      operator: one-of
+      value:
+      - XMP
+      - application/rdf+xml
+      array_pointer: /facts
+      same_item:
+      - pointer: /name
+        value: container-format
+  - role: stove0.media.source/v1
+  artifact_associations:
+  - primary_role: stove0.media.source/v1
+    associated_roles:
+    - stove0.media.xmp-source/v1
+    sources:
+    - &id001
+      observation_contract_id: stove0.riverhog-provenance/v1
+      observation_contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+      records_pointer: /artifacts
+      record_array_pointer: /claims
+      where:
+      - observation_contract_id: stove0.riverhog-provenance/v1
+        pointer: /predicate
+        value: https://nashspence.github.io/riverhog/v1/provenance/relations/describes
+      associated_pointer: /subject
+      primary_pointer: /object
+      endpoint_mode: exact-endpoint
+      endpoint_observation_contract_id: stove0.riverhog-provenance/v1
+      required:
+      - observation_contract_id: stove0.riverhog-provenance/v1
+        pointer: /value_type
+        value: reference
+      expected_options:
+        predicates:
+        - https://nashspence.github.io/riverhog/v1/provenance/relations/describes
+    - observation_contract_id: stove0.filename-prefix-sidecars/v1
+      observation_contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+      records_pointer: /candidates
+      where:
+      - observation_contract_id: stove0.filename-prefix-sidecars/v1
+        pointer: /rule
+        value: full-leaf
+      associated_pointer: /sidecar_id
+      primary_pointer: /primary_id
+      endpoint_mode: subject-id
+      primary_partition_pointer: /primary_ids
+      associated_partition_pointer: /sidecar_ids
+      evidence_slots_pointer: /provenance_slots
+      status_records_pointer: /statuses
+      status_pointer: /status
+      expected_options:
+        sidecar_suffixes:
+        - .XMP
+        - .xmp
+    - observation_contract_id: stove0.filename-prefix-sidecars/v1
+      observation_contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+      records_pointer: /candidates
+      where:
+      - observation_contract_id: stove0.filename-prefix-sidecars/v1
+        pointer: /rule
+        value: stem
+      associated_pointer: /sidecar_id
+      primary_pointer: /primary_id
+      endpoint_mode: subject-id
+      primary_partition_pointer: /primary_ids
+      associated_partition_pointer: /sidecar_ids
+      evidence_slots_pointer: /provenance_slots
+      status_records_pointer: /statuses
+      status_pointer: /status
+      expected_options:
+        sidecar_suffixes:
+        - .XMP
+        - .xmp
 - id: stove0.conformance-media/v1
   revision: '1'
   event_input_closure: single-finalized-collection
@@ -557,52 +702,130 @@ recipes:
   - primary_role: stove0.media.source/v1
     associated_roles:
     - stove0.media.xmp-source/v1
-    path_identity: same-parent-stem
+    sources:
+    - *id001
+    - observation_contract_id: stove0.filename-prefix-sidecars/v1
+      observation_contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+      records_pointer: /candidates
+      where:
+      - observation_contract_id: stove0.filename-prefix-sidecars/v1
+        pointer: /rule
+        value: full-leaf
+      associated_pointer: /sidecar_id
+      primary_pointer: /primary_id
+      endpoint_mode: subject-id
+      primary_partition_pointer: /primary_ids
+      associated_partition_pointer: /sidecar_ids
+      evidence_slots_pointer: /provenance_slots
+      status_records_pointer: /statuses
+      status_pointer: /status
+      expected_options:
+        sidecar_suffixes:
+        - .XMP
+        - .xmp
+    - observation_contract_id: stove0.filename-prefix-sidecars/v1
+      observation_contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+      records_pointer: /candidates
+      where:
+      - observation_contract_id: stove0.filename-prefix-sidecars/v1
+        pointer: /rule
+        value: stem
+      associated_pointer: /sidecar_id
+      primary_pointer: /primary_id
+      endpoint_mode: subject-id
+      primary_partition_pointer: /primary_ids
+      associated_partition_pointer: /sidecar_ids
+      evidence_slots_pointer: /provenance_slots
+      status_records_pointer: /statuses
+      status_pointer: /status
+      expected_options:
+        sidecar_suffixes:
+        - .XMP
+        - .xmp
   source_collection_retirement_policy: retain
   unmatched_artifact_disposition: retain-in-source
   observers:
   - registration_id: exiftool
     contract_id: stove0.media.metadata/v1
-    contract_sha256: 6bd7dab32a7857f706ca10316f9fcc3d1faa8d9a8459b8058d187d77c3675119
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.mov'
-      role: stove0.media.source/v1
-      media_type: video/quicktime
-    - glob: '*.wav'
-      role: stove0.media.source/v1
-      media_type: audio/wav
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    retrieval_policy: available-only
+    contract_sha256: 23bae2a55c65c7bb88defe8fca3ca37d655e82f803dc75d24d189c2a90ec9b8b
+    subject_batch_size: 1
+    retrieval_policy: allow
+  - registration_id: ffprobe-streams
+    contract_id: stove0.ffprobe.streams/v1
+    contract_sha256: 030964d80e5155aa0689f8d88fb8482d99d8e8ea3fad139fceefb46efbf90aa0
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    maximum_result_bytes: 4194304
+    retrieval_policy: allow
+  - registration_id: canonical-provenance
+    contract_id: stove0.riverhog-provenance/v1
+    contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+    options:
+      predicates:
+      - https://nashspence.github.io/riverhog/v1/provenance/relations/describes
+  - registration_id: canonical-hint
+    contract_id: stove0.riverhog-materialization-hint/v1
+    contract_sha256: 883a79452b904542c32cee8f46d1ac123e01646d4668096469340c4af23e1e50
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+  - registration_id: filename-prefix-sidecars
+    contract_id: stove0.filename-prefix-sidecars/v1
+    contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+    after:
+    - canonical-provenance
+    - exiftool
+    evidence_from:
+    - canonical-provenance
+    evidence_slots_pointer: /provenance_slots
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+    partitions:
+    - pointer: /primary_ids
+      roles:
+      - stove0.media.source/v1
+    - pointer: /sidecar_ids
+      roles:
+      - stove0.media.xmp-source/v1
+    options:
+      sidecar_suffixes:
+      - .XMP
+      - .xmp
+    maximum_result_bytes: 4194304
   routes:
   - id: archive-audio
     kind: operation
     when:
-    - observation_contract_id: stove0.media.metadata/v1
+    - observation_contract_id: stove0.ffprobe.streams/v1
       artifact_roles:
       - stove0.media.source/v1
       artifact_facts:
         records_pointer: /artifacts
         artifact_id_pointer: /artifact_id
-      pointer: /state
+      pointer: /has_audio
       operator: equals
-      value: observed
+      value: true
+    - observation_contract_id: stove0.ffprobe.streams/v1
+      artifact_roles:
+      - stove0.media.source/v1
+      artifact_facts:
+        records_pointer: /artifacts
+        artifact_id_pointer: /artifact_id
+      pointer: /has_non_attached_video
+      operator: equals
+      value: false
     operation_id: stove0.media.audio-archive/v1
     target_registration_id: opus
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.wav'
-      role: stove0.media.source/v1
-      media_type: audio/wav
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
     primary_role: stove0.media.source/v1
     associated_roles:
     - stove0.media.xmp-source/v1
@@ -626,30 +849,34 @@ recipes:
           fields:
           - XMP-xmp:CreateDate
     input_retrieval_policy: available-only
+    forward_observation_contract_ids:
+    - stove0.media.metadata/v1
+    - stove0.riverhog-materialization-hint/v1
+    target_options:
+      allow_missing_materialization_hint: true
   - id: archive-audio-overlap
     kind: operation
     when:
-    - observation_contract_id: stove0.media.metadata/v1
+    - observation_contract_id: stove0.ffprobe.streams/v1
       artifact_roles:
       - stove0.media.source/v1
       artifact_facts:
         records_pointer: /artifacts
         artifact_id_pointer: /artifact_id
-      pointer: /state
+      pointer: /has_audio
       operator: equals
-      value: observed
+      value: true
+    - observation_contract_id: stove0.ffprobe.streams/v1
+      artifact_roles:
+      - stove0.media.source/v1
+      artifact_facts:
+        records_pointer: /artifacts
+        artifact_id_pointer: /artifact_id
+      pointer: /has_non_attached_video
+      operator: equals
+      value: false
     operation_id: stove0.media.audio-archive/v1
     target_registration_id: opus
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.wav'
-      role: stove0.media.source/v1
-      media_type: audio/wav
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
     primary_role: stove0.media.source/v1
     associated_roles:
     - stove0.media.xmp-source/v1
@@ -664,30 +891,25 @@ recipes:
         tags:
         - conformance-overlap
     input_retrieval_policy: available-only
+    forward_observation_contract_ids:
+    - stove0.media.metadata/v1
+    - stove0.riverhog-materialization-hint/v1
+    target_options:
+      allow_missing_materialization_hint: true
   - id: archive-video
     kind: operation
     when:
-    - observation_contract_id: stove0.media.metadata/v1
+    - observation_contract_id: stove0.ffprobe.streams/v1
       artifact_roles:
       - stove0.media.source/v1
       artifact_facts:
         records_pointer: /artifacts
         artifact_id_pointer: /artifact_id
-      pointer: /state
+      pointer: /has_non_attached_video
       operator: equals
-      value: observed
+      value: true
     operation_id: stove0.media.av1-opus-archive/v1
     target_registration_id: nvenc-av1-opus
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.mov'
-      role: stove0.media.source/v1
-      media_type: video/quicktime
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
     primary_role: stove0.media.source/v1
     associated_roles:
     - stove0.media.xmp-source/v1
@@ -707,7 +929,16 @@ recipes:
         - conformance
     target_options:
       preset: p4
+      allow_missing_materialization_hint: true
     input_retrieval_policy: available-only
+    forward_observation_contract_ids:
+    - stove0.media.metadata/v1
+    - stove0.riverhog-materialization-hint/v1
+  artifact_rules:
+  - role: stove0.media.xmp-source/v1
+    when:
+    - *id002
+  - role: stove0.media.source/v1
 - id: stove0.rclone-delivery/v1
   revision: '1'
   event_input_closure: single-finalized-collection
@@ -716,15 +947,13 @@ recipes:
   observers:
   - registration_id: canonical-hint
     contract_id: stove0.riverhog-materialization-hint/v1
-    contract_sha256: b22d63d21745cd7dcb56fa6ca75ad2319dfa2eb883977f597c0407b340c7a29f
+    contract_sha256: 883a79452b904542c32cee8f46d1ac123e01646d4668096469340c4af23e1e50
     maximum_result_bytes: 1048576
   routes:
   - id: deliver
     kind: operation
     operation_id: stove0.rclone.deliver/v1
     target_registration_id: rclone
-    artifact_rules:
-    - role: stove0.rclone.source/v1
     intent: {}
     forward_observation_contract_ids:
     - stove0.riverhog-materialization-hint/v1
@@ -732,6 +961,8 @@ recipes:
       destination_identity: bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1
       destination_rules_sha256: ce6270abd5855b6eba66a518a54475163993ff6a43e9599ad42a8d2d2531c919
     input_retrieval_policy: available-only
+  artifact_rules:
+  - role: stove0.rclone.source/v1
 - id: stove0.review/v1
   revision: '1'
   event_input_closure: single-finalized-collection
@@ -740,20 +971,14 @@ recipes:
   observers:
   - registration_id: ffprobe-sampling
     contract_id: stove0.review.media-sampling/v1
-    contract_sha256: 406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a
+    contract_sha256: a5c3bea6da83fb3c6091b0deaa8051b05c3dee0692ae8fc1997c9a49b7830575
     maximum_result_bytes: 262144
-    artifact_rules:
-    - glob: '*'
-      role: stove0.review.source/v1
     retrieval_policy: available-only
   routes:
   - id: review
     kind: operation
     operation_id: stove0.review.materialize/v1
     target_registration_id: review
-    artifact_rules:
-    - glob: '*'
-      role: stove0.review.source/v1
     target_options:
       sampler_registration_id: opus
     projections:
@@ -781,6 +1006,8 @@ recipes:
       copy_to: []
       tags:
       - review0/output
+  artifact_rules:
+  - role: stove0.review.source/v1
 - id: stove0.video-archive/v1
   revision: '1'
   event_input_closure: single-finalized-collection
@@ -790,31 +1017,66 @@ recipes:
   observers:
   - registration_id: exiftool
     contract_id: stove0.media.metadata/v1
-    contract_sha256: 6bd7dab32a7857f706ca10316f9fcc3d1faa8d9a8459b8058d187d77c3675119
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*'
-      role: stove0.media.source/v1
+    contract_sha256: 23bae2a55c65c7bb88defe8fca3ca37d655e82f803dc75d24d189c2a90ec9b8b
+    subject_batch_size: 1
     retrieval_policy: allow
+  - registration_id: ffprobe-streams
+    contract_id: stove0.ffprobe.streams/v1
+    contract_sha256: 030964d80e5155aa0689f8d88fb8482d99d8e8ea3fad139fceefb46efbf90aa0
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    maximum_result_bytes: 4194304
+    retrieval_policy: allow
+  - registration_id: canonical-provenance
+    contract_id: stove0.riverhog-provenance/v1
+    contract_sha256: fb7aa7408b54a3b298fcc79ffb15eed069c4bded0749857d75e7028079fee558
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+    options:
+      predicates:
+      - https://nashspence.github.io/riverhog/v1/provenance/relations/describes
+  - registration_id: canonical-hint
+    contract_id: stove0.riverhog-materialization-hint/v1
+    contract_sha256: 883a79452b904542c32cee8f46d1ac123e01646d4668096469340c4af23e1e50
+    after:
+    - exiftool
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+  - registration_id: filename-prefix-sidecars
+    contract_id: stove0.filename-prefix-sidecars/v1
+    contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+    after:
+    - canonical-provenance
+    - exiftool
+    evidence_from:
+    - canonical-provenance
+    evidence_slots_pointer: /provenance_slots
+    subject_roles:
+    - stove0.media.source/v1
+    - stove0.media.xmp-source/v1
+    partitions:
+    - pointer: /primary_ids
+      roles:
+      - stove0.media.source/v1
+    - pointer: /sidecar_ids
+      roles:
+      - stove0.media.xmp-source/v1
+    options:
+      sidecar_suffixes:
+      - .XMP
+      - .xmp
+    maximum_result_bytes: 4194304
   routes:
   - id: archive-video
     kind: operation
     operation_id: stove0.media.av1-opus-archive/v1
     target_registration_id: nvenc-av1-opus
-    artifact_rules:
-    - glob: '*.XMP'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*.xmp'
-      role: stove0.media.xmp-source/v1
-      media_type: application/rdf+xml
-    - glob: '*'
-      role: stove0.media.source/v1
     intent:
       audio_bitrate_kbps: 128
       codec: av1
@@ -823,4 +1085,70 @@ recipes:
       salvage: safe-remux
     target_options:
       preset: p4
+      allow_missing_materialization_hint: true
     input_retrieval_policy: allow
+    primary_role: stove0.media.source/v1
+    associated_roles:
+    - stove0.media.xmp-source/v1
+    forward_observation_contract_ids:
+    - stove0.media.metadata/v1
+    - stove0.riverhog-materialization-hint/v1
+    when:
+    - observation_contract_id: stove0.ffprobe.streams/v1
+      artifact_roles:
+      - stove0.media.source/v1
+      artifact_facts:
+        records_pointer: /artifacts
+        artifact_id_pointer: /artifact_id
+      pointer: /has_non_attached_video
+      operator: equals
+      value: true
+  artifact_rules:
+  - role: stove0.media.xmp-source/v1
+    when:
+    - *id002
+  - role: stove0.media.source/v1
+  artifact_associations:
+  - primary_role: stove0.media.source/v1
+    associated_roles:
+    - stove0.media.xmp-source/v1
+    sources:
+    - *id001
+    - observation_contract_id: stove0.filename-prefix-sidecars/v1
+      observation_contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+      records_pointer: /candidates
+      where:
+      - observation_contract_id: stove0.filename-prefix-sidecars/v1
+        pointer: /rule
+        value: full-leaf
+      associated_pointer: /sidecar_id
+      primary_pointer: /primary_id
+      endpoint_mode: subject-id
+      primary_partition_pointer: /primary_ids
+      associated_partition_pointer: /sidecar_ids
+      evidence_slots_pointer: /provenance_slots
+      status_records_pointer: /statuses
+      status_pointer: /status
+      expected_options:
+        sidecar_suffixes:
+        - .XMP
+        - .xmp
+    - observation_contract_id: stove0.filename-prefix-sidecars/v1
+      observation_contract_sha256: 77eb7acc5ca246ee8b9c363da872703b1f83726e1cae5cb42865b51174d90f05
+      records_pointer: /candidates
+      where:
+      - observation_contract_id: stove0.filename-prefix-sidecars/v1
+        pointer: /rule
+        value: stem
+      associated_pointer: /sidecar_id
+      primary_pointer: /primary_id
+      endpoint_mode: subject-id
+      primary_partition_pointer: /primary_ids
+      associated_partition_pointer: /sidecar_ids
+      evidence_slots_pointer: /provenance_slots
+      status_records_pointer: /statuses
+      status_pointer: /status
+      expected_options:
+        sidecar_suffixes:
+        - .XMP
+        - .xmp

@@ -56,7 +56,7 @@ def _compare(
         {"primary": (first,), "sidecar": (second,)},
         primary_ids=("primary",),
         sidecar_ids=("sidecar",),
-        sidecar_suffix=".xmp",
+        sidecar_suffixes=(".XMP", ".xmp"),
     )
 
 
@@ -87,6 +87,15 @@ def test_equal_names_from_different_source_views_do_not_pair() -> None:
     assert candidates == ()
 
 
+def test_declared_uppercase_suffix_is_compared_in_original_source_units() -> None:
+    first = _locator("primary", b"/camera/clip.mp4", context_id="context-a", view_ids=(VIEW_A,))
+    second = _locator("sidecar", b"/camera/clip.XMP", context_id="context-b", view_ids=(VIEW_A,))
+    _, candidates = _compare(first, second)
+    assert [(row.primary_id, row.sidecar_id, row.rule) for row in candidates] == [
+        ("primary", "sidecar", "stem")
+    ]
+
+
 def test_missing_or_conflicting_view_is_explicitly_incomplete() -> None:
     first = _locator("primary", b"/camera/clip.mp4", context_id="context-a", view_ids=(VIEW_A,))
     missing = _locator("sidecar", b"/camera/clip.xmp", context_id="context-b")
@@ -109,7 +118,7 @@ def test_mixed_scoped_and_unscoped_locators_cannot_silently_select_one() -> None
         {"primary": (first,), "sidecar": (scoped, unscoped)},
         primary_ids=("primary",),
         sidecar_ids=("sidecar",),
-        sidecar_suffix=".xmp",
+        sidecar_suffixes=(".XMP", ".xmp"),
     )
     assert statuses[1].status == "insufficient"
     assert candidates == ()
