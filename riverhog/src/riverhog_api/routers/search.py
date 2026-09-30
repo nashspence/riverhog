@@ -4,7 +4,7 @@ from typing import Annotated, cast
 
 from fastapi import Query
 from http_api_contracts import mutable_browse_operation
-from riverhog_protocol import CollectionIdParameter, SearchSort, SortOrder
+from riverhog_protocol import ArtifactDiscoveryRequest, CollectionIdParameter, SearchSort, SortOrder
 
 from riverhog_api.auth import CatalogReader
 from riverhog_api.browse import (
@@ -16,9 +16,34 @@ from riverhog_api.browse import (
 )
 from riverhog_api.deps import ContainerDep
 from riverhog_api.routing import RiverhogRouter
-from riverhog_api.schemas.search import SearchArtifactOut, SearchOut
+from riverhog_api.schemas.search import DiscoveryPageOut, SearchArtifactOut, SearchOut
 
 router = RiverhogRouter(tags=["search"])
+
+
+@router.post("/artifacts/discover", response_model=DiscoveryPageOut)
+def discover(
+    request: ArtifactDiscoveryRequest,
+    container: ContainerDep,
+    principal: CatalogReader,
+    page_token: BrowsePageTokenQuery = None,
+) -> DiscoveryPageOut:
+    selectors = canonical_selectors(query_identity=request.identity())
+    position = page_position(
+        container,
+        principal=principal,
+        operation="artifact-discovery",
+        page_token=page_token,
+        selectors=selectors,
+    )
+    payload = page_payload(
+        container.search.discover(request=request, position=position, principal=principal),
+        container=container,
+        principal=principal,
+        operation="artifact-discovery",
+        selectors=selectors,
+    )
+    return DiscoveryPageOut.model_validate(payload)
 
 
 @router.get(

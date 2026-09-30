@@ -5,7 +5,7 @@ from typing import Any
 
 from http_api_contracts import BrowseScalar, closed_literal_values
 from riverhog_canonical_json import format_scalar
-from riverhog_protocol import SearchSort, SortOrder
+from riverhog_protocol import ArtifactDiscoveryRequest, SearchSort, SortOrder
 from riverhog_protocol.errors import BadRequest
 from riverhog_protocol.paths import (
     PathNormalizationError,
@@ -19,6 +19,7 @@ from state_schema import read_snapshot
 from riverhog_core.app_permissions import CATALOG_READ, Principal
 from riverhog_core.artifact_access import artifact_scope_filter
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
+from riverhog_core.canonical_discovery_search import discover_artifacts
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
 from riverhog_core.catalog_models import (
     CollectionArtifactRecord,
@@ -46,6 +47,18 @@ class SqlAlchemySearchService:
         session_factory: SessionFactory | None = None,
     ) -> None:
         self._session_factory = session_factory or make_session_factory(config.database_url)
+
+    def discover(
+        self,
+        *,
+        request: ArtifactDiscoveryRequest,
+        position: tuple[object, ...] | None,
+        principal: Principal | None = None,
+    ) -> dict[str, object]:
+        with read_snapshot(self._session_factory) as session:
+            return discover_artifacts(
+                session, request=request, principal=principal, position=position
+            )
 
     def search(
         self,
