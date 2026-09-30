@@ -6,12 +6,12 @@ from pathlib import Path
 import pytest
 from riverhog_api.mappers import map_archive_store
 from riverhog_api.schemas.archive_stores import ArchiveStoreOut
-from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+from riverhog_core.archive_store_registry import ArchiveStoreBinding, ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
 )
 from riverhog_core.runtime_config import RuntimeConfig
@@ -22,12 +22,30 @@ from riverhog_core.storage_incarnations import (
     reconcile_storage_incarnations,
 )
 
-from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
 from tests.unit.storage_incarnation_fixtures import (
     fixture_storage_incarnation_id,
     seed_storage_incarnation,
 )
+
+
+class _ReadModeStore:
+    def __init__(self, read_mode: str) -> None:
+        self._read_mode = read_mode
+
+    def read_mode(self) -> str:
+        return self._read_mode
+
+
+def _binding(name: str, read_mode: str) -> ArchiveStoreBinding:
+    store = _ReadModeStore(read_mode)
+    return ArchiveStoreBinding(
+        incarnation_id=fixture_storage_incarnation_id("archive", name),
+        store=store,  # type: ignore[arg-type]
+        resumable_objects=store,  # type: ignore[arg-type]
+        immutable_objects=store,  # type: ignore[arg-type]
+        object_ranges=store,  # type: ignore[arg-type]
+    )
 
 
 def _config(path: Path) -> RuntimeConfig:
@@ -55,7 +73,9 @@ def _seed(path: Path) -> None:
                 creation_idempotency_key="fixture-1",
                 creation_identity_sha256="e" * 64,
                 creation_custody_mode="producer-retained",
-                content_identity="0" * 64,
+                artifact_set_identity="0" * 64,
+                provenance_identity="2" * 64,
+                delivery_context_id="urn:uuid:00000000-0000-4000-8000-000000000001",
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
@@ -64,9 +84,9 @@ def _seed(path: Path) -> None:
             )
         )
         session.add(
-            CollectionFileRecord(
+            CollectionArtifactRecord(
                 collection_id=1,
-                path="readme.txt",
+                artifact_id="3" * 64,
                 bytes=12,
                 sha256="a" * 64,
             )
@@ -104,12 +124,10 @@ def _seed(path: Path) -> None:
 
 def _stores(*, include_b2: bool = False) -> ArchiveStoreRegistry:
     stores = {
-        "deep": archive_store_binding(
-            MemoryArchiveStore(read_mode="restore_required"), name="deep"
-        ),
+        "deep": _binding("deep", "restore_required"),
     }
     if include_b2:
-        stores["b2"] = archive_store_binding(MemoryArchiveStore(read_mode="immediate"), name="b2")
+        stores["b2"] = _binding("b2", "immediate")
     return ArchiveStoreRegistry(stores)
 
 
