@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 
 from riverhog_age import ResumableAgeScryptSession
-from riverhog_core.domain.archive import ArchiveFile
+from riverhog_core.domain.archive import ArchiveArtifact
 from riverhog_core.pack_retrieval import (
     BILLING_MODE_WHOLE_OBJECT,
     PackMemberRangeReader,
@@ -35,9 +35,9 @@ class MemoryRangeStore:
         yield self.content[offset : offset + size]
 
 
-def _file(path: str, content: bytes) -> ArchiveFile:
-    return ArchiveFile(
-        path=path,
+def _artifact(artifact_id: str, content: bytes) -> ArchiveArtifact:
+    return ArchiveArtifact(
+        artifact_id=artifact_id,
         bytes=len(content),
         sha256=hashlib.sha256(content).hexdigest(),
     )
@@ -51,15 +51,15 @@ def _archive(
     dict[str, PackMemberRetrievalSource],
     bytes,
 ]:
-    files = tuple(_file(path, content) for path, content in contents.items())
-    plan = plan_pack_volume(files, sequence=0)
+    artifacts = tuple(_artifact(artifact_id, content) for artifact_id, content in contents.items())
+    plan = plan_pack_volume(artifacts, sequence=0)
     plaintext = b"".join(
         chunk
         for unit in plan.units
         for chunk in iter_render_pack_upload_unit(
             plan,
             unit.unit,
-            lambda path: (contents[path],),
+            lambda artifact_id: (contents[artifact_id],),
         )
     )
     session = ResumableAgeScryptSession.create(
@@ -77,8 +77,8 @@ def _archive(
         age_state_json=state,
     )
     members = {
-        current.path: PackMemberRetrievalSource(
-            path=current.path,
+        current.artifact_id: PackMemberRetrievalSource(
+            artifact_id=current.artifact_id,
             bytes=current.bytes,
             sha256=current.sha256,
             data_offset=current.data_offset,
@@ -88,11 +88,11 @@ def _archive(
     return plan, source, members, ciphertext
 
 
-def test_two_mib_packed_file_does_not_download_its_six_mib_pack() -> None:
+def test_two_mib_packed_artifact_does_not_download_its_six_mib_pack() -> None:
     contents = {
-        "a.bin": b"a" * (2 * 1024 * 1024),
-        "target.bin": b"t" * (2 * 1024 * 1024),
-        "z.bin": b"z" * (2 * 1024 * 1024),
+        "1" * 64: b"a" * (2 * 1024 * 1024),
+        "2" * 64: b"t" * (2 * 1024 * 1024),
+        "3" * 64: b"z" * (2 * 1024 * 1024),
     }
     _plan, source, members, ciphertext = _archive(contents)
     store = MemoryRangeStore(ciphertext)
@@ -101,10 +101,10 @@ def test_two_mib_packed_file_does_not_download_its_six_mib_pack() -> None:
         PackMemberRangeReader(
             store,
             passphrase="archive passphrase",
-        ).iter_member(source, members["target.bin"])
+        ).iter_member(source, members["2" * 64])
     )
 
-    assert recovered == contents["target.bin"]
+    assert recovered == contents["2" * 64]
     assert len(store.requests) == 1
     assert store.requests[0][3] < source.stored_bytes // 2
 
@@ -112,7 +112,7 @@ def test_two_mib_packed_file_does_not_download_its_six_mib_pack() -> None:
 def test_head_middle_and_tail_ranges_read_only_bounded_pack_framing() -> None:
     content = bytes(range(251)) * (2 * 1024 * 1024 // 251)
     content += b"tail"
-    _plan, source, members, ciphertext = _archive({"large.bin": content})
+    _plan, source, members, ciphertext = _archive({"4" * 64: content})
     store = MemoryRangeStore(ciphertext)
     size = 4096
 
@@ -124,7 +124,7 @@ def test_head_middle_and_tail_ranges_read_only_bounded_pack_framing() -> None:
                 passphrase="archive passphrase",
             ).iter_member_range(
                 source,
-                members["large.bin"],
+                members["4" * 64],
                 offset=offset,
                 size=size,
             )
@@ -135,11 +135,11 @@ def test_head_middle_and_tail_ranges_read_only_bounded_pack_framing() -> None:
         assert store.requests[0][3] < len(content) // 4
 
 
-def test_batch_reader_coalesces_nearby_members_and_verifies_each_file() -> None:
+def test_batch_reader_coalesces_nearby_members_and_verifies_each_artifact() -> None:
     contents = {
-        "a.txt": b"alpha" * 1000,
-        "b.txt": b"beta" * 1000,
-        "c.bin": b"c" * (2 * 1024 * 1024),
+        "5" * 64: b"alpha" * 1000,
+        "6" * 64: b"beta" * 1000,
+        "7" * 64: b"c" * (2 * 1024 * 1024),
     }
     _plan, source, members, ciphertext = _archive(contents)
     policy = PackRangeRetrievalPolicy(
@@ -148,7 +148,7 @@ def test_batch_reader_coalesces_nearby_members_and_verifies_each_file() -> None:
     )
     plan = plan_pack_range_retrieval(
         source,
-        (members["a.txt"], members["b.txt"]),
+        (members["5" * 64], members["6" * 64]),
         policy=policy,
     )
     store = MemoryRangeStore(ciphertext)
@@ -158,17 +158,17 @@ def test_batch_reader_coalesces_nearby_members_and_verifies_each_file() -> None:
         passphrase="archive passphrase",
     ).read_members(plan)
 
-    assert recovered == {"a.txt": contents["a.txt"], "b.txt": contents["b.txt"]}
+    assert recovered == {"5" * 64: contents["5" * 64], "6" * 64: contents["6" * 64]}
     assert plan.request_count == 1
     assert len(store.requests) == 1
 
 
 def test_range_plan_accounts_for_cold_store_whole_object_semantics() -> None:
-    contents = {"a.bin": b"a" * 1000, "b.bin": b"b" * 1000}
+    contents = {"1" * 64: b"a" * 1000, "b" * 64: b"b" * 1000}
     _plan, source, members, _ciphertext = _archive(contents)
     whole_object = plan_pack_range_retrieval(
         source,
-        (members["a.bin"],),
+        (members["1" * 64],),
         policy=PackRangeRetrievalPolicy(billing_mode=BILLING_MODE_WHOLE_OBJECT),
     )
     assert whole_object.remote_bytes < source.stored_bytes
@@ -176,9 +176,9 @@ def test_range_plan_accounts_for_cold_store_whole_object_semantics() -> None:
 
 
 def test_batch_reader_verifies_zero_byte_members_without_remote_read() -> None:
-    contents = {"empty.txt": b"", "data.txt": b"data"}
+    contents = {"8" * 64: b"", "9" * 64: b"data"}
     _plan, source, members, ciphertext = _archive(contents)
-    plan = plan_pack_range_retrieval(source, (members["empty.txt"],))
+    plan = plan_pack_range_retrieval(source, (members["8" * 64],))
     store = MemoryRangeStore(ciphertext)
 
     recovered = PackRangeBatchReader(
@@ -186,18 +186,18 @@ def test_batch_reader_verifies_zero_byte_members_without_remote_read() -> None:
         passphrase="archive passphrase",
     ).read_members(plan)
 
-    assert recovered == {"empty.txt": b""}
+    assert recovered == {"8" * 64: b""}
     assert store.requests == []
 
 
 def test_range_plan_rejects_a_member_larger_than_the_memory_request_bound() -> None:
-    contents = {"large-packed.bin": b"x" * (2 * 1024 * 1024)}
+    contents = {"a" * 64: b"x" * (2 * 1024 * 1024)}
     _plan, source, members, _ciphertext = _archive(contents)
 
     try:
         plan_pack_range_retrieval(
             source,
-            (members["large-packed.bin"],),
+            (members["a" * 64],),
             policy=PackRangeRetrievalPolicy(
                 max_request_ciphertext_bytes=1024 * 1024,
             ),
@@ -213,9 +213,9 @@ def test_batch_reader_uses_parallel_range_requests_under_a_byte_budget() -> None
     import time
 
     contents = {
-        "a.bin": b"a" * (2 * 1024 * 1024),
-        "b.bin": b"b" * (2 * 1024 * 1024),
-        "c.bin": b"c" * (2 * 1024 * 1024),
+        "1" * 64: b"a" * (2 * 1024 * 1024),
+        "b" * 64: b"b" * (2 * 1024 * 1024),
+        "7" * 64: b"c" * (2 * 1024 * 1024),
     }
     _plan, source, members, ciphertext = _archive(contents)
     policy = PackRangeRetrievalPolicy(
@@ -276,7 +276,7 @@ def test_range_policy_supports_per_store_overrides_with_global_fallback() -> Non
 def test_single_member_reader_reports_remote_crypto_and_downstream_phases() -> None:
     import time
 
-    contents = {"target.bin": b"x" * (256 * 1024)}
+    contents = {"2" * 64: b"x" * (256 * 1024)}
     _plan, source, members, ciphertext = _archive(contents)
     timings = []
     reader = PackMemberRangeReader(
@@ -286,11 +286,11 @@ def test_single_member_reader_reports_remote_crypto_and_downstream_phases() -> N
     )
 
     recovered = bytearray()
-    for chunk in reader.iter_member(source, members["target.bin"]):
+    for chunk in reader.iter_member(source, members["2" * 64]):
         recovered.extend(chunk)
         time.sleep(0.001)
 
-    assert bytes(recovered) == contents["target.bin"]
+    assert bytes(recovered) == contents["2" * 64]
     assert len(timings) == 1
     assert timings[0].remote_seconds >= 0
     assert timings[0].crypto_seconds >= 0
