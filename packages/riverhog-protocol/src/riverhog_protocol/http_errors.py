@@ -25,7 +25,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "register_collection_upload_session_artifacts": ("conflict", "not_found"),
         "bind_collection_upload_session_artifact_provenance": ("conflict", "not_found"),
         "get_collection_upload_session_artifact_provenance_binding": ("not_found",),
-        "set_collection_upload_artifact_materialization_decisions": (
+        "set_collection_upload_session_materialization_decisions": (
             "conflict",
             "not_found",
         ),

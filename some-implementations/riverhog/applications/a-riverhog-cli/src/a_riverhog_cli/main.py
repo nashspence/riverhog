@@ -1860,6 +1860,18 @@ def artifact_locate_cmd(
     typer.echo("\n".join(lines))
 
 
+@artifact_app.command("inspect")
+def artifact_inspect_cmd(
+    collection_id: Annotated[int, typer.Argument(help="Exact collection id")],
+    artifact_id: Annotated[str, typer.Argument(help="Exact opaque artifact id")],
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON with exact support")] = False,
+) -> None:
+    """Inspect one member's exact primary provenance binding."""
+
+    payload = client().get_collection_artifact_provenance(collection_id, cast(Any, artifact_id))
+    emit(payload if json_mode else format_artifact_provenance(payload), json_mode=json_mode)
+
+
 @collection_app.command("show")
 def show_cmd(
     collection: Annotated[int, typer.Argument(help="Collection id")],
