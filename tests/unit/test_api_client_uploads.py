@@ -37,7 +37,7 @@ def _volume(sequence: int, units: int) -> _Volume:
                     "plaintext_bytes": "1",
                     "sources": [
                         {
-                            "path": f"source-{sequence}.bin",
+                            "artifact_id": f"{sequence + 1:064x}",
                             "offset": str(unit),
                             "bytes": "1",
                             "artifact_sha256": "b" * 64,
