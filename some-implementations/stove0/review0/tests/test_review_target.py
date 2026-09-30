@@ -137,6 +137,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
     )
     try:
         request = TargetPreflightRequest(
+            invocation_sha256=_sha("b"),
             operation_id=REVIEW_MATERIALIZE_OPERATION.id,
             operation_contract_sha256=REVIEW_MATERIALIZE_OPERATION.contract_sha256,
             inputs=_input_authority(
@@ -168,8 +169,8 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
         assert [item.operation_id for item in target.descriptor().operations] == [
             REVIEW_MATERIALIZE_OPERATION.id
         ]
-        assert preflight.plan.target_options == {
-            "sampler_registration_id": "opus",
+        assert preflight.plan.target_options == request.target_options
+        assert preflight.plan.execution_parameters == {
             "sampler_descriptor_sha256": registration.descriptor_sha256,
         }
         invalid_intent = request.intent.copy()

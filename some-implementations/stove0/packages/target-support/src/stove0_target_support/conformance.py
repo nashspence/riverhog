@@ -12,6 +12,7 @@ from typing import Any, Literal, Protocol, Self
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from riverhog_canonical_json import canonical_json_sha256
 from stove0_target_client.client import (
     TargetClient as HttpTargetClient,
 )
@@ -396,6 +397,14 @@ def _single_operation_report(
                 label="target semantic conformance intent",
             )
             vector_request = TargetPreflightRequest(
+                invocation_sha256=canonical_json_sha256(
+                    {
+                        "format": "stove0-semantic-conformance-invocation/v1",
+                        "basis": declaration.plan.invocation_sha256,
+                        "vector_id": vector.id,
+                        "intent": vector.intent,
+                    }
+                ),
                 protocol=declaration.plan.protocol,
                 operation_id=declaration.plan.operation_id,
                 operation_contract_sha256=declaration.plan.operation_contract_sha256,
@@ -403,6 +412,7 @@ def _single_operation_report(
                 observations=observations,
                 intent=vector.intent,
                 target_options=declaration.plan.target_options,
+                input_groups=declaration.plan.input_groups,
             )
             try:
                 vector_preflight = client.preflight(vector_request)
@@ -431,6 +441,7 @@ def _single_operation_report(
             "status": "exercised",
         }
     preflight_request = TargetPreflightRequest(
+        invocation_sha256=declaration.plan.invocation_sha256,
         protocol=declaration.plan.protocol,
         operation_id=declaration.plan.operation_id,
         operation_contract_sha256=declaration.plan.operation_contract_sha256,
@@ -438,6 +449,7 @@ def _single_operation_report(
         observations=observations,
         intent=declaration.plan.intent,
         target_options=declaration.plan.target_options,
+        input_groups=declaration.plan.input_groups,
     )
     preflight = client.preflight(preflight_request)
     validate_preflight_response_against_request(preflight, preflight_request)

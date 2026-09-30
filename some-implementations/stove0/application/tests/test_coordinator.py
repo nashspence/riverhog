@@ -414,6 +414,7 @@ class FixturePlanning:
     ) -> TargetPreflightRequest:
         selection = next(iter(selections.values()))
         return TargetPreflightRequest(
+            invocation_sha256=plan.workflow_plan_sha256,
             operation_id=self.operation.id,
             operation_contract_sha256=self.operation.contract_sha256,
             inputs=TargetInputAuthority.from_selection(selection),
@@ -533,6 +534,7 @@ class ForkJoinPlanning:
     ) -> TargetPreflightRequest:
         selection = self.target_input_selection(plan, selections)
         return TargetPreflightRequest(
+            invocation_sha256=plan.workflow_plan_sha256,
             operation_id=plan.operation.id,
             operation_contract_sha256=plan.operation.sha256,
             inputs=TargetInputAuthority.from_selection(selection),
@@ -909,6 +911,8 @@ class FixtureTarget:
         assert registration_id == "fixture-target"
         plan = TransformPlan.seal(
             TransformPlanPayload(
+                input_groups=request.input_groups,
+                invocation_sha256=request.invocation_sha256,
                 target_implementation_id=self.target.implementation_id,
                 target_descriptor_sha256=self.target.descriptor_sha256,
                 operation_id=request.operation_id,

@@ -193,10 +193,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                     "invalid_target_request",
                     f"configured review {key} differs from the requested value",
                 )
-        effective = request.model_copy(
-            update={"target_options": {**request.target_options, **expected}}
-        )
-        return super().preflight(effective)
+        return self._seal_preflight(request, execution_parameters=expected)
 
     def close(self) -> None:
         super().close()
@@ -229,7 +226,10 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                 "sampler-not-configured", f"Review sampler is not configured: {sampler_id}"
             ) from exc
         descriptor = registration.descriptor()
-        if options.get("sampler_descriptor_sha256") != descriptor.descriptor_sha256:
+        if (
+            request.declaration.plan.execution_parameters.get("sampler_descriptor_sha256")
+            != descriptor.descriptor_sha256
+        ):
             raise RuntimeError("sealed review plan differs from the selected sampler")
         Draft202012Validator(descriptor.portable_intent_schema.document).validate(portable_intent)
         timeout = options.get("sampler_timeout_seconds", 86400)

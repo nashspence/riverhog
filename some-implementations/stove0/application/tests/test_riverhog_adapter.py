@@ -219,6 +219,7 @@ def _authorities(
     selection = _input_selection(work)
     target_plan = TransformPlan.seal(
         TransformPlanPayload(
+            invocation_sha256=workflow.workflow_plan_sha256,
             target_implementation_id="fixture.target/v1",
             target_descriptor_sha256=_sha("5"),
             operation_id="fixture.copy/v1",
@@ -283,6 +284,7 @@ def _effect_authorities(
     )
     target_plan = EffectPlan.seal(
         EffectPlanPayload(
+            invocation_sha256=workflow.workflow_plan_sha256,
             target_implementation_id="fixture.effect-target/v1",
             target_descriptor_sha256=_sha("5"),
             operation_id="fixture.effect/v1",

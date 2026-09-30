@@ -577,6 +577,7 @@ class RecipePlanner:
         selection = self.target_input_selection(plan, selections)
         authority = TargetInputAuthority.from_selection(selection)
         return TargetPreflightRequest(
+            invocation_sha256=plan.workflow_plan_sha256,
             protocol=self.targets.descriptor(plan.target_registration_id).protocol,
             operation_id=plan.operation.id,
             operation_contract_sha256=plan.operation.sha256,

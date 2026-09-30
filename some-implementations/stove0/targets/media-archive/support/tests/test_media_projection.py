@@ -340,6 +340,7 @@ def test_preflight_uses_recipe_group_without_reclassifying_observer_subjects() -
     )
     group = WorkInputGroup(primary_id="primary", associated_ids=("sidecar",))
     request = TargetPreflightRequest(
+        invocation_sha256=_sha("b"),
         operation_id=AUDIO_ARCHIVE_OPERATION.id,
         operation_contract_sha256=AUDIO_ARCHIVE_OPERATION.contract_sha256,
         inputs=TargetInputAuthority.from_selection(selection),

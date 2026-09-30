@@ -165,7 +165,7 @@ def test_nvenc_preflight_and_encode_share_one_exact_projection(tmp_path: Path) -
     response = target.preflight(request)
     validate_preflight_response_against_request(response, request)
     projection = MediaArchiveProjection.model_validate(
-        response.plan.target_options["media_projection"]
+        response.plan.execution_parameters["media_projection"]
     )
     item = projection.items[0]
     command = target._command(
@@ -184,7 +184,7 @@ def test_nvenc_preflight_and_encode_share_one_exact_projection(tmp_path: Path) -
         sorted(item.result.result_sha256 for item in request.observations)
     )
     publication = MediaPublicationPlan.from_json_value(
-        response.plan.target_options["publication_decisions"]
+        response.plan.execution_parameters["publication_decisions"]
     )
     assert {item.components for item in publication.decisions} == {
         ("Camera", "clip.mkv"),

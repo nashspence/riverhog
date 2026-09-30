@@ -577,6 +577,7 @@ def _update_record_commitment(
 
 
 class TargetDeclaration(TargetProtocolModel):
+    invocation_sha256: Sha256
     operation_id: SemanticId
     operation_contract_sha256: Sha256
     inputs: TargetInputAuthority
@@ -614,6 +615,7 @@ class TransformPlanPayload(TargetDeclaration):
     target_implementation_id: SemanticId
     target_descriptor_sha256: Sha256
     observation_result_sha256s: tuple[Sha256, ...] = ()
+    execution_parameters: dict[str, JsonValue] = Field(default_factory=dict)
 
     @field_validator("observation_result_sha256s")
     @classmethod
@@ -651,6 +653,7 @@ class EffectPlanPayload(TargetDeclaration):
     target_implementation_id: SemanticId
     target_descriptor_sha256: Sha256
     observation_result_sha256s: tuple[Sha256, ...] = ()
+    execution_parameters: dict[str, JsonValue] = Field(default_factory=dict)
 
     @field_validator("observation_result_sha256s")
     @classmethod
@@ -730,10 +733,16 @@ class TargetJobDeclaration(TargetProtocolModel):
             raise ValueError("target job claim differs from the execution envelope")
         if self.plan.plan_sha256 != target.plan_sha256:
             raise ValueError("target job plan differs from the sealed execution envelope")
-        if self.plan.binding_document() != target.plan:
+        if canonical_json_bytes(self.plan.binding_document()) != canonical_json_bytes(target.plan):
             raise ValueError("target job plan document differs from the sealed binding")
         if (
-            self.plan.target_descriptor_sha256 != workflow.target_descriptor_sha256
+            self.plan.invocation_sha256 != workflow.workflow_plan_sha256
+            or canonical_json_bytes(self.plan.intent)
+            != canonical_json_bytes(workflow.work.effective_intent)
+            or canonical_json_bytes(self.plan.target_options)
+            != canonical_json_bytes(workflow.requested_target_options)
+            or self.plan.input_groups != workflow.input_groups
+            or self.plan.target_descriptor_sha256 != workflow.target_descriptor_sha256
             or self.plan.operation_contract_sha256 != workflow.operation.sha256
             or self.plan.observation_result_sha256s
             != tuple(sorted(item.result.result_sha256 for item in workflow.observations))
@@ -1095,13 +1104,12 @@ def validate_preflight_response_against_request(
         or plan.operation_id != request.operation_id
         or plan.operation_contract_sha256 != request.operation_contract_sha256
         or plan.inputs != request.inputs
-        or plan.intent != request.intent
+        or canonical_json_bytes(plan.intent) != canonical_json_bytes(request.intent)
+        or plan.invocation_sha256 != request.invocation_sha256
+        or plan.input_groups != request.input_groups
+        or canonical_json_bytes(plan.target_options) != canonical_json_bytes(request.target_options)
         or plan.observation_result_sha256s
         != tuple(sorted(item.result.result_sha256 for item in request.observations))
-        or any(
-            key not in plan.target_options or plan.target_options[key] != value
-            for key, value in request.target_options.items()
-        )
     ):
         raise ValueError("target preflight plan differs from the request or target descriptor")
 
