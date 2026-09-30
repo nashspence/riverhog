@@ -53,6 +53,7 @@ services:
       - stove0_browse_token_signing_key
       - a_stove0_ffprobe_observer_token
       - a_stove0_magic_observer_token
+      - a_stove0_filename_prefix_sidecar_observer_token
       - a_stove0_riverhog_provenance_observer_token
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
@@ -92,6 +93,7 @@ services:
       - stove0_browse_token_signing_key
       - a_stove0_ffprobe_observer_token
       - a_stove0_magic_observer_token
+      - a_stove0_filename_prefix_sidecar_observer_token
       - a_stove0_riverhog_provenance_observer_token
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
@@ -115,6 +117,7 @@ services:
       - stove0_browse_token_signing_key
       - a_stove0_ffprobe_observer_token
       - a_stove0_magic_observer_token
+      - a_stove0_filename_prefix_sidecar_observer_token
       - a_stove0_riverhog_provenance_observer_token
       - a_stove0_exiftool_observer_token
       - a_stove0_nvenc_av1_opus_target_token
@@ -193,6 +196,26 @@ services:
       A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
       A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID: ${A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID:?A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID is required}
     secrets: ["a_stove0_riverhog_provenance_observer_token"]
+    networks: ["stove0-internal", "riverhog-control"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
+    healthcheck: *ffmpeg-health
+
+  a-stove0-filename-prefix-sidecar-observer:
+    <<: *hardening
+    image: ${A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_REF:-a-stove0-filename-prefix-sidecar-observer:dev}
+    build:
+      context: ../../..
+      dockerfile: some-implementations/stove0/observers/filename-prefix-sidecars/Dockerfile
+      args:
+        SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+    command: ["a-stove0-filename-prefix-sidecar-observer", "--host", "0.0.0.0", "--port", "8080"]
+    environment:
+      TZ: ${TZ:-UTC}
+      A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_filename_prefix_sidecar_observer_token
+      A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+      A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID: ${A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID:?A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID is required}
+    secrets: ["a_stove0_filename_prefix_sidecar_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
@@ -418,6 +441,8 @@ secrets:
     file: ${A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE:?A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE is required}
   a_stove0_magic_observer_token:
     file: ${A_STOVE0_MAGIC_OBSERVER_TOKEN_FILE:?A_STOVE0_MAGIC_OBSERVER_TOKEN_FILE is required}
+  a_stove0_filename_prefix_sidecar_observer_token:
+    file: ${A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_TOKEN_FILE:?A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_TOKEN_FILE is required}
   a_stove0_riverhog_provenance_observer_token:
     file: ${A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_TOKEN_FILE:?A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_TOKEN_FILE is required}
   a_stove0_exiftool_observer_token:

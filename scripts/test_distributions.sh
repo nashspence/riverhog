@@ -347,6 +347,11 @@ smoke_workspace_distribution \
   'import importlib.metadata as m; import a_stove0_magic_observer.app; m.version("a-stove0-magic-observer")' \
   a-stove0-magic-observer
 smoke_workspace_distribution \
+  a-stove0-filename-prefix-sidecar-observer \
+  'a_stove0_filename_prefix_sidecar_observer-*.whl' \
+  'import importlib.metadata as m; import a_stove0_filename_prefix_sidecar_observer.app; m.version("a-stove0-filename-prefix-sidecar-observer")' \
+  a-stove0-filename-prefix-sidecar-observer
+smoke_workspace_distribution \
   a-stove0-exiftool-observer \
   'a_stove0_exiftool_observer-*.whl' \
   'import importlib.metadata as m; import a_stove0_exiftool_observer.app; m.version("a-stove0-exiftool-observer")' \

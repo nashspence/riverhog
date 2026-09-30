@@ -68,6 +68,10 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/stove0/observers/magic/src",
         {"a_stove0_magic_observer"},
     ),
+    "a-stove0-filename-prefix-sidecar-observer": (
+        REPO / "some-implementations/stove0/observers/filename-prefix-sidecars/src",
+        {"a_stove0_filename_prefix_sidecar_observer"},
+    ),
     "a-stove0-riverhog-provenance-observer": (
         REPO / "some-implementations/stove0/observers/riverhog-provenance/src",
         {"a_stove0_riverhog_provenance_observer"},
@@ -87,6 +91,10 @@ IMPLEMENTATION_OWNERS = {
     "a-stove0-magic-facts-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/magic/src",
         {"a_stove0_magic_facts_contract_lib"},
+    ),
+    "a-stove0-filename-prefix-sidecar-evidence-contract-lib": (
+        REPO / "some-implementations/stove0/observers/contracts/filename-prefix-sidecars/src",
+        {"a_stove0_filename_prefix_sidecar_evidence_contract_lib"},
     ),
     "a-stove0-materialization-hint-evidence-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/materialization-hint/src",
@@ -163,6 +171,7 @@ IMPLEMENTATION_OWNERS = {
     ),
 }
 SHARED_PROVIDER_MODULES = {
+    "a-stove0-filename-prefix-sidecar-evidence-contract-lib",
     "a-stove0-ffprobe-streams-contract-lib",
     "a-stove0-magic-facts-contract-lib",
     "a-stove0-materialization-hint-evidence-contract-lib",
@@ -947,6 +956,9 @@ def test_maintained_observer_distributions_do_not_pull_target_authority() -> Non
         "a-stove0-exiftool-observer": "a-stove0-media-metadata-contract-lib",
         "a-stove0-ffprobe-observer": "a-stove0-media-sampling-contract-lib",
         "a-stove0-magic-observer": "a-stove0-magic-facts-contract-lib",
+        "a-stove0-filename-prefix-sidecar-observer": (
+            "a-stove0-filename-prefix-sidecar-evidence-contract-lib"
+        ),
         "a-stove0-riverhog-provenance-observer": (
             "a-stove0-materialization-hint-evidence-contract-lib"
         ),

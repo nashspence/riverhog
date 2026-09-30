@@ -9,6 +9,7 @@ group "default" {
     "a-stove0-exiftool-observer",
     "a-stove0-ffprobe-observer",
     "a-stove0-magic-observer",
+    "a-stove0-filename-prefix-sidecar-observer",
     "a-stove0-riverhog-provenance-observer",
     "a-stove0-nvenc-av1-opus-target",
     "a-stove0-opus-target",
@@ -102,6 +103,14 @@ target "a-stove0-magic-observer" {
   context    = "."
   dockerfile = "some-implementations/stove0/observers/magic/Dockerfile"
   tags       = ["a-stove0-magic-observer:dev"]
+  args       = { SOURCE_REVISION = "unknown" }
+}
+
+target "a-stove0-filename-prefix-sidecar-observer" {
+  inherits   = ["image-common"]
+  context    = "."
+  dockerfile = "some-implementations/stove0/observers/filename-prefix-sidecars/Dockerfile"
+  tags       = ["a-stove0-filename-prefix-sidecar-observer:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 

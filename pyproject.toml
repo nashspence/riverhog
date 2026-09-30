@@ -72,6 +72,7 @@ a-stove0-magic-observer = { workspace = true }
 a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
 a-stove0-riverhog-provenance-evidence-contract-lib = { workspace = true }
 a-stove0-filename-prefix-sidecar-observer = { workspace = true }
+a-stove0-filename-prefix-sidecar-evidence-contract-lib = { workspace = true }
 a-stove0-riverhog-provenance-observer = { workspace = true }
 stove0-observer-client = { workspace = true }
 stove0-protocol = { workspace = true }

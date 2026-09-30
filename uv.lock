@@ -41,6 +41,7 @@ members = [
     "a-stove0-exiftool-observer",
     "a-stove0-ffprobe-observer",
     "a-stove0-ffprobe-streams-contract-lib",
+    "a-stove0-filename-prefix-sidecar-evidence-contract-lib",
     "a-stove0-filename-prefix-sidecar-observer",
     "a-stove0-magic-facts-contract-lib",
     "a-stove0-magic-observer",
@@ -744,18 +745,51 @@ requires-dist = [
 ]
 
 [[package]]
-name = "a-stove0-filename-prefix-sidecar-observer"
+name = "a-stove0-filename-prefix-sidecar-evidence-contract-lib"
 version = "0.1.0"
-source = { editable = "some-implementations/stove0/observers/filename-prefix-sidecars" }
+source = { editable = "some-implementations/stove0/observers/contracts/filename-prefix-sidecars" }
 dependencies = [
-    { name = "riverhog-canonical-json" },
-    { name = "riverhog-provenance-contracts" },
+    { name = "a-stove0-riverhog-provenance-evidence-contract-lib" },
+    { name = "pydantic" },
+    { name = "stove0-observer-protocol" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "a-stove0-riverhog-provenance-evidence-contract-lib", editable = "some-implementations/stove0/observers/contracts/riverhog-provenance" },
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
+]
+
+[[package]]
+name = "a-stove0-filename-prefix-sidecar-observer"
+version = "0.1.0"
+source = { editable = "some-implementations/stove0/observers/filename-prefix-sidecars" }
+dependencies = [
+    { name = "a-stove0-filename-prefix-sidecar-evidence-contract-lib" },
+    { name = "a-stove0-riverhog-provenance-evidence-contract-lib" },
+    { name = "fastapi" },
+    { name = "http-api-contracts" },
+    { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
+    { name = "riverhog-provenance-contracts" },
+    { name = "stove0-observer-protocol" },
+    { name = "stove0-observer-support" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "a-stove0-filename-prefix-sidecar-evidence-contract-lib", editable = "some-implementations/stove0/observers/contracts/filename-prefix-sidecars" },
+    { name = "a-stove0-riverhog-provenance-evidence-contract-lib", editable = "some-implementations/stove0/observers/contracts/riverhog-provenance" },
+    { name = "fastapi", specifier = ">=0.111,<1.0" },
+    { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
+    { name = "stove0-observer-support", editable = "some-implementations/stove0/packages/observer-support" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1.0" },
 ]
 
 [[package]]
