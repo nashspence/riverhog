@@ -4,6 +4,7 @@ import hashlib
 from types import SimpleNamespace
 from typing import Any, cast
 
+import pytest
 from a_stove0_filename_prefix_sidecar_evidence_contract_lib import (
     FILENAME_OBSERVER_CONTRACT,
     validate_filename_facts,
@@ -182,6 +183,13 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         (primary.id, sidecar.id, "stem")
     ]
     assert accepted.provenance_result_sha256 == core_result.result_sha256
+
+    forged_support = accepted.model_dump(mode="json")
+    forged_support["candidates"][0]["support"] = forged_support["candidates"][0][
+        "support"
+    ][:1]
+    with pytest.raises(ValueError, match="support differs"):
+        validate_filename_facts(forged_support, subjects, request.options, request=request)
 
     missing, missing_fact = _fact("d" * 64, None, hint="clip.xmp")
     missing_result = ContentObservationResultBuilder(core_descriptor, core_request).observed(
