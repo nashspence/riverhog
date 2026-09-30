@@ -7,6 +7,7 @@ from http_api_contracts import HttpOperationErrorAuthority
 RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
     common=("bad_request", "unauthorized", "forbidden", "internal_error"),
     operation={
+        "discover_artifacts": ("conflict", "service_unavailable"),
         "create_catalog_sync_checkpoint": (),
         "list_catalog_sync_collections": (
             "catalog_sync_cursor_expired",

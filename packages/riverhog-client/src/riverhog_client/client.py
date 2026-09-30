@@ -46,6 +46,7 @@ from riverhog_protocol import (
     ArchiveCopyStoreSelectionDocument,
     ArchiveStoreName,
     ArchiveStoreSort,
+    ArtifactDiscoveryRequest,
     ArtifactId,
     ArtifactMaterializationDecisionBatchDocument,
     ArtifactMemberIdentityDocument,
@@ -1608,6 +1609,31 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if collection is not None:
             params["collection"] = _collection_id(collection)
         return self._json("search", "GET", "/v1/search", params=params)
+
+    def discover_artifacts(
+        self,
+        request: ArtifactDiscoveryRequest | Mapping[str, Any],
+        *,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
+        try:
+            document = (
+                request
+                if isinstance(request, ArtifactDiscoveryRequest)
+                else ArtifactDiscoveryRequest.model_validate(dict(request))
+            )
+        except ValidationError as exc:
+            raise BadRequest(str(exc)) from exc
+        payload = self._json(
+            "discover_artifacts",
+            "POST",
+            "/v1/artifacts/discover",
+            params={"page_token": page_token} if page_token is not None else None,
+            json=document.model_dump(mode="json"),
+        )
+        if payload.get("query_identity") != document.identity():
+            raise RuntimeError("Riverhog discovery response belongs to another query")
+        return payload
 
     def get_collection(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
