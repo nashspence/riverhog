@@ -331,16 +331,6 @@ fixtures = [
   "tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin",
 ]
 
-[[state.owners]]
-id = "riverhog-provenance-installation"
-distribution = "riverhog-provenance"
-classification = "installation-identity"
-format = "riverhog-provenance-installation-id/v1"
-head = "v1"
-transition = "immutable-identity"
-structure = { kind = "python-contract", module = "riverhog_provenance.identity", symbol = "_installation_id_state_contract" }
-fixtures = ["tests/fixtures/state/v1_0001/provenance-installation-id"]
-
 [artifacts]
 python_formats = ["wheel", "sdist"]
 documentation = "riverhog-docs-v{version}.tar.gz"

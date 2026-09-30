@@ -89,7 +89,6 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "riverhog-catalog",
         "a-riverhog-ftp-spool-custody",
         "a-riverhog-cli-local",
-        "riverhog-provenance-installation",
         "stove0-control",
         "stove0-target-jobs",
     }
