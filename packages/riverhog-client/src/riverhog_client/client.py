@@ -1297,6 +1297,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         *,
         byte_count: int,
         sha256: str,
+        root_role: Literal["operation"] | None = None,
     ) -> CollectionUploadProvenanceJournalStatusDocument:
         canonical_journal_id = _provenance_journal_id(journal_id)
         if isinstance(byte_count, bool) or byte_count < 1:
@@ -1311,8 +1312,9 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                     {
                         "bytes": str(byte_count),
                         "sha256": _sha256_identity(sha256, "provenance SHA-256"),
+                        "root_role": root_role,
                     }
-                ).model_dump(mode="json"),
+                ).model_dump(mode="json", exclude_none=True),
             )
         )
 
@@ -1374,6 +1376,70 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             )
         )
 
+    @contextmanager
+    def stream_collection_upload_session_provenance_journal(
+        self,
+        collection_id: CollectionId,
+        journal_id: ProvenanceJournalId,
+        *,
+        chunk_size: int = _DOWNLOAD_CHUNK_BYTES,
+    ) -> Iterator[Iterator[bytes]]:
+        """Read a sealed construction journal by its exact staged authority."""
+
+        status = self.get_collection_upload_session_provenance_journal(collection_id, journal_id)
+        if status.state != "sealed" or status.anchor is None:
+            raise InvalidState("staged provenance journal is not sealed")
+        if chunk_size < 1:
+            raise ValueError("provenance journal stream chunk size must be positive")
+        path = (
+            f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/"
+            f"provenance/journals/{quote(status.journal_id, safe='')}/content"
+        )
+        client = self._persistent_download_client()
+        try:
+            with client.stream(
+                "GET",
+                path,
+                headers={"Accept": "application/json-seq", "Accept-Encoding": "identity"},
+            ) as response:
+                if not response.is_success:
+                    response.read()
+                    self._raise_for_error(
+                        "stream_collection_upload_session_provenance_journal", response
+                    )
+                if response.status_code != 200:
+                    raise InvalidState("staged provenance journal returned an unexpected status")
+                if (
+                    response.headers.get("Content-Type", "").split(";", 1)[0]
+                    != "application/json-seq"
+                ):
+                    raise InvalidState("staged provenance journal has another media type")
+                if _response_sha256_etag(response.headers.get("ETag", "")) != status.sha256:
+                    raise InvalidState("staged provenance journal ETag changed")
+                if response.headers.get("Content-Length") != str(status.bytes):
+                    raise InvalidState("staged provenance journal length changed")
+                digest = hashlib.sha256()
+                received = 0
+
+                def content() -> Iterator[bytes]:
+                    nonlocal received
+                    for chunk in response.iter_bytes(chunk_size=chunk_size):
+                        if chunk:
+                            received += len(chunk)
+                            if received > status.bytes:
+                                raise InvalidState(
+                                    "staged provenance journal exceeds its authority"
+                                )
+                            digest.update(chunk)
+                            yield chunk
+
+                yield content()
+                if received != status.bytes or digest.hexdigest() != status.sha256:
+                    raise HashMismatch("staged provenance journal differs from its authority")
+        except httpx.TransportError as exc:
+            self.close()
+            raise ServiceUnavailable("staged provenance journal stream was interrupted") from exc
+
     def upload_collection_upload_session_provenance_journal(
         self,
         collection_id: CollectionId,
@@ -1382,12 +1448,14 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         content: Iterable[bytes],
         byte_count: int,
         sha256: str,
+        root_role: Literal["operation"] | None = None,
     ) -> CollectionUploadProvenanceJournalStatusDocument:
         status = self.create_collection_upload_session_provenance_journal(
             collection_id,
             journal_id,
             byte_count=byte_count,
             sha256=sha256,
+            root_role=root_role,
         )
         skip = status.accepted_bytes
         offset = 0

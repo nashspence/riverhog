@@ -3,17 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
-    PRODUCER_EVIDENCE_PATH,
     ArtifactDispositionSetIdentity,
     CollectionDerivation,
     JsonValue,
-    canonical_json_bytes,
     canonical_json_sha256,
-    derivation_evidence_page_path,
 )
 
 from riverhog_client.processing.models import (
@@ -35,42 +31,6 @@ def _sha256(value: str, label: str) -> str:
     ):
         raise ValueError(f"{label} must be a lowercase SHA-256")
     return normalized
-
-
-def _append_generic_derivation_evidence(
-    api: Any,
-    producer: IncrementalCollectionProducer,
-    *,
-    claim_id: str,
-    disposition_set: ArtifactDispositionSetIdentity,
-) -> None:
-    expected = disposition_set.as_dict()
-    routes: tuple[tuple[Literal["dispositions", "output-edges"], str, str], ...] = (
-        ("dispositions", "list_processing_claim_dispositions", "dispositions"),
-        ("output-edges", "list_processing_claim_disposition_outputs", "outputs"),
-    )
-    for kind, method_name, field_name in routes:
-        start = 0
-        while True:
-            page = getattr(api, method_name)(
-                claim_id,
-                identity_sha256=disposition_set.sha256,
-                start_ordinal=start,
-            )
-            if page.identity.model_dump(mode="json") != expected or page.start_ordinal != start:
-                raise RuntimeError("Riverhog returned changed derivation evidence identity")
-            values = getattr(page, field_name)
-            if not values:
-                raise RuntimeError("Riverhog returned an empty derivation evidence page")
-            producer.append_derivation_evidence(
-                derivation_evidence_page_path(kind, start),
-                canonical_json_bytes(page.model_dump(mode="json", exclude_none=True)),
-            )
-            if page.next_ordinal is None:
-                break
-            if page.next_ordinal != start + len(values):
-                raise RuntimeError("Riverhog derivation evidence continuation is not contiguous")
-            start = page.next_ordinal
 
 
 class DerivedCollectionWriter:
@@ -139,15 +99,9 @@ class DerivedCollectionWriter:
         normalized_outputs = tuple(outputs)
         if not normalized_outputs:
             raise ValueError("successful collection transform must produce output artifacts")
-        output_paths = {current.path for current in normalized_outputs}
-        if len(output_paths) != len(normalized_outputs):
-            raise ValueError("derived collection output paths must be unique")
-        if any(
-            path in {PRODUCER_EVIDENCE_PATH, DERIVATION_EVIDENCE_PATH}
-            or path.startswith("riverhog/")
-            for path in output_paths
-        ):
-            raise ValueError("transform targets may not write Riverhog control paths")
+        output_ids = {current.artifact_id for current in normalized_outputs}
+        if len(output_ids) != len(normalized_outputs):
+            raise ValueError("derived collection output artifact IDs must be unique")
         if disposition_set.output_artifact_count != len(normalized_outputs):
             raise ValueError("sealed disposition identity differs from derived outputs")
         derivation = CollectionDerivation(
@@ -182,6 +136,7 @@ class DerivedCollectionWriter:
                 "execution_id": self.execution_id,
                 "execution_envelope_sha256": derivation.execution_envelope_sha256,
                 "execution_sha256": derivation.execution_sha256,
+                "derivation": derivation.as_dict(),
             },
             idempotency_key=self.execution_id,
             archive_store=self.spec.output_policy.archive_store,
@@ -197,22 +152,9 @@ class DerivedCollectionWriter:
                     "execution_id": self.execution_id,
                 }
             },
-            provenance_mode="captured",
-            provenance_omission_reason=(
-                "Transform output has no captured host journal for this artifact; "
-                "the immutable derivation document records exact execution evidence."
-            ),
-            server_generated_provenance=True,
         )
         producer.append_inputs(normalized_outputs)
-        _append_generic_derivation_evidence(
-            self.api,
-            producer,
-            claim_id=self.claim_id,
-            disposition_set=disposition_set,
-        )
         receipt = producer.finish(
-            terminal_evidence={DERIVATION_EVIDENCE_PATH: derivation.to_json_bytes()},
             poll_seconds=poll_seconds,
             timeout_seconds=timeout_seconds,
         )
@@ -290,12 +232,6 @@ class IncrementalDerivedCollectionWriter:
                     "execution_id": self.execution_id,
                 }
             },
-            provenance_mode="captured",
-            server_generated_provenance=True,
-            provenance_omission_reason=(
-                "Transform output has no captured host journal for this artifact; "
-                "the immutable derivation document records exact execution evidence."
-            ),
         )
 
     def heartbeat(self) -> None:
@@ -310,11 +246,11 @@ class IncrementalDerivedCollectionWriter:
         *,
         identity: ProducerArtifactIdentity,
     ) -> tuple[ProducerArtifactCustody, ...]:
-        if source.path != identity.path:
-            raise ValueError("incremental transform source path differs from its identity")
+        if source.artifact_id != identity.artifact_id:
+            raise ValueError("incremental transform source artifact differs from its identity")
         return self.producer.append_inputs(
             [source],
-            expected_identities={identity.path: identity},
+            expected_identities={identity.artifact_id: identity},
         )
 
     def finish(
@@ -339,14 +275,7 @@ class IncrementalDerivedCollectionWriter:
             controller_evidence_sha256=self.controller_evidence_sha256,
             disposition_set=disposition_set,
         )
-        _append_generic_derivation_evidence(
-            self.producer.api,
-            self.producer,
-            claim_id=self.claim_id,
-            disposition_set=disposition_set,
-        )
         produced = self.producer.finish(
-            terminal_evidence={DERIVATION_EVIDENCE_PATH: derivation.to_json_bytes()},
             poll_seconds=poll_seconds,
             timeout_seconds=timeout_seconds,
         )

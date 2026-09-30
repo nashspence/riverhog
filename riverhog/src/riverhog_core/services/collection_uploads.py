@@ -962,6 +962,12 @@ class SqlAlchemyCollectionUploadService:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
             if upload.state != "open":
                 raise Conflict("collection upload does not accept provenance journals")
+            if authority.root_role == "operation":
+                if upload.operation_journal_id not in (None, journal_id):
+                    raise Conflict("collection upload operation journal is already selected")
+                upload.operation_journal_id = journal_id
+            elif upload.operation_journal_id == journal_id:
+                raise Conflict("operation journal retry must retain its root role")
             existing = session.get(
                 CollectionUploadProvenanceJournalRecord,
                 (normalized_id, journal_id),
@@ -1239,6 +1245,22 @@ class SqlAlchemyCollectionUploadService:
             if record is None:
                 raise NotFound(f"collection upload provenance journal not found: {journal_id}")
             return _journal_payload(record)
+
+    def iter_sealed_provenance_journal(
+        self, collection_id: int, journal_id: str
+    ) -> Iterator[bytes]:
+        """Stream the exact staged journal to its owning producer for resumed recording."""
+
+        with read_snapshot(self._session_factory) as session:
+            record = session.get(
+                CollectionUploadProvenanceJournalRecord,
+                (_collection_id(collection_id), journal_id),
+            )
+            if record is None:
+                raise NotFound(f"collection upload provenance journal not found: {journal_id}")
+            if record.state != "sealed":
+                raise Conflict("canonical provenance journal is not sealed")
+            yield from _iter_upload_journal_chunks(session, record)
 
     def process_due_provenance_journal_validations(self, *, limit: int = 1) -> int:
         processed = 0
@@ -3369,6 +3391,7 @@ class SqlAlchemyCollectionUploadService:
                         binding_count=upload.artifact_count,
                         journal_count=journal_count,
                         ordered_volume_sha256=upload.provenance_archive_ordered_sha256,
+                        operation_journal_id=upload.operation_journal_id,
                     )
 
         publisher = ArchiveProvenancePublisher(
@@ -4822,6 +4845,8 @@ def _validate_staged_canonical_journal_set(
             )
         )
     )
+    if upload.operation_journal_id is not None:
+        roots.add(upload.operation_journal_id)
     pending = list(roots)
     reached: set[str] = set()
     while pending:

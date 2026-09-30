@@ -17,6 +17,7 @@ from riverhog_archive_contracts import (
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_METADATA_BYTES_MAX,
     PROVENANCE_SEQUENCE_DOMAIN,
+    PROVENANCE_TERMINAL_FORMAT,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
@@ -86,7 +87,7 @@ class CanonicalProvenanceArchiveReader:
             value = require_canonical_json(raw)
             if not isinstance(value, dict):
                 raise ProvenanceArchiveReadError("provenance volume is not an object")
-            if value.get("format") == "riverhog-provenance-terminal/v1":
+            if value.get("format") == PROVENANCE_TERMINAL_FORMAT:
                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
                 if terminal.sequence != sequence:
                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")
@@ -106,6 +107,7 @@ class CanonicalProvenanceArchiveReader:
         expected = 0
         binding_count = 0
         journal_count = 0
+        operation_journal_seen = False
         last_artifact_id: str | None = None
         current_journal_id: str | None = None
         current_journal_offset = 0
@@ -154,6 +156,8 @@ class CanonicalProvenanceArchiveReader:
                         "provenance journal identities are not ordered"
                     )
                 current_journal_id = document.journal_id
+                if document.journal_id == root.operation_journal_id:
+                    operation_journal_seen = True
                 current_journal_bytes = document.journal_bytes
                 current_journal_sha256 = document.journal_sha256
                 current_journal_offset = 0
@@ -169,6 +173,7 @@ class CanonicalProvenanceArchiveReader:
             digest.hexdigest() != root.ordered_volume_sha256
             or binding_count != root.binding_count
             or journal_count != root.journal_count
+            or (root.operation_journal_id is not None and not operation_journal_seen)
         ):
             raise ProvenanceArchiveReadError("provenance sequence differs from the root")
         return ProvenanceArchiveSummary(root=root, volume_count=expected - 1)

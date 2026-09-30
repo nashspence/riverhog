@@ -288,6 +288,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert set(external["cli"]["a-riverhog-cli"]["commands"]) == {
         "app",
         "archive",
+        "artifact",
         "catalog-sync",
         "collection",
         "event",

@@ -2534,6 +2534,7 @@ class CollectionUploadRecord(Base):
     tag_head_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     tag_publication_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     provenance_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    operation_journal_id: Mapped[str | None] = mapped_column(String(45), nullable=True)
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
     initiated_by_principal_id: Mapped[str] = mapped_column(String, default="riverhog")

@@ -38,6 +38,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         ),
         "seal_collection_upload_session_provenance_journal": ("conflict", "not_found"),
         "get_collection_upload_session_provenance_journal": ("not_found",),
+        "stream_collection_upload_session_provenance_journal": ("conflict", "not_found"),
         "list_collection_upload_session_artifacts": ("not_found",),
         "complete_collection_upload_session": ("conflict", "not_found"),
         "cancel_collection_upload_session": ("conflict", "not_found"),

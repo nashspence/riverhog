@@ -93,6 +93,7 @@ class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
 class CollectionUploadProvenanceJournalCreateDocument(CollectionUploadDocument):
     bytes: NonnegativeDecimal = Field(ge=1)
     sha256: Sha256
+    root_role: Literal["operation"] | None = None
 
 
 class CollectionUploadProvenanceJournalStatusDocument(CollectionUploadDocument):
