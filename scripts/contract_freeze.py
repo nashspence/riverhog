@@ -688,11 +688,11 @@ def _extension_points(
         invalid = sorted(
             provider["distribution"]
             for provider in group_providers
-            if roles[provider["distribution"]] != "component"
+            if roles[provider["distribution"]] not in {"component", "reusable_library"}
         )
         if invalid:
             raise ContractFreezeError(
-                f"checked-in extension providers are outside the component role: {invalid}"
+                f"checked-in extension providers are outside reusable or component roles: {invalid}"
             )
         points.append(
             {

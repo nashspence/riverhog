@@ -83,7 +83,16 @@ class AssertionClause(_DiscoveryDocument):
     assertion_state: AssertionStateSelector = "effective"
     kind: str | None = Field(default=None, min_length=1, max_length=160)
     profile: ProfilePin | None = None
-    values: tuple[ValuePredicate, ...] = Field(min_length=1, max_length=16)
+    values: tuple[ValuePredicate, ...] = Field(
+        min_length=1,
+        max_length=16,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-same-assertion-query-complexity",
+            }
+        },
+    )
 
     @field_validator("scopes", "values", mode="before")
     @classmethod
@@ -101,14 +110,59 @@ class ArtifactDiscoveryRequest(_DiscoveryDocument):
     """Closed native member query; all outer filters are conjunctive."""
 
     format: Literal["riverhog-artifact-discovery/v1"] = "riverhog-artifact-discovery/v1"
-    collections: tuple[str, ...] = Field(default=(), max_length=256)
-    tags_all: tuple[str, ...] = Field(default=(), max_length=256)
-    tags_any: tuple[str, ...] = Field(default=(), max_length=256)
-    tags_none: tuple[str, ...] = Field(default=(), max_length=256)
+    collections: tuple[str, ...] = Field(
+        default=(),
+        max_length=256,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-explicit-collection-query-set",
+            }
+        },
+    )
+    tags_all: tuple[str, ...] = Field(
+        default=(),
+        max_length=256,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-tag-query-predicate-set-not-collection-tag-count",
+            }
+        },
+    )
+    tags_any: tuple[str, ...] = Field(
+        default=(),
+        max_length=256,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-tag-query-predicate-set-not-collection-tag-count",
+            }
+        },
+    )
+    tags_none: tuple[str, ...] = Field(
+        default=(),
+        max_length=256,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-tag-query-predicate-set-not-collection-tag-count",
+            }
+        },
+    )
     description_contains: str | None = Field(default=None, min_length=1, max_length=256)
     artifact_id: ArtifactId | None = None
     payload_sha256: str | None = Field(default=None, pattern=_SHA256)
-    provenance_all: tuple[AssertionClause, ...] = Field(default=(), max_length=16)
+    provenance_all: tuple[AssertionClause, ...] = Field(
+        default=(),
+        max_length=16,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-correlated-provenance-query-clauses",
+            }
+        },
+    )
     page_size: int = Field(default=50, ge=1, le=200)
 
     @field_validator(

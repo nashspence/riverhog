@@ -10,6 +10,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_provenance_contracts import core_contract
 
 FORMAT = "riverhog-extent-contract/v1"
 EXTENT_DECLARATION = "x-riverhog-extent"
@@ -164,6 +165,17 @@ def _escape(value: str) -> str:
 
 def _pointer(*parts: str) -> str:
     return "/" + "/".join(_escape(part) for part in parts)
+
+
+_IMMUTABLE_CORE_HINT_COMPONENTS = (
+    _pointer(
+        "external_contract",
+        "protocol_schemas",
+        "https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json",
+    )
+    + "/$defs/materializationHint/properties/components"
+)
+_IMMUTABLE_CORE_SHA256 = "8fb75de6c0eae617df0824b42711bcd87ecdcd27aa0828d24daf4ba8850c0f71"
 
 
 def _canonical_sha256(value: object) -> str:
@@ -421,6 +433,19 @@ def _declared_cardinality_decision(
     minimum = schema.get(minimum_keyword)
     fixed = isinstance(minimum, int) and not isinstance(minimum, bool) and minimum == maximum
     declaration = _extent_declaration(schema)
+    if declaration is None and source_pointer == _IMMUTABLE_CORE_HINT_COMPONENTS:
+        # The selected canonical core is immutable. Record its reason here without
+        # modifying the pinned schema bytes or their contract digest.
+        if (
+            core_contract().contract_sha256 != _IMMUTABLE_CORE_SHA256
+            or maximum != 32
+            or minimum != 1
+        ):
+            raise ExtentContractError("pinned canonical hint component bound changed")
+        declaration = {
+            "policy": "contract_max",
+            "reason": "canonical-core-materialization-hint-component-count",
+        }
     if fixed:
         return _bound_decision(
             identity=identity,
@@ -685,7 +710,8 @@ def _schema_decisions(
                 )
             )
         if (
-            node.get("type") in {"integer", "number"}
+            isinstance(node.get("type"), str)
+            and node["type"] in {"integer", "number"}
             and maximum is None
             and _EXTENT_NAME.search(str(title or field))
         ):

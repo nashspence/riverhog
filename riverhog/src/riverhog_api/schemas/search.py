@@ -66,6 +66,15 @@ class DiscoveryPageOut(RiverhogModel):
     format: Literal["riverhog-artifact-discovery-page/v1"]
     query_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
     read_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
-    artifacts: list[DiscoveryArtifactOut] = Field(max_length=200)
+    artifacts: list[DiscoveryArtifactOut] = Field(
+        max_length=200,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-stable-artifact-discovery-page",
+                "progression": "read-identity-bound-page-token",
+            }
+        },
+    )
     complete: bool
     next_page_token: BrowsePageToken | None
