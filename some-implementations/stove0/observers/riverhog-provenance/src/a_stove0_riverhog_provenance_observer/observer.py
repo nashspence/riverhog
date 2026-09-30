@@ -97,7 +97,7 @@ class RiverhogProvenanceObserver:
                 else validate_materialization_hint_facts(document, request.subjects)
             )
             return builder.observed(cast(dict[str, JsonValue], validated.model_dump(mode="json")))
-        except (ValueError, RuntimeError, OSError) as exc:
+        except (KeyError, TypeError, ValueError, RuntimeError, OSError) as exc:
             return builder.failed(
                 code="canonical-occurrence-unavailable",
                 message="The exact delivered Occurrence could not be validated.",

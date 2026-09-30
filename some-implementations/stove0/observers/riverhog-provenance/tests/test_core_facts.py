@@ -268,6 +268,23 @@ def test_observer_fails_when_exact_primary_provenance_is_unavailable() -> None:
     assert failed.state == "failed"
     assert failed.facts is None
 
+    objects = deepcopy(summary.graph_validation.objects)
+    state = next(row for row in objects.values() if row["type"] == "state")
+    del state["occurrence_id"]
+    malformed = SimpleNamespace(
+        anchor=summary.anchor,
+        graph_validation=SimpleNamespace(objects=objects),
+        frames=summary.frames,
+    )
+
+    class MalformedRuntime(Runtime):
+        def open_provenance(self, _subject: WorkArtifactSubject) -> Any:
+            return SimpleNamespace(binding=binding, bound_summary=lambda: malformed)
+
+    rejected = observer.observe(request, cast(ContentObservationRuntime, MalformedRuntime()))
+    assert rejected.state == "failed"
+    assert rejected.facts is None
+
 
 def test_distinct_context_assertions_can_report_same_explicit_source_view() -> None:
     view_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
