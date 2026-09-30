@@ -115,6 +115,9 @@ def test_check_expression_normalizes_only_cast_postgres_integer_literals() -> No
     assert _check_expression("revision = (previous_revision + 1)") == (
         "revision=previous_revision + 1"
     )
+    assert _check_expression("bytes::numeric < '9223372036854775808'::numeric") == (
+        "bytes < 9223372036854775808"
+    )
 
 
 def test_complete_schema_verifier_rejects_missing_index() -> None:

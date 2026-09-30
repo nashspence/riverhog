@@ -5,8 +5,10 @@ import json
 import logging
 import re
 import secrets
+from collections import OrderedDict
 from collections.abc import Iterator, Mapping, Sequence
 from datetime import timedelta
+from itertools import islice
 from typing import Any, Literal, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
@@ -86,6 +88,7 @@ from riverhog_protocol.transport import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
 )
 from riverhog_provenance import (
+    JournalSummary,
     ProvenanceValidationError,
     validate_journal_chunks,
     validate_journal_set_chunks,
@@ -130,6 +133,22 @@ from riverhog_core.archive_root import (
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
+from riverhog_core.canonical_discovery_index import (
+    begin_index_build,
+    complete_index_build,
+    publish_index_build,
+    stage_assertion_page,
+    stage_entry_page,
+    stage_member,
+    stage_membership_page,
+    stage_snapshot_header,
+)
+from riverhog_core.canonical_discovery_relevance import (
+    member_relevance,
+    relevance_row_keys,
+    snapshots_for_relevance,
+)
+from riverhog_core.canonical_discovery_rows import iter_index_assertions
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_events import (
     begin_catalog_event,
@@ -170,6 +189,10 @@ from riverhog_core.catalog_models import (
     CollectionUploadTagPublicationFrontierRecord,
     CollectionUploadTagRecord,
     RetrievalCacheLeaseRecord,
+)
+from riverhog_core.catalog_provenance_index_models import (
+    CollectionProvenanceIndexMembershipRecord,
+    CollectionProvenanceIndexSnapshotRecord,
 )
 from riverhog_core.catalog_workflow_models import (
     CollectionProcessingClaimRecord,
@@ -2740,6 +2763,8 @@ class SqlAlchemyCollectionUploadService:
                 self._advance_catalog_archive_objects(session, upload)
             elif phase == "artifact-objects":
                 _advance_catalog_artifact_objects(session, upload)
+            elif phase == "index":
+                _advance_catalog_canonical_index(session, upload)
             elif phase == "terminal":
                 self._publish_catalog_collection(session, upload)
             else:  # pragma: no cover - constrained durable state
@@ -4218,7 +4243,7 @@ def _advance_catalog_artifact_objects(session: Session, upload: CollectionUpload
     if sequence >= total:
         if sequence != total:
             raise RuntimeError("catalog artifact-object cursor exceeds archive authority")
-        upload.catalog_phase = "terminal"
+        upload.catalog_phase = "index"
         upload.catalog_cursor_json = "{}"
         return
     record = session.scalar(
@@ -4268,6 +4293,193 @@ def _advance_catalog_artifact_objects(session: Session, upload: CollectionUpload
     else:
         raise RuntimeError("catalog artifact-object source kind is invalid")
     _set_catalog_cursor(upload, {"sequence": sequence + 1})
+
+
+class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
+    """Read exact sealed upload journals on demand while indexing one member."""
+
+    def __init__(self, session: Session, collection_id: int) -> None:
+        self.session = session
+        self.collection_id = collection_id
+        self.cache: OrderedDict[str, JournalSummary] = OrderedDict()
+
+    def __getitem__(self, journal_id: str) -> JournalSummary:
+        cached = self.cache.get(journal_id)
+        if cached is not None:
+            self.cache.move_to_end(journal_id)
+            return cached
+        record = self.session.get(
+            CollectionUploadProvenanceJournalRecord, (self.collection_id, journal_id)
+        )
+        if record is None or record.state != "sealed":
+            raise KeyError(journal_id)
+        summary = validate_journal_chunks(
+            _iter_upload_journal_chunks(self.session, record),
+            catalog=admission_provenance_catalog(),
+        )
+        if summary.journal_sha256 != record.sha256 or summary.journal_bytes != record.bytes:
+            raise ProvenanceValidationError("staged canonical journal identity changed")
+        self.cache[journal_id] = summary
+        if len(self.cache) > 2:
+            self.cache.popitem(last=False)
+        return summary
+
+    def __iter__(self) -> Iterator[str]:
+        yield from self.session.scalars(
+            select(CollectionUploadProvenanceJournalRecord.journal_id)
+            .where(CollectionUploadProvenanceJournalRecord.collection_id == self.collection_id)
+            .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
+        )
+
+    def __len__(self) -> int:
+        return int(
+            self.session.scalar(
+                select(func.count())
+                .select_from(CollectionUploadProvenanceJournalRecord)
+                .where(CollectionUploadProvenanceJournalRecord.collection_id == self.collection_id)
+            )
+            or 0
+        )
+
+
+def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadRecord) -> None:
+    """Stage one member's exact canonical discovery support before publication."""
+
+    cursor = _catalog_cursor(upload)
+    build_id = cursor.get("build_id")
+    if build_id is None:
+        build_id = begin_index_build(session, collection_id=upload.collection_id)
+        _set_catalog_cursor(
+            upload,
+            {"build_id": build_id, "members_indexed": 0, "memberships_indexed": 0},
+        )
+        return
+    if not isinstance(build_id, str):
+        raise RuntimeError("canonical discovery build cursor is invalid")
+    indexed = _cursor_nonnegative_int(cursor, "members_indexed")
+    memberships_indexed = _cursor_nonnegative_int(cursor, "memberships_indexed")
+    after_id = cursor.get("after_artifact_id")
+    if after_id is not None and (
+        not isinstance(after_id, str) or _SHA256_RE.fullmatch(after_id) is None
+    ):
+        raise RuntimeError("canonical discovery member cursor is invalid")
+    statement = select(CollectionUploadArtifactRecord).where(
+        CollectionUploadArtifactRecord.collection_id == upload.collection_id
+    )
+    if after_id is not None:
+        statement = statement.where(CollectionUploadArtifactRecord.artifact_id > after_id)
+    member_record = session.scalar(
+        statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(1)
+    )
+    if member_record is None:
+        if indexed != upload.artifact_count:
+            raise RuntimeError("canonical discovery did not cover every artifact")
+        snapshot_count = int(
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionProvenanceIndexSnapshotRecord)
+                .where(CollectionProvenanceIndexSnapshotRecord.build_id == build_id)
+            )
+            or 0
+        )
+        actual_memberships = int(
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionProvenanceIndexMembershipRecord)
+                .where(CollectionProvenanceIndexMembershipRecord.build_id == build_id)
+            )
+            or 0
+        )
+        if actual_memberships != memberships_indexed:
+            raise RuntimeError("canonical discovery membership cursor differs")
+        complete_index_build(
+            session,
+            build_id=build_id,
+            expected_snapshots=snapshot_count,
+            expected_members=indexed,
+            expected_memberships=memberships_indexed,
+        )
+        publish_index_build(session, build_id=build_id)
+        upload.catalog_phase = "terminal"
+        upload.catalog_cursor_json = "{}"
+        return
+
+    binding_record = session.get(
+        CollectionUploadArtifactProvenanceBindingRecord,
+        (upload.collection_id, member_record.artifact_id),
+    )
+    if binding_record is None:
+        raise RuntimeError("canonical discovery member has no exact provenance binding")
+    binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+        _provenance_binding_row(binding_record)
+    )
+    corpus = _StagedCanonicalCorpus(session, upload.collection_id)
+    full_primary = corpus[binding.journal.journal_id]
+    primary = validate_journal_chunks(
+        (
+            frame.encoded
+            for frame in full_primary.frames[: int(binding.journal.through.sequence) + 1]
+        ),
+        catalog=admission_provenance_catalog(),
+        expected_anchor=binding.journal.model_dump(mode="json"),
+        require_exact_tail=True,
+    )
+    member = ArtifactMemberIdentityDocument.model_validate(
+        {
+            "artifact_id": member_record.artifact_id,
+            "bytes": format_scalar("sequence63", member_record.bytes),
+            "sha256": member_record.sha256,
+        }
+    )
+    relevance = member_relevance(
+        member=member,
+        binding=binding,
+        primary=primary,
+        corpus=corpus,
+        delivery_context_id=upload.delivery_context_id,
+        catalog=admission_provenance_catalog(),
+    )
+    for summary in snapshots_for_relevance(
+        relevance, corpus=corpus, catalog=admission_provenance_catalog()
+    ):
+        snapshot_key = (build_id, summary.journal_id, summary.journal_sha256)
+        if session.get(CollectionProvenanceIndexSnapshotRecord, snapshot_key) is not None:
+            continue
+        stage_snapshot_header(session, build_id=build_id, summary=summary)
+        session.flush()
+        for start in range(0, len(summary.frames), 128):
+            stage_entry_page(session, build_id=build_id, summary=summary, start=start)
+        session.flush()
+        rows = iter_index_assertions(summary)
+        while batch := tuple(islice(rows, 2)):
+            stage_assertion_page(session, build_id=build_id, rows=batch)
+    stage_member(
+        session,
+        build_id=build_id,
+        artifact_id=member_record.artifact_id,
+        bytes=member_record.bytes,
+        sha256=member_record.sha256,
+        journal_id=primary.journal_id,
+        prefix_sha256=primary.journal_sha256,
+        delivery_association_id=binding.delivery_association_id,
+    )
+    session.flush()
+    membership_rows = (
+        (member_record.artifact_id, row_key, scope)
+        for row_key, scope in relevance_row_keys(relevance)
+    )
+    while membership_batch := tuple(islice(membership_rows, 1024)):
+        stage_membership_page(session, build_id=build_id, rows=membership_batch)
+        memberships_indexed += len(membership_batch)
+    _set_catalog_cursor(
+        upload,
+        {
+            "build_id": build_id,
+            "after_artifact_id": member_record.artifact_id,
+            "members_indexed": indexed + 1,
+            "memberships_indexed": memberships_indexed,
+        },
+    )
 
 
 def _collection_id(value: int) -> int:

@@ -56,6 +56,7 @@ _MAX_ROWS_PER_BATCH = 32
 _MAX_POSTINGS_PER_ASSERTION = 20_000
 _MAX_POSTINGS_PER_PAGE = 50_000
 _MAX_TEXT_CHUNKS_PER_POSTING = 10_000
+_MAX_TEXT_CHUNKS_PER_PAGE = 10_000
 
 
 class StaleIndexBuild(RuntimeError):
@@ -269,7 +270,6 @@ def stage_assertion_page(
             )
         )
     session.flush()
-    chunks: list[CollectionProvenanceIndexTextChunkRecord] = []
     for row in new_rows:
         for pointer in row.profiles:
             session.add(
@@ -312,12 +312,20 @@ def stage_assertion_page(
                     folded_text=ascii_fold(text) if text is not None else None,
                 )
             )
+    session.flush()
+    chunk_count = 0
+    for row in new_rows:
+        for ordinal, posting in enumerate(row.postings):
+            text = posting.value if type(posting.value) is str else None
             if text is None or posting.representation == "exact-bytes":
                 continue
             for chunk_ordinal, (offset, content) in enumerate(literal_chunks(text)):
                 if chunk_ordinal >= _MAX_TEXT_CHUNKS_PER_POSTING:
                     raise IndexResourceLimit("scalar exceeds literal text chunk budget")
-                chunks.append(
+                chunk_count += 1
+                if chunk_count > _MAX_TEXT_CHUNKS_PER_PAGE:
+                    raise IndexResourceLimit("discovery page exceeds literal text chunk budget")
+                session.add(
                     CollectionProvenanceIndexTextChunkRecord(
                         build_id=build_id,
                         row_key=row.row_key,
@@ -328,8 +336,9 @@ def stage_assertion_page(
                         folded_chunk=ascii_fold(content),
                     )
                 )
+                if chunk_count % 256 == 0:
+                    session.flush()
     session.flush()
-    session.add_all(chunks)
 
 
 def stage_member(
