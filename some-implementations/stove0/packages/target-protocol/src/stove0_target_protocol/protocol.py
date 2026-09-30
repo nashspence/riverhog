@@ -346,6 +346,14 @@ class OutputArtifact(TargetProtocolModel):
     artifact_id: ArtifactId
     bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
+    describes_output_id: str | None = Field(default=None, pattern=ARTIFACT_ID_PATTERN)
+    reconstructs_output_id: str | None = Field(default=None, pattern=ARTIFACT_ID_PATTERN)
+
+    @model_validator(mode="after")
+    def distinct_relationship_endpoints(self) -> Self:
+        if self.id in {self.describes_output_id, self.reconstructs_output_id}:
+            raise ValueError("an output relationship cannot target the same output")
+        return self
 
 
 class OutputSourceEdge(TargetProtocolModel):
@@ -465,6 +473,39 @@ class TargetProductionSealResponse(TargetProtocolModel):
     def validate_state(self) -> Self:
         if (self.state == "sealed") != (self.production is not None):
             raise ValueError("target production seal response is inconsistent with state")
+        return self
+
+
+class TargetOutputPage(TargetProtocolModel):
+    """A bounded slice of the exact sealed output declarations."""
+
+    production_sha256: Sha256
+    after_id: str | None = Field(default=None, pattern=ARTIFACT_ID_PATTERN)
+    next_after_id: str | None = Field(default=None, pattern=ARTIFACT_ID_PATTERN)
+    complete: bool
+    artifacts: tuple[OutputArtifact, ...] = Field(
+        max_length=TARGET_INPUT_PAGE_MAX,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-sealed-target-output-page",
+                "progression": "production-bound-output_id",
+            }
+        },
+    )
+
+    @model_validator(mode="after")
+    def ordered_complete_page(self) -> Self:
+        previous = self.after_id
+        for artifact in self.artifacts:
+            if previous is not None and artifact.id <= previous:
+                raise ValueError("target output page must advance in exact key order")
+            previous = artifact.id
+        if self.complete:
+            if self.next_after_id is not None:
+                raise ValueError("complete target output page cannot continue")
+        elif not self.artifacts or self.next_after_id != previous:
+            raise ValueError("incomplete target output page must continue from its final key")
         return self
 
 

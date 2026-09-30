@@ -8,10 +8,12 @@ from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Self, cast
 
+from a_riverhog_direct_relations_contract_lib import VOCABULARY_SHA256
 from pydantic import JsonValue
 from riverhog_archive_contracts import BOUND_HISTORY_EXTENT
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client.canonical_completion import CompletionRecord
+from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.processing import (
     ClaimedArtifact,
     ClaimedCollectionRuntime,
@@ -27,6 +29,7 @@ from riverhog_client.producer import (
     ProducerFile,
     ProducerInput,
 )
+from riverhog_protocol.collection_record_preimages import canonical_record_sequence
 from riverhog_protocol.collection_workflows import (
     OperationIdentity,
     RecipeIdentity,
@@ -53,6 +56,7 @@ from stove0_target_protocol import (
 )
 
 from stove0_target_support.execution import TargetExecutionSession
+from stove0_target_support.relationships import completion_output_relationships
 
 CancellationCheck = Callable[[], None]
 
@@ -163,6 +167,7 @@ class TargetCollectionPublication:
                     {
                         "descriptor": self.implementation.model_dump(mode="json", by_alias=True),
                         "operation": operation.model_dump(mode="json", by_alias=True),
+                        "direct_relations_vocabulary_sha256": VOCABULARY_SHA256,
                     }
                 ),
             ),
@@ -172,13 +177,22 @@ class TargetCollectionPublication:
                 canonical_json_bytes(pre_root.model_dump(mode="json", by_alias=True)),
             ),
         )
-        receipt = runtime.finish_incremental_publication(
-            self.writer,
-            execution_sha256=execution_sha256,
-            disposition_set=disposition_set,
-            completion_records=completion_records,
-            **kwargs,
-        )
+        with CompletionRecords() as declarations:
+            declared = declarations.add(
+                "target-output-declarations",
+                canonical_record_sequence(
+                    product.model_dump(mode="json", exclude_none=True)
+                    for product in self.execution._input_client.iter_outputs(production)
+                ),
+            )
+            receipt = runtime.finish_incremental_publication(
+                self.writer,
+                execution_sha256=execution_sha256,
+                disposition_set=disposition_set,
+                completion_records=(*completion_records, declared),
+                completion_assertions=completion_output_relationships,
+                **kwargs,
+            )
         self._release_all_files()
         output_collection = OutputCollectionRef.model_validate(
             {
@@ -443,6 +457,8 @@ class TargetExecutionRuntime:
             != self.request.declaration.plan.target_descriptor_sha256
         ):
             raise ValueError("publication implementation differs from the sealed target plan")
+        self.runtime.producer_app = implementation.implementation_id
+        self.runtime.producer_version = implementation.implementation_version
         writer = self.runtime.open_incremental_publication(
             execution_envelope_sha256=(
                 self.request.declaration.controller_evidence.execution_envelope.execution_envelope_sha256

@@ -69,6 +69,7 @@ from stove0_target_protocol.protocol import (
     TargetOperationSupport,
     TargetOutputBinding,
     TargetOutputBindingSetIdentity,
+    TargetOutputPage,
     TargetPlan,
     TargetPreflightRequest,
     TargetPreflightResponse,
@@ -209,6 +210,13 @@ _CALLBACK_ERRORS = _target_http_errors(
 TARGET_CALLBACK_HTTP_OPERATIONS = (
     HttpOperationContract(
         "GET",
+        "/v1/target-executions/{job_id}/outputs",
+        response_type=TargetOutputPage,
+        errors=_CALLBACK_ERRORS,
+        path_parameters=_JOB_ID_PARAMETER,
+    ),
+    HttpOperationContract(
+        "GET",
         "/v1/target-executions/{job_id}/inputs",
         response_type=TargetInputPage,
         errors=_CALLBACK_ERRORS,
@@ -319,6 +327,7 @@ __all__ = [
     "TargetOperationSupport",
     "TargetOutputBinding",
     "TargetOutputBindingSetIdentity",
+    "TargetOutputPage",
     "TargetPlan",
     "TargetPreflightRequest",
     "TargetPreflightResponse",

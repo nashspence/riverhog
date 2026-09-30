@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
 from pydantic import TypeAdapter
@@ -63,6 +63,31 @@ def validate_selected_claim(row: Mapping[str, Any]) -> DirectEdge:
     if not isinstance(value, dict) or value.get("type") != "reference":
         raise ValueError("direct relation value must be an exact State reference")
     return _state_reference(row.get("subject")), predicate, _state_reference(value.get("value"))
+
+
+def resolve_output_relations(
+    product: Mapping[str, Any], resolve_state: Callable[[str], object]
+) -> tuple[DirectEdge, ...]:
+    """Resolve one bounded accepted product against an exact operation State map."""
+    output_id = product.get("output_id")
+    if not isinstance(output_id, str) or not output_id:
+        raise ValueError("accepted products require output IDs")
+    subject = _state_reference(resolve_state(output_id))
+    edges = []
+    for field, predicate in (
+        ("describes_output_id", DESCRIBES),
+        ("reconstructs_output_id", RECONSTRUCTION_SUPPORT_FOR),
+    ):
+        target = product.get(field)
+        if target is None:
+            continue
+        if not isinstance(target, str) or target == output_id:
+            raise ValueError("direct relation targets a missing or same output")
+        endpoint = _state_reference(resolve_state(target))
+        if endpoint == subject:
+            raise ValueError("distinct produced outputs need distinct States")
+        edges.append((subject, predicate, endpoint))
+    return tuple(edges)
 
 
 def expected_output_edges(

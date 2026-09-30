@@ -20,6 +20,7 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import ValidationError
 from riverhog_client import ProducerArtifactCustody, ProducerArtifactIdentity, ProducerFile
+from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_client.processing import (
     ClaimedCollectionRuntime,
     ClaimedCollectionRuntimeRegistry,
@@ -27,8 +28,10 @@ from riverhog_client.processing import (
     DerivedCollectionReceipt,
 )
 from riverhog_protocol import (
+    ArtifactMemberIdentityDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyObjectDocument,
+    CollectionUploadProvenanceCustodyObjectDocument,
     Conflict,
     DownloadAllowanceExceeded,
     Unauthorized,
@@ -40,6 +43,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
+from riverhog_provenance import BoundedSourceObserver, BytesSource, new_id
 from stove0_protocol import (
     ArtifactSelection,
     CollectionRootIdentityRef,
@@ -121,6 +125,8 @@ from stove0_target_support import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
+_EXECUTION_PREIMAGE = canonical_json_bytes({"format": "fixture-execution/v1", "optional": None})
+_EXECUTION_SHA256 = hashlib.sha256(_EXECUTION_PREIMAGE).hexdigest()
 
 
 def _sha(character: str) -> str:
@@ -506,7 +512,7 @@ def _success_status(
         input_set_sha256=_sha("a"),
         artifact_set_sha256=_sha("b"),
         execution_envelope_sha256=declaration.job_id,
-        execution_sha256=_sha("9"),
+        execution_sha256=_EXECUTION_SHA256,
         controller_evidence=declaration.controller_evidence.model_dump(
             mode="json",
             by_alias=True,
@@ -554,7 +560,7 @@ def _success_status(
             target_descriptor_sha256=request.declaration.plan.target_descriptor_sha256,
             operation_contract_sha256=operation.contract_sha256,
             plan_sha256=request.declaration.plan.plan_sha256,
-            execution_sha256=_sha("9"),
+            execution_sha256=_EXECUTION_SHA256,
             runtime={"tool": "fixture"},
         ),
         derivation=derivation.as_dict(),
@@ -670,7 +676,7 @@ def test_effect_execution_uses_only_generic_claimed_collection_read_custody() ->
         assert not hasattr(execution.runtime, "spec")
         assert not hasattr(execution.runtime, "writer")
         with pytest.raises(RuntimeError, match="cannot publish"):
-            execution.open_collection_publication()
+            execution.open_collection_publication(implementation=_target_descriptor)
     finally:
         execution.runtime.close()
 
@@ -709,8 +715,21 @@ def test_target_runtime_builds_complete_success_status() -> None:
             disposition_set: ArtifactDispositionSetIdentity,
             **_kwargs: object,
         ) -> DerivedCollectionReceipt:
-            assert execution_sha256 == _sha("9")
+            assert execution_sha256 == _EXECUTION_SHA256
             assert disposition_set == derivation.disposition_set
+            records = {
+                record.kind: b"".join(record.read()) for record in _kwargs["completion_records"]
+            }
+            assert records["target-execution"] == _EXECUTION_PREIMAGE
+            assert b"null" in records["target-execution"]
+            assert b"archive_root_sha256" not in records["target-result"]
+            assert set(records) == {
+                "invocation",
+                "implementation",
+                "target-execution",
+                "target-output-declarations",
+                "target-result",
+            }
             return DerivedCollectionReceipt(
                 collection_id=output_collection.collection_id,
                 archive_root_sha256=output_collection.archive_root_sha256,
@@ -719,6 +738,15 @@ def test_target_runtime_builds_complete_success_status() -> None:
             )
 
     class Callback:
+        def iter_outputs(self, _production: object):
+            yield OutputArtifact(
+                id="output",
+                role="fixture.output/v1",
+                artifact_id=_sha("6"),
+                bytes="12",
+                sha256=_sha("5"),
+            )
+
         def seal_target_execution_production(self, job_id: str) -> TargetProductionSealResponse:
             assert job_id == request.declaration.job_id
             return TargetProductionSealResponse(state="sealed", production=expected.production)
@@ -728,11 +756,16 @@ def test_target_runtime_builds_complete_success_status() -> None:
 
     runtime = TargetExecutionRuntime(request, Runtime(), session=session)  # type: ignore[arg-type]
     runtime._input_client = Callback()  # type: ignore[assignment]
-    publication = TargetCollectionPublication(runtime, Writer())  # type: ignore[arg-type]
+    publication = TargetCollectionPublication(
+        runtime,
+        Writer(),
+        _target_descriptor,  # type: ignore[arg-type]
+    )
 
     result = publication.finish_success(
         operation=operation,
-        execution_sha256=_sha("9"),
+        execution_sha256=_EXECUTION_SHA256,
+        execution_preimage=_EXECUTION_PREIMAGE,
         runtime_evidence={"tool": "fixture"},
     )
     assert result == expected
@@ -753,6 +786,8 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
         sha256=hashlib.sha256(content).hexdigest(),
     )
 
+    _operation_contract, implementation, _request_document = _request()
+
     class Writer:
         pass
 
@@ -765,8 +800,30 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
             _source: object,
             *,
             identity: ProducerArtifactIdentity,
+            output_id: str,
+            inputs: object,
+            history_extent: str,
         ) -> tuple[ProducerArtifactCustody, ...]:
             assert local.exists()
+            assert output_id == output.id
+            assert history_extent == "bound-and-required-history"
+            member = ArtifactMemberIdentityDocument.model_validate(
+                {
+                    "artifact_id": identity.artifact_id,
+                    "bytes": str(identity.bytes),
+                    "sha256": identity.sha256,
+                }
+            )
+            primary = build_member_journal(
+                member=member,
+                observation=BoundedSourceObserver().observe(BytesSource(content)),
+                delivery_context_id=new_id(),
+                attribution=ProducerAttribution(
+                    "fixture", "fixture", "1", "event", "fixture", {}, _sha("1")
+                ),
+                materialization_hint=None,
+            )
+            primary_sha256 = hashlib.sha256(primary.content).hexdigest()
             receipt = ProducerArtifactCustody(
                 identity,
                 CollectionUploadArtifactCustodyReceiptDocument.seal(
@@ -774,9 +831,23 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
                     artifact_id=identity.artifact_id,
                     bytes=identity.bytes,
                     sha256=identity.sha256,
-                    archive_root_sha256=_sha("b"),
-                    provenance_root_sha256=_sha("c"),
-                    provenance_root_receipt_sha256=_sha("d"),
+                    primary=primary.binding,
+                    completion_requirement_sha256=None,
+                    provenance_objects=(
+                        CollectionUploadProvenanceCustodyObjectDocument.model_validate(
+                            {
+                                "object_id": "provenance-payload-" + primary_sha256,
+                                "relative_path": "provenance/payloads/"
+                                + primary_sha256[:2]
+                                + "/"
+                                + primary_sha256
+                                + ".bin.age",
+                                "plaintext_bytes": str(len(primary.content)),
+                                "plaintext_sha256": primary_sha256,
+                                "sealed_receipt_sha256": _sha("a"),
+                            }
+                        ),
+                    ),
                     archive_objects=(
                         CollectionUploadCustodyObjectDocument(
                             volume_id="pack-" + "0" * 64,
@@ -803,7 +874,11 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
 
         _input_client = Callback()
 
-    publication = TargetCollectionPublication(Execution(), writer)  # type: ignore[arg-type]
+        def resolve_input_ids(self, values):
+            assert values == ("source",)
+            return (object(),)
+
+    publication = TargetCollectionPublication(Execution(), writer, implementation)  # type: ignore[arg-type]
     custody = publication.append(
         ProducerFile(local, output.artifact_id, allow_missing_materialization_hint=True),
         output,
