@@ -36,7 +36,7 @@ class _Client:
                 CatalogSyncDescriptor(
                     collection_id="7",
                     archive_root_sha256="c" * 64,
-                    content_identity="d" * 64,
+                    artifact_set_identity="d" * 64,
                     description="Field notes",
                     description_revision=3,
                     description_identity="e" * 64,
@@ -57,7 +57,7 @@ class _Client:
                 CatalogSyncUpsert(
                     collection_id="7",
                     archive_root_sha256="c" * 64,
-                    content_identity="d" * 64,
+                    artifact_set_identity="d" * 64,
                     description=None,
                     description_revision=0,
                     description_identity="f" * 64,

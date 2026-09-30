@@ -29,7 +29,7 @@ def _descriptor(collection_id: int = 1, revision: str = "1") -> CatalogSyncDescr
         collection_id=str(collection_id),
         revision=revision,
         archive_root_sha256="c" * 64,
-        content_identity="d" * 64,
+        artifact_set_identity="d" * 64,
         description=None,
         description_revision=0,
         description_identity="e" * 64,

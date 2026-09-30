@@ -35,7 +35,7 @@ class _Api:
                 CatalogSyncDescriptor(
                     collection_id="42",
                     archive_root_sha256="c" * 64,
-                    content_identity="d" * 64,
+                    artifact_set_identity="d" * 64,
                     description=None,
                     description_revision=0,
                     description_identity="e" * 64,
