@@ -1,0 +1,278 @@
+"""Exact member-history closure with a disk-backed worklist and no graph union."""
+
+from __future__ import annotations
+
+import hashlib
+import sqlite3
+from collections.abc import Callable, Iterable, Iterator, Mapping
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Any, Self
+
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    RETAINED_HISTORY_EXTENT,
+    HistoryJournalAnchor,
+    MemberHistoryBinding,
+    MemberHistoryStore,
+    history_record_page_object_path,
+    member_history_object_path,
+    provenance_structure_identity,
+    read_bounded_history_object,
+    source_binding_proof_object_path,
+)
+from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_provenance_contracts import ContractCatalog, ExternalReference
+
+from .delivery import selected_delivery_occurrence
+from .errors import ProvenanceValidationError
+from .graph import iter_assertions
+from .journal import (
+    JournalSummary,
+    external_reference,
+    iter_journal_frames,
+    validate_journal_chunks,
+)
+
+
+def _external_references(value: object) -> Iterator[dict[str, Any]]:
+    if isinstance(value, dict):
+        if value.get("scope") == "external":
+            # Only canonical endpoint records are dependencies. An opaque profile
+            # may contain unrelated data which happens to have a scope field.
+            fields = {"scope", "journal_id", "entry", "assertion_id", "object_id", "object_type"}
+            if set(value) == fields:
+                yield ExternalReference.model_validate(value).model_dump(mode="json")
+                return
+        for key, child in value.items():
+            if key != "value":  # Profile values are opaque, not canonical endpoints.
+                yield from _external_references(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from _external_references(child)
+
+
+def _prefix(chunks: Iterable[bytes], count: int) -> Iterator[bytes]:
+    source = iter(chunks)
+    remaining = count
+    try:
+        while remaining:
+            chunk = next(source, None)
+            if chunk is None:
+                raise ProvenanceValidationError("required canonical prefix is incomplete")
+            selected = chunk[:remaining]
+            remaining -= len(selected)
+            yield selected
+    finally:
+        close = getattr(source, "close", None)
+        if close is not None:
+            close()
+
+
+class MemberHistoryClosure:
+    """Resolve exactly requested roots, documentary dependencies and accepted imports.
+
+    Callers supply authenticated local archive reads. The resolver never follows
+    URLs or imports a dependency's effective graph into a selected root. Selection
+    sets, dependency work and deduplication are stored on disk; each journal is
+    evaluated independently by the unchanged canonical engine.
+    """
+
+    def __init__(
+        self,
+        store: MemberHistoryStore,
+        read_journal: Callable[[str, int | None], Iterable[bytes]],
+        *,
+        member_role: str,
+        catalog: ContractCatalog | None = None,
+    ) -> None:
+        self.store = store
+        self.read_journal = read_journal
+        self.member_role = member_role
+        self.catalog = catalog
+        self._scratch = TemporaryDirectory(prefix="riverhog-history-closure-")
+        self._db = sqlite3.connect(Path(self._scratch.name) / "closure.sqlite3")
+        self._db.execute("PRAGMA cache_size = -512")
+        self._db.executescript(
+            "CREATE TABLE histories (identity TEXT, extent TEXT, binding BLOB, done INTEGER, "
+            "PRIMARY KEY(identity, extent));"
+            "CREATE TABLE imports (source TEXT, target TEXT, PRIMARY KEY(source, target));"
+            "CREATE TABLE snapshots (identity TEXT PRIMARY KEY, anchor BLOB, done INTEGER);"
+            "CREATE TABLE journals (identity TEXT PRIMARY KEY, size TEXT, anchor BLOB);"
+            "CREATE TABLE objects (path TEXT PRIMARY KEY);"
+        )
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self._db.close()
+        self._scratch.cleanup()
+
+    def _object(self, path: str) -> None:
+        self._db.execute("INSERT OR IGNORE INTO objects VALUES (?)", (path,))
+
+    def _history(self, binding: MemberHistoryBinding, extent: str) -> None:
+        if extent not in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+            raise ValueError("unsupported history request extent")
+        self._db.execute(
+            "INSERT OR IGNORE INTO histories VALUES (?, ?, ?, 0)",
+            (binding.history_sha256, extent, canonical_json_bytes(binding.to_mapping())),
+        )
+
+    def _snapshot(self, anchor: HistoryJournalAnchor) -> None:
+        encoded = canonical_json_bytes(anchor.to_mapping())
+        self._db.execute(
+            "INSERT OR IGNORE INTO snapshots VALUES (?, ?, 0)",
+            (hashlib.sha256(encoded).hexdigest(), encoded),
+        )
+        old = self._db.execute(
+            "SELECT size FROM journals WHERE identity = ?", (anchor.journal_id,)
+        ).fetchone()
+        if old is None or int(old[0]) < anchor.prefix_bytes:
+            self._db.execute(
+                "INSERT OR REPLACE INTO journals VALUES (?, ?, ?)",
+                (anchor.journal_id, str(anchor.prefix_bytes), encoded),
+            )
+
+    def summary_at(self, anchor: HistoryJournalAnchor) -> JournalSummary:
+        return validate_journal_chunks(
+            _prefix(self.read_journal(anchor.journal_id, anchor.prefix_bytes), anchor.prefix_bytes),
+            catalog=self.catalog,
+            expected_anchor=anchor.to_mapping(),
+            require_exact_tail=True,
+            require_profiles=False,
+        )
+
+    def _reference_anchor(self, reference: Mapping[str, Any]) -> HistoryJournalAnchor:
+        selected = ExternalReference.model_validate(reference).model_dump(mode="json")
+        digest = hashlib.sha256()
+        count = 0
+        found: HistoryJournalAnchor | None = None
+        # Consume the authenticated stream even after finding the entry. Its
+        # enclosing provider can verify ciphertext/fixity and the final read fence.
+        for frame in iter_journal_frames(self.read_journal(selected["journal_id"], None)):
+            digest.update(frame.encoded)
+            count += len(frame.encoded)
+            if frame.reference != selected["entry"]:
+                continue
+            rows = (
+                row
+                for _, row in iter_assertions(frame.document["body"].get("assertions", {}))
+                if row["assertion_id"] == selected["assertion_id"]
+            )
+            row = next(rows, None)
+            if (
+                row is None
+                or row["id"] != selected["object_id"]
+                or row["type"] != selected["object_type"]
+            ):
+                raise ProvenanceValidationError(
+                    "foreign reference differs from its exact assertion"
+                )
+            found = HistoryJournalAnchor.from_mapping(
+                {
+                    "journal_id": selected["journal_id"],
+                    "through": frame.reference,
+                    "prefix_sha256": digest.hexdigest(),
+                    "prefix_bytes": str(count),
+                }
+            )
+        if found is None:
+            raise ProvenanceValidationError("required foreign entry is absent")
+        return found
+
+    def _visit_history(self, binding: MemberHistoryBinding, extent: str) -> None:
+        history = self.store.descriptor(binding)
+        self._object(member_history_object_path(binding.history_sha256))
+        for authority in (history.roots, history.imports):
+            for page in self.store.pages(authority):
+                self._object(
+                    history_record_page_object_path(authority.records_sha256, page.ordinal)
+                )
+        for selected in self.store.roots(binding, extent=extent):
+            self._snapshot(selected.journal)
+        for imported in self.store.imports(binding):
+            proof = self.store.source_proof(imported)
+            source = self.store.descriptor(proof.binding)
+            primary = self.summary_at(source.primary.journal)
+            state, _ = selected_delivery_occurrence(
+                primary,
+                binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
+                artifact_id=source.artifact_id,
+                byte_count=source.bytes,
+                sha256=source.sha256,
+                member_role=self.member_role,
+            )
+            if external_reference(primary, state["id"]) != imported.input_state:
+                raise ProvenanceValidationError("imported State differs from the source primary")
+            self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
+            self._db.execute(
+                "INSERT OR IGNORE INTO imports VALUES (?, ?)",
+                (binding.history_sha256, proof.binding.history_sha256),
+            )
+            cycle = self._db.execute(
+                "WITH RECURSIVE descendants(id) AS (SELECT target FROM imports WHERE source = ? "
+                "UNION SELECT target FROM imports JOIN descendants ON source = id) "
+                "SELECT 1 FROM descendants WHERE id = ? LIMIT 1",
+                (binding.history_sha256, binding.history_sha256),
+            ).fetchone()
+            if cycle:
+                raise ProvenanceValidationError("cyclic member-history imports")
+            self._history(proof.binding, imported.extent)
+
+    def resolve(self, binding: MemberHistoryBinding, *, extent: str) -> None:
+        self._history(binding, extent)
+        while True:
+            pending = self._db.execute(
+                "SELECT identity, extent, binding FROM histories WHERE done = 0 LIMIT 1"
+            ).fetchone()
+            if pending is not None:
+                identity, requested, encoded = pending
+                self._visit_history(
+                    MemberHistoryBinding.from_mapping(require_canonical_json(encoded)), requested
+                )
+                self._db.execute(
+                    "UPDATE histories SET done = 1 WHERE identity = ? AND extent = ?",
+                    (identity, requested),
+                )
+                continue
+            snapshot = self._db.execute(
+                "SELECT identity, anchor FROM snapshots WHERE done = 0 LIMIT 1"
+            ).fetchone()
+            if snapshot is None:
+                return
+            identity, encoded = snapshot
+            summary = self.summary_at(
+                HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
+            )
+            # Inspect documentary assertions, including retracted rows. Required
+            # preimages do not disappear when a later local correction retires a claim.
+            for frame in summary.frames:
+                for reference in _external_references(frame.document["body"].get("assertions", {})):
+                    self._snapshot(self._reference_anchor(reference))
+            parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+            if parent is not None:
+                self._snapshot(HistoryJournalAnchor.from_mapping(parent))
+            self._db.execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
+
+    def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
+        """Largest required exact prefix per journal, never a substituted current head."""
+        for (encoded,) in self._db.execute("SELECT anchor FROM journals ORDER BY identity"):
+            yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
+
+    def contains_journal(self, journal_id: str) -> bool:
+        return (
+            self._db.execute("SELECT 1 FROM journals WHERE identity = ?", (journal_id,)).fetchone()
+            is not None
+        )
+
+    def structure_objects(self) -> Iterator[bytes]:
+        for (path,) in self._db.execute("SELECT path FROM objects ORDER BY path"):
+            content = read_bounded_history_object(self.store.read_object(path), 4 * 1024 * 1024)
+            if provenance_structure_identity(content).relative_path != path:
+                raise ProvenanceValidationError("history structure path differs from its bytes")
+            yield content
+
+
+__all__ = ["MemberHistoryClosure"]

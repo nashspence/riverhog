@@ -9,6 +9,7 @@ from http_api_contracts import (
     operation_interface,
     parse_quoted_sha256_identity,
 )
+from riverhog_archive_contracts import PAGE_BYTES_MAX
 from riverhog_canonical_json import parse_scalar
 from riverhog_core.app_permissions import COLLECTIONS_DELETE
 from riverhog_protocol import (
@@ -26,7 +27,9 @@ from riverhog_protocol import (
     CollectionUploadState,
     CollectionUploadUnitNumber,
     CollectionUploadVolumeId,
+    MemberHistoryBindingBatchDocument,
     ProcessingClaimId,
+    ProvenanceStructureIdentityDocument,
     SortOrder,
 )
 from riverhog_protocol.errors import Conflict
@@ -328,6 +331,73 @@ def bind_collection_upload_session_artifact_provenance(
     container.collection_uploads.require_access(collection_id, principal)
     return CollectionArtifactProvenanceBindingBatchDocument.model_validate(
         container.collection_uploads.bind_artifact_provenance(collection_id, request)
+    )
+
+
+@router.post(
+    "/collection-upload-sessions/{collection_id}/provenance/history-bindings",
+    response_model=MemberHistoryBindingBatchDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def bind_collection_upload_session_member_histories(
+    collection_id: CollectionIdParameter,
+    request: MemberHistoryBindingBatchDocument,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> MemberHistoryBindingBatchDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    return MemberHistoryBindingBatchDocument.model_validate(
+        container.collection_uploads.bind_member_histories(collection_id, request)
+    )
+
+
+@router.post(
+    "/collection-upload-sessions/{collection_id}/provenance/structure",
+    response_model=ProvenanceStructureIdentityDocument,
+    openapi_extra={
+        **operation_interface("client-only-primitive"),
+        "parameters": [
+            {
+                "name": "Content-Length",
+                "in": "header",
+                "required": True,
+                "schema": {"type": "integer", "minimum": 1, "maximum": PAGE_BYTES_MAX},
+            }
+        ],
+        "requestBody": {
+            "required": True,
+            "content": {
+                "application/octet-stream": {"schema": {"type": "string", "format": "binary"}}
+            },
+        },
+    },
+)
+async def stage_collection_upload_session_history_structure(
+    collection_id: CollectionIdParameter,
+    request: Request,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> ProvenanceStructureIdentityDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    declared = request.headers.get("content-length")
+    if declared is None or not declared.isdecimal():
+        raise HTTPException(status_code=411, detail="Content-Length is required")
+    expected = int(declared)
+    if not 1 <= expected <= PAGE_BYTES_MAX:
+        raise HTTPException(
+            status_code=413, detail="history structure exceeds its bounded object contract"
+        )
+    content = bytearray()
+    async for chunk in request.stream():
+        if len(content) + len(chunk) > expected:
+            raise HTTPException(status_code=400, detail="Content-Length does not match")
+        content.extend(chunk)
+    if len(content) != expected:
+        raise HTTPException(status_code=400, detail="Content-Length does not match")
+    return ProvenanceStructureIdentityDocument.model_validate(
+        await run_in_threadpool(
+            container.collection_uploads.stage_history_structure, collection_id, bytes(content)
+        )
     )
 
 

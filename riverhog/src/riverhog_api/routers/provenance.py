@@ -7,6 +7,7 @@ from typing import Annotated, Any
 
 from fastapi import Header, Query, Request, Response
 from http_api_contracts import operation_interface, parse_quoted_sha256_identity
+from riverhog_archive_contracts import provenance_structure_object_path
 from riverhog_protocol import ArtifactId, CollectionIdParameter
 from riverhog_protocol.errors import BadRequest, PreconditionFailed, PreconditionRequired
 from riverhog_provenance_contracts import ProvenanceJournalId
@@ -22,6 +23,62 @@ from riverhog_api.schemas.provenance import (
 )
 
 router = RiverhogRouter(tags=["provenance"])
+
+_STRUCTURE_RESPONSE: dict[int | str, dict[str, Any]] = {
+    200: {
+        "description": "Exact bounded canonical archive structure, pinned to its enclosing root.",
+        "content": {"application/json": {"schema": {"type": "string", "format": "binary"}}},
+    }
+}
+
+
+@router.get(
+    "/collections/{collection_id}/provenance/structure/{object_id}",
+    response_class=Response,
+    responses=_STRUCTURE_RESPONSE,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def get_collection_provenance_structure(
+    collection_id: CollectionIdParameter,
+    object_id: str,
+    principal: ProvenanceExporter,
+    container: ContainerDep,
+    if_match: Annotated[str | None, Header(alias="If-Match")] = None,
+) -> Response:
+    if if_match is None:
+        raise PreconditionRequired("history structure requires its archive root If-Match")
+    try:
+        provenance_structure_object_path(object_id)
+    except ValueError as exc:
+        raise BadRequest(str(exc)) from exc
+    root = parse_quoted_sha256_identity(if_match)
+    content = container.provenance.get_structure_object(
+        collection_id, object_id, expected_root=root, principal=principal
+    )
+    return Response(content, media_type="application/json", headers={"ETag": f'"{root}"'})
+
+
+@router.get(
+    "/collections/{collection_id}/provenance/artifacts/{artifact_id}/history-binding-proof",
+    response_class=Response,
+    responses=_STRUCTURE_RESPONSE,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def get_collection_artifact_history_binding_proof(
+    collection_id: CollectionIdParameter,
+    artifact_id: ArtifactId,
+    principal: ProvenanceExporter,
+    container: ContainerDep,
+    if_match: Annotated[str | None, Header(alias="If-Match")] = None,
+) -> Response:
+    if if_match is None:
+        raise PreconditionRequired("history binding proof requires its archive root If-Match")
+    root = parse_quoted_sha256_identity(if_match)
+    content = container.provenance.get_history_binding_proof(
+        collection_id, artifact_id, expected_root=root, principal=principal
+    )
+    return Response(content, media_type="application/json", headers={"ETag": f'"{root}"'})
+
 
 _PROVENANCE_JOURNAL_RESPONSE: dict[int | str, dict[str, Any]] = {
     200: {

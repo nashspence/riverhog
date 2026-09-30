@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import uuid
 from dataclasses import replace
 
 import pytest
@@ -13,6 +12,7 @@ from riverhog_archive_contracts import (
     RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryBinding,
+    MemberHistoryBuilder,
     MemberHistoryDocument,
     MemberHistoryPrimary,
     MemberHistoryRoot,
@@ -22,9 +22,11 @@ from riverhog_archive_contracts import (
     ProvenanceVolumeDocument,
     RecordPage,
     RecordSetCommitment,
+    binding_tree_commitment,
     history_record_page_object_path,
     member_history_object_path,
     ordered_provenance_commitment,
+    provenance_structure_identity,
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.provenance_archive_read import (
@@ -37,22 +39,29 @@ def _archive() -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str,
     generation = "a" * 64
     artifact_set = "b" * 64
     journal_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
-    association_id = "urn:uuid:22222222-2222-4222-8222-222222222222"
-    entry_id = "urn:uuid:33333333-3333-4333-8333-333333333333"
-    binding = {
-        "artifact_id": "c" * 64,
-        "journal": {
-            "journal_id": journal_id,
-            "through": {"entry_id": entry_id, "sequence": "0", "json_sha256": "d" * 64},
-            "prefix_sha256": "e" * 64,
-            "prefix_bytes": "9",
-        },
-        "delivery_association_id": association_id,
-    }
+    journal_bytes = b"first-frame\nsecond-frame\n"
+    primary = MemberHistoryPrimary(
+        HistoryJournalAnchor(
+            journal_id,
+            "urn:uuid:33333333-3333-4333-8333-333333333333",
+            0,
+            "d" * 64,
+            hashlib.sha256(journal_bytes).hexdigest(),
+            len(journal_bytes),
+        ),
+        "urn:uuid:22222222-2222-4222-8222-222222222222",
+    )
+    with MemberHistoryBuilder(
+        artifact_id="c" * 64, bytes=7, sha256="a" * 64, primary=primary
+    ) as builder:
+        final, _history = builder.seal()
+        binding = final.to_mapping()
+        structures = {
+            provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
+        }
     binding_bytes = canonical_json_bytes(
         {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": [binding]}
     )
-    journal_bytes = b"first-frame\nsecond-frame\n"
     descriptors = (
         ProvenanceVolumeDocument(
             archive_generation=generation,
@@ -109,10 +118,14 @@ def _archive() -> tuple[CanonicalProvenanceArchiveReader, dict[str, bytes], str,
         artifact_set_sha256=artifact_set,
         delivery_context_id="urn:uuid:44444444-4444-4444-8444-444444444444",
         binding_count=1,
+        binding_tree_sha256=binding_tree_commitment(
+            (MemberHistoryBinding.from_mapping(binding),)
+        ).root_sha256,
         journal_count=1,
         ordered_volume_sha256=ordered_provenance_commitment((*descriptors, terminal)),
     )
     objects = {"provenance/root.json.age": root.to_json_bytes()}
+    objects.update(structures)
     for document in (*descriptors, terminal):
         objects[document.metadata_path] = document.to_json_bytes()
     objects[descriptors[0].payload.path] = binding_bytes
@@ -162,14 +175,11 @@ def test_root_bound_reader_rejects_changed_sequence_and_payload() -> None:
         list(reader.iter_journal_range(journal_id))
 
 
-def test_operation_root_must_identify_an_archived_journal() -> None:
-    reader, objects, journal_id, _ = _archive()
+def test_member_binding_tree_must_match_the_archived_binding_pages() -> None:
+    reader, objects, _, _ = _archive()
     root = reader.scan().root
-    for selected, valid in (
-        (journal_id, True),
-        ("urn:uuid:55555555-5555-4555-8555-555555555555", False),
-    ):
-        amended = replace(root, operation_journal_id=selected)
+    for selected, valid in ((root.binding_tree_sha256, True), ("0" * 64, False)):
+        amended = replace(root, binding_tree_sha256=selected)
         objects["provenance/root.json.age"] = amended.to_json_bytes()
 
         def read_object(path: str):
@@ -182,10 +192,10 @@ def test_operation_root_must_identify_an_archived_journal() -> None:
             artifact_set_sha256=root.artifact_set_sha256,
         )
         if valid:
-            assert selected_reader.scan().root.operation_journal_id == journal_id
+            assert selected_reader.binding_inclusion("c" * 64).target_index == 0
         else:
             with pytest.raises(ProvenanceArchiveReadError, match="differs from the root"):
-                selected_reader.scan()
+                selected_reader.binding_inclusion("c" * 64)
 
 
 def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
@@ -195,17 +205,10 @@ def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
     bindings = [
         {
             "artifact_id": f"{index:064x}",
-            "journal": {
-                "journal_id": journal_id,
-                "through": {
-                    "entry_id": "urn:uuid:33333333-3333-4333-8333-333333333333",
-                    "sequence": "0",
-                    "json_sha256": "d" * 64,
-                },
-                "prefix_sha256": "e" * 64,
-                "prefix_bytes": "7",
-            },
-            "delivery_association_id": f"urn:uuid:{uuid.UUID(int=index + 1)}",
+            "bytes": "7",
+            "sha256": "a" * 64,
+            "history_sha256": "f" * 64,
+            "history_bytes": "512",
         }
         for index in range(513)
     ]
@@ -251,6 +254,9 @@ def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
         artifact_set,
         "urn:uuid:44444444-4444-4444-8444-444444444444",
         binding_count=513,
+        binding_tree_sha256=binding_tree_commitment(
+            MemberHistoryBinding.from_mapping(row) for row in bindings
+        ).root_sha256,
         journal_count=1,
         ordered_volume_sha256=ordered_provenance_commitment((*descriptors, terminal)),
     )
@@ -299,16 +305,17 @@ def test_member_history_requires_exact_root_and_terminal_pages() -> None:
         artifact_id="c" * 64,
         bytes=7,
         sha256="a" * 64,
-        primary=MemberHistoryPrimary(
-            primary, "urn:uuid:22222222-2222-4222-8222-222222222222"
-        ),
+        primary=MemberHistoryPrimary(primary, "urn:uuid:22222222-2222-4222-8222-222222222222"),
         roots=roots,
         imports=imports,
     )
     raw = history.to_json_bytes()
     binding = MemberHistoryBinding(
-        history.artifact_id, history.bytes, history.sha256,
-        history.identity, len(raw),
+        history.artifact_id,
+        history.bytes,
+        history.sha256,
+        history.identity,
+        len(raw),
     )
     objects[member_history_object_path(history.identity)] = raw
     objects[history_record_page_object_path(roots.records_sha256, 0)] = RecordPage(
@@ -326,7 +333,7 @@ def test_member_history_requires_exact_root_and_terminal_pages() -> None:
     ]
     assert list(
         reader.iter_selected_history_roots(binding, extent=RETAINED_HISTORY_EXTENT)
-    ) == list(selected)
+    ) == sorted(selected, key=lambda root: root.key)
     del objects[root_terminal]
     with pytest.raises(KeyError):
         reader.member_history(binding)

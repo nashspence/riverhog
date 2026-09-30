@@ -95,7 +95,7 @@ class RecordSetCommitment:
 
     def ref(self) -> RecordSetRef:
         digest = self._digest.copy()
-        digest.update(self.count.to_bytes(8, "big"))
+        digest.update(b"\x00count:" + str(self.count).encode("ascii"))
         return RecordSetRef(self.schema_id, self.count, digest.hexdigest())
 
 
@@ -134,7 +134,7 @@ class RecordPage:
     def from_json_bytes(cls, raw: bytes) -> RecordPage:
         if len(raw) > PAGE_BYTES_MAX:
             raise ValueError("structural record page exceeds its byte bound")
-        value = require_canonical_json(raw)
+        value: Any = require_canonical_json(raw)
         if (
             not isinstance(value, dict)
             or set(value) != {"format", "authority", "ordinal", "records", "terminal"}

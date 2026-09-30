@@ -241,6 +241,10 @@ from riverhog_protocol.provenance_transport import (
     CollectionArtifactProvenanceBindingBatchDocument,
     CollectionArtifactProvenanceBindingDocument,
     JournalAnchorDocument,
+    MemberHistoryBindingBatchDocument,
+    MemberHistoryBindingDocument,
+    MemberHistoryDescriptorDocument,
+    ProvenanceStructureIdentityDocument,
     validate_archive_binding_page,
 )
 from riverhog_protocol.retrieval_transport import (
@@ -321,6 +325,10 @@ __all__ += [
     "ArtifactMaterializationDecisionDocument",
     "CollectionArtifactProvenanceBindingBatchDocument",
     "CollectionArtifactProvenanceBindingDocument",
+    "MemberHistoryBindingBatchDocument",
+    "MemberHistoryBindingDocument",
+    "MemberHistoryDescriptorDocument",
+    "ProvenanceStructureIdentityDocument",
     "validate_archive_binding_page",
     "CollectionUploadArtifactBatchDocument",
     "CollectionUploadArtifactCustodyReceiptDocument",

@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from riverhog_archive_contracts import (
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    RecordSetRef,
+)
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_provenance_contracts import (
     PROFILE,
     ContractCatalog,
@@ -38,6 +44,95 @@ class CollectionArtifactProvenanceBindingDocument(BaseModel):
     artifact_id: ArtifactId
     journal: JournalAnchorDocument
     delivery_association_id: ProvenanceId
+
+
+class MemberHistoryBindingDocument(BaseModel):
+    """Final root-authenticated lookup of one exact history descriptor."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    artifact_id: ArtifactId
+    bytes: NonnegativeDecimal
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    history_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    history_bytes: NonnegativeDecimal = Field(ge=1, le=64 * 1024)
+
+    @model_validator(mode="after")
+    def validate_binding(self) -> Self:
+        MemberHistoryBinding.from_mapping(self.model_dump(mode="json"))
+        return self
+
+
+class ArchiveRecordSetReferenceDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    format: Literal["riverhog-archive-record-set/v1"] = "riverhog-archive-record-set/v1"
+    schema_id: str = Field(min_length=1)
+    record_count: NonnegativeDecimal
+    records_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_set(self) -> Self:
+        RecordSetRef.from_mapping(self.model_dump(mode="json"))
+        return self
+
+
+class MemberHistoryPrimaryDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    journal: JournalAnchorDocument
+    delivery_association_id: ProvenanceId
+
+
+class MemberHistoryDescriptorDocument(BaseModel):
+    """Bounded header selecting exact paged roots and inherited histories."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    format: Literal["riverhog-member-history/v1"] = "riverhog-member-history/v1"
+    artifact_id: ArtifactId
+    bytes: NonnegativeDecimal
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    primary: MemberHistoryPrimaryDocument
+    roots: ArchiveRecordSetReferenceDocument
+    imports: ArchiveRecordSetReferenceDocument
+
+    @model_validator(mode="after")
+    def validate_descriptor(self) -> Self:
+        MemberHistoryDocument.from_json_bytes(canonical_json_bytes(self.model_dump(mode="json")))
+        return self
+
+
+class MemberHistoryBindingBatchDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    bindings: list[MemberHistoryBindingDocument] = Field(
+        min_length=1,
+        max_length=COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-member-history-bindings",
+                "progression": "artifact-id",
+            }
+        },
+    )
+
+    @model_validator(mode="after")
+    def validate_order(self) -> Self:
+        identities = tuple(item.artifact_id for item in self.bindings)
+        if identities != tuple(sorted(set(identities))):
+            raise ValueError("member history bindings must be strictly ID ordered")
+        return self
+
+
+class ProvenanceStructureIdentityDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    object_id: str
+    kind: Literal["history", "record-page", "source-proof"]
+    bytes: NonnegativeDecimal = Field(ge=1, le=4 * 1024 * 1024)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
 class CollectionArtifactProvenanceBindingBatchDocument(BaseModel):
@@ -150,5 +245,11 @@ __all__ = [
     "CollectionArtifactProvenanceBindingBatchDocument",
     "CollectionArtifactProvenanceBindingDocument",
     "JournalAnchorDocument",
+    "ArchiveRecordSetReferenceDocument",
+    "MemberHistoryBindingDocument",
+    "MemberHistoryBindingBatchDocument",
+    "MemberHistoryDescriptorDocument",
+    "MemberHistoryPrimaryDocument",
+    "ProvenanceStructureIdentityDocument",
     "validate_archive_binding_page",
 ]

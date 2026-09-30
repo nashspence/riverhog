@@ -1032,6 +1032,7 @@ version = "0.1.0"
 source = { editable = "some-implementations/stove0/observers/contracts/riverhog-provenance" }
 dependencies = [
     { name = "pydantic" },
+    { name = "riverhog-archive-contracts" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol" },
@@ -1040,6 +1041,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "stove0-observer-protocol", editable = "some-implementations/stove0/packages/observer-protocol" },
@@ -2787,6 +2789,7 @@ dependencies = [
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
     { name = "riverhog-application-access" },
+    { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
@@ -2800,6 +2803,7 @@ requires-dist = [
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
+    { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
@@ -2832,6 +2836,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "lifecycle-events" },
     { name = "pydantic" },
+    { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
     { name = "time-formats" },
@@ -2842,6 +2847,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.12,<3.0" },
+    { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "time-formats", editable = "packages/time-formats" },
@@ -2853,6 +2859,7 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-provenance" }
 dependencies = [
     { name = "jsonschema" },
+    { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
     { name = "time-formats" },
@@ -2869,6 +2876,7 @@ requires-dist = [
     { name = "jsonschema", specifier = ">=4.23,<5.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8,<10" },
     { name = "rdflib", marker = "extra == 'test'", specifier = ">=7,<8" },
+    { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "time-formats", editable = "packages/time-formats" },

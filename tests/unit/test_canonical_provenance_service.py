@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -51,7 +52,7 @@ def _service(path: Path) -> tuple[SqlAlchemyCanonicalProvenanceService, str]:
         session.flush()
         session.add(
             CollectionArtifactRecord(
-                collection_id=1, artifact_id="c" * 64, bytes=7, sha256="f" * 64
+                collection_id=1, artifact_id="c" * 64, bytes=7, sha256="a" * 64
             )
         )
         session.add(
@@ -67,6 +68,7 @@ def _service(path: Path) -> tuple[SqlAlchemyCanonicalProvenanceService, str]:
             )
         )
         session.flush()
+        final_binding = next(reader.iter_bindings())
         session.add(
             CollectionArtifactProvenanceRecord(
                 collection_id=1,
@@ -75,9 +77,11 @@ def _service(path: Path) -> tuple[SqlAlchemyCanonicalProvenanceService, str]:
                 through_entry_id="urn:uuid:33333333-3333-4333-8333-333333333333",
                 through_sequence=0,
                 through_json_sha256="d" * 64,
-                prefix_sha256="e" * 64,
-                prefix_bytes=9,
+                prefix_sha256=hashlib.sha256(journal_text.encode()).hexdigest(),
+                prefix_bytes=len(journal_text.encode()),
                 delivery_association_id="urn:uuid:22222222-2222-4222-8222-222222222222",
+                history_sha256=final_binding["history_sha256"],
+                history_bytes=int(final_binding["history_bytes"]),
             )
         )
     service = SqlAlchemyCanonicalProvenanceService(

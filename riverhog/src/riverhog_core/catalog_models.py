@@ -918,6 +918,8 @@ class CollectionArtifactProvenanceRecord(Base):
     prefix_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     prefix_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     delivery_association_id: Mapped[str] = mapped_column(String, nullable=False)
+    history_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    history_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -941,8 +943,13 @@ class CollectionArtifactProvenanceRecord(Base):
         CheckConstraint(
             _fixed_lowercase_integer_check("through_json_sha256", 64)
             + " AND "
-            + _fixed_lowercase_integer_check("prefix_sha256", 64),
+            + _fixed_lowercase_integer_check("prefix_sha256", 64)
+            + " AND "
+            + _fixed_lowercase_integer_check("history_sha256", 64),
             name="ck_collection_artifact_provenance_hashes",
+        ),
+        CheckConstraint(
+            "history_bytes > 0 AND history_bytes <= 65536", name="ck_member_history_bytes"
         ),
     )
 
@@ -2583,6 +2590,12 @@ class CollectionUploadRecord(Base):
     provenance_closure_validated: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default=text("false")
     )
+    provenance_history_after_artifact_id: Mapped[str | None] = mapped_column(
+        String(64), nullable=True
+    )
+    provenance_histories_sealed: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=text("false")
+    )
     derivative_provenance_state: Mapped[str] = mapped_column(
         String, default="not-required", server_default=text("'not-required'")
     )
@@ -2675,6 +2688,14 @@ class CollectionUploadRecord(Base):
             cascade="all, delete-orphan",
             passive_deletes=True,
         )
+    )
+    member_histories: Mapped[list[CollectionUploadMemberHistoryRecord]] = relationship(
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    provenance_structure: Mapped[list[CollectionUploadProvenanceStructureRecord]] = relationship(
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
     __table_args__ = (
         ForeignKeyConstraint(
@@ -3010,6 +3031,73 @@ class CollectionUploadArtifactProvenanceBindingRecord(Base):
             + " AND "
             + _fixed_lowercase_integer_check("prefix_sha256", 64),
             name="ck_upload_artifact_provenance_hashes",
+        ),
+    )
+
+
+class CollectionUploadMemberHistoryRecord(Base):
+    """Immutable final selection, separate from each member's early primary."""
+
+    __tablename__ = "collection_upload_member_histories"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    history_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    history_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    binding_json: Mapped[str] = mapped_column(Text, nullable=False)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id"], ["collection_uploads.collection_id"], ondelete="CASCADE"
+        ),
+        ForeignKeyConstraint(
+            ["collection_id", "artifact_id"],
+            [
+                "collection_upload_artifacts.collection_id",
+                "collection_upload_artifacts.artifact_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint(
+            "history_bytes > 0 AND history_bytes <= 65536", name="ck_upload_history_bytes"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("history_sha256", 64), name="ck_upload_history_sha256"
+        ),
+    )
+
+
+class CollectionUploadProvenanceStructureRecord(Base):
+    """Durably staged bounded descriptor, selection page or source proof."""
+
+    __tablename__ = "collection_upload_provenance_structure"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    object_id: Mapped[str] = mapped_column(String, primary_key=True)
+    kind: Mapped[str] = mapped_column(String, nullable=False)
+    relative_path: Mapped[str] = mapped_column(String, nullable=False)
+    content: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id"], ["collection_uploads.collection_id"], ondelete="CASCADE"
+        ),
+        UniqueConstraint(
+            "collection_id", "relative_path", name="uq_upload_provenance_structure_path"
+        ),
+        CheckConstraint(
+            "kind IN ('history','record-page','source-proof')", name="ck_upload_structure_kind"
+        ),
+        CheckConstraint(
+            "length(content) > 0 AND length(content) <= 4194304", name="ck_upload_structure_bytes"
+        ),
+        Index(
+            "ix_upload_structure_publication",
+            "collection_id",
+            "object_id",
+            postgresql_where=text("receipt_json IS NULL"),
+            sqlite_where=text("receipt_json IS NULL"),
         ),
     )
 

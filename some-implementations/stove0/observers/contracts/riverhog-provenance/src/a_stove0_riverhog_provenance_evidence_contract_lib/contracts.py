@@ -3,12 +3,23 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Self
+from typing import Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
+from riverhog_archive_contracts import (
+    MEMBER_HISTORY_IMPORTS_SCHEMA,
+    MEMBER_HISTORY_ROOTS_SCHEMA,
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+    RecordSetCommitment,
+)
 from riverhog_protocol import (
     CollectionArtifactProvenanceBindingDocument,
     JournalAnchorDocument,
+    MemberHistoryBindingDocument,
+    MemberHistoryDescriptorDocument,
 )
 from riverhog_provenance_contracts import (
     PROFILE,
@@ -124,8 +135,14 @@ class CoreClaimFact(_Model):
 class CoreProvenanceFact(_Model):
     subject_id: str = Field(min_length=1)
     primary_binding: CollectionArtifactProvenanceBindingDocument
+    history_binding: MemberHistoryBindingDocument
+    member_history: MemberHistoryDescriptorDocument
+    history_extent: Literal["bound-and-required-history"]
     state: CanonicalEndpoint
     occurrence: CanonicalEndpoint
+    artifact: CanonicalEndpoint
+    producing_activity: CanonicalEndpoint | None
+    generation_support: AssertionSupport | None
     locators: tuple[CoreLocatorFact, ...]
     claims: tuple[CoreClaimFact, ...]
     materialization_hint: dict[str, JsonValue] | None
@@ -135,15 +152,42 @@ class CoreProvenanceFact(_Model):
         if self.state.object_type != "state" or self.occurrence.object_type != "occurrence":
             raise ValueError("primary facts require a State and an Occurrence")
         anchor = self.primary_binding.journal
-        for endpoint in (self.state, self.occurrence):
+        history = MemberHistoryBinding.from_mapping(
+            self.history_binding.model_dump(mode="json")
+        ).verify_descriptor(canonical_json_bytes(self.member_history.model_dump(mode="json")))
+        if (
+            history.primary.journal.to_mapping() != anchor.model_dump(mode="json")
+            or history.primary.delivery_association_id
+            != self.primary_binding.delivery_association_id
+            or history.artifact_id != self.primary_binding.artifact_id
+        ):
+            raise ValueError("selected history differs from its exact primary binding")
+        if self.artifact.object_type != "artifact":
+            raise ValueError("primary facts require the exact continuity Artifact")
+        if (self.producing_activity is None) != (self.generation_support is None):
+            raise ValueError("producing activity requires exact generation support")
+        endpoints: tuple[CanonicalEndpoint, ...] = (self.state, self.occurrence, self.artifact)
+        if self.producing_activity is not None:
+            if self.producing_activity.object_type != "activity":
+                raise ValueError("producing endpoint is not an activity")
+            endpoints += (self.producing_activity,)
+        if self.generation_support is not None and self.generation_support.journal != anchor:
+            raise ValueError("producing activity generation support differs from the primary")
+        for endpoint in endpoints:
             if endpoint.journal_id != anchor.journal_id or int(endpoint.entry.sequence) > int(
                 anchor.through.sequence
             ):
                 raise ValueError("selected canonical fact is outside its primary anchor")
         if any(item.subject_id != self.subject_id for item in self.locators):
             raise ValueError("locator fact differs from the exact subject")
-        if any(item.subject not in (self.state, self.occurrence) for item in self.claims):
-            raise ValueError("claim differs from the delivered State or Occurrence")
+        if any(item.subject not in endpoints for item in self.claims):
+            raise ValueError("claim has no exact member or producing-activity attachment")
+        if any(
+            claim.support.journal.journal_id == anchor.journal_id
+            and claim.support.journal != anchor
+            for claim in self.claims
+        ):
+            raise ValueError("claim substitutes a different primary journal head")
         return self
 
     @field_validator("materialization_hint")
@@ -177,6 +221,11 @@ def validate_core_provenance_facts(
     for fact, subject in zip(document.artifacts, subjects, strict=True):
         if fact.primary_binding.artifact_id != subject.artifact_id:
             raise ValueError("core provenance binding differs from the selected member")
+        if (int(fact.history_binding.bytes), fact.history_binding.sha256) != (
+            int(subject.bytes),
+            subject.sha256,
+        ):
+            raise ValueError("core provenance history differs from the selected payload")
         if any(claim.predicate not in requested.predicates for claim in fact.claims):
             raise ValueError("core provenance returned an unrequested predicate")
     return document
@@ -192,7 +241,7 @@ CORE_PROVENANCE_OPTIONS_SCHEMA = JsonSchemaValidationProfile.from_schema(
 CORE_PROVENANCE_FACTS_SCHEMA = JsonSchemaValidationProfile.from_schema(
     "stove0.riverhog-provenance-facts/v1", CoreProvenanceFacts.model_json_schema()
 )
-_SAMPLE_SUBJECT = {
+_SAMPLE_SUBJECT: dict[str, Any] = {
     "id": "sample",
     "role": "stove0.source/v1",
     "collection": {
@@ -245,10 +294,44 @@ _SAMPLE_FACT: dict[str, object] = {
     "primary_binding": _BINDING,
     "state": _STATE,
     "occurrence": _OCCURRENCE,
+    "artifact": {**_STATE, "object_type": "artifact"},
+    "producing_activity": None,
+    "generation_support": None,
     "locators": [],
     "claims": [],
     "materialization_hint": None,
 }
+_PRIMARY = MemberHistoryPrimary.from_mapping(
+    {
+        "journal": _BINDING["journal"],
+        "delivery_association_id": _BINDING["delivery_association_id"],
+    }
+)
+_ROOT = MemberHistoryRoot(_PRIMARY.journal, "bound")
+_ROOTS = RecordSetCommitment(MEMBER_HISTORY_ROOTS_SCHEMA)
+_ROOTS.update(_ROOT.key, _ROOT.to_mapping())
+_history = MemberHistoryDocument(
+    artifact_id=_SAMPLE_SUBJECT["artifact_id"],
+    bytes=1,
+    sha256=_SAMPLE_SUBJECT["sha256"],
+    primary=_PRIMARY,
+    roots=_ROOTS.ref(),
+    imports=RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref(),
+)
+_history_binding = MemberHistoryBinding(
+    _history.artifact_id,
+    _history.bytes,
+    _history.sha256,
+    _history.identity,
+    len(_history.to_json_bytes()),
+)
+_SAMPLE_FACT.update(
+    {
+        "history_binding": _history_binding.to_mapping(),
+        "member_history": _history.to_mapping(),
+        "history_extent": "bound-and-required-history",
+    }
+)
 CORE_PROVENANCE_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate(
     {
         "profile_id": "stove0.riverhog-provenance-facts-semantics/v1",

@@ -59,23 +59,24 @@ def test_bounded_structural_corpus_root_round_trip() -> None:
         _ARTIFACT_SET,
         _CONTEXT,
         binding_count=2,
+        binding_tree_sha256="c" * 64,
         journal_count=1,
         ordered_volume_sha256=ordered_provenance_commitment((bindings, journal, terminal)),
     )
     assert ProvenanceRootDocument.from_json_bytes(root.to_json_bytes()) == root
     assert root.identity == hashlib.sha256(root.to_json_bytes()).hexdigest()
     assert b"path" not in root.to_json_bytes()
-    operation_root = ProvenanceRootDocument(
+    changed_root = ProvenanceRootDocument(
         _GENERATION,
         _ARTIFACT_SET,
         _CONTEXT,
         binding_count=2,
+        binding_tree_sha256="d" * 64,
         journal_count=1,
         ordered_volume_sha256=root.ordered_volume_sha256,
-        operation_journal_id=_JOURNAL,
     )
-    assert ProvenanceRootDocument.from_json_bytes(operation_root.to_json_bytes()) == operation_root
-    assert operation_root.identity != root.identity
+    assert ProvenanceRootDocument.from_json_bytes(changed_root.to_json_bytes()) == changed_root
+    assert changed_root.identity != root.identity
 
 
 def test_sequence_and_authority_must_be_complete_and_contiguous() -> None:
@@ -120,26 +121,19 @@ def test_archive_custody_schemas_match_their_distinct_wire_formats() -> None:
         _ARTIFACT_SET,
         _CONTEXT,
         binding_count=2,
+        binding_tree_sha256="c" * 64,
         journal_count=1,
         ordered_volume_sha256=ordered_provenance_commitment((bindings, journal, terminal)),
-        operation_journal_id=_JOURNAL,
     )
     binding_page = {
-        "format": "riverhog-archive-provenance-bindings/v1",
+        "format": "riverhog-archive-member-history-bindings/v1",
         "bindings": [
             {
                 "artifact_id": _FIRST,
-                "journal": {
-                    "journal_id": _JOURNAL,
-                    "through": {
-                        "entry_id": _CONTEXT,
-                        "sequence": "0",
-                        "json_sha256": _ARTIFACT_SET,
-                    },
-                    "prefix_sha256": _GENERATION,
-                    "prefix_bytes": "8",
-                },
-                "delivery_association_id": _CONTEXT,
+                "bytes": "8",
+                "sha256": _ARTIFACT_SET,
+                "history_sha256": _GENERATION,
+                "history_bytes": "512",
             }
         ],
     }

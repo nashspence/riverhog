@@ -22,6 +22,7 @@ dependencies = [
   "http-api-contracts>=0.1,<0.2",
   "lifecycle-events>=0.1,<0.2",
   "pydantic>=2.12,<3.0",
+  "riverhog-archive-contracts>=0.1,<0.2",
   "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
@@ -33,6 +34,7 @@ collection-production = "riverhog_protocol.collection_production_provenance:CONT
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
 lifecycle-events = { workspace = true }
+riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 time-formats = { workspace = true }

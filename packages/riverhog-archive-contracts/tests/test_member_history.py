@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import uuid
 
 import pytest
 from riverhog_archive_contracts import (
@@ -8,20 +9,66 @@ from riverhog_archive_contracts import (
     MEMBER_HISTORY_ROOTS_SCHEMA,
     HistoryJournalAnchor,
     MemberHistoryBinding,
+    MemberHistoryBuilder,
     MemberHistoryDocument,
     MemberHistoryImport,
     MemberHistoryPrimary,
     MemberHistoryRoot,
+    MemberHistoryStore,
     RecordPage,
     RecordSetCommitment,
     format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
+    provenance_structure_identity,
     source_binding_proof_object_path,
     verify_member_history_sets,
     verify_record_pages,
 )
 from riverhog_canonical_json import canonical_json_bytes
+
+
+def test_builder_and_store_preserve_large_selection_across_pages_without_order_dependence() -> None:
+    primary = MemberHistoryPrimary(_anchor("1"), "urn:uuid:33333333-3333-4333-8333-333333333333")
+    roots = [
+        MemberHistoryRoot(
+            HistoryJournalAnchor(
+                f"urn:uuid:{uuid.UUID(int=index + 101)}",
+                f"urn:uuid:{uuid.UUID(int=index + 1001)}",
+                index,
+                f"{index:064x}",
+                f"{index:064x}",
+                123,
+            ),
+            "bound" if index % 2 else "retained",
+        )
+        for index in range(385)
+    ]
+    identities = []
+    for ordered in (roots, list(reversed(roots))):
+        with MemberHistoryBuilder(
+            artifact_id="c" * 64, bytes=7, sha256="d" * 64, primary=primary
+        ) as builder:
+            for root in ordered:
+                builder.add_root(root)
+            binding, history = builder.seal()
+            identities.append(binding.history_sha256)
+            objects = {
+                provenance_structure_identity(raw).relative_path: raw for raw in builder.objects()
+            }
+            store = MemberHistoryStore(lambda path, archive_objects=objects: (archive_objects[path],))
+            assert store.descriptor(binding) == history
+            assert len(tuple(store.roots(binding, extent="complete-retained-history"))) == 386
+            assert len(tuple(store.roots(binding, extent="bound-and-required-history"))) == 193
+            pages = tuple(store.pages(history.roots))
+            assert pages[-1].terminal
+            assert len(pages) == 5
+            objects.pop(
+                history_record_page_object_path(history.roots.records_sha256, pages[-1].ordinal)
+            )
+            with pytest.raises(KeyError):
+                store.descriptor(binding)
+    assert identities[0] == identities[1]
 
 
 def _anchor(seed: str) -> HistoryJournalAnchor:
@@ -153,6 +200,7 @@ def test_member_history_rejects_missing_primary_and_conflicting_heads() -> None:
 
 def test_inherited_history_retains_source_scope_proof_and_selected_extent() -> None:
     selected = MemberHistoryImport(
+        source_identity="0" * 64,
         source_collection_id=17,
         source_archive_root_sha256="a" * 64,
         source_artifact_set_sha256="b" * 64,
