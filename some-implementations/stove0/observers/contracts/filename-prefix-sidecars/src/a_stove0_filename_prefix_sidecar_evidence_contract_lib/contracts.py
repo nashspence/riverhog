@@ -8,8 +8,9 @@ from typing import Literal, Self
 
 from a_stove0_riverhog_provenance_evidence_contract_lib import (
     CORE_PROVENANCE_OBSERVER_CONTRACT,
+    AssertionSupport,
 )
-from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_protocol import (
     ContentObservationRequest,
     JsonSchemaValidationProfile,
@@ -30,6 +31,10 @@ _SUFFIX = re.compile(r"\.[A-Za-z0-9_-]{1,32}\Z")
 
 class _Model(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+
+def _support_keys(rows: Sequence[AssertionSupport]) -> tuple[bytes, ...]:
+    return tuple(canonical_json_bytes(row.model_dump(mode="json")) for row in rows)
 
 
 class FilenameQuestion(_Model):
@@ -53,14 +58,23 @@ class FilenameQuestion(_Model):
 class FilenameSourceStatus(_Model):
     subject_id: str = Field(min_length=1)
     status: Literal["usable", "no-locator", "insufficient", "unsupported", "ambiguous"]
-    support: tuple[dict[str, JsonValue], ...]
+    support: tuple[AssertionSupport, ...]
+
+    @model_validator(mode="after")
+    def supported_status(self) -> Self:
+        if (self.status == "no-locator") != (not self.support):
+            raise ValueError("filename status and canonical locator support differ")
+        keys = _support_keys(self.support)
+        if keys != tuple(sorted(set(keys))):
+            raise ValueError("filename status support must be unique and ordered")
+        return self
 
 
 class FilenameCandidate(_Model):
     primary_id: str = Field(min_length=1)
     sidecar_id: str = Field(min_length=1)
     rule: Literal["full-leaf", "stem"]
-    support: tuple[dict[str, JsonValue], ...] = Field(min_length=1)
+    support: tuple[AssertionSupport, ...] = Field(min_length=1)
 
 
 class FilenameFacts(_Model):
@@ -82,6 +96,15 @@ class FilenameFacts(_Model):
         keys = tuple((row.sidecar_id, row.primary_id, row.rule) for row in self.candidates)
         if keys != tuple(sorted(set(keys))):
             raise ValueError("filename candidates must be unique and ordered")
+        statuses = {row.subject_id: row for row in self.statuses}
+        for candidate in self.candidates:
+            primary = statuses.get(candidate.primary_id)
+            sidecar = statuses.get(candidate.sidecar_id)
+            if primary is None or sidecar is None:
+                raise ValueError("filename candidate lacks subject status")
+            expected = tuple(sorted(set(_support_keys((*primary.support, *sidecar.support)))))
+            if _support_keys(candidate.support) != expected:
+                raise ValueError("filename candidate support differs from both exact subjects")
         return self
 
 
