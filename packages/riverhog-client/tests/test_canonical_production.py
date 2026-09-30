@@ -16,7 +16,14 @@ from riverhog_protocol.collection_production_provenance import (
     COLLECTION_PRODUCTION_CONTRACT_ID,
     collection_production_contract,
 )
-from riverhog_provenance import BoundedSourceObserver, BytesSource, validate_journal
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    create_journal,
+    external_reference,
+    validate_journal,
+    validate_journal_set,
+)
 from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
 
 
@@ -81,6 +88,43 @@ def test_member_journal_rejects_unmeasured_payload() -> None:
             ),
             materialization_hint=None,
         )
+
+
+def test_derived_member_primary_journal_carries_exact_source_causality() -> None:
+    source_observation = BoundedSourceObserver().observe(BytesSource(b"source"))
+    source_raw = create_journal(
+        source_observation.graph_fragment(),
+        recorded_by_agent_id=source_observation.observer_agent_id,
+    )
+    source = external_reference(validate_journal(source_raw), source_observation.state_id)
+    content = b"derived"
+    produced = build_member_journal(
+        member=ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": "c4" * 32,
+                "bytes": str(len(content)),
+                "sha256": hashlib.sha256(content).hexdigest(),
+            }
+        ),
+        observation=BoundedSourceObserver().observe(BytesSource(content)),
+        delivery_context_id="urn:uuid:ba123103-fd14-4813-b2d9-b83859e36f31",
+        attribution=ProducerAttribution(
+            "example", "example", "v1", "event-1", "example", {}, "f2" * 32
+        ),
+        materialization_hint=None,
+        causal_input_states=(source,),
+    )
+    catalog = ContractCatalog((collection_production_contract(),))
+    summary = validate_journal(produced.content, catalog=catalog)
+    assert any(row["kind"] == "transformation" for row in summary.graph["activities"])
+    assert len([row for row in summary.graph["relations"] if row["type"] == "usage"]) == 1
+    assert len([row for row in summary.graph["relations"] if row["type"] == "generation"]) == 1
+    derivation = next(row for row in summary.graph["relations"] if row["type"] == "derivation")
+    assert derivation["used_state"] == source
+    assert derivation["generated_state"]["object_type"] == "state"
+    validate_journal_set(
+        (source_raw, produced.content), catalog=catalog, require_all_references=True
+    )
 
 
 def test_publication_requires_explicit_hint_or_omission_before_network() -> None:

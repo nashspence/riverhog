@@ -32,6 +32,17 @@ from riverhog_archive_contracts.archive_manifest import (
     parse_archive_sequence,
     update_archive_sequence_commitment,
 )
+from riverhog_archive_contracts.member_history import (
+    MEMBER_HISTORY_BYTES_MAX,
+    MEMBER_HISTORY_FORMAT,
+    MEMBER_HISTORY_IMPORTS_SCHEMA,
+    MEMBER_HISTORY_ROOTS_SCHEMA,
+    HistoryJournalAnchor,
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+)
 from riverhog_archive_contracts.provenance_archive import (
     PROVENANCE_BINDING_PAGE_BYTES_MAX,
     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
@@ -59,8 +70,37 @@ from riverhog_archive_contracts.recovery_descriptor import (
     RecoveryDescriptorError,
     normalize_passphrase_id,
 )
+from riverhog_archive_contracts.structural_record_set import (
+    PAGE_BYTES_MAX,
+    PAGE_RECORDS_MAX,
+    RECORD_BYTES_MAX,
+    RECORD_PAGE_FORMAT,
+    RECORD_SET_FORMAT,
+    RecordPage,
+    RecordSetCommitment,
+    RecordSetRef,
+    verify_record_pages,
+)
 
 __all__ = [
+    "MEMBER_HISTORY_BYTES_MAX",
+    "MEMBER_HISTORY_FORMAT",
+    "MEMBER_HISTORY_IMPORTS_SCHEMA",
+    "MEMBER_HISTORY_ROOTS_SCHEMA",
+    "HistoryJournalAnchor",
+    "MemberHistoryBinding",
+    "MemberHistoryDocument",
+    "MemberHistoryPrimary",
+    "MemberHistoryRoot",
+    "PAGE_BYTES_MAX",
+    "PAGE_RECORDS_MAX",
+    "RECORD_BYTES_MAX",
+    "RECORD_PAGE_FORMAT",
+    "RECORD_SET_FORMAT",
+    "RecordPage",
+    "RecordSetCommitment",
+    "RecordSetRef",
+    "verify_record_pages",
     "AGE_UPLOAD_STATE_FORMAT",
     "ARCHIVE_PACK_ARTIFACTS_MAX",
     "ARCHIVE_ROOT_DOCUMENT_BYTES_MAX",
