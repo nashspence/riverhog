@@ -72,6 +72,10 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
         if "/provenance/" in path
     } == {
         (
+            "POST",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/bindings",
+        ): COLLECTIONS_CREATE,
+        (
             "PUT",
             "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
         ): COLLECTIONS_CREATE,
@@ -89,16 +93,16 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
         ): COLLECTIONS_CREATE,
         (
             "GET",
-            "/v1/collections/{collection_id}/provenance/files",
+            "/v1/collections/{collection_id}/provenance/artifacts",
         ): PROVENANCE_READ,
         (
             "GET",
-            "/v1/collections/{collection_id}/provenance/files/{path:path}",
+            "/v1/collections/{collection_id}/provenance/artifacts/{artifact_id}",
         ): PROVENANCE_READ,
         (
             "GET",
-            "/v1/collections/{collection_id}/provenance/trace/{path:path}",
-        ): PROVENANCE_READ,
+            "/v1/collections/{collection_id}/provenance/journals",
+        ): PROVENANCE_EXPORT,
         (
             "GET",
             "/v1/collections/{collection_id}/provenance/journals/{journal_id}",
@@ -107,22 +111,6 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
             "HEAD",
             "/v1/collections/{collection_id}/provenance/journals/{journal_id}",
         ): PROVENANCE_EXPORT,
-        (
-            "GET",
-            "/v1/collections/{collection_id}/provenance/journals/{journal_id}/agents",
-        ): PROVENANCE_READ,
-        (
-            "POST",
-            "/v1/collections/{collection_id}/provenance/verification",
-        ): PROVENANCE_READ,
-        (
-            "GET",
-            "/v1/collections/{collection_id}/provenance/verification",
-        ): PROVENANCE_READ,
-        (
-            "DELETE",
-            "/v1/collections/{collection_id}/provenance/verification",
-        ): PROVENANCE_READ,
     }
 
     workflow_permissions = {
@@ -293,7 +281,7 @@ def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
                 "plaintext_bytes": "3",
                 "sources": [
                     {
-                        "path": "camera/clip.bin",
+                        "artifact_id": "c" * 64,
                         "offset": "0",
                         "bytes": "3",
                         "artifact_sha256": "b" * 64,
@@ -320,7 +308,7 @@ def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
                 "plaintext_bytes": "3",
                 "sources": [
                     {
-                        "path": "camera/clip.bin",
+                        "artifact_id": "c" * 64,
                         "offset": "0",
                         "bytes": "3",
                         "artifact_sha256": "b" * 64,
