@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -39,7 +39,7 @@ from riverhog_provenance import (
     software_agent_id,
     validate_journal,
 )
-from riverhog_provenance_contracts import require_canonical_uuid_urn
+from riverhog_provenance_contracts import ExternalReference, require_canonical_uuid_urn
 
 _RECORD_FRAGMENTS_PER_ENTRY = 24
 
@@ -89,6 +89,7 @@ def build_member_journal(
     delivery_context_id: str,
     attribution: ProducerAttribution,
     materialization_hint: tuple[str, ...] | None,
+    causal_input_states: Sequence[Mapping[str, Any]] = (),
 ) -> ProducedMemberJournal:
     """Bind source measurement and producer attribution to one opaque member.
 
@@ -166,6 +167,63 @@ def build_member_journal(
             evidence_items=[evidence(producer_agent_id, "process_record")],
         )
     )
+    if causal_input_states:
+        source_states = tuple(
+            ExternalReference.model_validate(value).model_dump(mode="json")
+            for value in causal_input_states
+        )
+        if any(value["object_type"] != "state" for value in source_states):
+            raise ValueError("derived output causality requires exact source State references")
+        if len({canonical_json_bytes(value) for value in source_states}) != len(source_states):
+            raise ValueError("derived output causal source States must be unique")
+        activity = assertion(
+            "activity",
+            producer_agent_id,
+            kind="transformation",
+            outcome="success",
+            associations=[
+                {
+                    "agent_id": producer_agent_id,
+                    "role": COLLECTION_PRODUCTION_CONTRACT_ID + "/transformer",
+                }
+            ],
+            contexts=[{"context_id": delivery_context_id, "role": "execution"}],
+            evidence_items=[evidence(producer_agent_id, "process_record")],
+        )
+        graph["activities"].append(activity)
+        generated = assertion(
+            "generation",
+            producer_agent_id,
+            activity_id=activity["id"],
+            state=reference(observation.state_id, "state"),
+            evidence_items=[evidence(producer_agent_id, "process_record")],
+        )
+        graph.setdefault("relations", []).append(generated)
+        for source_state in source_states:
+            used = assertion(
+                "usage",
+                producer_agent_id,
+                activity_id=activity["id"],
+                state=source_state,
+                role=COLLECTION_PRODUCTION_CONTRACT_ID + "/source",
+                evidence_items=[evidence(producer_agent_id, "process_record")],
+            )
+            graph["relations"].extend(
+                (
+                    used,
+                    assertion(
+                        "derivation",
+                        producer_agent_id,
+                        used_state=source_state,
+                        generated_state=reference(observation.state_id, "state"),
+                        kind="transformation",
+                        activity_id=activity["id"],
+                        usage_id=used["id"],
+                        generation_id=generated["id"],
+                        evidence_items=[evidence(producer_agent_id, "process_record")],
+                    ),
+                )
+            )
     graph.setdefault("extensions", []).extend(
         (
             assertion(
@@ -286,6 +344,7 @@ def bind_produced_member(
     attribution: ProducerAttribution,
     materialization_hint: tuple[str, ...] | None,
     allow_missing_materialization_hint: bool,
+    causal_input_states: Sequence[Mapping[str, Any]] = (),
 ) -> ProducedMemberJournal:
     """Stage and bind one already registered member before finalization."""
 
@@ -300,6 +359,7 @@ def bind_produced_member(
         delivery_context_id=delivery_context_id,
         attribution=attribution,
         materialization_hint=materialization_hint,
+        causal_input_states=causal_input_states,
     )
     api.upload_collection_upload_session_provenance_journal(
         collection_id,
