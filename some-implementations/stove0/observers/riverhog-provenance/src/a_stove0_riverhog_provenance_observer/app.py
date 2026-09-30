@@ -155,12 +155,16 @@ _CLI_RESULT_CONTRACT = {
 }
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog=SERVICE)
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{PREFIX}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{PREFIX}_PORT", "8080")))
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _parser().parse_args(argv)
     observer = RiverhogProvenanceObserver(
         source_revision=os.getenv(f"{PREFIX}_SOURCE_REVISION", "unknown"),
         image_id=_image_id(),
