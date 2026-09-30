@@ -286,6 +286,7 @@ class PreviewPlanning:
             )
         )
         return TargetPreflightRequest(
+            invocation_sha256=_plan.workflow_plan_sha256,
             operation_id=self.operation.id,
             operation_contract_sha256=self.operation.contract_sha256,
             inputs=TargetInputAuthority.from_selection(selection),
@@ -456,6 +457,8 @@ class PreviewTarget:
             descriptor=self.target,
             plan=TransformPlan.seal(
                 TransformPlanPayload(
+                    input_groups=request.input_groups,
+                    invocation_sha256=request.invocation_sha256,
                     target_implementation_id=self.target.implementation_id,
                     target_descriptor_sha256=self.target.descriptor_sha256,
                     operation_id=request.operation_id,

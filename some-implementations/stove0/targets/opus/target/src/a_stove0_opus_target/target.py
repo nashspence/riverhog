@@ -55,8 +55,6 @@ from stove0_target_support import (
 
 from a_stove0_opus_target.common import OpusContentError, file_identity, run_ffmpeg, tool_version
 
-_PROJECTION_SCHEMA = MediaArchiveProjection.model_json_schema()
-_PUBLICATION_SCHEMA = MediaPublicationPlan.model_json_schema()
 OPTIONS = JsonSchemaValidationProfile.from_schema(
     "a-stove0-opus-target-options/v1",
     {
@@ -64,17 +62,7 @@ OPTIONS = JsonSchemaValidationProfile.from_schema(
         "type": "object",
         "properties": {
             "ffmpeg_timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 86400},
-            "media_projection": {
-                key: value for key, value in _PROJECTION_SCHEMA.items() if key != "$defs"
-            },
-            "publication_decisions": {
-                key: value for key, value in _PUBLICATION_SCHEMA.items() if key != "$defs"
-            },
             "allow_missing_materialization_hint": {"type": "boolean"},
-        },
-        "$defs": {
-            **_PROJECTION_SCHEMA.get("$defs", {}),
-            **_PUBLICATION_SCHEMA.get("$defs", {}),
         },
         "additionalProperties": False,
     },
@@ -158,35 +146,19 @@ class OpusTargetService(PersistentTargetService):
                 hint_result_sha256s=hint_results,
                 allow_missing=allow_missing,
             )
-            supplied = request.target_options.get("media_projection")
-            if (
-                supplied is not None
-                and MediaArchiveProjection.model_validate(supplied) != projection
-            ):
-                raise ValueError("supplied media projection differs from target preflight")
-            supplied_decisions = request.target_options.get("publication_decisions")
-            if (
-                supplied_decisions is not None
-                and MediaPublicationPlan.from_json_value(supplied_decisions)
-                != publication_decisions
-            ):
-                raise ValueError("supplied publication decisions differ from accepted hints")
         except MaterializationDecisionRequired as exc:
             raise TargetServiceError(400, "materialization_decision_required", str(exc)) from exc
         except (KeyError, ValueError) as exc:
             raise TargetServiceError(400, "invalid_target_request", str(exc)) from exc
-        effective = request.model_copy(
-            update={
-                "target_options": {
-                    **request.target_options,
-                    "media_projection": projection.model_dump(mode="json"),
-                    "publication_decisions": publication_decisions.model_dump(
-                        mode="json", exclude_none=True
-                    ),
-                }
-            }
+        return self._seal_preflight(
+            request,
+            execution_parameters={
+                "media_projection": projection.model_dump(mode="json"),
+                "publication_decisions": publication_decisions.model_dump(
+                    mode="json", exclude_none=True
+                ),
+            },
         )
-        return super().preflight(effective)
 
     def _execute(
         self,
@@ -200,9 +172,11 @@ class OpusTargetService(PersistentTargetService):
         timeout = options.get("ffmpeg_timeout_seconds", 86400)
         if isinstance(timeout, bool) or not isinstance(timeout, int):
             raise ValueError("ffmpeg_timeout_seconds must be an integer")
-        projection = MediaArchiveProjection.model_validate(options["media_projection"])
+        projection = MediaArchiveProjection.model_validate(
+            request.declaration.plan.execution_parameters["media_projection"]
+        )
         publication_decisions = MediaPublicationPlan.from_json_value(
-            options["publication_decisions"]
+            request.declaration.plan.execution_parameters["publication_decisions"]
         )
         try:
             projection.validate_plan_evidence(request.declaration.plan.observation_result_sha256s)

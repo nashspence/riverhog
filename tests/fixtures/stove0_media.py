@@ -221,6 +221,7 @@ def media_preflight_request(
         )
     )
     return TargetPreflightRequest(
+        invocation_sha256=sha("b"),
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
         inputs=TargetInputAuthority.from_selection(ArtifactSelection.seal(routed_subjects)),

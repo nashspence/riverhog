@@ -1475,7 +1475,15 @@ class Stove0WorkService:
         if record.phase not in {"target_preflight", "queued"} or workflow is None:
             raise Stove0StateError(f"work cannot seal a target plan from {record.phase}")
         if (
-            target.descriptor_sha256 != workflow.target_descriptor_sha256
+            plan.invocation_sha256 != workflow.workflow_plan_sha256
+            or canonical_json_bytes(plan.intent)
+            != canonical_json_bytes(workflow.work.effective_intent)
+            or canonical_json_bytes(plan.target_options)
+            != canonical_json_bytes(workflow.requested_target_options)
+            or plan.input_groups != workflow.input_groups
+            or plan.observation_result_sha256s
+            != tuple(sorted(item.result.result_sha256 for item in workflow.observations))
+            or target.descriptor_sha256 != workflow.target_descriptor_sha256
             or plan.target_descriptor_sha256 != target.descriptor_sha256
             or plan.target_implementation_id != target.implementation_id
             or plan.operation_id != workflow.operation.id

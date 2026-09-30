@@ -252,6 +252,7 @@ def _target_plan(
     operation: OperationContract,
     target: TargetDescriptor,
     *,
+    invocation_sha256: str,
     observation_result_sha256s: tuple[str, ...] = (),
     selection: ArtifactSelection | None = None,
 ) -> TransformPlan:
@@ -270,6 +271,7 @@ def _target_plan(
         )
     return TransformPlan.seal(
         TransformPlanPayload(
+            invocation_sha256=invocation_sha256,
             target_implementation_id=target.implementation_id,
             target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
@@ -374,7 +376,12 @@ def _queued_target_callback_execution(
     record = service.seal_target_plan(
         child_id,
         target=target,
-        plan=_target_plan(operation, target, selection=decision.selections[0]),
+        plan=_target_plan(
+            operation,
+            target,
+            invocation_sha256=record.workflow_plan.workflow_plan_sha256,
+            selection=decision.selections[0],
+        ),
         expected_revision=record.revision,
     )
 
@@ -784,6 +791,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
     plan = _target_plan(
         operation,
         target,
+        invocation_sha256=workflow.workflow_plan_sha256,
         observation_result_sha256s=(result.result_sha256,),
     )
     record = service.seal_target_plan(
@@ -966,7 +974,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
     record = service.seal_target_plan(
         work.work_id,
         target=target,
-        plan=_target_plan(operation, target),
+        plan=_target_plan(operation, target, invocation_sha256=workflow.workflow_plan_sha256),
         expected_revision=record.revision,
     )
     stale_execution_id = record.controller_evidence.execution_envelope.execution_envelope_sha256
@@ -1002,7 +1010,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
     rebound = service.seal_target_plan(
         work.work_id,
         target=target,
-        plan=_target_plan(operation, target),
+        plan=_target_plan(operation, target, invocation_sha256=workflow.workflow_plan_sha256),
         expected_revision=rebound.revision,
     )
     assert rebound.controller_evidence is not None

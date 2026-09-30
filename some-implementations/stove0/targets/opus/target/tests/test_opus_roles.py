@@ -156,14 +156,14 @@ def test_opus_preflight_fixes_exact_unbounded_metadata_projection(tmp_path: Path
     response = target.preflight(request)
     validate_preflight_response_against_request(response, request)
     projection = MediaArchiveProjection.model_validate(
-        response.plan.target_options["media_projection"]
+        response.plan.execution_parameters["media_projection"]
     )
 
     assert response.plan.observation_result_sha256s == tuple(
         sorted(item.result.result_sha256 for item in request.observations)
     )
     publication = MediaPublicationPlan.from_json_value(
-        response.plan.target_options["publication_decisions"]
+        response.plan.execution_parameters["publication_decisions"]
     )
     assert {item.components for item in publication.decisions} == {
         ("Camera", "clip.opus"),
@@ -212,7 +212,7 @@ def test_opus_missing_canonical_hint_requires_an_explicit_output_decision(tmp_pa
     )
     response = target.preflight(request)
     publication = MediaPublicationPlan.from_json_value(
-        response.plan.target_options["publication_decisions"]
+        response.plan.execution_parameters["publication_decisions"]
     )
     assert sorted(item.components for item in publication.decisions if item.components) == [
         ("Camera", "clip.xmp")
@@ -220,7 +220,7 @@ def test_opus_missing_canonical_hint_requires_an_explicit_output_decision(tmp_pa
     assert sum(item.allow_missing_materialization_hint for item in publication.decisions) == 2
     assert all(
         "materialization_hint" not in decision
-        for decision in response.plan.target_options["publication_decisions"]["decisions"]
+        for decision in response.plan.execution_parameters["publication_decisions"]["decisions"]
         if decision["allow_missing_materialization_hint"]
     )
     target.close()

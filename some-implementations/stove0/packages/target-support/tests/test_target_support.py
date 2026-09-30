@@ -61,6 +61,7 @@ from stove0_protocol import (
     WorkflowPlan,
     WorkflowPlanPayload,
     WorkIdentity,
+    WorkInputGroup,
     WorkPayload,
 )
 from stove0_target_client import TargetClient, TargetProtocolError
@@ -267,12 +268,27 @@ def _work() -> WorkIdentity:
     )
 
 
+def _workflow_for(operation: OperationContract, target: TargetDescriptor) -> WorkflowPlan:
+    work = _work()
+    workflow = WorkflowPlan.seal(
+        WorkflowPlanPayload(
+            work=work,
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
+            target_registration_id="fixture-target",
+            target_descriptor_sha256=target.descriptor_sha256,
+            source_collection_retirement_policy="retain",
+        )
+    )
+    return workflow
+
+
 def _plan(
     operation: OperationContract,
     target: TargetDescriptor,
 ) -> TransformPlan:
     return TransformPlan.seal(
         TransformPlanPayload(
+            invocation_sha256=_workflow_for(operation, target).workflow_plan_sha256,
             target_implementation_id=target.implementation_id,
             target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
@@ -290,15 +306,7 @@ def _controller_evidence(
     plan: TransformPlan,
 ) -> ControllerEvidence:
     work = _work()
-    workflow = WorkflowPlan.seal(
-        WorkflowPlanPayload(
-            work=work,
-            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
-            target_registration_id="fixture-target",
-            target_descriptor_sha256=target.descriptor_sha256,
-            source_collection_retirement_policy="retain",
-        )
-    )
+    workflow = _workflow_for(operation, target)
     binding = TargetPlanBinding(
         protocol=target.protocol,
         target_implementation_id=target.implementation_id,
@@ -399,18 +407,13 @@ def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobReq
             ),
         )
     )
-    plan = EffectPlan.seal(
-        EffectPlanPayload(
-            target_implementation_id=target.implementation_id,
-            target_descriptor_sha256=target.descriptor_sha256,
-            operation_id=operation.id,
-            operation_contract_sha256=operation.contract_sha256,
-            inputs=_input_authority(),
-            intent={},
-            target_options={},
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=_work().recipe,
+            inputs=_work().inputs,
+            effective_intent={},
         )
     )
-    work = _work()
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
@@ -419,6 +422,18 @@ def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobReq
             target_registration_id="fixture-index-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
+        )
+    )
+    plan = EffectPlan.seal(
+        EffectPlanPayload(
+            invocation_sha256=workflow.workflow_plan_sha256,
+            target_implementation_id=target.implementation_id,
+            target_descriptor_sha256=target.descriptor_sha256,
+            operation_id=operation.id,
+            operation_contract_sha256=operation.contract_sha256,
+            inputs=_input_authority(),
+            intent={},
+            target_options={},
         )
     )
     binding = TargetPlanBinding(
@@ -481,6 +496,7 @@ def test_preflight_job_identity_excludes_refreshable_capability_secret() -> None
     assert second.request_sha256 == request.request_sha256
 
     preflight_request = TargetPreflightRequest(
+        invocation_sha256=request.declaration.plan.invocation_sha256,
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
         inputs=request.declaration.plan.inputs,
@@ -489,6 +505,50 @@ def test_preflight_job_identity_excludes_refreshable_capability_secret() -> None
     )
     response = TargetPreflightResponse(descriptor=target, plan=request.declaration.plan)
     validate_preflight_response_against_request(response, preflight_request)
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("invocation_sha256", _sha("f")),
+        ("input_groups", (WorkInputGroup(primary_id="source"),)),
+        ("intent", {"count": True}),
+        ("target_options", {"count": True}),
+        ("target_options", {"count": 1, "injected": "option"}),
+    ],
+)
+def test_preflight_cannot_change_the_recipe_invocation(
+    field: str,
+    replacement: Any,
+) -> None:
+    _operation, target, job = _request()
+    payload = TransformPlanPayload.model_validate(
+        job.declaration.plan.model_dump(exclude={"plan_sha256"})
+    ).model_copy(update={"intent": {"count": 1}, "target_options": {"count": 1}})
+    plan = TransformPlan.seal(payload)
+    request = TargetPreflightRequest.model_validate(
+        plan.model_dump(
+            exclude={
+                "plan_sha256",
+                "target_implementation_id",
+                "target_descriptor_sha256",
+                "observation_result_sha256s",
+                "execution_parameters",
+            }
+        )
+    )
+    changed = TransformPlan.seal(payload.model_copy(update={field: replacement}))
+    with pytest.raises(ValueError, match="differs from the request"):
+        validate_preflight_response_against_request(
+            TargetPreflightResponse(descriptor=target, plan=changed), request
+        )
+    sealed = TransformPlan.seal(
+        payload.model_copy(update={"execution_parameters": {"tool_plan": "exact-target-detail"}})
+    )
+    validate_preflight_response_against_request(
+        TargetPreflightResponse(descriptor=target, plan=sealed), request
+    )
+    assert sealed.plan_sha256 != plan.plan_sha256
 
 
 def _success_status(
@@ -1154,6 +1214,8 @@ def test_target_conformance_executes_the_exact_advertised_semantic_vectors() -> 
                 )
             plan = TransformPlan.seal(
                 TransformPlanPayload(
+                    input_groups=received.input_groups,
+                    invocation_sha256=received.invocation_sha256,
                     target_implementation_id=target.implementation_id,
                     target_descriptor_sha256=target.descriptor_sha256,
                     operation_id=received.operation_id,
@@ -1365,6 +1427,7 @@ def test_framework_neutral_target_http_binding() -> None:
     assert TargetDescriptor.model_validate_json(contract_response.body) == target
 
     preflight_request = TargetPreflightRequest(
+        invocation_sha256=request.declaration.plan.invocation_sha256,
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
         inputs=request.declaration.plan.inputs,
@@ -1415,6 +1478,7 @@ def test_target_http_binding_treats_untyped_service_schema_faults_as_server_faul
 
     binding = TargetHttpBinding(SchemaRejectingService(target, request, status))
     preflight_request = TargetPreflightRequest(
+        invocation_sha256=request.declaration.plan.invocation_sha256,
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
         inputs=request.declaration.plan.inputs,
@@ -1494,6 +1558,7 @@ def test_persistent_target_requires_and_executes_advertised_semantic_validation(
         with pytest.raises(TargetServiceError, match="suffix policy"):
             service.preflight(
                 TargetPreflightRequest(
+                    invocation_sha256=_sha("b"),
                     operation_id=operation.id,
                     operation_contract_sha256=operation.contract_sha256,
                     inputs=_input_authority(),
@@ -1515,6 +1580,7 @@ def test_persistent_target_service_uses_canonical_public_error_codes(tmp_path: P
         execute=lambda *_args: status,
     )
     preflight = TargetPreflightRequest(
+        invocation_sha256=request.declaration.plan.invocation_sha256,
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
         inputs=request.declaration.plan.inputs,

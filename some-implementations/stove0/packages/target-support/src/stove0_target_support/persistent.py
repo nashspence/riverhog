@@ -161,6 +161,11 @@ class PersistentTargetService:
         return self._descriptor
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:
+        return self._seal_preflight(request, execution_parameters={})
+
+    def _seal_preflight(
+        self, request: TargetPreflightRequest, *, execution_parameters: Mapping[str, Any]
+    ) -> TargetPreflightResponse:
         if request.protocol != self._descriptor.protocol:
             raise TargetServiceError(409, "target_protocol_mismatch", "target protocol changed")
         operation = self._operation(request.operation_id)
@@ -176,6 +181,8 @@ class PersistentTargetService:
             raise TargetServiceError(409, "operation_contract_mismatch", "operation changed")
         self._validate_operation_request(request, operation, support)
         plan_fields: dict[str, object] = {
+            "invocation_sha256": request.invocation_sha256,
+            "execution_parameters": dict(execution_parameters),
             "operation_id": request.operation_id,
             "operation_contract_sha256": request.operation_contract_sha256,
             "inputs": request.inputs,
