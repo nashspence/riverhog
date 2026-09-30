@@ -16,7 +16,12 @@ observers:
     base_url: http://a-stove0-ffprobe-observer:8080
     token_file: /run/secrets/a_stove0_ffprobe_observer_token
     allow_insecure_http: true
-    semantic_validator_providers: [media-sampling]
+    semantic_validator_providers: [ffprobe-streams, media-sampling]
+  ffprobe-streams:
+    base_url: http://a-stove0-ffprobe-observer:8080
+    token_file: /run/secrets/a_stove0_ffprobe_observer_token
+    allow_insecure_http: true
+    semantic_validator_providers: [ffprobe-streams, media-sampling]
   magic:
     base_url: http://a-stove0-magic-observer:8080
     token_file: /run/secrets/a_stove0_magic_observer_token
@@ -26,12 +31,12 @@ observers:
     base_url: http://a-stove0-riverhog-provenance-observer:8080
     token_file: /run/secrets/a_stove0_riverhog_provenance_observer_token
     allow_insecure_http: true
-    semantic_validator_providers: [materialization-hint]
+    semantic_validator_providers: [materialization-hint, riverhog-provenance]
   canonical-provenance:
     base_url: http://a-stove0-riverhog-provenance-observer:8080
     token_file: /run/secrets/a_stove0_riverhog_provenance_observer_token
     allow_insecure_http: true
-    semantic_validator_providers: [riverhog-provenance]
+    semantic_validator_providers: [materialization-hint, riverhog-provenance]
   filename-prefix-sidecars:
     base_url: http://a-stove0-filename-prefix-sidecar-observer:8080
     token_file: /run/secrets/a_stove0_filename_prefix_sidecar_observer_token

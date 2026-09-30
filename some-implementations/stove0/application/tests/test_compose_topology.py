@@ -233,7 +233,12 @@ def test_supplied_observer_registrations_connect_exact_one_role_services() -> No
         "ffprobe-sampling": (
             "http://a-stove0-ffprobe-observer:8080",
             "a_stove0_ffprobe_observer_token",
-            ["media-sampling"],
+            ["ffprobe-streams", "media-sampling"],
+        ),
+        "ffprobe-streams": (
+            "http://a-stove0-ffprobe-observer:8080",
+            "a_stove0_ffprobe_observer_token",
+            ["ffprobe-streams", "media-sampling"],
         ),
         "magic": (
             "http://a-stove0-magic-observer:8080",
@@ -248,12 +253,12 @@ def test_supplied_observer_registrations_connect_exact_one_role_services() -> No
         "canonical-hint": (
             "http://a-stove0-riverhog-provenance-observer:8080",
             "a_stove0_riverhog_provenance_observer_token",
-            ["materialization-hint"],
+            ["materialization-hint", "riverhog-provenance"],
         ),
         "canonical-provenance": (
             "http://a-stove0-riverhog-provenance-observer:8080",
             "a_stove0_riverhog_provenance_observer_token",
-            ["riverhog-provenance"],
+            ["materialization-hint", "riverhog-provenance"],
         ),
     }
     assert set(registrations) == set(expected)
