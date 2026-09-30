@@ -82,6 +82,8 @@ class RiverhogProvenanceObserver:
                             subject,
                             claimed.binding,
                             summary,
+                            history=claimed.history,
+                            selected_summaries=claimed.iter_bound_summaries(),
                             predicates=options.predicates,
                             resolve_external=claimed.resolve_external_reference,
                         )

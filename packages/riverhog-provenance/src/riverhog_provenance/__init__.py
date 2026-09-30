@@ -12,6 +12,7 @@ from .common import (
     utc_now,
 )
 from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
+from .corpus import CanonicalCorpusValidator, validate_canonical_corpus
 from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
     ConcurrentJournalChangeError,
@@ -21,6 +22,7 @@ from .errors import (
     UnresolvedContractError,
 )
 from .graph import GraphValidation, validate_graph
+from .history import MemberHistoryClosure
 from .interface import ObservationSource, StateObserver
 from .journal import (
     JournalFrame,
@@ -66,6 +68,8 @@ from .sources import BytesSource, SegmentSource, StreamSource
 __all__ = [
     "PROVENANCE_ENTRY_SCHEMA",
     "PROVENANCE_PROFILE",
+    "CanonicalCorpusValidator",
+    "validate_canonical_corpus",
     "artifact",
     "assertion",
     "byte_string",
@@ -83,6 +87,7 @@ __all__ = [
     "ProvenanceValidationError",
     "UnresolvedContractError",
     "GraphValidation",
+    "MemberHistoryClosure",
     "validate_graph",
     "ObservationSource",
     "StateObserver",

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import builtins
 import hashlib
 import re
-from collections.abc import Iterable
+import sqlite3
+import tempfile
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from riverhog_canonical_json import (
     canonical_json_bytes,
@@ -156,7 +159,7 @@ class MemberHistoryDocument:
     def to_mapping(self) -> dict[str, object]:
         return {
             "format": MEMBER_HISTORY_FORMAT,
-            "artifact_id": self.artifact_id,
+            "artifact_id": str(self.artifact_id),
             "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
             "primary": self.primary.to_mapping(),
@@ -164,7 +167,7 @@ class MemberHistoryDocument:
             "imports": self.imports.to_mapping(),
         }
 
-    def to_json_bytes(self) -> bytes:
+    def to_json_bytes(self) -> builtins.bytes:
         return canonical_json_bytes(self.to_mapping())
 
     @property
@@ -172,10 +175,10 @@ class MemberHistoryDocument:
         return hashlib.sha256(self.to_json_bytes()).hexdigest()
 
     @classmethod
-    def from_json_bytes(cls, raw: bytes) -> MemberHistoryDocument:
+    def from_json_bytes(cls, raw: builtins.bytes) -> MemberHistoryDocument:
         if len(raw) > MEMBER_HISTORY_BYTES_MAX:
             raise ValueError("member history descriptor exceeds its byte bound")
-        value = require_canonical_json(raw)
+        value: Any = require_canonical_json(raw)
         if (
             not isinstance(value, dict)
             or set(value)
@@ -217,7 +220,7 @@ class MemberHistoryBinding:
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "artifact_id": self.artifact_id,
+            "artifact_id": str(self.artifact_id),
             "bytes": format_scalar("nonnegative", self.bytes),
             "sha256": self.sha256,
             "history_sha256": self.history_sha256,
@@ -242,7 +245,7 @@ class MemberHistoryBinding:
             history_bytes=parse_scalar("nonnegative", value["history_bytes"]),
         )
 
-    def verify_descriptor(self, raw: bytes) -> MemberHistoryDocument:
+    def verify_descriptor(self, raw: builtins.bytes) -> MemberHistoryDocument:
         if len(raw) != self.history_bytes or hashlib.sha256(raw).hexdigest() != self.history_sha256:
             raise ValueError("member history descriptor differs from its root binding")
         descriptor = MemberHistoryDocument.from_json_bytes(raw)
@@ -253,6 +256,25 @@ class MemberHistoryBinding:
         ):
             raise ValueError("member history descriptor names another member")
         return descriptor
+
+
+def validate_member_history_binding_page(
+    bindings: Sequence[MemberHistoryBinding | Mapping[str, object]], *, max_members: int
+) -> tuple[MemberHistoryBinding, ...]:
+    """Validate one bounded final archive page, distinct from early primaries."""
+
+    if type(max_members) is not int or not 1 <= len(bindings) <= max_members:
+        raise ValueError("member history binding page count is invalid")
+    rows = tuple(
+        value
+        if isinstance(value, MemberHistoryBinding)
+        else MemberHistoryBinding.from_mapping(dict(value))
+        for value in bindings
+    )
+    identities = tuple(row.artifact_id for row in rows)
+    if identities != tuple(sorted(set(identities))):
+        raise ValueError("member history binding page is not strictly ID ordered")
+    return rows
 
 
 @dataclass(frozen=True, slots=True)
@@ -266,9 +288,7 @@ class MemberHistoryRoot:
 
     @property
     def key(self) -> str:
-        # Group every selected head for one journal in the ordered record set.
-        # This permits constant-space duplicate and conflicting-head checks.
-        return f"{self.journal.journal_id}/{self.journal.prefix_sha256}"
+        return hashlib.sha256(canonical_json_bytes(self.journal.to_mapping())).hexdigest()
 
     def to_mapping(self) -> dict[str, object]:
         return {"journal": self.journal.to_mapping(), "inclusion": self.inclusion}
@@ -287,6 +307,7 @@ class MemberHistoryRoot:
 class MemberHistoryImport:
     """Source-qualified transfer of an exact prior member-history selection."""
 
+    source_identity: str
     source_collection_id: int
     source_archive_root_sha256: str
     source_artifact_set_sha256: str
@@ -300,6 +321,7 @@ class MemberHistoryImport:
         if type(self.source_collection_id) is not int or not 0 < self.source_collection_id < 2**63:
             raise ValueError("source collection identity is invalid")
         for label, value in (
+            ("source identity", self.source_identity),
             ("source archive root", self.source_archive_root_sha256),
             ("source artifact set", self.source_artifact_set_sha256),
             ("source artifact ID", self.source_artifact_id),
@@ -330,21 +352,24 @@ class MemberHistoryImport:
 
     @property
     def key(self) -> str:
-        # The same source member/history cannot be silently selected twice at
-        # different extents or with conflicting State/proof evidence.
-        return (
-            f"{self.source_archive_root_sha256}/"
-            f"{self.source_artifact_id}/{self.source_history_sha256}"
-        )
+        return hashlib.sha256(
+            canonical_json_bytes(
+                {"source": self._source(), "history_sha256": self.source_history_sha256}
+            )
+        ).hexdigest()
+
+    def _source(self) -> dict[str, str]:
+        return {
+            "identity": self.source_identity,
+            "collection_id": format_scalar("sequence63", self.source_collection_id),
+            "archive_root_sha256": self.source_archive_root_sha256,
+            "artifact_set_identity": self.source_artifact_set_sha256,
+            "artifact_id": str(self.source_artifact_id),
+        }
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "source": {
-                "collection_id": format_scalar("sequence63", self.source_collection_id),
-                "archive_root_sha256": self.source_archive_root_sha256,
-                "artifact_set_identity": self.source_artifact_set_sha256,
-                "artifact_id": self.source_artifact_id,
-            },
+            "source": self._source(),
             "history_sha256": self.source_history_sha256,
             "source_binding_proof_sha256": self.source_binding_proof_sha256,
             "extent": self.extent,
@@ -363,6 +388,7 @@ class MemberHistoryImport:
             raise ValueError("member history import fields are invalid")
         source = value["source"]
         if not isinstance(source, dict) or set(source) != {
+            "identity",
             "collection_id",
             "archive_root_sha256",
             "artifact_set_identity",
@@ -370,6 +396,7 @@ class MemberHistoryImport:
         }:
             raise ValueError("member history import source fields are invalid")
         return cls(
+            source_identity=source["identity"],
             source_collection_id=parse_scalar("sequence63", source["collection_id"]),
             source_archive_root_sha256=source["archive_root_sha256"],
             source_artifact_set_sha256=source["artifact_set_identity"],
@@ -382,13 +409,14 @@ class MemberHistoryImport:
 
 
 def _verify_selected_pages(
-    authority: RecordSetRef, pages: Iterable[RecordPage], *,
+    authority: RecordSetRef,
+    pages: Iterable[RecordPage],
+    *,
     primary: HistoryJournalAnchor | None = None,
+    bound_heads: sqlite3.Connection | None = None,
 ) -> None:
     commitment = RecordSetCommitment(authority.schema_id)
     terminal_seen = False
-    previous_journal_id: str | None = None
-    bound_head_seen = False
     primary_seen = False
     for ordinal, page in enumerate(pages):
         if terminal_seen or page.ordinal != ordinal or page.authority != authority:
@@ -400,13 +428,14 @@ def _verify_selected_pages(
                 root = MemberHistoryRoot.from_mapping(row["value"])
                 if row["key"] != root.key:
                     raise ValueError("member history root record key differs")
-                if root.journal.journal_id != previous_journal_id:
-                    previous_journal_id = root.journal.journal_id
-                    bound_head_seen = False
                 if root.inclusion == "bound":
-                    if bound_head_seen:
-                        raise ValueError("member history has conflicting bound heads")
-                    bound_head_seen = True
+                    assert bound_heads is not None
+                    try:
+                        bound_heads.execute(
+                            "INSERT INTO bound_heads VALUES (?)", (root.journal.journal_id,)
+                        )
+                    except sqlite3.IntegrityError as exc:
+                        raise ValueError("member history has conflicting bound heads") from exc
                 if root.journal == primary:
                     if root.inclusion != "bound":
                         raise ValueError("primary history root must be bound")
@@ -436,9 +465,18 @@ def verify_member_history_sets(
     Callers may stream pages from durable storage, then re-read only the selected
     records they need. Neither set needs to be materialized as a collection.
     """
-    _verify_selected_pages(
-        descriptor.roots, root_pages, primary=descriptor.primary.journal
-    )
+    with tempfile.TemporaryDirectory(prefix="riverhog-history-check-") as scratch:
+        with sqlite3.connect(scratch + "/heads.sqlite3") as bound_heads:
+            bound_heads.execute("PRAGMA cache_size = -512")
+            bound_heads.execute(
+                "CREATE TABLE bound_heads (journal_id TEXT PRIMARY KEY) WITHOUT ROWID"
+            )
+            _verify_selected_pages(
+                descriptor.roots,
+                root_pages,
+                primary=descriptor.primary.journal,
+                bound_heads=bound_heads,
+            )
     _verify_selected_pages(descriptor.imports, import_pages)
 
 
@@ -458,5 +496,6 @@ __all__ = [
     "history_record_page_object_path",
     "member_history_object_path",
     "source_binding_proof_object_path",
+    "validate_member_history_binding_page",
     "verify_member_history_sets",
 ]

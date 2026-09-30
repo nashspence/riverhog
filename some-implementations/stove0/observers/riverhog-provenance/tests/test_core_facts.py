@@ -16,15 +16,20 @@ from a_stove0_riverhog_provenance_evidence_contract_lib import (
 )
 from a_stove0_riverhog_provenance_observer import (
     RiverhogProvenanceObserver,
-    extract_core_facts,
     extract_materialization_hint_fact,
 )
+from a_stove0_riverhog_provenance_observer import (
+    extract_core_facts as _extract_core_facts,
+)
+from riverhog_archive_contracts import HistoryJournalAnchor, MemberHistoryRoot
 from riverhog_protocol import CollectionArtifactProvenanceBindingDocument
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_provenance import (
     BoundedSourceObserver,
     BytesSource,
+    append_correction,
     assertion,
+    assertion_reference,
     create_journal,
     external_reference,
     new_id,
@@ -39,6 +44,19 @@ from stove0_observer_protocol import (
     WorkArtifactSubject,
 )
 from stove0_observer_support import ContentObservationRuntime
+
+from tests.support.member_history import member_history_fixture
+
+
+def extract_core_facts(subject: Any, binding: Any, summary: Any, **kwargs: Any) -> dict[str, Any]:
+    return _extract_core_facts(
+        subject,
+        binding,
+        summary,
+        history=member_history_fixture(subject, binding),
+        selected_summaries=(summary,),
+        **kwargs,
+    )
 
 
 def _fixture(
@@ -178,6 +196,8 @@ def test_core_observation_exposes_only_requested_predicates_at_exact_anchor() ->
         def open_provenance(self, _subject: WorkArtifactSubject) -> Any:
             return SimpleNamespace(
                 binding=binding,
+                history=member_history_fixture(subject, binding),
+                iter_bound_summaries=lambda: iter((summary,)),
                 bound_summary=lambda: summary,
                 resolve_external_reference=lambda _: None,
             )
@@ -317,3 +337,116 @@ def test_foreign_claim_requires_exact_resolved_assertion() -> None:
             predicates=(predicate,),
             resolve_external=lambda _: {**endpoint, "object_id": summary.states[0]["id"]},
         )
+
+
+def test_late_bound_claim_keeps_exact_support_and_does_not_apply_sibling_claims() -> None:
+    subject, binding, primary = _fixture(name="/camera/clip.mp4", view_id="fixture")
+    _, _, sibling = _fixture(name="/camera/other.mp4", view_id="fixture")
+    who = primary.graph["agents"][0]["id"]
+    predicate = "urn:example:describes"
+    selected_state = external_reference(primary, primary.states[0]["id"])
+    sibling_state = external_reference(sibling, sibling.states[0]["id"])
+    claims = [
+        assertion(
+            "extension",
+            who,
+            subject=state,
+            property=predicate,
+            value={"type": "text", "value": text},
+        )
+        for state, text in ((selected_state, "selected"), (sibling_state, "sibling"))
+    ]
+    completion_raw = create_journal(
+        {"agents": primary.graph["agents"], "extensions": claims}, recorded_by_agent_id=who
+    )
+    completion = validate_journal(completion_raw)
+    history = member_history_fixture(
+        subject,
+        binding,
+        roots=(MemberHistoryRoot(HistoryJournalAnchor.from_mapping(completion.anchor), "bound"),),
+    )
+    facts = _extract_core_facts(
+        subject,
+        binding,
+        primary,
+        history=history,
+        selected_summaries=(primary, completion),
+        predicates=(predicate,),
+        resolve_external=lambda ref: {k: v for k, v in ref.items() if k != "scope"},
+    )
+    validate_core_provenance_facts({"artifacts": [facts]}, (subject,), {"predicates": [predicate]})
+    assert len(facts["claims"]) == 1
+    assert facts["claims"][0]["value"]["value"] == "selected"
+    assert facts["claims"][0]["support"]["journal"] == completion.anchor
+    assert facts["primary_binding"] == binding.model_dump(mode="json")
+    assert facts["member_history"] == history.to_mapping()
+
+    corrected = validate_journal(
+        append_correction(
+            completion_raw,
+            (assertion_reference(completion, claims[0]["assertion_id"]),),
+            reason="withdraw selected claim",
+            recorded_by_agent_id=who,
+        )
+    )
+    corrected_history = member_history_fixture(
+        subject,
+        binding,
+        roots=(
+            MemberHistoryRoot(HistoryJournalAnchor.from_mapping(corrected.anchor), "bound"),
+            MemberHistoryRoot(HistoryJournalAnchor.from_mapping(completion.anchor), "retained"),
+        ),
+    )
+    corrected_facts = _extract_core_facts(
+        subject,
+        binding,
+        primary,
+        history=corrected_history,
+        selected_summaries=(primary, corrected),
+        predicates=(predicate,),
+        resolve_external=lambda ref: {k: v for k, v in ref.items() if k != "scope"},
+    )
+    assert corrected_facts["claims"] == []
+
+
+def test_claims_on_continuity_artifact_are_explicitly_member_attached() -> None:
+    subject, binding, primary = _fixture(name="/camera/clip.mp4", view_id="fixture")
+    state = primary.states[0]
+    occurrence = primary.graph_validation.objects[state["occurrence_id"]]
+    artifact = primary.graph_validation.objects[occurrence["artifact_id"]]
+    who = primary.graph["agents"][0]["id"]
+    predicate = "urn:example:artifact-fact"
+    attached = external_reference(primary, artifact["id"])
+    late = validate_journal(
+        create_journal(
+            {
+                "agents": primary.graph["agents"],
+                "extensions": [
+                    assertion(
+                        "extension",
+                        who,
+                        subject=attached,
+                        property=predicate,
+                        value={"type": "text", "value": "exact Artifact"},
+                    )
+                ],
+            },
+            recorded_by_agent_id=who,
+        )
+    )
+    history = member_history_fixture(
+        subject,
+        binding,
+        roots=(MemberHistoryRoot(HistoryJournalAnchor.from_mapping(late.anchor), "bound"),),
+    )
+    facts = _extract_core_facts(
+        subject,
+        binding,
+        primary,
+        history=history,
+        selected_summaries=(primary, late),
+        predicates=(predicate,),
+        resolve_external=lambda ref: {k: v for k, v in ref.items() if k != "scope"},
+    )
+    validate_core_provenance_facts({"artifacts": [facts]}, (subject,), {"predicates": [predicate]})
+    assert facts["claims"][0]["subject"] == facts["artifact"]

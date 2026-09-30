@@ -4,21 +4,21 @@
   "$comment": "Structural projection; ProvenanceRootDocument validates canonical bytes and exact semantics.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "archive_generation", "artifact_set_sha256", "delivery_context_id", "binding_count", "journal_count", "volume_sequence"],
+  "required": ["format", "archive_generation", "artifact_set_sha256", "delivery_context_id", "binding_count", "binding_tree_sha256", "journal_count", "volume_sequence"],
   "properties": {
     "format": {"const": "riverhog-archive-provenance-root/v1"},
     "archive_generation": {"$ref": "#/$defs/sha256"},
     "artifact_set_sha256": {"$ref": "#/$defs/sha256"},
     "delivery_context_id": {"$ref": "#/$defs/uuid"},
     "binding_count": {"$ref": "#/$defs/positive_count"},
+    "binding_tree_sha256": {"$ref": "#/$defs/sha256"},
     "journal_count": {"$ref": "#/$defs/positive_count"},
     "volume_sequence": {
       "type": "object",
       "additionalProperties": false,
       "required": ["sha256"],
       "properties": {"sha256": {"$ref": "#/$defs/sha256"}}
-    },
-    "operation_journal_id": {"$ref": "#/$defs/uuid"}
+    }
   },
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},

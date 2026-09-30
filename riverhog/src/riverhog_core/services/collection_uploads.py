@@ -13,21 +13,41 @@ from typing import Any, Literal, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
 from riverhog_archive_contracts import (
+    MEMBER_HISTORY_IMPORTS_SCHEMA,
+    MEMBER_HISTORY_ROOTS_SCHEMA,
     PROVENANCE_BINDING_PAGE_BYTES_MAX,
     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
     PROVENANCE_SEQUENCE_DOMAIN,
+    RETAINED_HISTORY_EXTENT,
     CollectionArchiveTerminalDocument,
     CollectionArchiveVolumeDocument,
     CollectionEncryptionBinding,
+    HistoryJournalAnchor,
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+    MemberHistoryStore,
     ProvenancePayload,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
+    RecordPage,
+    RecordSetCommitment,
+    RecordSetRef,
+    SourceMemberHistoryBindingProof,
+    binding_tree_commitment,
     format_archive_sequence,
+    history_record_page_object_path,
+    member_history_object_path,
+    provenance_structure_identity,
+    provenance_structure_object_id,
     update_archive_sequence_commitment,
     update_provenance_commitment,
+    validate_member_history_binding_page,
+    verify_member_history_sets,
 )
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
@@ -54,6 +74,7 @@ from riverhog_protocol import (
     CollectionUploadRegistrationConstraintsDocument,
     CollectionUploadSort,
     CollectionUploadState,
+    MemberHistoryBindingBatchDocument,
     MemoryCollectionTagNodeStore,
     PortableCollectionArtifact,
     PortableCollectionHeader,
@@ -61,10 +82,10 @@ from riverhog_protocol import (
     collection_description_identity,
     collection_upload_raw_digest_summary,
     decode_collection_tag_node,
-    validate_archive_binding_page,
     validate_collection_tag,
     validate_collection_upload_batch_against_registration_constraints,
 )
+from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import (
     BadRequest,
     Conflict,
@@ -88,10 +109,11 @@ from riverhog_protocol.transport import (
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
 )
 from riverhog_provenance import (
+    CanonicalCorpusValidator,
     JournalSummary,
+    MemberHistoryClosure,
     ProvenanceValidationError,
     validate_journal_chunks,
-    validate_journal_set_chunks,
 )
 from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true
 from sqlalchemy.orm import Session, selectinload
@@ -181,9 +203,11 @@ from riverhog_core.catalog_models import (
     CollectionUploadArtifactRecord,
     CollectionUploadArtifactVolumeRecord,
     CollectionUploadCopyIntentRecord,
+    CollectionUploadMemberHistoryRecord,
     CollectionUploadProvenanceArchiveVolumeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
+    CollectionUploadProvenanceStructureRecord,
     CollectionUploadRawPartDigestRecord,
     CollectionUploadRecord,
     CollectionUploadTagPublicationFrontierRecord,
@@ -1068,6 +1092,103 @@ class SqlAlchemyCollectionUploadService:
             if row is None:
                 raise NotFound(f"artifact provenance binding not found: {artifact_id}")
             return _provenance_binding_row(row)
+
+    def stage_history_structure(self, collection_id: int, content: bytes) -> dict[str, object]:
+        """Durably stage one exact bounded object without granting it semantic authority."""
+
+        normalized_id = _collection_id(collection_id)
+        try:
+            identity = provenance_structure_identity(content)
+        except ValueError as exc:
+            raise BadRequest(str(exc)) from exc
+        with session_scope(self._session_factory) as session:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            )
+            if upload is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            if upload.state != "open":
+                raise Conflict("collection upload no longer accepts history structure")
+            _stage_provenance_structure(
+                session,
+                collection_id=normalized_id,
+                object_id=identity.object_id,
+                kind=identity.kind,
+                relative_path=identity.relative_path,
+                content=content,
+            )
+            _touch_upload(upload, config=self._config)
+        return {
+            "object_id": identity.object_id,
+            "kind": identity.kind,
+            "bytes": format_scalar("nonnegative", identity.bytes),
+            "sha256": identity.sha256,
+        }
+
+    def bind_member_histories(
+        self, collection_id: int, batch: MemberHistoryBindingBatchDocument
+    ) -> dict[str, object]:
+        """Accept final explicit selections while retaining the immutable early primary."""
+
+        normalized_id = _collection_id(collection_id)
+        with session_scope(self._session_factory) as session:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            )
+            if upload is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            if upload.state != "open":
+                raise Conflict("collection upload no longer accepts final history bindings")
+            for value in batch.bindings:
+                binding = MemberHistoryBinding.from_mapping(value.model_dump(mode="json"))
+                artifact = session.get(
+                    CollectionUploadArtifactRecord, (normalized_id, binding.artifact_id)
+                )
+                early = session.get(
+                    CollectionUploadArtifactProvenanceBindingRecord,
+                    (normalized_id, binding.artifact_id),
+                )
+                structure = session.get(
+                    CollectionUploadProvenanceStructureRecord,
+                    (normalized_id, "provenance-history-" + binding.history_sha256),
+                )
+                if artifact is None or early is None or structure is None:
+                    raise Conflict(
+                        "final history requires a registered member, primary and descriptor"
+                    )
+                if (binding.bytes, binding.sha256) != (artifact.bytes, artifact.sha256):
+                    raise Conflict("final history differs from the registered member")
+                history = binding.verify_descriptor(structure.content)
+                primary = MemberHistoryPrimary.from_mapping(
+                    {
+                        "journal": _provenance_binding_row(early)["journal"],
+                        "delivery_association_id": early.delivery_association_id,
+                    }
+                )
+                if history.primary != primary:
+                    raise Conflict("final history cannot replace the accepted early primary")
+                existing = session.get(
+                    CollectionUploadMemberHistoryRecord, (normalized_id, binding.artifact_id)
+                )
+                encoded = canonical_json_bytes(binding.to_mapping()).decode("utf-8")
+                if existing is None:
+                    session.add(
+                        CollectionUploadMemberHistoryRecord(
+                            collection_id=normalized_id,
+                            artifact_id=binding.artifact_id,
+                            history_sha256=binding.history_sha256,
+                            history_bytes=binding.history_bytes,
+                            binding_json=encoded,
+                        )
+                    )
+                elif existing.binding_json != encoded:
+                    raise Conflict("final member history already differs")
+            _touch_upload(upload, config=self._config)
+        return batch.model_dump(mode="json")
 
     def set_artifact_materialization_decisions(
         self,
@@ -2326,7 +2447,13 @@ class SqlAlchemyCollectionUploadService:
             upload.archive_failure = f"{type(exc).__name__}: {exc}"[:1000]
 
     def _finalize(self, collection_id: int) -> None:
+        if self._stage_next_member_histories(collection_id):
+            self._requeue_finalization_step(collection_id)
+            return
         if self._advance_provenance_closure_validation(collection_id):
+            self._requeue_finalization_step(collection_id)
+            return
+        if self._publish_next_provenance_structure(collection_id):
             self._requeue_finalization_step(collection_id)
             return
         if self._advance_archive_tree_checkpoint(collection_id):
@@ -3087,11 +3214,59 @@ class SqlAlchemyCollectionUploadService:
                     verified_at=now,
                 )
             )
-            _set_catalog_cursor(upload, {"section": "roots"})
+            _set_catalog_cursor(
+                upload,
+                {
+                    "section": "structure",
+                    "next_order": 2 * total_volumes + 1 + 2 * provenance_count + 1,
+                },
+            )
+            return
+        if section == "structure":
+            statement = select(CollectionUploadProvenanceStructureRecord).where(
+                CollectionUploadProvenanceStructureRecord.collection_id == upload.collection_id
+            )
+            after_object_id = cursor.get("after_object_id")
+            if after_object_id is not None:
+                statement = statement.where(
+                    CollectionUploadProvenanceStructureRecord.object_id > after_object_id
+                )
+            rows = list(
+                session.scalars(
+                    statement.order_by(CollectionUploadProvenanceStructureRecord.object_id).limit(
+                        _FINALIZATION_FILE_BATCH
+                    )
+                )
+            )
+            order = _cursor_nonnegative_int(cursor, "next_order")
+            for structure_row in rows:
+                if structure_row.receipt_json is None:
+                    raise RuntimeError("catalog provenance structure receipt is unavailable")
+                current = _parse_sealed_provenance_object(structure_row.receipt_json)
+                session.add(
+                    _catalog_small_archive_object(
+                        upload=upload,
+                        current=current,
+                        object_order=order,
+                        verified_at=now,
+                    )
+                )
+                order += 1
+            if rows:
+                _set_catalog_cursor(
+                    upload,
+                    {
+                        "section": "structure",
+                        "after_object_id": rows[-1].object_id,
+                        "next_order": order,
+                    },
+                )
+            else:
+                _set_catalog_cursor(upload, {"section": "roots", "next_order": order})
             return
         if section == "roots":
             authority = _final_authority(upload)
-            order = 2 * total_volumes + 1 + 2 * provenance_count + 1
+            order = _cursor_nonnegative_int(cursor, "next_order")
             sealed = _sealed_upload_provenance(upload)
             session.add(
                 _catalog_small_archive_object(
@@ -3178,6 +3353,205 @@ class SqlAlchemyCollectionUploadService:
         upload.catalog_phase = "complete"
         session.delete(upload)
 
+    def _stage_next_member_histories(self, collection_id: int) -> bool:
+        """Freeze final selections in bounded transactions before root publication."""
+
+        with session_scope(self._session_factory) as session:
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .with_for_update()
+            )
+            if upload is None or upload.provenance_histories_sealed:
+                return False
+            statement = select(CollectionUploadArtifactRecord).where(
+                CollectionUploadArtifactRecord.collection_id == collection_id
+            )
+            if upload.provenance_history_after_artifact_id is not None:
+                statement = statement.where(
+                    CollectionUploadArtifactRecord.artifact_id
+                    > upload.provenance_history_after_artifact_id
+                )
+            artifacts = list(
+                session.scalars(
+                    statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                        _FINALIZATION_FILE_BATCH
+                    )
+                )
+            )
+            if not artifacts:
+                count = session.scalar(
+                    select(func.count())
+                    .select_from(CollectionUploadMemberHistoryRecord)
+                    .where(CollectionUploadMemberHistoryRecord.collection_id == collection_id)
+                )
+                if count != upload.artifact_count:
+                    raise Conflict("final member histories do not cover the artifact set")
+                upload.provenance_histories_sealed = True
+                return True
+            completion = None
+            if upload.operation_journal_id is not None:
+                journal = session.get(
+                    CollectionUploadProvenanceJournalRecord,
+                    (collection_id, upload.operation_journal_id),
+                )
+                if journal is None or journal.state != "sealed":
+                    raise Conflict("required operation journal is not sealed")
+                completion = _sealed_journal_history_anchor(journal)
+            for artifact in artifacts:
+                existing_history = session.get(
+                    CollectionUploadMemberHistoryRecord, (collection_id, artifact.artifact_id)
+                )
+                if existing_history is not None:
+                    upload.provenance_history_after_artifact_id = artifact.artifact_id
+                    continue
+                early = session.get(
+                    CollectionUploadArtifactProvenanceBindingRecord,
+                    (collection_id, artifact.artifact_id),
+                )
+                if early is None:
+                    raise Conflict("member history has no accepted primary binding")
+                primary = MemberHistoryPrimary.from_mapping(
+                    {
+                        "journal": _provenance_binding_row(early)["journal"],
+                        "delivery_association_id": early.delivery_association_id,
+                    }
+                )
+                roots = [MemberHistoryRoot(primary.journal, "bound")]
+                if completion is not None:
+                    roots.append(MemberHistoryRoot(completion, "bound"))
+                ordered = sorted(roots, key=lambda root: root.key)
+                commitment = RecordSetCommitment(MEMBER_HISTORY_ROOTS_SCHEMA)
+                root_rows: tuple[dict[str, Any], ...] = tuple(
+                    {"key": root.key, "value": root.to_mapping()} for root in ordered
+                )
+                for root in ordered:
+                    commitment.update(root.key, root.to_mapping())
+                root_ref = commitment.ref()
+                import_ref = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
+                history = MemberHistoryDocument(
+                    artifact_id=artifact.artifact_id,
+                    bytes=artifact.bytes,
+                    sha256=artifact.sha256,
+                    primary=primary,
+                    roots=root_ref,
+                    imports=import_ref,
+                )
+                root_pages = (
+                    RecordPage(root_ref, 0, root_rows, False),
+                    RecordPage(root_ref, 1, (), True),
+                )
+                import_pages = (RecordPage(import_ref, 0, (), True),)
+                verify_member_history_sets(
+                    history, root_pages=root_pages, import_pages=import_pages
+                )
+                for page in (*root_pages, *import_pages):
+                    _stage_provenance_structure(
+                        session,
+                        collection_id=collection_id,
+                        object_id="provenance-record-page-"
+                        + page.authority.records_sha256
+                        + "-"
+                        + format_archive_sequence(page.ordinal),
+                        kind="record-page",
+                        relative_path=history_record_page_object_path(
+                            page.authority.records_sha256, page.ordinal
+                        ),
+                        content=page.to_json_bytes(),
+                    )
+                content = history.to_json_bytes()
+                binding = MemberHistoryBinding(
+                    artifact.artifact_id,
+                    artifact.bytes,
+                    artifact.sha256,
+                    history.identity,
+                    len(content),
+                )
+                _stage_provenance_structure(
+                    session,
+                    collection_id=collection_id,
+                    object_id="provenance-history-" + history.identity,
+                    kind="history",
+                    relative_path=member_history_object_path(history.identity),
+                    content=content,
+                )
+                existing = session.get(
+                    CollectionUploadMemberHistoryRecord, (collection_id, artifact.artifact_id)
+                )
+                binding_json = canonical_json_bytes(binding.to_mapping()).decode("utf-8")
+                if existing is None:
+                    session.add(
+                        CollectionUploadMemberHistoryRecord(
+                            collection_id=collection_id,
+                            artifact_id=artifact.artifact_id,
+                            history_sha256=history.identity,
+                            history_bytes=len(content),
+                            binding_json=binding_json,
+                        )
+                    )
+                elif existing.binding_json != binding_json:
+                    raise Conflict("member history retry differs from its sealed selection")
+                upload.provenance_history_after_artifact_id = artifact.artifact_id
+            return True
+
+    def _publish_next_provenance_structure(self, collection_id: int) -> bool:
+        """Publish one exact staged structural object and checkpoint its receipt."""
+
+        with read_snapshot(self._session_factory) as session:
+            upload = session.get(CollectionUploadRecord, collection_id)
+            if upload is None or not upload.provenance_closure_validated:
+                return False
+            pending = session.scalar(
+                select(CollectionUploadProvenanceStructureRecord)
+                .where(
+                    CollectionUploadProvenanceStructureRecord.collection_id == collection_id,
+                    CollectionUploadProvenanceStructureRecord.receipt_json.is_(None),
+                )
+                .order_by(CollectionUploadProvenanceStructureRecord.object_id)
+                .limit(1)
+            )
+            if pending is None:
+                return False
+            object_id, kind, content = pending.object_id, pending.kind, pending.content
+            prefix, store_name = upload.archive_storage_prefix, upload.archive_store
+            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
+        publisher = ArchiveProvenancePublisher(
+            object_store=self._archive_stores.require(store_name).immutable_objects,
+            passphrase=passphrase,
+            scrypt_log_n=self._config.archive_scrypt_work_factor,
+        )
+        if kind == "history":
+            history = MemberHistoryDocument.from_json_bytes(content)
+            sealed = publisher.publish_member_history(
+                archive_storage_prefix=prefix,
+                binding=MemberHistoryBinding(
+                    history.artifact_id,
+                    history.bytes,
+                    history.sha256,
+                    history.identity,
+                    len(content),
+                ),
+                content=content,
+            )
+        elif kind == "record-page":
+            sealed = publisher.publish_record_page(
+                archive_storage_prefix=prefix, page=RecordPage.from_json_bytes(content)
+            )
+        elif kind == "source-proof":
+            sealed = publisher.publish_source_binding_proof(
+                archive_storage_prefix=prefix,
+                proof=SourceMemberHistoryBindingProof.from_json_bytes(content),
+            )
+        else:
+            raise Conflict("unsupported staged provenance structure")
+        with session_scope(self._session_factory) as session:
+            row = session.get(CollectionUploadProvenanceStructureRecord, (collection_id, object_id))
+            if row is None or row.content != content:
+                raise Conflict("staged provenance structure changed during publication")
+            if row.receipt_json is None:
+                row.receipt_json = _sealed_provenance_object_json(sealed)
+        return True
+
     def _advance_provenance_closure_validation(self, collection_id: int) -> bool:
         """Resolve each member against its exact primary canonical snapshot."""
 
@@ -3189,6 +3563,8 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.provenance_closure_validated:
                 return False
+            if not upload.provenance_histories_sealed:
+                raise Conflict("final member history selections are not sealed")
             statement = select(CollectionUploadArtifactRecord).where(
                 CollectionUploadArtifactRecord.collection_id == collection_id
             )
@@ -3247,6 +3623,63 @@ class SqlAlchemyCollectionUploadService:
                         summary=summary,
                         delivery_context_id=upload.delivery_context_id,
                     )
+                    final = session.get(
+                        CollectionUploadMemberHistoryRecord, (collection_id, row.artifact_id)
+                    )
+                    if final is None:
+                        raise Conflict("final member history is missing")
+                    structural = session.get(
+                        CollectionUploadProvenanceStructureRecord,
+                        (collection_id, "provenance-history-" + final.history_sha256),
+                    )
+                    if structural is None:
+                        raise Conflict("final member history descriptor bytes are missing")
+                    history = _member_history_binding_row(final).verify_descriptor(
+                        structural.content
+                    )
+                    expected_primary = MemberHistoryPrimary.from_mapping(
+                        {
+                            "journal": binding.journal.model_dump(mode="json"),
+                            "delivery_association_id": binding.delivery_association_id,
+                        }
+                    )
+                    if history.primary != expected_primary:
+                        raise Conflict(
+                            "final member history differs from the accepted early primary"
+                        )
+                    verify_member_history_sets(
+                        history,
+                        root_pages=_iter_staged_history_pages(
+                            session, collection_id, history.roots
+                        ),
+                        import_pages=_iter_staged_history_pages(
+                            session, collection_id, history.imports
+                        ),
+                    )
+                    for page in _iter_staged_history_pages(session, collection_id, history.roots):
+                        for selected in page.records:
+                            selected_anchor = MemberHistoryRoot.from_mapping(
+                                selected["value"]
+                            ).journal
+                            if selected_anchor == history.primary.journal:
+                                continue
+                            selected_journal = session.get(
+                                CollectionUploadProvenanceJournalRecord,
+                                (collection_id, selected_anchor.journal_id),
+                            )
+                            if selected_journal is None or selected_journal.state != "sealed":
+                                raise Conflict("selected member history root is absent or unsealed")
+                            validate_journal_chunks(
+                                _iter_upload_journal_chunks(
+                                    session,
+                                    selected_journal,
+                                    through_bytes=selected_anchor.prefix_bytes,
+                                ),
+                                catalog=admission_provenance_catalog(),
+                                expected_anchor=selected_anchor.to_mapping(),
+                                require_exact_tail=True,
+                                require_profiles=False,
+                            )
                     validate_collection_production_records(
                         summary.graph, delivery_context_id=upload.delivery_context_id
                     )
@@ -3306,25 +3739,25 @@ class SqlAlchemyCollectionUploadService:
             next_artifact_order = int(upload.provenance_archive_next_artifact_order)
 
             if next_artifact_order < upload.artifact_count:
-                statement = select(CollectionUploadArtifactProvenanceBindingRecord).where(
-                    CollectionUploadArtifactProvenanceBindingRecord.collection_id == collection_id
+                statement = select(CollectionUploadMemberHistoryRecord).where(
+                    CollectionUploadMemberHistoryRecord.collection_id == collection_id
                 )
                 if upload.provenance_archive_after_artifact_id is not None:
                     statement = statement.where(
-                        CollectionUploadArtifactProvenanceBindingRecord.artifact_id
+                        CollectionUploadMemberHistoryRecord.artifact_id
                         > upload.provenance_archive_after_artifact_id
                     )
                 rows = list(
                     session.scalars(
-                        statement.order_by(
-                            CollectionUploadArtifactProvenanceBindingRecord.artifact_id
-                        ).limit(PROVENANCE_BINDING_PAGE_MEMBERS_MAX)
+                        statement.order_by(CollectionUploadMemberHistoryRecord.artifact_id).limit(
+                            PROVENANCE_BINDING_PAGE_MEMBERS_MAX
+                        )
                     )
                 )
                 if not rows:
                     raise RuntimeError("provenance binding pages do not cover the member set")
-                bindings = [_provenance_binding_row(row) for row in rows]
-                validate_archive_binding_page(
+                bindings = [_member_history_binding_row(row).to_mapping() for row in rows]
+                validate_member_history_binding_page(
                     bindings, max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX
                 )
                 payload = canonical_json_bytes(
@@ -3389,9 +3822,20 @@ class SqlAlchemyCollectionUploadService:
                         artifact_set_sha256=artifact_set_sha256,
                         delivery_context_id=upload.delivery_context_id,
                         binding_count=upload.artifact_count,
+                        binding_tree_sha256=binding_tree_commitment(
+                            _member_history_binding_row(row)
+                            for row in session.scalars(
+                                select(CollectionUploadMemberHistoryRecord)
+                                .where(
+                                    CollectionUploadMemberHistoryRecord.collection_id
+                                    == collection_id
+                                )
+                                .order_by(CollectionUploadMemberHistoryRecord.artifact_id)
+                                .execution_options(yield_per=256)
+                            )
+                        ).root_sha256,
                         journal_count=journal_count,
                         ordered_volume_sha256=upload.provenance_archive_ordered_sha256,
-                        operation_journal_id=upload.operation_journal_id,
                     )
 
         publisher = ArchiveProvenancePublisher(
@@ -4059,6 +4503,14 @@ def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) 
         upload.catalog_phase = "provenance-segments"
         upload.catalog_cursor_json = "{}"
         return
+    histories = {
+        row.artifact_id: session.get(
+            CollectionUploadMemberHistoryRecord, (upload.collection_id, row.artifact_id)
+        )
+        for row in rows
+    }
+    if any(history is None for history in histories.values()):
+        raise RuntimeError("catalog member history selection is unavailable")
     session.execute(
         insert(CollectionArtifactProvenanceRecord),
         [
@@ -4072,6 +4524,12 @@ def _advance_catalog_bindings(session: Session, upload: CollectionUploadRecord) 
                 "prefix_sha256": row.prefix_sha256,
                 "prefix_bytes": row.prefix_bytes,
                 "delivery_association_id": row.delivery_association_id,
+                "history_sha256": cast(
+                    CollectionUploadMemberHistoryRecord, histories[row.artifact_id]
+                ).history_sha256,
+                "history_bytes": cast(
+                    CollectionUploadMemberHistoryRecord, histories[row.artifact_id]
+                ).history_bytes,
             }
             for row in rows
         ],
@@ -4817,54 +5275,142 @@ def _provenance_binding_row(
     return document.bindings[0].model_dump(mode="json")
 
 
+def _sealed_journal_history_anchor(
+    journal: CollectionUploadProvenanceJournalRecord,
+) -> HistoryJournalAnchor:
+    if journal.state != "sealed" or any(
+        value is None
+        for value in (
+            journal.terminal_entry_id,
+            journal.terminal_sequence,
+            journal.terminal_json_sha256,
+        )
+    ):
+        raise Conflict("member history selects an unsealed journal")
+    return HistoryJournalAnchor(
+        journal_id=journal.journal_id,
+        through_entry_id=cast(str, journal.terminal_entry_id),
+        through_sequence=cast(int, journal.terminal_sequence),
+        through_json_sha256=cast(str, journal.terminal_json_sha256),
+        prefix_sha256=journal.sha256,
+        prefix_bytes=journal.bytes,
+    )
+
+
+def _stage_provenance_structure(
+    session: Session,
+    *,
+    collection_id: int,
+    object_id: str,
+    kind: str,
+    relative_path: str,
+    content: bytes,
+) -> None:
+    existing = session.get(CollectionUploadProvenanceStructureRecord, (collection_id, object_id))
+    if existing is None:
+        session.add(
+            CollectionUploadProvenanceStructureRecord(
+                collection_id=collection_id,
+                object_id=object_id,
+                kind=kind,
+                relative_path=relative_path,
+                content=content,
+            )
+        )
+    elif (existing.kind, existing.relative_path, existing.content) != (
+        kind,
+        relative_path,
+        content,
+    ):
+        raise Conflict("provenance structure retry differs from accepted bytes")
+
+
+def _member_history_binding_row(row: CollectionUploadMemberHistoryRecord) -> MemberHistoryBinding:
+    return MemberHistoryBinding.from_mapping(json.loads(row.binding_json))
+
+
+def _iter_staged_history_pages(
+    session: Session, collection_id: int, authority: RecordSetRef
+) -> Iterator[RecordPage]:
+    for ordinal in range(authority.record_count + 1):
+        object_id = (
+            "provenance-record-page-"
+            + authority.records_sha256
+            + "-"
+            + format_archive_sequence(ordinal)
+        )
+        row = session.get(CollectionUploadProvenanceStructureRecord, (collection_id, object_id))
+        if row is None:
+            raise Conflict("required member history page is missing")
+        page = RecordPage.from_json_bytes(row.content)
+        yield page
+        if page.terminal:
+            return
+    raise Conflict("member history set has no terminal")
+
+
 def _validate_staged_canonical_journal_set(
     session: Session, upload: CollectionUploadRecord
 ) -> None:
-    """Resolve foreign assertions and forks across the complete staged corpus."""
+    """Resolve explicit member roots/imports and exact documentary dependencies."""
 
-    records = list(
-        session.scalars(
+    collection_id = upload.collection_id
+
+    def read_structure(path: str) -> Iterator[bytes]:
+        row = session.get(
+            CollectionUploadProvenanceStructureRecord,
+            (collection_id, provenance_structure_object_id(path)),
+        )
+        if row is None or row.relative_path != path:
+            raise Conflict("required history structure is missing from staged custody")
+        yield row.content
+
+    def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
+        row = session.get(CollectionUploadProvenanceJournalRecord, (collection_id, journal_id))
+        if row is None or row.state != "sealed":
+            raise Conflict("required history journal is absent or unsealed")
+        yield from _iter_upload_journal_chunks(session, row, through_bytes=end)
+
+    with (
+        MemberHistoryClosure(
+            MemberHistoryStore(read_structure),
+            read_journal,
+            member_role=COLLECTION_MEMBER_ROLE,
+            catalog=admission_provenance_catalog(),
+        ) as closure,
+        CanonicalCorpusValidator() as corpus,
+    ):
+        for final in session.scalars(
+            select(CollectionUploadMemberHistoryRecord)
+            .where(CollectionUploadMemberHistoryRecord.collection_id == collection_id)
+            .order_by(CollectionUploadMemberHistoryRecord.artifact_id)
+            .execution_options(yield_per=_FINALIZATION_FILE_BATCH)
+        ):
+            # Publication retains every selected local documentary root. Each
+            # inherited selection keeps its own exact accepted transfer extent.
+            closure.resolve(_member_history_binding_row(final), extent=RETAINED_HISTORY_EXTENT)
+        count = 0
+        for record in session.scalars(
             select(CollectionUploadProvenanceJournalRecord)
-            .where(CollectionUploadProvenanceJournalRecord.collection_id == upload.collection_id)
+            .where(CollectionUploadProvenanceJournalRecord.collection_id == collection_id)
             .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
-        )
-    )
-    if not records or any(record.state != "sealed" for record in records):
-        raise Conflict("canonical provenance corpus is absent or unsealed")
-    corpus = validate_journal_set_chunks(
-        (_iter_upload_journal_chunks(session, record) for record in records),
-        catalog=admission_provenance_catalog(),
-        require_profiles=False,
-    )
-    summaries = {summary.journal_id: summary for summary in corpus.journals}
-    roots = set(
-        session.scalars(
-            select(CollectionUploadArtifactProvenanceBindingRecord.journal_id).where(
-                CollectionUploadArtifactProvenanceBindingRecord.collection_id
-                == upload.collection_id
+            .execution_options(yield_per=_FINALIZATION_FILE_BATCH)
+        ):
+            if record.state != "sealed":
+                raise Conflict("canonical provenance corpus contains an unsealed journal")
+            if not closure.contains_journal(record.journal_id):
+                raise Conflict("canonical provenance corpus contains unrelated journals")
+            corpus.add(
+                validate_journal_chunks(
+                    _iter_upload_journal_chunks(session, record),
+                    catalog=admission_provenance_catalog(),
+                    require_profiles=False,
+                )
             )
-        )
-    )
-    if upload.operation_journal_id is not None:
-        roots.add(upload.operation_journal_id)
-    pending = list(roots)
-    reached: set[str] = set()
-    while pending:
-        journal_id = pending.pop()
-        if journal_id in reached:
-            continue
-        summary = summaries.get(journal_id)
-        if summary is None:
-            raise Conflict(f"primary canonical journal is missing: {journal_id}")
-        reached.add(journal_id)
-        pending.extend(
-            reference["journal_id"] for reference in summary.graph_validation.external_references
-        )
-        parent = summary.frames[0].document["body"]["journal"].get("forked_from")
-        if parent is not None:
-            pending.append(parent["journal_id"])
-    if reached != set(summaries):
-        raise Conflict("canonical provenance corpus contains unrelated journals")
+            count += 1
+        if count == 0:
+            raise Conflict("canonical provenance corpus is absent")
+        corpus.validate()
 
 
 def _provenance_volume_document(

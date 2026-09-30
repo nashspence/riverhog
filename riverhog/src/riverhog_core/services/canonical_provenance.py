@@ -5,9 +5,10 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Any
 
+from riverhog_archive_contracts import MemberHistoryBinding, SourceMemberHistoryBindingProof
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol import ArtifactId, CollectionArtifactProvenanceBindingDocument
-from riverhog_protocol.errors import NotFound
+from riverhog_protocol.errors import InvalidState, NotFound, PreconditionFailed
 from riverhog_protocol.paths import validate_collection_id
 from riverhog_provenance_contracts import ProvenanceJournalId
 from sqlalchemy import select
@@ -25,6 +26,7 @@ from riverhog_core.artifact_access import artifact_scope_filter, require_artifac
 from riverhog_core.canonical_provenance_archive import PublishedCanonicalProvenance
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
 from riverhog_core.catalog_models import (
+    CatalogSyncStateRecord,
     CollectionArtifactProvenanceRecord,
     CollectionArtifactRecord,
     CollectionRecord,
@@ -113,25 +115,37 @@ class SqlAlchemyCanonicalProvenanceService:
                 projection.prefix_sha256,
                 projection.delivery_association_id,
             )
+            projected_history = (projection.history_sha256, projection.history_bytes)
         reader = self._archives.reader(normalized_id)
-        binding: CollectionArtifactProvenanceBindingDocument | None = None
+        final_binding: MemberHistoryBinding | None = None
         for value in reader.iter_bindings():
-            candidate = CollectionArtifactProvenanceBindingDocument.model_validate(value)
+            candidate = MemberHistoryBinding.from_mapping(value)
             if candidate.artifact_id == canonical_id:
-                binding = candidate
+                final_binding = candidate
                 break
             if candidate.artifact_id > canonical_id:
                 break
         if (
-            binding is None
-            or (
-                binding.journal.journal_id,
-                binding.journal.prefix_sha256,
-                binding.delivery_association_id,
-            )
-            != projected_binding
+            final_binding is None
+            or (final_binding.history_sha256, final_binding.history_bytes) != projected_history
+            or (final_binding.artifact_id, str(final_binding.bytes), final_binding.sha256)
+            != (member_payload["artifact_id"], member_payload["bytes"], member_payload["sha256"])
         ):
-            raise NotFound("archive does not confirm the artifact's canonical binding")
+            raise NotFound("archive does not confirm the artifact's member history binding")
+        history = reader.member_history(final_binding)
+        binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+            {
+                "artifact_id": history.artifact_id,
+                "journal": history.primary.journal.to_mapping(),
+                "delivery_association_id": history.primary.delivery_association_id,
+            }
+        )
+        if (
+            binding.journal.journal_id,
+            binding.journal.prefix_sha256,
+            binding.delivery_association_id,
+        ) != projected_binding:
+            raise NotFound("archive does not confirm the artifact's primary binding")
         with read_snapshot(self._session_factory) as session:
             current = _authorized_collection(session, normalized_id, principal)
             require_artifact_scope(session, principal, normalized_id, canonical_id)
@@ -142,7 +156,68 @@ class SqlAlchemyCanonicalProvenanceService:
             "archive_root_sha256": root_identity,
             "artifact": member_payload,
             "binding": binding.model_dump(mode="json"),
+            "history_binding": final_binding.to_mapping(),
+            "member_history": history.to_mapping(),
         }
+
+    def get_structure_object(
+        self, collection_id: int, object_id: str, *, expected_root: str, principal: Principal
+    ) -> bytes:
+        normalized_id = validate_collection_id(collection_id)
+        self._require_export_root(normalized_id, expected_root, principal)
+        content = self._archives.reader(normalized_id).structure_object(object_id)
+        self._require_export_root(normalized_id, expected_root, principal)
+        return content
+
+    def get_history_binding_proof(
+        self,
+        collection_id: int,
+        artifact_id: ArtifactId,
+        *,
+        expected_root: str,
+        principal: Principal,
+    ) -> bytes:
+        normalized_id = validate_collection_id(collection_id)
+        self._require_export_root(normalized_id, expected_root, principal, artifact_id=artifact_id)
+        detail = self.get_artifact(normalized_id, artifact_id, principal=principal)
+        binding = MemberHistoryBinding.from_mapping(detail["history_binding"])
+        reader = self._archives.reader(normalized_id)
+        tree = reader.binding_inclusion(artifact_id)
+        if tree.target_index is None:
+            raise InvalidState("root-authenticated member binding is absent")
+        with read_snapshot(self._session_factory) as session:
+            state = session.get(CatalogSyncStateRecord, 1)
+            if state is None:
+                raise InvalidState("catalog source identity is absent")
+            source_identity = state.source_identity
+        proof = SourceMemberHistoryBindingProof(
+            source_identity=source_identity,
+            collection_id=normalized_id,
+            archive_root=self._archives.archive_root_preimage(normalized_id),
+            provenance_root=reader.scan().root.to_json_bytes(),
+            binding=binding,
+            index=tree.target_index,
+            siblings=tree.target_siblings,
+        )
+        self._require_export_root(normalized_id, expected_root, principal, artifact_id=artifact_id)
+        return proof.to_json_bytes()
+
+    def _require_export_root(
+        self,
+        collection_id: int,
+        expected_root: str,
+        principal: Principal,
+        *,
+        artifact_id: ArtifactId | None = None,
+    ) -> None:
+        with read_snapshot(self._session_factory) as session:
+            collection = _authorized_collection(
+                session, collection_id, principal, permission=PROVENANCE_EXPORT
+            )
+            if artifact_id is not None:
+                require_artifact_scope(session, principal, collection_id, artifact_id)
+            if collection.archive_root_sha256 != expected_root:
+                raise PreconditionFailed("collection archive root changed")
 
     def journal_metadata(
         self, collection_id: int, journal_id: str, *, principal: Principal

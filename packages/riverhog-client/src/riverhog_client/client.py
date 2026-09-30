@@ -34,6 +34,12 @@ from riverhog_application_access import (
 from riverhog_application_access import (
     ApplicationResource as ApplicationResource,
 )
+from riverhog_archive_contracts import (
+    PAGE_BYTES_MAX,
+    SourceMemberHistoryBindingProof,
+    provenance_structure_identity,
+    provenance_structure_object_path,
+)
 from riverhog_canonical_json import parse_identity_json
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
@@ -76,8 +82,10 @@ from riverhog_protocol import (
     CollectionUploadVolumeId,
     CollectionUploadWorkBatchDocument,
     DownloadQuotaSort,
+    MemberHistoryBindingBatchDocument,
     PortableCollectionInventoryPage,
     ProcessingClaimId,
+    ProvenanceStructureIdentityDocument,
     RetrievalArtifactReferenceSetDocument,
     RetrievalCacheProtection,
     RetrievalCacheSort,
@@ -1260,6 +1268,47 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         )
         return CollectionArtifactProvenanceBindingBatchDocument.model_validate(payload)
 
+    def stage_collection_upload_session_history_structure(
+        self, collection_id: CollectionId, content: bytes
+    ) -> ProvenanceStructureIdentityDocument:
+        identity = provenance_structure_identity(content)
+        payload = self._json(
+            "stage_collection_upload_session_history_structure",
+            "POST",
+            f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/provenance/structure",
+            content=content,
+            headers={
+                "Content-Type": "application/octet-stream",
+                "Content-Length": str(len(content)),
+            },
+        )
+        response = ProvenanceStructureIdentityDocument.model_validate(payload)
+        if (response.object_id, response.kind, int(response.bytes), response.sha256) != (
+            identity.object_id,
+            identity.kind,
+            identity.bytes,
+            identity.sha256,
+        ):
+            raise RuntimeError("Riverhog changed the staged history structure identity")
+        return response
+
+    def bind_collection_upload_session_member_histories(
+        self,
+        collection_id: CollectionId,
+        batch: MemberHistoryBindingBatchDocument | Mapping[str, Any],
+    ) -> MemberHistoryBindingBatchDocument:
+        document = MemberHistoryBindingBatchDocument.model_validate(batch)
+        payload = self._json(
+            "bind_collection_upload_session_member_histories",
+            "POST",
+            f"/v1/collection-upload-sessions/{_collection_id(collection_id)}/provenance/history-bindings",
+            json=document.model_dump(mode="json"),
+        )
+        accepted = MemberHistoryBindingBatchDocument.model_validate(payload)
+        if accepted != document:
+            raise RuntimeError("Riverhog changed the final member history selection")
+        return accepted
+
     def get_collection_upload_session_artifact_provenance_binding(
         self,
         collection_id: CollectionId,
@@ -1785,6 +1834,57 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             f"/v1/collections/{_collection_id(collection_id)}/provenance/artifacts/"
             f"{_ARTIFACT_ID.validate_python(artifact_id, strict=True)}",
         )
+
+    def get_collection_provenance_structure(
+        self, collection_id: CollectionId, object_id: str, *, archive_root_sha256: str
+    ) -> bytes:
+        provenance_structure_object_path(object_id)
+        # Stream into a bounded buffer: reject excess data before retaining it.
+        client = self._persistent_download_client()
+        path = f"/v1/collections/{_collection_id(collection_id)}/provenance/structure/{object_id}"
+        with client.stream(
+            "GET", path, headers=_archive_root_headers(archive_root_sha256)
+        ) as response:
+            if not response.is_success:
+                response.read()
+                self._raise_for_error("get_collection_provenance_structure", response)
+            if response.headers.get("ETag") != quote_sha256_identity(archive_root_sha256):
+                raise InvalidState("history structure differs from the selected archive root")
+            raw = bytearray()
+            for chunk in response.iter_bytes():
+                if len(raw) + len(chunk) > PAGE_BYTES_MAX:
+                    raise InvalidState("history structure exceeds its bounded contract")
+                raw.extend(chunk)
+        content = bytes(raw)
+        if provenance_structure_identity(content).object_id != object_id:
+            raise InvalidState("history structure differs from its declared identity")
+        return content
+
+    def get_collection_artifact_history_binding_proof(
+        self, collection_id: CollectionId, artifact_id: ArtifactId, *, archive_root_sha256: str
+    ) -> SourceMemberHistoryBindingProof:
+        path = (
+            f"/v1/collections/{_collection_id(collection_id)}/provenance/artifacts/"
+            f"{ArtifactId(artifact_id)}/history-binding-proof"
+        )
+        response = self._request(
+            "get_collection_artifact_history_binding_proof",
+            "GET",
+            path,
+            headers=_archive_root_headers(archive_root_sha256),
+        )
+        proof = SourceMemberHistoryBindingProof.from_json_bytes(response.content)
+        if (
+            hashlib.sha256(proof.archive_root).hexdigest(),
+            proof.binding.artifact_id,
+            proof.collection_id,
+        ) != (
+            archive_root_sha256,
+            artifact_id,
+            _collection_id(collection_id),
+        ):
+            raise InvalidState("source history proof differs from the selected archive member")
+        return proof
 
     def list_collection_provenance_journals(
         self,

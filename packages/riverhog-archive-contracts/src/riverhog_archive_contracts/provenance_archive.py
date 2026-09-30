@@ -24,7 +24,7 @@ from .archive_manifest import format_archive_sequence, parse_archive_sequence
 PROVENANCE_VOLUME_FORMAT = "riverhog-archive-provenance-volume/v1"
 PROVENANCE_TERMINAL_FORMAT = "riverhog-archive-provenance-terminal/v1"
 PROVENANCE_ROOT_FORMAT = "riverhog-archive-provenance-root/v1"
-PROVENANCE_BINDINGS_FORMAT = "riverhog-archive-provenance-bindings/v1"
+PROVENANCE_BINDINGS_FORMAT = "riverhog-archive-member-history-bindings/v1"
 PROVENANCE_BINDING_PAGE_MEMBERS_MAX = 512
 PROVENANCE_BINDING_PAGE_BYTES_MAX = 4 * 1024 * 1024
 PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX = 8 * 1024 * 1024
@@ -346,9 +346,9 @@ class ProvenanceRootDocument:
     artifact_set_sha256: str
     delivery_context_id: str
     binding_count: int
+    binding_tree_sha256: str
     journal_count: int
     ordered_volume_sha256: str
-    operation_journal_id: str | None = None
 
     def __post_init__(self) -> None:
         _sha256(self.archive_generation, "archive generation")
@@ -356,11 +356,10 @@ class ProvenanceRootDocument:
         _uuid(self.delivery_context_id, "delivery context")
         if type(self.binding_count) is not int or self.binding_count < 1:
             raise ProvenanceArchiveError("provenance root needs bound members")
+        _sha256(self.binding_tree_sha256, "member history binding tree")
         if type(self.journal_count) is not int or self.journal_count < 1:
             raise ProvenanceArchiveError("provenance root needs canonical journals")
         _sha256(self.ordered_volume_sha256, "ordered provenance volume")
-        if self.operation_journal_id is not None:
-            _uuid(self.operation_journal_id, "operation journal ID")
 
     def to_mapping(self) -> dict[str, object]:
         result: dict[str, object] = {
@@ -369,11 +368,10 @@ class ProvenanceRootDocument:
             "artifact_set_sha256": self.artifact_set_sha256,
             "delivery_context_id": self.delivery_context_id,
             "binding_count": format_scalar("nonnegative", self.binding_count),
+            "binding_tree_sha256": self.binding_tree_sha256,
             "journal_count": format_scalar("nonnegative", self.journal_count),
             "volume_sequence": {"sha256": self.ordered_volume_sha256},
         }
-        if self.operation_journal_id is not None:
-            result["operation_journal_id"] = self.operation_journal_id
         return result
 
     def to_json_bytes(self) -> bytes:
@@ -399,10 +397,11 @@ class ProvenanceRootDocument:
             "artifact_set_sha256",
             "delivery_context_id",
             "binding_count",
+            "binding_tree_sha256",
             "journal_count",
             "volume_sequence",
         }
-        if set(value) not in (expected, expected | {"operation_journal_id"}):
+        if set(value) != expected:
             raise ProvenanceArchiveError("provenance root has invalid fields")
         if value["format"] != PROVENANCE_ROOT_FORMAT:
             raise ProvenanceArchiveError("provenance root format is unsupported")
@@ -414,9 +413,9 @@ class ProvenanceRootDocument:
             artifact_set_sha256=value["artifact_set_sha256"],
             delivery_context_id=value["delivery_context_id"],
             binding_count=_count(value["binding_count"], "binding count", positive=True),
+            binding_tree_sha256=value["binding_tree_sha256"],
             journal_count=_count(value["journal_count"], "journal count", positive=True),
             ordered_volume_sha256=sequence["sha256"],
-            operation_journal_id=value.get("operation_journal_id"),
         )
 
 

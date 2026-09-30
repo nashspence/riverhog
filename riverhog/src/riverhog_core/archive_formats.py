@@ -8,10 +8,11 @@ RECOVERY_DESCRIPTOR_STORAGE_FORMAT = "riverhog-recovery-descriptor/v1"
 PROVENANCE_ROOT_STORAGE_FORMAT = "riverhog-archive-provenance-root/v1+age"
 PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT = "riverhog-archive-provenance-volume/v1+age"
 PROVENANCE_TERMINAL_STORAGE_FORMAT = "riverhog-archive-provenance-terminal/v1+age"
-PROVENANCE_BINDING_SEGMENT_STORAGE_FORMAT = "riverhog-archive-provenance-bindings/v1+age"
+PROVENANCE_BINDING_SEGMENT_STORAGE_FORMAT = "riverhog-archive-member-history-bindings/v1+age"
 PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT = "riverhog-provenance-journal-segment/v1+age"
 PROVENANCE_HISTORY_STORAGE_FORMAT = "riverhog-member-history/v1+age"
 PROVENANCE_RECORD_PAGE_STORAGE_FORMAT = "riverhog-archive-record-page/v1+age"
+PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT = "riverhog-source-member-history-proof/v1+age"
 
 ARCHIVE_OBJECT_STORAGE_FORMATS = {
     "pack": PACK_VOLUME_STORAGE_FORMAT,
@@ -27,6 +28,7 @@ ARCHIVE_OBJECT_STORAGE_FORMATS = {
     "provenance-journal-segment": PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT,
     "provenance-history": PROVENANCE_HISTORY_STORAGE_FORMAT,
     "provenance-record-page": PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
+    "provenance-source-proof": PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT,
 }
 
 
@@ -46,6 +48,7 @@ __all__ = [
     "PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT",
     "PROVENANCE_HISTORY_STORAGE_FORMAT",
     "PROVENANCE_RECORD_PAGE_STORAGE_FORMAT",
+    "PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT",
     "PROVENANCE_ROOT_STORAGE_FORMAT",
     "PROVENANCE_TERMINAL_STORAGE_FORMAT",
     "PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT",

@@ -32,6 +32,13 @@ from riverhog_archive_contracts.archive_manifest import (
     parse_archive_sequence,
     update_archive_sequence_commitment,
 )
+from riverhog_archive_contracts.history_builder import MemberHistoryBuilder
+from riverhog_archive_contracts.history_store import MemberHistoryStore, read_bounded_history_object
+from riverhog_archive_contracts.member_binding_tree import (
+    BindingTreeCommitment,
+    binding_tree_commitment,
+    verify_binding_inclusion,
+)
 from riverhog_archive_contracts.member_history import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_BYTES_MAX,
@@ -48,6 +55,7 @@ from riverhog_archive_contracts.member_history import (
     history_record_page_object_path,
     member_history_object_path,
     source_binding_proof_object_path,
+    validate_member_history_binding_page,
     verify_member_history_sets,
 )
 from riverhog_archive_contracts.provenance_archive import (
@@ -68,6 +76,12 @@ from riverhog_archive_contracts.provenance_archive import (
     ordered_provenance_commitment,
     update_provenance_commitment,
 )
+from riverhog_archive_contracts.provenance_structure import (
+    ProvenanceStructureIdentity,
+    provenance_structure_identity,
+    provenance_structure_object_id,
+    provenance_structure_object_path,
+)
 from riverhog_archive_contracts.recovery_descriptor import (
     RECOVERY_DESCRIPTOR_FORMAT,
     RECOVERY_DESCRIPTOR_PATH,
@@ -76,6 +90,11 @@ from riverhog_archive_contracts.recovery_descriptor import (
     RecoveryDescriptor,
     RecoveryDescriptorError,
     normalize_passphrase_id,
+)
+from riverhog_archive_contracts.source_binding_proof import (
+    SOURCE_BINDING_PROOF_BYTES_MAX,
+    SOURCE_BINDING_PROOF_FORMAT,
+    SourceMemberHistoryBindingProof,
 )
 from riverhog_archive_contracts.structural_record_set import (
     PAGE_BYTES_MAX,
@@ -90,6 +109,16 @@ from riverhog_archive_contracts.structural_record_set import (
 )
 
 __all__ = [
+    "MemberHistoryBuilder",
+    "MemberHistoryStore",
+    "read_bounded_history_object",
+    "ProvenanceStructureIdentity",
+    "provenance_structure_identity",
+    "provenance_structure_object_id",
+    "provenance_structure_object_path",
+    "SOURCE_BINDING_PROOF_BYTES_MAX",
+    "SOURCE_BINDING_PROOF_FORMAT",
+    "SourceMemberHistoryBindingProof",
     "BOUND_HISTORY_EXTENT",
     "MEMBER_HISTORY_BYTES_MAX",
     "MEMBER_HISTORY_FORMAT",
@@ -105,7 +134,11 @@ __all__ = [
     "history_record_page_object_path",
     "member_history_object_path",
     "source_binding_proof_object_path",
+    "validate_member_history_binding_page",
     "verify_member_history_sets",
+    "BindingTreeCommitment",
+    "binding_tree_commitment",
+    "verify_binding_inclusion",
     "PAGE_BYTES_MAX",
     "PAGE_RECORDS_MAX",
     "RECORD_BYTES_MAX",

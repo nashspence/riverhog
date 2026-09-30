@@ -24,6 +24,12 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "create_or_resume_collection_upload_session": ("conflict",),
         "register_collection_upload_session_artifacts": ("conflict", "not_found"),
         "bind_collection_upload_session_artifact_provenance": ("conflict", "not_found"),
+        "stage_collection_upload_session_history_structure": (
+            "conflict",
+            "not_found",
+            "length_required",
+        ),
+        "bind_collection_upload_session_member_histories": ("conflict", "not_found"),
         "get_collection_upload_session_artifact_provenance_binding": ("not_found",),
         "set_collection_upload_session_materialization_decisions": (
             "conflict",
@@ -101,6 +107,18 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
             "precondition_required",
         ),
         "get_collection_artifact_provenance": ("invalid_state", "not_found"),
+        "get_collection_provenance_structure": (
+            "invalid_state",
+            "not_found",
+            "precondition_required",
+            "precondition_failed",
+        ),
+        "get_collection_artifact_history_binding_proof": (
+            "invalid_state",
+            "not_found",
+            "precondition_required",
+            "precondition_failed",
+        ),
         "stream_collection_provenance_journal": (
             "not_found",
             "precondition_failed",

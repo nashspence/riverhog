@@ -10,9 +10,11 @@ from riverhog_archive_contracts import (
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     RecordPage,
+    SourceMemberHistoryBindingProof,
     format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
+    source_binding_proof_object_path,
 )
 
 from riverhog_core.archive_formats import (
@@ -21,6 +23,7 @@ from riverhog_core.archive_formats import (
     PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT,
     PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
     PROVENANCE_ROOT_STORAGE_FORMAT,
+    PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT,
     PROVENANCE_TERMINAL_STORAGE_FORMAT,
     PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT,
 )
@@ -141,6 +144,21 @@ class ArchiveProvenancePublisher:
             ),
             content=page.to_json_bytes(),
             storage_format=PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
+        )
+
+    def publish_source_binding_proof(
+        self,
+        *,
+        archive_storage_prefix: str,
+        proof: SourceMemberHistoryBindingProof,
+    ) -> SealedProvenanceObject:
+        return self._put(
+            prefix=_prefix(archive_storage_prefix),
+            object_id="provenance-source-proof-" + proof.identity,
+            kind="provenance-source-proof",
+            relative_path=source_binding_proof_object_path(proof.identity),
+            content=proof.to_json_bytes(),
+            storage_format=PROVENANCE_SOURCE_PROOF_STORAGE_FORMAT,
         )
 
     def publish_root(

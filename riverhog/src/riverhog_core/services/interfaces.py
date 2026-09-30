@@ -92,6 +92,17 @@ class CollectionDescriptionService(Protocol):
 
 
 class ProvenanceService(Protocol):
+    def get_structure_object(
+        self, collection_id: int, object_id: str, *, expected_root: str, principal: Principal
+    ) -> bytes: ...
+    def get_history_binding_proof(
+        self,
+        collection_id: int,
+        artifact_id: ArtifactId,
+        *,
+        expected_root: str,
+        principal: Principal,
+    ) -> bytes: ...
     def list_artifacts(
         self,
         collection_id: int,

@@ -1,56 +1,68 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-archive-provenance-bindings-v1.schema.json",
-  "$comment": "Structural projection; validate_archive_binding_page checks exact ID order and bounds.",
+  "$comment": "Structural projection; validate_member_history_binding_page checks exact ID order and bounds.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "bindings"],
+  "required": [
+    "format",
+    "bindings"
+  ],
   "properties": {
-    "format": {"const": "riverhog-archive-provenance-bindings/v1"},
+    "format": {
+      "const": "riverhog-archive-member-history-bindings/v1"
+    },
     "bindings": {
       "type": "array",
       "minItems": 1,
       "maxItems": 512,
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
-        "reason": "bounded-archive-provenance-binding-page",
+        "reason": "bounded-archive-member-history-binding-page",
         "progression": "archive-provenance-volume-sequence"
       },
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["artifact_id", "journal", "delivery_association_id"],
+        "required": [
+          "artifact_id",
+          "bytes",
+          "sha256",
+          "history_sha256",
+          "history_bytes"
+        ],
         "properties": {
-          "artifact_id": {"$ref": "#/$defs/sha256"},
-          "journal": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["journal_id", "through", "prefix_sha256", "prefix_bytes"],
-            "properties": {
-              "journal_id": {"$ref": "#/$defs/uuid"},
-              "through": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["entry_id", "sequence", "json_sha256"],
-                "properties": {
-                  "entry_id": {"$ref": "#/$defs/uuid"},
-                  "sequence": {"$ref": "#/$defs/nonnegative_count"},
-                  "json_sha256": {"$ref": "#/$defs/sha256"}
-                }
-              },
-              "prefix_sha256": {"$ref": "#/$defs/sha256"},
-              "prefix_bytes": {"$ref": "#/$defs/positive_count"}
-            }
+          "artifact_id": {
+            "$ref": "#/$defs/sha256"
           },
-          "delivery_association_id": {"$ref": "#/$defs/uuid"}
+          "bytes": {
+            "$ref": "#/$defs/nonnegative_count"
+          },
+          "sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "history_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "history_bytes": {
+            "$ref": "#/$defs/positive_count"
+          }
         }
       }
     }
   },
   "$defs": {
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "uuid": {"type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"},
-    "nonnegative_count": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$"},
-    "positive_count": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nonnegative_count": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)$"
+    },
+    "positive_count": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    }
   }
 }

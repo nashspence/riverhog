@@ -10,6 +10,8 @@ from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
     CollectionArtifactProvenanceBindingDocument,
     CollectionId,
+    MemberHistoryBindingDocument,
+    MemberHistoryDescriptorDocument,
 )
 from riverhog_provenance_contracts import ProvenanceJournalId
 
@@ -41,6 +43,8 @@ class CollectionArtifactProvenanceDetailOut(RiverhogModel):
     archive_root_sha256: Sha256
     artifact: ArtifactMemberIdentityDocument
     binding: CollectionArtifactProvenanceBindingDocument
+    history_binding: MemberHistoryBindingDocument
+    member_history: MemberHistoryDescriptorDocument
 
 
 class ProvenanceJournalSummaryOut(RiverhogModel):

@@ -21,23 +21,31 @@ from riverhog_archive_contracts import (
     PROVENANCE_SEQUENCE_DOMAIN,
     PROVENANCE_TERMINAL_FORMAT,
     RETAINED_HISTORY_EXTENT,
+    SOURCE_BINDING_PROOF_BYTES_MAX,
+    BindingTreeCommitment,
     MemberHistoryBinding,
     MemberHistoryDocument,
     MemberHistoryImport,
     MemberHistoryRoot,
+    MemberHistoryStore,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     RecordPage,
     RecordSetRef,
+    SourceMemberHistoryBindingProof,
+    binding_tree_commitment,
     format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
+    provenance_structure_identity,
+    provenance_structure_object_path,
+    source_binding_proof_object_path,
     update_provenance_commitment,
+    validate_member_history_binding_page,
     verify_member_history_sets,
 )
 from riverhog_canonical_json import require_canonical_json
-from riverhog_protocol import validate_archive_binding_page
 
 ObjectReader = Callable[[str], Iterator[bytes]]
 
@@ -93,6 +101,18 @@ class CanonicalProvenanceArchiveReader:
                 return
         raise ProvenanceArchiveReadError("member history set lacks its terminal")
 
+    def history_store(self) -> MemberHistoryStore:
+        return MemberHistoryStore(self._read_object)
+
+    def structure_object(self, object_id: str) -> bytes:
+        self.scan()
+        raw = _read_bounded(
+            self._read_object(provenance_structure_object_path(object_id)), PAGE_BYTES_MAX
+        )
+        if provenance_structure_identity(raw).object_id != object_id:
+            raise ProvenanceArchiveReadError("history structure differs from its identity")
+        return raw
+
     def member_history(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
         """Verify the exact descriptor and both complete structural selections.
 
@@ -133,13 +153,42 @@ class CanonicalProvenanceArchiveReader:
                 if extent == RETAINED_HISTORY_EXTENT or selected.inclusion == "bound":
                     yield selected
 
-    def iter_history_imports(
-        self, binding: MemberHistoryBinding
-    ) -> Iterator[MemberHistoryImport]:
+    def iter_history_imports(self, binding: MemberHistoryBinding) -> Iterator[MemberHistoryImport]:
         descriptor = self.member_history(binding)
         for page in self._history_pages(descriptor.imports):
             for row in page.records:
                 yield MemberHistoryImport.from_mapping(row["value"])
+
+    def source_binding_proof(
+        self, imported: MemberHistoryImport
+    ) -> SourceMemberHistoryBindingProof:
+        raw = _read_bounded(
+            self._read_object(
+                source_binding_proof_object_path(imported.source_binding_proof_sha256)
+            ),
+            SOURCE_BINDING_PROOF_BYTES_MAX,
+        )
+        try:
+            proof = SourceMemberHistoryBindingProof.from_json_bytes(raw)
+            proof.verify_import(imported)
+        except ValueError as exc:
+            raise ProvenanceArchiveReadError(str(exc)) from exc
+        return proof
+
+    def binding_inclusion(self, artifact_id: str) -> BindingTreeCommitment:
+        """Verify and prove one final binding without revealing sibling records."""
+
+        root = self.scan().root
+        commitment = binding_tree_commitment(
+            (MemberHistoryBinding.from_mapping(row) for row in self.iter_bindings()),
+            target_artifact_id=artifact_id,
+        )
+        if (commitment.count, commitment.root_sha256) != (
+            root.binding_count,
+            root.binding_tree_sha256,
+        ):
+            raise ProvenanceArchiveReadError("member binding tree differs from the root")
+        return commitment
 
     def _root(self) -> ProvenanceRootDocument:
         raw = _read_bounded(
@@ -185,7 +234,6 @@ class CanonicalProvenanceArchiveReader:
         expected = 0
         binding_count = 0
         journal_count = 0
-        operation_journal_seen = False
         last_artifact_id: str | None = None
         current_journal_id: str | None = None
         current_journal_offset = 0
@@ -234,8 +282,6 @@ class CanonicalProvenanceArchiveReader:
                         "provenance journal identities are not ordered"
                     )
                 current_journal_id = document.journal_id
-                if document.journal_id == root.operation_journal_id:
-                    operation_journal_seen = True
                 current_journal_bytes = document.journal_bytes
                 current_journal_sha256 = document.journal_sha256
                 current_journal_offset = 0
@@ -251,7 +297,6 @@ class CanonicalProvenanceArchiveReader:
             digest.hexdigest() != root.ordered_volume_sha256
             or binding_count != root.binding_count
             or journal_count != root.journal_count
-            or (root.operation_journal_id is not None and not operation_journal_seen)
         ):
             raise ProvenanceArchiveReadError("provenance sequence differs from the root")
         return ProvenanceArchiveSummary(root=root, volume_count=expected - 1)
@@ -382,7 +427,7 @@ class CanonicalProvenanceArchiveReader:
             ):
                 raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
             try:
-                bindings = validate_archive_binding_page(
+                bindings = validate_member_history_binding_page(
                     cast(list[Mapping[str, Any]], raw_bindings),
                     max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
                 )
@@ -400,7 +445,7 @@ class CanonicalProvenanceArchiveReader:
                 if last_id is not None and binding.artifact_id <= last_id:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
                 last_id = binding.artifact_id
-                yield binding.model_dump(mode="json")
+                yield binding.to_mapping()
 
 
 __all__ = [

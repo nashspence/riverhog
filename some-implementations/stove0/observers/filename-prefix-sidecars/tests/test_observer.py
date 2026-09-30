@@ -38,6 +38,8 @@ from stove0_observer_protocol import (
 )
 from stove0_observer_support import ContentObservationResultBuilder, ContentObservationRuntime
 
+from tests.support.member_history import member_history_fixture
+
 _VIEW = "urn:uuid:11111111-1111-4111-8111-111111111111"
 
 
@@ -110,7 +112,13 @@ def _fact(artifact_id: str, name: str | None, *, hint: str | None = None) -> tup
         bytes="3",
         sha256=hashlib.sha256(b"abc").hexdigest(),
     )
-    return subject, extract_core_facts(subject, binding, summary)
+    return subject, extract_core_facts(
+        subject,
+        binding,
+        summary,
+        history=member_history_fixture(subject, binding),
+        selected_summaries=(summary,),
+    )
 
 
 def _request(
