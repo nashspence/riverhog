@@ -153,6 +153,7 @@ def test_late_output_relations_reject_incomplete_or_substituted_maps(change: str
         if change == "omitted":
             records._db.execute("DELETE FROM outputs WHERE output_id = 'xmp'")
         elif change == "duplicate":
+            (records._root / hashlib.sha256(b"target-output-declarations").hexdigest()).unlink()
             records._db.execute("DELETE FROM records WHERE kind = 'target-output-declarations'")
             records.add(
                 "target-output-declarations",
@@ -161,6 +162,7 @@ def test_late_output_relations_reject_incomplete_or_substituted_maps(change: str
         elif change == "substituted":
             records._db.execute("UPDATE outputs SET output_id = 'other' WHERE output_id = 'media'")
         else:
+            (records._root / hashlib.sha256(b"target-output-declarations").hexdigest()).unlink()
             records._db.execute("DELETE FROM records WHERE kind = 'target-output-declarations'")
             records.add(
                 "target-output-declarations",

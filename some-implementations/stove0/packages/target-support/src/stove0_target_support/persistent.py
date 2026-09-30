@@ -44,6 +44,7 @@ from stove0_target_protocol import (
 from stove0_target_support.completion_checkpoint import TargetCompletionCheckpoint
 from stove0_target_support.execution import TargetExecutionSession
 from stove0_target_support.http_binding import TargetServiceError
+from stove0_target_support.output_checkpoint import TargetOutputCheckpoint
 from stove0_target_support.runtime import TargetExecutionRuntime
 
 _ACTIVE_STATES: Final = frozenset({"queued", "running", "canceling"})
@@ -345,7 +346,10 @@ class PersistentTargetService:
                 if status.protocol == EFFECT_TARGET_PROTOCOL and status.state == "succeeded":
                     continue
                 completion_path = TargetCompletionCheckpoint.manifest_path(self.state_root, job_id)
-                if completion_path.exists() and status.state != "succeeded":
+                if status.state != "succeeded" and (
+                    completion_path.exists()
+                    or TargetOutputCheckpoint.has_job_records(self.state_root, job_id)
+                ):
                     continue
                 accepted_path = self._accepted_path(job_id)
                 removed_bytes += stat.st_size
@@ -363,18 +367,36 @@ class PersistentTargetService:
                             raise ValueError("target checkpoint paths must not be symlinks")
                         removed_bytes += checkpoint_path.stat().st_size
                         checkpoint_path.unlink()
+                for checkpoint_path in self.state_root.glob(f"{job_id}.step-*.bin"):
+                    if checkpoint_path.is_symlink() or not checkpoint_path.is_file():
+                        raise ValueError("target step checkpoint must be a regular file")
+                    removed_bytes += checkpoint_path.stat().st_size
+                    checkpoint_path.unlink()
+                for suffix in ("outputs", "output-members"):
+                    directory = self.state_root / f"{job_id}.{suffix}"
+                    if directory.is_symlink():
+                        raise ValueError("target output checkpoint directory must not be a symlink")
+                    if not directory.exists():
+                        continue
+                    with os.scandir(directory) as checkpoints:
+                        for entry in checkpoints:
+                            if not entry.is_file(follow_symlinks=False):
+                                raise ValueError("target output checkpoint must be a regular file")
+                            removed_bytes += entry.stat(follow_symlinks=False).st_size
+                            os.unlink(entry.path)
+                    directory.rmdir()
                 status_path.unlink(missing_ok=True)
                 accepted_path.unlink(missing_ok=True)
                 removed_jobs += 1
             if removed_jobs:
-                directory = os.open(
+                directory_descriptor = os.open(
                     self.state_root,
                     os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
                 )
                 try:
-                    os.fsync(directory)
+                    os.fsync(directory_descriptor)
                 finally:
-                    os.close(directory)
+                    os.close(directory_descriptor)
         return {"jobs": removed_jobs, "bytes": removed_bytes}
 
     def _operation(self, operation_id: str) -> OperationContract:
@@ -507,9 +529,14 @@ class PersistentTargetService:
                 if (
                     terminal.failure is not None
                     and terminal.failure.retryable
-                    and TargetCompletionCheckpoint.manifest_path(
-                        self.state_root, request.declaration.job_id
-                    ).exists()
+                    and (
+                        TargetCompletionCheckpoint.manifest_path(
+                            self.state_root, request.declaration.job_id
+                        ).exists()
+                        or TargetOutputCheckpoint.has_job_records(
+                            self.state_root, request.declaration.job_id
+                        )
+                    )
                 ):
                     terminal = self._status(
                         request,

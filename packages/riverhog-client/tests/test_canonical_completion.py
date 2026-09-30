@@ -7,6 +7,7 @@ from dataclasses import replace
 import pytest
 from riverhog_canonical_json import canonical_json_bytes, canonical_json_sha256
 from riverhog_client.canonical_completion import CompletionRecord, build_completion_journal
+from riverhog_client.completion_records import CompletionRecords
 from riverhog_protocol.collection_completion import (
     COMPLETION_REQUIRED_RECORD_KINDS,
     CollectionCompletionRequirementDocument,
@@ -85,6 +86,40 @@ def test_completion_rejects_missing_or_changed_sealed_record() -> None:
         _completion(records[:-1])
     with pytest.raises(ValueError, match="sealed identity"):
         _completion([replace(records[0], sha256="0" * 64), *records[1:]])
+
+
+def test_completion_record_spool_preserves_first_exact_preimage() -> None:
+    with CompletionRecords() as records:
+        original = records.add("target-execution", (b'{"result":null}',))
+        with pytest.raises(ValueError, match="duplicate"):
+            records.add("target-execution", (b'{"result":"replacement"}',))
+        assert b"".join(original.read()) == b'{"result":null}'
+        assert records.record("target-execution").sha256 == original.sha256
+
+
+def test_completion_record_spool_retries_interrupted_write() -> None:
+    def interrupted():
+        yield b"partial"
+        raise OSError("fixture interrupted input")
+
+    with CompletionRecords() as records:
+        with pytest.raises(OSError, match="interrupted"):
+            records.add("target-execution", interrupted())
+        retained = records.add("target-execution", (b"complete",))
+        assert b"".join(retained.read()) == b"complete"
+
+
+def test_completion_output_spool_uses_member_and_operation_key_identity() -> None:
+    # A State endpoint is evidence about bytes, not the identity of an output
+    # declaration or member. The spool does not impose another provenance rule.
+    with CompletionRecords() as records:
+        for key in ("a", "b"):
+            records.add_output(
+                {"artifact_id": key * 64, "output_id": key, "state": {"id": "same-state"}},
+                {"artifact_id": key * 64},
+            )
+        assert records.output_count == 2
+        assert records.output_for_key("a")["state"] == records.output_for_key("b")["state"]
 
 
 def test_completion_checks_exact_output_import_and_disposition_correspondence() -> None:

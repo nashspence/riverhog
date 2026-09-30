@@ -8,6 +8,7 @@ import os
 import shutil
 import threading
 from collections.abc import Sequence
+from functools import partial
 from pathlib import Path
 
 from a_stove0_media_archive_contract_lib import (
@@ -32,8 +33,10 @@ from a_stove0_media_archive_lib import (
     seal_publication_plan,
     sibling_hint,
 )
+from pydantic import JsonValue
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ProducerFile
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
 from stove0_protocol import JsonSchemaValidationProfile
@@ -41,6 +44,7 @@ from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
     PersistentTargetService,
+    TargetCollectionPublication,
     TargetDescriptor,
     TargetDescriptorPayload,
     TargetExecutionCanceled,
@@ -180,6 +184,9 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         cancellation: threading.Event,
         session: TargetExecutionSession,
     ) -> TargetJobStatus:
+        toolchain = session.step_value(
+            "nvenc-toolchain", lambda: {"ffmpeg": tool_version(self.ffmpeg)}
+        )
         intent = Av1OpusArchiveIntent.model_validate(request.declaration.plan.intent)
         options = request.declaration.plan.target_options
         timeout = options.get("ffmpeg_timeout_seconds", 86400)
@@ -223,6 +230,16 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 )
                 for item in projection.items:
                     check()
+                    resumed = self._resume_projection_outputs(
+                        item,
+                        workspace=workspace,
+                        publication=publication,
+                        decisions=publication_decisions,
+                        plan_sha256=request.declaration.plan.plan_sha256,
+                    )
+                    if resumed is not None:
+                        outputs.extend(resumed)
+                        continue
                     artifact, claimed = resolved_by_id[item.input_artifact_id]
                     source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -330,6 +347,28 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             reconstructs_output_id=video.id,
                         )
                         outputs.append(source_artifact)
+                        session.step_value(
+                            "nvenc-output-group:" + item.input_artifact_id,
+                            partial(_output_group_value, (video, xmp_output, source_artifact)),
+                        )
+                        for path, product, inputs in (
+                            (destination, video, item.derived_from),
+                            (xmp, xmp_output, item.derived_from),
+                            (bundle, source_artifact, (item.input_artifact_id,)),
+                        ):
+                            decision = publication_decisions.decision_for(product.id)
+                            publication.prepare_output(
+                                ProducerFile(
+                                    path,
+                                    product.artifact_id,
+                                    materialization_hint=decision.components,
+                                    allow_missing_materialization_hint=(
+                                        decision.allow_missing_materialization_hint
+                                    ),
+                                ),
+                                product,
+                                derived_from=inputs,
+                            )
                         video_decision = publication_decisions.decision_for(video.id)
                         publication.append(
                             ProducerFile(
@@ -372,6 +411,20 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     finally:
                         source.unlink(missing_ok=True)
                 for retained in projection.retained_xmp_sidecars:
+                    retained_output_id = _output_id("source-xmp", (retained.input_artifact_id,))
+                    resumed_output = publication.resume_output(
+                        retained_output_id,
+                        derived_from=(retained.input_artifact_id,),
+                        materialization_hint=publication_decisions.decision_for(
+                            retained_output_id
+                        ).components,
+                        allow_missing_materialization_hint=publication_decisions.decision_for(
+                            retained_output_id
+                        ).allow_missing_materialization_hint,
+                    )
+                    if resumed_output is not None:
+                        outputs.append(resumed_output)
+                        continue
                     artifact, claimed = resolved_by_id[retained.input_artifact_id]
                     source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -423,13 +476,98 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     execution_sha256=execution_sha256,
                     execution_preimage=execution_preimage,
                     attempt=attempt,
-                    runtime_evidence={
-                        "ffmpeg": tool_version(self.ffmpeg),
-                    },
+                    runtime_evidence=toolchain,
                 )
             finally:
                 if not execution.completed:
-                    workspace.release()
+                    execution.release_workspace(workspace)
+
+    def _resume_projection_outputs(
+        self,
+        item: MediaProjectionItem,
+        *,
+        workspace: ProcessingWorkspace,
+        publication: TargetCollectionPublication,
+        decisions: MediaPublicationPlan,
+        plan_sha256: str,
+    ) -> tuple[OutputArtifact, ...] | None:
+        media_id = _output_id("video", item.derived_from)
+        specifications = (
+            (media_id, "archive.mkv", AV1_OPUS_ARCHIVE_ROLE, item.derived_from, None, None),
+            (
+                _output_id("metadata-xmp", item.derived_from),
+                "archive.mkv.xmp",
+                METADATA_XMP_ROLE,
+                item.derived_from,
+                media_id,
+                None,
+            ),
+            (
+                _output_id("source-artifacts", (item.input_artifact_id,)),
+                "source-artifacts.tar.zst",
+                SOURCE_ARTIFACT_ROLE,
+                (item.input_artifact_id,),
+                None,
+                media_id,
+            ),
+        )
+        session = publication.execution.session
+        group = (
+            None
+            if session is None
+            else session.stored_step_value("nvenc-output-group:" + item.input_artifact_id)
+        )
+        if group is None:
+            if any(publication.has_output_checkpoint(spec[0]) for spec in specifications):
+                raise ValueError("media output group checkpoint is missing")
+            return None
+        raw_products = group.get("outputs")
+        if (
+            set(group) != {"outputs"}
+            or not isinstance(raw_products, list)
+            or len(raw_products) != 3
+        ):
+            raise ValueError("media output group checkpoint is malformed")
+        original = tuple(OutputArtifact.model_validate(value) for value in raw_products)
+        products: list[OutputArtifact] = []
+        for product, (key, name, role, inputs, describes, reconstructs) in zip(
+            original, specifications, strict=True
+        ):
+            if (
+                product.id != key
+                or product.role != role
+                or product.artifact_id != _member_id(plan_sha256, key)
+                or product.describes_output_id != describes
+                or product.reconstructs_output_id != reconstructs
+            ):
+                raise ValueError("media output group differs from the accepted invocation")
+            resumed = publication.resume_output(
+                key,
+                derived_from=inputs,
+                materialization_hint=decisions.decision_for(key).components,
+                allow_missing_materialization_hint=decisions.decision_for(
+                    key
+                ).allow_missing_materialization_hint,
+            )
+            if resumed is None:
+                path = workspace.resolve(f"output/video/{item.input_artifact_id}/{name}")
+                if file_identity(path) != (int(product.bytes), product.sha256):
+                    raise ValueError("pending media output differs from its exact checkpoint")
+                decision = decisions.decision_for(key)
+                publication.append(
+                    ProducerFile(
+                        path,
+                        product.artifact_id,
+                        materialization_hint=decision.components,
+                        allow_missing_materialization_hint=decision.allow_missing_materialization_hint,
+                    ),
+                    product,
+                    derived_from=inputs,
+                )
+            elif resumed != product:
+                raise ValueError("media output checkpoint changed a sealed group member")
+            products.append(product)
+        return tuple(products)
 
     def _command(
         self,
@@ -486,6 +624,10 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 sha256=sha256,
             )
         )
+
+
+def _output_group_value(products: Sequence[OutputArtifact]) -> dict[str, JsonValue]:
+    return {"outputs": [product.model_dump(mode="json", exclude_none=True) for product in products]}
 
 
 def _execution_sha256(plan_sha256: str, outputs: Sequence[OutputArtifact]) -> str:

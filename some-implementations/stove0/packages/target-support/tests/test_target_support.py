@@ -19,6 +19,7 @@ from http_api_contracts import (
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import ValidationError
+from riverhog_canonical_json import require_canonical_json
 from riverhog_client import ProducerArtifactCustody, ProducerArtifactIdentity, ProducerFile
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_client.processing import (
@@ -26,6 +27,7 @@ from riverhog_client.processing import (
     ClaimedCollectionRuntimeRegistry,
     CollectionTransformRuntime,
     DerivedCollectionReceipt,
+    ProcessingWorkspace,
 )
 from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
@@ -125,6 +127,7 @@ from stove0_target_support import (
     validate_preflight_response_against_request,
     validate_status_against_request,
 )
+from stove0_target_support.output_checkpoint import TargetOutputCheckpoint
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 _EXECUTION_PREIMAGE = canonical_json_bytes({"format": "fixture-execution/v1", "optional": None})
@@ -922,6 +925,8 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
     class Execution:
         runtime = Runtime()
         job_id = _sha("1")
+        session = None
+        _publications: list[Any] = []
 
         class Callback:
             def declare_target_execution_output(
@@ -2515,9 +2520,218 @@ def test_checkpoint_retention_keeps_failed_unpublished_evidence(tmp_path: Path) 
     try:
         assert service.prune_terminal_state(now=time.time() + 10**9) == {"jobs": 0, "bytes": 0}
         assert (tmp_path / f"{job_id}.completion.json").exists()
+        for suffix in ("outputs", "output-members"):
+            directory = tmp_path / f"{job_id}.{suffix}"
+            directory.mkdir(mode=0o700)
+            (directory / "fixture.json").write_bytes(b"retained restart state")
+        (tmp_path / f"{job_id}.step-fixture.bin").write_bytes(b"original tool evidence")
+        assert service.prune_terminal_state(now=time.time() + 10**9) == {"jobs": 0, "bytes": 0}
         service._write_model(tmp_path / f"{job_id}.status.json", expected)
-        sizes = sum(path.stat().st_size for path in tmp_path.iterdir())
+        sizes = sum(path.stat().st_size for path in tmp_path.rglob("*") if path.is_file())
         assert service.prune_terminal_state(now=time.time() + 10**9) == {"jobs": 1, "bytes": sizes}
         assert list(tmp_path.iterdir()) == []
     finally:
         service.close()
+
+
+def test_partial_output_restart_keeps_pending_bytes_and_skips_receipted_bytes(
+    tmp_path: Path,
+) -> None:
+    operation, implementation, request = _request()
+    state = tmp_path / "state"
+    state.mkdir(mode=0o700)
+    base = tmp_path / "workspace"
+    base.mkdir(mode=0o700)
+    workspace = ProcessingWorkspace.open(
+        base,
+        execution_id=request.declaration.job_id,
+        declared_protection=request.declaration.declared_workspace_protection,
+    )
+    local = workspace.resolve("output/disposable.bin")
+    local.parent.mkdir(mode=0o700)
+    local.write_bytes(b"exact pending output")
+    artifact = OutputArtifact(
+        id="output",
+        role="fixture.output/v1",
+        artifact_id=_sha("6"),
+        bytes=str(len(local.read_bytes())),
+        sha256=hashlib.sha256(local.read_bytes()).hexdigest(),
+    )
+    appended = []
+    declared = []
+    custodied = False
+
+    class Producer:
+        def set_pending_source_resolver(self, resolver):
+            self.resolver = resolver
+
+        def resume_artifact_custody(self, identity):
+            assert identity.artifact_id == artifact.artifact_id
+            return object() if custodied else None
+
+    class Writer:
+        producer = Producer()
+
+    class Runtime:
+        def append_incremental_output(self, _writer, source, **_kwargs):
+            assert source.source.read_bytes() == b"exact pending output"
+            appended.append(source.source)
+            return ()
+
+        def __exit__(self, *_args):
+            pass
+
+    class Callback:
+        def declare_target_execution_output(self, job_id, output):
+            assert job_id == request.declaration.job_id
+            assert output == artifact
+            declared.append(output)
+
+        def declare_target_execution_source_edge(self, _job_id, edge):
+            assert edge.output_id == artifact.id and edge.input_id == "source"
+
+        def close(self):
+            pass
+
+    def open_execution():
+        session = TargetExecutionSession(
+            request, 1, ClaimedCollectionRuntimeRegistry(), state_root=state
+        )
+        execution = TargetExecutionRuntime(request, Runtime(), session=session)
+        execution._workspaces.append(workspace)
+        execution._input_client = Callback()
+        execution.resolve_input_ids = lambda ids: tuple(ids)
+        return execution, TargetCollectionPublication(execution, Writer(), implementation)
+
+    execution, publication = open_execution()
+    publication.prepare_output(
+        ProducerFile(local, artifact.artifact_id, allow_missing_materialization_hint=True),
+        artifact,
+        derived_from=("source",),
+    )
+    execution.__exit__(None, None, None)
+    assert local.read_bytes() == b"exact pending output"
+
+    restarted, resumed = open_execution()
+    assert (
+        resumed.resume_output(
+            "output",
+            derived_from=("source",),
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+        )
+        == artifact
+    )
+    assert appended == [local]
+    assert resumed.writer.producer.resolver(artifact.artifact_id).source == local
+    restarted.__exit__(None, None, None)
+    assert local.exists()
+
+    # Simulate a receipt followed by release and process loss. A new attempt
+    # must consult Riverhog custody and never touch the released payload.
+    custodied = True
+    local.unlink()
+    restarted, resumed = open_execution()
+    assert (
+        resumed.resume_output(
+            "output",
+            derived_from=("source",),
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+        )
+        == artifact
+    )
+    assert appended == [local]
+    with pytest.raises(ValueError, match="source edges"):
+        resumed.resume_output(
+            "output",
+            derived_from=("another-source",),
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+        )
+    with pytest.raises(ValueError, match="publication decision"):
+        resumed.resume_output(
+            "output",
+            derived_from=("source",),
+            materialization_hint=("unaccepted-name",),
+            allow_missing_materialization_hint=True,
+        )
+    assert len(declared) == 3
+
+
+def test_output_checkpoint_rejects_replacement_and_changed_workspace(tmp_path: Path) -> None:
+    _operation, _implementation, request = _request()
+    state = tmp_path / "state"
+    state.mkdir(mode=0o700)
+    base = tmp_path / "workspace"
+    base.mkdir(mode=0o700)
+    workspace = ProcessingWorkspace.open(
+        base,
+        execution_id=request.declaration.job_id,
+        declared_protection=request.declaration.declared_workspace_protection,
+    )
+    local = workspace.resolve("pending.bin")
+    local.write_bytes(b"original")
+    artifact = OutputArtifact(
+        id="output",
+        role="fixture.output/v1",
+        artifact_id=_sha("6"),
+        bytes="8",
+        sha256=hashlib.sha256(b"original").hexdigest(),
+    )
+    arguments = dict(
+        request=request,
+        output=artifact,
+        source_edges_sha256=_sha("1"),
+        source=ProducerFile(local, artifact.artifact_id, allow_missing_materialization_hint=True),
+        workspace=workspace,
+    )
+    first = TargetOutputCheckpoint.retain(state, **arguments)
+    assert TargetOutputCheckpoint.retain(state, **arguments) == first
+    assert (
+        TargetOutputCheckpoint.load_member(state, request=request, artifact_id=artifact.artifact_id)
+        == first
+    )
+    index = state / f"{request.declaration.job_id}.output-members" / f"{artifact.artifact_id}.json"
+    index.unlink()
+    assert TargetOutputCheckpoint.load(state, request=request, output_id=artifact.id) == first
+    assert (
+        TargetOutputCheckpoint.load_member(state, request=request, artifact_id=artifact.artifact_id)
+        == first
+    )
+    with pytest.raises(ValueError, match="checkpoint changed"):
+        TargetOutputCheckpoint.retain(state, **{**arguments, "source_edges_sha256": _sha("2")})
+    wrong_workspace = ProcessingWorkspace(
+        workspace.root, workspace.execution_id, "encrypted-at-rest"
+    )
+    with pytest.raises(ValueError, match="workspace differs"):
+        first.producer_file(wrong_workspace)
+    local.unlink()
+    local.symlink_to(tmp_path / "foreign.bin")
+    with pytest.raises(ValueError, match="symlinks"):
+        first.producer_file(workspace)
+
+
+def test_step_checkpoint_preserves_original_evidence_after_restart(tmp_path: Path) -> None:
+    _operation, _target, request = _request()
+    session = TargetExecutionSession(
+        request, 1, ClaimedCollectionRuntimeRegistry(), state_root=tmp_path
+    )
+    first = session.step_value("toolchain", lambda: {"tool": "original"})
+    assert first == {"tool": "original"}
+    restarted = TargetExecutionSession(
+        request, 2, ClaimedCollectionRuntimeRegistry(), state_root=tmp_path
+    )
+    assert restarted.step_value("toolchain", lambda: {"tool": "changed"}) == first
+    assert restarted.stored_step_value("toolchain") == first
+    assert restarted.stored_step_value("not-recorded") is None
+    with pytest.raises(ValueError, match="checkpoint changed"):
+        restarted.retain_step("toolchain", b"replacement")
+    with pytest.raises(ValueError, match="record budget"):
+        restarted.retain_step("oversized", b"too big", maximum_bytes=2)
+    path = next(tmp_path.glob("*.step-*.bin"))
+    value = require_canonical_json(path.read_bytes())
+    value["request_sha256"] = _sha("f")
+    path.write_bytes(canonical_json_bytes(value))
+    with pytest.raises(ValueError, match="accepted execution"):
+        restarted.stored_step_value("toolchain")

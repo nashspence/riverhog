@@ -25,7 +25,7 @@ class CompletionRecords:
         )
         self._db.execute(
             "CREATE TABLE outputs (artifact_id TEXT PRIMARY KEY, output_id TEXT UNIQUE, "
-            "state BLOB UNIQUE, value BLOB, imports BLOB)"
+            "value BLOB, imports BLOB)"
         )
 
     def __enter__(self) -> Self:
@@ -39,30 +39,34 @@ class CompletionRecords:
         path = self._root / hashlib.sha256(kind.encode("utf-8")).hexdigest()
         digest = hashlib.sha256()
         size = 0
-        with path.open("wb") as stream:
-            for chunk in chunks:
-                stream.write(chunk)
-                digest.update(chunk)
-                size += len(chunk)
-        if size == 0:
-            raise ValueError("required completion record has no bytes")
         try:
+            stream = path.open("xb")
+        except FileExistsError as exc:
+            raise ValueError("duplicate completion record kind") from exc
+        try:
+            with stream:
+                for chunk in chunks:
+                    stream.write(chunk)
+                    digest.update(chunk)
+                    size += len(chunk)
+            if size == 0:
+                raise ValueError("required completion record has no bytes")
             self._db.execute(
                 "INSERT INTO records VALUES (?, ?, ?, ?)",
                 (kind, str(size), digest.hexdigest(), str(path)),
             )
-        except sqlite3.IntegrityError as exc:
-            raise ValueError("duplicate completion record kind") from exc
+        except Exception:
+            path.unlink()
+            raise
         return self.record(kind)
 
     def add_output(self, output: Mapping[str, Any], imports: Mapping[str, Any]) -> None:
         try:
             self._db.execute(
-                "INSERT INTO outputs VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO outputs VALUES (?, ?, ?, ?)",
                 (
                     output["artifact_id"],
                     output["output_id"],
-                    canonical_json_bytes(output["state"]),
                     canonical_json_bytes(dict(output)),
                     canonical_json_bytes(dict(imports)),
                 ),
