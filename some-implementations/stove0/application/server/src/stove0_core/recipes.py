@@ -47,6 +47,7 @@ from stove0_recipe_config import (
     ArtifactFactBinding,
     ArtifactRule,
     AssociationEvidenceSource,
+    FactCondition,
     FactPredicate,
     ObserverUse,
     OperationProjection,
@@ -1091,10 +1092,13 @@ def _predicate_matches(
             return False
         values = [record for artifact_id in sorted(records) for record in records[artifact_id]]
         if predicate.operator == "exists" and predicate.value is False:
-            return all(not _json_pointer(record, predicate.pointer)[0] for record in values)
+            return all(_document_matches_predicate(predicate, record) for record in values)
         return any(_document_matches_predicate(predicate, record) for record in values)
     if predicate.operator == "exists" and predicate.value is False:
-        return all(not _json_pointer(result.facts, predicate.pointer)[0] for result in matches)
+        return all(
+            result.facts is not None and _document_matches_predicate(predicate, result.facts)
+            for result in matches
+        )
     return any(
         result.facts is not None and _document_matches_predicate(predicate, result.facts)
         for result in matches
@@ -1126,20 +1130,53 @@ def _document_matches_predicate(
     predicate: FactPredicate,
     document: dict[str, JsonValue],
 ) -> bool:
-    present, value = _json_pointer(document, predicate.pointer)
-    if predicate.operator == "exists":
-        return present is bool(predicate.value)
+    rows: Sequence[JsonValue] = (document,)
+    if predicate.array_pointer is not None:
+        present, selected = _json_pointer(document, predicate.array_pointer)
+        if not present:
+            return False
+        if not isinstance(selected, list):
+            raise ValueError("declared fact array has a different shape")
+        rows = selected
+    rows = tuple(
+        row
+        for row in rows
+        if all(_fact_condition_matches(item, row) for item in predicate.same_item)
+    )
+    if predicate.operator == "exists" and predicate.value is False:
+        return bool(rows) and all(not _json_pointer(row, predicate.pointer)[0] for row in rows)
+    for row in rows:
+        present, value = _json_pointer(row, predicate.pointer)
+        if _comparison_matches(predicate.operator, predicate.value, present, value):
+            return True
+    return False
+
+
+def _fact_condition_matches(condition: FactCondition, row: JsonValue) -> bool:
+    present, value = _json_pointer(row, condition.pointer)
+    return _comparison_matches(condition.operator, condition.value, present, value)
+
+
+def _comparison_matches(
+    operator: str, expected: JsonValue, present: bool, value: JsonValue
+) -> bool:
+    if operator == "exists":
+        return present is expected
     if not present:
         return False
-    if predicate.operator == "equals":
-        return canonical_json_bytes(value) == canonical_json_bytes(predicate.value)
-    if predicate.operator == "not-equals":
-        return canonical_json_bytes(value) != canonical_json_bytes(predicate.value)
-    if predicate.operator == "contains":
+    if operator == "equals":
+        return canonical_json_bytes(value) == canonical_json_bytes(expected)
+    if operator == "not-equals":
+        return canonical_json_bytes(value) != canonical_json_bytes(expected)
+    if operator == "contains":
         return isinstance(value, list) and any(
-            canonical_json_bytes(item) == canonical_json_bytes(predicate.value) for item in value
+            canonical_json_bytes(item) == canonical_json_bytes(expected) for item in value
         )
-    raise AssertionError(predicate.operator)
+    if operator == "one-of":
+        return isinstance(expected, list) and any(
+            canonical_json_bytes(value) == canonical_json_bytes(item) for item in expected
+        )
+    raise AssertionError(operator)
 
 
 def _json_pointer(document: JsonValue, pointer: str) -> tuple[bool, JsonValue]:

@@ -59,12 +59,30 @@ class ArtifactFactBinding(RecipeModel):
     artifact_id_pointer: str = Field(default="/artifact_id", pattern=_JSON_POINTER_PATTERN)
 
 
+class FactCondition(RecipeModel):
+    """One typed JSON Pointer comparison within a selected fact record."""
+
+    pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
+    operator: Literal["equals", "exists", "one-of"] = "equals"
+    value: JsonValue = None
+
+    @model_validator(mode="after")
+    def valid_value(self) -> Self:
+        if self.operator == "exists" and not isinstance(self.value, bool):
+            raise ValueError("exists conditions require a boolean value")
+        if self.operator == "one-of" and (not isinstance(self.value, list) or not self.value):
+            raise ValueError("one-of conditions require a nonempty JSON value list")
+        return self
+
+
 class FactPredicate(RecipeModel):
     observation_contract_id: SemanticId
     artifact_roles: tuple[SemanticId, ...] = ()
     artifact_facts: ArtifactFactBinding | None = None
+    array_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    same_item: tuple[FactCondition, ...] = ()
     pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
-    operator: Literal["equals", "not-equals", "contains", "exists"] = "equals"
+    operator: Literal["equals", "not-equals", "contains", "exists", "one-of"] = "equals"
     value: JsonValue = None
 
     @model_validator(mode="after")
@@ -77,6 +95,10 @@ class FactPredicate(RecipeModel):
             )
         if self.operator == "exists" and not isinstance(self.value, bool):
             raise ValueError("exists predicates require a boolean value")
+        if self.operator == "one-of" and (not isinstance(self.value, list) or not self.value):
+            raise ValueError("one-of predicates require a nonempty JSON value list")
+        if self.same_item and self.array_pointer is None:
+            raise ValueError("same-item conditions require a declared fact array")
         return self
 
 
@@ -550,6 +572,8 @@ __all__ = [
     "ArtifactAssociation",
     "ArtifactFactBinding",
     "ArtifactRule",
+    "AssociationEvidenceSource",
+    "FactCondition",
     "FactPredicate",
     "ObserverUse",
     "OperationProjection",

@@ -6,9 +6,14 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
-from stove0_core.recipes import _accepted_relationships, _subjects
+from stove0_core.recipes import _accepted_relationships, _document_matches_predicate, _subjects
 from stove0_protocol import CollectionRootIdentityRef, WorkArtifactSubject
-from stove0_recipe_config import ArtifactAssociation, AssociationEvidenceSource
+from stove0_recipe_config import (
+    ArtifactAssociation,
+    AssociationEvidenceSource,
+    FactCondition,
+    FactPredicate,
+)
 
 
 def _root() -> CollectionRootIdentityRef:
@@ -118,3 +123,44 @@ def test_missing_or_partial_relation_evidence_cannot_be_a_negative() -> None:
             association,
             (_evidence("fixture.direct/v1", (sidecar,), []),),
         )
+
+
+def test_nested_metadata_rows_are_tested_without_position_or_filename_rules() -> None:
+    document = {
+        "subject_id": "a-" + "3" * 32,
+        "facts": [
+            {"name": "creator", "value": "Example"},
+            {"name": "container-format", "value": "XMP"},
+        ],
+    }
+    xmp = FactPredicate(
+        observation_contract_id="fixture.metadata/v1",
+        array_pointer="/facts",
+        same_item=(FactCondition(pointer="/name", value="container-format"),),
+        pointer="/value",
+        operator="one-of",
+        value=["XMP", "application/rdf+xml"],
+    )
+    assert _document_matches_predicate(xmp, document)
+    assert not _document_matches_predicate(xmp, {**document, "facts": []})
+    assert not _document_matches_predicate(
+        xmp,
+        {
+            **document,
+            "facts": [
+                {"name": "creator", "value": "XMP"},
+                {"name": "container-format", "value": "PNG"},
+            ],
+        },
+    )
+    with pytest.raises(ValueError, match="different shape"):
+        _document_matches_predicate(xmp, {**document, "facts": {}})
+
+    missing = FactPredicate(
+        observation_contract_id="fixture.metadata/v1",
+        array_pointer="/facts",
+        pointer="/unknown",
+        operator="exists",
+        value=False,
+    )
+    assert _document_matches_predicate(missing, document)
