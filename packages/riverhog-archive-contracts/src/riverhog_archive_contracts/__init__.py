@@ -33,15 +33,22 @@ from riverhog_archive_contracts.archive_manifest import (
     update_archive_sequence_commitment,
 )
 from riverhog_archive_contracts.member_history import (
+    BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_BYTES_MAX,
     MEMBER_HISTORY_FORMAT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
     MEMBER_HISTORY_ROOTS_SCHEMA,
+    RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryBinding,
     MemberHistoryDocument,
+    MemberHistoryImport,
     MemberHistoryPrimary,
     MemberHistoryRoot,
+    history_record_page_object_path,
+    member_history_object_path,
+    source_binding_proof_object_path,
+    verify_member_history_sets,
 )
 from riverhog_archive_contracts.provenance_archive import (
     PROVENANCE_BINDING_PAGE_BYTES_MAX,
@@ -83,15 +90,22 @@ from riverhog_archive_contracts.structural_record_set import (
 )
 
 __all__ = [
+    "BOUND_HISTORY_EXTENT",
     "MEMBER_HISTORY_BYTES_MAX",
     "MEMBER_HISTORY_FORMAT",
     "MEMBER_HISTORY_IMPORTS_SCHEMA",
     "MEMBER_HISTORY_ROOTS_SCHEMA",
+    "RETAINED_HISTORY_EXTENT",
     "HistoryJournalAnchor",
     "MemberHistoryBinding",
     "MemberHistoryDocument",
+    "MemberHistoryImport",
     "MemberHistoryPrimary",
     "MemberHistoryRoot",
+    "history_record_page_object_path",
+    "member_history_object_path",
+    "source_binding_proof_object_path",
+    "verify_member_history_sets",
     "PAGE_BYTES_MAX",
     "PAGE_RECORDS_MAX",
     "RECORD_BYTES_MAX",

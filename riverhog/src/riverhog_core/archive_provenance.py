@@ -5,15 +5,21 @@ from dataclasses import dataclass
 
 from riverhog_age import encrypt_age_scrypt
 from riverhog_archive_contracts import (
+    MemberHistoryBinding,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
+    RecordPage,
     format_archive_sequence,
+    history_record_page_object_path,
+    member_history_object_path,
 )
 
 from riverhog_core.archive_formats import (
     PROVENANCE_BINDING_SEGMENT_STORAGE_FORMAT,
+    PROVENANCE_HISTORY_STORAGE_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT,
+    PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
     PROVENANCE_ROOT_STORAGE_FORMAT,
     PROVENANCE_TERMINAL_STORAGE_FORMAT,
     PROVENANCE_VOLUME_METADATA_STORAGE_FORMAT,
@@ -92,6 +98,49 @@ class ArchiveProvenancePublisher:
             sequence=document.sequence,
             payload=payload_object,
             metadata=metadata_object,
+        )
+
+    def publish_member_history(
+        self,
+        *,
+        archive_storage_prefix: str,
+        binding: MemberHistoryBinding,
+        content: bytes,
+    ) -> SealedProvenanceObject:
+        """Seal the exact descriptor selected by a final member binding."""
+
+        binding.verify_descriptor(content)
+        return self._put(
+            prefix=_prefix(archive_storage_prefix),
+            object_id="provenance-history-" + binding.history_sha256,
+            kind="provenance-history",
+            relative_path=member_history_object_path(binding.history_sha256),
+            content=content,
+            storage_format=PROVENANCE_HISTORY_STORAGE_FORMAT,
+        )
+
+    def publish_record_page(
+        self,
+        *,
+        archive_storage_prefix: str,
+        page: RecordPage,
+    ) -> SealedProvenanceObject:
+        """Seal one bounded page; the caller verifies the complete set and terminal."""
+
+        return self._put(
+            prefix=_prefix(archive_storage_prefix),
+            object_id=(
+                "provenance-record-page-"
+                + page.authority.records_sha256
+                + "-"
+                + format_archive_sequence(page.ordinal)
+            ),
+            kind="provenance-record-page",
+            relative_path=history_record_page_object_path(
+                page.authority.records_sha256, page.ordinal
+            ),
+            content=page.to_json_bytes(),
+            storage_format=PROVENANCE_RECORD_PAGE_STORAGE_FORMAT,
         )
 
     def publish_root(

@@ -6,11 +6,24 @@ from dataclasses import replace
 
 import pytest
 from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    MEMBER_HISTORY_IMPORTS_SCHEMA,
+    MEMBER_HISTORY_ROOTS_SCHEMA,
     PROVENANCE_BINDINGS_FORMAT,
+    RETAINED_HISTORY_EXTENT,
+    HistoryJournalAnchor,
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
     ProvenancePayload,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
+    RecordPage,
+    RecordSetCommitment,
+    history_record_page_object_path,
+    member_history_object_path,
     ordered_provenance_commitment,
 )
 from riverhog_canonical_json import canonical_json_bytes
@@ -255,3 +268,65 @@ def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
     assert [row["artifact_id"] for row in reader.iter_bindings()] == [
         row["artifact_id"] for row in bindings
     ]
+
+
+def test_member_history_requires_exact_root_and_terminal_pages() -> None:
+    reader, objects, journal_id, _ = _archive()
+    primary = HistoryJournalAnchor(
+        journal_id=journal_id,
+        through_entry_id="urn:uuid:33333333-3333-4333-8333-333333333333",
+        through_sequence=0,
+        through_json_sha256="d" * 64,
+        prefix_sha256="e" * 64,
+        prefix_bytes=9,
+    )
+    completion = replace(
+        primary,
+        journal_id="urn:uuid:55555555-5555-4555-8555-555555555555",
+        prefix_sha256="f" * 64,
+    )
+    selected = (MemberHistoryRoot(primary, "bound"), MemberHistoryRoot(completion, "retained"))
+    rows = tuple(
+        {"key": root.key, "value": root.to_mapping()}
+        for root in sorted(selected, key=lambda root: root.key)
+    )
+    commitment = RecordSetCommitment(MEMBER_HISTORY_ROOTS_SCHEMA)
+    for row in rows:
+        commitment.update(row["key"], row["value"])
+    roots = commitment.ref()
+    imports = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
+    history = MemberHistoryDocument(
+        artifact_id="c" * 64,
+        bytes=7,
+        sha256="a" * 64,
+        primary=MemberHistoryPrimary(
+            primary, "urn:uuid:22222222-2222-4222-8222-222222222222"
+        ),
+        roots=roots,
+        imports=imports,
+    )
+    raw = history.to_json_bytes()
+    binding = MemberHistoryBinding(
+        history.artifact_id, history.bytes, history.sha256,
+        history.identity, len(raw),
+    )
+    objects[member_history_object_path(history.identity)] = raw
+    objects[history_record_page_object_path(roots.records_sha256, 0)] = RecordPage(
+        roots, 0, rows, False
+    ).to_json_bytes()
+    root_terminal = history_record_page_object_path(roots.records_sha256, 1)
+    objects[root_terminal] = RecordPage(roots, 1, (), True).to_json_bytes()
+    objects[history_record_page_object_path(imports.records_sha256, 0)] = RecordPage(
+        imports, 0, (), True
+    ).to_json_bytes()
+
+    assert reader.member_history(binding) == history
+    assert list(reader.iter_selected_history_roots(binding, extent=BOUND_HISTORY_EXTENT)) == [
+        selected[0]
+    ]
+    assert list(
+        reader.iter_selected_history_roots(binding, extent=RETAINED_HISTORY_EXTENT)
+    ) == list(selected)
+    del objects[root_terminal]
+    with pytest.raises(KeyError):
+        reader.member_history(binding)

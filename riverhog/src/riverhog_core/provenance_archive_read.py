@@ -13,16 +13,28 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    PAGE_BYTES_MAX,
     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_METADATA_BYTES_MAX,
     PROVENANCE_SEQUENCE_DOMAIN,
     PROVENANCE_TERMINAL_FORMAT,
+    RETAINED_HISTORY_EXTENT,
+    MemberHistoryBinding,
+    MemberHistoryDocument,
+    MemberHistoryImport,
+    MemberHistoryRoot,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
+    RecordPage,
+    RecordSetRef,
     format_archive_sequence,
+    history_record_page_object_path,
+    member_history_object_path,
     update_provenance_commitment,
+    verify_member_history_sets,
 )
 from riverhog_canonical_json import require_canonical_json
 from riverhog_protocol import validate_archive_binding_page
@@ -62,6 +74,72 @@ class CanonicalProvenanceArchiveReader:
         self._expected_root_sha256 = expected_root_sha256
         self._archive_generation = archive_generation
         self._artifact_set_sha256 = artifact_set_sha256
+
+    def _history_pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
+        """Read a bounded set through its mandatory terminal, with no total cap."""
+
+        for ordinal in range(authority.record_count + 1):
+            raw = _read_bounded(
+                self._read_object(
+                    history_record_page_object_path(authority.records_sha256, ordinal)
+                ),
+                PAGE_BYTES_MAX,
+            )
+            page = RecordPage.from_json_bytes(raw)
+            if page.authority != authority or page.ordinal != ordinal:
+                raise ProvenanceArchiveReadError("member history set page authority changed")
+            yield page
+            if page.terminal:
+                return
+        raise ProvenanceArchiveReadError("member history set lacks its terminal")
+
+    def member_history(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
+        """Verify the exact descriptor and both complete structural selections.
+
+        The binding must come from the root-authenticated final binding page;
+        this verifies structure, while claim readers also resolve the journal and
+        source-proof closure at the explicitly requested extent.
+        """
+
+        raw = _read_bounded(
+            self._read_object(member_history_object_path(binding.history_sha256)),
+            binding.history_bytes,
+        )
+        descriptor = binding.verify_descriptor(raw)
+        try:
+            verify_member_history_sets(
+                descriptor,
+                root_pages=self._history_pages(descriptor.roots),
+                import_pages=self._history_pages(descriptor.imports),
+            )
+        except ValueError as exc:
+            raise ProvenanceArchiveReadError(str(exc)) from exc
+        return descriptor
+
+    def iter_selected_history_roots(
+        self,
+        binding: MemberHistoryBinding,
+        *,
+        extent: str = BOUND_HISTORY_EXTENT,
+    ) -> Iterator[MemberHistoryRoot]:
+        """Enumerate exact selected snapshots after verifying the whole descriptor."""
+
+        if extent not in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+            raise ProvenanceArchiveReadError("unsupported member history extent")
+        descriptor = self.member_history(binding)
+        for page in self._history_pages(descriptor.roots):
+            for row in page.records:
+                selected = MemberHistoryRoot.from_mapping(row["value"])
+                if extent == RETAINED_HISTORY_EXTENT or selected.inclusion == "bound":
+                    yield selected
+
+    def iter_history_imports(
+        self, binding: MemberHistoryBinding
+    ) -> Iterator[MemberHistoryImport]:
+        descriptor = self.member_history(binding)
+        for page in self._history_pages(descriptor.imports):
+            for row in page.records:
+                yield MemberHistoryImport.from_mapping(row["value"])
 
     def _root(self) -> ProvenanceRootDocument:
         raw = _read_bounded(
