@@ -12,10 +12,13 @@ from a_stove0_media_archive_contract_lib import (
     AUDIO_ARCHIVE_OPERATION,
     METADATA_XMP_ROLE,
     SOURCE_ARTIFACT_ROLE,
+    SOURCE_ROLE,
+    XMP_SOURCE_ROLE,
 )
 from a_stove0_media_archive_lib import (
     MediaArchiveProjection,
     MediaPublicationPlan,
+    accepted_source_hints,
 )
 from a_stove0_opus_target import OpusTargetService
 from a_stove0_opus_target import app as opus_app
@@ -29,6 +32,8 @@ from review0_sampler_protocol import (
     SamplerWindow,
 )
 from riverhog_protocol import canonical_json_sha256
+from stove0_protocol import ArtifactSelection
+from stove0_target_protocol import TargetInputAuthority
 from stove0_target_support import (
     OutputArtifact,
     TargetHttpBinding,
@@ -219,6 +224,28 @@ def test_opus_missing_canonical_hint_requires_an_explicit_output_decision(tmp_pa
         if decision["allow_missing_materialization_hint"]
     )
     target.close()
+
+
+def test_media_hint_evidence_covers_the_exact_routed_input_selection() -> None:
+    request = media_preflight_request(
+        AUDIO_ARCHIVE_OPERATION,
+        {"codec": "opus", "container": "opus", "bitrate_kbps": 128},
+    )
+    assert set(accepted_source_hints(request)[0]) == {"primary", "sidecar"}
+    original = request.observations[0].request.subjects
+    altered = ArtifactSelection.seal(
+        (
+            original[0].model_copy(
+                update={"role": SOURCE_ROLE, "artifact_id": _sha("e")}
+            ),
+            original[1].model_copy(update={"role": XMP_SOURCE_ROLE}),
+        )
+    )
+    mismatched = request.model_copy(
+        update={"inputs": TargetInputAuthority.from_selection(altered)}
+    )
+    with pytest.raises(ValueError, match="accepted hint evidence"):
+        accepted_source_hints(mismatched)
 
 
 def test_opus_execution_identity_is_the_canonical_semantic_result() -> None:

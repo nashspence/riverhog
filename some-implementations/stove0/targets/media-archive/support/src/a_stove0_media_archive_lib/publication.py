@@ -9,12 +9,12 @@ from a_stove0_materialization_hint_evidence_contract_lib import (
     MATERIALIZATION_HINT_OBSERVER_CONTRACT,
     validate_materialization_hint_facts,
 )
-from a_stove0_media_metadata_contract_lib import MEDIA_METADATA_OBSERVATION_ID
+from a_stove0_media_archive_contract_lib import SOURCE_ROLE, XMP_SOURCE_ROLE
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from stove0_observer_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol import Sha256
-from stove0_target_protocol import TargetPreflightRequest
+from stove0_protocol import ArtifactSelection, Sha256, WorkArtifactSubject
+from stove0_target_protocol import TargetInputAuthority, TargetPreflightRequest
 
 
 class _Model(BaseModel):
@@ -104,21 +104,20 @@ def accepted_source_hints(
 ) -> tuple[dict[str, tuple[str, ...] | None], tuple[str, ...]]:
     """Resolve only controller-forwarded hint facts for exact selected inputs."""
 
-    selected = {
-        subject.id: subject
-        for item in request.observations
-        if item.request.observer_contract_id == MEDIA_METADATA_OBSERVATION_ID
-        for subject in item.request.subjects
-    }
-    expected_ids = {
-        subject_id
-        for group in request.input_groups
-        for subject_id in (group.primary_id, *group.associated_ids)
-    }
-    if not selected or set(selected) != expected_ids:
-        raise ValueError("media selection lacks exact accepted subject evidence")
+    roles: dict[str, str] = {}
+    for group in request.input_groups:
+        if group.primary_id in roles:
+            raise ValueError("media invocation repeats a primary subject")
+        roles[group.primary_id] = SOURCE_ROLE
+        for subject_id in group.associated_ids:
+            if subject_id in roles:
+                raise ValueError("media invocation repeats an associated subject")
+            roles[subject_id] = XMP_SOURCE_ROLE
+    if not roles:
+        raise ValueError("media invocation has no selected subjects")
     hints: dict[str, tuple[str, ...] | None] = {}
     identities: list[str] = []
+    subjects: list[WorkArtifactSubject] = []
     for item in request.observations:
         if item.request.observer_contract_id != MATERIALIZATION_HINT_OBSERVER_CONTRACT.id:
             continue
@@ -135,19 +134,9 @@ def accepted_source_hints(
         facts = validate_materialization_hint_facts(item.result.facts, item.request.subjects)
         identities.append(item.result.result_sha256)
         for subject, fact in zip(item.request.subjects, facts.artifacts, strict=True):
-            expected = selected.get(subject.id)
-            if (
-                expected is None
-                or subject.id in hints
-                or (subject.collection, subject.artifact_id, subject.bytes, subject.sha256)
-                != (
-                    expected.collection,
-                    expected.artifact_id,
-                    expected.bytes,
-                    expected.sha256,
-                )
-            ):
+            if subject.id not in roles or subject.id in hints:
                 raise ValueError("hint evidence differs from an exact selected input")
+            subjects.append(subject.model_copy(update={"role": roles[subject.id]}))
             hints[subject.id] = (
                 None
                 if fact.materialization_hint is None
@@ -157,7 +146,11 @@ def accepted_source_hints(
                     ).components
                 )
             )
-    if set(hints) != expected_ids:
+    if (
+        set(hints) != set(roles)
+        or TargetInputAuthority.from_selection(ArtifactSelection.seal(subjects))
+        != request.inputs
+    ):
         raise ValueError("accepted hint evidence does not cover every selected input")
     return hints, tuple(sorted(set(identities)))
 
