@@ -58,8 +58,12 @@ def test_raw_artifact_is_reassembled_and_verified_before_root_publication(
     )
     whole = b"abcdefghij"
     artifact_id = "1" * 64
-    first = _sealed_segment(sequence=0, artifact_id=artifact_id, whole=whole, offset=0, content=whole[:6])
-    second = _sealed_segment(sequence=1, artifact_id=artifact_id, whole=whole, offset=6, content=whole[6:])
+    first = _sealed_segment(
+        sequence=0, artifact_id=artifact_id, whole=whole, offset=0, content=whole[:6]
+    )
+    second = _sealed_segment(
+        sequence=1, artifact_id=artifact_id, whole=whole, offset=6, content=whole[6:]
+    )
     stored = {
         first.relative_path: whole[:6],
         second.relative_path: whole[6:],
@@ -79,13 +83,16 @@ def test_raw_artifact_is_reassembled_and_verified_before_root_publication(
 
     assert verified.artifact_id == artifact_id
     assert verified.sha256 == hashlib.sha256(whole).hexdigest()
-    assert verified.ordered_volume_sha256 == raw_verification.raw_artifact_ordered_volume_commitment(
-        artifact=ArchiveArtifact(
-            artifact_id=artifact_id,
-            bytes=len(whole),
-            sha256=hashlib.sha256(whole).hexdigest(),
-        ),
-        volumes=(first, second),
+    assert (
+        verified.ordered_volume_sha256
+        == raw_verification.raw_artifact_ordered_volume_commitment(
+            artifact=ArchiveArtifact(
+                artifact_id=artifact_id,
+                bytes=len(whole),
+                sha256=hashlib.sha256(whole).hexdigest(),
+            ),
+            volumes=(first, second),
+        )
     )
     payload = raw_verification.raw_artifact_verification_payload(verified)
     assert payload["format"] == "raw-artifact-verification/v1"
@@ -123,7 +130,9 @@ def test_raw_volume_set_digest_changes_with_immutable_object_identity() -> None:
         bytes=len(whole),
         sha256=hashlib.sha256(whole).hexdigest(),
     )
-    first = _sealed_segment(sequence=0, artifact_id=artifact.artifact_id, whole=whole, offset=0, content=whole)
+    first = _sealed_segment(
+        sequence=0, artifact_id=artifact.artifact_id, whole=whole, offset=0, content=whole
+    )
     changed_part = StoredArchivePart(
         number=1,
         plaintext_start=0,
@@ -149,7 +158,9 @@ def test_raw_volume_set_digest_changes_with_immutable_object_identity() -> None:
 
     assert raw_verification.raw_artifact_ordered_volume_commitment(
         artifact=artifact, volumes=(first,)
-    ) != raw_verification.raw_artifact_ordered_volume_commitment(artifact=artifact, volumes=(changed,))
+    ) != raw_verification.raw_artifact_ordered_volume_commitment(
+        artifact=artifact, volumes=(changed,)
+    )
 
 
 def test_part_manifest_verification_avoids_remote_read_after_write() -> None:
