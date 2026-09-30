@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import dataclasses
 import hashlib
+import json
 import os
 import shutil
 import sqlite3
+import tempfile
 import time
-from collections.abc import Sequence
+import uuid
+from collections.abc import Iterator, Mapping, Sequence
 from contextlib import closing
 from pathlib import Path
 from typing import Annotated, Any, cast
@@ -14,20 +18,39 @@ import typer
 from http_api_contracts import BrowseTokenCodec, BrowseTokenError
 from riverhog_client import (
     ApiClient,
-    CatalogReplica,
     RestorePolicy,
     RetrievalDownload,
     configured_download_concurrency,
     configured_download_window,
     download_retrieval_files,
 )
-from riverhog_protocol import validate_collection_tag
+from riverhog_materialization import (
+    DestinationRules,
+    MemberAdvice,
+    plan_materialization,
+    primary_sidecar_components,
+    shared_journal_components,
+)
+from riverhog_protocol import (
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingDocument,
+    PortableCollectionArtifact,
+    PortableCollectionIdentityBuilder,
+    validate_collection_tag,
+)
+from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import InvalidState, NotFound
-from riverhog_protocol.paths import normalize_collection_id, validate_canonical_relpath
+from riverhog_protocol.paths import normalize_collection_id
+from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from riverhog_protocol.transport import RETRIEVAL_ARTIFACT_BATCH_MAX
-from riverhog_provenance import list_provenance_observers, resolve_provenance_observer
+from riverhog_provenance import (
+    list_provenance_observers,
+    resolve_provenance_observer,
+    selected_delivery_occurrence,
+    validate_journal_chunks,
+)
 from state_schema import StateSchemaError
-from time_formats import parse_utc_timestamp
 
 from a_riverhog_cli.cli_support import emit, format_list_ids
 from a_riverhog_cli.local_state import state_schema as local_state_schema
@@ -194,22 +217,321 @@ def state_verify(
     _state_command("verify", json_mode=json_mode)
 
 
+def _collection_directory(target: Path, collection_id: int) -> Path:
+    directory = target / str(normalize_collection_id(collection_id))
+    if directory.is_symlink():
+        raise InvalidState("local collection directory is a symbolic link")
+    directory.mkdir(mode=0o700, exist_ok=True)
+    return directory
+
+
+def _output(target: Path, collection_id: int, components: Sequence[str]) -> Path:
+    if not components or any(
+        not isinstance(part, str)
+        or not part
+        or part in {".", ".."}
+        or "/" in part
+        or "\\" in part
+        or "\x00" in part
+        for part in components
+    ):
+        raise InvalidState("local materialization mapping contains an unsafe component")
+    output = _collection_directory(target, collection_id)
+    for component in components[:-1]:
+        output /= component
+        if output.is_symlink():
+            raise InvalidState("local materialization parent is a symbolic link")
+        output.mkdir(mode=0o700, exist_ok=True)
+    return output / components[-1]
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        while chunk := source.read(8 * 1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _matches(path: Path, byte_count: int, sha256: str) -> bool:
+    return (
+        path.is_file()
+        and not path.is_symlink()
+        and path.stat().st_size == byte_count
+        and _sha256(path) == sha256
+    )
+
+
+def _publish_file(source: Path, output: Path, *, byte_count: int, sha256: str) -> None:
+    if not _matches(source, byte_count, sha256):
+        raise InvalidState("staged materialization differs from its exact identity")
+    try:
+        os.link(source, output)
+    except FileExistsError as exc:
+        if not _matches(output, byte_count, sha256):
+            raise InvalidState(f"local file would be overwritten: {output}") from exc
+    if os.name != "nt":
+        descriptor = os.open(output.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+
+def _prefix_chunks(path: Path, byte_count: int) -> Iterator[bytes]:
+    with path.open("rb") as source:
+        remaining = byte_count
+        while remaining:
+            chunk = source.read(min(8 * 1024 * 1024, remaining))
+            if not chunk:
+                raise InvalidState("canonical primary journal prefix is incomplete")
+            remaining -= len(chunk)
+            yield chunk
+
+
+def _publish_prefix(source: Path, output: Path, *, byte_count: int, sha256: str) -> None:
+    if _matches(output, byte_count, sha256):
+        return
+    if output.exists() or output.is_symlink():
+        raise InvalidState(f"local primary provenance would be overwritten: {output}")
+    with tempfile.NamedTemporaryFile(
+        mode="wb", prefix=".primary-", dir=output.parent, delete=False
+    ) as stream:
+        staging = Path(stream.name)
+        digest = hashlib.sha256()
+        try:
+            for chunk in _prefix_chunks(source, byte_count):
+                stream.write(chunk)
+                digest.update(chunk)
+            stream.flush()
+            os.fsync(stream.fileno())
+        except BaseException:
+            staging.unlink(missing_ok=True)
+            raise
+    try:
+        if digest.hexdigest() != sha256:
+            raise InvalidState("canonical primary journal prefix differs from its anchor")
+        _publish_file(staging, output, byte_count=byte_count, sha256=sha256)
+    finally:
+        staging.unlink(missing_ok=True)
+
+
+def _destination_rules(target: Path) -> DestinationRules:
+    with tempfile.TemporaryDirectory(prefix=".rules-", dir=target) as name:
+        probe = Path(name)
+        (probe / "case").write_bytes(b"x")
+        case_sensitive = not (probe / "CASE").exists()
+        (probe / "e\u0301").write_bytes(b"x")
+        unicode_equivalence = "NFC" if (probe / "\u00e9").exists() else "exact"
+    try:
+        component_bytes = os.pathconf(target, "PC_NAME_MAX")
+        relative_path_bytes = os.pathconf(target, "PC_PATH_MAX")
+    except (AttributeError, OSError, ValueError):
+        component_bytes = 255
+        relative_path_bytes = 240 if os.name == "nt" else 4096
+    if component_bytes < 1:
+        component_bytes = 255
+    if relative_path_bytes < 1:
+        relative_path_bytes = 240 if os.name == "nt" else 4096
+    return DestinationRules(
+        windows_names=os.name == "nt",
+        case_sensitive=case_sensitive,
+        unicode_equivalence=cast(Any, unicode_equivalence),
+        component_bytes=component_bytes,
+        relative_path_bytes=relative_path_bytes,
+    )
+
+
+def _inventory(
+    api: ApiClient, collection_id: int, summary: Mapping[str, Any]
+) -> tuple[str, str, list[PortableCollectionArtifact]]:
+    cursor: str | None = None
+    identity: str | None = None
+    artifacts: list[PortableCollectionArtifact] = []
+    while True:
+        page = api.get_portable_collection_inventory(
+            collection_id,
+            cursor=cursor,
+            limit=1000,
+            inventory_identity=identity,
+        )
+        authority = page.authority
+        if authority.header.collection != collection_id:
+            raise InvalidState("portable inventory names another collection")
+        if authority.header.artifact_set_identity != summary["artifact_set_identity"]:
+            raise InvalidState("portable inventory artifact set differs from collection")
+        if identity is None:
+            identity = authority.inventory_identity
+        elif authority.inventory_identity != identity:
+            raise InvalidState("portable inventory changed during traversal")
+        artifacts.extend(
+            PortableCollectionArtifact.from_mapping(item.model_dump(mode="json"))
+            for item in page.artifacts
+        )
+        if page.complete:
+            if len(artifacts) != int(authority.artifact_count):
+                raise InvalidState("portable inventory count differs from complete traversal")
+            builder = PortableCollectionIdentityBuilder(authority.header)
+            for item in artifacts:
+                builder.add(item)
+            if builder.identity != identity:
+                raise InvalidState("portable inventory identity differs from its artifacts")
+            return identity, authority.header.provenance_identity, artifacts
+        cursor = page.next_cursor
+        if cursor is None:
+            raise InvalidState("portable inventory continuation is missing")
+
+
+def _journals(
+    api: ApiClient,
+    target: Path,
+    collection_id: int,
+    archive_root: str,
+    *,
+    repair: bool = False,
+) -> dict[str, tuple[Path, int, str]]:
+    result: dict[str, tuple[Path, int, str]] = {}
+    after: str | None = None
+    while True:
+        page = api.list_collection_provenance_journals(
+            collection_id,
+            page_size=200,
+            after_journal_id=after,
+            archive_root_sha256=archive_root if after is not None else None,
+        )
+        if page.get("archive_root_sha256") != archive_root:
+            raise InvalidState("canonical journal corpus names another archive root")
+        journals = page.get("journals")
+        if not isinstance(journals, list):
+            raise InvalidState("canonical journal page is malformed")
+        for row in journals:
+            journal_id = str(row["journal_id"])
+            byte_count = int(row["bytes"])
+            sha256 = str(row["sha256"])
+            if journal_id in result:
+                raise InvalidState("canonical journal corpus repeats an identity")
+            output = _output(target, collection_id, shared_journal_components(sha256))
+            if not _matches(output, byte_count, sha256):
+                if output.exists() or output.is_symlink():
+                    if not repair:
+                        raise InvalidState("local canonical journal differs from archive")
+                    _quarantine(target, output)
+                with tempfile.TemporaryDirectory(prefix=".journal-", dir=output.parent) as name:
+                    staging = Path(name) / "journal.jsonseq"
+                    downloaded = api.download_collection_provenance_journal(
+                        collection_id, journal_id, output=staging
+                    )
+                    if downloaded != (byte_count, sha256):
+                        raise InvalidState("downloaded journal differs from frozen corpus")
+                    _publish_file(staging, output, byte_count=byte_count, sha256=sha256)
+            result[journal_id] = (output, byte_count, sha256)
+        after = page.get("next_journal_id")
+        if after is None:
+            break
+        if not isinstance(after, str) or not journals:
+            raise InvalidState("canonical journal traversal did not advance")
+    return result
+
+
+def _selected_hint(
+    api: ApiClient,
+    target: Path,
+    collection_id: int,
+    archive_root: str,
+    artifact: PortableCollectionArtifact,
+    journals: Mapping[str, tuple[Path, int, str]],
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    detail = api.get_collection_artifact_provenance(collection_id, artifact.artifact_id)
+    if detail.get("archive_root_sha256") != archive_root or detail.get(
+        "artifact"
+    ) != ArtifactMemberIdentityDocument.model_validate(
+        {
+            "artifact_id": artifact.artifact_id,
+            "bytes": str(artifact.bytes),
+            "sha256": artifact.sha256,
+        }
+    ).model_dump(mode="json"):
+        raise InvalidState("primary provenance detail differs from selected artifact")
+    binding = CollectionArtifactProvenanceBindingDocument.model_validate(detail["binding"])
+    if binding.artifact_id != artifact.artifact_id:
+        raise InvalidState("primary provenance binding names another artifact")
+    journal = journals.get(binding.journal.journal_id)
+    if journal is None:
+        raise InvalidState("primary provenance journal is absent from corpus")
+    journal_path, journal_bytes, _ = journal
+    prefix_bytes = int(binding.journal.prefix_bytes)
+    if prefix_bytes > journal_bytes:
+        raise InvalidState("primary provenance prefix exceeds its journal")
+    summary = validate_journal_chunks(
+        _prefix_chunks(journal_path, prefix_bytes),
+        expected_anchor=binding.journal.model_dump(mode="json"),
+        require_exact_tail=True,
+        require_profiles=False,
+    )
+    _, occurrence = selected_delivery_occurrence(
+        summary,
+        binding=binding.model_dump(mode="json"),
+        artifact_id=artifact.artifact_id,
+        byte_count=artifact.bytes,
+        sha256=artifact.sha256,
+        member_role=COLLECTION_MEMBER_ROLE,
+    )
+    hint = occurrence.get("materialization_hint")
+    if hint is not None:
+        hint = MaterializationHintDocument.model_validate(hint).model_dump(mode="json")
+    sidecar = _output(target, collection_id, primary_sidecar_components(artifact.artifact_id))
+    _publish_prefix(
+        journal_path,
+        sidecar,
+        byte_count=prefix_bytes,
+        sha256=binding.journal.prefix_sha256,
+    )
+    return hint, binding.model_dump(mode="json")
+
+
+def _tags(api: ApiClient, collection_id: int, summary: Mapping[str, Any]) -> list[str]:
+    tags: list[str] = []
+    token: str | None = None
+    while True:
+        page = api.list_collection_tags(
+            collection_id,
+            revision=int(summary["tag_revision"]),
+            tag_set_identity=str(summary["tag_set_identity"]),
+            page_size=100,
+            page_token=token,
+        )
+        if (
+            page.get("collection_id") != str(collection_id)
+            or page.get("revision") != summary["tag_revision"]
+            or page.get("tag_set_identity") != summary["tag_set_identity"]
+        ):
+            raise InvalidState("collection tag authority changed during traversal")
+        values = page.get("tags")
+        if not isinstance(values, list) or any(
+            not isinstance(value, str) or validate_collection_tag(value) != value
+            for value in values
+        ):
+            raise InvalidState("collection tag page is invalid")
+        tags.extend(values)
+        next_token = page.get("next_page_token")
+        if next_token is None:
+            return tags
+        if not isinstance(next_token, str) or not next_token or not values:
+            raise InvalidState("collection tag traversal did not advance")
+        token = next_token
+
+
 def _local_collection(db: sqlite3.Connection, collection_id: int) -> dict[str, object]:
     row = db.execute(
         """
-        SELECT c.collection_id, c.created_at,
-               CASE
-                   WHEN c.remote_deleted = 1 THEN 'remote-deleted'
-                   WHEN c.inventory_complete = 0 OR c.tags_complete = 0 THEN 'synchronizing'
-                   ELSE 'desired'
-               END AS status,
-               COUNT(f.path) AS files,
-               COALESCE(SUM(f.bytes), 0) AS bytes
+        SELECT c.collection_id, c.created_at, c.archive_root_sha256,
+               c.layout_mode, c.remote_unavailable,
+               COUNT(a.artifact_id) AS artifacts,
+               COALESCE(SUM(a.bytes), 0) AS bytes
         FROM desired_collections AS c
-        LEFT JOIN desired_files AS f USING (collection_id)
+        LEFT JOIN desired_artifacts AS a USING (collection_id)
         WHERE c.collection_id = ?
-        GROUP BY c.collection_id, c.created_at, c.remote_deleted,
-                 c.inventory_complete, c.tags_complete
+        GROUP BY c.collection_id
         """,
         (collection_id,),
     ).fetchone()
@@ -218,392 +540,257 @@ def _local_collection(db: sqlite3.Connection, collection_id: int) -> dict[str, o
     return {
         "collection_id": int(row["collection_id"]),
         "created_at": str(row["created_at"]),
+        "archive_root_sha256": str(row["archive_root_sha256"]),
+        "layout_mode": str(row["layout_mode"]),
+        "status": "remote-unavailable" if row["remote_unavailable"] else "desired",
+        "artifacts": int(row["artifacts"]),
+        "bytes": int(row["bytes"]),
         "tag_count": int(
             db.execute(
                 "SELECT COUNT(*) FROM desired_collection_tags WHERE collection_id = ?",
                 (collection_id,),
             ).fetchone()[0]
         ),
-        "status": str(row["status"]),
-        "files": int(row["files"]),
-        "bytes": int(row["bytes"]),
     }
 
 
-def _begin_inventory_refresh(
-    db: sqlite3.Connection,
-    *,
-    collection_id: int,
-    inventory_identity: str,
-    tag_revision: int,
-    tag_set_identity: str,
-    created_at: str,
+@local_app.command("add")
+def add_collection(
+    collection_id: Annotated[int, typer.Argument(help="Collection ID")],
+    mode: Annotated[
+        str,
+        typer.Option("--mode", help="declared-hints or id-layout"),
+    ] = "declared-hints",
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
-    parse_utc_timestamp(created_at)
-    db.execute(
-        """
-        INSERT INTO desired_collections (
-            collection_id,
-            inventory_identity,
-            inventory_cursor,
-            inventory_complete,
-            tag_revision,
-            tag_set_identity,
-            tag_page_token,
-            tags_complete,
-            created_at,
-            remote_deleted
-        )
-        VALUES (?, ?, NULL, 0, ?, ?, NULL, 0, ?, 0)
-        ON CONFLICT (collection_id) DO UPDATE SET
-            inventory_identity = excluded.inventory_identity,
-            inventory_cursor = NULL,
-            inventory_complete = 0,
-            tag_revision = excluded.tag_revision,
-            tag_set_identity = excluded.tag_set_identity,
-            tag_page_token = NULL,
-            tags_complete = 0,
-            created_at = excluded.created_at,
-            remote_deleted = 0
-        """,
-        (collection_id, inventory_identity, tag_revision, tag_set_identity, created_at),
-    )
-    db.execute("DELETE FROM desired_files WHERE collection_id = ?", (collection_id,))
-    db.execute("DELETE FROM desired_collection_tags WHERE collection_id = ?", (collection_id,))
-    db.commit()
-
-
-def _store_inventory_page(
-    db: sqlite3.Connection,
-    *,
-    collection_id: int,
-    inventory_identity: str,
-    files: Sequence[Any],
-    next_cursor: str | None,
-    complete: bool,
-) -> None:
-    for current in files:
+    if mode not in {"declared-hints", "id-layout"}:
+        raise typer.BadParameter("--mode must be declared-hints or id-layout")
+    target = _target()
+    normalized = normalize_collection_id(collection_id)
+    with closing(_connect(target)) as db, ApiClient() as api:
+        summary = api.get_collection(normalized)
+        if normalize_collection_id(summary["id"]) != normalized:
+            raise InvalidState("Riverhog returned another collection")
+        archive_root = str(summary["archive_root_sha256"])
+        existing = db.execute(
+            "SELECT archive_root_sha256, layout_mode FROM desired_collections "
+            "WHERE collection_id = ?",
+            (normalized,),
+        ).fetchone()
+        if existing is not None:
+            if (existing["archive_root_sha256"], existing["layout_mode"]) != (
+                archive_root,
+                mode,
+            ):
+                raise InvalidState("local collection has a different frozen root or layout")
+            payload = {"status": "already-added", "collection": _local_collection(db, normalized)}
+            emit(
+                payload if json_mode else f"desired collection already added: {normalized}",
+                json_mode=json_mode,
+            )
+            return
+        inventory_identity, provenance_identity, artifacts = _inventory(api, normalized, summary)
+        journals = _journals(api, target, normalized, archive_root)
+        advice: list[MemberAdvice] = []
+        bindings: dict[str, dict[str, Any]] = {}
+        for artifact in artifacts:
+            hint, binding = _selected_hint(
+                api, target, normalized, archive_root, artifact, journals
+            )
+            advice.append(MemberAdvice(str(artifact.artifact_id), hint))
+            bindings[str(artifact.artifact_id)] = binding
+        rules = _destination_rules(target)
+        plan = plan_materialization(advice, rules=rules, mode=cast(Any, mode))
+        plan_by_id = {row.artifact_id: row for row in plan}
+        tags = _tags(api, normalized, summary)
+        if api.get_collection(normalized)["archive_root_sha256"] != archive_root:
+            raise InvalidState("collection archive root changed before local plan freeze")
         db.execute(
             """
-            INSERT INTO desired_files (collection_id, path, bytes, sha256)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT (collection_id, path) DO UPDATE SET
-                bytes = excluded.bytes,
-                sha256 = excluded.sha256
-            """,
-            (collection_id, current.path, current.bytes, current.sha256),
-        )
-    updated = db.execute(
-        """
-        UPDATE desired_collections
-        SET inventory_cursor = ?, inventory_complete = ?
-        WHERE collection_id = ? AND inventory_identity = ?
-        """,
-        (next_cursor, int(complete), collection_id, inventory_identity),
-    )
-    if updated.rowcount != 1:
-        raise InvalidState("local collection inventory authority changed")
-    db.commit()
-
-
-def _refresh_collection(db: sqlite3.Connection, api: ApiClient, collection_id: int) -> None:
-    summary = api.get_collection(collection_id)
-    if normalize_collection_id(summary["id"]) != collection_id:
-        raise InvalidState("Riverhog returned the wrong collection summary")
-    inventory_identity = str(summary.get("inventory_identity") or "")
-    raw_tag_revision = summary.get("tag_revision")
-    tag_set_identity = str(summary.get("tag_set_identity") or "")
-    if (
-        isinstance(raw_tag_revision, bool)
-        or not isinstance(raw_tag_revision, int)
-        or raw_tag_revision < 1
-        or len(tag_set_identity) != 64
-    ):
-        raise InvalidState("Riverhog returned an invalid collection tag authority")
-    tag_revision = raw_tag_revision
-    state = db.execute(
-        """
-        SELECT inventory_identity, inventory_cursor, inventory_complete,
-               tag_revision, tag_set_identity, tag_page_token, tags_complete
-        FROM desired_collections
-        WHERE collection_id = ?
-        """,
-        (collection_id,),
-    ).fetchone()
-    if state is None or str(state["inventory_identity"]) != inventory_identity:
-        _begin_inventory_refresh(
-            db,
-            collection_id=collection_id,
-            inventory_identity=inventory_identity,
-            tag_revision=tag_revision,
-            tag_set_identity=tag_set_identity,
-            created_at=str(summary["created_at"]),
-        )
-        cursor: str | None = None
-        complete = False
-    else:
-        cursor = None if state["inventory_cursor"] is None else str(state["inventory_cursor"])
-        complete = bool(state["inventory_complete"])
-        if (
-            int(state["tag_revision"]) != tag_revision
-            or str(state["tag_set_identity"]) != tag_set_identity
-        ):
-            db.execute(
-                """
-                UPDATE desired_collections
-                SET tag_revision = ?, tag_set_identity = ?, tag_page_token = NULL,
-                    tags_complete = 0, remote_deleted = 0
-                WHERE collection_id = ?
-                """,
-                (tag_revision, tag_set_identity, collection_id),
-            )
-            db.execute(
-                "DELETE FROM desired_collection_tags WHERE collection_id = ?",
-                (collection_id,),
-            )
-            db.commit()
-    while not complete:
-        inventory = api.get_portable_collection_inventory(
-            collection_id,
-            cursor=cursor,
-            limit=1000,
-            inventory_identity=inventory_identity,
-        )
-        if inventory.authority.inventory_identity != inventory_identity:
-            raise InvalidState("Riverhog returned the wrong collection inventory authority")
-        _store_inventory_page(
-            db,
-            collection_id=collection_id,
-            inventory_identity=inventory_identity,
-            files=inventory.files,
-            next_cursor=inventory.next_cursor,
-            complete=inventory.complete,
-        )
-        cursor = inventory.next_cursor
-        complete = inventory.complete
-    observed = db.execute(
-        "SELECT COUNT(*), COALESCE(SUM(bytes), 0) FROM desired_files WHERE collection_id = ?",
-        (collection_id,),
-    ).fetchone()
-    if observed is None or (int(observed[0]), int(observed[1])) != (
-        int(summary["files"]),
-        int(summary["bytes"]),
-    ):
-        raise InvalidState("local collection inventory is incomplete")
-    tag_state = db.execute(
-        "SELECT tag_page_token, tags_complete FROM desired_collections WHERE collection_id = ?",
-        (collection_id,),
-    ).fetchone()
-    if tag_state is None:
-        raise InvalidState("local collection tag state is unavailable")
-    tag_page_token = (
-        None if tag_state["tag_page_token"] is None else str(tag_state["tag_page_token"])
-    )
-    tags_complete = bool(tag_state["tags_complete"])
-    while not tags_complete:
-        payload = api.list_collection_tags(
-            collection_id,
-            revision=tag_revision,
-            tag_set_identity=tag_set_identity,
-            page_size=100,
-            page_token=tag_page_token,
-        )
-        if (
-            payload.get("collection_id") != str(collection_id)
-            or payload.get("revision") != tag_revision
-            or payload.get("tag_set_identity") != tag_set_identity
-        ):
-            raise InvalidState("collection tags changed during bounded traversal")
-        raw_tags = payload.get("tags")
-        if not isinstance(raw_tags, list):
-            raise InvalidState("Riverhog returned invalid collection tags")
-        for raw_tag in raw_tags:
-            if not isinstance(raw_tag, str) or validate_collection_tag(raw_tag) != raw_tag:
-                raise InvalidState("Riverhog returned an invalid collection tag")
-            try:
-                db.execute(
-                    "INSERT INTO desired_collection_tags (collection_id, tag) VALUES (?, ?)",
-                    (collection_id, raw_tag),
-                )
-            except sqlite3.IntegrityError as exc:
-                raise InvalidState("Riverhog repeated a collection tag") from exc
-        next_page_token = payload.get("next_page_token")
-        if next_page_token is not None and (
-            not isinstance(next_page_token, str) or not next_page_token
-        ):
-            raise InvalidState("Riverhog returned an invalid collection-tag page token")
-        tags_complete = next_page_token is None
-        db.execute(
-            """
-            UPDATE desired_collections
-            SET tag_page_token = ?, tags_complete = ?
-            WHERE collection_id = ? AND tag_revision = ? AND tag_set_identity = ?
+            INSERT INTO desired_collections (
+                collection_id, archive_root_sha256, inventory_identity,
+                artifact_set_identity, provenance_identity, created_at,
+                layout_mode, rules_json
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                next_page_token,
-                int(tags_complete),
-                collection_id,
-                tag_revision,
-                tag_set_identity,
+                normalized,
+                archive_root,
+                inventory_identity,
+                str(summary["artifact_set_identity"]),
+                provenance_identity,
+                str(summary["created_at"]),
+                mode,
+                json.dumps(dataclasses.asdict(rules), sort_keys=True),
+            ),
+        )
+        db.executemany(
+            "INSERT INTO desired_collection_tags (collection_id, tag) VALUES (?, ?)",
+            ((normalized, tag) for tag in tags),
+        )
+        db.executemany(
+            """
+            INSERT INTO desired_journals (collection_id, journal_id, bytes, sha256)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                (normalized, journal_id, value[1], value[2])
+                for journal_id, value in journals.items()
+            ),
+        )
+        db.executemany(
+            """
+            INSERT INTO desired_artifacts (
+                collection_id, artifact_id, bytes, sha256, destination_json, reason,
+                hint_json, binding_json, primary_bytes, primary_sha256
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                (
+                    normalized,
+                    str(artifact.artifact_id),
+                    artifact.bytes,
+                    artifact.sha256,
+                    json.dumps(
+                        list(plan_by_id[str(artifact.artifact_id)].components), ensure_ascii=False
+                    ),
+                    plan_by_id[str(artifact.artifact_id)].reason,
+                    (
+                        json.dumps(
+                            list(
+                                cast(
+                                    tuple[str, ...],
+                                    plan_by_id[str(artifact.artifact_id)].materialization_hint,
+                                )
+                            ),
+                            ensure_ascii=False,
+                        )
+                        if plan_by_id[str(artifact.artifact_id)].materialization_hint is not None
+                        else None
+                    ),
+                    json.dumps(bindings[str(artifact.artifact_id)], sort_keys=True),
+                    int(bindings[str(artifact.artifact_id)]["journal"]["prefix_bytes"]),
+                    bindings[str(artifact.artifact_id)]["journal"]["prefix_sha256"],
+                )
+                for artifact in artifacts
             ),
         )
         db.commit()
-        tag_page_token = next_page_token
+        payload = {"status": "added", "collection": _local_collection(db, normalized)}
+    emit(payload if json_mode else f"desired collection added: {normalized}", json_mode=json_mode)
 
 
-def _output_path(target: Path, collection_id: int, path: str) -> Path:
-    output = (target / str(collection_id) / path).resolve()
-    if not output.is_relative_to(target):
-        raise InvalidState("materialization path escapes A_RIVERHOG_CLI_LOCAL_ROOT")
-    return output
+def _destination(target: Path, collection_id: int, serialized: str) -> Path:
+    parts = json.loads(serialized)
+    if not isinstance(parts, list) or any(not isinstance(part, str) for part in parts):
+        raise InvalidState("frozen local destination is malformed")
+    return _output(target, collection_id, parts)
 
 
-def _collection_is_materialized(
+def _ensure_provenance(
     db: sqlite3.Connection,
-    target: Path,
-    collection_id: int,
-) -> bool:
-    paths = [
-        str(row["path"])
-        for row in db.execute(
-            "SELECT path FROM desired_files WHERE collection_id = ? ORDER BY path",
-            (collection_id,),
-        )
-    ]
-    collection_dir = target / str(collection_id)
-    if not paths:
-        return collection_dir.is_dir()
-    return all(_output_path(target, collection_id, path).is_file() for path in paths)
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(8 * 1024 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _matches(path: Path, *, byte_count: int, sha256: str) -> bool:
-    return path.is_file() and path.stat().st_size == byte_count and _sha256(path) == sha256
-
-
-def _refresh_catalog(db: sqlite3.Connection, api: ApiClient, target: Path) -> None:
-    """Advance one native catalog page and one bounded local reconciliation slice."""
-
-    replica = CatalogReplica(_catalog_database(target))
-    status = replica.status()
-    if status["phase"] in {"new", "reset_required"}:
-        status = replica.start(api)
-    else:
-        status = replica.step(api, limit=LOCAL_CATALOG_RECONCILE_BATCH)
-    if status["usable"]:
-        row = db.execute(
-            "SELECT value FROM settings WHERE key = 'catalog_reconcile_after'"
-        ).fetchone()
-        after = int(row["value"]) if row is not None else 0
-        collection_ids = [
-            int(current["collection_id"])
-            for current in db.execute(
-                "SELECT collection_id FROM desired_collections "
-                "WHERE collection_id > ? ORDER BY collection_id LIMIT ?",
-                (after, LOCAL_CATALOG_RECONCILE_BATCH),
-            )
-        ]
-        if not collection_ids and after:
-            after = 0
-            collection_ids = [
-                int(current["collection_id"])
-                for current in db.execute(
-                    "SELECT collection_id FROM desired_collections ORDER BY collection_id LIMIT ?",
-                    (LOCAL_CATALOG_RECONCILE_BATCH,),
-                )
-            ]
-        for collection_id in collection_ids:
-            descriptor = replica.get(collection_id)
-            db.execute(
-                "UPDATE desired_collections SET remote_deleted = ? WHERE collection_id = ?",
-                (int(descriptor is None), collection_id),
-            )
-            if descriptor is None:
-                continue
-            local_authority = db.execute(
-                "SELECT tag_revision, tag_set_identity FROM desired_collections "
-                "WHERE collection_id = ?",
-                (collection_id,),
-            ).fetchone()
-            if local_authority is None:
-                continue
-            if (
-                int(local_authority["tag_revision"]) != descriptor.tag_revision
-                or str(local_authority["tag_set_identity"]) != descriptor.tag_set_identity
-            ):
-                _refresh_collection(db, api, collection_id)
-        db.execute(
-            """
-            INSERT INTO settings (key, value) VALUES ('catalog_reconcile_after', ?)
-            ON CONFLICT (key) DO UPDATE SET value = excluded.value
-            """,
-            (str(collection_ids[-1] if collection_ids else after),),
-        )
-    replica.reclaim(limit=LOCAL_CATALOG_RECONCILE_BATCH)
-    db.commit()
-
-
-def _missing_files(
-    db: sqlite3.Connection,
+    api: ApiClient,
     target: Path,
     *,
     repair: bool,
+) -> None:
+    for collection in db.execute(
+        "SELECT collection_id, archive_root_sha256 FROM desired_collections "
+        "WHERE remote_unavailable = 0 ORDER BY collection_id"
+    ):
+        collection_id = int(collection["collection_id"])
+        archive_root = str(collection["archive_root_sha256"])
+        frozen = {
+            str(row["journal_id"]): (int(row["bytes"]), str(row["sha256"]))
+            for row in db.execute(
+                "SELECT journal_id, bytes, sha256 FROM desired_journals WHERE collection_id = ?",
+                (collection_id,),
+            )
+        }
+        current = _journals(api, target, collection_id, archive_root, repair=repair)
+        if {key: (value[1], value[2]) for key, value in current.items()} != frozen:
+            raise InvalidState("canonical journal corpus differs from frozen local state")
+        for row in db.execute(
+            """
+            SELECT artifact_id, binding_json, primary_bytes, primary_sha256
+            FROM desired_artifacts WHERE collection_id = ? ORDER BY artifact_id
+            """,
+            (collection_id,),
+        ):
+            binding = json.loads(str(row["binding_json"]))
+            source = current[binding["journal"]["journal_id"]][0]
+            output = _output(
+                target,
+                collection_id,
+                primary_sidecar_components(str(row["artifact_id"])),
+            )
+            byte_count = int(row["primary_bytes"])
+            sha256 = str(row["primary_sha256"])
+            if _matches(output, byte_count, sha256):
+                continue
+            if output.exists() or output.is_symlink():
+                if not repair:
+                    raise InvalidState("local primary provenance was modified")
+                _quarantine(target, output)
+            _publish_prefix(source, output, byte_count=byte_count, sha256=sha256)
+
+
+def _quarantine(target: Path, output: Path) -> Path:
+    directory = target / ".a-riverhog-cli-quarantine"
+    if directory.is_symlink():
+        raise InvalidState("local quarantine is a symbolic link")
+    directory.mkdir(mode=0o700, exist_ok=True)
+    if output.is_symlink() or not output.is_file():
+        raise InvalidState("local non-regular materialization requires manual repair")
+    destination = directory / (uuid.uuid4().hex + "-" + output.name)
+    os.link(output, destination)
+    output.unlink()
+    return destination
+
+
+def _missing_artifacts(
+    db: sqlite3.Connection, target: Path, *, repair: bool
 ) -> list[tuple[int, str]]:
     missing: list[tuple[int, str]] = []
     for row in db.execute(
         """
-        SELECT f.collection_id, f.path, f.bytes, f.sha256
-        FROM desired_files AS f
+        SELECT a.collection_id, a.artifact_id, a.destination_json, a.bytes, a.sha256
+        FROM desired_artifacts AS a
         JOIN desired_collections AS c USING (collection_id)
-        WHERE c.remote_deleted = 0 AND c.inventory_complete = 1
-        ORDER BY f.collection_id, f.path
+        WHERE c.remote_unavailable = 0
+        ORDER BY a.collection_id, a.artifact_id
         """
     ):
-        output = _output_path(target, row["collection_id"], row["path"])
-        if not output.exists():
-            missing.append((row["collection_id"], row["path"]))
+        output = _destination(target, int(row["collection_id"]), str(row["destination_json"]))
+        byte_count = int(row["bytes"])
+        sha256 = str(row["sha256"])
+        if _matches(output, byte_count, sha256):
             continue
-        if _matches(output, byte_count=row["bytes"], sha256=row["sha256"]):
-            continue
-        if not repair:
-            typer.echo(f"mismatch retained: {row['collection_id']}/{row['path']}", err=True)
-            continue
-        quarantine = target / ".a-riverhog-cli-quarantine" / str(row["collection_id"]) / row["path"]
-        quarantine.parent.mkdir(parents=True, exist_ok=True)
-        candidate = quarantine
-        index = 1
-        while candidate.exists():
-            candidate = quarantine.with_name(f"{quarantine.name}.{index}")
-            index += 1
-        output.replace(candidate)
-        missing.append((row["collection_id"], row["path"]))
+        if output.exists() or output.is_symlink():
+            if not repair:
+                typer.echo(
+                    f"mismatch retained: {row['collection_id']}/{row['artifact_id']}",
+                    err=True,
+                )
+                continue
+            _quarantine(target, output)
+        missing.append((int(row["collection_id"]), str(row["artifact_id"])))
     return missing
 
 
-def _retrieval_plan_files(
-    api: ApiClient,
-    plan: dict[str, Any],
+def _retrieval_plan_artifacts(
+    api: ApiClient, plan: Mapping[str, Any]
 ) -> tuple[dict[str, Any], ...]:
     plan_id = str(plan["id"])
     plan_etag = str(plan["etag"])
-    file_count = int(plan["file_count"])
-    files: list[dict[str, Any]] = []
+    artifact_count = int(plan["artifact_count"])
+    artifacts: list[dict[str, Any]] = []
     start_ordinal = 0
     while True:
-        page = api.list_retrieval_plan_files(
-            plan_id,
-            plan_etag=plan_etag,
-            start_ordinal=start_ordinal,
-            page_size=100,
+        page = api.list_retrieval_plan_artifacts(
+            plan_id, plan_etag=plan_etag, start_ordinal=start_ordinal, page_size=100
         )
-        current = page.get("files")
+        current = page.get("artifacts")
         if (
             page.get("plan_id") != plan_id
             or page.get("etag") != plan_etag
@@ -611,167 +798,147 @@ def _retrieval_plan_files(
             or not isinstance(current, list)
             or any(not isinstance(item, dict) for item in current)
         ):
-            raise InvalidState("retrieval plan file page changed its authority")
-        files.extend(current)
-        if len(files) > file_count:
-            raise InvalidState("retrieval plan file page exceeded its declared count")
-        complete = page.get("complete")
-        if not isinstance(complete, bool):
-            raise InvalidState("retrieval plan file page omitted completion state")
-        if complete:
-            if page.get("next_ordinal") is not None or len(files) != file_count:
-                raise InvalidState("retrieval plan file traversal ended inconsistently")
-            return tuple(files)
+            raise InvalidState("retrieval plan artifact page changed its authority")
+        artifacts.extend(current)
+        if len(artifacts) > artifact_count:
+            raise InvalidState("retrieval plan exceeded its declared artifact count")
+        if page.get("complete") is True:
+            if page.get("next_ordinal") is not None or len(artifacts) != artifact_count:
+                raise InvalidState("retrieval plan ended inconsistently")
+            return tuple(artifacts)
         next_ordinal = page.get("next_ordinal")
         expected_next = start_ordinal + len(current)
         if not current or isinstance(next_ordinal, bool) or next_ordinal != expected_next:
-            raise InvalidState("retrieval plan file traversal did not advance exactly")
+            raise InvalidState("retrieval plan did not advance exactly")
         start_ordinal = expected_next
-
-
-def _verify_retrieval_plan_selection(
-    files: Sequence[dict[str, Any]],
-    expected: Sequence[tuple[int, str]],
-) -> None:
-    actual = tuple(
-        (
-            normalize_collection_id(current["collection_id"]),
-            validate_canonical_relpath(current["path"]),
-        )
-        for current in files
-    )
-    if actual != tuple(expected):
-        raise InvalidState("retrieval plan changed its requested file selection")
 
 
 def _download_job(
     db: sqlite3.Connection,
     target: Path,
     api: ApiClient,
-    job: dict[str, Any],
+    job: Mapping[str, Any],
 ) -> int:
+    job_id = str(job["id"])
     lease_seconds = int(job["lease_seconds"])
-    job = api.renew_retrieval_job(
-        str(job["id"]),
-        lease_seconds=lease_seconds,
-    )
-    persisted_files = tuple(
-        (
-            int(row["collection_id"]),
-            str(row["path"]),
-            int(row["bytes"]),
-            str(row["sha256"]),
-        )
-        for row in db.execute(
-            "SELECT collection_id, path, bytes, sha256 FROM retrieval_job_files "
-            "WHERE retrieval_job_id = ? ORDER BY ordinal",
-            (str(job["id"]),),
+    api.renew_retrieval_job(job_id, lease_seconds=lease_seconds)
+    rows = list(
+        db.execute(
+            """
+            SELECT r.collection_id, r.artifact_id, r.bytes, r.sha256,
+                   a.destination_json
+            FROM retrieval_job_artifacts AS r
+            JOIN desired_artifacts AS a
+              ON a.collection_id = r.collection_id AND a.artifact_id = r.artifact_id
+            WHERE r.retrieval_job_id = ? ORDER BY r.ordinal
+            """,
+            (job_id,),
         )
     )
-    expected: dict[tuple[int, str], tuple[int, str]] = {}
-    for collection_id, path, expected_bytes, expected_sha256 in persisted_files:
-        output = _output_path(target, collection_id, path)
-        if output.exists():
-            if _matches(output, byte_count=expected_bytes, sha256=expected_sha256):
-                continue
-            typer.echo(f"mismatch retained: {collection_id}/{path}", err=True)
+    count = db.execute(
+        "SELECT COUNT(*) FROM retrieval_job_artifacts WHERE retrieval_job_id = ?",
+        (job_id,),
+    ).fetchone()[0]
+    if len(rows) != count:
+        raise InvalidState("local retrieval job has an unavailable frozen artifact")
+    downloads: list[RetrievalDownload] = []
+    transfer_root = target / ".a-riverhog-cli-transfers" / job_id
+    if transfer_root.is_symlink():
+        raise InvalidState("local transfer root is a symbolic link")
+    transfer_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    for row in rows:
+        output = _destination(target, int(row["collection_id"]), str(row["destination_json"]))
+        if _matches(output, int(row["bytes"]), str(row["sha256"])):
             continue
-        expected[(collection_id, path)] = (expected_bytes, expected_sha256)
+        if output.exists() or output.is_symlink():
+            raise InvalidState(f"local artifact was modified: {output}")
+        staging = transfer_root / f"{row['collection_id']}-{row['artifact_id']}"
+        downloads.append(
+            RetrievalDownload(
+                collection_id=int(row["collection_id"]),
+                artifact_id=ArtifactId(str(row["artifact_id"])),
+                output=staging,
+                expected_bytes=int(row["bytes"]),
+                expected_sha256=str(row["sha256"]),
+            )
+        )
 
-    transfer_root = target / ".a-riverhog-cli-transfers" / str(job["id"])
-    staging_root = transfer_root / "files"
-    shutil.rmtree(transfer_root, ignore_errors=True)
+    def maintain_lease() -> None:
+        api.renew_retrieval_job(job_id, lease_seconds=lease_seconds)
+
+    concurrency = configured_download_concurrency()
     try:
-        downloads: list[RetrievalDownload] = []
-        for (collection_id, path), (expected_bytes, expected_sha256) in expected.items():
-            staging = _output_path(staging_root, collection_id, path)
-            staging.parent.mkdir(parents=True, exist_ok=True)
-            downloads.append(
-                RetrievalDownload(
-                    collection_id=collection_id,
-                    path=path,
-                    output=staging,
-                    expected_bytes=expected_bytes,
-                    expected_sha256=expected_sha256,
-                )
-            )
-        concurrency = configured_download_concurrency()
-
-        def maintain_lease() -> None:
-            api.renew_retrieval_job(
-                str(job["id"]),
-                lease_seconds=lease_seconds,
-            )
-
         download_retrieval_files(
             api,
-            str(job["id"]),
+            job_id,
             downloads,
             concurrency=concurrency,
             window=configured_download_window(concurrency=concurrency),
             heartbeat=maintain_lease,
-            heartbeat_interval_seconds=max(
-                0.1,
-                min(RETRIEVAL_RENEW_INTERVAL_MAX_SECONDS, lease_seconds / 3),
-            ),
+            heartbeat_interval_seconds=max(0.1, min(3600, lease_seconds / 3)),
         )
         for download in downloads:
-            if not _matches(
+            row = next(
+                current
+                for current in rows
+                if int(current["collection_id"]) == download.collection_id
+                and str(current["artifact_id"]) == download.artifact_id
+            )
+            output = _destination(target, int(row["collection_id"]), str(row["destination_json"]))
+            _publish_file(
                 download.output,
+                output,
                 byte_count=download.expected_bytes,
                 sha256=download.expected_sha256,
-            ):
-                raise InvalidState(
-                    "retrieved file did not match its catalog identity: "
-                    f"{download.collection_id}/{download.path}"
-                )
-
-        for collection_id, path in expected:
-            staging = _output_path(staging_root, collection_id, path)
-            output = _output_path(target, collection_id, path)
-            output.parent.mkdir(parents=True, exist_ok=True)
-            if output.exists():
-                raise InvalidState(f"target appeared during retrieval: {collection_id}/{path}")
-            staging.replace(output)
+            )
+        api.acknowledge_retrieval_job(job_id)
+        db.execute("DELETE FROM retrieval_jobs WHERE id = ?", (job_id,))
+        db.commit()
+        return len(downloads)
     finally:
         shutil.rmtree(transfer_root, ignore_errors=True)
-    api.acknowledge_retrieval_job(str(job["id"]))
-    db.execute("DELETE FROM retrieval_jobs WHERE id = ?", (str(job["id"]),))
-    return len(expected)
 
 
 def _cancel_active_retrievals(db: sqlite3.Connection, api: ApiClient) -> list[str]:
     canceled: list[str] = []
     for row in db.execute("SELECT id FROM retrieval_jobs ORDER BY updated_at"):
-        job = api.get_retrieval_job(str(row["id"]))
+        job_id = str(row["id"])
+        job = api.get_retrieval_job(job_id)
         if job["state"] in {"requested", "ready", "failed"}:
-            api.cancel_retrieval_job(str(row["id"]))
-            canceled.append(str(row["id"]))
+            api.cancel_retrieval_job(job_id)
+            canceled.append(job_id)
     db.execute("DELETE FROM retrieval_jobs")
+    db.commit()
     return canceled
 
 
-def _sync_notice(message: str, *, json_mode: bool) -> None:
-    typer.echo(message, err=json_mode)
-
-
-def _sync(
-    *,
-    wait: bool,
-    repair: bool,
-    restore_policy: str,
-    json_mode: bool,
-) -> dict[str, object]:
+def _sync(*, wait: bool, repair: bool, restore_policy: str) -> dict[str, object]:
     if restore_policy not in {"allow", "never"}:
         raise typer.BadParameter("--restore-policy must be allow or never")
-    policy = cast(RestorePolicy, restore_policy)
     target = _target()
     with closing(_connect(target)) as db, ApiClient() as api:
-        _refresh_catalog(db, api, target)
-        materialized_files = 0
+        for row in list(
+            db.execute("SELECT collection_id, archive_root_sha256 FROM desired_collections")
+        ):
+            collection_id = int(row["collection_id"])
+            try:
+                remote = api.get_collection(collection_id)
+            except NotFound:
+                db.execute(
+                    "UPDATE desired_collections SET remote_unavailable = 1 WHERE collection_id = ?",
+                    (collection_id,),
+                )
+                continue
+            if remote.get("archive_root_sha256") != row["archive_root_sha256"]:
+                raise InvalidState("remote collection differs from frozen local archive root")
+            db.execute(
+                "UPDATE desired_collections SET remote_unavailable = 0 WHERE collection_id = ?",
+                (collection_id,),
+            )
+        db.commit()
+        _ensure_provenance(db, api, target, repair=repair)
+        materialized = 0
         unavailable: set[tuple[int, str]] = set()
-        last_retrieval_id: str | None = None
-
         while True:
             active = db.execute(
                 "SELECT id FROM retrieval_jobs ORDER BY updated_at DESC LIMIT 1"
@@ -779,145 +946,120 @@ def _sync(
             job: dict[str, Any] | None = None
             if active is not None:
                 job = api.get_retrieval_job(str(active["id"]))
-                if job["state"] in {"expired", "failed", "canceled"}:
+                if job["state"] in {"expired", "failed", "canceled", "completed"}:
                     db.execute("DELETE FROM retrieval_jobs WHERE id = ?", (job["id"],))
                     db.commit()
                     job = None
-                elif job["state"] != "ready" and not wait:
-                    db.commit()
-                    return {
-                        "status": str(job["state"]),
-                        "retrieval": job,
-                        "materialized_files": materialized_files,
-                    }
-
             if job is None:
                 missing = [
-                    current
-                    for current in _missing_files(db, target, repair=repair)
-                    if current not in unavailable
+                    item
+                    for item in _missing_artifacts(db, target, repair=repair)
+                    if item not in unavailable
                 ]
                 if not missing:
-                    db.commit()
                     if unavailable:
                         return {
                             "status": "cache-miss",
-                            "restore_policy": restore_policy,
-                            "materialized_files": materialized_files,
-                            "unavailable_files": len(unavailable),
+                            "materialized_artifacts": materialized,
+                            "unavailable_artifacts": len(unavailable),
                         }
-                    payload: dict[str, object] = {
-                        "status": "materialized" if materialized_files else "current",
-                        "materialized_files": materialized_files,
+                    return {
+                        "status": "materialized" if materialized else "current",
+                        "materialized_artifacts": materialized,
                     }
-                    if last_retrieval_id is not None:
-                        payload["retrieval_id"] = last_retrieval_id
-                    return payload
-
                 batch = missing[:RETRIEVAL_ARTIFACT_BATCH_MAX]
-                plan = api.plan_retrieval(batch, restore_policy=policy)
-                plan_files = _retrieval_plan_files(api, plan)
-                _verify_retrieval_plan_selection(plan_files, batch)
-                if policy == "never" and plan.get("requires_restore"):
+                plan = api.plan_retrieval(batch, restore_policy=cast(RestorePolicy, restore_policy))
+                selected = _retrieval_plan_artifacts(api, plan)
+                actual = tuple(
+                    (normalize_collection_id(item["collection_id"]), str(item["artifact_id"]))
+                    for item in selected
+                )
+                if actual != tuple(sorted(batch)):
+                    raise InvalidState("retrieval plan changed its requested artifact selection")
+                if restore_policy == "never" and plan["requires_restore"]:
                     blocked = {
-                        (
-                            normalize_collection_id(current["collection_id"]),
-                            validate_canonical_relpath(current["path"]),
-                        )
-                        for current in plan_files
-                        if current.get("requires_restore") is True
+                        (normalize_collection_id(item["collection_id"]), str(item["artifact_id"]))
+                        for item in selected
+                        if item["requires_restore"] is True
                     }
                     unavailable.update(blocked)
-                    batch = [current for current in batch if current not in blocked]
+                    batch = [item for item in batch if item not in blocked]
                     if not batch:
                         continue
-                    plan = api.plan_retrieval(batch, restore_policy=policy)
-                    plan_files = _retrieval_plan_files(api, plan)
-                    _verify_retrieval_plan_selection(plan_files, batch)
-                job = api.create_retrieval_job(
-                    str(plan["id"]),
-                    plan_etag=str(plan["etag"]),
-                )
+                    plan = api.plan_retrieval(
+                        batch, restore_policy=cast(RestorePolicy, restore_policy)
+                    )
+                    selected = _retrieval_plan_artifacts(api, plan)
+                job = api.create_retrieval_job(str(plan["id"]), plan_etag=str(plan["etag"]))
                 db.execute(
                     "INSERT INTO retrieval_jobs (id, state) VALUES (?, ?)",
                     (job["id"], job["state"]),
                 )
                 db.executemany(
                     """
-                    INSERT INTO retrieval_job_files (
-                        retrieval_job_id, ordinal, collection_id, path, bytes, sha256
+                    INSERT INTO retrieval_job_artifacts (
+                        retrieval_job_id, ordinal, collection_id, artifact_id, bytes, sha256
                     ) VALUES (?, ?, ?, ?, ?, ?)
                     """,
                     (
                         (
                             job["id"],
-                            ordinal,
-                            current["collection_id"],
-                            current["path"],
-                            current["bytes"],
-                            current["sha256"],
+                            index,
+                            normalize_collection_id(item["collection_id"]),
+                            str(item["artifact_id"]),
+                            int(item["bytes"]),
+                            str(item["sha256"]),
                         )
-                        for ordinal, current in enumerate(plan_files)
+                        for index, item in enumerate(selected)
                     ),
                 )
                 db.commit()
-
             while job["state"] == "requested" and wait:
-                _sync_notice(
-                    f"retrieval {job['id']} is waiting for archive availability",
-                    json_mode=json_mode,
-                )
                 time.sleep(10)
                 job = api.get_retrieval_job(str(job["id"]))
             if job["state"] != "ready":
                 return {
                     "status": str(job["state"]),
                     "retrieval": job,
-                    "materialized_files": materialized_files,
+                    "materialized_artifacts": materialized,
                 }
-
-            materialized_files += _download_job(db, target, api, job)
-            last_retrieval_id = str(job["id"])
-            db.commit()
+            materialized += _download_job(db, target, api, job)
 
 
-def _format_sync_result(payload: dict[str, object]) -> str:
-    status = str(payload.get("status") or "unknown")
-    if status == "materialized":
-        return f"materialized {payload.get('materialized_files', 0)} file(s)"
-    if status == "current":
-        return "materialization is current"
-    if status == "cache-miss":
-        raw_materialized = payload.get("materialized_files", 0)
-        materialized = raw_materialized if isinstance(raw_materialized, int) else 0
-        prefix = f"materialized {materialized} file(s); " if materialized else ""
-        return prefix + (
-            f"{payload.get('unavailable_files', 0)} remaining file(s) would require archive restore"
-        )
-    retrieval = payload.get("retrieval")
-    retrieval_id = retrieval.get("id") if isinstance(retrieval, dict) else "unknown"
-    return f"retrieval {retrieval_id} is {status}; rerun sync later"
-
-
-@local_app.command("add")
-def add_collection(
-    collection_id: Annotated[int, typer.Argument(help="Collection ID")],
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+@local_app.command("sync")
+def sync(
+    wait: Annotated[bool, typer.Option(help="Wait while archive retrieval is pending")] = False,
+    restore_policy: Annotated[str, typer.Option("--restore-policy")] = "allow",
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
-    target = _target()
-    normalized = normalize_collection_id(collection_id)
-    with closing(_connect(target)) as db, ApiClient() as api:
-        _refresh_collection(db, api, normalized)
-        collection = _local_collection(db, normalized)
-        db.commit()
-    payload = {"status": "added", "collection": collection}
-    emit(payload if json_mode else f"desired collection added: {normalized}", json_mode=json_mode)
+    payload = _sync(wait=wait, repair=False, restore_policy=restore_policy)
+    emit(
+        payload
+        if json_mode
+        else f"{payload['status']}: {payload.get('materialized_artifacts', 0)} artifacts",
+        json_mode=json_mode,
+    )
+
+
+@local_app.command("repair")
+def repair(
+    wait: Annotated[bool, typer.Option(help="Wait while archive retrieval is pending")] = False,
+    restore_policy: Annotated[str, typer.Option("--restore-policy")] = "allow",
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
+) -> None:
+    payload = _sync(wait=wait, repair=True, restore_policy=restore_policy)
+    emit(
+        payload
+        if json_mode
+        else f"{payload['status']}: {payload.get('materialized_artifacts', 0)} artifacts",
+        json_mode=json_mode,
+    )
 
 
 @local_app.command("remove")
 def remove_collection(
     collection_id: Annotated[int, typer.Argument(help="Collection ID")],
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
     target = _target()
     normalized = normalize_collection_id(collection_id)
@@ -928,244 +1070,128 @@ def remove_collection(
     payload = {
         "status": "removed",
         "collection_id": normalized,
-        "local_files": "retained",
+        "local_artifacts": "retained",
         "retrievals_canceled": canceled,
     }
     emit(
-        payload if json_mode else f"desired collection removed; local files retained: {normalized}",
+        payload
+        if json_mode
+        else f"desired collection removed; local artifacts retained: {normalized}",
         json_mode=json_mode,
     )
-
-
-@local_app.command("list")
-def list_collections(
-    page_size: Annotated[
-        int,
-        typer.Option("--page-size", min=1, max=LOCAL_LIST_PAGE_SIZE_MAX),
-    ] = 25,
-    page_token: Annotated[str | None, typer.Option("--page-token")] = None,
-    sort: Annotated[str, typer.Option("--sort", help="Sort field")] = "collection_id",
-    order: Annotated[str, typer.Option("--order", help="Sort order")] = "asc",
-    query: Annotated[
-        str | None,
-        typer.Option("--query", "-q", help="Search collection id, tag, or status"),
-    ] = None,
-    ids: Annotated[
-        bool,
-        typer.Option("--ids", help="Emit one collection id per line"),
-    ] = False,
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-) -> None:
-    if ids and json_mode:
-        raise typer.BadParameter("--ids and --json cannot be used together")
-    if sort not in LOCAL_LIST_SORT_FIELDS:
-        allowed = ", ".join(sorted(LOCAL_LIST_SORT_FIELDS))
-        raise typer.BadParameter(f"--sort must be one of: {allowed}")
-    normalized_order = order.strip().lower()
-    if normalized_order not in {"asc", "desc"}:
-        raise typer.BadParameter("--order must be asc or desc")
-
-    target = _target()
-    normalized_query = (query or "").strip() or None
-    selectors = {
-        "order": normalized_order,
-        "query": normalized_query,
-        "sort": sort,
-    }
-    database = _database(target)
-    token_codec = BrowseTokenCodec(
-        hashlib.sha256(
-            b"a-riverhog-cli-local-list-token/v1\x00" + str(database).encode("utf-8")
-        ).digest(),
-        lifetime_seconds=LOCAL_LIST_TOKEN_LIFETIME_SECONDS,
-    )
-    try:
-        position = token_codec.verify(
-            page_token,
-            operation="local.list_collections",
-            principal=str(database),
-            selectors=selectors,
-        )
-    except BrowseTokenError as exc:
-        raise typer.BadParameter(str(exc), param_hint="--page-token") from exc
-    if position is not None and len(position) != 2:
-        raise typer.BadParameter("page token position is invalid", param_hint="--page-token")
-    with closing(_connect(target)) as db:
-        filters = ""
-        params: list[object] = []
-        if normalized_query:
-            filters = (
-                "WHERE CAST(collection_id AS TEXT) LIKE ? "
-                "OR EXISTS (SELECT 1 FROM desired_collection_tags AS t "
-                "           WHERE t.collection_id = local_collections.collection_id "
-                "             AND t.tag LIKE ?) "
-                "OR status LIKE lower(?)"
-            )
-            pattern = f"%{normalized_query}%"
-            params.extend((pattern, pattern, pattern))
-        base_query = f"""
-                WITH local_collections AS (
-                SELECT c.collection_id, c.created_at, c.remote_deleted,
-                       (SELECT COUNT(*) FROM desired_collection_tags AS t
-                        WHERE t.collection_id = c.collection_id) AS tag_count,
-                       CASE
-                           WHEN c.remote_deleted = 1 THEN 'remote-deleted'
-                           WHEN c.inventory_complete = 0 OR c.tags_complete = 0
-                               THEN 'synchronizing'
-                           ELSE 'desired'
-                       END AS status,
-                       COUNT(f.path) AS files,
-                       COALESCE(SUM(f.bytes), 0) AS bytes
-                FROM desired_collections AS c
-                LEFT JOIN desired_files AS f USING (collection_id)
-                GROUP BY c.collection_id, c.created_at, c.remote_deleted,
-                         c.inventory_complete, c.tags_complete
-                )
-                SELECT * FROM local_collections
-                {filters}
-                """
-        order_column = LOCAL_LIST_SORT_FIELDS[sort]
-        order_column = LOCAL_LIST_SORT_FIELDS[sort]
-        continuation = ""
-        if position is not None:
-            sort_value, collection_id = position
-            if not isinstance(collection_id, int) or isinstance(collection_id, bool):
-                raise typer.BadParameter(
-                    "page token position is invalid", param_hint="--page-token"
-                )
-            comparison = ">" if normalized_order == "asc" else "<"
-            continuation = (
-                f"WHERE ({order_column} {comparison} ? "
-                f"OR ({order_column} = ? AND collection_id > ?))"
-            )
-            params.extend((sort_value, sort_value, collection_id))
-        rows = db.execute(
-            f"""
-            SELECT * FROM ({base_query})
-            {continuation}
-            ORDER BY {order_column} {normalized_order.upper()}, collection_id ASC
-            LIMIT ?
-            """,
-            (*params, page_size + 1),
-        ).fetchall()
-        has_more = len(rows) > page_size
-        page_rows = rows[:page_size]
-        collections = [_local_collection_list_item(row) for row in page_rows]
-    next_page_token = None
-    if has_more and page_rows:
-        last = page_rows[-1]
-        next_page_token = token_codec.issue(
-            operation="local.list_collections",
-            principal=str(database),
-            selectors=selectors,
-            position=(last[order_column], int(last["collection_id"])),
-        )
-    payload = {
-        "page_size": page_size,
-        "next_page_token": next_page_token,
-        "sort": sort,
-        "order": normalized_order,
-        "query": normalized_query,
-        "collections": collections,
-    }
-    if ids:
-        emit(
-            format_list_ids(payload, "collections", id_key="collection_id"),
-            json_mode=False,
-        )
-        return
-    emit(payload if json_mode else format_local_collections(payload), json_mode=json_mode)
-
-
-def _local_collection_list_item(row: sqlite3.Row) -> dict[str, object]:
-    return {
-        "collection_id": int(row["collection_id"]),
-        "created_at": str(row["created_at"]),
-        "tag_count": int(row["tag_count"]),
-        "status": str(row["status"]),
-        "files": int(row["files"]),
-        "bytes": int(row["bytes"]),
-    }
 
 
 @local_app.command("show")
 def show_collection(
     collection_id: Annotated[int, typer.Argument(help="Collection ID")],
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
     target = _target()
-    normalized = normalize_collection_id(collection_id)
     with closing(_connect(target)) as db:
-        payload = _local_collection(db, normalized)
+        payload = _local_collection(db, normalize_collection_id(collection_id))
     emit(payload if json_mode else format_local_collection(payload), json_mode=json_mode)
 
 
-@local_app.command("sync")
-def sync(
-    wait: Annotated[bool, typer.Option(help="Wait while archival retrieval is pending")] = False,
-    restore_policy: Annotated[
-        str,
-        typer.Option(
-            "--restore-policy",
-            help="Use allow for full retrieval or never for opportunistic-only materialization",
-        ),
-    ] = "allow",
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+@local_app.command("list")
+def list_collections(
+    page_size: Annotated[
+        int, typer.Option("--page-size", min=1, max=LOCAL_LIST_PAGE_SIZE_MAX)
+    ] = 25,
+    page_token: Annotated[str | None, typer.Option("--page-token")] = None,
+    ids: Annotated[bool, typer.Option("--ids")] = False,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
-    payload = _sync(
-        wait=wait,
-        repair=False,
-        restore_policy=restore_policy,
-        json_mode=json_mode,
+    if ids and json_mode:
+        raise typer.BadParameter("--ids and --json cannot be used together")
+    target = _target()
+    database = _database(target)
+    codec = BrowseTokenCodec(
+        hashlib.sha256(b"a-riverhog-cli-local-list-token/v1\x00" + str(database).encode()).digest(),
+        lifetime_seconds=LOCAL_LIST_TOKEN_LIFETIME_SECONDS,
     )
-    emit(payload if json_mode else _format_sync_result(payload), json_mode=json_mode)
-
-
-@local_app.command("repair")
-def repair(
-    wait: Annotated[bool, typer.Option(help="Wait while archival retrieval is pending")] = False,
-    restore_policy: Annotated[
-        str,
-        typer.Option(
-            "--restore-policy",
-            help="Use allow for full retrieval or never for opportunistic-only repair",
-        ),
-    ] = "allow",
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-) -> None:
-    payload = _sync(
-        wait=wait,
-        repair=True,
-        restore_policy=restore_policy,
-        json_mode=json_mode,
+    try:
+        position = codec.verify(
+            page_token,
+            operation="local.list_collections",
+            principal=str(database),
+            selectors={},
+        )
+    except BrowseTokenError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--page-token") from exc
+    if position is not None and (
+        len(position) != 1 or type(position[0]) is not int or position[0] < 1
+    ):
+        raise typer.BadParameter("page token position is invalid", param_hint="--page-token")
+    after = position[0] if position is not None else 0
+    with closing(_connect(target)) as db:
+        rows = db.execute(
+            "SELECT collection_id FROM desired_collections WHERE collection_id > ? "
+            "ORDER BY collection_id LIMIT ?",
+            (after, page_size + 1),
+        ).fetchall()
+        has_more = len(rows) > page_size
+        selected = rows[:page_size]
+        collections = [_local_collection(db, int(row["collection_id"])) for row in selected]
+    next_page_token = (
+        codec.issue(
+            operation="local.list_collections",
+            principal=str(database),
+            selectors={},
+            position=(int(selected[-1]["collection_id"]),),
+        )
+        if has_more and selected
+        else None
     )
-    emit(payload if json_mode else _format_sync_result(payload), json_mode=json_mode)
+    payload = {
+        "page_size": page_size,
+        "next_page_token": next_page_token,
+        "collections": collections,
+    }
+    if ids:
+        emit(format_list_ids(payload, "collections", id_key="collection_id"), json_mode=False)
+    else:
+        emit(payload if json_mode else format_local_collections(payload), json_mode=json_mode)
 
 
 @local_app.command("audit")
 def audit(
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
     target = _target()
     problems = 0
     samples: list[str] = []
 
-    def record(message: str) -> None:
+    def record(label: str) -> None:
         nonlocal problems
         problems += 1
         if len(samples) < LOCAL_AUDIT_SAMPLE_LIMIT:
-            samples.append(message)
+            samples.append(label)
 
     with closing(_connect(target)) as db:
         for row in db.execute(
-            "SELECT collection_id, path, bytes, sha256 "
-            "FROM desired_files ORDER BY collection_id, path"
+            "SELECT collection_id, artifact_id, destination_json, bytes, sha256, "
+            "primary_bytes, primary_sha256 FROM desired_artifacts "
+            "ORDER BY collection_id, artifact_id"
         ):
-            output = _output_path(target, row["collection_id"], row["path"])
-            if not output.exists():
-                record(f"missing: {row['collection_id']}/{row['path']}")
-            elif not _matches(output, byte_count=row["bytes"], sha256=row["sha256"]):
-                record(f"mismatch: {row['collection_id']}/{row['path']}")
+            collection_id = int(row["collection_id"])
+            artifact_id = str(row["artifact_id"])
+            output = _destination(target, collection_id, str(row["destination_json"]))
+            if not _matches(output, int(row["bytes"]), str(row["sha256"])):
+                record(f"artifact mismatch: {collection_id}/{artifact_id}")
+            sidecar = _output(target, collection_id, primary_sidecar_components(artifact_id))
+            if not _matches(sidecar, int(row["primary_bytes"]), str(row["primary_sha256"])):
+                record(f"primary provenance mismatch: {collection_id}/{artifact_id}")
+        for row in db.execute(
+            "SELECT collection_id, journal_id, bytes, sha256 FROM desired_journals "
+            "ORDER BY collection_id, journal_id"
+        ):
+            output = _output(
+                target,
+                int(row["collection_id"]),
+                shared_journal_components(str(row["sha256"])),
+            )
+            if not _matches(output, int(row["bytes"]), str(row["sha256"])):
+                record(f"journal mismatch: {row['collection_id']}/{row['journal_id']}")
     payload = {
         "status": "ok" if not problems else "issues",
         "problems": problems,
@@ -1173,47 +1199,75 @@ def audit(
         "samples_truncated": problems > len(samples),
     }
     if problems:
-        if json_mode:
-            emit(payload, json_mode=True)
-        else:
-            typer.echo("\n".join(samples))
-            if problems > len(samples):
-                typer.echo(f"... {problems - len(samples)} more problem(s)")
+        emit(payload if json_mode else "\n".join(samples), json_mode=json_mode)
         raise typer.Exit(1)
-    emit(
-        payload if json_mode else "materialization matches all desired files",
-        json_mode=json_mode,
-    )
+    emit(payload if json_mode else "local artifacts and provenance match", json_mode=json_mode)
 
 
 @local_app.command("evict")
 def evict(
     collection_id: Annotated[int, typer.Argument(help="Collection ID")],
-    confirm: Annotated[bool, typer.Option(help="Confirm local file removal")] = False,
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+    confirm: Annotated[bool, typer.Option("--confirm")] = False,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
 ) -> None:
     if not confirm:
         raise typer.BadParameter("--confirm is required")
     target = _target()
     normalized = normalize_collection_id(collection_id)
     with closing(_connect(target)) as db, ApiClient() as api:
-        canceled = _cancel_active_retrievals(db, api)
         rows = list(
             db.execute(
-                "SELECT path FROM desired_files WHERE collection_id = ? ORDER BY path",
+                "SELECT artifact_id, destination_json, bytes, sha256, "
+                "primary_bytes, primary_sha256 FROM desired_artifacts WHERE collection_id = ?",
                 (normalized,),
             )
         )
+        journals = list(
+            db.execute(
+                "SELECT sha256, bytes FROM desired_journals WHERE collection_id = ?",
+                (normalized,),
+            )
+        )
+        outputs: list[tuple[Path, int, str]] = []
         for row in rows:
-            _output_path(target, normalized, row["path"]).unlink(missing_ok=True)
-        collection_dir = target / str(normalized)
-        if collection_dir.exists():
-            shutil.rmtree(collection_dir)
+            outputs.append(
+                (
+                    _destination(target, normalized, str(row["destination_json"])),
+                    int(row["bytes"]),
+                    str(row["sha256"]),
+                )
+            )
+            outputs.append(
+                (
+                    _output(
+                        target,
+                        normalized,
+                        primary_sidecar_components(str(row["artifact_id"])),
+                    ),
+                    int(row["primary_bytes"]),
+                    str(row["primary_sha256"]),
+                )
+            )
+        for row in journals:
+            outputs.append(
+                (
+                    _output(target, normalized, shared_journal_components(str(row["sha256"]))),
+                    int(row["bytes"]),
+                    str(row["sha256"]),
+                )
+            )
+        for output, byte_count, sha256 in outputs:
+            if output.exists() and not _matches(output, byte_count, sha256):
+                raise InvalidState(f"local modification blocks eviction: {output}")
+        canceled = _cancel_active_retrievals(db, api)
+        for output, _, _ in outputs:
+            output.unlink(missing_ok=True)
         db.execute("DELETE FROM desired_collections WHERE collection_id = ?", (normalized,))
         db.commit()
     payload = {
         "status": "evicted",
         "collection_id": normalized,
+        "artifacts": len(rows),
         "retrievals_canceled": canceled,
     }
-    emit(payload if json_mode else f"evicted local collection: {normalized}", json_mode=json_mode)
+    emit(payload if json_mode else f"evicted local collection {normalized}", json_mode=json_mode)

@@ -1,83 +1,15 @@
-"""Immutable DDL snapshot for the Riverhog CLI local-state v1 baseline."""
+"""Immutable DDL snapshot for the current Riverhog CLI local-state v1 baseline."""
 
 # ruff: noqa: E501
 
 # This module is migration authority. Runtime model metadata must never be imported here.
 
 SQLITE_DDL: tuple[str, ...] = (
-    """
-CREATE TABLE settings (
-	"key" TEXT NOT NULL,
-	value TEXT NOT NULL,
-	PRIMARY KEY ("key")
-)
-    """.strip(),
-    """
-CREATE TABLE desired_collections (
-	collection_id INTEGER NOT NULL,
-	inventory_identity TEXT NOT NULL,
-	inventory_cursor TEXT,
-	inventory_complete INTEGER DEFAULT 0 NOT NULL,
-	tag_revision INTEGER NOT NULL,
-	tag_set_identity TEXT NOT NULL,
-	tag_page_token TEXT,
-	tags_complete INTEGER DEFAULT 0 NOT NULL,
-	created_at TEXT NOT NULL,
-	remote_deleted INTEGER DEFAULT 0 NOT NULL,
-	PRIMARY KEY (collection_id),
-	CONSTRAINT ck_desired_collections_id CHECK (collection_id > 0),
-	CONSTRAINT ck_desired_collections_etag CHECK (length(inventory_identity) = 64 AND inventory_identity = lower(inventory_identity) AND inventory_identity NOT GLOB '*[^0-9a-f]*'),
-	CONSTRAINT ck_desired_collections_inventory_complete CHECK (inventory_complete IN (0, 1)),
-	CONSTRAINT ck_desired_collections_tag_revision CHECK (tag_revision >= 1),
-	CONSTRAINT ck_desired_collections_tag_set_identity CHECK (length(tag_set_identity) = 64 AND tag_set_identity = lower(tag_set_identity) AND tag_set_identity NOT GLOB '*[^0-9a-f]*'),
-	CONSTRAINT ck_desired_collections_tags_complete CHECK (tags_complete IN (0, 1)),
-	CONSTRAINT ck_desired_collections_remote_deleted CHECK (remote_deleted IN (0, 1))
-)
-    """.strip(),
-    """
-CREATE TABLE retrieval_jobs (
-	id TEXT NOT NULL,
-	state TEXT NOT NULL,
-	updated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	PRIMARY KEY (id),
-	CONSTRAINT ck_retrieval_jobs_state CHECK (state IN ('requested', 'ready', 'completed', 'expired', 'failed', 'canceled'))
-)
-    """.strip(),
-    """
-CREATE TABLE desired_collection_tags (
-	collection_id INTEGER NOT NULL,
-	tag TEXT NOT NULL,
-	PRIMARY KEY (collection_id, tag),
-	FOREIGN KEY(collection_id) REFERENCES desired_collections (collection_id) ON DELETE CASCADE
-)
-    """.strip(),
-    """
-CREATE TABLE desired_files (
-	collection_id INTEGER NOT NULL,
-	path TEXT NOT NULL,
-	bytes INTEGER NOT NULL,
-	sha256 TEXT NOT NULL,
-	PRIMARY KEY (collection_id, path),
-	CONSTRAINT ck_desired_files_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_desired_files_sha256 CHECK (length(sha256) = 64 AND sha256 = lower(sha256) AND sha256 NOT GLOB '*[^0-9a-f]*'),
-	FOREIGN KEY(collection_id) REFERENCES desired_collections (collection_id) ON DELETE CASCADE
-)
-    """.strip(),
-    """
-CREATE TABLE retrieval_job_files (
-	retrieval_job_id TEXT NOT NULL,
-	ordinal INTEGER NOT NULL,
-	collection_id INTEGER NOT NULL,
-	path TEXT NOT NULL,
-	bytes INTEGER NOT NULL,
-	sha256 TEXT NOT NULL,
-	PRIMARY KEY (retrieval_job_id, ordinal),
-	CONSTRAINT ck_retrieval_job_files_ordinal CHECK (ordinal >= 0),
-	CONSTRAINT ck_retrieval_job_files_collection CHECK (collection_id > 0),
-	CONSTRAINT ck_retrieval_job_files_bytes CHECK (bytes >= 0),
-	CONSTRAINT ck_retrieval_job_files_sha256 CHECK (length(sha256) = 64 AND sha256 = lower(sha256) AND sha256 NOT GLOB '*[^0-9a-f]*'),
-	CONSTRAINT uq_retrieval_job_files_artifact UNIQUE (retrieval_job_id, collection_id, path),
-	FOREIGN KEY(retrieval_job_id) REFERENCES retrieval_jobs (id) ON DELETE CASCADE
-)
-    """.strip(),
+    "CREATE TABLE desired_collections (\n\tcollection_id INTEGER NOT NULL, \n\tarchive_root_sha256 TEXT NOT NULL, \n\tinventory_identity TEXT NOT NULL, \n\tartifact_set_identity TEXT NOT NULL, \n\tprovenance_identity TEXT NOT NULL, \n\tcreated_at TEXT NOT NULL, \n\tlayout_mode TEXT NOT NULL, \n\trules_json TEXT NOT NULL, \n\tremote_unavailable INTEGER DEFAULT 0 NOT NULL, \n\tPRIMARY KEY (collection_id), \n\tCONSTRAINT ck_desired_collections_id CHECK (collection_id > 0), \n\tCONSTRAINT ck_desired_collections_layout CHECK (layout_mode IN ('declared-hints', 'id-layout')), \n\tCONSTRAINT ck_desired_collections_unavailable CHECK (remote_unavailable IN (0, 1))\n)",
+    "CREATE TABLE retrieval_jobs (\n\tid TEXT NOT NULL, \n\tstate TEXT NOT NULL, \n\tupdated_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT ck_retrieval_jobs_state CHECK (state IN ('requested', 'ready', 'completed', 'expired', 'failed', 'canceled'))\n)",
+    'CREATE TABLE settings (\n\t"key" TEXT NOT NULL, \n\tvalue TEXT NOT NULL, \n\tPRIMARY KEY ("key")\n)',
+    "CREATE TABLE desired_artifacts (\n\tcollection_id INTEGER NOT NULL, \n\tartifact_id TEXT NOT NULL, \n\tbytes INTEGER NOT NULL, \n\tsha256 TEXT NOT NULL, \n\tdestination_json TEXT NOT NULL, \n\treason TEXT NOT NULL, \n\thint_json TEXT, \n\tbinding_json TEXT NOT NULL, \n\tprimary_bytes INTEGER NOT NULL, \n\tprimary_sha256 TEXT NOT NULL, \n\tPRIMARY KEY (collection_id, artifact_id), \n\tCONSTRAINT ck_desired_artifacts_bytes CHECK (bytes >= 0), \n\tCONSTRAINT ck_desired_artifacts_primary_bytes CHECK (primary_bytes > 0), \n\tCONSTRAINT uq_desired_artifact_destination UNIQUE (collection_id, destination_json), \n\tFOREIGN KEY(collection_id) REFERENCES desired_collections (collection_id) ON DELETE CASCADE\n)",
+    "CREATE TABLE desired_collection_tags (\n\tcollection_id INTEGER NOT NULL, \n\ttag TEXT NOT NULL, \n\tPRIMARY KEY (collection_id, tag), \n\tFOREIGN KEY(collection_id) REFERENCES desired_collections (collection_id) ON DELETE CASCADE\n)",
+    "CREATE TABLE desired_journals (\n\tcollection_id INTEGER NOT NULL, \n\tjournal_id TEXT NOT NULL, \n\tbytes INTEGER NOT NULL, \n\tsha256 TEXT NOT NULL, \n\tPRIMARY KEY (collection_id, journal_id), \n\tCONSTRAINT ck_desired_journals_bytes CHECK (bytes > 0), \n\tFOREIGN KEY(collection_id) REFERENCES desired_collections (collection_id) ON DELETE CASCADE\n)",
+    "CREATE TABLE retrieval_job_artifacts (\n\tretrieval_job_id TEXT NOT NULL, \n\tordinal INTEGER NOT NULL, \n\tcollection_id INTEGER NOT NULL, \n\tartifact_id TEXT NOT NULL, \n\tbytes INTEGER NOT NULL, \n\tsha256 TEXT NOT NULL, \n\tPRIMARY KEY (retrieval_job_id, ordinal), \n\tCONSTRAINT ck_retrieval_job_artifacts_ordinal CHECK (ordinal >= 0), \n\tCONSTRAINT ck_retrieval_job_artifacts_collection CHECK (collection_id > 0), \n\tCONSTRAINT ck_retrieval_job_artifacts_bytes CHECK (bytes >= 0), \n\tCONSTRAINT uq_retrieval_job_artifacts_member UNIQUE (retrieval_job_id, collection_id, artifact_id), \n\tFOREIGN KEY(retrieval_job_id) REFERENCES retrieval_jobs (id) ON DELETE CASCADE\n)",
 )

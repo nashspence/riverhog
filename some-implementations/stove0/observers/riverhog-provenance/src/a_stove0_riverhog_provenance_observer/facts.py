@@ -7,7 +7,7 @@ from typing import Any
 
 from riverhog_protocol import CollectionArtifactProvenanceBindingDocument
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
-from riverhog_provenance import JournalSummary
+from riverhog_provenance import JournalSummary, selected_delivery_occurrence
 from stove0_observer_protocol import WorkArtifactSubject
 
 
@@ -88,32 +88,14 @@ def _delivered_occurrence(
         raise ValueError("primary canonical snapshot differs from the frozen subject")
     objects = summary.graph_validation.objects
     origins = _origins(summary)
-    association = objects.get(binding.delivery_association_id)
-    if association is None or association["type"] != "delivery_association":
-        raise ValueError("primary delivery association is absent")
-    if association["role"] != COLLECTION_MEMBER_ROLE or association["slot"] != {
-        "kind": "text",
-        "text": subject.artifact_id,
-    }:
-        raise ValueError("primary delivery association names another member slot")
-    state = _local_object(objects, association["state"], "state")
-    occurrence = objects.get(state["occurrence_id"])
-    if occurrence is None or occurrence["type"] != "occurrence":
-        raise ValueError("selected canonical State has no Occurrence")
-    measurement = objects.get(association["verification_observation_id"])
-    if (
-        measurement is None
-        or measurement["type"] != "observation"
-        or measurement["state"]
-        != {"scope": "local", "object_id": state["id"], "object_type": "state"}
-        or int(measurement["content"]["size_bytes"]) != int(subject.bytes)
-        or (
-            "sha-256",
-            subject.sha256,
-        )
-        not in {(item["algorithm"], item["value"]) for item in measurement["content"]["digests"]}
-    ):
-        raise ValueError("primary canonical observation differs from member fixity")
+    state, occurrence = selected_delivery_occurrence(
+        summary,
+        binding=binding.model_dump(mode="json"),
+        artifact_id=subject.artifact_id,
+        byte_count=int(subject.bytes),
+        sha256=subject.sha256,
+        member_role=COLLECTION_MEMBER_ROLE,
+    )
     return objects, origins, state, occurrence
 
 

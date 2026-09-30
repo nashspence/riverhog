@@ -14,6 +14,7 @@ from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ProducerFile
+from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 
 _FORMAT = "a-riverhog-cli-directory-upload/v1"
@@ -33,13 +34,13 @@ class LocalSource:
         except ValueError:
             return ProducerFile(
                 source=self.path,
-                artifact_id=self.artifact_id,
+                artifact_id=ArtifactId(self.artifact_id),
                 allow_missing_materialization_hint=True,
                 observation=observation,
             )
         return ProducerFile(
             source=self.path,
-            artifact_id=self.artifact_id,
+            artifact_id=ArtifactId(self.artifact_id),
             materialization_hint=self.relative_parts,
             observation=observation,
         )
