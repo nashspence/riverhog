@@ -5,7 +5,7 @@ import hashlib
 import pytest
 from riverhog_core import raw_verification
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     SealedRawVolume,
     StoredArchivePart,
 )
@@ -16,7 +16,7 @@ from tests.fixtures.archive import age_state_json
 def _sealed_segment(
     *,
     sequence: int,
-    path: str,
+    artifact_id: str,
     whole: bytes,
     offset: int,
     content: bytes,
@@ -27,12 +27,12 @@ def _sealed_segment(
         volume_id=volume_id,
         sequence=sequence,
         relative_path=f"volumes/{volume_id}.bin.age",
-        source_path=path,
-        file_offset=offset,
+        artifact_id=artifact_id,
+        artifact_offset=offset,
         plaintext_bytes=len(content),
         age_state_json=age_state_json(len(content)),
-        file_bytes=len(whole),
-        file_sha256=hashlib.sha256(whole).hexdigest(),
+        artifact_bytes=len(whole),
+        artifact_sha256=hashlib.sha256(whole).hexdigest(),
         parts=(
             StoredArchivePart(
                 number=1,
@@ -48,7 +48,7 @@ def _sealed_segment(
     )
 
 
-def test_raw_file_is_reassembled_and_verified_before_root_publication(
+def test_raw_artifact_is_reassembled_and_verified_before_root_publication(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
@@ -57,16 +57,17 @@ def test_raw_file_is_reassembled_and_verified_before_root_publication(
         lambda chunks, _passphrase: chunks,
     )
     whole = b"abcdefghij"
-    first = _sealed_segment(sequence=0, path="large.bin", whole=whole, offset=0, content=whole[:6])
-    second = _sealed_segment(sequence=1, path="large.bin", whole=whole, offset=6, content=whole[6:])
+    artifact_id = "1" * 64
+    first = _sealed_segment(sequence=0, artifact_id=artifact_id, whole=whole, offset=0, content=whole[:6])
+    second = _sealed_segment(sequence=1, artifact_id=artifact_id, whole=whole, offset=6, content=whole[6:])
     stored = {
         first.relative_path: whole[:6],
         second.relative_path: whole[6:],
     }
 
-    verified = raw_verification.verify_raw_file(
-        file=ArchiveFile(
-            path="large.bin",
+    verified = raw_verification.verify_raw_artifact(
+        artifact=ArchiveArtifact(
+            artifact_id=artifact_id,
             bytes=len(whole),
             sha256=hashlib.sha256(whole).hexdigest(),
         ),
@@ -76,18 +77,18 @@ def test_raw_file_is_reassembled_and_verified_before_root_publication(
         verified_at="2026-08-03T00:00:01Z",
     )
 
-    assert verified.path == "large.bin"
+    assert verified.artifact_id == artifact_id
     assert verified.sha256 == hashlib.sha256(whole).hexdigest()
-    assert verified.ordered_volume_sha256 == raw_verification.raw_file_ordered_volume_commitment(
-        file=ArchiveFile(
-            path="large.bin",
+    assert verified.ordered_volume_sha256 == raw_verification.raw_artifact_ordered_volume_commitment(
+        artifact=ArchiveArtifact(
+            artifact_id=artifact_id,
             bytes=len(whole),
             sha256=hashlib.sha256(whole).hexdigest(),
         ),
         volumes=(first, second),
     )
-    payload = raw_verification.raw_file_verification_payload(verified)
-    assert payload["format"] == "raw-file-verification/v1"
+    payload = raw_verification.raw_artifact_verification_payload(verified)
+    assert payload["format"] == "raw-artifact-verification/v1"
 
 
 def test_raw_verification_rejects_stored_part_corruption(
@@ -99,12 +100,12 @@ def test_raw_verification_rejects_stored_part_corruption(
         lambda chunks, _passphrase: chunks,
     )
     whole = b"abcdefghij"
-    volume = _sealed_segment(sequence=0, path="large.bin", whole=whole, offset=0, content=whole)
+    volume = _sealed_segment(sequence=0, artifact_id="1" * 64, whole=whole, offset=0, content=whole)
 
     with pytest.raises(ValueError, match="raw (stored|plaintext) part sha256 mismatch"):
-        raw_verification.verify_raw_file(
-            file=ArchiveFile(
-                path="large.bin",
+        raw_verification.verify_raw_artifact(
+            artifact=ArchiveArtifact(
+                artifact_id="1" * 64,
                 bytes=len(whole),
                 sha256=hashlib.sha256(whole).hexdigest(),
             ),
@@ -117,12 +118,12 @@ def test_raw_verification_rejects_stored_part_corruption(
 
 def test_raw_volume_set_digest_changes_with_immutable_object_identity() -> None:
     whole = b"abcdefghij"
-    file = ArchiveFile(
-        path="large.bin",
+    artifact = ArchiveArtifact(
+        artifact_id="1" * 64,
         bytes=len(whole),
         sha256=hashlib.sha256(whole).hexdigest(),
     )
-    first = _sealed_segment(sequence=0, path=file.path, whole=whole, offset=0, content=whole)
+    first = _sealed_segment(sequence=0, artifact_id=artifact.artifact_id, whole=whole, offset=0, content=whole)
     changed_part = StoredArchivePart(
         number=1,
         plaintext_start=0,
@@ -135,48 +136,48 @@ def test_raw_volume_set_digest_changes_with_immutable_object_identity() -> None:
         volume_id=first.volume_id,
         sequence=first.sequence,
         relative_path=first.relative_path,
-        source_path=first.source_path,
-        file_offset=first.file_offset,
+        artifact_id=first.artifact_id,
+        artifact_offset=first.artifact_offset,
         plaintext_bytes=first.plaintext_bytes,
         age_state_json=age_state_json(first.plaintext_bytes),
-        file_bytes=first.file_bytes,
-        file_sha256=first.file_sha256,
+        artifact_bytes=first.artifact_bytes,
+        artifact_sha256=first.artifact_sha256,
         parts=(changed_part,),
         revision="new-version",
         completed_at="2026-08-03T00:00:02Z",
     )
 
-    assert raw_verification.raw_file_ordered_volume_commitment(
-        file=file, volumes=(first,)
-    ) != raw_verification.raw_file_ordered_volume_commitment(file=file, volumes=(changed,))
+    assert raw_verification.raw_artifact_ordered_volume_commitment(
+        artifact=artifact, volumes=(first,)
+    ) != raw_verification.raw_artifact_ordered_volume_commitment(artifact=artifact, volumes=(changed,))
 
 
 def test_part_manifest_verification_avoids_remote_read_after_write() -> None:
     from riverhog_client.source_hashing import hash_raw_source_chunks
 
     whole = b"abcdefghij"
-    file = ArchiveFile(
-        path="large.bin",
+    artifact = ArchiveArtifact(
+        artifact_id="1" * 64,
         bytes=len(whole),
         sha256=hashlib.sha256(whole).hexdigest(),
     )
     volume = _sealed_segment(
         sequence=0,
-        path=file.path,
+        artifact_id=artifact.artifact_id,
         whole=whole,
         offset=0,
         content=whole,
     )
     source_hash = hash_raw_source_chunks(
-        path=file.path,
+        artifact_id=artifact.artifact_id,
         chunks=(whole,),
         expected_bytes=len(whole),
         part_plaintext_bytes=65536,
     )
 
     try:
-        verified = raw_verification.verify_raw_file_from_digest_summary(
-            file=file,
+        verified = raw_verification.verify_raw_artifact_from_digest_summary(
+            artifact=artifact,
             volumes=(volume,),
             summary=source_hash.summary,
             verified_at="2026-08-03T00:00:01Z",
@@ -184,5 +185,5 @@ def test_part_manifest_verification_avoids_remote_read_after_write() -> None:
     finally:
         source_hash.close()
 
-    assert verified.sha256 == file.sha256
+    assert verified.sha256 == artifact.sha256
     assert verified.ordered_volume_sha256
