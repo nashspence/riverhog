@@ -48,6 +48,7 @@ from riverhog_provenance import BoundedSourceObserver, BytesSource, validate_jou
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy.orm import Session, sessionmaker
 
+from tests.support.member_history import member_history_selection_fixture
 from tests.unit.db_helpers import sqlite_url
 
 
@@ -100,14 +101,21 @@ def _indexed_collection(session: Session) -> str:
     catalog = ContractCatalog((collection_production_contract(),))
     summary = validate_journal(produced.content, catalog=catalog)
     rows = tuple(iter_index_assertions(summary))
-    relevance = member_relevance(
-        member=member,
-        binding=produced.binding,
-        primary=summary,
-        corpus={summary.journal_id: summary},
-        delivery_context_id=collection.delivery_context_id,
-        catalog=catalog,
+    history_binding, history_closure, _ = member_history_selection_fixture(
+        member, produced.binding, {summary.journal_id: summary}
     )
+    with history_closure:
+        relevance = member_relevance(
+            member=member,
+            binding=produced.binding,
+            primary=summary,
+            corpus={summary.journal_id: summary},
+            delivery_context_id=collection.delivery_context_id,
+            catalog=catalog,
+            history_binding=history_binding,
+            closure=history_closure,
+        )
+
     memberships = tuple(
         (artifact_id, row_key, scope) for row_key, scope in relevance_row_keys(relevance)
     )

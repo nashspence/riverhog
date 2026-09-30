@@ -13,10 +13,10 @@ import hashlib
 import json
 import re
 from collections import defaultdict
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, MutableMapping, MutableSequence, MutableSet, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 from riverhog_provenance_contracts import (
     CATEGORY_TYPES,
@@ -114,6 +114,25 @@ def _acyclic(edges: Iterable[tuple[str, str]], label: str) -> None:
         raise ProvenanceValidationError(f"{label} graph contains a cycle")
 
 
+class GraphStore(Protocol):
+    @property
+    def view(self) -> Mapping[str, Sequence[dict[str, Any]]]: ...
+
+    @property
+    def objects(self) -> Mapping[str, dict[str, Any]]: ...
+
+    @property
+    def external_references(self) -> Sequence[dict[str, Any]]: ...
+
+    @property
+    def unresolved_profiles(self) -> Sequence[dict[str, str]]: ...
+
+    @property
+    def findings(self) -> Sequence[str]: ...
+
+    def iter_assertions(self) -> Iterable[tuple[str, dict[str, Any]]]: ...
+
+
 @dataclass(frozen=True, slots=True)
 class GraphValidation:
     """Isolated materialized view plus explicit unresolved dependencies/findings."""
@@ -121,18 +140,30 @@ class GraphValidation:
     _graph_json: bytes
     _externals_json: bytes
     _profiles_json: bytes
-    findings: tuple[str, ...] = ()
+    _findings: tuple[str, ...] = ()
+    _store: GraphStore | None = None
 
     @property
     def graph(self) -> dict[str, Any]:
+        if self._store is not None:
+            return graph_from_assertions(self._store.iter_assertions())
         return cast(dict[str, Any], json.loads(self._graph_json))
 
     @property
-    def external_references(self) -> tuple[dict[str, Any], ...]:
+    def view(self) -> Mapping[str, Sequence[dict[str, Any]]]:
+        """Read effective categories without materializing the entire snapshot."""
+        return self.graph if self._store is None else self._store.view
+
+    @property
+    def external_references(self) -> Sequence[dict[str, Any]]:
+        if self._store is not None:
+            return self._store.external_references
         return tuple(json.loads(self._externals_json))
 
     @property
-    def unresolved_profiles(self) -> tuple[dict[str, str], ...]:
+    def unresolved_profiles(self) -> Sequence[dict[str, str]]:
+        if self._store is not None:
+            return self._store.unresolved_profiles
         return tuple(json.loads(self._profiles_json))
 
     @property
@@ -140,8 +171,19 @@ class GraphValidation:
         return not self.unresolved_profiles
 
     @property
-    def objects(self) -> dict[str, dict[str, Any]]:
+    def objects(self) -> Mapping[str, dict[str, Any]]:
+        if self._store is not None:
+            return self._store.objects
         return {row["id"]: row for _, row in iter_assertions(self.graph)}
+
+    @property
+    def findings(self) -> Sequence[str]:
+        return self._findings if self._store is None else self._store.findings
+
+    def iter_assertions(self) -> Iterable[tuple[str, dict[str, Any]]]:
+        if self._store is not None:
+            return self._store.iter_assertions()
+        return iter_assertions(self.graph)
 
 
 class _Validator:
@@ -157,11 +199,11 @@ class _Validator:
         self.catalog = catalog
         self.journal_id = journal_id
         self.require_profiles = require_profiles
-        self.objects: dict[str, dict[str, Any]] = {}
-        self.assertions: set[str] = set()
-        self.externals: dict[bytes, dict[str, Any]] = {}
-        self.profiles: dict[bytes, dict[str, str]] = {}
-        self.findings: list[str] = []
+        self.objects: Mapping[str, dict[str, Any]] = {}
+        self.assertions: MutableSet[str] = set()
+        self.externals: MutableMapping[bytes, dict[str, Any]] = {}
+        self.profiles: MutableMapping[bytes, dict[str, str]] = {}
+        self.findings: MutableSequence[str] = []
         for _, row in iter_assertions(graph):
             if row["id"] in self.objects:
                 raise ProvenanceValidationError("duplicate effective entity/record identity")
@@ -335,15 +377,17 @@ class _Validator:
         if "at" in value:
             time_ns(value["at"])
 
+    def aggregates(self) -> tuple[Any, ...]:
+        return {}, {}, [], [], {}, set(), set()
+
+    def validation_rows(self) -> Iterable[dict[str, Any]]:
+        return self.objects.values()
+
     def run(self) -> None:
-        generation: dict[str, dict[str, Any]] = {}
-        invalidation: dict[str, dict[str, Any]] = {}
-        derivations: list[tuple[str, str]] = []
-        specializations: list[tuple[str, str]] = []
-        capture_targets: dict[str, str] = {}
-        ends: set[str] = set()
-        slots: set[tuple[str, bytes]] = set()
-        for row in self.objects.values():
+        generation, invalidation, derivations, specializations, capture_targets, ends, slots = (
+            self.aggregates()
+        )
+        for row in self.validation_rows():
             self.generic(row)
             kind = row["type"]
             if kind == "occurrence":
@@ -559,6 +603,15 @@ class _Validator:
             elif kind == "extension":
                 self.reference(row["subject"])
                 self.typed(row["value"])
+        self.finish(generation, invalidation, derivations, specializations)
+
+    def finish(
+        self,
+        generation: Mapping[str, Any],
+        invalidation: Mapping[str, Any],
+        derivations: Iterable[tuple[str, str]],
+        specializations: Iterable[tuple[str, str]],
+    ) -> None:
         _acyclic(derivations, "derivation")
         _acyclic(specializations, "specialization")
         self._lifecycle_times(generation, invalidation)
@@ -573,7 +626,9 @@ class _Validator:
             raise ProvenanceValidationError("event follows activity end")
 
     @staticmethod
-    def _unique_lifecycle(index: dict[str, dict[str, Any]], row: dict[str, Any], name: str) -> None:
+    def _unique_lifecycle(
+        index: MutableMapping[str, dict[str, Any]], row: dict[str, Any], name: str
+    ) -> None:
         key = row["state"]["object_id"]
         previous = index.get(key)
         if previous and (

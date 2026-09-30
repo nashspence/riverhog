@@ -136,7 +136,6 @@ def index_row_key(prefix_sha256: str, assertion_id: str) -> str:
 def iter_index_assertions(summary: JournalSummary) -> Iterator[IndexedAssertion]:
     """Retain each documentary assertion with exact entry and snapshot support."""
 
-    effective = {row["assertion_id"] for rows in summary.graph.values() for row in rows}
     for sequence, frame in enumerate(summary.frames):
         document = frame.document
         for assertions in document["body"].get("assertions", {}).values():
@@ -152,7 +151,9 @@ def iter_index_assertions(summary: JournalSummary) -> Iterator[IndexedAssertion]
                     referent_id=row["id"],
                     kind=row["type"],
                     assertion_state=(
-                        "effective" if row["assertion_id"] in effective else "retracted"
+                        "retracted"
+                        if row["assertion_id"] in summary.retracted_assertion_ids
+                        else "effective"
                     ),
                     canonical_json=canonical_json_bytes(row),
                     postings=tuple(assertion_postings(row)),

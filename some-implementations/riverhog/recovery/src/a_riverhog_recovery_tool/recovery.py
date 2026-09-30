@@ -17,8 +17,12 @@ from riverhog_archive_contracts import (
     ARCHIVE_ROOT_DOCUMENT_BYTES_MAX,
     PROVENANCE_METADATA_BYTES_MAX,
     RECOVERY_DESCRIPTOR_PATH,
+    RETAINED_HISTORY_EXTENT,
     CollectionArchiveManifest,
+    MemberHistoryBinding,
+    MemberHistoryStore,
     RecoveryDescriptor,
+    provenance_structure_identity,
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_materialization import (
@@ -40,9 +44,10 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_provenance import (
+    CanonicalCorpusValidator,
+    MemberHistoryClosure,
     selected_delivery_occurrence,
     validate_journal_chunks,
-    validate_journal_set_chunks,
 )
 
 from ._archive_io import EncryptedArchive, archive_file, sha256_file
@@ -257,14 +262,10 @@ def _stage_provenance(
     journals.commit()
     # The entire selected set must resolve exact foreign/fork references. Unknown
     # optional profile payloads remain exact even without their application code.
-    validate_journal_set_chunks(
-        (
-            _file_chunks(Path(path))
-            for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id")
-        ),
-        require_all_references=True,
-        require_profiles=False,
-    )
+    with CanonicalCorpusValidator() as corpus:
+        for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id"):
+            corpus.add(validate_journal_chunks(_file_chunks(Path(path)), require_profiles=False))
+        corpus.validate()
     return reader, journals, count
 
 
@@ -358,30 +359,68 @@ def _stage_mapping(
                 str(artifact_id), json.loads(raw_hint) if raw_hint is not None else None
             )
 
-    for member, raw_binding in zip(members, reader.iter_bindings(), strict=True):
-        artifact_id, byte_count, sha256 = str(member[0]), int(member[1]), str(member[2])
-        binding = CollectionArtifactProvenanceBindingDocument.model_validate(raw_binding)
-        if binding.artifact_id != artifact_id:
-            raise RecoveryError("primary binding differs from archive artifact order")
-        hint, support = _selected_advice(
-            binding=binding,
-            byte_count=byte_count,
-            sha256=sha256,
-            journals=journals,
-            staging=staging,
-        )
-        selected.execute(
-            "INSERT INTO selected VALUES (?, ?, ?, ?, ?, ?)",
-            (
+    def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
+        row = journals.execute(
+            "SELECT path FROM journals WHERE journal_id = ?", (journal_id,)
+        ).fetchone()
+        if row is None:
+            raise RecoveryError("member history selects an absent shared journal")
+        yield from _file_chunks(Path(row[0])) if end is None else _prefix_chunks(Path(row[0]), end)
+
+    with MemberHistoryClosure(
+        MemberHistoryStore(reader.read_structure),
+        read_journal,
+        member_role=COLLECTION_MEMBER_ROLE,
+    ) as closure:
+        for member, raw_binding in zip(members, reader.iter_bindings(), strict=True):
+            artifact_id, byte_count, sha256 = str(member[0]), int(member[1]), str(member[2])
+            history_binding = MemberHistoryBinding.from_mapping(raw_binding)
+            if (history_binding.artifact_id, history_binding.bytes, history_binding.sha256) != (
                 artifact_id,
                 byte_count,
                 sha256,
-                canonical_json_bytes(binding.model_dump(mode="json")),
-                canonical_json_bytes(hint) if hint is not None else None,
-                canonical_json_bytes(support),
-            ),
-        )
-        count += 1
+            ):
+                raise RecoveryError("member history differs from exact archive member fixity")
+            closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
+            history = closure.store.descriptor(history_binding)
+            binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+                {
+                    "artifact_id": artifact_id,
+                    **history.primary.to_mapping(),
+                }
+            )
+            if binding.artifact_id != artifact_id:
+                raise RecoveryError("primary binding differs from archive artifact order")
+            hint, support = _selected_advice(
+                binding=binding,
+                byte_count=byte_count,
+                sha256=sha256,
+                journals=journals,
+                staging=staging,
+            )
+            selected.execute(
+                "INSERT INTO selected VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    artifact_id,
+                    byte_count,
+                    sha256,
+                    canonical_json_bytes(history_binding.to_mapping()),
+                    canonical_json_bytes(hint) if hint is not None else None,
+                    canonical_json_bytes(support),
+                ),
+            )
+            count += 1
+        for raw in closure.structure_objects():
+            identity = provenance_structure_identity(raw)
+            components = ("structure", *identity.relative_path.removesuffix(".age").split("/"))
+            if not rules.fits(components):
+                raise RecoveryError("destination cannot represent required history structure")
+            _write_exact(staging, components, raw)
+        for (journal_id,) in journals.execute(
+            "SELECT journal_id FROM journals ORDER BY journal_id"
+        ):
+            if not closure.contains_journal(journal_id):
+                raise RecoveryError("provenance corpus contains an unselected unrelated journal")
     selected.commit()
     planned = plan_materialization_spooled(advice(), rules=rules, state=selected, mode=mode)
     mapped = 0
@@ -412,6 +451,13 @@ def _stage_mapping(
                 "materialization_hint": json.loads(row[3]) if row[3] is not None else None,
                 "support": json.loads(row[4]),
                 "binding": json.loads(row[2]),
+                "history": [
+                    "structure",
+                    "provenance",
+                    "history",
+                    json.loads(row[2])["history_sha256"][:2],
+                    json.loads(row[2])["history_sha256"] + ".json",
+                ],
             }
             mapping.write(canonical_json_bytes(record) + b"\n")
             mapped += 1

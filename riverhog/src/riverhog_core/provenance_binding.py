@@ -79,7 +79,7 @@ def verify_member_binding(
         row["journal_id"] == summary.journal_id
         and row["artifact"] == subject
         and row["role"] == _MEMBER_HISTORY_ROLE
-        for row in summary.graph.get("journal_subjects", ())
+        for row in summary.graph_validation.view.get("journal_subjects", ())
     ):
         raise ProvenanceValidationError("primary journal does not declare the member history")
     hint: tuple[str, ...] | None = None

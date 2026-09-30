@@ -288,12 +288,13 @@ def test_observer_fails_when_exact_primary_provenance_is_unavailable() -> None:
     assert failed.state == "failed"
     assert failed.facts is None
 
-    objects = deepcopy(summary.graph_validation.objects)
+    objects = deepcopy(dict(summary.graph_validation.objects))
     state = next(row for row in objects.values() if row["type"] == "state")
     del state["occurrence_id"]
     malformed = SimpleNamespace(
         anchor=summary.anchor,
-        graph_validation=SimpleNamespace(objects=objects),
+        graph_validation=SimpleNamespace(objects=objects, view=summary.graph_validation.view),
+        assertion_entries=summary.assertion_entries,
         frames=summary.frames,
     )
 

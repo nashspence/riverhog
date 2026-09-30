@@ -7,18 +7,116 @@ shared context, or matching payload bytes as an attribution to a member.
 from __future__ import annotations
 
 import hashlib
+import json
+import sqlite3
 from collections.abc import Iterator, Mapping
-from typing import Any
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Any, Self
 
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    RETAINED_HISTORY_EXTENT,
+    MemberHistoryBinding,
+)
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol.artifact_identity import ArtifactMemberIdentityDocument
 from riverhog_protocol.provenance_transport import CollectionArtifactProvenanceBindingDocument
-from riverhog_provenance import JournalSummary, ProvenanceValidationError, validate_journal_chunks
+from riverhog_provenance import (
+    JournalSummary,
+    MemberHistoryClosure,
+    ProvenanceValidationError,
+    external_reference,
+    validate_journal_chunks,
+)
 from riverhog_provenance_contracts import ContractCatalog
 
 from riverhog_core.canonical_discovery_rows import index_row_key
 from riverhog_core.provenance_binding import verify_member_binding
 
 type RelevanceKey = tuple[str, str, str]
+
+
+class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
+    """Persistent member scope and traversal; no in-memory corpus or result set."""
+
+    def __init__(self) -> None:
+        self._scratch = TemporaryDirectory(prefix="riverhog-member-relevance-")
+        self.db = sqlite3.connect(Path(self._scratch.name) / "relevance.sqlite3")
+        self.db.execute("PRAGMA cache_size = -512")
+        self.db.execute("PRAGMA temp_store = FILE")
+        self.db.executescript(
+            "CREATE TABLE scopes(journal TEXT, prefix TEXT, assertion TEXT, scope TEXT, "
+            "PRIMARY KEY(journal, prefix, assertion, scope));"
+            "CREATE TABLE snapshots(journal TEXT, prefix TEXT, anchor BLOB, "
+            "PRIMARY KEY(journal, prefix));"
+            "CREATE TABLE states(journal TEXT, prefix TEXT, state TEXT, scope TEXT, value BLOB, "
+            "done INTEGER, PRIMARY KEY(journal, prefix, state, scope));"
+            "CREATE TABLE causal(reference BLOB PRIMARY KEY);"
+            "CREATE TABLE views(history TEXT, extent TEXT, binding BLOB, "
+            "own INTEGER, done INTEGER, "
+            "PRIMARY KEY(history, extent));"
+        )
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self.db.close()
+        self._scratch.cleanup()
+
+    def __getitem__(self, key: RelevanceKey) -> frozenset[str]:
+        values = frozenset(
+            row[0]
+            for row in self.db.execute(
+                "SELECT scope FROM scopes WHERE journal = ? AND prefix = ? AND assertion = ?", key
+            )
+        )
+        if not values:
+            raise KeyError(key)
+        return values
+
+    def __iter__(self) -> Iterator[RelevanceKey]:
+        yield from self.db.execute(
+            "SELECT DISTINCT journal, prefix, assertion FROM scopes "
+            "ORDER BY journal, prefix, assertion"
+        )
+
+    def __len__(self) -> int:
+        return int(
+            self.db.execute(
+                "SELECT count(*) FROM (SELECT DISTINCT journal, prefix, assertion FROM scopes)"
+            ).fetchone()[0]
+        )
+
+    def remember(self, summary: JournalSummary) -> None:
+        self.db.execute(
+            "INSERT OR IGNORE INTO snapshots VALUES (?, ?, ?)",
+            (summary.journal_id, summary.journal_sha256, canonical_json_bytes(summary.anchor)),
+        )
+
+    def mark(self, summary: JournalSummary, row: Mapping[str, Any], scope: str) -> None:
+        self.remember(summary)
+        self.db.execute(
+            "INSERT OR IGNORE INTO scopes VALUES (?, ?, ?, ?)",
+            (summary.journal_id, summary.journal_sha256, row["assertion_id"], scope),
+        )
+
+    def anchors(self) -> Iterator[Mapping[str, Any]]:
+        for (anchor,) in self.db.execute("SELECT anchor FROM snapshots ORDER BY journal, prefix"):
+            yield json.loads(anchor)
+
+    def row_keys(self) -> Iterator[tuple[str, str]]:
+        for prefix, assertion_id, scope in self.db.execute(
+            "SELECT prefix, assertion, scope FROM scopes ORDER BY journal, prefix, assertion, scope"
+        ):
+            yield index_row_key(prefix, assertion_id), scope
 
 
 def _assertions(summary: JournalSummary) -> Iterator[dict[str, Any]]:
@@ -68,8 +166,10 @@ def member_relevance(
     primary: JournalSummary,
     corpus: Mapping[str, JournalSummary],
     delivery_context_id: str,
+    history_binding: MemberHistoryBinding,
+    closure: MemberHistoryClosure,
     catalog: ContractCatalog | None = None,
-) -> dict[RelevanceKey, frozenset[str]]:
+) -> MemberRelevance:
     """Return exact (journal,prefix,assertion) scopes for one bound member."""
 
     verified = verify_member_binding(
@@ -80,24 +180,17 @@ def member_relevance(
     )
     if primary.journal_id not in corpus:
         raise ProvenanceValidationError("primary journal is outside the admitted corpus")
-    found: dict[RelevanceKey, set[str]] = {}
-    snapshots: dict[tuple[str, str], JournalSummary] = {
-        (primary.journal_id, primary.journal_sha256): primary
-    }
+    found = MemberRelevance()
+    found.remember(primary)
 
     def mark(summary: JournalSummary, row: Mapping[str, Any], scope: str) -> None:
-        key = (summary.journal_id, summary.journal_sha256, row["assertion_id"])
-        found.setdefault(key, set()).add(scope)
-        snapshots[(summary.journal_id, summary.journal_sha256)] = summary
+        found.mark(summary, row, scope)
 
     def resolve_anchor(anchor: Mapping[str, Any]) -> JournalSummary:
-        key = (anchor["journal_id"], anchor["prefix_sha256"])
-        if key not in snapshots:
-            full = corpus.get(anchor["journal_id"])
-            if full is None:
-                raise ProvenanceValidationError("referenced journal is outside the admitted corpus")
-            snapshots[key] = _anchored_snapshot(full, anchor, catalog=catalog)
-        return snapshots[key]
+        full = corpus.get(anchor["journal_id"])
+        if full is None:
+            raise ProvenanceValidationError("referenced journal is outside the admitted corpus")
+        return _anchored_snapshot(full, anchor, catalog=catalog)
 
     def resolve_state(
         summary: JournalSummary, ref: Mapping[str, Any]
@@ -136,13 +229,25 @@ def member_relevance(
             raise ProvenanceValidationError("input history State is unresolved")
         return target, row
 
-    visited_states: set[tuple[str, str, str, str]] = set()
+    def enqueue_state(summary: JournalSummary, state: Mapping[str, Any], scope: str) -> None:
+        found.remember(summary)
+        found.db.execute(
+            "INSERT OR IGNORE INTO states VALUES (?, ?, ?, ?, ?, 0)",
+            (
+                summary.journal_id,
+                summary.journal_sha256,
+                state["id"],
+                scope,
+                canonical_json_bytes(state),
+            ),
+        )
+        if scope in {"member", "input-history"}:
+            found.db.execute(
+                "INSERT OR IGNORE INTO causal VALUES (?)",
+                (canonical_json_bytes(external_reference(summary, state["id"])),),
+            )
 
     def state_history(summary: JournalSummary, state: Mapping[str, Any], scope: str) -> None:
-        visit = (summary.journal_id, summary.journal_sha256, state["id"], scope)
-        if visit in visited_states:
-            return
-        visited_states.add(visit)
         objects = summary.graph_validation.objects
         occurrence = objects[state["occurrence_id"]]
         artifact = objects[occurrence["artifact_id"]]
@@ -151,7 +256,7 @@ def member_relevance(
         if "source_context_id" in occurrence:
             context_ids.add(occurrence["source_context_id"])
         activities: set[str] = set()
-        for row in _assertions(summary):
+        for row in objects.values():
             kind = row["type"]
             if kind in {"generation", "invalidation"} and _matches_local(
                 row.get("state"), {state["id"]}
@@ -167,7 +272,7 @@ def member_relevance(
                     if relation is not None:
                         mark(summary, relation, scope)
                 target, source = resolve_state(summary, row["used_state"])
-                state_history(target, source, "input-history")
+                enqueue_state(target, source, "input-history")
         for activity_id in activities:
             activity = objects.get(activity_id)
             if activity is not None:
@@ -197,7 +302,7 @@ def member_relevance(
     state = objects[association["state"]["object_id"]]
     if objects[state["occurrence_id"]]["id"] != verified.occurrence_id:
         raise ProvenanceValidationError("member relevance selected a different Occurrence")
-    state_history(primary, state, "member")
+    enqueue_state(primary, state, "member")
     mark(primary, association, "member")
     context = objects.get(delivery_context_id)
     if context is not None:
@@ -214,92 +319,129 @@ def member_relevance(
             continue
         occurrence = objects.get(candidate["occurrence_id"])
         if occurrence is not None and occurrence["artifact_id"] == selected_artifact_id:
-            state_history(primary, candidate, "recorded-history")
+            enqueue_state(primary, candidate, "recorded-history")
 
-    pending = [primary]
-    visited_snapshots: set[tuple[str, str]] = set()
-    while pending:
-        summary = pending.pop()
-        key = (summary.journal_id, summary.journal_sha256)
-        if key in visited_snapshots:
-            continue
-        visited_snapshots.add(key)
-        for ref in summary.graph_validation.external_references:
-            foreign = corpus.get(ref["journal_id"])
-            if foreign is None:
-                raise ProvenanceValidationError("documentary foreign journal is absent")
-            digest = hashlib.sha256()
-            size = 0
-            for frame in foreign.frames:
-                digest.update(frame.encoded)
-                size += len(frame.encoded)
-                if frame.reference == ref["entry"]:
-                    pending.append(
-                        resolve_anchor(
-                            {
-                                "journal_id": foreign.journal_id,
-                                "through": frame.reference,
-                                "prefix_sha256": digest.hexdigest(),
-                                "prefix_bytes": str(size),
-                            }
-                        )
+    while pending := found.db.execute(
+        "SELECT journal, prefix, state, scope, value FROM states WHERE done = 0 LIMIT 1"
+    ).fetchone():
+        journal_id, prefix_sha256, state_id, scope, encoded = pending
+        (anchor,) = found.db.execute(
+            "SELECT anchor FROM snapshots WHERE journal = ? AND prefix = ?",
+            (journal_id, prefix_sha256),
+        ).fetchone()
+        state_history(resolve_anchor(json.loads(anchor)), json.loads(encoded), scope)
+        found.db.execute(
+            "UPDATE states SET done = 1 WHERE journal = ? AND prefix = ? "
+            "AND state = ? AND scope = ?",
+            (journal_id, prefix_sha256, state_id, scope),
+        )
+
+    history = closure.store.descriptor(history_binding)
+    if (history.artifact_id, history.bytes, history.sha256) != (
+        member.artifact_id,
+        member.bytes,
+        member.sha256,
+    ) or history.primary.to_mapping() != {
+        "journal": binding.journal.model_dump(mode="json"),
+        "delivery_association_id": binding.delivery_association_id,
+    }:
+        raise ProvenanceValidationError(
+            "index history differs from the exact primary/member binding"
+        )
+    closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
+    found.db.execute(
+        "INSERT INTO views VALUES (?, ?, ?, 1, 0)",
+        (
+            history_binding.history_sha256,
+            RETAINED_HISTORY_EXTENT,
+            canonical_json_bytes(history_binding.to_mapping()),
+        ),
+    )
+    while pending := found.db.execute(
+        "SELECT history, extent, binding, own FROM views WHERE done = 0 LIMIT 1"
+    ).fetchone():
+        history_id, extent, encoded, own = pending
+        selected_binding = MemberHistoryBinding.from_mapping(json.loads(encoded))
+        selected_history = closure.store.descriptor(selected_binding)
+        selected_primary = closure.summary_at(selected_history.primary.journal)
+        selected_state = selected_primary.graph_validation.objects[
+            selected_primary.graph_validation.objects[
+                selected_history.primary.delivery_association_id
+            ]["state"]["object_id"]
+        ]
+        endpoints = [external_reference(selected_primary, selected_state["id"])]
+        occurrence = selected_primary.graph_validation.objects[selected_state["occurrence_id"]]
+        endpoints.extend(
+            external_reference(selected_primary, identity)
+            for identity in (occurrence["id"], occurrence["artifact_id"])
+        )
+        for row in selected_primary.graph_validation.view.get("relations", ()):
+            if row["type"] == "generation" and row["state"] == {
+                "scope": "local",
+                "object_id": selected_state["id"],
+                "object_type": "state",
+            }:
+                endpoints.append(external_reference(selected_primary, row["activity_id"]))
+        applicable = (
+            bool(own)
+            or found.db.execute(
+                "SELECT 1 FROM causal WHERE reference = ?", (canonical_json_bytes(endpoints[0]),)
+            ).fetchone()
+            is not None
+        )
+        if applicable:
+            for root in closure.store.roots(selected_binding, extent=BOUND_HISTORY_EXTENT):
+                selected = closure.summary_at(root.journal)
+                for row in selected.graph_validation.view.get("extensions", ()):
+                    subject = row["subject"]
+                    exact = (
+                        subject
+                        if subject["scope"] == "external"
+                        else external_reference(selected, subject["object_id"])
                     )
-                    break
-            else:
-                raise ProvenanceValidationError("documentary foreign entry is absent")
-        parent = summary.frames[0].document["body"]["journal"].get("forked_from")
-        if parent is not None:
-            pending.append(resolve_anchor(parent))
-    return {key: frozenset(scopes) for key, scopes in found.items()}
+                    if exact in endpoints:
+                        mark(selected, row, "member" if own else "input-history")
+        for imported in closure.store.imports(selected_binding):
+            source = closure.store.source_proof(imported).binding
+            found.db.execute(
+                "INSERT OR IGNORE INTO views VALUES (?, ?, ?, 0, 0)",
+                (source.history_sha256, imported.extent, canonical_json_bytes(source.to_mapping())),
+            )
+        found.db.execute(
+            "UPDATE views SET done = 1 WHERE history = ? AND extent = ?", (history_id, extent)
+        )
+
+    for anchor in closure.snapshots():
+        snapshot = closure.summary_at(anchor)
+        for row in _assertions(snapshot):
+            mark(snapshot, row, "recorded-history")
+    return found
 
 
 def relevance_row_keys(
-    relevance: Mapping[RelevanceKey, frozenset[str]],
+    relevance: MemberRelevance,
 ) -> Iterator[tuple[str, str]]:
     """Translate exact assertions into content-addressed index rows and scopes."""
-    for (_, prefix_sha256, assertion_id), scopes in sorted(relevance.items()):
-        row_key = index_row_key(prefix_sha256, assertion_id)
-        for scope in sorted(scopes):
-            yield row_key, scope
+    yield from relevance.row_keys()
 
 
 def snapshots_for_relevance(
-    relevance: Mapping[RelevanceKey, frozenset[str]],
+    relevance: MemberRelevance,
     *,
     corpus: Mapping[str, JournalSummary],
     catalog: ContractCatalog | None = None,
 ) -> Iterator[JournalSummary]:
     """Reconstruct only exact selected prefix snapshots from admitted full journals."""
-    for journal_id, prefix_sha256 in sorted({key[:2] for key in relevance}):
-        full = corpus.get(journal_id)
+    for anchor in relevance.anchors():
+        full = corpus.get(anchor["journal_id"])
         if full is None:
             raise ProvenanceValidationError("relevant journal is outside the admitted corpus")
-        if full.journal_sha256 == prefix_sha256:
-            yield full
-            continue
-        digest = hashlib.sha256()
-        size = 0
-        for frame in full.frames:
-            digest.update(frame.encoded)
-            size += len(frame.encoded)
-            if digest.hexdigest() == prefix_sha256:
-                yield _anchored_snapshot(
-                    full,
-                    {
-                        "journal_id": journal_id,
-                        "through": frame.reference,
-                        "prefix_sha256": prefix_sha256,
-                        "prefix_bytes": str(size),
-                    },
-                    catalog=catalog,
-                )
-                break
-        else:
-            raise ProvenanceValidationError("relevant prefix is outside the admitted journal")
+        yield _anchored_snapshot(full, anchor, catalog=catalog)
 
 
 __all__ = [
     "RelevanceKey",
+    "MemberRelevance",
     "member_relevance",
     "relevance_row_keys",
     "snapshots_for_relevance",

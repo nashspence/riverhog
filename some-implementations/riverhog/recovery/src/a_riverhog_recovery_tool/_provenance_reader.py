@@ -18,14 +18,18 @@ from riverhog_archive_contracts import (
     PROVENANCE_METADATA_BYTES_MAX,
     PROVENANCE_SEQUENCE_DOMAIN,
     PROVENANCE_TERMINAL_FORMAT,
+    MemberHistoryBinding,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
+    binding_tree_commitment,
     format_archive_sequence,
+    provenance_structure_identity,
+    provenance_structure_object_id,
     update_provenance_commitment,
+    validate_member_history_binding_page,
 )
 from riverhog_canonical_json import require_canonical_json
-from riverhog_protocol import validate_archive_binding_page
 
 ObjectReader = Callable[[str], Iterator[bytes]]
 
@@ -271,10 +275,24 @@ class CanonicalProvenanceArchiveReader:
         for journal_id, _bytes, _sha256 in self.iter_journal_headers():
             yield journal_id
 
-    def iter_bindings(self) -> Iterator[dict[str, object]]:
-        """Stream exact member-ordered binding pages from the selected archive."""
+    def read_structure(self, path: str) -> Iterator[bytes]:
+        """Read one content-addressed H, record page or proof without semantic inference."""
+        provenance_structure_object_id(path)
+        raw = _read_bounded(self._read_object(path), 4 * 1024 * 1024)
+        if provenance_structure_identity(raw).relative_path != path:
+            raise ProvenanceArchiveReadError("member history structure identity changed")
+        yield raw
 
-        self.scan()
+    def iter_bindings(self) -> Iterator[dict[str, object]]:
+        """Verify the authenticated tree and stream complete member-history bindings."""
+        root = self.scan().root
+        tree = binding_tree_commitment(self._iter_bindings())
+        if (tree.count, tree.root_sha256) != (root.binding_count, root.binding_tree_sha256):
+            raise ProvenanceArchiveReadError("member history binding tree differs from root")
+        for binding in self._iter_bindings():
+            yield binding.to_mapping()
+
+    def _iter_bindings(self) -> Iterator[MemberHistoryBinding]:
         last_id: str | None = None
         for document in self._descriptors():
             if isinstance(document, ProvenanceTerminalDocument):
@@ -300,7 +318,7 @@ class CanonicalProvenanceArchiveReader:
             ):
                 raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
             try:
-                bindings = validate_archive_binding_page(
+                bindings = validate_member_history_binding_page(
                     cast(list[Mapping[str, Any]], raw_bindings),
                     max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
                 )
@@ -318,7 +336,7 @@ class CanonicalProvenanceArchiveReader:
                 if last_id is not None and binding.artifact_id <= last_id:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
                 last_id = binding.artifact_id
-                yield binding.model_dump(mode="json")
+                yield binding
 
 
 __all__ = [

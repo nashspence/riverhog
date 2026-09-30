@@ -45,6 +45,7 @@ from .journal import (
     validate_journal_chunks,
     validate_journal_set,
     validate_journal_set_chunks,
+    write_assertion_batches,
 )
 from .model import (
     BinaryReadable,
@@ -96,6 +97,7 @@ __all__ = [
     "JournalSummary",
     "RecoveryResult",
     "append_assertion_batches",
+    "write_assertion_batches",
     "append_assertions",
     "append_checkpoint",
     "append_correction",
