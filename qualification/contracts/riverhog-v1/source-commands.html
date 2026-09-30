@@ -34,13 +34,13 @@
 <tr>
 <td data-label="Route">
 <code id="route-d1121e35fa7adab170fe1ee4">make build</code></td>
-<td data-label="Associated elements">3397</td>
+<td data-label="Associated elements">3402</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-413b0b241ba870e262fb82fa">make compose-smoke</code></td>
-<td data-label="Associated elements">756</td>
+<td data-label="Associated elements">757</td>
 <td data-label="Candidate witness groups">14</td>
 </tr>
 <tr>
@@ -58,13 +58,19 @@
 <tr>
 <td data-label="Route">
 <code id="route-0ba2578a3eb74fda1e38b234">make dist-smoke</code></td>
-<td data-label="Associated elements">3619</td>
+<td data-label="Associated elements">3624</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
+<code id="route-1e48334b293209e397388efa">make filesystem-recovery-qualification</code></td>
+<td data-label="Associated elements">0</td>
+<td data-label="Candidate witness groups">1</td>
+</tr>
+<tr>
+<td data-label="Route">
 <code id="route-dd95e4459fb8ecb561da1c86">make operation-qualification</code></td>
-<td data-label="Associated elements">838</td>
+<td data-label="Associated elements">839</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
@@ -89,7 +95,7 @@
 <td data-label="Route">
 <code id="route-ce47068f504c25a93bdddb64">make unit</code></td>
 <td data-label="Associated elements">149</td>
-<td data-label="Candidate witness groups">17</td>
+<td data-label="Candidate witness groups">18</td>
 </tr>
 </tbody>
 </table>
@@ -750,6 +756,14 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
+<code>GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/content</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
 <code>POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
@@ -1378,7 +1392,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
 </p>
 </details>
 </footer>

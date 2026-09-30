@@ -29,8 +29,10 @@ from riverhog_protocol import (
     ProcessingClaimId,
     SortOrder,
 )
+from riverhog_protocol.errors import Conflict
 from riverhog_provenance_contracts import ProvenanceJournalId
 from starlette.concurrency import run_in_threadpool
+from starlette.responses import StreamingResponse
 
 from riverhog_api.auth import (
     CatalogReader,
@@ -466,6 +468,41 @@ def get_collection_upload_session_provenance_journal(
     container.collection_uploads.require_access(collection_id, principal)
     return CollectionUploadProvenanceJournalOut.model_validate(
         container.collection_uploads.get_provenance_journal(collection_id, journal_id)
+    )
+
+
+@router.get(
+    "/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/content",
+    response_class=Response,
+    responses={
+        200: {
+            "description": "Exact sealed journal staged by the owning producer.",
+            "headers": {
+                "Content-Length": {"required": True, "schema": {"type": "integer", "minimum": 1}},
+                "ETag": {"required": True, "schema": {"type": "string"}},
+            },
+            "content": {"application/json-seq": {"schema": {"type": "string", "format": "binary"}}},
+        }
+    },
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def stream_collection_upload_session_provenance_journal(
+    collection_id: CollectionIdParameter,
+    journal_id: ProvenanceJournalId,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> Response:
+    container.collection_uploads.require_access(collection_id, principal)
+    status = container.collection_uploads.get_provenance_journal(collection_id, journal_id)
+    if status["state"] != "sealed":
+        raise Conflict("canonical provenance journal is not sealed")
+    return StreamingResponse(
+        container.collection_uploads.iter_sealed_provenance_journal(collection_id, journal_id),
+        media_type="application/json-seq",
+        headers={
+            "Content-Length": str(status["bytes"]),
+            "ETag": f'"{status["sha256"]}"',
+        },
     )
 
 

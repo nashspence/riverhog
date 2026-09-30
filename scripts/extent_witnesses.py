@@ -80,6 +80,28 @@ WITNESSES = (
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-archive-provenance-binding-page-progression/v1",
+        owner=(
+            "https://nashspence.github.io/riverhog/v1/schemas/"
+            "riverhog-archive-provenance-bindings-v1.schema.json"
+        ),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "https://nashspence.github.io/riverhog/v1/schemas/"
+                "riverhog-archive-provenance-bindings-v1.schema.json",
+                "properties/bindings",
+            ),
+        ),
+        test_node_ids=(
+            "packages/riverhog-archive-contracts/tests/test_provenance_archive.py::"
+            "test_archive_custody_schemas_match_their_distinct_wire_formats",
+            "tests/unit/test_provenance_archive_read.py::"
+            "test_binding_pages_progress_across_the_bounded_archive_extent",
+        ),
+        gates=("make unit", "make filesystem-recovery-qualification"),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-storage-write-segment-progression/v1",
         owner="riverhog-storage-adapter-protocol",
         rule_id="bounded-segment/v1",

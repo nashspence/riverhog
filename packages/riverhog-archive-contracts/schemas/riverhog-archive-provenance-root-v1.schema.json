@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-archive-provenance-root-v1.schema.json",
+  "$comment": "Structural projection; ProvenanceRootDocument validates canonical bytes and exact semantics.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "archive_generation", "artifact_set_sha256", "delivery_context_id", "binding_count", "journal_count", "volume_sequence"],
+  "properties": {
+    "format": {"const": "riverhog-archive-provenance-root/v1"},
+    "archive_generation": {"$ref": "#/$defs/sha256"},
+    "artifact_set_sha256": {"$ref": "#/$defs/sha256"},
+    "delivery_context_id": {"$ref": "#/$defs/uuid"},
+    "binding_count": {"$ref": "#/$defs/positive_count"},
+    "journal_count": {"$ref": "#/$defs/positive_count"},
+    "volume_sequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256"],
+      "properties": {"sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "operation_journal_id": {"$ref": "#/$defs/uuid"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "uuid": {"type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"},
+    "positive_count": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+  }
+}

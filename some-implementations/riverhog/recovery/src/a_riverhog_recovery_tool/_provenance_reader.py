@@ -17,6 +17,7 @@ from riverhog_archive_contracts import (
     PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_METADATA_BYTES_MAX,
     PROVENANCE_SEQUENCE_DOMAIN,
+    PROVENANCE_TERMINAL_FORMAT,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
@@ -86,7 +87,7 @@ class CanonicalProvenanceArchiveReader:
             value = require_canonical_json(raw)
             if not isinstance(value, dict):
                 raise ProvenanceArchiveReadError("provenance volume is not an object")
-            if value.get("format") == "riverhog-provenance-terminal/v1":
+            if value.get("format") == PROVENANCE_TERMINAL_FORMAT:
                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
                 if terminal.sequence != sequence:
                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")

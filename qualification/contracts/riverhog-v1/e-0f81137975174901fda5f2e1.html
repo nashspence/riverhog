@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+<code>&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], root_role: Optional[Literal[&#x27;operation&#x27;]] = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-c51483f66672a30907fd1720">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -96,6 +96,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-6a77b1e54714b784130da66e">root_role</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; const: <code>operation</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -112,6 +121,34 @@
 <a href="#s-59348dfa74255496eca40c42">NonnegativeDecimal</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-6a77b1e54714b784130da66e">
+<h3>Field: root_role</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; const: <code>operation</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; const: <code>operation</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-59348dfa74255496eca40c42">
 <h3>Definition: NonnegativeDecimal</h3>
@@ -251,6 +288,86 @@
 </tr>
 <tr>
 <th scope="row">
+<code>root_role</code>
+</th>
+<td>
+<table id="v-6a77b1e54714b784130da66e">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-bae263d9869a504833c2c51a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-064301e233ee73ac4ccfd0c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-bf2638d6846356c0877d8764">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/anyOf/0/const">operation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c809cc80375de274c3cdce07">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9edd1403574f7af62cc2f460">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0c523faed507ed449bced7b7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-cf62107f5beb6732076a62ca">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>sha256</code>
 </th>
 <td>
@@ -331,7 +448,7 @@
 </th>
 <td>
 <span id="v-90b646475e778fb3d9b9635b">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/signature">&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/signature">&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], root_role: Optional[Literal[&#x27;operation&#x27;]] = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -414,7 +531,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
 </p>
 </details>
 </footer>

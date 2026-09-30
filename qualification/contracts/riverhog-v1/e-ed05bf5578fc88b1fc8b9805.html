@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-cd0f4e795b83adfe1ec375ce">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -71,12 +71,54 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-099451f9c4cd50d721c11086">root_role</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; const: <code>operation</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-099451f9c4cd50d721c11086">
+<h3>Field: root_role</h3>
+<p class="shape">any of: <code>string</code>; const: <code>operation</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Root Role</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; const: <code>operation</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -133,6 +175,86 @@
 <span id="v-4e9424d87207968ebc422d4f">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalCreateDocument/properties/bytes/ge">1</code>
 <span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>root_role</code>
+</th>
+<td>
+<table id="v-099451f9c4cd50d721c11086">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-93b8719bb78a5feb3f6d4b29">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-6bb86b21d280fb83aa921e16">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-97238cc7b3268d51e6279937">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalCreateDocument/properties/root_role/anyOf/0/const">operation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e846685532673567923da500">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalCreateDocument/properties/root_role/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a79dcdcfdaea8809db93e719">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-54347ba55518916774e68345">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalCreateDocument/properties/root_role/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9deadd88f0aa2083bcf61f77">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalCreateDocument/properties/root_role/title">Root Role</code>
+<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -291,7 +413,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
 </p>
 </details>
 </footer>

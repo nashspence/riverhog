@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-archive-provenance-volume-v1.schema.json",
+  "$comment": "Structural projection; ProvenanceVolumeDocument validates canonical bytes, ordering and bounds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "archive_generation", "artifact_set_sha256", "sequence", "payload"],
+  "properties": {
+    "format": {"const": "riverhog-archive-provenance-volume/v1"},
+    "archive_generation": {"$ref": "#/$defs/sha256"},
+    "artifact_set_sha256": {"$ref": "#/$defs/sha256"},
+    "sequence": {"$ref": "#/$defs/sha256"},
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "bytes", "sha256"],
+      "properties": {
+        "kind": {"enum": ["bindings", "journal"]},
+        "path": {"type": "string", "pattern": "^provenance/payloads/volume-[0-9a-f]{64}\\.bin\\.age$"},
+        "bytes": {"$ref": "#/$defs/positive_count"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "binding_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["first_artifact_id", "last_artifact_id", "count"],
+      "properties": {
+        "first_artifact_id": {"$ref": "#/$defs/sha256"},
+        "last_artifact_id": {"$ref": "#/$defs/sha256"},
+        "count": {"$ref": "#/$defs/positive_count"}
+      }
+    },
+    "journal_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["journal_id", "offset", "bytes", "sha256"],
+      "properties": {
+        "journal_id": {"$ref": "#/$defs/uuid"},
+        "offset": {"$ref": "#/$defs/nonnegative_count"},
+        "bytes": {"$ref": "#/$defs/positive_count"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "oneOf": [
+    {"required": ["binding_range"], "properties": {"payload": {"properties": {"kind": {"const": "bindings"}}}}},
+    {"required": ["journal_range"], "properties": {"payload": {"properties": {"kind": {"const": "journal"}}}}}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "uuid": {"type": "string", "pattern": "^urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"},
+    "nonnegative_count": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$"},
+    "positive_count": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+  }
+}

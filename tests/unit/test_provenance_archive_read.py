@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import uuid
+from dataclasses import replace
 
 import pytest
 from riverhog_archive_contracts import (
@@ -145,3 +147,111 @@ def test_root_bound_reader_rejects_changed_sequence_and_payload() -> None:
     objects["provenance/metadata/volume-" + "0" * 63 + "1.json.age"] = b"{}"
     with pytest.raises((ProvenanceArchiveReadError, ValueError)):
         list(reader.iter_journal_range(journal_id))
+
+
+def test_operation_root_must_identify_an_archived_journal() -> None:
+    reader, objects, journal_id, _ = _archive()
+    root = reader.scan().root
+    for selected, valid in (
+        (journal_id, True),
+        ("urn:uuid:55555555-5555-4555-8555-555555555555", False),
+    ):
+        amended = replace(root, operation_journal_id=selected)
+        objects["provenance/root.json.age"] = amended.to_json_bytes()
+
+        def read_object(path: str):
+            yield objects[path]
+
+        selected_reader = CanonicalProvenanceArchiveReader(
+            read_object,
+            expected_root_sha256=amended.identity,
+            archive_generation=root.archive_generation,
+            artifact_set_sha256=root.artifact_set_sha256,
+        )
+        if valid:
+            assert selected_reader.scan().root.operation_journal_id == journal_id
+        else:
+            with pytest.raises(ProvenanceArchiveReadError, match="differs from the root"):
+                selected_reader.scan()
+
+
+def test_binding_pages_progress_across_the_bounded_archive_extent() -> None:
+    generation = "a" * 64
+    artifact_set = "b" * 64
+    journal_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
+    bindings = [
+        {
+            "artifact_id": f"{index:064x}",
+            "journal": {
+                "journal_id": journal_id,
+                "through": {
+                    "entry_id": "urn:uuid:33333333-3333-4333-8333-333333333333",
+                    "sequence": "0",
+                    "json_sha256": "d" * 64,
+                },
+                "prefix_sha256": "e" * 64,
+                "prefix_bytes": "7",
+            },
+            "delivery_association_id": f"urn:uuid:{uuid.UUID(int=index + 1)}",
+        }
+        for index in range(513)
+    ]
+    pages = [bindings[:512], bindings[512:]]
+    objects: dict[str, bytes] = {}
+    descriptors: list[ProvenanceVolumeDocument] = []
+    for sequence, page in enumerate(pages):
+        payload = canonical_json_bytes({"format": PROVENANCE_BINDINGS_FORMAT, "bindings": page})
+        descriptor = ProvenanceVolumeDocument(
+            archive_generation=generation,
+            artifact_set_sha256=artifact_set,
+            sequence=sequence,
+            payload=ProvenancePayload(
+                "bindings", sequence, len(payload), hashlib.sha256(payload).hexdigest()
+            ),
+            first_artifact_id=page[0]["artifact_id"],
+            last_artifact_id=page[-1]["artifact_id"],
+            binding_count=len(page),
+        )
+        descriptors.append(descriptor)
+        objects[descriptor.payload.path] = payload
+        objects[descriptor.metadata_path] = descriptor.to_json_bytes()
+    raw_journal = b"journal"
+    journal = ProvenanceVolumeDocument(
+        archive_generation=generation,
+        artifact_set_sha256=artifact_set,
+        sequence=2,
+        payload=ProvenancePayload(
+            "journal", 2, len(raw_journal), hashlib.sha256(raw_journal).hexdigest()
+        ),
+        journal_id=journal_id,
+        journal_offset=0,
+        journal_bytes=len(raw_journal),
+        journal_sha256=hashlib.sha256(raw_journal).hexdigest(),
+    )
+    descriptors.append(journal)
+    objects[journal.payload.path] = raw_journal
+    objects[journal.metadata_path] = journal.to_json_bytes()
+    terminal = ProvenanceTerminalDocument(generation, artifact_set, 3)
+    objects[terminal.metadata_path] = terminal.to_json_bytes()
+    root = ProvenanceRootDocument(
+        generation,
+        artifact_set,
+        "urn:uuid:44444444-4444-4444-8444-444444444444",
+        binding_count=513,
+        journal_count=1,
+        ordered_volume_sha256=ordered_provenance_commitment((*descriptors, terminal)),
+    )
+    objects["provenance/root.json.age"] = root.to_json_bytes()
+
+    def read_object(path: str):
+        yield objects[path]
+
+    reader = CanonicalProvenanceArchiveReader(
+        read_object,
+        expected_root_sha256=root.identity,
+        archive_generation=generation,
+        artifact_set_sha256=artifact_set,
+    )
+    assert [row["artifact_id"] for row in reader.iter_bindings()] == [
+        row["artifact_id"] for row in bindings
+    ]

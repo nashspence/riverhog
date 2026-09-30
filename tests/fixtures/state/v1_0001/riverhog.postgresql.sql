@@ -750,6 +750,7 @@ CREATE TABLE collection_uploads (
 	tag_head_identity VARCHAR(64),
 	tag_publication_receipt_json TEXT,
 	provenance_identity VARCHAR(64),
+	operation_journal_id VARCHAR(45),
 	encryption_format VARCHAR NOT NULL,
 	passphrase_id VARCHAR NOT NULL,
 	initiated_by_principal_id VARCHAR NOT NULL,
