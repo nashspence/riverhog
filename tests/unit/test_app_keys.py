@@ -22,13 +22,13 @@ from riverhog_core.app_permissions import (
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     AppKeyRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
     CollectionTagRecord,
     KeyDownloadReservationRecord,
     RetrievalJobRecord,
-    RetrievalPlanFileRecord,
+    RetrievalPlanArtifactRecord,
     RetrievalPlanRecord,
 )
 from riverhog_core.runtime_config import RuntimeConfig
@@ -99,14 +99,16 @@ def seed_tag(
                     creation_idempotency_key=f"fixture-{collection_id}",
                     creation_identity_sha256=f"{collection_id:064x}",
                     creation_custody_mode="producer-retained",
-                    content_identity="0" * 64,
+                    artifact_set_identity="0" * 64,
+                    provenance_identity="2" * 64,
+                    delivery_context_id="urn:uuid:00000000-0000-4000-8000-000000000001",
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
                     inventory_identity="1" * 64,
                     created_by_principal_id="fixture",
                     created_at="2026-07-24T00:00:00.000000000Z",
-                    file_count=0,
-                    file_bytes=0,
+                    artifact_count=0,
+                    artifact_bytes=0,
                 )
             )
             session.add(
@@ -347,7 +349,9 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
                 creation_idempotency_key="revocation-fixture",
                 creation_identity_sha256="e" * 64,
                 creation_custody_mode="producer-retained",
-                content_identity="0" * 64,
+                artifact_set_identity="0" * 64,
+                provenance_identity="2" * 64,
+                delivery_context_id="urn:uuid:00000000-0000-4000-8000-000000000001",
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
@@ -356,7 +360,9 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
             )
         )
         session.add(
-            CollectionFileRecord(collection_id=1, path="video.mp4", bytes=100, sha256="2" * 64)
+            CollectionArtifactRecord(
+                collection_id=1, artifact_id="3" * 64, bytes=100, sha256="2" * 64
+            )
         )
         session.add(
             RetrievalPlanRecord(
@@ -366,23 +372,23 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
                 idempotency_key="plan-one",
                 creation_identity_sha256="d" * 64,
                 state="consumed",
-                request_json='[{"collection_id":1,"path":"video.mp4"}]',
+                request_json='[{"collection_id":1,"artifact_id":"' + "3" * 64 + '"}]',
                 lease_seconds=3600,
                 restore_policy="allow",
                 created_at=str(created["created_at"]),
                 ready_at=None,
                 expires_at="2026-08-01T00:00:00.000000000Z",
-                file_commitment_sha256="b" * 64,
+                artifact_commitment_sha256="b" * 64,
                 segment_commitment_sha256="c" * 64,
                 etag="a" * 64,
             )
         )
         session.add(
-            RetrievalPlanFileRecord(
+            RetrievalPlanArtifactRecord(
                 plan_id="plan-one",
-                file_order=0,
+                artifact_order=0,
                 collection_id=1,
-                path="video.mp4",
+                artifact_id="3" * 64,
                 bytes=100,
                 sha256="2" * 64,
                 source_store="fixture",
