@@ -20,41 +20,45 @@ class DownloadApi:
     def spawn(self) -> DownloadApi:
         return DownloadApi(self.contents, self.transfer)
 
-    def download_retrieval_file(
+    def download_retrieval_artifact(
         self,
         job_id: str,
         *,
         collection_id: int,
-        path: str,
+        artifact_id: str,
         output: Path,
         expected_bytes: int,
         expected_sha256: str,
     ) -> int:
         assert job_id == "job-1"
         assert collection_id == 1
-        content = self.contents[path]
+        content = self.contents[artifact_id]
         assert expected_bytes == len(content)
         assert expected_sha256 == hashlib.sha256(content).hexdigest()
-        self.transfer(path)
+        self.transfer(artifact_id)
         output.write_bytes(content)
         return len(content)
+
+
+def _artifact(label: str) -> str:
+    return hashlib.sha256(label.encode()).hexdigest()
 
 
 def _downloads(tmp_path: Path, contents: dict[str, bytes]) -> list[RetrievalDownload]:
     return [
         RetrievalDownload(
             collection_id=1,
-            path=path,
-            output=tmp_path / path,
+            artifact_id=artifact_id,
+            output=tmp_path / artifact_id,
             expected_bytes=len(content),
             expected_sha256=hashlib.sha256(content).hexdigest(),
         )
-        for path, content in contents.items()
+        for artifact_id, content in contents.items()
     ]
 
 
 def test_retrieval_files_download_concurrently_and_preserve_identity(tmp_path: Path) -> None:
-    contents = {"one": b"one", "two": b"two"}
+    contents = {_artifact("one"): b"one", _artifact("two"): b"two"}
     rendezvous = threading.Barrier(2)
     completed: list[str] = []
 
@@ -75,12 +79,12 @@ def test_retrieval_files_download_concurrently_and_preserve_identity(tmp_path: P
         )
         == 6
     )
-    assert sorted(completed) == ["one", "two"]
-    assert {item.path: item.output.read_bytes() for item in downloads} == contents
+    assert sorted(completed) == sorted(contents)
+    assert {item.artifact_id: item.output.read_bytes() for item in downloads} == contents
 
 
 def test_download_progress_does_not_block_transfer_workers(tmp_path: Path) -> None:
-    contents = {str(index): bytes([index]) for index in range(4)}
+    contents = {_artifact(str(index)): bytes([index]) for index in range(4)}
     condition = threading.Condition()
     callback_started = threading.Event()
     callback_lock = threading.Lock()
@@ -89,7 +93,7 @@ def test_download_progress_does_not_block_transfer_workers(tmp_path: Path) -> No
 
     def transfer(path: str) -> None:
         nonlocal completed
-        if path != "0":
+        if path != _artifact("0"):
             assert callback_started.wait(timeout=2)
         with condition:
             completed += 1
@@ -97,7 +101,7 @@ def test_download_progress_does_not_block_transfer_workers(tmp_path: Path) -> No
 
     def downloaded(item: RetrievalDownload, _accepted: int) -> None:
         with callback_lock:
-            callbacks.append(item.path)
+            callbacks.append(item.artifact_id)
             if len(callbacks) == 1:
                 callback_started.set()
                 with condition:
@@ -116,7 +120,7 @@ def test_download_progress_does_not_block_transfer_workers(tmp_path: Path) -> No
         )
         == 4
     )
-    assert sorted(callbacks) == ["0", "1", "2", "3"]
+    assert sorted(callbacks) == sorted(contents)
 
 
 def test_download_heartbeat_runs_while_one_unbounded_file_is_active(tmp_path: Path) -> None:
@@ -125,12 +129,12 @@ def test_download_heartbeat_runs_while_one_unbounded_file_is_active(tmp_path: Pa
     def transfer(_path: str) -> None:
         assert heartbeat.wait(timeout=2)
 
-    api = DownloadApi({"large": b"content"}, transfer)
+    api = DownloadApi({_artifact("large"): b"content"}, transfer)
 
     assert download_retrieval_files(
         api,
         "job-1",
-        _downloads(tmp_path, {"large": b"content"}),
+        _downloads(tmp_path, {_artifact("large"): b"content"}),
         concurrency=1,
         window=1,
         heartbeat=heartbeat.set,
