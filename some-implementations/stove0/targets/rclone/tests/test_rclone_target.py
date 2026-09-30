@@ -16,6 +16,7 @@ from a_stove0_rclone_target.target import (
     RcloneDestination,
     RcloneEffectTargetService,
     _planned_destinations,
+    _verify_selected_inputs,
     _write_delivery_manifest,
 )
 from riverhog_materialization import DestinationRules
@@ -30,7 +31,7 @@ from stove0_observer_protocol import (
 )
 from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import ArtifactSelection, CollectionRootIdentityRef, WorkArtifactSubject
-from stove0_target_support import TargetEffectCommitUncertain
+from stove0_target_support import InputArtifact, TargetEffectCommitUncertain
 
 
 def _destination() -> RcloneDestination:
@@ -175,6 +176,28 @@ def test_rclone_rejects_hint_evidence_for_another_selection_and_resolves_collisi
     limited = replace(_destination().naming_rules, relative_path_bytes=1)
     with pytest.raises(ValueError, match="collection-qualified path"):
         _planned_destinations((evidence,), selection, limited)
+
+
+def test_rclone_checks_exact_target_selection_before_delivery() -> None:
+    first, second = _subject("one", "1" * 64), _subject("two", "2" * 64)
+    evidence = _hint_evidence((first, second), (None, None))
+    selected = tuple(
+        subject.model_copy(update={"role": "stove0.rclone.source/v1"})
+        for subject in (first, second)
+    )
+    selection = ArtifactSelection.seal(selected).ref()
+    planned = _planned_destinations((evidence,), selection, _destination().naming_rules)
+    inputs = tuple(
+        InputArtifact.model_validate(subject.model_dump(mode="json")) for subject in selected
+    )
+    _verify_selected_inputs(inputs, planned, selection)
+
+    wrong_role = inputs[1].model_copy(update={"role": "stove0.other/v1"})
+    with pytest.raises(ValueError, match="exact input selection"):
+        _verify_selected_inputs((inputs[0], wrong_role), planned, selection)
+    other_member = inputs[1].model_copy(update={"artifact_id": "3" * 64})
+    with pytest.raises(ValueError, match="exact input selection"):
+        _verify_selected_inputs((inputs[0], other_member), planned, selection)
 
 
 def test_rclone_streamed_manifest_is_canonical_and_covers_every_input(tmp_path: Path) -> None:

@@ -30,9 +30,11 @@ from stove0_protocol import (
     ArtifactSelectionRef,
     JsonSchemaValidationProfile,
     WorkArtifactSubject,
+    update_artifact_selection_commitment,
 )
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
+    InputArtifact,
     PersistentTargetService,
     TargetDescriptor,
     TargetDescriptorPayload,
@@ -227,13 +229,21 @@ class RcloneEffectTargetService(PersistentTargetService):
             producer_version=self.implementation_version,
             session=session,
         ) as execution:
+            _verify_selected_inputs(
+                (artifact for artifact, _claimed in execution.iter_inputs()),
+                destinations,
+                request.declaration.plan.inputs.selection,
+            )
             workspace = execution.open_workspace(self.workspace_root)
             try:
                 objects_root = workspace.resolve("output/objects")
                 manifest_path = workspace.resolve("control/manifest.json")
                 manifest_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+                delivered_digest = hashlib.sha256()
+                delivered_count = 0
 
                 def delivered_entries() -> Iterator[tuple[str, int, dict[str, JsonValue]]]:
+                    nonlocal delivered_count
                     for artifact, claimed in execution.iter_inputs():
                         check()
                         planned = destinations.get(artifact.id)
@@ -246,6 +256,14 @@ class RcloneEffectTargetService(PersistentTargetService):
                             or planned.subject.sha256 != artifact.sha256
                         ):
                             raise ValueError("forwarded hint belongs to another sealed input")
+                        update_artifact_selection_commitment(
+                            delivered_digest,
+                            ordinal=delivered_count,
+                            artifact=WorkArtifactSubject.model_validate(
+                                artifact.model_dump(mode="json")
+                            ),
+                        )
+                        delivered_count += 1
                         relative = planned.relative_path
                         local = objects_root / relative
                         local.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -279,6 +297,12 @@ class RcloneEffectTargetService(PersistentTargetService):
                     selection=request.declaration.plan.inputs.selection,
                     entries=delivered_entries(),
                 )
+                if (
+                    delivered_count != artifact_count
+                    or delivered_digest.hexdigest()
+                    != request.declaration.plan.inputs.selection.selection_sha256
+                ):
+                    raise ValueError("rclone delivered inputs differ from the exact selection")
                 check()
                 execution_sha256 = canonical_json_sha256(
                     {
@@ -375,6 +399,41 @@ class _PlannedDelivery:
     occurrence: dict[str, JsonValue]
     primary_binding: dict[str, JsonValue]
     subject: WorkArtifactSubject
+
+
+def _verify_selected_inputs(
+    inputs: Iterable[InputArtifact],
+    planned: Mapping[str, _PlannedDelivery],
+    selection: ArtifactSelectionRef,
+) -> None:
+    """Check every controller-selected member and role before staging delivery bytes."""
+
+    digest = hashlib.sha256()
+    count = 0
+    total_bytes = 0
+    for artifact in inputs:
+        item = planned.get(artifact.id)
+        if (
+            item is None
+            or item.subject.collection != artifact.collection
+            or item.subject.artifact_id != artifact.artifact_id
+            or item.subject.bytes != artifact.bytes
+            or item.subject.sha256 != artifact.sha256
+        ):
+            raise ValueError("accepted hint evidence differs from the exact input selection")
+        update_artifact_selection_commitment(
+            digest,
+            ordinal=count,
+            artifact=WorkArtifactSubject.model_validate(artifact.model_dump(mode="json")),
+        )
+        count += 1
+        total_bytes += int(artifact.bytes)
+    if (
+        count != selection.artifact_count
+        or total_bytes != int(selection.total_bytes)
+        or digest.hexdigest() != selection.selection_sha256
+    ):
+        raise ValueError("accepted hint evidence differs from the exact input selection")
 
 
 def _planned_destinations(
