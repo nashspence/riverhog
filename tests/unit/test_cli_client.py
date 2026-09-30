@@ -26,6 +26,8 @@ UPLOAD_REGISTRATION_CONSTRAINTS = {
     "pack_member_bytes": "1024",
     "raw_part_plaintext_bytes": "65536",
 }
+ARTIFACT_ID = "1" * 64
+OTHER_ARTIFACT_ID = "2" * 64
 
 
 def _tag_set_identity(*tags: str) -> str:
@@ -59,7 +61,7 @@ class RecordingClient(ApiClient):
                 "plaintext_bytes": str(len(content)),
                 "sources": [
                     {
-                        "path": "fixture.bin",
+                        "artifact_id": ARTIFACT_ID,
                         "offset": "0",
                         "bytes": str(len(content)),
                         "artifact_sha256": "a" * 64,
@@ -67,11 +69,13 @@ class RecordingClient(ApiClient):
                 ],
                 "state": "committed",
             }
-        if method == "POST" and path.endswith("/files"):
+        if method == "POST" and path.endswith("/artifacts"):
             payload = {
                 "collection_id": path.split("/")[-2],
                 "state": "open",
-                "files": [{**item, "custody_receipt": None} for item in kwargs["json"]["files"]],
+                "artifacts": [
+                    {**item, "custody_receipt": None} for item in kwargs["json"]["artifacts"]
+                ],
             }
         return httpx.Response(200, json=payload, request=httpx.Request(method, path))
 
@@ -85,15 +89,18 @@ class WrongCustodyReceiptClient(RecordingClient):
         **kwargs: Any,
     ) -> httpx.Response:
         response = super()._request(operation_id, method, path, **kwargs)
-        if method != "POST" or not path.endswith("/files"):
+        if method != "POST" or not path.endswith("/artifacts"):
             return response
         payload = response.json()
-        row = payload["files"][0]
+        row = payload["artifacts"][0]
         row["custody_receipt"] = CollectionUploadArtifactCustodyReceiptDocument.seal(
             collection_id=int(payload["collection_id"]),
-            path="other.txt",
+            artifact_id=OTHER_ARTIFACT_ID,
             bytes=int(row["bytes"]),
             sha256=str(row["sha256"]),
+            archive_root_sha256="c" * 64,
+            provenance_root_sha256="d" * 64,
+            provenance_root_receipt_sha256="e" * 64,
             archive_objects=(
                 CollectionUploadCustodyObjectDocument(
                     volume_id=f"segment-{1:064x}",
@@ -113,7 +120,7 @@ class ImpossibleRegistrationStateClient(RecordingClient):
         **kwargs: Any,
     ) -> httpx.Response:
         response = super()._request(operation_id, method, path, **kwargs)
-        if method != "POST" or not path.endswith("/files"):
+        if method != "POST" or not path.endswith("/artifacts"):
             return response
         payload = response.json()
         payload["state"] = "uploading"
@@ -253,7 +260,7 @@ def test_search_uses_current_collection_filters() -> None:
     client.search(
         "tax",
         collection=1,
-        sort="path",
+        sort="artifact_id",
         order="desc",
     )
 
@@ -264,7 +271,7 @@ def test_search_uses_current_collection_filters() -> None:
             {
                 "params": {
                     "page_size": 25,
-                    "sort": "path",
+                    "sort": "artifact_id",
                     "order": "desc",
                     "q": "tax",
                     "collection": 1,
@@ -290,8 +297,6 @@ def test_collection_upload_custody_transfer_and_operator_controls_use_exact_rout
     client.create_or_resume_collection_upload_session(
         "execution-1",
         initial_tag_set_identity=_tag_set_identity(),
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
         custody_mode="custody-transfer",
     )
     client.heartbeat_collection_upload_session(42)
@@ -306,9 +311,7 @@ def test_collection_upload_custody_transfer_and_operator_controls_use_exact_rout
                 "json": {
                     "idempotency_key": "execution-1",
                     "initial_tag_set_identity": _tag_set_identity(),
-                    "provenance_mode": "omitted",
                     "custody_mode": "custody-transfer",
-                    "provenance_omission_reason": "fixture",
                 }
             },
         ),
@@ -332,20 +335,14 @@ def test_collection_upload_selects_archive_store_without_materialization_policy(
         "upload-one",
         initial_tag_set_identity=_tag_set_identity(),
         archive_store="b2",
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture source has no provenance",
     )
-    client.register_collection_upload_session_files(
+    client.register_collection_upload_session_artifacts(
         1,
         [
             {
-                "path": "one.txt",
+                "artifact_id": ARTIFACT_ID,
                 "bytes": "1",
                 "sha256": "a" * 64,
-                "provenance": {
-                    "status": "omitted",
-                    "omission_reason": "fixture source has no provenance",
-                },
             }
         ],
         registration_constraints=UPLOAD_REGISTRATION_CONSTRAINTS,
@@ -356,20 +353,14 @@ def test_collection_upload_selects_archive_store_without_materialization_policy(
         "idempotency_key": "upload-one",
         "initial_tag_set_identity": _tag_set_identity(),
         "archive_store": "b2",
-        "provenance_mode": "omitted",
-        "provenance_omission_reason": "fixture source has no provenance",
     }
     assert client.calls[1][2]["json"] == {
-        "files": [
+        "artifacts": [
             {
-                "path": "one.txt",
+                "artifact_id": ARTIFACT_ID,
                 "bytes": "1",
                 "sha256": "a" * 64,
                 "raw_parts": None,
-                "provenance": {
-                    "status": "omitted",
-                    "omission_reason": "fixture source has no provenance",
-                },
             }
         ],
     }
@@ -398,7 +389,6 @@ def test_client_carries_description_on_create_and_conditional_replacement() -> N
                 "json": {
                     "idempotency_key": "upload-description",
                     "initial_tag_set_identity": _tag_set_identity(),
-                    "provenance_mode": "captured",
                     "description": "Reference footage — morning",
                 }
             },
@@ -417,18 +407,14 @@ def test_client_carries_description_on_create_and_conditional_replacement() -> N
 def test_collection_upload_client_rejects_a_custody_receipt_for_another_artifact() -> None:
     client = WrongCustodyReceiptClient()
 
-    with pytest.raises(InvalidState, match="invalid collection upload file response"):
-        client.register_collection_upload_session_files(
+    with pytest.raises(InvalidState, match="invalid collection upload artifact response"):
+        client.register_collection_upload_session_artifacts(
             1,
             [
                 {
-                    "path": "one.txt",
+                    "artifact_id": ARTIFACT_ID,
                     "bytes": "1",
                     "sha256": "a" * 64,
-                    "provenance": {
-                        "status": "omitted",
-                        "omission_reason": "fixture source has no provenance",
-                    },
                 }
             ],
             registration_constraints=UPLOAD_REGISTRATION_CONSTRAINTS,
@@ -438,66 +424,47 @@ def test_collection_upload_client_rejects_a_custody_receipt_for_another_artifact
 def test_collection_upload_client_rejects_an_impossible_registration_state() -> None:
     client = ImpossibleRegistrationStateClient()
 
-    with pytest.raises(InvalidState, match="invalid collection upload file response"):
-        client.register_collection_upload_session_files(
+    with pytest.raises(InvalidState, match="invalid collection upload artifact response"):
+        client.register_collection_upload_session_artifacts(
             1,
             [
                 {
-                    "path": "one.txt",
+                    "artifact_id": ARTIFACT_ID,
                     "bytes": "1",
                     "sha256": "a" * 64,
-                    "provenance": {
-                        "status": "omitted",
-                        "omission_reason": "fixture source has no provenance",
-                    },
                 }
             ],
             registration_constraints=UPLOAD_REGISTRATION_CONSTRAINTS,
         )
 
 
-def test_client_rejects_invalid_upload_provenance_before_transport() -> None:
+def test_client_rejects_invalid_artifact_registration_before_transport() -> None:
     client = RecordingClient()
-
-    with pytest.raises(BadRequest, match="provenance_mode"):
-        client.create_or_resume_collection_upload_session(
-            "upload-one",
-            initial_tag_set_identity=_tag_set_identity(),
-            provenance_mode="captured",
-            provenance_omission_reason="not omitted",
-        )
 
     with pytest.raises(BadRequest):
         client.create_or_resume_collection_upload_session(
             " padded ", initial_tag_set_identity=_tag_set_identity()
         )
-    with pytest.raises(BadRequest):
-        client.register_collection_upload_session_files(
+    with pytest.raises(BadRequest, match="artifact_id"):
+        client.register_collection_upload_session_artifacts(
             1,
             [
                 {
-                    "path": "camera/../clip.mp4",
+                    "artifact_id": "camera/../clip.mp4",
                     "bytes": "1",
                     "sha256": "a" * 64,
-                    "provenance": {
-                        "status": "omitted",
-                        "omission_reason": "source did not expose provenance",
-                    },
                 }
             ],
             registration_constraints=UPLOAD_REGISTRATION_CONSTRAINTS,
         )
-    with pytest.raises(BadRequest, match="provenance_mode"):
-        client.create_or_resume_collection_upload_session(
-            "upload-one",
-            initial_tag_set_identity=_tag_set_identity(),
-            provenance_mode="omitted",
-        )
-    with pytest.raises(BadRequest, match="provenance_mode"):
-        client.create_or_resume_collection_upload_session(
-            "upload-one",
-            initial_tag_set_identity=_tag_set_identity(),
-            provenance_mode="obsolete",  # type: ignore[arg-type]
+    with pytest.raises(BadRequest, match="unique"):
+        client.register_collection_upload_session_artifacts(
+            1,
+            [
+                {"artifact_id": ARTIFACT_ID, "bytes": "1", "sha256": "a" * 64},
+                {"artifact_id": ARTIFACT_ID, "bytes": "1", "sha256": "a" * 64},
+            ],
+            registration_constraints=UPLOAD_REGISTRATION_CONSTRAINTS,
         )
 
     assert client.calls == []
@@ -540,22 +507,22 @@ def test_collection_deletion_carries_optional_event_context() -> None:
     ]
 
 
-def test_retrieval_plan_and_job_share_exact_file_selection() -> None:
+def test_retrieval_plan_and_job_share_exact_artifact_selection() -> None:
     client = RecordingClient()
-    files = [(42, "invoice.pdf")]
+    artifacts = [(42, ARTIFACT_ID)]
 
     client.plan_retrieval(
-        files,
+        artifacts,
         idempotency_key="retrieval-one",
         lease_seconds=3600,
     )
     client.create_retrieval_job("plan-1", plan_etag="a" * 64)
 
     payload = {
-        "files": [
+        "artifacts": [
             {
                 "collection_id": "42",
-                "path": "invoice.pdf",
+                "artifact_id": ARTIFACT_ID,
             }
         ],
         "idempotency_key": "retrieval-one",
@@ -579,7 +546,7 @@ def test_retrieval_plan_fails_closed_before_callers_use_an_unsealed_plan() -> No
     client = FailedRetrievalPlanClient()
 
     with pytest.raises(InvalidState, match="archive topology is unavailable"):
-        client.plan_retrieval([(42, "invoice.pdf")])
+        client.plan_retrieval([(42, ARTIFACT_ID)])
 
 
 def test_client_rejects_unknown_restore_policy_before_transport() -> None:
@@ -594,7 +561,7 @@ def test_client_rejects_an_empty_retrieval_plan_idempotency_key() -> None:
     client = RecordingClient()
 
     with pytest.raises(BadRequest):
-        client.plan_retrieval([(42, "invoice.pdf")], idempotency_key="")
+        client.plan_retrieval([(42, ARTIFACT_ID)], idempotency_key="")
 
     assert client.calls == []
 
@@ -656,7 +623,7 @@ def test_client_rejects_noncanonical_resource_identities_before_transport() -> N
             source_store="archive",
         )
     with pytest.raises(BadRequest, match="unique"):
-        client.plan_retrieval([(1, "a.txt"), (1, "a.txt")])
+        client.plan_retrieval([(1, ARTIFACT_ID), (1, ARTIFACT_ID)])
 
     assert client.calls == []
 
@@ -708,7 +675,7 @@ def test_retrieval_cache_reads_use_list_and_composite_identity_routes() -> None:
     ]
 
 
-def test_retrieval_file_download_uses_the_logical_file_endpoint(
+def test_retrieval_artifact_download_uses_the_opaque_artifact_endpoint(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
@@ -728,10 +695,10 @@ def test_retrieval_file_download_uses_the_logical_file_endpoint(
 
     monkeypatch.setattr(client, "_download", download)
 
-    result = client.download_retrieval_file(
+    result = client.download_retrieval_artifact(
         "job-id",
         collection_id=42,
-        path="docs/document.txt",
+        artifact_id=ARTIFACT_ID,
         output=output,
         expected_bytes=42,
         expected_sha256="a" * 64,
@@ -740,14 +707,14 @@ def test_retrieval_file_download_uses_the_logical_file_endpoint(
     assert result == 42
     assert calls == [
         (
-            "download_retrieval_file",
-            "/v1/retrieval-jobs/job-id/content?collection_id=42&path=docs%2Fdocument.txt",
+            "download_retrieval_artifact",
+            f"/v1/retrieval-jobs/job-id/content?collection_id=42&artifact_id={ARTIFACT_ID}",
             output,
         )
     ]
 
 
-def test_retrieval_file_download_streams_and_verifies_catalog_identity(
+def test_retrieval_artifact_download_streams_and_verifies_catalog_identity(
     tmp_path: Path,
 ) -> None:
     content = b"retrieved archive object"
@@ -758,7 +725,7 @@ def test_retrieval_file_download_streams_and_verifies_catalog_identity(
         assert request.headers["If-Match"] == f'"{sha256}"'
         assert dict(request.url.params) == {
             "collection_id": "42",
-            "path": "docs/document.txt",
+            "artifact_id": ARTIFACT_ID,
         }
         return httpx.Response(
             200,
@@ -773,10 +740,10 @@ def test_retrieval_file_download_streams_and_verifies_catalog_identity(
         transport=httpx.MockTransport(handle),
     )
     try:
-        result = client.download_retrieval_file(
+        result = client.download_retrieval_artifact(
             "job-id",
             collection_id=42,
-            path="docs/document.txt",
+            artifact_id=ARTIFACT_ID,
             output=output,
             expected_bytes=len(content),
             expected_sha256=sha256,
@@ -796,7 +763,7 @@ def test_retrieval_file_download_streams_and_verifies_catalog_identity(
         'W/"' + "a" * 64 + '"',
     ),
 )
-def test_retrieval_file_download_rejects_noncanonical_response_etags(
+def test_retrieval_artifact_download_rejects_noncanonical_response_etags(
     tmp_path: Path,
     etag: str,
 ) -> None:
@@ -817,10 +784,10 @@ def test_retrieval_file_download_rejects_noncanonical_response_etags(
     )
     try:
         with pytest.raises(InvalidState, match="invalid SHA-256 ETag"):
-            client.download_retrieval_file(
+            client.download_retrieval_artifact(
                 "job-id",
                 collection_id=42,
-                path="docs/document.txt",
+                artifact_id=ARTIFACT_ID,
                 output=tmp_path / "document.txt",
                 expected_bytes=len(content),
                 expected_sha256=sha256,
