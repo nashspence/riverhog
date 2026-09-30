@@ -1,20 +1,14 @@
 from __future__ import annotations
 
-import hashlib
 import importlib.metadata
-import itertools
 import json
-import os
 import re
 import sys
-import threading
 import time
 import uuid
-from collections.abc import Callable, Iterator, Mapping
-from concurrent.futures import ThreadPoolExecutor
-from functools import partial
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Annotated, Any, Literal, TypedDict, cast
+from typing import Annotated, Any, cast
 
 import httpx
 import typer
@@ -23,34 +17,19 @@ from riverhog_application_access import ApplicationPermission
 from riverhog_client import (
     COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
     ApiClient,
-    ProvenanceMode,
-    RawSourceHash,
-    configured_upload_concurrency,
-    configured_upload_window,
-    create_or_resume_with_initial_collection_tags,
-    hash_raw_source_chunks,
-    upload_collection_units,
+    IncrementalCollectionProducer,
+    ProducerArtifactIdentity,
 )
 from riverhog_protocol.collection_description import validate_collection_description
-from riverhog_protocol.collection_upload_transport import (
-    CollectionUploadRegistrationConstraintsDocument,
-    CollectionUploadUnitWorkDocument,
-)
-from riverhog_protocol.errors import Conflict, RiverhogError, ServiceUnavailable
+from riverhog_protocol.errors import RiverhogError
 from riverhog_protocol.paths import (
     PathNormalizationError,
     normalize_collection_id,
 )
 from riverhog_provenance import (
-    SIDECAR_SUFFIX,
-    FileStateObserverFactory,
-    ResolvedProvenanceObserver,
-    canonical_sidecar_path,
-    prepare_file_provenance,
     resolve_provenance_observer,
-    user_installation_id,
 )
-from time_formats import parse_duration, utc_timestamp_now
+from time_formats import parse_duration
 
 from a_riverhog_cli.application_keys_output import (
     format_app_key_created,
@@ -65,6 +44,7 @@ from a_riverhog_cli.cli_support import (
     format_lifecycle_events,
     format_list_ids,
 )
+from a_riverhog_cli.directory_upload import prepare_upload, preview_upload
 from a_riverhog_cli.local import local_app
 from a_riverhog_cli.output import (
     format_app_access,
@@ -89,7 +69,6 @@ from a_riverhog_cli.output import (
     format_collection_upload_discard_plan,
     format_collection_upload_discard_result,
     format_collection_upload_files,
-    format_collection_upload_plan,
     format_collection_uploads,
     format_collections,
     format_download_quota,
@@ -107,7 +86,6 @@ from a_riverhog_cli.output import (
     format_retrieval_cache_status,
     format_tags,
 )
-from a_riverhog_cli.upload_progress import make_collection_upload_progress
 
 _ERROR_RESPONSE_OUTPUT = {
     "kind": "python-model",
@@ -683,34 +661,7 @@ app.add_typer(retrieval_app, name="retrieval")
 retrieval_app.add_typer(retrieval_cache_app, name="cache")
 app.add_typer(local_app, name="local")
 
-HASH_CHUNK_BYTES = 8 * 1024 * 1024
-UPLOAD_FILE_LOG_BYTES = 1 * 1024 * 1024
-UPLOAD_PROGRESS_INTERVAL_SECONDS = 5.0
-UPLOAD_FINALIZE_POLL_SECONDS = 5.0
-UPLOAD_FINALIZE_STATUS_INTERVAL_SECONDS = 30.0
-TRANSIENT_UPLOAD_STATUS_CODES = {408, 425, 429, 500, 502, 503, 504}
-UPLOAD_RESUME_RETRY_INITIAL_DELAY_SECONDS = 1.0
-UPLOAD_RESUME_RETRY_MAX_DELAY_SECONDS = 10.0
-UPLOAD_RESUME_RETRY_LOG_INTERVAL_SECONDS = 30.0
-UPLOAD_LOG_LOCK = threading.Lock()
-UploadCompletionState = Literal["finalized", "timeout"]
 _API_CLIENT: ApiClient | None = None
-
-
-class RawPartsPayload(TypedDict):
-    part_plaintext_bytes: int
-    part_count: int
-    ordered_sha256: str
-
-
-class CollectionManifestEntry(TypedDict, total=False):
-    path: str
-    bytes: int
-    sha256: str
-    raw_parts: RawPartsPayload
-    raw_digest_spool: RawSourceHash
-    provenance: dict[str, object]
-    provenance_journals: dict[str, bytes]
 
 
 def client() -> ApiClient:
@@ -1428,667 +1379,6 @@ def app_key_quota_list_cmd(
     emit(payload if json_mode else format_download_quotas(payload), json_mode=json_mode)
 
 
-def _iter_file_chunks(
-    path: Path,
-    *,
-    offset: int = 0,
-    limit: int | None = None,
-    chunk_size: int = HASH_CHUNK_BYTES,
-) -> Iterator[bytes]:
-    remaining = limit
-    with path.open("rb") as handle:
-        if offset:
-            handle.seek(offset)
-        while remaining is None or remaining > 0:
-            read_size = chunk_size if remaining is None else min(chunk_size, remaining)
-            chunk = handle.read(read_size)
-            if not chunk:
-                return
-            yield chunk
-            if remaining is not None:
-                remaining -= len(chunk)
-
-
-def _file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    for chunk in _iter_file_chunks(path):
-        digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _upload_file_concurrency() -> int:
-    try:
-        return configured_upload_concurrency()
-    except ValueError as exc:
-        raise typer.BadParameter(str(exc)) from exc
-
-
-def _upload_file_log_bytes() -> int:
-    raw_value = os.getenv("A_RIVERHOG_CLI_UPLOAD_FILE_LOG_BYTES")
-    if raw_value is None or raw_value.strip() == "":
-        return UPLOAD_FILE_LOG_BYTES
-    try:
-        value = int(raw_value)
-    except ValueError as exc:
-        raise typer.BadParameter(
-            "A_RIVERHOG_CLI_UPLOAD_FILE_LOG_BYTES must be a non-negative integer"
-        ) from exc
-    if value < 0:
-        raise typer.BadParameter(
-            "A_RIVERHOG_CLI_UPLOAD_FILE_LOG_BYTES must be a non-negative integer"
-        )
-    return value
-
-
-def _upload_finalize_poll_seconds() -> float:
-    raw_value = os.getenv("A_RIVERHOG_CLI_UPLOAD_FINALIZE_POLL_SECONDS")
-    if raw_value is None or raw_value.strip() == "":
-        return UPLOAD_FINALIZE_POLL_SECONDS
-    try:
-        value = float(raw_value)
-    except ValueError as exc:
-        raise typer.BadParameter(
-            "A_RIVERHOG_CLI_UPLOAD_FINALIZE_POLL_SECONDS must be a positive number"
-        ) from exc
-    if value <= 0:
-        raise typer.BadParameter(
-            "A_RIVERHOG_CLI_UPLOAD_FINALIZE_POLL_SECONDS must be a positive number"
-        )
-    return value
-
-
-def _upload_finalize_timeout_seconds() -> float | None:
-    raw_value = os.getenv("A_RIVERHOG_CLI_UPLOAD_FINALIZE_TIMEOUT_SECONDS")
-    if raw_value is None or raw_value.strip() == "":
-        return None
-    try:
-        value = float(raw_value)
-    except ValueError as exc:
-        raise typer.BadParameter(
-            "A_RIVERHOG_CLI_UPLOAD_FINALIZE_TIMEOUT_SECONDS must be a non-negative number"
-        ) from exc
-    if value < 0:
-        raise typer.BadParameter(
-            "A_RIVERHOG_CLI_UPLOAD_FINALIZE_TIMEOUT_SECONDS must be a non-negative number"
-        )
-    return None if value == 0 else value
-
-
-def _format_bytes(value: int) -> str:
-    if value < 1000:
-        return f"{value} B"
-    scaled = float(value)
-    for unit in ("KB", "MB", "GB", "TB", "PB"):
-        scaled /= 1000.0
-        if scaled < 1000.0 or unit == "PB":
-            return f"{scaled:.1f} {unit}"
-    raise AssertionError("unreachable")
-
-
-def _log_upload(message: str) -> None:
-    with UPLOAD_LOG_LOCK:
-        typer.echo(message, err=True)
-
-
-def _report_upload_status(status: Callable[[str], None] | None, message: str) -> None:
-    if status is None:
-        _log_upload(message)
-    else:
-        status(message)
-
-
-def _is_transient_upload_error(exc: BaseException) -> bool:
-    if isinstance(exc, httpx.TransportError):
-        return True
-    if isinstance(exc, httpx.HTTPStatusError):
-        return exc.response.status_code in TRANSIENT_UPLOAD_STATUS_CODES
-    return isinstance(exc, ServiceUnavailable)
-
-
-def _upload_error_description(exc: BaseException) -> str:
-    if isinstance(exc, httpx.HTTPStatusError):
-        return f"HTTP {exc.response.status_code}"
-    if isinstance(exc, (Conflict, ServiceUnavailable)):
-        return exc.message
-    return f"{type(exc).__name__}: {exc}"
-
-
-def _retry_transient_upload_operation[UploadResult](
-    description: str,
-    operation: Callable[[], UploadResult],
-) -> UploadResult:
-    delay = UPLOAD_RESUME_RETRY_INITIAL_DELAY_SECONDS
-    last_log_at = 0.0
-    attempt = 0
-    while True:
-        try:
-            return operation()
-        except (httpx.TransportError, httpx.HTTPStatusError, ServiceUnavailable) as exc:
-            if not _is_transient_upload_error(exc):
-                raise
-            attempt += 1
-            now = time.monotonic()
-            if attempt == 1 or now - last_log_at >= UPLOAD_RESUME_RETRY_LOG_INTERVAL_SECONDS:
-                _log_upload(
-                    f"{description} failed ({_upload_error_description(exc)}); "
-                    f"retrying in {delay:.1f}s"
-                )
-                last_log_at = now
-            time.sleep(delay)
-            delay = min(delay * 2, UPLOAD_RESUME_RETRY_MAX_DELAY_SECONDS)
-
-
-def _create_or_resume_collection_upload_session(
-    api: ApiClient,
-    idempotency_key: str,
-    *,
-    ingest_source: str | None,
-    description: str | None = None,
-    tags: list[str] | None = None,
-    archive_store: str | None = None,
-    use_cache: bool | None = None,
-    copy_to: list[str] | None = None,
-    provenance_mode: ProvenanceMode,
-    provenance_omission_reason: str | None,
-) -> dict[str, Any]:
-    return create_or_resume_with_initial_collection_tags(
-        tags or (),
-        create_or_resume=lambda first_batch, identity: _retry_transient_upload_operation(
-            "Upload session open/resume",
-            lambda: api.create_or_resume_collection_upload_session(
-                idempotency_key,
-                ingest_source=ingest_source,
-                description=description,
-                tags=first_batch,
-                initial_tag_set_identity=identity,
-                archive_store=archive_store,
-                use_cache=use_cache,
-                copy_to=copy_to,
-                provenance_mode=provenance_mode,
-                provenance_omission_reason=provenance_omission_reason,
-            ),
-        ),
-        add_tags=lambda collection_id, batch: _retry_transient_upload_operation(
-            f"Upload session add {len(batch)} tag(s)",
-            partial(api.add_collection_upload_session_tags, collection_id, batch),
-        ),
-    )
-
-
-def _register_collection_upload_session_files(
-    api: ApiClient,
-    collection_id: int,
-    file_payloads: list[CollectionManifestEntry],
-    *,
-    registration_constraints: CollectionUploadRegistrationConstraintsDocument,
-) -> dict[str, Any]:
-    registration: list[dict[str, object]] = []
-    for item in file_payloads:
-        payload: dict[str, object] = {
-            key: value
-            for key, value in item.items()
-            if key not in {"provenance_journals", "raw_digest_spool"}
-        }
-        payload["bytes"] = str(item["bytes"])
-        raw_parts = item.get("raw_parts")
-        if raw_parts is not None:
-            payload["raw_parts"] = {
-                **raw_parts,
-                "part_plaintext_bytes": str(raw_parts["part_plaintext_bytes"]),
-                "part_count": str(raw_parts["part_count"]),
-            }
-        registration.append(payload)
-    return _retry_transient_upload_operation(
-        f"Upload session register {len(file_payloads)} file(s)",
-        lambda: api.register_collection_upload_session_files(
-            collection_id,
-            registration,
-            registration_constraints=registration_constraints,
-        ),
-    )
-
-
-def _register_collection_upload_raw_digests(
-    api: ApiClient,
-    collection_id: int,
-    entries: list[CollectionManifestEntry],
-) -> None:
-    for entry in entries:
-        spool = entry.get("raw_digest_spool")
-        if spool is None:
-            continue
-        try:
-            for first_part, sha256s in spool.iter_batches():
-                _retry_transient_upload_operation(
-                    f"Upload session register raw digests for {entry['path']}",
-                    partial(
-                        api.register_collection_upload_session_raw_part_digests,
-                        collection_id,
-                        {
-                            "path": entry["path"],
-                            "first_part": str(first_part),
-                            "sha256s": list(sha256s),
-                        },
-                    ),
-                )
-        finally:
-            spool.close()
-            entry.pop("raw_digest_spool", None)
-
-
-def _complete_collection_upload_session(
-    api: ApiClient,
-    collection_id: int,
-) -> dict[str, Any]:
-    return _retry_transient_upload_operation(
-        "Upload session complete",
-        lambda: api.complete_collection_upload_session(collection_id),
-    )
-
-
-def _iter_collection_source_paths(root: Path) -> Iterator[Path]:
-    for path in root.rglob("*"):
-        if not path.is_file() or _is_provenance_control_path(root, path):
-            continue
-        yield path
-
-
-def _local_collection_summary(root: Path) -> tuple[int, int, list[CollectionManifestEntry]]:
-    files_total = 0
-    bytes_total = 0
-    preview: list[CollectionManifestEntry] = []
-    for path in _iter_collection_source_paths(root):
-        entry: CollectionManifestEntry = {
-            "path": path.relative_to(root).as_posix(),
-            "bytes": path.stat().st_size,
-            "sha256": _file_sha256(path),
-        }
-        files_total += 1
-        bytes_total += entry["bytes"]
-        if len(preview) < 5:
-            preview.append(entry)
-    if files_total == 0:
-        raise typer.BadParameter("collection source must contain at least one file")
-    return files_total, bytes_total, preview
-
-
-def _collection_upload_dry_run_plan(
-    *,
-    idempotency_key: str,
-    root: Path,
-    files_total: int,
-    bytes_total: int,
-    files_preview: list[CollectionManifestEntry],
-    description: str | None = None,
-    tags: list[str] | None = None,
-    archive_store: str | None = None,
-    use_cache: bool | None = None,
-    copy_to: list[str] | None = None,
-    provenance_observer: ResolvedProvenanceObserver | None = None,
-) -> dict[str, object]:
-    return {
-        "dry_run": True,
-        "status": "would_upload",
-        "idempotency_key": idempotency_key,
-        "collection_id": None,
-        "root": str(root),
-        "ingest_source": str(root),
-        "description": description,
-        "tags": tags or [],
-        "files_total": files_total,
-        "bytes_total": bytes_total,
-        "archive_store": archive_store,
-        "use_cache": use_cache,
-        "copy_to": copy_to,
-        "provenance_observer": (
-            provenance_observer.as_dict() if provenance_observer is not None else None
-        ),
-        "server_validation": "not_run",
-        "created_at": utc_timestamp_now(),
-        "files_preview": files_preview,
-    }
-
-
-def _session_registration_constraints(
-    payload: Mapping[str, object],
-) -> CollectionUploadRegistrationConstraintsDocument:
-    constraints = payload.get("registration_constraints")
-    if not isinstance(constraints, Mapping):
-        raise RuntimeError("open upload session is missing registration constraints")
-    try:
-        return CollectionUploadRegistrationConstraintsDocument.model_validate(dict(constraints))
-    except ValueError as exc:
-        raise RuntimeError("upload session returned invalid registration constraints") from exc
-
-
-def _hash_collection_source(
-    root: Path,
-    source_path: Path,
-    *,
-    pack_member_bytes: int,
-    raw_part_plaintext_bytes: int,
-    provenance: Path | None = None,
-    omit_provenance: str | None = None,
-    provenance_observer_factory: FileStateObserverFactory | None = None,
-) -> CollectionManifestEntry:
-    rel_path = source_path.relative_to(root).as_posix()
-    byte_count = source_path.stat().st_size
-    if byte_count >= _upload_file_log_bytes():
-        _log_upload(f"Hashing {rel_path} ({_format_bytes(byte_count)})")
-    if byte_count < pack_member_bytes:
-        result: CollectionManifestEntry = {
-            "path": rel_path,
-            "bytes": byte_count,
-            "sha256": _file_sha256(source_path),
-        }
-    else:
-        raw = hash_raw_source_chunks(
-            path=rel_path,
-            chunks=_iter_file_chunks(source_path),
-            expected_bytes=byte_count,
-            part_plaintext_bytes=raw_part_plaintext_bytes,
-        )
-        result = {
-            "path": rel_path,
-            "bytes": byte_count,
-            "sha256": raw.summary.sha256,
-            "raw_parts": {
-                "part_plaintext_bytes": raw.summary.part_plaintext_bytes,
-                "part_count": raw.summary.part_count,
-                "ordered_sha256": raw.summary.ordered_part_sha256,
-            },
-            "raw_digest_spool": raw,
-        }
-    prepared = prepare_file_provenance(
-        source_path,
-        relative_path=rel_path,
-        host_id=user_installation_id("a-riverhog-cli"),
-        agent_name="a-riverhog-cli",
-        agent_version=importlib.metadata.version("a-riverhog-cli"),
-        observer=(
-            provenance_observer_factory() if provenance_observer_factory is not None else None
-        ),
-        provenance=provenance,
-        omit_reason=omit_provenance,
-    )
-    result["provenance"] = {
-        "status": prepared.binding.status,
-        **(
-            {
-                "journal_id": prepared.binding.journal_id,
-                "current_state_id": prepared.binding.current_state_id,
-            }
-            if prepared.binding.status == "captured"
-            else {"omission_reason": prepared.binding.omission_reason}
-        ),
-    }
-    result["provenance_journals"] = prepared.journals
-    return result
-
-
-def _put_provenance_journals(
-    api: ApiClient,
-    collection_id: int,
-    manifest: list[CollectionManifestEntry],
-) -> None:
-    journals: dict[str, bytes] = {}
-    for item in manifest:
-        for journal_id, content in item.get("provenance_journals", {}).items():
-            previous = journals.get(journal_id)
-            if previous is not None and previous != content:
-                raise Conflict(f"local provenance journal bytes disagree: {journal_id}")
-            journals[journal_id] = content
-    for journal_id, content in sorted(journals.items()):
-        _retry_transient_upload_operation(
-            f"Upload provenance journal {journal_id}",
-            partial(
-                api.upload_collection_upload_session_provenance_journal,
-                collection_id,
-                journal_id,
-                content=(content,),
-                byte_count=len(content),
-                sha256=hashlib.sha256(content).hexdigest(),
-            ),
-        )
-
-
-def _is_provenance_control_path(root: Path, path: Path) -> bool:
-    relative = path.relative_to(root)
-    return path.name.endswith(SIDECAR_SUFFIX) or relative.parts[:2] == (
-        ".riverhog",
-        "provenance",
-    )
-
-
-def _upload_unit_content(
-    root: Path,
-    unit: CollectionUploadUnitWorkDocument,
-) -> bytes:
-    content = bytearray()
-    for source in unit.sources:
-        source_path = root / source.path
-        for chunk in _iter_file_chunks(
-            source_path,
-            offset=source.offset,
-            limit=source.bytes,
-        ):
-            content.extend(chunk)
-    if len(content) != unit.payload_bytes:
-        raise RuntimeError(
-            f"local sources produced {len(content)} bytes for a "
-            f"{unit.payload_bytes}-byte upload unit"
-        )
-    return bytes(content)
-
-
-def _upload_planned_units(
-    api: ApiClient,
-    collection_id: int,
-    root: Path,
-    *,
-    concurrency: int,
-    progress: Any,
-    api_factory: Callable[[], ApiClient] | None,
-) -> None:
-    upload_collection_units(
-        api,
-        collection_id,
-        content_for_unit=lambda unit: _upload_unit_content(root, unit),
-        concurrency=concurrency,
-        window=configured_upload_window(concurrency=concurrency),
-        client_factory=api_factory,
-        on_committed=progress.uploaded,
-        on_resumed=progress.resumed,
-        retry_notice=_log_upload,
-    )
-
-
-def _wait_for_finalized_collection(
-    api: ApiClient,
-    collection_id: int,
-    files_total: int | None = None,
-    bytes_total: int | None = None,
-    *,
-    status: Callable[[str], None] | None = None,
-) -> tuple[dict[str, object], UploadCompletionState]:
-    poll_seconds = _upload_finalize_poll_seconds()
-    timeout_seconds = _upload_finalize_timeout_seconds()
-    deadline = None if timeout_seconds is None else time.monotonic() + timeout_seconds
-    last_status_log_at = 0.0
-    last_payload: dict[str, object] | None = None
-
-    _report_upload_status(status, "Waiting for verified archive custody")
-    while True:
-        now = time.monotonic()
-        try:
-            last_payload = api.get_collection_upload_session(collection_id)
-            state = str(last_payload.get("state", "unknown"))
-            if state == "finalized":
-                return last_payload, "finalized"
-            if state == "canceled":
-                raise RuntimeError("collection upload was canceled before custody completed")
-            if now - last_status_log_at >= UPLOAD_FINALIZE_STATUS_INTERVAL_SECONDS:
-                _report_upload_status(
-                    status,
-                    f"Waiting for verified archive custody: state={state}"
-                    f"{_archive_wait_status(last_payload)}",
-                )
-                last_status_log_at = now
-        except Exception as exc:
-            if not _is_transient_upload_error(exc):
-                raise
-            if now - last_status_log_at >= UPLOAD_FINALIZE_STATUS_INTERVAL_SECONDS:
-                _report_upload_status(
-                    status,
-                    f"Custody status unavailable ({_upload_error_description(exc)}); retrying",
-                )
-                last_status_log_at = now
-
-        if deadline is not None and now >= deadline:
-            return last_payload or {
-                "collection_id": collection_id,
-                "state": "finalizing",
-                "files_total": files_total or 0,
-                "bytes_total": bytes_total or 0,
-            }, "timeout"
-        sleep_seconds = poll_seconds
-        if deadline is not None:
-            sleep_seconds = max(0.0, min(poll_seconds, deadline - now))
-        time.sleep(sleep_seconds)
-
-
-def _upload_collection_via_session(
-    api: ApiClient,
-    idempotency_key: str,
-    resolved_root: Path,
-    *,
-    ingest_source: str | None,
-    description: str | None = None,
-    tags: list[str] | None = None,
-    archive_store: str | None = None,
-    use_cache: bool | None = None,
-    copy_to: list[str] | None = None,
-    json_mode: bool = False,
-    file_concurrency: int,
-    api_factory: Callable[[], ApiClient] | None = None,
-    provenance: Path | None = None,
-    omit_provenance: str | None = None,
-    provenance_observer_factory: FileStateObserverFactory | None = None,
-) -> dict[str, object]:
-    _log_upload(f"Opening direct-to-archive upload session for {resolved_root}")
-    session_payload = _create_or_resume_collection_upload_session(
-        api,
-        idempotency_key,
-        ingest_source=ingest_source,
-        description=description,
-        tags=tags,
-        archive_store=archive_store,
-        use_cache=use_cache,
-        copy_to=copy_to,
-        provenance_mode="omitted" if omit_provenance is not None else "captured",
-        provenance_omission_reason=omit_provenance,
-    )
-    collection_id = normalize_collection_id(session_payload["collection_id"])
-    if session_payload.get("state") == "finalized":
-        _log_upload(f"Collection {collection_id} already finalized for this retry key")
-        return session_payload
-
-    state = str(session_payload.get("state") or "open")
-    registration_constraints = _session_registration_constraints(session_payload)
-    pack_member_bytes = registration_constraints.pack_member_bytes
-    raw_part_plaintext_bytes = registration_constraints.raw_part_plaintext_bytes
-    files_total = int(session_payload.get("files_total") or 0) if state != "open" else 0
-    bytes_total = int(session_payload.get("bytes_total") or 0) if state != "open" else 0
-    progress = make_collection_upload_progress(
-        collection_id=collection_id,
-        files_total=files_total,
-        bytes_total=bytes_total,
-        files_hashed=0,
-        files_registered=0,
-        file_concurrency=file_concurrency,
-        chunk_bytes=raw_part_plaintext_bytes,
-        discovery_complete=state != "open",
-        json_mode=json_mode,
-        interval_seconds=UPLOAD_PROGRESS_INTERVAL_SECONDS,
-    )
-
-    with progress:
-        if state == "open":
-            progress.notice(
-                "Discovering, hashing, and transferring bounded source windows",
-                phase="discovering/uploading",
-            )
-
-            def hash_one(path: Path) -> CollectionManifestEntry:
-                return _hash_collection_source(
-                    resolved_root,
-                    path,
-                    pack_member_bytes=pack_member_bytes,
-                    raw_part_plaintext_bytes=raw_part_plaintext_bytes,
-                    provenance=provenance,
-                    omit_provenance=omit_provenance,
-                    provenance_observer_factory=provenance_observer_factory,
-                )
-
-            paths = iter(_iter_collection_source_paths(resolved_root))
-            with ThreadPoolExecutor(max_workers=file_concurrency) as executor:
-                while path_batch := list(
-                    itertools.islice(paths, COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES)
-                ):
-                    batch = list(executor.map(hash_one, path_batch))
-                    files_total += len(batch)
-                    bytes_total += sum(item["bytes"] for item in batch)
-                    progress.set_totals(files_total=files_total, bytes_total=bytes_total)
-                    for _ in batch:
-                        progress.hashed_file()
-                    _put_provenance_journals(api, collection_id, batch)
-                    _register_collection_upload_session_files(
-                        api,
-                        collection_id,
-                        batch,
-                        registration_constraints=registration_constraints,
-                    )
-                    _register_collection_upload_raw_digests(api, collection_id, batch)
-                    for _ in batch:
-                        progress.registered_file()
-                    _upload_planned_units(
-                        api,
-                        collection_id,
-                        resolved_root,
-                        concurrency=file_concurrency,
-                        progress=progress,
-                        api_factory=api_factory,
-                    )
-            if files_total == 0:
-                raise typer.BadParameter("collection source must contain at least one file")
-            progress.finish_discovery()
-
-        progress.notice("Closing discovery and persisting final volume plans", phase="planning")
-        _complete_collection_upload_session(api, collection_id)
-        progress.notice("Uploading plaintext units over the authenticated API", phase="uploading")
-        _upload_planned_units(
-            api,
-            collection_id,
-            resolved_root,
-            concurrency=file_concurrency,
-            progress=progress,
-            api_factory=api_factory,
-        )
-        progress.complete_all_files()
-        final_payload, completion_state = _wait_for_finalized_collection(
-            api,
-            collection_id,
-            files_total,
-            bytes_total,
-            status=lambda message: progress.notice(message, phase="finalizing"),
-        )
-        if completion_state == "timeout":
-            progress.notice("Timed out waiting for verified custody", phase="timeout")
-            raise typer.Exit(124)
-        progress.notice("Collection finalized with verified archive custody", phase="finalized")
-        return final_payload
-
-
 def _archive_wait_status(payload: Mapping[str, object]) -> str:
     phase = payload.get("archive_phase")
     status = f", archive_phase={phase}" if phase else ""
@@ -2197,159 +1487,108 @@ def collection_archive_copies_cmd(
 @collection_upload_app.command("start")
 def upload_cmd(
     root: Annotated[Path, typer.Argument(help="Local collection root directory")],
-    idempotency_key: Annotated[
-        str | None,
-        typer.Option(
-            "--idempotency-key",
-            help="Stable retry key; defaults to a new UUID for this invocation",
-        ),
-    ] = None,
-    archive_store: Annotated[
-        str | None,
-        typer.Option("--archive-store", help="Named archive store destination"),
-    ] = None,
-    use_cache: Annotated[
-        bool | None,
-        typer.Option("--use-cache/--no-use-cache", help="Override retrieval-cache placement"),
-    ] = None,
-    copy_to: Annotated[
-        list[str] | None,
-        typer.Option("--copy-to", help="Archive copy destination; repeat as needed"),
-    ] = None,
-    description: Annotated[
-        str | None,
-        typer.Option("--description", help="Mutable human description for catalog discovery"),
-    ] = None,
-    tag: Annotated[
-        list[str] | None,
-        typer.Option("--tag", help="Initial collection tag; repeat as needed"),
-    ] = None,
-    provenance: Annotated[
-        Path | None,
-        typer.Option(
-            "--provenance",
-            help="Existing Riverhog provenance journal or recovered provenance set",
-        ),
-    ] = None,
-    omit_provenance: Annotated[
-        str | None,
-        typer.Option(
-            "--omit-provenance",
-            help="Explicit reason to omit provenance for the whole collection",
-        ),
-    ] = None,
+    idempotency_key: Annotated[str | None, typer.Option("--idempotency-key")] = None,
+    archive_store: Annotated[str | None, typer.Option("--archive-store")] = None,
+    use_cache: Annotated[bool | None, typer.Option("--use-cache/--no-use-cache")] = None,
+    copy_to: Annotated[list[str] | None, typer.Option("--copy-to")] = None,
+    description: Annotated[str | None, typer.Option("--description")] = None,
+    tag: Annotated[list[str] | None, typer.Option("--tag")] = None,
     provenance_observer: Annotated[
         str | None,
-        typer.Option(
-            "--provenance-observer",
-            envvar="A_RIVERHOG_CLI_PROVENANCE_OBSERVER",
-            help="Explicit installed provenance observer provider name",
-        ),
+        typer.Option("--provenance-observer", envvar="A_RIVERHOG_CLI_PROVENANCE_OBSERVER"),
+    ] = None,
+    source_host_id: Annotated[
+        str | None,
+        typer.Option("--source-host-id", envvar="A_RIVERHOG_CLI_SOURCE_HOST_ID"),
     ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-    dry_run: Annotated[
-        bool,
-        typer.Option(
-            "--dry-run",
-            help="Hash and preview without creating a session or uploading bytes",
-        ),
-    ] = False,
+    dry_run: Annotated[bool, typer.Option("--dry-run")] = False,
 ) -> None:
-    """Upload a local directory as a collection."""
+    """Upload every regular source as an opaque artifact with canonical provenance."""
 
-    resolved_idempotency_key = idempotency_key or uuid.uuid4().hex
+    key = idempotency_key or uuid.uuid4().hex
     resolved_root = root.expanduser().resolve()
-    if not resolved_root.is_dir():
-        raise typer.BadParameter("collection source must be a directory")
-    if provenance is not None and omit_provenance is not None:
-        raise typer.BadParameter("--provenance and --omit-provenance are mutually exclusive")
-    if provenance_observer is not None and omit_provenance is not None:
-        raise typer.BadParameter(
-            "--provenance-observer and --omit-provenance are mutually exclusive"
-        )
     if description is not None:
         try:
             description = validate_collection_description(description)
         except ValueError as exc:
             raise typer.BadParameter(str(exc), param_hint="--description") from exc
-    resolved_provenance = provenance.expanduser().resolve() if provenance is not None else None
-    if resolved_provenance is not None and not resolved_provenance.exists():
-        raise typer.BadParameter("--provenance path does not exist")
-    resolved_observer: ResolvedProvenanceObserver | None = None
-    if provenance_observer is not None:
-        try:
-            resolved_observer = resolve_provenance_observer(provenance_observer)
-        except (TypeError, ValueError) as exc:
-            raise typer.BadParameter(str(exc), param_hint="--provenance-observer") from exc
-    if (
-        not dry_run
-        and resolved_observer is None
-        and resolved_provenance is None
-        and omit_provenance is None
-    ):
-        missing_sidecar = next(
-            (
-                path
-                for path in resolved_root.rglob("*")
-                if path.is_file()
-                and not _is_provenance_control_path(resolved_root, path)
-                and not canonical_sidecar_path(path).is_file()
-            ),
-            None,
-        )
-        if missing_sidecar is not None:
-            raise typer.BadParameter(
-                "provenance capture requires --provenance-observer, existing sidecars, "
-                "--provenance, or explicit --omit-provenance"
+    try:
+        if dry_run:
+            preview = preview_upload(resolved_root)
+            payload = {
+                "format": "a-riverhog-cli-upload-preview/v1",
+                "idempotency_key": key,
+                "artifact_count": len(preview),
+                "total_bytes": sum(int(item["bytes"]) for item in preview),
+                "sources": preview[:5],
+            }
+            emit(
+                payload if json_mode else f"would upload {len(preview)} artifacts",
+                json_mode=json_mode,
             )
-
-    if dry_run:
-        _log_upload(f"Hashing collection manifest from {resolved_root}")
-        manifest_started_at = time.monotonic()
-        files_total, manifest_bytes, files_preview = _local_collection_summary(resolved_root)
-        _log_upload(
-            "Manifest hashed: "
-            f"{files_total} files, {_format_bytes(manifest_bytes)} "
-            f"in {time.monotonic() - manifest_started_at:.1f}s"
-        )
-        payload = _collection_upload_dry_run_plan(
-            idempotency_key=resolved_idempotency_key,
-            root=resolved_root,
-            files_total=files_total,
-            bytes_total=manifest_bytes,
-            files_preview=files_preview,
-            description=description,
-            tags=tag,
-            archive_store=archive_store,
-            use_cache=use_cache,
-            copy_to=copy_to,
-            provenance_observer=resolved_observer,
-        )
-        emit(payload if json_mode else format_collection_upload_plan(payload), json_mode=json_mode)
-        return
-
-    api = client()
-    file_concurrency = _upload_file_concurrency()
-    payload = _upload_collection_via_session(
-        api,
-        resolved_idempotency_key,
-        resolved_root,
-        ingest_source=str(resolved_root),
-        description=description,
-        tags=tag,
-        archive_store=archive_store,
-        use_cache=use_cache,
-        copy_to=copy_to,
-        json_mode=json_mode,
-        file_concurrency=file_concurrency,
-        provenance=resolved_provenance,
-        omit_provenance=omit_provenance,
-        provenance_observer_factory=(
-            resolved_observer.create if resolved_observer is not None else None
-        ),
+            return
+        upload = prepare_upload(resolved_root, key)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="root") from exc
+    selected_observer = (
+        resolve_provenance_observer(provenance_observer)
+        if provenance_observer is not None
+        else None
     )
+    if selected_observer is not None and source_host_id is None:
+        raise typer.BadParameter(
+            "a selected native provenance observer requires --source-host-id",
+            param_hint="--source-host-id",
+        )
+    typer.echo(f"upload retry key: {key}", err=True)
+    try:
+        version = importlib.metadata.version("a-riverhog-cli")
+    except importlib.metadata.PackageNotFoundError:
+        version = "development"
+    producer = IncrementalCollectionProducer(
+        client(),
+        producer_app="a-riverhog-cli",
+        adapter_id="a-riverhog-cli.directory/v1",
+        adapter_version=version,
+        ingest_source="local-directory",
+        source_event_id=key,
+        source_context={"kind": "local-directory"},
+        idempotency_key=key,
+        archive_store=cast(Any, archive_store),
+        use_cache=use_cache,
+        copy_to=cast(Any, copy_to),
+        description=description,
+        tags=tag or (),
+    )
+    try:
+        if producer.constraints is not None:
+            for start in range(0, len(upload.sources), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
+                inputs = []
+                expected = {}
+                for source in upload.sources[
+                    start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
+                ]:
+                    observation = (
+                        selected_observer.observe_native_file(
+                            source.path,
+                            host_id=source_host_id,
+                            naming_view_id=upload.source_naming_view_id,
+                        )
+                        if selected_observer is not None and source_host_id is not None
+                        else None
+                    )
+                    item = source.producer_file(observation=observation)
+                    inputs.append(item)
+                    expected[item.artifact_id] = ProducerArtifactIdentity(
+                        item.artifact_id, source.bytes, source.sha256
+                    )
+                producer.append_inputs(inputs, expected_identities=expected)
+        result = producer.finish()
+    finally:
+        producer.stop()
     emit(
-        payload if json_mode else format_collection_upload(payload),
+        result.receipt if json_mode else format_collection_upload(result.receipt),
         json_mode=json_mode,
     )
 
@@ -2450,13 +1689,13 @@ def upload_watch_cmd(
 ) -> None:
     """Wait for collection finalization to finish."""
 
-    payload, completion_state = _wait_for_finalized_collection(
-        client(),
-        collection_id,
-        None,
-    )
+    deadline = time.monotonic() + 24 * 60 * 60
+    payload = client().get_collection_upload_session(collection_id)
+    while payload.get("state") != "finalized" and time.monotonic() < deadline:
+        time.sleep(5.0)
+        payload = client().get_collection_upload_session(collection_id)
     emit(payload if json_mode else format_collection_upload(payload), json_mode=json_mode)
-    if completion_state == "timeout":
+    if payload.get("state") != "finalized":
         raise typer.Exit(124)
 
 

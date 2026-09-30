@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol, cast
 
-from riverhog_protocol import CollectionId
+from riverhog_protocol import ArtifactId, CollectionId
 
 DEFAULT_DOWNLOAD_CONCURRENCY = 4
 DEFAULT_DOWNLOAD_WINDOW = 8
@@ -22,19 +22,19 @@ DownloadHeartbeat = Callable[[], None]
 @dataclass(frozen=True, slots=True)
 class RetrievalDownload:
     collection_id: CollectionId
-    path: str
+    artifact_id: ArtifactId
     output: Path
     expected_bytes: int
     expected_sha256: str
 
 
 class RetrievalDownloadApi(Protocol):
-    def download_retrieval_file(
+    def download_retrieval_artifact(
         self,
         job_id: str,
         *,
         collection_id: CollectionId,
-        path: str,
+        artifact_id: ArtifactId,
         output: Path,
         expected_bytes: int,
         expected_sha256: str,
@@ -120,10 +120,10 @@ def download_retrieval_files(
 
     def download_one(download: RetrievalDownload) -> int:
         worker_api = cast(RetrievalDownloadApi, local.api)
-        return worker_api.download_retrieval_file(
+        return worker_api.download_retrieval_artifact(
             job_id,
             collection_id=download.collection_id,
-            path=download.path,
+            artifact_id=download.artifact_id,
             output=download.output,
             expected_bytes=download.expected_bytes,
             expected_sha256=download.expected_sha256,

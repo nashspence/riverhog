@@ -24,7 +24,7 @@ from riverhog_client import (
 from riverhog_protocol import validate_collection_tag
 from riverhog_protocol.errors import InvalidState, NotFound
 from riverhog_protocol.paths import normalize_collection_id, validate_canonical_relpath
-from riverhog_protocol.transport import RETRIEVAL_FILE_BATCH_MAX
+from riverhog_protocol.transport import RETRIEVAL_ARTIFACT_BATCH_MAX
 from riverhog_provenance import list_provenance_observers, resolve_provenance_observer
 from state_schema import StateSchemaError
 from time_formats import parse_utc_timestamp
@@ -814,7 +814,7 @@ def _sync(
                         payload["retrieval_id"] = last_retrieval_id
                     return payload
 
-                batch = missing[:RETRIEVAL_FILE_BATCH_MAX]
+                batch = missing[:RETRIEVAL_ARTIFACT_BATCH_MAX]
                 plan = api.plan_retrieval(batch, restore_policy=policy)
                 plan_files = _retrieval_plan_files(api, plan)
                 _verify_retrieval_plan_selection(plan_files, batch)
