@@ -33,7 +33,6 @@ def prepare(workspace: Path) -> None:
     archive = workspace / "logical-archive"
     write_archive(
         archive,
-        with_provenance=True,
         description="Filesystem materialization qualification",
         tags=("camera", "qualification"),
     )
@@ -94,13 +93,22 @@ def prepare(workspace: Path) -> None:
 def verify_full(workspace: Path) -> None:
     output = workspace / "recovered"
     expected = {
-        "notes/alpha.txt": b"alpha\n",
-        "notes/beta.txt": b"beta\n",
-        "video.bin": b"first-second",
+        "files/notes/alpha.txt": b"alpha\n",
+        "files/notes/beta.txt": b"beta\n",
+        "artifacts/33/" + "3" * 64: b"first-second",
     }
     actual = {path: (output / path).read_bytes() for path in expected}
     if actual != expected:
         raise RuntimeError("built-artifact recovery differs from its source collection")
+    receipt = json.loads((output / "recovery.json").read_bytes())
+    if receipt.get("complete") is not True or receipt.get("artifacts") != 3:
+        raise RuntimeError("built-artifact recovery has no complete four-content receipt")
+    if not (output / "metadata/description.json").is_file():
+        raise RuntimeError("full recovery omitted the selected description authority")
+    if not (output / "metadata/tags/head.json").is_file():
+        raise RuntimeError("full recovery omitted the selected tag authority")
+    if len(list((output / "provenance/primary").rglob("*.jsonseq"))) != 3:
+        raise RuntimeError("full recovery omitted an exact primary journal sidecar")
     if (workspace / "full" / "archives/unrelated").exists():
         raise RuntimeError("materialization included an unselected provider object")
     if (workspace / "full" / "archives/recovery-proof/incomplete.age").exists():

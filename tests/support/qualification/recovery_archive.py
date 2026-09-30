@@ -1,67 +1,74 @@
+"""Encrypted pathless archive fixture for independent recovery qualification."""
+
 from __future__ import annotations
 
 import hashlib
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 
 from riverhog_age import encrypt_age_scrypt
 from riverhog_archive_contracts import (
     ARCHIVE_ENCRYPTION_FORMAT,
+    PROVENANCE_BINDINGS_FORMAT,
     ArchiveRootCiphertextIdentity,
     CollectionEncryptionBinding,
+    ProvenancePayload,
+    ProvenanceRootDocument,
+    ProvenanceTerminalDocument,
+    ProvenanceVolumeDocument,
     RecoveryDescriptor,
     format_archive_sequence,
+    ordered_provenance_commitment,
 )
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_core.archive_manifest import (
     build_collection_archive_authority,
     build_collection_archive_terminal_document,
 )
 from riverhog_core.domain.archive import (
-    ArchiveFile,
+    ArchiveArtifact,
     SealedPackVolume,
     SealedProvenanceObject,
     SealedRawVolume,
     StoredArchivePart,
-    VerifiedRawFile,
+    VerifiedRawArtifact,
 )
 from riverhog_core.pack_volume import iter_render_pack_upload_unit, plan_pack_volume
-from riverhog_core.raw_verification import raw_file_ordered_volume_commitment
+from riverhog_core.raw_verification import raw_artifact_ordered_volume_commitment
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
     COLLECTION_TAG_HEAD_RELATIVE_PATH,
+    ArtifactMemberIdentityDocument,
     CollectionDescriptionDocument,
     CollectionTagHeadDocument,
     CollectionTagSet,
     MemoryCollectionTagNodeStore,
     collection_tag_node_path,
 )
-from riverhog_provenance import (
-    PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    ArchiveFileProvenanceRecord,
-    ProvenancePayloadIdentity,
-    ProvenanceRootDocument,
-    ProvenanceTerminalDocument,
-    ProvenanceVolumeDocument,
-    binding_segment_bytes,
-    create_observation_journal,
-    format_provenance_sequence,
-    update_ordered_volume_commitment,
-    validate_journal,
-)
+from riverhog_protocol.manifest import artifact_set_identity
+from riverhog_provenance import BoundedSourceObserver, BytesSource, new_id
 
 from tests.fixtures.archive import age_state_json
-from tests.provenance_observer import native_provenance_observer
 
 PASSPHRASE = "correct horse battery archive"
 PASSPHRASE_ID = "recovery-test-key-v1"
+GENERATION = "a" * 64
+
+
+@dataclass(frozen=True, slots=True)
+class FixtureArchive:
+    members: Mapping[str, bytes]
+    hints: Mapping[str, tuple[str, ...] | None]
+    journals: Mapping[str, bytes]
+    archive_root_sha256: str
+    description_sha256: str | None
+    tag_head_sha256: str
 
 
 def _sha256(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
-
-
-def _file(path: str, content: bytes) -> ArchiveFile:
-    return ArchiveFile(path=path, bytes=len(content), sha256=_sha256(content))
 
 
 def _part(plaintext: bytes, ciphertext: bytes) -> tuple[StoredArchivePart, ...]:
@@ -77,315 +84,251 @@ def _part(plaintext: bytes, ciphertext: bytes) -> tuple[StoredArchivePart, ...]:
     )
 
 
+def _encrypt(value: bytes, passphrase: str) -> bytes:
+    return encrypt_age_scrypt(value, passphrase, log_n=1)
+
+
 def write_archive(
     root: Path,
     *,
     passphrase: str = PASSPHRASE,
     passphrase_id: str = PASSPHRASE_ID,
-    with_provenance: bool = False,
-    provenance_journal: bytes | None = None,
-    provenance_journals: Mapping[str, bytes] | None = None,
-    description: str | None = None,
+    description: str | None = "Recovered fixture collection",
+    description_document: bool = True,
     tags: Sequence[str] = (),
-) -> tuple[dict[str, bytes], bytes | None]:
-    expected = {
-        "notes/alpha.txt": b"alpha\n",
-        "notes/beta.txt": b"beta\n",
-        "video.bin": b"first-second",
+    hints: Mapping[str, tuple[str, ...] | None] | None = None,
+) -> FixtureArchive:
+    root.mkdir(parents=True, exist_ok=True)
+    contents = {
+        "1" * 64: b"alpha\n",
+        "2" * 64: b"beta\n",
+        "3" * 64: b"first-second",
     }
-    files = tuple(_file(path, content) for path, content in sorted(expected.items()))
-
-    pack_files = tuple(current for current in files if current.path.startswith("notes/"))
-    pack_plan = plan_pack_volume(pack_files, sequence=0)
-    pack_plaintext = b"".join(
-        iter_render_pack_upload_unit(
-            pack_plan,
-            0,
-            lambda path: (expected[path],),
+    suggested: dict[str, tuple[str, ...] | None] = {
+        "1" * 64: ("notes", "alpha.txt"),
+        "2" * 64: ("notes", "beta.txt"),
+        "3" * 64: None,
+    }
+    suggested.update(hints or {})
+    artifacts = tuple(
+        ArchiveArtifact(artifact_id, len(content), _sha256(content))
+        for artifact_id, content in sorted(contents.items())
+    )
+    artifact_set_sha256 = artifact_set_identity(
+        ArtifactMemberIdentityDocument.model_validate(
+            {"artifact_id": row.artifact_id, "bytes": str(row.bytes), "sha256": row.sha256}
+        )
+        for row in artifacts
+    )
+    delivery_context_id = new_id()
+    attribution = ProducerAttribution(
+        producer_app="recovery-fixture",
+        adapter_id="recovery-fixture/v1",
+        adapter_version="1.0.0",
+        source_event_id="recovery-fixture-event",
+        ingest_source="fixture",
+        source_context={"fixture": True},
+        construction_identity="f" * 64,
+    )
+    bindings = []
+    journals: dict[str, bytes] = {}
+    for row in artifacts:
+        observed = BoundedSourceObserver().observe(BytesSource(contents[row.artifact_id]))
+        produced = build_member_journal(
+            member=ArtifactMemberIdentityDocument.model_validate(
+                {"artifact_id": row.artifact_id, "bytes": str(row.bytes), "sha256": row.sha256}
+            ),
+            observation=observed,
+            delivery_context_id=delivery_context_id,
+            attribution=attribution,
+            materialization_hint=suggested[row.artifact_id],
+        )
+        bindings.append(produced.binding)
+        journals[produced.journal_id] = produced.content
+    binding_page = canonical_json_bytes(
+        {
+            "format": PROVENANCE_BINDINGS_FORMAT,
+            "bindings": [item.model_dump(mode="json") for item in bindings],
+        }
+    )
+    provenance_docs: list[ProvenanceVolumeDocument] = []
+    archive_objects: dict[str, bytes] = {}
+    provenance_docs.append(
+        ProvenanceVolumeDocument(
+            archive_generation=GENERATION,
+            artifact_set_sha256=artifact_set_sha256,
+            sequence=0,
+            payload=ProvenancePayload("bindings", 0, len(binding_page), _sha256(binding_page)),
+            first_artifact_id=artifacts[0].artifact_id,
+            last_artifact_id=artifacts[-1].artifact_id,
+            binding_count=len(bindings),
         )
     )
-    pack_ciphertext = encrypt_age_scrypt(pack_plaintext, passphrase, log_n=1)
-    sealed_pack = SealedPackVolume(
-        volume_id=pack_plan.volume_id,
-        sequence=0,
-        relative_path=f"volumes/{pack_plan.volume_id}.tar.age",
-        files=len(pack_files),
-        source_bytes=sum(current.bytes for current in pack_files),
-        plaintext_bytes=len(pack_plaintext),
-        age_state_json=age_state_json(len(pack_plaintext)),
-        index_sha256=pack_plan.index_sha256,
-        plan_sha256=pack_plan.plan_sha256,
-        parts=_part(pack_plaintext, pack_ciphertext),
-        revision="pack-version",
+    payloads: list[bytes] = [binding_page]
+    for journal_id, raw in sorted(journals.items()):
+        sequence = len(provenance_docs)
+        provenance_docs.append(
+            ProvenanceVolumeDocument(
+                archive_generation=GENERATION,
+                artifact_set_sha256=artifact_set_sha256,
+                sequence=sequence,
+                payload=ProvenancePayload("journal", sequence, len(raw), _sha256(raw)),
+                journal_id=journal_id,
+                journal_offset=0,
+                journal_bytes=len(raw),
+                journal_sha256=_sha256(raw),
+            )
+        )
+        payloads.append(raw)
+    for document, payload in zip(provenance_docs, payloads, strict=True):
+        archive_objects[document.metadata_path] = _encrypt(document.to_json_bytes(), passphrase)
+        archive_objects[document.payload.path] = _encrypt(payload, passphrase)
+    provenance_terminal = ProvenanceTerminalDocument(
+        archive_generation=GENERATION,
+        artifact_set_sha256=artifact_set_sha256,
+        sequence=len(provenance_docs),
+    )
+    archive_objects[provenance_terminal.metadata_path] = _encrypt(
+        provenance_terminal.to_json_bytes(), passphrase
+    )
+    provenance_root = ProvenanceRootDocument(
+        archive_generation=GENERATION,
+        artifact_set_sha256=artifact_set_sha256,
+        delivery_context_id=delivery_context_id,
+        binding_count=len(bindings),
+        journal_count=len(journals),
+        ordered_volume_sha256=ordered_provenance_commitment(
+            (*provenance_docs, provenance_terminal)
+        ),
+    )
+    provenance_root_raw = provenance_root.to_json_bytes()
+    provenance_root_ciphertext = _encrypt(provenance_root_raw, passphrase)
+    archive_objects["provenance/root.json.age"] = provenance_root_ciphertext
+    provenance_object = SealedProvenanceObject(
+        object_id="provenance-root",
+        kind="provenance-root",
+        relative_path="provenance/root.json.age",
+        plaintext_bytes=len(provenance_root_raw),
+        plaintext_sha256=provenance_root.identity,
+        stored_bytes=len(provenance_root_ciphertext),
+        stored_sha256=_sha256(provenance_root_ciphertext),
+        revision="fixture-provenance-root",
         completed_at="2026-08-08T00:00:00Z",
     )
 
-    raw_file = next(current for current in files if current.path == "video.bin")
-    raw_volumes: list[SealedRawVolume] = []
-    raw_ciphertexts: dict[str, bytes] = {}
+    pack_artifacts = artifacts[:2]
+    pack = plan_pack_volume(pack_artifacts, sequence=0)
+    pack_plaintext = b"".join(
+        iter_render_pack_upload_unit(pack, 0, lambda artifact_id: (contents[artifact_id],))
+    )
+    pack_ciphertext = _encrypt(pack_plaintext, passphrase)
+    sealed_pack = SealedPackVolume(
+        volume_id=pack.volume_id,
+        sequence=0,
+        relative_path=f"volumes/{pack.volume_id}.tar.age",
+        artifacts=len(pack_artifacts),
+        source_bytes=sum(row.bytes for row in pack_artifacts),
+        plaintext_bytes=len(pack_plaintext),
+        age_state_json=age_state_json(len(pack_plaintext)),
+        index_sha256=pack.index_sha256,
+        plan_sha256=pack.plan_sha256,
+        parts=_part(pack_plaintext, pack_ciphertext),
+        revision="fixture-pack",
+        completed_at="2026-08-08T00:00:00Z",
+    )
+    archive_objects[sealed_pack.relative_path] = pack_ciphertext
+    raw_artifact = artifacts[-1]
+    raw_volumes = []
     offset = 0
     for sequence, plaintext in enumerate((b"first-", b"second"), start=1):
         volume_id = f"segment-{format_archive_sequence(sequence)}"
-        relative_path = f"volumes/{volume_id}.bin.age"
-        raw_ciphertext = encrypt_age_scrypt(plaintext, passphrase, log_n=1)
-        raw_ciphertexts[relative_path] = raw_ciphertext
-        raw_volumes.append(
-            SealedRawVolume(
-                volume_id=volume_id,
-                sequence=sequence,
-                relative_path=relative_path,
-                source_path=raw_file.path,
-                file_offset=offset,
-                plaintext_bytes=len(plaintext),
-                file_bytes=raw_file.bytes,
-                file_sha256=raw_file.sha256,
-                age_state_json=age_state_json(len(plaintext)),
-                parts=_part(plaintext, raw_ciphertext),
-                revision=f"segment-version-{sequence}",
-                completed_at="2026-08-08T00:00:00Z",
-            )
+        ciphertext = _encrypt(plaintext, passphrase)
+        sealed = SealedRawVolume(
+            volume_id=volume_id,
+            sequence=sequence,
+            relative_path=f"volumes/{volume_id}.bin.age",
+            artifact_id=raw_artifact.artifact_id,
+            artifact_offset=offset,
+            plaintext_bytes=len(plaintext),
+            artifact_bytes=raw_artifact.bytes,
+            artifact_sha256=raw_artifact.sha256,
+            age_state_json=age_state_json(len(plaintext)),
+            parts=_part(plaintext, ciphertext),
+            revision=f"fixture-segment-{sequence}",
+            completed_at="2026-08-08T00:00:00Z",
         )
+        raw_volumes.append(sealed)
+        archive_objects[sealed.relative_path] = ciphertext
         offset += len(plaintext)
-    verified_raw = VerifiedRawFile(
-        path=raw_file.path,
-        bytes=raw_file.bytes,
-        sha256=raw_file.sha256,
-        ordered_volume_sha256=raw_file_ordered_volume_commitment(
-            file=raw_file,
-            volumes=raw_volumes,
+    verified_raw = VerifiedRawArtifact(
+        artifact_id=raw_artifact.artifact_id,
+        bytes=raw_artifact.bytes,
+        sha256=raw_artifact.sha256,
+        ordered_volume_sha256=raw_artifact_ordered_volume_commitment(
+            artifact=raw_artifact, volumes=raw_volumes
         ),
         verified_at="2026-08-08T00:00:00Z",
     )
-    provenance_identity: str | None = None
-    provenance_objects: tuple[SealedProvenanceObject, ...] = ()
-    provenance_ciphertexts: dict[str, bytes] = {}
-    exact_journal: bytes | None = None
-    if with_provenance:
-        exact_journal = provenance_journal
-        if exact_journal is None:
-            observed = root.parent / "observed-alpha.txt"
-            observed.write_bytes(expected["notes/alpha.txt"])
-            exact_journal = create_observation_journal(
-                observed,
-                relative_path="notes/alpha.txt",
-                host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
-                agent_name="recovery-fixture",
-                agent_version="1.0.0",
-                observer=native_provenance_observer(),
-            )
-            observed.unlink()
-        summary = validate_journal(exact_journal)
-        bindings = tuple(
-            ArchiveFileProvenanceRecord(
-                path=current.path,
-                bytes=current.bytes,
-                sha256=current.sha256,
-                status="captured" if current.path == "notes/alpha.txt" else "omitted",
-                journal_id=(summary.journal_id if current.path == "notes/alpha.txt" else None),
-                current_state_id=(
-                    summary.current_state_id if current.path == "notes/alpha.txt" else None
-                ),
-                omission_reason=(
-                    None
-                    if current.path == "notes/alpha.txt"
-                    else "fixture explicitly omitted source provenance"
-                ),
-            )
-            for current in files
-        )
-        journal_set = dict(provenance_journals or {summary.journal_id: exact_journal})
-        if journal_set.get(summary.journal_id) != exact_journal:
-            raise ValueError("recovery fixture current journal is missing from its exact set")
-        tree_digest = hashlib.sha256()
-        for current in files:
-            tree_digest.update(f"{current.path}\t{current.bytes}\t{current.sha256}\n".encode())
-        tree_sha256 = tree_digest.hexdigest()
-        binding_payload = binding_segment_bytes(
-            first_file_order=0,
-            files=[
-                {
-                    "path": binding.path,
-                    "bytes": binding.bytes,
-                    "sha256": binding.sha256,
-                    "status": binding.status,
-                    **(
-                        {
-                            "journal_id": binding.journal_id,
-                            "current_state_id": binding.current_state_id,
-                        }
-                        if binding.status == "captured"
-                        else {"omission_reason": binding.omission_reason}
-                    ),
-                }
-                for binding in bindings
-            ],
-        )
-        provenance_volume_documents: list[ProvenanceVolumeDocument] = []
-        volume_payloads: list[bytes] = []
-        sequence = 0
-        provenance_volume_documents.append(
-            ProvenanceVolumeDocument(
-                archive_generation="a" * 64,
-                archive_tree_sha256=tree_sha256,
-                sequence=sequence,
-                payload=ProvenancePayloadIdentity(
-                    kind="bindings",
-                    path=f"provenance/payloads/volume-{format_provenance_sequence(sequence)}.bin.age",
-                    bytes=len(binding_payload),
-                    sha256=_sha256(binding_payload),
-                ),
-                first_file_order=0,
-                file_count=len(bindings),
-            )
-        )
-        volume_payloads.append(binding_payload)
-        sequence += 1
-        for journal_id, content in sorted(journal_set.items()):
-            for offset in range(0, len(content), PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX):
-                payload = content[offset : offset + PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX]
-                provenance_volume_documents.append(
-                    ProvenanceVolumeDocument(
-                        archive_generation="a" * 64,
-                        archive_tree_sha256=tree_sha256,
-                        sequence=sequence,
-                        payload=ProvenancePayloadIdentity(
-                            kind="journal",
-                            path=(
-                                "provenance/payloads/volume-"
-                                f"{format_provenance_sequence(sequence)}.bin.age"
-                            ),
-                            bytes=len(payload),
-                            sha256=_sha256(payload),
-                        ),
-                        journal_id=journal_id,
-                        journal_offset=offset,
-                        journal_bytes=len(content),
-                        journal_sha256=_sha256(content),
-                    )
-                )
-                volume_payloads.append(payload)
-                sequence += 1
-        ordered = hashlib.sha256()
-        for document, payload in zip(provenance_volume_documents, volume_payloads, strict=True):
-            metadata_bytes = document.to_json_bytes()
-            update_ordered_volume_commitment(ordered, document)
-            provenance_ciphertexts[document.metadata_path] = encrypt_age_scrypt(
-                metadata_bytes, passphrase, log_n=1
-            )
-            provenance_ciphertexts[document.payload.path] = encrypt_age_scrypt(
-                payload, passphrase, log_n=1
-            )
-        provenance_terminal = ProvenanceTerminalDocument(
-            archive_generation="a" * 64,
-            archive_tree_sha256=tree_sha256,
-            sequence=len(provenance_volume_documents),
-        )
-        update_ordered_volume_commitment(ordered, provenance_terminal)
-        provenance_ciphertexts[provenance_terminal.metadata_path] = encrypt_age_scrypt(
-            provenance_terminal.to_json_bytes(), passphrase, log_n=1
-        )
-        provenance_root = ProvenanceRootDocument(
-            archive_generation="a" * 64,
-            archive_tree_sha256=tree_sha256,
-            ordered_volume_sha256=ordered.hexdigest(),
-        )
-        root_plaintext = provenance_root.to_json_bytes()
-        root_ciphertext = encrypt_age_scrypt(root_plaintext, passphrase, log_n=1)
-        provenance_ciphertexts["provenance/root.json.age"] = root_ciphertext
-        provenance_identity = provenance_root.identity
-        provenance_objects = (
-            SealedProvenanceObject(
-                object_id="provenance-root",
-                kind="provenance-root",
-                relative_path="provenance/root.json.age",
-                plaintext_bytes=len(root_plaintext),
-                plaintext_sha256=provenance_root.identity,
-                stored_bytes=len(root_ciphertext),
-                stored_sha256=_sha256(root_ciphertext),
-                revision="provenance-root-version",
-                completed_at="2026-08-08T00:00:00Z",
-            ),
-        )
-
-    manifest, archive_volume_documents = build_collection_archive_authority(
-        archive_generation="a" * 64,
-        files=files,
-        packs=((pack_plan, sealed_pack),),
+    manifest_raw, volumes = build_collection_archive_authority(
+        archive_generation=GENERATION,
+        artifacts=artifacts,
+        packs=((pack, sealed_pack),),
         raw_volumes=raw_volumes,
-        verified_raw_files=(verified_raw,),
-        provenance_identity=provenance_identity,
-        provenance_objects=provenance_objects,
+        verified_raw_artifacts=(verified_raw,),
+        provenance_identity=provenance_root.identity,
+        provenance_objects=(provenance_object,),
     )
-    encrypted_manifest = encrypt_age_scrypt(manifest, passphrase, log_n=1)
+    root_sha256 = _sha256(manifest_raw)
+    manifest_ciphertext = _encrypt(manifest_raw, passphrase)
+    archive_objects["manifest.json.age"] = manifest_ciphertext
     descriptor = RecoveryDescriptor(
-        encryption=CollectionEncryptionBinding(
-            format=ARCHIVE_ENCRYPTION_FORMAT,
-            passphrase_id=passphrase_id,
-        ),
+        encryption=CollectionEncryptionBinding(ARCHIVE_ENCRYPTION_FORMAT, passphrase_id),
         root=ArchiveRootCiphertextIdentity(
-            path="manifest.json.age",
-            stored_bytes=len(encrypted_manifest),
-            stored_sha256=_sha256(encrypted_manifest),
+            "manifest.json.age", len(manifest_ciphertext), _sha256(manifest_ciphertext)
         ),
-    ).to_json_bytes()
-    archive_ciphertexts: dict[str, bytes] = {
-        "manifest.json.age": encrypted_manifest,
-        "recovery.json": descriptor,
-        sealed_pack.relative_path: pack_ciphertext,
-        **raw_ciphertexts,
-        **provenance_ciphertexts,
-    }
-    if description is not None:
-        description_document = CollectionDescriptionDocument.seal(
-            archive_root_sha256=_sha256(manifest),
-            revision=1,
-            description=description,
-        )
-        archive_ciphertexts[COLLECTION_DESCRIPTION_RELATIVE_PATH] = encrypt_age_scrypt(
-            description_document.to_json_bytes(),
-            passphrase,
-            log_n=1,
+    )
+    archive_objects["recovery.json"] = descriptor.to_json_bytes()
+    for archive_document in volumes:
+        archive_objects[
+            f"metadata/volume-{format_archive_sequence(archive_document.volume.sequence)}.json.age"
+        ] = _encrypt(archive_document.to_json_bytes(), passphrase)
+    archive_terminal = build_collection_archive_terminal_document(
+        archive_generation=GENERATION,
+        artifact_set_sha256=artifact_set_sha256,
+        sequence=len(volumes),
+    )
+    archive_objects[
+        f"metadata/volume-{format_archive_sequence(archive_terminal.sequence)}.json.age"
+    ] = _encrypt(archive_terminal.to_json_bytes(), passphrase)
+
+    description_sha256 = None
+    if description_document:
+        description_raw = CollectionDescriptionDocument.seal(
+            archive_root_sha256=root_sha256, revision=1, description=description
+        ).to_json_bytes()
+        description_sha256 = _sha256(description_raw)
+        archive_objects[COLLECTION_DESCRIPTION_RELATIVE_PATH] = _encrypt(
+            description_raw, passphrase
         )
     tag_store = MemoryCollectionTagNodeStore()
     tag_set = CollectionTagSet(tag_store)
     for tag in tags:
         tag_set = tag_set.insert(tag)
-    tag_head = CollectionTagHeadDocument.seal(
-        archive_root_sha256=_sha256(manifest),
+    head_raw = CollectionTagHeadDocument.seal(
+        archive_root_sha256=root_sha256,
         revision=1,
         root_sha256=tag_set.root.root_sha256,
+    ).to_json_bytes()
+    archive_objects[COLLECTION_TAG_HEAD_RELATIVE_PATH] = _encrypt(head_raw, passphrase)
+    for digest, raw in tag_store.nodes.items():
+        archive_objects[collection_tag_node_path(digest)] = _encrypt(raw, passphrase)
+    for relative, content in archive_objects.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    return FixtureArchive(
+        contents, suggested, journals, root_sha256, description_sha256, _sha256(head_raw)
     )
-    archive_ciphertexts[COLLECTION_TAG_HEAD_RELATIVE_PATH] = encrypt_age_scrypt(
-        tag_head.to_json_bytes(), passphrase, log_n=1
-    )
-    for digest, encoded in tag_store.nodes.items():
-        archive_ciphertexts[collection_tag_node_path(digest)] = encrypt_age_scrypt(
-            encoded, passphrase, log_n=1
-        )
-    for archive_document in archive_volume_documents:
-        relative_path = (
-            f"metadata/volume-{format_archive_sequence(archive_document.volume.sequence)}.json.age"
-        )
-        archive_ciphertexts[relative_path] = encrypt_age_scrypt(
-            archive_document.to_json_bytes(),
-            passphrase,
-            log_n=1,
-        )
-    tree_sha256 = str(__import__("json").loads(manifest)["tree"]["sha256"])
-    archive_terminal = build_collection_archive_terminal_document(
-        archive_generation="a" * 64,
-        tree_sha256=tree_sha256,
-        sequence=len(archive_volume_documents),
-    )
-    terminal_path = f"metadata/volume-{format_archive_sequence(archive_terminal.sequence)}.json.age"
-    archive_ciphertexts[terminal_path] = encrypt_age_scrypt(
-        archive_terminal.to_json_bytes(), passphrase, log_n=1
-    )
-    for relative, content in archive_ciphertexts.items():
-        destination = root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(content)
-    return expected, exact_journal
 
 
-__all__ = ["PASSPHRASE", "PASSPHRASE_ID", "write_archive"]
+__all__ = ["FixtureArchive", "PASSPHRASE", "PASSPHRASE_ID", "write_archive"]

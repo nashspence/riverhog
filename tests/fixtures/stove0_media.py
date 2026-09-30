@@ -178,9 +178,7 @@ def media_preflight_request(
                         "prefix_sha256": sha("b"),
                         "prefix_bytes": "100",
                     },
-                    "delivery_association_id": (
-                        "urn:uuid:33333333-3333-4333-8333-333333333333"
-                    ),
+                    "delivery_association_id": ("urn:uuid:33333333-3333-4333-8333-333333333333"),
                 },
                 "occurrence": {
                     "scope": "external",
@@ -190,9 +188,7 @@ def media_preflight_request(
                     "object_id": "urn:uuid:55555555-5555-4555-8555-555555555555",
                     "object_type": "occurrence",
                 },
-                "materialization_hint": (
-                    {"components": list(hint)} if hint is not None else None
-                ),
+                "materialization_hint": ({"components": list(hint)} if hint is not None else None),
             }
             for subject, hint in zip(subjects, (primary_hint, sidecar_hint), strict=True)
         ]

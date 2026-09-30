@@ -973,10 +973,9 @@ class SqlAlchemyCollectionWorkflowService:
                 .where(CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id)
                 .limit(1)
             )
-            if (
-                {"read-root", "read-inputs", "read-provenance"} & set(actions)
-                and has_artifact_scope is None
-            ):
+            if {"read-root", "read-inputs", "read-provenance"} & set(
+                actions
+            ) and has_artifact_scope is None:
                 return None
             return Principal(
                 id=principal_id,

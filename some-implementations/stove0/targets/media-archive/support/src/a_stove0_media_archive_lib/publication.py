@@ -69,9 +69,7 @@ class MediaPublicationPlan(MediaPublicationPlanPayload):
 
     @model_validator(mode="after")
     def verify_identity(self) -> Self:
-        document = self.model_dump(
-            mode="json", exclude_none=True, exclude={"decision_set_sha256"}
-        )
+        document = self.model_dump(mode="json", exclude_none=True, exclude={"decision_set_sha256"})
         if canonical_json_sha256(document) != self.decision_set_sha256:
             raise ValueError("media publication decision set changed identity")
         return self
@@ -141,23 +139,18 @@ def accepted_source_hints(
                 None
                 if fact.materialization_hint is None
                 else tuple(
-                    MaterializationHintDocument.model_validate(
-                        fact.materialization_hint
-                    ).components
+                    MaterializationHintDocument.model_validate(fact.materialization_hint).components
                 )
             )
     if (
         set(hints) != set(roles)
-        or TargetInputAuthority.from_selection(ArtifactSelection.seal(subjects))
-        != request.inputs
+        or TargetInputAuthority.from_selection(ArtifactSelection.seal(subjects)) != request.inputs
     ):
         raise ValueError("accepted hint evidence does not cover every selected input")
     return hints, tuple(sorted(set(identities)))
 
 
-def replace_final_suffix(
-    source: tuple[str, ...] | None, suffix: str
-) -> tuple[str, ...] | None:
+def replace_final_suffix(source: tuple[str, ...] | None, suffix: str) -> tuple[str, ...] | None:
     """Adapt only an accepted leaf suffix; leave unknown source names unnamed."""
 
     if source is None or not suffix.startswith(".") or len(suffix) < 2:
@@ -174,9 +167,7 @@ def append_leaf_suffix(source: tuple[str, ...] | None, suffix: str) -> tuple[str
     return (*source[:-1], source[-1] + suffix)
 
 
-def sibling_hint(
-    source: tuple[str, ...] | None, leaf: str
-) -> tuple[str, ...] | None:
+def sibling_hint(source: tuple[str, ...] | None, leaf: str) -> tuple[str, ...] | None:
     if source is None:
         return None
     return (*source[:-1], leaf)

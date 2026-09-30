@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import sqlite3
+from pathlib import Path
+
 import pytest
 from riverhog_materialization import (
     DestinationRules,
     MemberAdvice,
     escape_component,
     plan_materialization,
+    plan_materialization_spooled,
 )
 
 A = "a" * 64
@@ -129,3 +133,20 @@ def test_invalid_hint_is_an_error_not_an_absence(hint: dict[str, object]) -> Non
 def test_duplicate_member_is_rejected() -> None:
     with pytest.raises(ValueError, match="duplicate"):
         plan_materialization([_member(A, "one"), _member(A, "two")], rules=_rules())
+
+
+def test_spooled_planner_matches_exact_collision_rules_on_streamed_selection(
+    tmp_path: Path,
+) -> None:
+    members = (
+        _member(A, "Photos", "one"),
+        _member(B, "photos", "two"),
+        _member(C, "single"),
+        _member("d" * 64, "single", "child"),
+        _member("e" * 64, "CON.txt"),
+        _member("f" * 64),
+    )
+    rules = _rules(windows_names=True, case_sensitive=False)
+    with sqlite3.connect(tmp_path / "plan.sqlite3") as state:
+        actual = tuple(plan_materialization_spooled(iter(members), rules=rules, state=state))
+    assert actual == plan_materialization(members, rules=rules)

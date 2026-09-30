@@ -20,12 +20,16 @@ classifiers = [
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "riverhog-archive-contracts>=0.1,<0.2",
+  "riverhog-canonical-json>=0.1,<0.2",
+  "riverhog-materialization>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
 riverhog-archive-contracts = { workspace = true }
+riverhog-canonical-json = { workspace = true }
+riverhog-materialization = { workspace = true }
 riverhog-provenance = { workspace = true }
 riverhog-protocol = { workspace = true }
 

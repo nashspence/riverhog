@@ -1658,7 +1658,7 @@ def _run_recovery(
 
     archive = scratch / "recovery-archive"
     archive.mkdir()
-    expected, _journal = write_archive(archive)
+    fixture = write_archive(archive)
     passphrases = scratch / "passphrases.json"
     passphrases.write_text(
         # codeql[py/clear-text-storage-sensitive-data]
@@ -1681,22 +1681,41 @@ def _run_recovery(
         )
     finally:
         passphrases.unlink(missing_ok=True)
-    actual = {
-        path.relative_to(output).as_posix(): path.read_bytes()
-        for path in output.rglob("*")
-        if path.is_file()
-    }
-    if actual != expected:
-        raise QualificationError("installed recovery output differs from the release fixture")
-    expected_digest = hashlib.sha256(
-        b"".join(name.encode() + b"\0" + expected[name] for name in sorted(expected))
-    ).hexdigest()
-    actual_digest = hashlib.sha256(
-        b"".join(name.encode() + b"\0" + actual[name] for name in sorted(actual))
-    ).hexdigest()
-    if actual_digest != expected_digest:
-        raise QualificationError("installed recovery output identity differs")
-    return actual_digest
+    receipt = json.loads((output / "recovery.json").read_bytes())
+    if (
+        receipt.get("complete") is not True
+        or receipt.get("archive_root_sha256") != fixture.archive_root_sha256
+        or receipt.get("artifacts") != len(fixture.members)
+        or receipt.get("metadata_pins", {}).get("description_sha256") != fixture.description_sha256
+        or receipt.get("metadata_pins", {}).get("tag_head_sha256") != fixture.tag_head_sha256
+    ):
+        raise QualificationError("installed recovery did not complete the exact four contents")
+    rows = [
+        json.loads(line) for line in (output / "recovery-members.jsonseq").read_bytes().splitlines()
+    ]
+    if {row["artifact_id"] for row in rows} != set(fixture.members):
+        raise QualificationError("installed recovery mapping omits an artifact")
+    for row in rows:
+        artifact_id = row["artifact_id"]
+        payload = (output.joinpath(*row["components"])).read_bytes()
+        if payload != fixture.members[artifact_id]:
+            raise QualificationError("installed recovery payload differs from the fixture")
+        sidecar = output.joinpath(*row["sidecar"])
+        if (
+            hashlib.sha256(sidecar.read_bytes()).hexdigest()
+            != row["binding"]["journal"]["prefix_sha256"]
+        ):
+            raise QualificationError("installed recovery primary history differs")
+    if (
+        not (output / "metadata/description.json").is_file()
+        or not (output / "metadata/tags/head.json").is_file()
+    ):
+        raise QualificationError("installed recovery omitted metadata authority")
+    for journal in fixture.journals.values():
+        digest = hashlib.sha256(journal).hexdigest()
+        if (output / "provenance/journals" / f"{digest}.jsonseq").read_bytes() != journal:
+            raise QualificationError("installed recovery shared history differs")
+    return hashlib.sha256((output / "recovery.json").read_bytes()).hexdigest()
 
 
 def _installation_platform() -> str:

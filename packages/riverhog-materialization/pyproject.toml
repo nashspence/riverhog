@@ -18,9 +18,10 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["riverhog-protocol>=0.1,<0.2", "riverhog-provenance-contracts>=0.1,<0.2"]
+dependencies = ["riverhog-canonical-json>=0.1,<0.2", "riverhog-protocol>=0.1,<0.2", "riverhog-provenance-contracts>=0.1,<0.2"]
 
 [tool.uv.sources]
+riverhog-canonical-json = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 
