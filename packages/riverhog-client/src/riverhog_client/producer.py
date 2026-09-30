@@ -968,7 +968,7 @@ def _register_source_raw_digests(
             collection_id,
             {
                 "artifact_id": source.artifact_id,
-                "first_part": first_part,
+                "first_part": str(first_part),
                 "sha256s": list(sha256s),
             },
         )

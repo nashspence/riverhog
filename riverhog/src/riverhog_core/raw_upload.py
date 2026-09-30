@@ -102,7 +102,7 @@ class RawUploadCheckpoint:
                 "volume_id": self.volume_id,
                 "object_path": self.object_path,
                 "relative_path": self.relative_path,
-                "artifact_id": self.artifact_id,
+                "artifact_id": str(self.artifact_id),
                 "artifact_offset": self.artifact_offset,
                 "plaintext_bytes": self.plaintext_bytes,
                 "artifact_bytes": self.artifact_bytes,

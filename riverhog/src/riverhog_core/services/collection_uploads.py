@@ -3210,6 +3210,7 @@ class SqlAlchemyCollectionUploadService:
                         catalog=admission_provenance_catalog(),
                         expected_anchor=binding.journal.model_dump(mode="json"),
                         require_exact_tail=True,
+                        require_profiles=False,
                     )
                     member = ArtifactMemberIdentityDocument.model_validate(
                         {
@@ -4316,6 +4317,7 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
         summary = validate_journal_chunks(
             _iter_upload_journal_chunks(self.session, record),
             catalog=admission_provenance_catalog(),
+            require_profiles=False,
         )
         if summary.journal_sha256 != record.sha256 or summary.journal_bytes != record.bytes:
             raise ProvenanceValidationError("staged canonical journal identity changed")
@@ -4423,6 +4425,7 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
         catalog=admission_provenance_catalog(),
         expected_anchor=binding.journal.model_dump(mode="json"),
         require_exact_tail=True,
+        require_profiles=False,
     )
     member = ArtifactMemberIdentityDocument.model_validate(
         {
@@ -4808,6 +4811,7 @@ def _validate_staged_canonical_journal_set(
     corpus = validate_journal_set_chunks(
         (_iter_upload_journal_chunks(session, record) for record in records),
         catalog=admission_provenance_catalog(),
+        require_profiles=False,
     )
     summaries = {summary.journal_id: summary for summary in corpus.journals}
     roots = set(
@@ -5302,7 +5306,7 @@ def _validate_next_upload_journal_entry(
     summary = validate_journal_chunks(
         _iter_upload_journal_chunks(session, record),
         catalog=admission_provenance_catalog(),
-        require_profiles=True,
+        require_profiles=False,
     )
     if (
         summary.journal_id != record.journal_id

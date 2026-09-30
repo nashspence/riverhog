@@ -124,12 +124,13 @@ receipt="$({
     --env RIVERHOG_BASE_URL=http://app:8000 \
     --env "RIVERHOG_TOKEN=${qualification_token}" \
     --env RIVERHOG_ALLOW_INSECURE_HTTP=true \
-    --env RIVERHOG_PROVENANCE_STATE_HOME=/state \
+    --env XDG_STATE_HOME=/state \
     --tmpfs /state:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
     --volume "${proof_root}/oracle:/input:ro" \
     "${client_image}" collection upload start /input \
     --description 'Built-service filesystem recovery qualification' \
     --provenance-observer a-riverhog-linux-provenance-observer \
+    --source-host-id urn:uuid:00000000-0000-4000-8000-000000000946 \
     "${tags[@]}" \
     --json
 } 2>"${proof_root}/client.stderr")"
