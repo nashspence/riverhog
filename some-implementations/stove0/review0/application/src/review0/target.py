@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
-from pydantic import JsonValue
+from pydantic import BaseModel, ConfigDict, JsonValue
 from review0_contracts import (
     REVIEW_INDEX_ROLE,
     REVIEW_MATERIALIZE_OPERATION,
@@ -25,6 +25,7 @@ from review0_sampler_protocol import (
     SamplerRequestPayload,
     SamplerResult,
     SamplerWindow,
+    validate_result,
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ProducerFile
@@ -76,6 +77,13 @@ MATERIALIZE_OPTIONS = JsonSchemaValidationProfile.from_schema(
         "additionalProperties": False,
     },
 )
+
+
+class _SamplerCheckpoint(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    target_request_sha256: str
+    request: SamplerRequest
+    result: SamplerResult
 
 
 @dataclass(frozen=True, slots=True)
@@ -280,8 +288,6 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                     relative = f"input/{artifact.id}/payload"
                     source = workspace.resolve(relative)
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                    with execution.prepare_inputs((artifact,)) as retrieval:
-                        retrieval.download(claimed, source)
                     try:
                         remaining_bytes = maximum - produced_bytes
                         if remaining_bytes < 1:
@@ -305,24 +311,71 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                                 cancellation_path="control/cancel",
                             )
                         )
-                        sampler_result = self._sample(
-                            registration,
-                            sampler_request,
-                            cancellation=cancellation,
-                            workspace=workspace,
-                        )
+                        step_key = "review-sampler:" + artifact.id
+                        retained = session.load_step(step_key)
+                        if retained is not None:
+                            checkpoint = _SamplerCheckpoint.model_validate_json(retained)
+                            if (
+                                checkpoint.target_request_sha256 != request.request_sha256
+                                or checkpoint.request != sampler_request
+                            ):
+                                raise ValueError(
+                                    "sampler checkpoint differs from the accepted invocation"
+                                )
+                            sampler_result = checkpoint.result
+                            validate_result(sampler_result, sampler_request, descriptor)
+                        else:
+                            with execution.prepare_inputs((artifact,)) as retrieval:
+                                retrieval.download(claimed, source)
+                            sampler_result = self._sample(
+                                registration,
+                                sampler_request,
+                                cancellation=cancellation,
+                                workspace=workspace,
+                            )
+                            validate_result(sampler_result, sampler_request, descriptor)
+                            _require_sampler_success(sampler_result)
+                            session.retain_step(
+                                step_key,
+                                canonical_json_bytes(
+                                    _SamplerCheckpoint(
+                                        target_request_sha256=request.request_sha256,
+                                        request=sampler_request,
+                                        result=sampler_result,
+                                    ).model_dump(mode="json")
+                                ),
+                            )
                         _require_sampler_success(sampler_result)
                         sampler_requests.append(sampler_request)
                         sampler_results.append(sampler_result)
                         current_paths = {output.path for output in sampler_result.outputs}
                         allowed_output_paths.update(current_paths)
-                        _verify_output_set(
-                            workspace,
-                            allowed=allowed_output_paths,
-                            required=current_paths,
-                        )
                         produced_bytes += sum(output.bytes for output in sampler_result.outputs)
                         for output in sorted(sampler_result.outputs, key=lambda item: item.path):
+                            resumed = publication.resume_output(
+                                output.id,
+                                derived_from=output.derived_from,
+                                materialization_hint=None,
+                                allow_missing_materialization_hint=True,
+                            )
+                            if resumed is not None:
+                                artifacts.append(resumed)
+                                window = next(item for item in windows if item.id == output.id)
+                                samples.append(
+                                    {
+                                        "artifact_id": output.id,
+                                        "source_artifact_id": window.input_id,
+                                        "output_artifact_id": resumed.artifact_id,
+                                        "start_ms": window.start_ms,
+                                        "duration_ms": window.duration_ms,
+                                    }
+                                )
+                                continue
+                            _verify_output_set(
+                                workspace,
+                                allowed=allowed_output_paths,
+                                required={output.path},
+                            )
                             path = workspace.resolve(output.path)
                             _verify_file(path, output.bytes, output.sha256)
                             member_id = _member_id(request.declaration.plan.plan_sha256, output.id)
@@ -363,47 +416,58 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                         "results": [item.result_sha256 for item in sampler_results],
                     }
                 )
-                index_path = workspace.resolve("output/review/summary.json")
-                index_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                index_path.write_bytes(
-                    canonical_json_bytes(
-                        {
-                            "format": "review0-index/v1",
-                            "variant_id": variant_id,
-                            "sample_plan": sample_plan.model_dump(mode="json"),
-                            "sampler_descriptor": descriptor.model_dump(mode="json"),
-                            "sampler_request_sha256s": [
-                                item.request_sha256 for item in sampler_requests
-                            ],
-                            "sampler_result_sha256s": [
-                                item.result_sha256 for item in sampler_results
-                            ],
-                            "sampler_result_set_sha256": sampler_result_sha256,
-                            "samples": samples,
-                        }
-                    )
-                )
-                index_bytes, index_sha = file_identity(index_path)
-                index_member_id = _member_id(request.declaration.plan.plan_sha256, "review-index")
-                index = OutputArtifact.model_validate(
-                    dict(
-                        id="review-index",
-                        role=REVIEW_INDEX_ROLE,
-                        artifact_id=index_member_id,
-                        bytes=str(index_bytes),
-                        sha256=index_sha,
-                    )
-                )
-                artifacts.append(index)
-                publication.append(
-                    ProducerFile(
-                        index_path,
-                        index_member_id,
-                        allow_missing_materialization_hint=True,
-                    ),
-                    index,
+                index = publication.resume_output(
+                    "review-index",
                     derived_from=(item.id for item, _claimed in execution.iter_inputs()),
+                    materialization_hint=None,
+                    allow_missing_materialization_hint=True,
                 )
+                if index is None:
+                    index_path = workspace.resolve("output/review/summary.json")
+                    index_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+                    index_path.write_bytes(
+                        canonical_json_bytes(
+                            {
+                                "format": "review0-index/v1",
+                                "variant_id": variant_id,
+                                "sample_plan": sample_plan.model_dump(mode="json"),
+                                "sampler_descriptor": descriptor.model_dump(mode="json"),
+                                "sampler_request_sha256s": [
+                                    item.request_sha256 for item in sampler_requests
+                                ],
+                                "sampler_result_sha256s": [
+                                    item.result_sha256 for item in sampler_results
+                                ],
+                                "sampler_result_set_sha256": sampler_result_sha256,
+                                "samples": samples,
+                            }
+                        )
+                    )
+                    index_bytes, index_sha = file_identity(index_path)
+                    index_member_id = _member_id(
+                        request.declaration.plan.plan_sha256, "review-index"
+                    )
+                    index = OutputArtifact.model_validate(
+                        dict(
+                            id="review-index",
+                            role=REVIEW_INDEX_ROLE,
+                            artifact_id=index_member_id,
+                            bytes=str(index_bytes),
+                            sha256=index_sha,
+                        )
+                    )
+                    artifacts.append(index)
+                    publication.append(
+                        ProducerFile(
+                            index_path,
+                            index_member_id,
+                            allow_missing_materialization_hint=True,
+                        ),
+                        index,
+                        derived_from=(item.id for item, _claimed in execution.iter_inputs()),
+                    )
+                else:
+                    artifacts.append(index)
                 declared = tuple(sorted(artifacts, key=lambda item: item.id))
                 for artifact, _claimed in execution.iter_inputs():
                     execution.declare_disposition(artifact.id, "transformed")
@@ -425,7 +489,7 @@ class ReviewMaterializeTargetService(PersistentTargetService):
                 )
             finally:
                 if not execution.completed:
-                    workspace.release()
+                    execution.release_workspace(workspace)
 
     @staticmethod
     def _sample(

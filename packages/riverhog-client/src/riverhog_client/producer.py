@@ -8,6 +8,7 @@ import itertools
 import tempfile
 import threading
 import time
+from collections import OrderedDict
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
 from dataclasses import field as dataclass_field
@@ -328,6 +329,9 @@ class IncrementalCollectionProducer:
             completion_requirement=completion_requirement,
         )
         self._sources: dict[ArtifactId, _Source] = {}
+        self._pending_source_resolver: Callable[[ArtifactId], ProducerInput] | None = None
+        self._restored_sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
+        self._source_lock = threading.RLock()
         self._closed = False
         self._needs_upload_scan = True
         self._heartbeat_stop = threading.Event()
@@ -412,6 +416,13 @@ class IncrementalCollectionProducer:
         for source in self._sources.values():
             source.close()
         self._sources.clear()
+        for source in self._restored_sources.values():
+            source.close()
+        self._restored_sources.clear()
+
+    def set_pending_source_resolver(self, resolver: Callable[[ArtifactId], ProducerInput]) -> None:
+        """Restore exact pending readers on demand from caller-owned restart state."""
+        self._pending_source_resolver = resolver
 
     def append_inputs(
         self,
@@ -619,21 +630,52 @@ class IncrementalCollectionProducer:
         return tuple(receipts)
 
     def _upload_available(self, *, reconcile: bool = True) -> tuple[ProducerArtifactCustody, ...]:
+        constraints = self.constraints
+        if constraints is None:
+            raise RuntimeError("incremental producer has no registration constraints")
         concurrency = configured_upload_concurrency()
 
         def content_for_unit(unit: CollectionUploadUnitWorkDocument) -> bytes:
             chunks: list[bytes] = []
             for row in unit.sources:
-                source = self._sources.get(row.artifact_id)
-                if source is None:
-                    raise RuntimeError(
-                        f"uncustodied producer source is unavailable: {row.artifact_id}"
-                    )
-                if row.artifact_sha256 != source.sha256:
-                    raise RuntimeError(
-                        f"Riverhog requested a changed producer artifact: {row.artifact_id}"
-                    )
-                chunks.append(source.read_range(row.offset, row.bytes))
+                with self._source_lock:
+                    source = self._sources.get(row.artifact_id)
+                    if source is None or (source.reader is None and source.content is None):
+                        source = self._restored_sources.get(row.artifact_id)
+                        if source is None and self._pending_source_resolver is not None:
+                            item = self._pending_source_resolver(row.artifact_id)
+                            if item.artifact_id != row.artifact_id:
+                                raise ValueError("pending source resolver changed the artifact ID")
+                            source = (
+                                _hash_local_source(
+                                    item,
+                                    pack_member_bytes=0,
+                                    raw_part_bytes=constraints.raw_part_plaintext_bytes,
+                                    progress=self.progress,
+                                )
+                                if isinstance(item, ProducerFile)
+                                else _verify_stream_source(
+                                    item,
+                                    pack_member_bytes=0,
+                                    raw_part_bytes=constraints.raw_part_plaintext_bytes,
+                                    progress=self.progress,
+                                )
+                            )
+                            self._restored_sources[row.artifact_id] = source
+                            while len(self._restored_sources) > 8:
+                                _, evicted = self._restored_sources.popitem(last=False)
+                                evicted.close()
+                        elif source is not None:
+                            self._restored_sources.move_to_end(row.artifact_id)
+                    if source is None:
+                        raise RuntimeError(
+                            f"uncustodied producer source is unavailable: {row.artifact_id}"
+                        )
+                    if row.artifact_sha256 != source.sha256:
+                        raise RuntimeError(
+                            f"Riverhog requested a changed producer artifact: {row.artifact_id}"
+                        )
+                    chunks.append(source.read_range(row.offset, row.bytes))
             return b"".join(chunks)
 
         upload_collection_units(
@@ -671,6 +713,31 @@ class IncrementalCollectionProducer:
         """Poll exact pending identities after accepting their required history."""
         self._require_heartbeat()
         return self._reconcile_pending_sources()
+
+    def resume_artifact_custody(
+        self, identity: ProducerArtifactIdentity
+    ) -> ProducerArtifactCustody | None:
+        """Reconcile one previously verified identity without rereading released bytes."""
+        self._require_heartbeat()
+        if self.constraints is None:
+            raise RuntimeError("incremental producer has no registration constraints")
+        source = _Source(
+            artifact_id=identity.artifact_id,
+            bytes=identity.bytes,
+            sha256=identity.sha256,
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+        )
+        payload = self.api.register_collection_upload_session_artifacts(
+            self.collection_id,
+            [_source_registration(source)],
+            registration_constraints=self.constraints,
+        )
+        rows = payload.get("artifacts")
+        if not isinstance(rows, list) or len(rows) != 1:
+            raise RuntimeError("Riverhog returned an invalid exact custody inventory")
+        receipts = self._accept_registered_rows(iter(rows), expected=(source,))
+        return receipts[0] if receipts else None
 
     def _accept_registered_rows(
         self,
@@ -711,6 +778,12 @@ class IncrementalCollectionProducer:
                     ),
                     receipt,
                 )
+                requirement = self._attribution.completion_requirement
+                expected_requirement = None if requirement is None else requirement.identity
+                if receipt.completion_requirement_sha256 != expected_requirement:
+                    raise RuntimeError(
+                        "Riverhog custody receipt changed the completion requirement"
+                    )
                 receipts.append(
                     ProducerArtifactCustody(
                         artifact=ProducerArtifactIdentity(

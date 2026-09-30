@@ -232,4 +232,87 @@ def media_preflight_request(
     )
 
 
-__all__ = ["media_preflight_request", "sha"]
+__all__ = ["media_preflight_request", "sealed_media_job", "sha"]
+
+
+def sealed_media_job(service, operation: OperationContract, intent: dict[str, object]):
+    from stove0_protocol import (
+        BranchWorkBinding,
+        ControllerEvidence,
+        ControllerEvidencePayload,
+        ExecutionEnvelope,
+        ExecutionEnvelopePayload,
+        OperationIdentityRef,
+        RecipeIdentityRef,
+        TargetPlanBinding,
+        WorkflowPlan,
+        WorkflowPlanPayload,
+        WorkIdentity,
+        WorkPayload,
+    )
+    from stove0_target_protocol import (
+        TargetCallbackAccess,
+        TargetJobDeclaration,
+        TargetJobRequest,
+        TargetRuntimeAuthority,
+    )
+
+    preflight = media_preflight_request(operation, intent)
+    subjects = preflight.observations[0].request.subjects
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=RecipeIdentityRef(id="fixture.media/v1", revision="1", sha256=sha("f")),
+            inputs=(subjects[0].collection,),
+            effective_intent=preflight.intent,
+            fork_join=BranchWorkBinding(
+                parent_work_id=sha("5"),
+                branch_id="fixture.media/v1",
+                decision_sha256=sha("a"),
+                artifact_selection_sha256=preflight.inputs.selection.selection_sha256,
+            ),
+        )
+    )
+    target = service.descriptor()
+    workflow = WorkflowPlan.seal(
+        WorkflowPlanPayload(
+            work=work,
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
+            target_registration_id="fixture-media",
+            target_descriptor_sha256=target.descriptor_sha256,
+            requested_target_options=preflight.target_options,
+            input_groups=preflight.input_groups,
+            observations=preflight.observations,
+        )
+    )
+    preflight = preflight.model_copy(update={"invocation_sha256": workflow.workflow_plan_sha256})
+    plan = service.preflight(preflight).plan
+    envelope = ExecutionEnvelope.seal(
+        ExecutionEnvelopePayload(
+            claim_id=work.work_id,
+            fence=1,
+            workflow_plan=workflow,
+            target_plan=TargetPlanBinding(
+                protocol=target.protocol,
+                target_implementation_id=target.implementation_id,
+                target_descriptor_sha256=target.descriptor_sha256,
+                operation_contract_sha256=operation.contract_sha256,
+                plan=plan.binding_document(),
+                plan_sha256=plan.plan_sha256,
+            ),
+        )
+    )
+    evidence = ControllerEvidence.seal(ControllerEvidencePayload(execution_envelope=envelope))
+    return TargetJobRequest.seal(
+        TargetJobDeclaration(
+            job_id=envelope.execution_envelope_sha256,
+            claim_id=work.work_id,
+            fence=1,
+            controller_evidence=evidence,
+            plan=plan,
+            declared_workspace_protection="memory-backed",
+        ),
+        TargetRuntimeAuthority(
+            riverhog_base_url="https://riverhog.invalid", capability_token="fixture-runtime"
+        ),
+        TargetCallbackAccess(stove0_base_url="https://stove0.invalid", token="fixture-callback"),
+    )

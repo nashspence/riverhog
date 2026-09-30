@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import time
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
@@ -28,6 +29,7 @@ from riverhog_client.producer import (
     ProducerFile,
     ProducerInput,
 )
+from riverhog_protocol import ArtifactId
 from riverhog_protocol.collection_record_preimages import canonical_record_sequence
 from riverhog_protocol.collection_workflows import (
     OperationIdentity,
@@ -55,6 +57,7 @@ from stove0_target_protocol import (
 )
 
 from stove0_target_support.execution import TargetExecutionSession
+from stove0_target_support.output_checkpoint import TargetOutputCheckpoint
 from stove0_target_support.relationships import completion_output_relationships
 
 CancellationCheck = Callable[[], None]
@@ -76,6 +79,147 @@ class TargetCollectionPublication:
         self.execution = execution
         self.writer = writer
         self._local_files: dict[str, Path] = {}
+        execution._publications.append(self)
+        session = execution.session
+        self.has_restart_state = bool(
+            session is not None
+            and session.state_root is not None
+            and TargetOutputCheckpoint.has_records(session.state_root, execution.request)
+        )
+        if session is not None and session.state_root is not None:
+            writer.producer.set_pending_source_resolver(self._pending_source)
+
+    def _pending_source(self, artifact_id: ArtifactId) -> ProducerFile:
+        session = self.execution.session
+        if session is None or session.state_root is None:
+            raise ValueError("pending output has no target-owned restart state")
+        checkpoint = TargetOutputCheckpoint.load_member(
+            session.state_root, request=self.execution.request, artifact_id=artifact_id
+        )
+        if checkpoint is None:
+            raise ValueError("pending output has no exact target-owned checkpoint")
+        workspace = next(
+            (
+                value
+                for value in self.execution._workspaces
+                if str(value.root) == checkpoint.workspace_root
+            ),
+            None,
+        )
+        if workspace is None:
+            raise ValueError("pending output checkpoint lacks its protected workspace")
+        source = checkpoint.producer_file(workspace)
+        self._local_files[artifact_id] = source.source
+        return source
+
+    @staticmethod
+    def _source_edges_identity(selected: Iterable[str]) -> str:
+        identifiers = tuple(sorted(selected))
+        if not identifiers or len(identifiers) != len(set(identifiers)):
+            raise ValueError("target output sources must be nonempty and unique")
+        return hashlib.sha256(canonical_json_bytes(list(identifiers))).hexdigest()
+
+    def prepare_output(
+        self,
+        source: ProducerInput,
+        artifact: OutputArtifact,
+        *,
+        derived_from: Iterable[str],
+    ) -> None:
+        """Retain restart metadata before any of the prepared files can be released."""
+        if source.artifact_id != artifact.artifact_id:
+            raise ValueError(f"target output artifact ID does not match its source: {artifact.id}")
+        if not isinstance(source, ProducerFile):
+            return
+        session = self.execution.session
+        if session is not None and session.state_root is not None:
+            workspace = next(
+                (
+                    value
+                    for value in self.execution._workspaces
+                    if source.source.is_relative_to(value.root)
+                ),
+                None,
+            )
+            if workspace is None:
+                raise ValueError("persistent target outputs require their protected workspace")
+            TargetOutputCheckpoint.retain(
+                session.state_root,
+                request=self.execution.request,
+                output=artifact,
+                source_edges_sha256=self._source_edges_identity(derived_from),
+                source=source,
+                workspace=workspace,
+            )
+            self.has_restart_state = True
+        self._local_files[artifact.artifact_id] = source.source
+
+    def resume_output(
+        self,
+        output_id: str,
+        *,
+        derived_from: Iterable[str],
+        materialization_hint: tuple[str, ...] | None,
+        allow_missing_materialization_hint: bool,
+    ) -> OutputArtifact | None:
+        """Resume only the exact recorded output and its currently authorized custody."""
+        session = self.execution.session
+        if session is None or session.state_root is None:
+            return None
+        checkpoint = TargetOutputCheckpoint.load(
+            session.state_root, request=self.execution.request, output_id=output_id
+        )
+        if checkpoint is None:
+            return None
+        selected = tuple(derived_from)
+        if self._source_edges_identity(selected) != checkpoint.source_edges_sha256:
+            raise ValueError("output checkpoint changed the accepted source edges")
+        if (
+            checkpoint.materialization_hint != materialization_hint
+            or type(allow_missing_materialization_hint) is not bool
+            or checkpoint.allow_missing_materialization_hint != allow_missing_materialization_hint
+        ):
+            raise ValueError("output checkpoint differs from the accepted publication decision")
+        artifact = checkpoint.output
+        self._declare_output(artifact, selected)
+        identity = ProducerArtifactIdentity(
+            artifact.artifact_id, int(artifact.bytes), artifact.sha256
+        )
+        custody = self.writer.producer.resume_artifact_custody(identity)
+        if custody is not None:
+            return artifact
+        workspace = next(
+            (
+                value
+                for value in self.execution._workspaces
+                if str(value.root) == checkpoint.workspace_root
+            ),
+            None,
+        )
+        if workspace is None:
+            raise ValueError("pending output checkpoint lacks its protected workspace")
+        self.append(checkpoint.producer_file(workspace), artifact, derived_from=selected)
+        return artifact
+
+    def has_output_checkpoint(self, output_id: str) -> bool:
+        session = self.execution.session
+        return bool(
+            session is not None
+            and session.state_root is not None
+            and TargetOutputCheckpoint.load(
+                session.state_root, request=self.execution.request, output_id=output_id
+            )
+            is not None
+        )
+
+    def _declare_output(self, artifact: OutputArtifact, selected: Sequence[str]) -> None:
+        self.execution._input_client.declare_target_execution_output(
+            self.execution.job_id, artifact
+        )
+        for input_id in selected:
+            self.execution._input_client.declare_target_execution_source_edge(
+                self.execution.job_id, OutputSourceEdge(output_id=artifact.id, input_id=input_id)
+            )
 
     def append(
         self,
@@ -84,21 +228,12 @@ class TargetCollectionPublication:
         *,
         derived_from: Iterable[str],
     ) -> tuple[ProducerArtifactCustody, ...]:
-        if source.artifact_id != artifact.artifact_id:
-            raise ValueError(f"target output artifact ID does not match its source: {artifact.id}")
-        if isinstance(source, ProducerFile):
-            self._local_files[artifact.artifact_id] = source.source
         selected = tuple(derived_from)
         sources = self.execution.resolve_input_ids(selected)
+        self.prepare_output(source, artifact, derived_from=selected)
         # Callback declarations precede custody so restart can finish from
         # accepted keys/edges after the target releases disposable files.
-        self.execution._input_client.declare_target_execution_output(
-            self.execution.job_id, artifact
-        )
-        for input_id in selected:
-            self.execution._input_client.declare_target_execution_source_edge(
-                self.execution.job_id, OutputSourceEdge(output_id=artifact.id, input_id=input_id)
-            )
+        self._declare_output(artifact, selected)
         runtime = cast(CollectionTransformRuntime, self.execution.runtime)
         receipts = runtime.append_incremental_output(
             self.writer,
@@ -281,6 +416,7 @@ class TargetExecutionRuntime:
         self.session = session
         self._runtime_binding: Any = None
         self._workspaces: list[ProcessingWorkspace] = []
+        self._publications: list[TargetCollectionPublication] = []
         self._input_client = TargetCallbackClient(request.callback_access)
         self._completed = False
 
@@ -363,7 +499,7 @@ class TargetExecutionRuntime:
             if not workspace.root.exists() and not workspace.root.is_symlink():
                 continue
             try:
-                workspace.release()
+                self.release_workspace(workspace)
             except Exception as cleanup_exc:
                 failures.append(cleanup_exc)
         if self._runtime_binding is not None:
@@ -463,6 +599,23 @@ class TargetExecutionRuntime:
         )
         self._workspaces.append(workspace)
         return workspace
+
+    def release_workspace(self, workspace: ProcessingWorkspace) -> bool:
+        if workspace not in self._workspaces:
+            raise ValueError("workspace does not belong to this target execution")
+        if not self._completed and any(
+            publication.has_restart_state
+            or any(
+                path.is_relative_to(workspace.root) and path.exists()
+                for path in publication._local_files.values()
+            )
+            for publication in self._publications
+        ):
+            # Pending bytes remain under the same declared protection and
+            # restart-stable marker; only custody receipts authorize release.
+            return False
+        workspace.release()
+        return True
 
     def open_collection_publication(
         self,

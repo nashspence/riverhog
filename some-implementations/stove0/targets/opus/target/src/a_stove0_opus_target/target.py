@@ -21,6 +21,7 @@ from a_stove0_media_archive_contract_lib import (
 from a_stove0_media_archive_lib import (
     MaterializationDecisionRequired,
     MediaArchiveProjection,
+    MediaProjectionItem,
     MediaPublicationPlan,
     accepted_source_hints,
     append_leaf_suffix,
@@ -32,6 +33,7 @@ from a_stove0_media_archive_lib import (
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ProducerFile
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from riverhog_protocol.artifact_identity import ArtifactId
 from stove0_protocol import JsonSchemaValidationProfile
@@ -39,6 +41,7 @@ from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
     PersistentTargetService,
+    TargetCollectionPublication,
     TargetDescriptor,
     TargetDescriptorPayload,
     TargetExecutionCanceled,
@@ -167,6 +170,9 @@ class OpusTargetService(PersistentTargetService):
         cancellation: threading.Event,
         session: TargetExecutionSession,
     ) -> TargetJobStatus:
+        toolchain = session.step_value(
+            "opus-toolchain", lambda: {"ffmpeg": tool_version(self.ffmpeg)}
+        )
         intent = AudioArchiveIntent.model_validate(request.declaration.plan.intent)
         options = request.declaration.plan.target_options
         timeout = options.get("ffmpeg_timeout_seconds", 86400)
@@ -209,6 +215,31 @@ class OpusTargetService(PersistentTargetService):
                 )
                 for item in projection.items:
                     check()
+                    output_id = _output_id("opus", item.derived_from)
+                    resumed = publication.resume_output(
+                        output_id,
+                        derived_from=item.derived_from,
+                        materialization_hint=publication_decisions.decision_for(
+                            output_id
+                        ).components,
+                        allow_missing_materialization_hint=publication_decisions.decision_for(
+                            output_id
+                        ).allow_missing_materialization_hint,
+                    )
+                    if resumed is not None:
+                        outputs.append(resumed)
+                        outputs.append(
+                            _publish_xmp(
+                                item,
+                                workspace=workspace,
+                                publication=publication,
+                                decisions=publication_decisions,
+                                plan_sha256=request.declaration.plan.plan_sha256,
+                                intent=intent,
+                                media_output_id=output_id,
+                            )
+                        )
+                        continue
                     artifact, claimed = resolved_by_id[item.input_artifact_id]
                     source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -272,43 +303,34 @@ class OpusTargetService(PersistentTargetService):
                             output,
                             derived_from=item.derived_from,
                         )
-                        xmp_relative = f"audio/{item.input_artifact_id}/archive.opus.xmp"
-                        xmp = workspace.resolve(f"output/{xmp_relative}")
-                        xmp.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-                        xmp.write_bytes(
-                            render_projection_xmp(item, tags=intent.metadata_projection.tags)
-                        )
-                        xmp_size, xmp_sha256 = file_identity(xmp)
-                        xmp_output_id = _output_id("metadata-xmp", item.derived_from)
-                        xmp_output = OutputArtifact.model_validate(
-                            dict(
-                                id=xmp_output_id,
-                                describes_output_id=output_id,
-                                role=METADATA_XMP_ROLE,
-                                artifact_id=_member_id(
-                                    request.declaration.plan.plan_sha256, xmp_output_id
-                                ),
-                                bytes=str(xmp_size),
-                                sha256=xmp_sha256,
+                        outputs.append(
+                            _publish_xmp(
+                                item,
+                                workspace=workspace,
+                                publication=publication,
+                                decisions=publication_decisions,
+                                plan_sha256=request.declaration.plan.plan_sha256,
+                                intent=intent,
+                                media_output_id=output_id,
                             )
-                        )
-                        outputs.append(xmp_output)
-                        xmp_decision = publication_decisions.decision_for(xmp_output.id)
-                        publication.append(
-                            ProducerFile(
-                                xmp,
-                                xmp_output.artifact_id,
-                                materialization_hint=xmp_decision.components,
-                                allow_missing_materialization_hint=(
-                                    xmp_decision.allow_missing_materialization_hint
-                                ),
-                            ),
-                            xmp_output,
-                            derived_from=item.derived_from,
                         )
                     finally:
                         source.unlink(missing_ok=True)
                 for retained in projection.retained_xmp_sidecars:
+                    retained_output_id = _output_id("source-xmp", (retained.input_artifact_id,))
+                    resumed = publication.resume_output(
+                        retained_output_id,
+                        derived_from=(retained.input_artifact_id,),
+                        materialization_hint=publication_decisions.decision_for(
+                            retained_output_id
+                        ).components,
+                        allow_missing_materialization_hint=publication_decisions.decision_for(
+                            retained_output_id
+                        ).allow_missing_materialization_hint,
+                    )
+                    if resumed is not None:
+                        outputs.append(resumed)
+                        continue
                     artifact, claimed = resolved_by_id[retained.input_artifact_id]
                     source = workspace.resolve(f"input/{artifact.id}")
                     source.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -364,13 +386,60 @@ class OpusTargetService(PersistentTargetService):
                     execution_sha256=execution_sha256,
                     execution_preimage=execution_preimage,
                     attempt=attempt,
-                    runtime_evidence={
-                        "ffmpeg": tool_version(self.ffmpeg),
-                    },
+                    runtime_evidence=toolchain,
                 )
             finally:
                 if not execution.completed:
-                    workspace.release()
+                    execution.release_workspace(workspace)
+
+
+def _publish_xmp(
+    item: MediaProjectionItem,
+    *,
+    workspace: ProcessingWorkspace,
+    publication: TargetCollectionPublication,
+    decisions: MediaPublicationPlan,
+    plan_sha256: str,
+    intent: AudioArchiveIntent,
+    media_output_id: str,
+) -> OutputArtifact:
+    output_id = _output_id("metadata-xmp", item.derived_from)
+    resumed = publication.resume_output(
+        output_id,
+        derived_from=item.derived_from,
+        materialization_hint=decisions.decision_for(output_id).components,
+        allow_missing_materialization_hint=decisions.decision_for(
+            output_id
+        ).allow_missing_materialization_hint,
+    )
+    if resumed is not None:
+        return resumed
+    xmp = workspace.resolve(f"output/audio/{item.input_artifact_id}/archive.opus.xmp")
+    xmp.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    xmp.write_bytes(render_projection_xmp(item, tags=intent.metadata_projection.tags))
+    size, sha256 = file_identity(xmp)
+    output = OutputArtifact.model_validate(
+        {
+            "id": output_id,
+            "describes_output_id": media_output_id,
+            "role": METADATA_XMP_ROLE,
+            "artifact_id": _member_id(plan_sha256, output_id),
+            "bytes": str(size),
+            "sha256": sha256,
+        }
+    )
+    decision = decisions.decision_for(output.id)
+    publication.append(
+        ProducerFile(
+            xmp,
+            output.artifact_id,
+            materialization_hint=decision.components,
+            allow_missing_materialization_hint=decision.allow_missing_materialization_hint,
+        ),
+        output,
+        derived_from=item.derived_from,
+    )
+    return output
 
 
 def _execution_sha256(plan_sha256: str, outputs: Sequence[OutputArtifact]) -> str:
