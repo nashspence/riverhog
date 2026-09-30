@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Protocol
 
 from riverhog_protocol import (
+    ArtifactDiscoveryRequest,
     ArtifactId,
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
@@ -503,6 +504,14 @@ class LifecycleEventService(Protocol):
 
 
 class SearchService(Protocol):
+    def discover(
+        self,
+        *,
+        request: ArtifactDiscoveryRequest,
+        position: BrowsePosition,
+        principal: Principal | None = None,
+    ) -> JsonObject: ...
+
     def search(
         self,
         *,

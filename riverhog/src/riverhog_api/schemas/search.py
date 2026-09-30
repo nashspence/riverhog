@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from http_api_contracts import BrowsePageToken
 from pydantic import Field, model_validator
 from riverhog_protocol import (
@@ -8,6 +10,8 @@ from riverhog_protocol import (
     SearchSort,
     SortOrder,
 )
+from riverhog_protocol.provenance_transport import JournalAnchorDocument
+from riverhog_provenance_contracts import EntryReference, ProvenanceId
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -31,3 +35,37 @@ class SearchOut(RiverhogModel):
     sort: SearchSort
     order: SortOrder
     artifacts: list[SearchArtifactOut]
+
+
+class DiscoverySupportOut(RiverhogModel):
+    journal_anchor: JournalAnchorDocument
+    entry: EntryReference
+    assertion_id: ProvenanceId
+    referent_id: ProvenanceId
+    assertion_kind: str
+    assertion_state: str
+    relationship: str
+    pointer: str
+    representation: str
+    value_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class DiscoveryArtifactOut(RiverhogModel):
+    source_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    collection_id: CollectionId
+    archive_root_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    provenance_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    artifact: ArtifactMemberIdentityDocument
+    index_generation: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    tag_revision: str
+    description_revision: str
+    matches: list[DiscoverySupportOut]
+
+
+class DiscoveryPageOut(RiverhogModel):
+    format: Literal["riverhog-artifact-discovery-page/v1"]
+    query_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    read_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    artifacts: list[DiscoveryArtifactOut] = Field(max_length=200)
+    complete: bool
+    next_page_token: BrowsePageToken | None
