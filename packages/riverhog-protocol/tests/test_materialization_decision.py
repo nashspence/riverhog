@@ -25,6 +25,11 @@ def test_publication_decision_requires_exactly_one_supplied_choice() -> None:
             "allow_missing_materialization_hint": True,
         },
         {"artifact_id": _ARTIFACT_ID, "allow_missing_materialization_hint": "true"},
+        {
+            "artifact_id": _ARTIFACT_ID,
+            "materialization_hint": None,
+            "allow_missing_materialization_hint": True,
+        },
         {"artifact_id": _ARTIFACT_ID, "materialization_hint": {"components": [".."]}},
     ):
         with pytest.raises(ValidationError):

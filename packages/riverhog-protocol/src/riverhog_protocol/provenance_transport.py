@@ -111,6 +111,8 @@ class ArtifactMaterializationDecisionDocument(BaseModel):
 
     @model_validator(mode="after")
     def validate_choice(self) -> Self:
+        if "materialization_hint" in self.model_fields_set and self.materialization_hint is None:
+            raise ValueError("a null materialization hint is not an omission decision")
         if (self.materialization_hint is None) != self.allow_missing_materialization_hint:
             raise ValueError("exactly one materialization hint or explicit omission is required")
         return self

@@ -17,6 +17,7 @@ from a_stove0_media_archive_contract_lib import (
 )
 from a_stove0_media_archive_lib import (
     MediaArchiveProjection,
+    MediaPublicationPlan,
 )
 from a_stove0_nvenc_av1_opus_target import NvencAv1OpusTargetService, source_artifacts
 from a_stove0_nvenc_av1_opus_target import target as nvenc_target
@@ -54,10 +55,9 @@ def test_nvenc_execution_identity_is_the_canonical_semantic_result() -> None:
     output = OutputArtifact(
         id="archive-source",
         role="stove0.media.video-archive/v1",
-        path="video/source.mkv",
+        artifact_id=_sha("2"),
         bytes=str(12),
         sha256=_sha("3"),
-        media_type="video/x-matroska",
     )
     expected = canonical_json_sha256(
         {
@@ -176,15 +176,22 @@ def test_nvenc_preflight_and_encode_share_one_exact_projection(tmp_path: Path) -
         item,
     )
 
-    assert item.archive_path == "video/primary/archive.mkv"
-    assert item.xmp_path == "video/primary/archive.mkv.xmp"
     assert item.derived_from == ("primary", "sidecar")
     assert "creation_time=2025-02-03T04:05:06-08:00" in command
     assert "ARTIST=Alex Example; River Example" in command
     assert command[-1] == "/output/clip.mkv"
-    assert response.plan.observation_result_sha256s == (
-        request.observations[0].result.result_sha256,
+    assert response.plan.observation_result_sha256s == tuple(
+        sorted(item.result.result_sha256 for item in request.observations)
     )
+    publication = MediaPublicationPlan.from_json_value(
+        response.plan.target_options["publication_decisions"]
+    )
+    assert {item.components for item in publication.decisions} == {
+        ("Camera", "clip.mkv"),
+        ("Camera", "clip.mkv.xmp"),
+        ("Camera", "source-artifacts.tar.zst"),
+        ("Camera", "clip.xmp"),
+    }
     assert {output.role for output in AV1_OPUS_ARCHIVE_OPERATION.outputs} == {
         "stove0.media.av1-opus-archive/v1",
         METADATA_XMP_ROLE,

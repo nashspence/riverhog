@@ -329,10 +329,10 @@ def member_materialization_decision(
             "decisions": [
                 {
                     "artifact_id": artifact_id,
-                    "materialization_hint": (
-                        {"components": list(materialization_hint)}
+                    **(
+                        {"materialization_hint": {"components": list(materialization_hint)}}
                         if materialization_hint is not None
-                        else None
+                        else {}
                     ),
                     "allow_missing_materialization_hint": allow_missing_materialization_hint,
                 }

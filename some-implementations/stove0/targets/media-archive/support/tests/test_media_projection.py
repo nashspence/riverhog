@@ -188,8 +188,6 @@ def test_media_projection_accepts_large_collection_and_assertion_sets() -> None:
         input_groups=tuple(WorkInputGroup(primary_id=item.id) for item in inputs),
         observations=observations,
         policy=MediaProjectionPolicy(),
-        archive_directory="video",
-        archive_suffix=".mkv",
     )
 
     assert len(projection.items) == 257
@@ -252,8 +250,6 @@ def test_projection_retains_conflicts_and_only_selects_explicit_evidence() -> No
         input_groups=(WorkInputGroup(primary_id="primary", associated_ids=("sidecar",)),),
         observations=observations,
         policy=MediaProjectionPolicy(),
-        archive_directory="video",
-        archive_suffix=".mkv",
     )
     item = unresolved.items[0]
 
@@ -285,8 +281,6 @@ def test_projection_retains_conflicts_and_only_selects_explicit_evidence() -> No
                 ),
             ),
         ),
-        archive_directory="video",
-        archive_suffix=".mkv",
     )
     selected = {value.name: value.value for value in resolved.items[0].selected}
 
@@ -356,8 +350,6 @@ def test_preflight_uses_recipe_group_without_reclassifying_observer_subjects() -
     projection = resolve_media_archive_preflight_projection(
         request,
         policy=MediaProjectionPolicy(),
-        archive_directory="audio",
-        archive_suffix=".opus",
     )
     assert projection.items[0].associated_sidecar_artifact_ids == ("sidecar",)
 
@@ -365,6 +357,4 @@ def test_preflight_uses_recipe_group_without_reclassifying_observer_subjects() -
         resolve_media_archive_preflight_projection(
             request.model_copy(update={"input_groups": ()}),
             policy=MediaProjectionPolicy(),
-            archive_directory="audio",
-            archive_suffix=".opus",
         )
