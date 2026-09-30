@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
 
 import pytest
+import httpx
+from http_api_contracts import BrowseTokenCodec
+from riverhog_api.app import create_app
 from riverhog_api.schemas.search import DiscoveryPageOut
 from riverhog_application_access import (
     ALL_RESOURCES,
@@ -32,12 +39,17 @@ from riverhog_core.catalog_models import (
     CollectionRecord,
 )
 from riverhog_core.catalog_provenance_index_models import CollectionProvenanceIndexStateRecord
+from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.search import SqlAlchemySearchService
 from riverhog_protocol import ArtifactDiscoveryRequest, ArtifactMemberIdentityDocument
 from riverhog_protocol.collection_production_provenance import collection_production_contract
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
 from riverhog_provenance import BoundedSourceObserver, BytesSource, validate_journal
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
+
+from tests.unit.db_helpers import sqlite_url
 
 
 def _indexed_collection(session: Session) -> str:
@@ -238,4 +250,116 @@ def test_provenance_matches_require_current_provenance_disclosure() -> None:
             )
             == 1
         )
+    engine.dispose()
+
+
+def test_discovery_http_authentication_paging_and_metadata_fence(tmp_path: Path) -> None:
+    database_url = sqlite_url(tmp_path / "discovery.sqlite3")
+    engine = create_catalog_engine(database_url)
+    Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        original = _indexed_collection(session)
+        session.add(
+            CollectionArtifactRecord(
+                collection_id=1,
+                artifact_id="cd" * 32,
+                bytes=4,
+                sha256=hashlib.sha256(b"next").hexdigest(),
+            )
+        )
+        session.commit()
+
+    catalog_only = Principal(
+        id="reader",
+        key_id="reader-key",
+        access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
+    )
+    with_provenance = Principal(
+        id="reader",
+        key_id="reader-key",
+        access=frozenset(
+            {
+                ApplicationAccess(CATALOG_READ, ALL_RESOURCES),
+                ApplicationAccess(PROVENANCE_READ, ALL_RESOURCES),
+            }
+        ),
+    )
+
+    class Keys:
+        def authenticate(self, token: str) -> Principal | None:
+            return {"catalog": catalog_only, "provenance": with_provenance}.get(token)
+
+    factory = sessionmaker(bind=engine)
+    app = create_app(
+        container=SimpleNamespace(
+            app_keys=Keys(),
+            search=SqlAlchemySearchService(
+                RuntimeConfig.for_testing(database_url=database_url),
+                session_factory=factory,
+            ),
+            browse_tokens=BrowseTokenCodec(
+                b"discovery-http-page-test-key-0123456789", lifetime_seconds=3600
+            ),
+        )
+    )
+    query: dict[str, Any] = {"page_size": 1}
+
+    async def exercise() -> None:
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+        ) as client:
+            assert (await client.post("/v1/artifacts/discover", json=query)).status_code == 401
+            first_response = await client.post(
+                "/v1/artifacts/discover",
+                json=query,
+                headers={"Authorization": "Bearer catalog"},
+            )
+            assert first_response.status_code == 200, first_response.text
+            first = first_response.json()
+            assert first["artifacts"][0]["artifact"]["artifact_id"] == original
+            assert first["next_page_token"]
+            second_response = await client.post(
+                "/v1/artifacts/discover",
+                params={"page_token": first["next_page_token"]},
+                json=query,
+                headers={"Authorization": "Bearer catalog"},
+            )
+            assert second_response.status_code == 200, second_response.text
+            assert second_response.json()["artifacts"][0]["artifact"]["artifact_id"] == "cd" * 32
+            assert second_response.json()["complete"] is True
+
+            provenance_query = {
+                "provenance_all": [{"values": [{"value": "source.bin"}]}],
+            }
+            denied = await client.post(
+                "/v1/artifacts/discover",
+                json=provenance_query,
+                headers={"Authorization": "Bearer catalog"},
+            )
+            assert denied.status_code == 200, denied.text
+            assert denied.json()["artifacts"] == []
+            allowed = await client.post(
+                "/v1/artifacts/discover",
+                json=provenance_query,
+                headers={"Authorization": "Bearer provenance"},
+            )
+            assert allowed.status_code == 200, allowed.text
+            assert [hit["artifact"]["artifact_id"] for hit in allowed.json()["artifacts"]] == [
+                original
+            ]
+
+            with Session(engine) as session:
+                collection = session.get(CollectionRecord, 1)
+                assert collection is not None
+                collection.description_revision += 1
+                session.commit()
+            stale = await client.post(
+                "/v1/artifacts/discover",
+                params={"page_token": first["next_page_token"]},
+                json=query,
+                headers={"Authorization": "Bearer catalog"},
+            )
+            assert stale.status_code == 409, stale.text
+
+    asyncio.run(exercise())
     engine.dispose()
