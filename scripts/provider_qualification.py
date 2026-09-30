@@ -3504,7 +3504,7 @@ def _independent_provider_recovery(
         output,
         passphrases={QUALIFICATION_PASSPHRASE_ID: passphrase},
     )
-    if summary.files != len(corpus.files) or summary.bytes != corpus.bytes:
+    if summary.artifacts != len(corpus.files) or summary.bytes != corpus.bytes:
         raise QualificationError("independent recovery summary differs from the corpus")
     _verify_recovered_tree(output, corpus)
     identity = hashlib.sha256(_canonical_json(sorted(identities))).hexdigest()

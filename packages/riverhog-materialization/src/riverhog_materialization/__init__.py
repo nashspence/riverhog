@@ -7,12 +7,14 @@ destination filesystem. This package neither reads provenance nor writes files.
 from __future__ import annotations
 
 import re
+import sqlite3
 import unicodedata
 from collections import defaultdict
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
+from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 from riverhog_protocol.artifact_identity import ArtifactId
 from riverhog_provenance_contracts import PROFILE, ContractCatalog
 
@@ -208,6 +210,130 @@ def plan_materialization(
     )
 
 
+def plan_materialization_spooled(
+    members: Iterable[MemberAdvice],
+    *,
+    rules: DestinationRules,
+    state: sqlite3.Connection,
+    mode: MaterializationMode = "declared-hints",
+) -> Iterator[PlannedDestination]:
+    """Apply the same rules to an arbitrarily large selection using caller-owned disk state.
+
+    The input is consumed once. The caller must exhaust the iterator before reusing
+    the connection, and must keep its backing database on protected scratch storage.
+    """
+
+    if mode not in ("declared-hints", "id-layout"):
+        raise ValueError("unknown materialization mode")
+    catalog = ContractCatalog()
+    state.executescript(
+        """
+        DROP TABLE IF EXISTS materialization_members;
+        DROP TABLE IF EXISTS materialization_prefixes;
+        DROP TABLE IF EXISTS materialization_conflicts;
+        CREATE TABLE materialization_members (
+            artifact_id TEXT PRIMARY KEY,
+            components BLOB NOT NULL,
+            hint BLOB,
+            reason TEXT NOT NULL
+        );
+        CREATE TABLE materialization_prefixes (
+            key BLOB NOT NULL,
+            spelling BLOB NOT NULL,
+            artifact_id TEXT NOT NULL,
+            is_leaf INTEGER NOT NULL,
+            PRIMARY KEY (key, artifact_id)
+        );
+        CREATE INDEX materialization_prefix_key ON materialization_prefixes(key);
+        CREATE TABLE materialization_conflicts (artifact_id TEXT PRIMARY KEY);
+        """
+    )
+    for member in members:
+        artifact_id = str(ArtifactId(member.artifact_id))
+        hint: tuple[str, ...] | None = None
+        if member.materialization_hint is not None:
+            catalog.validate(_HINT_SCHEMA, member.materialization_hint)
+            hint = tuple(member.materialization_hint["components"])
+        components: tuple[str, ...] = id_components(artifact_id)
+        reason: FallbackReason = "id-layout" if mode == "id-layout" else "no-hint"
+        if mode == "declared-hints" and hint is not None:
+            candidate = ("files", *(_escape_validated_component(value, rules) for value in hint))
+            if rules.fits(candidate):
+                components = candidate
+                reason = "hint" if candidate[1:] == hint else "escaped-hint"
+            else:
+                reason = "destination-limits"
+        if not rules.fits(id_components(artifact_id)) or not rules.fits(
+            primary_sidecar_components(artifact_id)
+        ):
+            raise ValueError("destination cannot represent mandatory ID and provenance layout")
+        try:
+            state.execute(
+                "INSERT INTO materialization_members VALUES (?, ?, ?, ?)",
+                (
+                    artifact_id,
+                    canonical_json_bytes(list(components)),
+                    canonical_json_bytes(list(hint)) if hint is not None else None,
+                    reason,
+                ),
+            )
+        except sqlite3.IntegrityError as exc:
+            raise ValueError("artifact selection contains a duplicate member") from exc
+        if components[0] == "files":
+            for size in range(1, len(components) + 1):
+                state.execute(
+                    "INSERT INTO materialization_prefixes VALUES (?, ?, ?, ?)",
+                    (
+                        canonical_json_bytes(
+                            [rules.equivalent(part) for part in components[:size]]
+                        ),
+                        canonical_json_bytes(list(components[:size])),
+                        artifact_id,
+                        int(size == len(components)),
+                    ),
+                )
+    state.execute(
+        """
+        INSERT INTO materialization_conflicts
+        SELECT DISTINCT prefix.artifact_id
+        FROM materialization_prefixes AS prefix
+        JOIN (
+            SELECT key
+            FROM materialization_prefixes
+            GROUP BY key
+            HAVING COUNT(DISTINCT spelling) > 1
+                OR (SUM(is_leaf) > 0 AND (SUM(is_leaf) > 1 OR COUNT(*) > SUM(is_leaf)))
+        ) AS collision ON collision.key = prefix.key
+        """
+    )
+    state.commit()
+    for artifact_id, raw_components, raw_hint, reason, conflict in state.execute(
+        """
+        SELECT member.artifact_id, member.components, member.hint, member.reason,
+               collision.artifact_id
+        FROM materialization_members AS member
+        LEFT JOIN materialization_conflicts AS collision USING (artifact_id)
+        ORDER BY member.artifact_id
+        """
+    ):
+        components = _read_spooled_components(raw_components)
+        hint = _read_spooled_components(raw_hint) if raw_hint is not None else None
+        yield PlannedDestination(
+            artifact_id,
+            id_components(artifact_id) if conflict is not None else components,
+            primary_sidecar_components(artifact_id),
+            "destination-collision" if conflict is not None else reason,
+            hint,
+        )
+
+
+def _read_spooled_components(raw: bytes) -> tuple[str, ...]:
+    value = require_canonical_json(raw)
+    if not isinstance(value, list) or any(type(part) is not str for part in value):
+        raise ValueError("materialization plan state has invalid components")
+    return tuple(cast(list[str], value))
+
+
 __all__ = [
     "DestinationRules",
     "MemberAdvice",
@@ -215,6 +341,7 @@ __all__ = [
     "escape_component",
     "id_components",
     "plan_materialization",
+    "plan_materialization_spooled",
     "primary_sidecar_components",
     "shared_journal_components",
 ]

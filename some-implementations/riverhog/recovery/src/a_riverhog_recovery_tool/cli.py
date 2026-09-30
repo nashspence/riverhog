@@ -172,6 +172,15 @@ def _parser() -> argparse.ArgumentParser:
         help="read an opaque key-ID to passphrase JSON map from a permission-restricted file",
     )
     parser.add_argument("--age-command", default="age", help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--layout-mode",
+        choices=("declared-hints", "id-layout"),
+        default="declared-hints",
+        help="payload destination layout for complete recovery",
+    )
+    parser.add_argument("--expected-archive-root-sha256")
+    parser.add_argument("--expected-description-sha256")
+    parser.add_argument("--expected-tag-head-sha256")
     return parser
 
 
@@ -267,13 +276,18 @@ def main() -> None:
             args.output,
             passphrases=passphrases,
             age_command=args.age_command,
+            layout_mode=args.layout_mode,
+            expected_archive_root_sha256=args.expected_archive_root_sha256,
+            expected_description_sha256=args.expected_description_sha256,
+            expected_tag_head_sha256=args.expected_tag_head_sha256,
         )
     except RecoveryError as exc:
         print(f"a-riverhog-recovery-tool: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
     print(
-        f"Recovered {summary.files} files ({summary.bytes} bytes) to {summary.output}; "
-        f"provenance={summary.provenance_mode} journals={summary.provenance_journals}",
+        f"Recovered {summary.artifacts} artifacts ({summary.bytes} bytes), "
+        f"{summary.tag_count} tags and {summary.provenance_journals} journals "
+        f"to {summary.output} ({summary.layout_mode})",
         flush=True,
     )
 

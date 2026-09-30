@@ -154,11 +154,11 @@ class NvencAv1OpusTargetService(PersistentTargetService):
             for item in projection.items:
                 media_hint = replace_final_suffix(hints[item.input_artifact_id], ".mkv")
                 proposals[_output_id("video", item.derived_from)] = media_hint
-                proposals[_output_id("metadata-xmp", item.derived_from)] = (
-                    append_leaf_suffix(media_hint, ".xmp")
+                proposals[_output_id("metadata-xmp", item.derived_from)] = append_leaf_suffix(
+                    media_hint, ".xmp"
                 )
-                proposals[_output_id("source-artifacts", (item.input_artifact_id,))] = (
-                    sibling_hint(media_hint, "source-artifacts.tar.zst")
+                proposals[_output_id("source-artifacts", (item.input_artifact_id,))] = sibling_hint(
+                    media_hint, "source-artifacts.tar.zst"
                 )
             for retained in projection.retained_xmp_sidecars:
                 proposals[_output_id("source-xmp", (retained.input_artifact_id,))] = hints[
@@ -328,9 +328,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             role=METADATA_XMP_ROLE,
                         )
                         outputs.append(xmp_output)
-                        bundle_relative = (
-                            f"video/{item.input_artifact_id}/source-artifacts.tar.zst"
-                        )
+                        bundle_relative = f"video/{item.input_artifact_id}/source-artifacts.tar.zst"
                         bundle = workspace.resolve(f"output/{bundle_relative}")
                         build_strict_source_artifacts(
                             source=source,
@@ -416,9 +414,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             role=SOURCE_ARTIFACT_ROLE,
                         )
                         outputs.append(retained_output)
-                        retained_decision = publication_decisions.decision_for(
-                            retained_output.id
-                        )
+                        retained_decision = publication_decisions.decision_for(retained_output.id)
                         publication.append(
                             ProducerFile(
                                 destination,

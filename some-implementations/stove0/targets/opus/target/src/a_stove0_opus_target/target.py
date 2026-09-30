@@ -144,8 +144,8 @@ class OpusTargetService(PersistentTargetService):
             for item in projection.items:
                 media_hint = replace_final_suffix(hints[item.input_artifact_id], ".opus")
                 proposals[_output_id("opus", item.derived_from)] = media_hint
-                proposals[_output_id("metadata-xmp", item.derived_from)] = (
-                    append_leaf_suffix(media_hint, ".xmp")
+                proposals[_output_id("metadata-xmp", item.derived_from)] = append_leaf_suffix(
+                    media_hint, ".xmp"
                 )
             for retained in projection.retained_xmp_sidecars:
                 proposals[_output_id("source-xmp", (retained.input_artifact_id,))] = hints[
@@ -356,9 +356,7 @@ class OpusTargetService(PersistentTargetService):
                             )
                         )
                         outputs.append(retained_output)
-                        retained_decision = publication_decisions.decision_for(
-                            retained_output.id
-                        )
+                        retained_decision = publication_decisions.decision_for(retained_output.id)
                         publication.append(
                             ProducerFile(
                                 destination,

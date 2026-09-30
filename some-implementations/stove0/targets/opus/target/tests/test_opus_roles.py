@@ -235,15 +235,11 @@ def test_media_hint_evidence_covers_the_exact_routed_input_selection() -> None:
     original = request.observations[0].request.subjects
     altered = ArtifactSelection.seal(
         (
-            original[0].model_copy(
-                update={"role": SOURCE_ROLE, "artifact_id": _sha("e")}
-            ),
+            original[0].model_copy(update={"role": SOURCE_ROLE, "artifact_id": _sha("e")}),
             original[1].model_copy(update={"role": XMP_SOURCE_ROLE}),
         )
     )
-    mismatched = request.model_copy(
-        update={"inputs": TargetInputAuthority.from_selection(altered)}
-    )
+    mismatched = request.model_copy(update={"inputs": TargetInputAuthority.from_selection(altered)})
     with pytest.raises(ValueError, match="accepted hint evidence"):
         accepted_source_hints(mismatched)
 

@@ -581,6 +581,8 @@ version = "0.1.0"
 source = { editable = "some-implementations/riverhog/recovery" }
 dependencies = [
     { name = "riverhog-archive-contracts" },
+    { name = "riverhog-canonical-json" },
+    { name = "riverhog-materialization" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
 ]
@@ -588,6 +590,8 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
+    { name = "riverhog-materialization", editable = "packages/riverhog-materialization" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
 ]
@@ -2808,12 +2812,14 @@ name = "riverhog-materialization"
 version = "0.1.0"
 source = { editable = "packages/riverhog-materialization" }
 dependencies = [
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
 ]
