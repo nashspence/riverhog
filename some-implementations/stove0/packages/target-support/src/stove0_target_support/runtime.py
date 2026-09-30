@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import time
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
@@ -69,8 +68,11 @@ class TargetCollectionPublication:
         execution: TargetExecutionRuntime,
         writer: IncrementalDerivedCollectionWriter,
         implementation: TargetDescriptor,
+        *,
+        source_context: Mapping[str, Any] | None = None,
     ) -> None:
         self.implementation = implementation
+        self.source_context = dict(source_context or {})
         self.execution = execution
         self.writer = writer
         self._local_files: dict[str, Path] = {}
@@ -116,7 +118,7 @@ class TargetCollectionPublication:
         *,
         operation: OperationContract,
         execution_sha256: str,
-        execution_preimage: bytes,
+        execution_preimage: bytes | CompletionRecord,
         attempt: int = 1,
         runtime_evidence: Mapping[str, object] | None = None,
         **kwargs: Any,
@@ -134,7 +136,15 @@ class TargetCollectionPublication:
             raise RuntimeError("Stove0 sealed no target production authority")
         disposition_set = production.riverhog_disposition_set
         runtime = cast(CollectionTransformRuntime, self.execution.runtime)
-        if hashlib.sha256(execution_preimage).hexdigest() != execution_sha256:
+        execution_record = (
+            CompletionRecord.from_bytes("target-execution", execution_preimage)
+            if isinstance(execution_preimage, bytes)
+            else execution_preimage
+        )
+        if (
+            execution_record.kind != "target-execution"
+            or execution_record.sha256 != execution_sha256
+        ):
             raise ValueError("target execution digest differs from its sealed preimage")
         plan = self.execution.request.declaration.plan
         evidence = TargetExecutionEvidence(
@@ -152,6 +162,16 @@ class TargetCollectionPublication:
             production=production,
             execution_evidence=evidence,
         )
+        if self.execution.session is not None:
+            pre_root = self.execution.session.retain_completion(
+                request=self.execution.request,
+                implementation=self.implementation,
+                operation=operation,
+                pre_root=pre_root,
+                execution=execution_record,
+                source_context=self.source_context,
+            )
+        evidence = pre_root.execution_evidence
         completion_records = (
             CompletionRecord.from_bytes(
                 "invocation",
@@ -171,7 +191,7 @@ class TargetCollectionPublication:
                     }
                 ),
             ),
-            CompletionRecord.from_bytes("target-execution", execution_preimage),
+            execution_record,
             CompletionRecord.from_bytes(
                 "target-result",
                 canonical_json_bytes(pre_root.model_dump(mode="json", by_alias=True)),
@@ -469,7 +489,9 @@ class TargetExecutionRuntime:
                 "target_request_sha256": self.request.request_sha256,
             },
         )
-        return TargetCollectionPublication(self, writer, implementation)
+        return TargetCollectionPublication(
+            self, writer, implementation, source_context=source_context
+        )
 
     def effect_success(
         self,

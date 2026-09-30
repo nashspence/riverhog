@@ -11,6 +11,7 @@ import threading
 import time
 from collections.abc import Callable, Mapping
 from concurrent.futures import Future, ThreadPoolExecutor
+from itertools import chain
 from pathlib import Path
 from typing import Any, Final
 
@@ -40,8 +41,10 @@ from stove0_target_protocol import (
     validate_declaration_against_operation,
 )
 
+from stove0_target_support.completion_checkpoint import TargetCompletionCheckpoint
 from stove0_target_support.execution import TargetExecutionSession
 from stove0_target_support.http_binding import TargetServiceError
+from stove0_target_support.runtime import TargetExecutionRuntime
 
 _ACTIVE_STATES: Final = frozenset({"queued", "running", "canceling"})
 _TERMINAL_STATES: Final = frozenset({"inapplicable", "succeeded", "failed", "canceled"})
@@ -314,7 +317,7 @@ class PersistentTargetService:
         removed_jobs = 0
         removed_bytes = 0
         with self._lock:
-            for status_path in sorted(self.state_root.glob("*.status.json")):
+            for status_path in self.state_root.glob("*.status.json"):
                 if status_path.is_symlink():
                     raise ValueError("target state paths must not be symlinks")
                 job_id = status_path.name.removesuffix(".status.json")
@@ -334,12 +337,25 @@ class PersistentTargetService:
                     continue
                 if status.protocol == EFFECT_TARGET_PROTOCOL and status.state == "succeeded":
                     continue
+                completion_path = TargetCompletionCheckpoint.manifest_path(self.state_root, job_id)
+                if completion_path.exists() and status.state != "succeeded":
+                    continue
                 accepted_path = self._accepted_path(job_id)
                 removed_bytes += stat.st_size
                 if accepted_path.exists():
                     if accepted_path.is_symlink():
                         raise ValueError("target state paths must not be symlinks")
                     removed_bytes += accepted_path.stat().st_size
+                if completion_path.exists():
+                    if completion_path.is_symlink():
+                        raise ValueError("target checkpoint paths must not be symlinks")
+                    for checkpoint_path in chain(
+                        (completion_path,), self.state_root.glob(f"{job_id}.execution-*.bin")
+                    ):
+                        if checkpoint_path.is_symlink():
+                            raise ValueError("target checkpoint paths must not be symlinks")
+                        removed_bytes += checkpoint_path.stat().st_size
+                        checkpoint_path.unlink()
                 status_path.unlink(missing_ok=True)
                 accepted_path.unlink(missing_ok=True)
                 removed_jobs += 1
@@ -401,6 +417,7 @@ class PersistentTargetService:
             request,
             attempt,
             self._runtime_registry,
+            state_root=self.state_root,
         )
         self._sessions[job_id] = session
         future = self._pool.submit(
@@ -451,7 +468,13 @@ class PersistentTargetService:
             if active.state == "canceling" or cancellation.is_set():
                 return self._commit_status(self._stop_status(request, attempt))
             try:
-                terminal = self._execute(request, attempt, cancellation, session)
+                checkpoint = session.completion_checkpoint(request)
+                if checkpoint is None:
+                    terminal = self._execute(request, attempt, cancellation, session)
+                else:
+                    terminal = self._resume_publication(
+                        request, attempt, cancellation, session, checkpoint
+                    )
             except TargetExecutionCanceled:
                 terminal = self._stop_status(request, attempt)
             except TargetExecutionInapplicable as exc:
@@ -474,6 +497,19 @@ class PersistentTargetService:
                 )
             except Exception as exc:
                 terminal = _failure_status(request, attempt=attempt, failure=exc)
+                if (
+                    terminal.failure is not None
+                    and terminal.failure.retryable
+                    and TargetCompletionCheckpoint.manifest_path(
+                        self.state_root, request.declaration.job_id
+                    ).exists()
+                ):
+                    terminal = self._status(
+                        request,
+                        state="interrupted",
+                        attempt=attempt,
+                        phase="publication-interrupted",
+                    )
             completed = session.completed_status
             if completed is not None:
                 terminal = completed
@@ -487,6 +523,36 @@ class PersistentTargetService:
                 self._runtime_contexts.pop(request.declaration.job_id, None)
                 self._runtime_token_fingerprints.pop(request.declaration.job_id, None)
                 self._runtime_registry.discard(request.declaration.job_id)
+
+    def _resume_publication(
+        self,
+        request: TargetJobRequest,
+        attempt: int,
+        cancellation: threading.Event,
+        session: TargetExecutionSession,
+        checkpoint: TargetCompletionCheckpoint,
+    ) -> TargetJobStatus:
+        def check() -> None:
+            if cancellation.is_set():
+                raise TargetExecutionCanceled("target publication resume was canceled")
+
+        with TargetExecutionRuntime.from_request(
+            request,
+            cancellation_check=check,
+            session=session,
+            producer_version=checkpoint.implementation.implementation_version,
+        ) as execution:
+            publication = execution.open_collection_publication(
+                implementation=checkpoint.implementation,
+                source_context=checkpoint.source_context,
+            )
+            return publication.finish_success(
+                operation=checkpoint.operation,
+                execution_sha256=checkpoint.execution.sha256,
+                execution_preimage=checkpoint.execution,
+                attempt=attempt,
+                runtime_evidence=checkpoint.pre_root.execution_evidence.runtime,
+            )
 
     def _stop_status(self, request: TargetJobRequest, attempt: int) -> TargetJobStatus:
         job_id = request.declaration.job_id
@@ -516,7 +582,7 @@ class PersistentTargetService:
         )
 
     def _recover_interrupted(self) -> None:
-        for path in sorted(self.state_root.glob("*.status.json")):
+        for path in self.state_root.glob("*.status.json"):
             if path.is_symlink():
                 raise ValueError("target state paths must not be symlinks")
             status = TargetJobStatus.model_validate_json(path.read_text(encoding="utf-8"))

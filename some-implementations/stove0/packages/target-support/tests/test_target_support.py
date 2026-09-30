@@ -71,6 +71,7 @@ from stove0_target_protocol import (
     SemanticIntentConformanceVectors,
     TargetCallbackAccess,
     TargetInputAuthority,
+    TargetPreRootResult,
     TargetProductionAuthority,
     TargetProductionAuthorityPayload,
     TargetProductionSealResponse,
@@ -2262,3 +2263,195 @@ def test_target_failure_classes_remain_distinct_from_content_inapplicability(
     else:
         assert status.failure is not None
         assert (status.failure.code, status.failure.retryable) == (code, retryable)
+
+
+def _retain_publication_checkpoint(state_root: Path):
+    from riverhog_client.canonical_completion import CompletionRecord
+    from stove0_target_support.completion_checkpoint import TargetCompletionCheckpoint
+
+    operation, target, request = _request()
+    expected = _success_status(operation, request)
+    assert expected.production is not None
+    assert expected.execution_evidence is not None
+    pre_root = TargetPreRootResult(
+        job_id=request.declaration.job_id,
+        attempt=1,
+        request_sha256=request.request_sha256,
+        plan_sha256=request.declaration.plan.plan_sha256,
+        production=expected.production,
+        execution_evidence=expected.execution_evidence,
+    )
+    checkpoint = TargetCompletionCheckpoint.retain(
+        state_root,
+        request=request,
+        implementation=target,
+        operation=operation,
+        pre_root=pre_root,
+        execution=CompletionRecord.from_bytes(
+            "target-execution",
+            _EXECUTION_PREIMAGE,
+        ),
+        source_context={},
+    )
+    return operation, target, request, expected, checkpoint
+
+
+def test_publication_checkpoint_keeps_exact_evidence_and_original_attempt(tmp_path: Path) -> None:
+    from riverhog_client.canonical_completion import CompletionRecord
+    from stove0_target_support.completion_checkpoint import TargetCompletionCheckpoint
+
+    operation, target, request, _expected, original = _retain_publication_checkpoint(tmp_path)
+    retry = TargetCompletionCheckpoint.retain(
+        tmp_path,
+        request=request,
+        implementation=target,
+        operation=operation,
+        pre_root=original.pre_root.model_copy(update={"attempt": 2}),
+        execution=CompletionRecord.from_bytes("target-execution", _EXECUTION_PREIMAGE),
+        source_context={},
+    )
+    assert retry.pre_root.attempt == 1
+    assert retry.pre_root == original.pre_root
+    assert b"".join(retry.execution.read()) == _EXECUTION_PREIMAGE
+    persisted = b"\n".join(path.read_bytes() for path in tmp_path.iterdir())
+    assert b"first-secret" not in persisted
+    assert b"callback-secret" not in persisted
+    assert b"riverhog.invalid" not in persisted
+    with pytest.raises(ValueError, match="identity differs|evidence changed"):
+        TargetCompletionCheckpoint.retain(
+            tmp_path,
+            request=request,
+            implementation=target,
+            operation=operation,
+            pre_root=original.pre_root,
+            execution=CompletionRecord.from_bytes("target-execution", b"changed"),
+            source_context={},
+        )
+
+
+def test_publication_checkpoint_rejects_corrupt_exact_preimage(tmp_path: Path) -> None:
+    from stove0_target_support.completion_checkpoint import TargetCompletionCheckpoint
+
+    _operation, _target, request, _expected, checkpoint = _retain_publication_checkpoint(tmp_path)
+    content_path = tmp_path / (
+        f"{request.declaration.job_id}.execution-{checkpoint.execution.sha256}.bin"
+    )
+    content_path.write_bytes(b"x" * checkpoint.execution.bytes)
+    loaded = TargetCompletionCheckpoint.load(tmp_path, request=request)
+    assert loaded is not None
+    with pytest.raises(ValueError, match="preimage changed"):
+        b"".join(loaded.execution.read())
+
+
+def test_persistent_target_resumes_sealed_publication_without_rerunning_operation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from riverhog_protocol import ServiceUnavailable
+
+    operation, target, request, expected, checkpoint = _retain_publication_checkpoint(tmp_path)
+    job_id = request.declaration.job_id
+    _write_model(tmp_path / f"{job_id}.accepted.json", request.accepted())
+    _write_model(
+        tmp_path / f"{job_id}.status.json",
+        TargetJobStatus(
+            job_id=job_id,
+            state="running",
+            attempt=1,
+            request_sha256=request.request_sha256,
+            plan_sha256=request.declaration.plan.plan_sha256,
+            progress=TargetProgress(phase="publishing", completed=1),
+        ),
+    )
+    calls = []
+
+    def resume(
+        _cls: object, fresh: TargetJobRequest, *, session: TargetExecutionSession, **_kwargs
+    ):
+        assert fresh.request_sha256 == request.request_sha256
+
+        class Execution:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_exc):
+                pass
+
+            def open_collection_publication(self, *, implementation, source_context):
+                assert implementation == target
+                assert source_context == checkpoint.source_context
+                return self
+
+            def finish_success(self, *, execution_preimage, attempt, runtime_evidence, **_kwargs):
+                assert b"".join(execution_preimage.read()) == _EXECUTION_PREIMAGE
+                assert runtime_evidence == checkpoint.pre_root.execution_evidence.runtime
+                calls.append(attempt)
+                if len(calls) == 1:
+                    raise ServiceUnavailable("publication transport lost its response")
+                result = expected.model_copy(update={"attempt": attempt})
+                session.record_completed(result)
+                return result
+
+        return Execution()
+
+    monkeypatch.setattr(TargetExecutionRuntime, "from_request", classmethod(resume))
+
+    def execute(*_args):
+        raise AssertionError("sealed publication must not invoke the target operation")
+
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=execute,
+    )
+    try:
+        assert service.get_job(job_id).state == "interrupted"
+        service.put_job(request)
+        deadline = time.monotonic() + 5
+        while service.get_job(job_id).state != "interrupted":
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+        assert service.get_job(job_id).progress.phase == "publication-interrupted"
+        service.put_job(request)
+        while service.get_job(job_id).state != "succeeded":
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+        assert service.get_job(job_id).attempt == 3
+        assert service.get_job(job_id).output_collection == expected.output_collection
+        assert calls == [2, 3]
+        assert service.prune_terminal_state(now=time.time()) == {"jobs": 0, "bytes": 0}
+    finally:
+        service.close()
+    assert checkpoint.pre_root.attempt == 1
+
+
+def test_checkpoint_retention_keeps_failed_unpublished_evidence(tmp_path: Path) -> None:
+    operation, target, request, expected, _checkpoint = _retain_publication_checkpoint(tmp_path)
+    job_id = request.declaration.job_id
+    _write_model(tmp_path / f"{job_id}.accepted.json", request.accepted())
+    failed = TargetJobStatus(
+        job_id=job_id,
+        state="failed",
+        attempt=1,
+        request_sha256=request.request_sha256,
+        plan_sha256=request.declaration.plan.plan_sha256,
+        progress=TargetProgress(phase="publishing", completed=1),
+        failure={"code": "fixture-publish", "message": "publishing failed", "retryable": False},
+    )
+    _write_model(tmp_path / f"{job_id}.status.json", failed)
+    service = PersistentTargetService(
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path,
+        execute=lambda *_args: expected,
+    )
+    try:
+        assert service.prune_terminal_state(now=time.time() + 10**9) == {"jobs": 0, "bytes": 0}
+        assert (tmp_path / f"{job_id}.completion.json").exists()
+        service._write_model(tmp_path / f"{job_id}.status.json", expected)
+        sizes = sum(path.stat().st_size for path in tmp_path.iterdir())
+        assert service.prune_terminal_state(now=time.time() + 10**9) == {"jobs": 1, "bytes": sizes}
+        assert list(tmp_path.iterdir()) == []
+    finally:
+        service.close()
