@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from riverhog_core.app_permissions import (
     CATALOG_READ,
     ApplicationAccess,
@@ -43,11 +44,11 @@ def _seed_collections(database: Path, *, count: int) -> tuple[RuntimeConfig, Eng
                     creation_idempotency_key=f"fixture-{collection_id}",
                     creation_identity_sha256=f"{collection_id:064x}",
                     creation_custody_mode="producer-retained",
-                    content_identity=f"{collection_id:064x}",
+                    artifact_set_identity=f"{collection_id:064x}",
+                    delivery_context_id=f"urn:uuid:00000000-0000-4000-8000-{collection_id:012x}",
                     encryption_format="age-v1-scrypt",
                     passphrase_id=f"fixture-archive-key-v{1 if collection_id % 2 else 2}",
-                    provenance_mode="omitted",
-                    provenance_identity=None,
+                    provenance_identity=f"{collection_id:064x}",
                     inventory_identity=f"{collection_id:064x}",
                     created_by_principal_id="fixture",
                     created_at=NOW,
@@ -161,4 +162,33 @@ def test_collection_encryption_filters_preserve_catalog_authorization(tmp_path: 
     assert visible.collections[0].passphrase_id == "fixture-archive-key-v2"
     assert hidden.collections == []
     assert hidden.next_position is None
+    engine.dispose()
+
+
+@pytest.mark.parametrize("sort", ("files", "bytes"))
+def test_collection_count_and_byte_sorts_page_over_current_artifact_totals(
+    tmp_path: Path, sort: str
+) -> None:
+    config, engine = _seed_collections(tmp_path / "catalog.sqlite3", count=3)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    with session_scope(factory) as session:
+        for collection_id in range(1, 4):
+            collection = session.get(CollectionRecord, collection_id)
+            assert collection is not None
+            collection.artifact_count = collection_id
+            collection.artifact_bytes = collection_id * 10
+
+    service = SqlAlchemyCollectionService(config, session_factory=factory)
+    first = service.list(page_size=2, position=None, q=None, sort=sort, order="desc")
+    assert [item.id for item in first.collections] == [3, 2]
+    assert first.next_position is not None
+    second = service.list(
+        page_size=2,
+        position=first.next_position,
+        q=None,
+        sort=sort,
+        order="desc",
+    )
+    assert [item.id for item in second.collections] == [1]
+    assert second.next_position is None
     engine.dispose()
