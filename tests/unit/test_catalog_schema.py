@@ -4,8 +4,8 @@ import pytest
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectRecord,
     CollectionArchiveObjectUploadRecord,
-    CollectionFileRecord,
-    CollectionUploadFileRecord,
+    CollectionArtifactRecord,
+    CollectionUploadArtifactRecord,
 )
 from sqlalchemy import BigInteger
 from sqlalchemy.orm import DeclarativeBase
@@ -14,11 +14,11 @@ from sqlalchemy.orm import DeclarativeBase
 @pytest.mark.parametrize(
     ("model", "column"),
     [
-        (CollectionFileRecord, "bytes"),
+        (CollectionArtifactRecord, "bytes"),
         (CollectionArchiveObjectRecord, "plaintext_bytes"),
         (CollectionArchiveObjectRecord, "stored_bytes"),
-        (CollectionUploadFileRecord, "bytes"),
-        (CollectionUploadFileRecord, "raw_part_plaintext_bytes"),
+        (CollectionUploadArtifactRecord, "bytes"),
+        (CollectionUploadArtifactRecord, "raw_part_plaintext_bytes"),
         (CollectionArchiveObjectUploadRecord, "plaintext_bytes"),
         (CollectionArchiveObjectUploadRecord, "source_bytes"),
         (CollectionArchiveObjectUploadRecord, "unit_plaintext_bytes"),
