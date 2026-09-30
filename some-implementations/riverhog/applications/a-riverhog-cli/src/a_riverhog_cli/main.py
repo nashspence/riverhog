@@ -216,14 +216,23 @@ _CLI_RESULT_CONTRACT = {
         "collection upload start": {
             "success": [
                 {
-                    "id": "completed",
+                    "id": "planned",
+                    "exit_status": 0,
+                    "stdout": {
+                        "human": "noncontractual-presentation-of-command-result",
+                        "json": "$command-json-output",
+                    },
+                    "stderr": {"all": "empty"},
+                },
+                {
+                    "id": "executed",
                     "exit_status": 0,
                     "stdout": {
                         "human": "noncontractual-presentation-of-command-result",
                         "json": "$command-json-output",
                     },
                     "stderr": {"all": "noncontractual-progress"},
-                }
+                },
             ],
             "failures": [
                 {
@@ -495,8 +504,47 @@ _CLI_RESULT_CONTRACT = {
             "operation_id": "remove_collection_tag",
         },
         "collection upload start": {
-            "kind": "operation-response",
-            "operation_id": "get_collection_upload_session",
+            "outcomes": {
+                "planned": _cli_local_json(
+                    "a-riverhog-cli-upload-preview/v1",
+                    {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": [
+                            "format",
+                            "idempotency_key",
+                            "artifact_count",
+                            "total_bytes",
+                            "sources",
+                        ],
+                        "properties": {
+                            "format": {"const": "a-riverhog-cli-upload-preview/v1"},
+                            "idempotency_key": {"type": "string"},
+                            "artifact_count": {"type": "integer", "minimum": 1},
+                            "total_bytes": {"type": "integer", "minimum": 0},
+                            "sources": {
+                                "type": "array",
+                                "maxItems": 5,
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": False,
+                                    "required": ["relative_components", "bytes", "sha256"],
+                                    "properties": {
+                                        "relative_components": {
+                                            "type": "array",
+                                            "minItems": 1,
+                                            "items": {"type": "string"},
+                                        },
+                                        "bytes": {"type": "integer", "minimum": 0},
+                                        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ),
+                "executed": {"kind": "openapi-schema", "schema": "CollectionUploadSessionOut"},
+            },
         },
         "collection provenance export": _cli_local_json(
             "a-riverhog-cli-provenance-journal-export/v1",
