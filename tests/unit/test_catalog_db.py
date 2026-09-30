@@ -32,8 +32,6 @@ def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
         use_cache=False,
         copy_to=["secondary"],
         event_context={"source": "fixture"},
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture source has no provenance",
         custody_mode="custody-transfer",
     )
     sealed = CollectionUploadCreationIdentityDocument.seal(base)
@@ -44,13 +42,6 @@ def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
         base.model_copy(update={"use_cache": True}),
         base.model_copy(update={"copy_to": ["tertiary"]}),
         base.model_copy(update={"event_context": {"source": "other"}}),
-        base.model_copy(
-            update={
-                "provenance_mode": "captured",
-                "provenance_omission_reason": None,
-            }
-        ),
-        base.model_copy(update={"provenance_omission_reason": "a different reason"}),
         base.model_copy(update={"custody_mode": "producer-retained"}),
     )
 
@@ -103,9 +94,9 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "principal_id",
         "state",
         "request_json",
-        "next_file_order",
+        "next_artifact_order",
         "next_placement_sequence",
-        "file_commitment_sha256",
+        "artifact_commitment_sha256",
         "segment_commitment_sha256",
         "etag",
     }
@@ -184,11 +175,11 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "updated_at",
         "collection_count",
     }
-    assert {column["name"] for column in inspector.get_columns("retrieval_plan_files")} == {
+    assert {column["name"] for column in inspector.get_columns("retrieval_plan_artifacts")} == {
         "plan_id",
-        "file_order",
+        "artifact_order",
         "collection_id",
-        "path",
+        "artifact_id",
         "bytes",
         "sha256",
         "source_store",
@@ -197,10 +188,10 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
     }
     assert {column["name"] for column in inspector.get_columns("retrieval_plan_placements")} == {
         "plan_id",
-        "file_order",
+        "artifact_order",
         "sequence",
         "object_order",
-        "file_offset",
+        "artifact_offset",
         "object_offset",
         "bytes",
         "member",
@@ -236,15 +227,16 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
     collection_columns = {column["name"]: column for column in inspector.get_columns("collections")}
     assert collection_columns["creation_identity_sha256"]["nullable"] is False
     assert collection_columns["creation_custody_mode"]["nullable"] is False
-    assert collection_columns["content_identity"]["nullable"] is False
+    assert collection_columns["delivery_context_id"]["nullable"] is False
+    assert collection_columns["provenance_identity"]["nullable"] is False
     assert collection_columns["inventory_identity"]["nullable"] is False
-    upload_file_columns = {
-        column["name"]: column for column in inspector.get_columns("collection_upload_files")
+    upload_artifact_columns = {
+        column["name"]: column for column in inspector.get_columns("collection_upload_artifacts")
     }
-    assert upload_file_columns["raw_part_count"]["nullable"] is True
-    assert upload_file_columns["raw_part_ordered_sha256"]["nullable"] is True
-    assert upload_file_columns["raw_parts_accepted"]["nullable"] is False
-    assert upload_file_columns["raw_part_plaintext_bytes"]["nullable"] is True
+    assert upload_artifact_columns["raw_part_count"]["nullable"] is True
+    assert upload_artifact_columns["raw_part_ordered_sha256"]["nullable"] is True
+    assert upload_artifact_columns["raw_parts_accepted"]["nullable"] is False
+    assert upload_artifact_columns["raw_part_plaintext_bytes"]["nullable"] is True
     upload_volume_columns = {
         column["name"]: column
         for column in inspector.get_columns("collection_archive_object_uploads")
