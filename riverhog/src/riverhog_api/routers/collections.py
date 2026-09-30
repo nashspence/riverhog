@@ -9,7 +9,7 @@ from http_api_contracts import (
     operation_interface,
     parse_quoted_sha256_identity,
 )
-from riverhog_archive_contracts import PAGE_BYTES_MAX
+from riverhog_archive_contracts import PAGE_BYTES_MAX, RecordSetRef
 from riverhog_canonical_json import parse_scalar
 from riverhog_core.app_permissions import COLLECTIONS_DELETE
 from riverhog_protocol import (
@@ -32,7 +32,13 @@ from riverhog_protocol import (
     ProvenanceStructureIdentityDocument,
     SortOrder,
 )
+from riverhog_protocol.collection_completion import (
+    CollectionCompletionRecordingDocument,
+    CollectionCompletionRecordingRequestDocument,
+    CollectionCompletionRequirementDocument,
+)
 from riverhog_protocol.errors import Conflict
+from riverhog_protocol.provenance_transport import ArchiveRecordSetReferenceDocument
 from riverhog_provenance_contracts import ProvenanceJournalId
 from starlette.concurrency import run_in_threadpool
 from starlette.responses import StreamingResponse
@@ -332,6 +338,74 @@ def bind_collection_upload_session_artifact_provenance(
     return CollectionArtifactProvenanceBindingBatchDocument.model_validate(
         container.collection_uploads.bind_artifact_provenance(collection_id, request)
     )
+
+
+@router.put(
+    "/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs",
+    response_model=ArchiveRecordSetReferenceDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def set_collection_upload_session_member_history_inputs(
+    collection_id: CollectionIdParameter,
+    artifact_id: ArtifactId,
+    request: ArchiveRecordSetReferenceDocument,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> ArchiveRecordSetReferenceDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    accepted = container.collection_uploads.set_member_history_inputs(
+        collection_id, artifact_id, RecordSetRef.from_mapping(request.model_dump(mode="json"))
+    )
+    return ArchiveRecordSetReferenceDocument.model_validate(accepted.to_mapping())
+
+
+@router.get(
+    "/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs",
+    response_model=ArchiveRecordSetReferenceDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def get_collection_upload_session_member_history_inputs(
+    collection_id: CollectionIdParameter,
+    artifact_id: ArtifactId,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> ArchiveRecordSetReferenceDocument:
+    container.collection_uploads.require_read_access(collection_id, principal)
+    return ArchiveRecordSetReferenceDocument.model_validate(
+        container.collection_uploads.get_member_history_inputs(
+            collection_id, artifact_id
+        ).to_mapping()
+    )
+
+
+@router.put(
+    "/collection-upload-sessions/{collection_id}/provenance/completion-requirement",
+    response_model=CollectionCompletionRequirementDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def set_collection_upload_session_completion_requirement(
+    collection_id: CollectionIdParameter,
+    request: CollectionCompletionRequirementDocument,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> CollectionCompletionRequirementDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    return container.collection_uploads.set_completion_requirement(collection_id, request)
+
+
+@router.post(
+    "/collection-upload-sessions/{collection_id}/provenance/completion-recording",
+    response_model=CollectionCompletionRecordingDocument,
+    openapi_extra=operation_interface("client-only-primitive"),
+)
+def reserve_collection_upload_session_completion_recording(
+    collection_id: CollectionIdParameter,
+    request: CollectionCompletionRecordingRequestDocument,
+    container: ContainerDep,
+    principal: CollectionCreator,
+) -> CollectionCompletionRecordingDocument:
+    container.collection_uploads.require_access(collection_id, principal)
+    return container.collection_uploads.reserve_completion_recording(collection_id, request)
 
 
 @router.post(

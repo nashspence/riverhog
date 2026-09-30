@@ -381,6 +381,7 @@ def create_journal(
     policy_uri: str = JOURNAL_POLICY,
     forked_from: Mapping[str, Any] | None = None,
     recorded_at: str | None = None,
+    entry_id: str | None = None,
     catalog: ContractCatalog | None = None,
 ) -> bytes:
     identity = journal_id or new_id()
@@ -401,6 +402,7 @@ def create_journal(
         kind="journal_init",
         body={"journal": policy, "assertions": dict(assertions)},
         recorded_at=recorded_at,
+        entry_id=entry_id,
     )
     raw = encode_entry(document, catalog=catalog)
     validate_journal(raw, catalog=catalog)
@@ -462,6 +464,8 @@ def append_assertion_batches(
     *,
     recorded_by_agent_id: str,
     catalog: ContractCatalog | None = None,
+    recorded_at: str | None = None,
+    entry_ids: Iterable[str] | None = None,
 ) -> bytes:
     """Append bounded assertion entries with one final journal validation.
 
@@ -475,6 +479,7 @@ def append_assertion_batches(
     previous = summary.tail.reference
     frames = [raw]
     sequence = len(summary.frames)
+    identities = None if entry_ids is None else iter(entry_ids)
     for assertions in batches:
         document = _entry(
             journal_id=summary.journal_id,
@@ -483,6 +488,8 @@ def append_assertion_batches(
             body={"assertions": dict(assertions)},
             sequence=sequence,
             previous=previous,
+            entry_id=None if identities is None else next(identities),
+            recorded_at=recorded_at,
         )
         encoded = encode_entry(document, catalog=catalog)
         frames.append(encoded)

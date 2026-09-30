@@ -16,7 +16,7 @@ from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
 
 from riverhog_client.processing.models import ClaimedArtifact
-from riverhog_client.processing.provenance import ClaimedProvenance
+from riverhog_client.processing.provenance import ClaimedProvenance, ClaimedProvenanceApi
 
 Heartbeat = Callable[[], None]
 _TERMINAL_RETRIEVAL_STATES = frozenset({"completed", "expired", "failed", "canceled"})
@@ -24,7 +24,7 @@ RetrievalPolicy = Literal["available-only", "allow"]
 RiverhogRestorePolicy = Literal["never", "allow"]
 
 
-class ClaimedCollectionApi(Protocol):
+class ClaimedCollectionApi(ClaimedProvenanceApi, Protocol):
     def get_collection(self, collection_id: CollectionId) -> dict[str, Any]: ...
 
     def get_collection_artifact_provenance(

@@ -9,7 +9,7 @@ import tempfile
 import threading
 import time
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from dataclasses import field as dataclass_field
 from pathlib import Path
 from typing import Any, BinaryIO
@@ -20,6 +20,7 @@ from riverhog_protocol import (
     CollectionTag,
 )
 from riverhog_protocol.artifact_identity import ArtifactId, ArtifactMemberIdentityDocument
+from riverhog_protocol.collection_completion import CollectionCompletionRequirementDocument
 from riverhog_protocol.collection_upload_transport import (
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadRegistrationConstraintsDocument,
@@ -60,6 +61,8 @@ class ProducerFile:
     materialization_hint: tuple[str, ...] | None = None
     allow_missing_materialization_hint: bool = False
     observation: ObservationResult | None = None
+    output_id: str | None = None
+    causal_input_states: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         supplied = self.source
@@ -91,6 +94,8 @@ class ProducerStream:
     materialization_hint: tuple[str, ...] | None = None
     allow_missing_materialization_hint: bool = False
     observation: ObservationResult | None = None
+    output_id: str | None = None
+    causal_input_states: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "artifact_id", ArtifactId(self.artifact_id))
@@ -141,6 +146,8 @@ class _Source:
     materialization_hint: tuple[str, ...] | None
     allow_missing_materialization_hint: bool
     observation: ObservationResult | None = None
+    output_id: str | None = None
+    causal_input_states: tuple[Mapping[str, Any], ...] = ()
     content: builtins.bytes | None = None
     raw_parts: dict[str, object] | None = None
     raw_digest_spool: RawSourceHash | None = None
@@ -281,7 +288,7 @@ class IncrementalCollectionProducer:
 
     A payload seal lets this client discard its range-reader state. The caller
     retains each original source until Riverhog returns a custody receipt that
-    binds both the final archive root and canonical provenance root. Completion
+    binds the verified payload, exact primary and required input history. Completion
     remains explicit and is the sole path that publishes a collection.
     """
 
@@ -303,6 +310,7 @@ class IncrementalCollectionProducer:
         tags: Sequence[CollectionTag] = (),
         event_context: Mapping[str, object] | None = None,
         progress: ReadProgress | None = None,
+        completion_requirement: CollectionCompletionRequirementDocument | None = None,
     ) -> None:
         self.api = api
         self.progress = progress
@@ -317,6 +325,7 @@ class IncrementalCollectionProducer:
             ingest_source=ingest_source,
             source_context=dict(source_context or {}),
             construction_identity=construction_identity,
+            completion_requirement=completion_requirement,
         )
         self._sources: dict[ArtifactId, _Source] = {}
         self._closed = False
@@ -360,6 +369,16 @@ class IncrementalCollectionProducer:
             self._closed = True
             self.constraints = None
             return
+        self.construction_identity_sha256 = session.get("construction_identity_sha256")
+        if completion_requirement is not None:
+            if not isinstance(self.construction_identity_sha256, str):
+                raise RuntimeError("execution construction omitted its accepted creation identity")
+            self._attribution = replace(
+                self._attribution, construction_identity=self.construction_identity_sha256
+            )
+            api.set_collection_upload_session_completion_requirement(
+                self.collection_id, completion_requirement
+            )
         constraints = session.get("registration_constraints")
         if not isinstance(constraints, Mapping):
             raise RuntimeError("Riverhog upload session did not return registration constraints")
@@ -572,6 +591,8 @@ class IncrementalCollectionProducer:
                         allow_missing_materialization_hint=(
                             source.allow_missing_materialization_hint
                         ),
+                        output_id=source.output_id,
+                        causal_input_states=source.causal_input_states,
                     )
                 else:
                     if accepted.artifact_id != source.artifact_id:
@@ -646,6 +667,11 @@ class IncrementalCollectionProducer:
             receipts.extend(self._accept_registered_rows(iter(rows), expected=source_batch))
         return tuple(receipts)
 
+    def reconcile_custody(self) -> tuple[ProducerArtifactCustody, ...]:
+        """Poll exact pending identities after accepting their required history."""
+        self._require_heartbeat()
+        return self._reconcile_pending_sources()
+
     def _accept_registered_rows(
         self,
         rows: Iterator[dict[str, Any]],
@@ -699,9 +725,12 @@ class IncrementalCollectionProducer:
             elif row.get("payload_sealed") is True:
                 # Only the internal range reader can be released here. The
                 # adapter retains its source until the full custody receipt.
-                owned = self._sources.pop(source.artifact_id, None)
+                owned = self._sources.get(source.artifact_id)
                 if owned is not None:
                     owned.close()
+                    self._sources[source.artifact_id] = replace(
+                        owned, reader=None, content=None, raw_digest_spool=None, observation=None
+                    )
         if expected_by_id:
             raise RuntimeError("Riverhog omitted requested registered artifacts")
         return tuple(receipts)
@@ -781,6 +810,8 @@ def _hash_local_source(
         materialization_hint=item.materialization_hint,
         allow_missing_materialization_hint=item.allow_missing_materialization_hint,
         observation=item.observation,
+        output_id=item.output_id,
+        causal_input_states=item.causal_input_states,
         raw_parts=raw_parts,
         raw_digest_spool=raw_digest_spool,
         reader=_VerifiedRangeReader(
@@ -859,6 +890,8 @@ def _verify_stream_source(
         materialization_hint=item.materialization_hint,
         allow_missing_materialization_hint=item.allow_missing_materialization_hint,
         observation=item.observation,
+        output_id=item.output_id,
+        causal_input_states=item.causal_input_states,
         raw_parts=raw_parts,
         raw_digest_spool=raw_digest_spool,
         reader=verified_reader,

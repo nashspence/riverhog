@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Sequence
+from collections.abc import Iterable
 from typing import Annotated, Literal, Self
 
 from pydantic import (
@@ -24,7 +24,10 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.exact_scalar import NonnegativeDecimal, Sequence256Hex
 from riverhog_protocol.paths import CollectionId, validate_collection_id
-from riverhog_protocol.provenance_transport import JournalAnchorDocument
+from riverhog_protocol.provenance_transport import (
+    CollectionArtifactProvenanceBindingDocument,
+    JournalAnchorDocument,
+)
 from riverhog_protocol.raw_ingress import (
     RAW_SOURCE_DIGEST_BATCH_MAX,
     RawSourceDigestSummary,
@@ -93,7 +96,7 @@ class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
 class CollectionUploadProvenanceJournalCreateDocument(CollectionUploadDocument):
     bytes: NonnegativeDecimal = Field(ge=1)
     sha256: Sha256
-    root_role: Literal["operation"] | None = None
+    selection_role: Literal["completion", "history-dependency"] | None = None
 
 
 class CollectionUploadProvenanceJournalStatusDocument(CollectionUploadDocument):
@@ -260,17 +263,26 @@ class CollectionUploadCustodyObjectDocument(CollectionUploadDocument):
     sealed_receipt_sha256: Sha256
 
 
+class CollectionUploadProvenanceCustodyObjectDocument(CollectionUploadDocument):
+    object_id: str
+    relative_path: str
+    plaintext_bytes: NonnegativeDecimal = Field(ge=1)
+    plaintext_sha256: Sha256
+    sealed_receipt_sha256: Sha256
+
+
 class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
-    """Safe-release evidence after payload and canonical corpus roots are sealed."""
+    """Durable verified payload/primary custody, before completion and final roots."""
 
     format: Literal["riverhog-artifact-custody-receipt/v1"] = "riverhog-artifact-custody-receipt/v1"
     collection_id: CollectionId
     artifact_id: ArtifactId
     bytes: NonnegativeDecimal
     sha256: Sha256
-    archive_root_sha256: Sha256
-    provenance_root_sha256: Sha256
-    provenance_root_receipt_sha256: Sha256
+    primary: CollectionArtifactProvenanceBindingDocument
+    completion_requirement_sha256: Sha256 | None
+    provenance_object_count: NonnegativeDecimal = Field(ge=1)
+    provenance_object_set_sha256: Sha256
     archive_object_count: NonnegativeDecimal = Field(ge=1)
     archive_object_set_sha256: Sha256
     receipt_sha256: Sha256
@@ -282,6 +294,8 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
 
     @model_validator(mode="after")
     def validate_receipt(self) -> Self:
+        if self.primary.artifact_id != self.artifact_id:
+            raise ValueError("custody primary names another artifact")
         payload = self.model_dump(mode="json", exclude={"receipt_sha256"})
         if canonical_json_sha256(payload) != self.receipt_sha256:
             raise ValueError("artifact custody receipt identity differs from its payload")
@@ -295,10 +309,10 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
         artifact_id: ArtifactId,
         bytes: int,
         sha256: str,
-        archive_root_sha256: str,
-        provenance_root_sha256: str,
-        provenance_root_receipt_sha256: str,
-        archive_objects: Sequence[CollectionUploadCustodyObjectDocument],
+        primary: CollectionArtifactProvenanceBindingDocument,
+        completion_requirement_sha256: str | None,
+        provenance_objects: Iterable[CollectionUploadProvenanceCustodyObjectDocument],
+        archive_objects: Iterable[CollectionUploadCustodyObjectDocument],
     ) -> CollectionUploadArtifactCustodyReceiptDocument:
         digest = hashlib.sha256()
         count = 0
@@ -313,15 +327,29 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
             count += 1
         if count < 1:
             raise ValueError("custody receipt requires at least one archive object")
+        provenance_digest = hashlib.sha256()
+        provenance_count = 0
+        previous_path: str | None = None
+        for provenance in provenance_objects:
+            if previous_path is not None and provenance.relative_path <= previous_path:
+                raise ValueError("custody provenance objects must be unique and path ordered")
+            encoded = canonical_json_bytes(provenance.model_dump(mode="json"))
+            provenance_digest.update(len(encoded).to_bytes(8, "big"))
+            provenance_digest.update(encoded)
+            provenance_count += 1
+            previous_path = provenance.relative_path
+        if provenance_count == 0:
+            raise ValueError("custody receipt requires durable primary provenance objects")
         payload = {
             "format": "riverhog-artifact-custody-receipt/v1",
             "collection_id": format_scalar("sequence63", validate_collection_id(collection_id)),
             "artifact_id": str(artifact_id),
             "bytes": format_scalar("nonnegative", bytes),
             "sha256": sha256,
-            "archive_root_sha256": archive_root_sha256,
-            "provenance_root_sha256": provenance_root_sha256,
-            "provenance_root_receipt_sha256": provenance_root_receipt_sha256,
+            "primary": primary.model_dump(mode="json"),
+            "completion_requirement_sha256": completion_requirement_sha256,
+            "provenance_object_count": str(provenance_count),
+            "provenance_object_set_sha256": provenance_digest.hexdigest(),
             "archive_object_count": format_scalar("nonnegative", count),
             "archive_object_set_sha256": digest.hexdigest(),
         }
@@ -390,6 +418,7 @@ __all__ = [
     "CollectionUploadArtifactCustodyReceiptDocument",
     "CollectionUploadCustodyMode",
     "CollectionUploadCustodyObjectDocument",
+    "CollectionUploadProvenanceCustodyObjectDocument",
     "CollectionUploadRegistrationConstraintsDocument",
     "CollectionUploadRawDigestBatchDocument",
     "CollectionUploadRawDigestProgressDocument",

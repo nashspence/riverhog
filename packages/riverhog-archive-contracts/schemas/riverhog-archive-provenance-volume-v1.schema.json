@@ -16,7 +16,7 @@
       "required": ["kind", "path", "bytes", "sha256"],
       "properties": {
         "kind": {"enum": ["bindings", "journal"]},
-        "path": {"type": "string", "pattern": "^provenance/payloads/volume-[0-9a-f]{64}\\.bin\\.age$"},
+        "path": {"type": "string", "pattern": "^provenance/payloads/[0-9a-f]{2}/[0-9a-f]{64}\\.bin\\.age$"},
         "bytes": {"$ref": "#/$defs/positive_count"},
         "sha256": {"$ref": "#/$defs/sha256"}
       }

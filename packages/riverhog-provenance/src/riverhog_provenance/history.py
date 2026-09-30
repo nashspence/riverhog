@@ -14,6 +14,7 @@ from riverhog_archive_contracts import (
     RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryBinding,
+    MemberHistoryImport,
     MemberHistoryStore,
     history_record_page_object_path,
     member_history_object_path,
@@ -44,9 +45,10 @@ def _external_references(value: object) -> Iterator[dict[str, Any]]:
             if set(value) == fields:
                 yield ExternalReference.model_validate(value).model_dump(mode="json")
                 return
-        for key, child in value.items():
-            if key != "value":  # Profile values are opaque, not canonical endpoints.
-                yield from _external_references(child)
+        if value.get("type") == "json" and set(value) == {"type", "value"}:
+            return  # Opaque profile data is not a canonical endpoint language.
+        for child in value.values():
+            yield from _external_references(child)
     elif isinstance(value, list):
         for child in value:
             yield from _external_references(child)
@@ -193,23 +195,10 @@ class MemberHistoryClosure:
         for selected in self.store.roots(binding, extent=extent):
             self._snapshot(selected.journal)
         for imported in self.store.imports(binding):
-            proof = self.store.source_proof(imported)
-            source = self.store.descriptor(proof.binding)
-            primary = self.summary_at(source.primary.journal)
-            state, _ = selected_delivery_occurrence(
-                primary,
-                binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
-                artifact_id=source.artifact_id,
-                byte_count=source.bytes,
-                sha256=source.sha256,
-                member_role=self.member_role,
-            )
-            if external_reference(primary, state["id"]) != imported.input_state:
-                raise ProvenanceValidationError("imported State differs from the source primary")
-            self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
+            source_binding = self._accept_import(imported)
             self._db.execute(
                 "INSERT OR IGNORE INTO imports VALUES (?, ?)",
-                (binding.history_sha256, proof.binding.history_sha256),
+                (binding.history_sha256, source_binding.history_sha256),
             )
             cycle = self._db.execute(
                 "WITH RECURSIVE descendants(id) AS (SELECT target FROM imports WHERE source = ? "
@@ -219,10 +208,38 @@ class MemberHistoryClosure:
             ).fetchone()
             if cycle:
                 raise ProvenanceValidationError("cyclic member-history imports")
-            self._history(proof.binding, imported.extent)
+
+    def _accept_import(self, imported: MemberHistoryImport) -> MemberHistoryBinding:
+        proof = self.store.source_proof(imported)
+        source = self.store.descriptor(proof.binding)
+        primary = self.summary_at(source.primary.journal)
+        state, _ = selected_delivery_occurrence(
+            primary,
+            binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
+            artifact_id=source.artifact_id, byte_count=source.bytes, sha256=source.sha256,
+            member_role=self.member_role,
+        )
+        if external_reference(primary, state["id"]) != imported.input_state:
+            raise ProvenanceValidationError("imported State differs from the source primary")
+        self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
+        self._history(proof.binding, imported.extent)
+        return proof.binding
+
+    def resolve_import(self, imported: MemberHistoryImport) -> None:
+        """Validate an accepted early input selection, before output H can be sealed."""
+        self._accept_import(imported)
+        self._drain()
 
     def resolve(self, binding: MemberHistoryBinding, *, extent: str) -> None:
         self._history(binding, extent)
+        self._drain()
+
+    def resolve_snapshot(self, anchor: HistoryJournalAnchor) -> None:
+        """Validate early construction custody without claiming a finalized H."""
+        self._snapshot(anchor)
+        self._drain()
+
+    def _drain(self) -> None:
         while True:
             pending = self._db.execute(
                 "SELECT identity, extent, binding FROM histories WHERE done = 0 LIMIT 1"

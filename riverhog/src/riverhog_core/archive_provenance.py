@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from riverhog_age import encrypt_age_scrypt
 from riverhog_archive_contracts import (
+    PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
     MemberHistoryBinding,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
@@ -14,6 +15,7 @@ from riverhog_archive_contracts import (
     format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
+    provenance_payload_object_path,
     source_binding_proof_object_path,
 )
 
@@ -75,7 +77,7 @@ class ArchiveProvenancePublisher:
             raise ValueError("provenance payload identity changed before publication")
         payload_object = self._put(
             prefix=prefix,
-            object_id=f"provenance-payload-{format_archive_sequence(document.sequence)}",
+            object_id=f"provenance-payload-{document.payload.sha256}",
             kind=(
                 "provenance-bindings"
                 if document.payload.kind == "bindings"
@@ -101,6 +103,26 @@ class ArchiveProvenancePublisher:
             sequence=document.sequence,
             payload=payload_object,
             metadata=metadata_object,
+        )
+
+    def publish_journal_segment(
+        self, *, archive_storage_prefix: str, content: bytes
+    ) -> SealedProvenanceObject:
+        """Durably retain a bounded segment before an early primary custody receipt.
+
+        Final corpus metadata refers to these same encrypted octets by digest;
+        physical custody does not require a future collection or provenance root.
+        """
+        if not 1 <= len(content) <= PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX:
+            raise ValueError("canonical custody segment exceeds its bounded byte contract")
+        digest = hashlib.sha256(content).hexdigest()
+        return self._put(
+            prefix=_prefix(archive_storage_prefix),
+            object_id="provenance-payload-" + digest,
+            kind="provenance-journal-segment",
+            relative_path=provenance_payload_object_path(digest),
+            content=content,
+            storage_format=PROVENANCE_JOURNAL_SEGMENT_STORAGE_FORMAT,
         )
 
     def publish_member_history(

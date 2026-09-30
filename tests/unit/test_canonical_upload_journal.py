@@ -27,6 +27,11 @@ from riverhog_protocol import (
     CollectionUploadProvenanceJournalCreateDocument,
     collection_tag_set_identity,
 )
+from riverhog_protocol.collection_completion import (
+    COMPLETION_REQUIRED_RECORD_KINDS,
+    CollectionCompletionRequirementDocument,
+    CollectionCompletionRecordingRequestDocument,
+)
 from riverhog_protocol.errors import Conflict
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
 from sqlalchemy.orm import Session
@@ -101,7 +106,7 @@ def test_staged_canonical_journal_seals_to_its_exact_tail() -> None:
         assert _journal_payload(record)["anchor"] == expected.anchor
 
 
-def test_operation_journal_role_is_immutable_and_explicit(tmp_path: Path) -> None:
+def test_completion_requirement_and_journal_selection_are_immutable(tmp_path: Path) -> None:
     config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.db"))
     factory = make_session_factory(config.database_url)
     Base.metadata.create_all(factory.kw["bind"])
@@ -140,13 +145,37 @@ def test_operation_journal_role_is_immutable_and_explicit(tmp_path: Path) -> Non
     first = "urn:uuid:11111111-1111-4111-8111-111111111111"
     second = "urn:uuid:22222222-2222-4222-8222-222222222222"
     authority = CollectionUploadProvenanceJournalCreateDocument(
-        bytes="10", sha256="b" * 64, root_role="operation"
+        bytes="10", sha256="b" * 64, selection_role="completion"
     )
+    with pytest.raises(Conflict, match="no accepted construction requirement"):
+        service.create_provenance_journal(1, first, authority)
+    requirement = CollectionCompletionRequirementDocument(
+        execution_id="a" * 64,
+        execution_envelope_sha256="b" * 64,
+        controller_evidence_sha256="c" * 64,
+        record_kinds=COMPLETION_REQUIRED_RECORD_KINDS,
+    )
+    assert service.set_completion_requirement(1, requirement) == requirement
+    assert service.set_completion_requirement(1, requirement) == requirement
+    request = CollectionCompletionRecordingRequestDocument(
+        requirement_sha256=requirement.identity, records_sha256="c" * 64
+    )
+    recording = service.reserve_completion_recording(1, request)
+    assert service.reserve_completion_recording(1, request) == recording
+    with pytest.raises(Conflict, match="preimages cannot be replaced"):
+        service.reserve_completion_recording(
+            1, request.model_copy(update={"records_sha256": "d" * 64})
+        )
+    first = recording.journal_id
+    with pytest.raises(Conflict, match="cannot be replaced"):
+        service.set_completion_requirement(
+            1, requirement.model_copy(update={"execution_id": "d" * 64})
+        )
     assert service.create_provenance_journal(1, first, authority)["journal_id"] == first
     assert service.create_provenance_journal(1, first, authority)["journal_id"] == first
     with session_scope(factory) as session:
         upload = session.get(CollectionUploadRecord, 1)
-        assert upload is not None and upload.operation_journal_id == first
+        assert upload is not None and upload.completion_journal_id == first
     with pytest.raises(Conflict, match="already selected"):
         service.create_provenance_journal(1, second, authority)
     with pytest.raises(Conflict, match="retain its root role"):

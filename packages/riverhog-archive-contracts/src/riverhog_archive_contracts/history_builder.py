@@ -93,8 +93,8 @@ class MemberHistoryBuilder:
             )
             verify_member_history_sets(
                 history,
-                root_pages=self._pages(history.roots),
-                import_pages=self._pages(history.imports),
+                root_pages=self.pages(history.roots),
+                import_pages=self.pages(history.imports),
             )
             self._sealed = history
         history = self._sealed
@@ -106,7 +106,7 @@ class MemberHistoryBuilder:
             len(history.to_json_bytes()),
         ), history
 
-    def _pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
+    def pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
         rows: list[dict[str, object]] = []
         ordinal = 0
         for key, value in self._db.execute(
@@ -125,7 +125,7 @@ class MemberHistoryBuilder:
     def objects(self) -> Iterator[bytes]:
         _, history = self.seal()
         for authority in (history.roots, history.imports):
-            for page in self._pages(authority):
+            for page in self.pages(authority):
                 yield page.to_json_bytes()
         yield history.to_json_bytes()
 

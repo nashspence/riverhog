@@ -99,7 +99,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
                 delivery_context_id=delivery_context_id,
                 artifact_count=1,
                 artifact_bytes=7,
-                operation_journal_id=late_summary.journal_id,
+                completion_journal_id=late_summary.journal_id,
                 state="finalizing",
                 archive_phase="finalizing",
             )

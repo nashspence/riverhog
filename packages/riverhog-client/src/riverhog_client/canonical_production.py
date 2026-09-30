@@ -14,11 +14,14 @@ from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
     CollectionArtifactProvenanceBindingBatchDocument,
 )
+from riverhog_protocol.collection_completion import CollectionCompletionRequirementDocument
 from riverhog_protocol.collection_production_provenance import (
     COLLECTION_MEMBER_HISTORY_ROLE,
     COLLECTION_MEMBER_ROLE,
     COLLECTION_PRODUCTION_CONTRACT_ID,
     COLLECTION_RECORD_FRAGMENT_BYTES_MAX,
+    COMPLETION_REQUIREMENT_SCHEMA_ID,
+    EXECUTION_OUTPUT_SCHEMA_ID,
     PRODUCER_SCHEMA_ID,
     RECORD_FRAGMENT_SCHEMA_ID,
     RECORD_MANIFEST_SCHEMA_ID,
@@ -53,6 +56,7 @@ class ProducerAttribution:
     ingest_source: str
     source_context: Mapping[str, Any]
     construction_identity: str
+    completion_requirement: CollectionCompletionRequirementDocument | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,6 +94,7 @@ def build_member_journal(
     attribution: ProducerAttribution,
     materialization_hint: tuple[str, ...] | None,
     causal_input_states: Sequence[Mapping[str, Any]] = (),
+    output_id: str | None = None,
 ) -> ProducedMemberJournal:
     """Bind source measurement and producer attribution to one opaque member.
 
@@ -258,6 +263,34 @@ def build_member_journal(
             ),
         )
     )
+    requirement = attribution.completion_requirement
+    if requirement is not None:
+        if not output_id or output_id != output_id.strip():
+            raise ValueError("incremental execution member requires its exact output key")
+        for subject, property_name, schema_id, data in (
+            (
+                reference(delivery_context_id, "context"),
+                "required-completion",
+                COMPLETION_REQUIREMENT_SCHEMA_ID,
+                requirement.model_dump(mode="json"),
+            ),
+            (
+                reference(observation.state_id, "state"),
+                "execution-output",
+                EXECUTION_OUTPUT_SCHEMA_ID,
+                {"execution_id": requirement.execution_id, "output_id": output_id},
+            ),
+        ):
+            graph["extensions"].append(
+                assertion(
+                    "extension",
+                    producer_agent_id,
+                    subject=subject,
+                    property=COLLECTION_PRODUCTION_CONTRACT_ID + "/" + property_name,
+                    value={"type": "json", "value": collection_production_profile(schema_id, data)},
+                    evidence_items=[evidence(producer_agent_id, "process_record")],
+                )
+            )
     journal_id = new_id()
     association = assertion(
         "delivery_association",
@@ -345,6 +378,7 @@ def bind_produced_member(
     materialization_hint: tuple[str, ...] | None,
     allow_missing_materialization_hint: bool,
     causal_input_states: Sequence[Mapping[str, Any]] = (),
+    output_id: str | None = None,
 ) -> ProducedMemberJournal:
     """Stage and bind one already registered member before finalization."""
 
@@ -360,6 +394,7 @@ def bind_produced_member(
         attribution=attribution,
         materialization_hint=materialization_hint,
         causal_input_states=causal_input_states,
+        output_id=output_id,
     )
     api.upload_collection_upload_session_provenance_journal(
         collection_id,
