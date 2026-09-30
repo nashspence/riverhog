@@ -195,7 +195,7 @@ docker run --rm \
   --volume "${proof_root}/oracle:/oracle:ro" \
   --volume "${proof_root}/recovery-output/recovered:/recovered:ro" \
   alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce \
-  sh -ceu 'cmp /oracle/alpha.txt /recovered/alpha.txt; cmp /oracle/beta.txt /recovered/beta.txt; cmp /oracle/direct.bin /recovered/direct.bin; test -d /recovered/.riverhog/provenance'
+  sh -ceu 'cmp /oracle/alpha.txt /recovered/files/alpha.txt; cmp /oracle/beta.txt /recovered/files/beta.txt; cmp /oracle/direct.bin /recovered/files/direct.bin; test -d /recovered/provenance/primary; test -d /recovered/provenance/journals; test -f /recovered/metadata/description.json; test -f /recovered/metadata/tags/head.json; test -f /recovered/recovery.json'
 
 instrument=(
   docker run --rm --network none --user 0

@@ -96,6 +96,7 @@ def _select_archive(
     age_command: str,
     scratch: Path,
     expected_archive_root_sha256: str | None = None,
+    require_provenance: bool = True,
 ) -> _ArchiveSelection:
     archive = archive_dir.expanduser().resolve()
     if not archive.is_dir():
@@ -118,12 +119,13 @@ def _select_archive(
     root_sha256 = hashlib.sha256(raw).hexdigest()
     if expected_archive_root_sha256 is not None and root_sha256 != expected_archive_root_sha256:
         raise RecoveryError("selected archive root differs from trusted expectation")
-    provenance_file = archive_file(archive, manifest.provenance.root.path)
-    if sha256_file(provenance_file) != (
-        manifest.provenance.root.stored_bytes,
-        manifest.provenance.root.stored_sha256,
-    ):
-        raise RecoveryError("encrypted provenance root differs from the immutable manifest")
+    if require_provenance:
+        provenance_file = archive_file(archive, manifest.provenance.root.path)
+        if sha256_file(provenance_file) != (
+            manifest.provenance.root.stored_bytes,
+            manifest.provenance.root.stored_sha256,
+        ):
+            raise RecoveryError("encrypted provenance root differs from the immutable manifest")
     return _ArchiveSelection(archive, descriptor, encrypted, manifest, raw, root_sha256)
 
 
@@ -608,6 +610,7 @@ def recover_collection_tags(
             passphrases=passphrases,
             age_command=age_command,
             scratch=Path(name),
+            require_provenance=False,
         )
         raw = selection.encrypted.read_bounded(COLLECTION_TAG_HEAD_RELATIVE_PATH, 64 * 1024)
         head = CollectionTagHeadDocument.from_json_bytes(raw)
@@ -637,6 +640,7 @@ def recover_collection_description(
             passphrases=passphrases,
             age_command=age_command,
             scratch=Path(name),
+            require_provenance=False,
         )
         path = selection.archive / COLLECTION_DESCRIPTION_RELATIVE_PATH
         if not path.exists():
