@@ -4,7 +4,7 @@ import hashlib
 from dataclasses import dataclass
 
 import pytest
-from riverhog_core.domain.archive import ArchiveFile
+from riverhog_core.domain.archive import ArchiveArtifact
 from riverhog_core.pack_upload import (
     PackUploadCheckpoint,
     PackVolumeUploader,
@@ -32,8 +32,12 @@ def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionPrec
     )
 
 
-def _file(path: str, content: bytes) -> ArchiveFile:
-    return ArchiveFile(path=path, bytes=len(content), sha256=hashlib.sha256(content).hexdigest())
+def _artifact(artifact_id: str, content: bytes) -> ArchiveArtifact:
+    return ArchiveArtifact(
+        artifact_id=artifact_id,
+        bytes=len(content),
+        sha256=hashlib.sha256(content).hexdigest(),
+    )
 
 
 class MemoryCheckpointStore:
@@ -195,12 +199,14 @@ def _uploader(
 
 def _payload(plan, unit, contents: dict[str, bytes]) -> bytes:
     descriptor = pack_unit_descriptors(plan)[unit]
-    return b"".join(contents[source.path] for source in descriptor.sources)
+    return b"".join(contents[source.artifact_id] for source in descriptor.sources)
 
 
 def test_pack_is_acknowledged_only_after_final_resumable_write_completion() -> None:
-    contents = {"a.txt": b"alpha", "b.txt": b"beta"}
-    plan = plan_pack_volume([_file(path, value) for path, value in contents.items()], sequence=0)
+    contents = {"a" * 64: b"alpha", "b" * 64: b"beta"}
+    plan = plan_pack_volume(
+        [_artifact(path, value) for path, value in contents.items()], sequence=0
+    )
     store = MemoryResumableStore()
     checkpoints = MemoryCheckpointStore()
     uploader = _uploader(store, checkpoints)
@@ -229,7 +235,7 @@ def test_pack_is_acknowledged_only_after_final_resumable_write_completion() -> N
 
 def test_pack_upload_revalidates_the_registered_source_identity() -> None:
     content = b"registered content"
-    plan = plan_pack_volume([_file("only.txt", content)], sequence=0)
+    plan = plan_pack_volume([_artifact("c" * 64, content)], sequence=0)
     store = MemoryResumableStore()
     checkpoints = MemoryCheckpointStore()
     uploader = _uploader(store, checkpoints)
@@ -249,9 +255,9 @@ def test_pack_upload_revalidates_the_registered_source_identity() -> None:
 
 
 def test_checkpoint_resumes_across_riverhog_and_adapter_restart() -> None:
-    contents = {f"f-{index}.bin": bytes([index]) * (1024 * 1024) for index in range(7)}
+    contents = {f"{index:064x}": bytes([index]) * (1024 * 1024) for index in range(7)}
     plan = plan_pack_volume(
-        [_file(path, value) for path, value in contents.items()],
+        [_artifact(path, value) for path, value in contents.items()],
         sequence=0,
         part_plaintext_bytes=ARCHIVE_UNIT_BYTES,
     )
@@ -295,8 +301,8 @@ def test_checkpoint_resumes_across_riverhog_and_adapter_restart() -> None:
 
 
 def test_lost_complete_response_is_recovered_from_final_object_metadata() -> None:
-    contents = {"only.txt": b"content"}
-    plan = plan_pack_volume([_file("only.txt", contents["only.txt"])], sequence=0)
+    contents = {"c" * 64: b"content"}
+    plan = plan_pack_volume([_artifact("c" * 64, contents["c" * 64])], sequence=0)
     store = MemoryResumableStore()
     checkpoints = MemoryCheckpointStore()
     uploader = _uploader(store, checkpoints)
@@ -326,8 +332,8 @@ def test_lost_complete_response_is_recovered_from_final_object_metadata() -> Non
 
 
 def test_checkpoint_round_trips() -> None:
-    contents = {"only.txt": b"content"}
-    plan = plan_pack_volume([_file("only.txt", contents["only.txt"])], sequence=0)
+    contents = {"c" * 64: b"content"}
+    plan = plan_pack_volume([_artifact("c" * 64, contents["c" * 64])], sequence=0)
     store = MemoryResumableStore()
     checkpoints = MemoryCheckpointStore()
     uploader = _uploader(store, checkpoints)
@@ -365,8 +371,8 @@ class LoseFirstPartResponseStore(MemoryResumableStore):
 
 
 def test_lost_part_response_is_retried_at_the_same_deterministic_part_number() -> None:
-    contents = {"only.txt": b"content"}
-    plan = plan_pack_volume([_file("only.txt", contents["only.txt"])], sequence=0)
+    contents = {"c" * 64: b"content"}
+    plan = plan_pack_volume([_artifact("c" * 64, contents["c" * 64])], sequence=0)
     store = LoseFirstPartResponseStore()
     checkpoints = MemoryCheckpointStore()
     uploader = _uploader(store, checkpoints)
