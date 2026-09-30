@@ -839,6 +839,7 @@ name = "a-stove0-media-archive-lib"
 version = "0.1.0"
 source = { editable = "some-implementations/stove0/targets/media-archive/support" }
 dependencies = [
+    { name = "a-stove0-materialization-hint-evidence-contract-lib" },
     { name = "a-stove0-media-archive-contract-lib" },
     { name = "a-stove0-media-metadata-contract-lib" },
     { name = "pydantic" },
@@ -850,6 +851,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "a-stove0-materialization-hint-evidence-contract-lib", editable = "some-implementations/stove0/observers/contracts/materialization-hint" },
     { name = "a-stove0-media-archive-contract-lib", editable = "some-implementations/stove0/targets/media-archive/contracts" },
     { name = "a-stove0-media-metadata-contract-lib", editable = "some-implementations/stove0/observers/contracts/media-metadata" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },

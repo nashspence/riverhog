@@ -22,7 +22,6 @@ from a_stove0_media_metadata_contract_lib import (
     MediaMetadataFacts,
 )
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
-from riverhog_protocol.paths import validate_canonical_relpath
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     canonical_json_bytes,
@@ -84,8 +83,6 @@ class MediaProjectedValue(ProjectionModel):
 class MediaProjectionItem(ProjectionModel):
     input_artifact_id: str
     associated_sidecar_artifact_ids: tuple[str, ...] = ()
-    archive_path: str
-    xmp_path: str
     assertions: tuple[MediaMetadataFact, ...] = ()
     selected: tuple[MediaProjectedValue, ...] = ()
 
@@ -95,11 +92,6 @@ class MediaProjectionItem(ProjectionModel):
         if value != tuple(sorted(set(value))):
             raise ValueError("associated XMP artifact IDs must be unique and ordered")
         return value
-
-    @field_validator("archive_path", "xmp_path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
 
     @model_validator(mode="after")
     def canonical_evidence(self) -> Self:
@@ -130,12 +122,6 @@ class MediaProjectionItem(ProjectionModel):
 
 class RetainedXmpSidecar(ProjectionModel):
     input_artifact_id: str
-    output_path: str
-
-    @field_validator("output_path")
-    @classmethod
-    def canonical_path(cls, value: str) -> str:
-        return validate_canonical_relpath(value)
 
 
 class MediaArchiveProjectionPayload(ProjectionModel):
@@ -154,13 +140,6 @@ class MediaArchiveProjectionPayload(ProjectionModel):
         sidecar_ids = [item.input_artifact_id for item in self.retained_xmp_sidecars]
         if sidecar_ids != sorted(sidecar_ids) or len(sidecar_ids) != len(set(sidecar_ids)):
             raise ValueError("retained XMP sidecars must be unique and ordered")
-        output_paths = [
-            *(item.archive_path for item in self.items),
-            *(item.xmp_path for item in self.items),
-            *(item.output_path for item in self.retained_xmp_sidecars),
-        ]
-        if len(output_paths) != len(set(output_paths)):
-            raise ValueError("media projection output paths must be unique")
         return self
 
 
@@ -203,13 +182,9 @@ def resolve_media_archive_projection(
     input_groups: Sequence[WorkInputGroup],
     observations: Sequence[ContentObservationEvidence],
     policy: MediaProjectionPolicy,
-    archive_directory: str,
-    archive_suffix: str,
 ) -> MediaArchiveProjection:
     """Resolve exact media output semantics without reading any payload bytes."""
 
-    if not archive_suffix.startswith(".") or "/" in archive_suffix:
-        raise ValueError("media archive suffix must be a simple extension")
     primary = tuple(item for item in inputs if item.role == SOURCE_ROLE)
     sidecars = tuple(item for item in inputs if item.role == XMP_SOURCE_ROLE)
     unknown = sorted({item.role for item in inputs} - {SOURCE_ROLE, XMP_SOURCE_ROLE})
@@ -295,17 +270,12 @@ def resolve_media_archive_projection(
             MediaProjectionItem(
                 input_artifact_id=primary_artifact.id,
                 associated_sidecar_artifact_ids=tuple(item.id for item in associated),
-                archive_path=(f"{archive_directory}/{primary_artifact.id}/archive{archive_suffix}"),
-                xmp_path=(f"{archive_directory}/{primary_artifact.id}/archive{archive_suffix}.xmp"),
                 assertions=assertions,
                 selected=_select_values(assertions, policy),
             )
         )
     retained = tuple(
-        RetainedXmpSidecar(
-            input_artifact_id=item.id,
-            output_path=f"{archive_directory}/~source-artifacts/{item.id}.xmp",
-        )
+        RetainedXmpSidecar(input_artifact_id=item.id)
         for item in sorted(sidecars, key=lambda item: item.id)
     )
     return MediaArchiveProjection.seal(
@@ -323,8 +293,6 @@ def resolve_media_archive_preflight_projection(
     request: TargetPreflightRequest,
     *,
     policy: MediaProjectionPolicy,
-    archive_directory: str,
-    archive_suffix: str,
 ) -> MediaArchiveProjection:
     """Validate the recipe's exact grouping and seal media execution details."""
 
@@ -371,8 +339,6 @@ def resolve_media_archive_preflight_projection(
         input_groups=request.input_groups,
         observations=request.observations,
         policy=policy,
-        archive_directory=archive_directory,
-        archive_suffix=archive_suffix,
     )
 
 

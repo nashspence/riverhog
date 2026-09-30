@@ -23,6 +23,7 @@ dependencies = [
   "riverhog-protocol>=0.1,<0.2",
   "a-stove0-media-archive-contract-lib>=0.1,<0.2",
   "a-stove0-media-metadata-contract-lib>=0.1,<0.2",
+  "a-stove0-materialization-hint-evidence-contract-lib>=0.1,<0.2",
   "stove0-observer-protocol>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
   "stove0-target-protocol>=0.1,<0.2",
@@ -32,6 +33,7 @@ dependencies = [
 riverhog-protocol = { workspace = true }
 a-stove0-media-archive-contract-lib = { workspace = true }
 a-stove0-media-metadata-contract-lib = { workspace = true }
+a-stove0-materialization-hint-evidence-contract-lib = { workspace = true }
 stove0-observer-protocol = { workspace = true }
 stove0-protocol = { workspace = true }
 stove0-target-protocol = { workspace = true }

@@ -7,7 +7,7 @@ import os
 import shutil
 import threading
 from collections.abc import Sequence
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from a_stove0_media_archive_contract_lib import (
     AUDIO_ARCHIVE_OPERATION,
@@ -18,10 +18,16 @@ from a_stove0_media_archive_contract_lib import (
     validate_audio_archive_intent,
 )
 from a_stove0_media_archive_lib import (
+    MaterializationDecisionRequired,
     MediaArchiveProjection,
+    MediaPublicationPlan,
+    accepted_source_hints,
+    append_leaf_suffix,
     ffmpeg_container_metadata_args,
     render_projection_xmp,
+    replace_final_suffix,
     resolve_media_archive_preflight_projection,
+    seal_publication_plan,
 )
 from riverhog_client import ProducerFile
 from riverhog_protocol import canonical_json_sha256
@@ -48,6 +54,7 @@ from stove0_target_support import (
 from a_stove0_opus_target.common import OpusContentError, file_identity, run_ffmpeg, tool_version
 
 _PROJECTION_SCHEMA = MediaArchiveProjection.model_json_schema()
+_PUBLICATION_SCHEMA = MediaPublicationPlan.model_json_schema()
 OPTIONS = JsonSchemaValidationProfile.from_schema(
     "a-stove0-opus-target-options/v1",
     {
@@ -58,8 +65,15 @@ OPTIONS = JsonSchemaValidationProfile.from_schema(
             "media_projection": {
                 key: value for key, value in _PROJECTION_SCHEMA.items() if key != "$defs"
             },
+            "publication_decisions": {
+                key: value for key, value in _PUBLICATION_SCHEMA.items() if key != "$defs"
+            },
+            "allow_missing_materialization_hint": {"type": "boolean"},
         },
-        "$defs": _PROJECTION_SCHEMA.get("$defs", {}),
+        "$defs": {
+            **_PROJECTION_SCHEMA.get("$defs", {}),
+            **_PUBLICATION_SCHEMA.get("$defs", {}),
+        },
         "additionalProperties": False,
     },
 )
@@ -121,8 +135,26 @@ class OpusTargetService(PersistentTargetService):
             projection = resolve_media_archive_preflight_projection(
                 request,
                 policy=intent.metadata_projection,
-                archive_directory="audio",
-                archive_suffix=".opus",
+            )
+            hints, hint_results = accepted_source_hints(request)
+            allow_missing = request.target_options.get("allow_missing_materialization_hint", False)
+            if type(allow_missing) is not bool:
+                raise ValueError("allow_missing_materialization_hint must be a JSON boolean")
+            proposals: dict[str, tuple[str, ...] | None] = {}
+            for item in projection.items:
+                media_hint = replace_final_suffix(hints[item.input_artifact_id], ".opus")
+                proposals[_output_id("opus", item.derived_from)] = media_hint
+                proposals[_output_id("metadata-xmp", item.derived_from)] = (
+                    append_leaf_suffix(media_hint, ".xmp")
+                )
+            for retained in projection.retained_xmp_sidecars:
+                proposals[_output_id("source-xmp", (retained.input_artifact_id,))] = hints[
+                    retained.input_artifact_id
+                ]
+            publication_decisions = seal_publication_plan(
+                proposals,
+                hint_result_sha256s=hint_results,
+                allow_missing=allow_missing,
             )
             supplied = request.target_options.get("media_projection")
             if (
@@ -130,6 +162,15 @@ class OpusTargetService(PersistentTargetService):
                 and MediaArchiveProjection.model_validate(supplied) != projection
             ):
                 raise ValueError("supplied media projection differs from target preflight")
+            supplied_decisions = request.target_options.get("publication_decisions")
+            if (
+                supplied_decisions is not None
+                and MediaPublicationPlan.from_json_value(supplied_decisions)
+                != publication_decisions
+            ):
+                raise ValueError("supplied publication decisions differ from accepted hints")
+        except MaterializationDecisionRequired as exc:
+            raise TargetServiceError(400, "materialization_decision_required", str(exc)) from exc
         except (KeyError, ValueError) as exc:
             raise TargetServiceError(400, "invalid_target_request", str(exc)) from exc
         effective = request.model_copy(
@@ -137,6 +178,9 @@ class OpusTargetService(PersistentTargetService):
                 "target_options": {
                     **request.target_options,
                     "media_projection": projection.model_dump(mode="json"),
+                    "publication_decisions": publication_decisions.model_dump(
+                        mode="json", exclude_none=True
+                    ),
                 }
             }
         )
@@ -155,8 +199,15 @@ class OpusTargetService(PersistentTargetService):
         if isinstance(timeout, bool) or not isinstance(timeout, int):
             raise ValueError("ffmpeg_timeout_seconds must be an integer")
         projection = MediaArchiveProjection.model_validate(options["media_projection"])
+        publication_decisions = MediaPublicationPlan.from_json_value(
+            options["publication_decisions"]
+        )
         try:
             projection.validate_plan_evidence(request.declaration.plan.observation_result_sha256s)
+            if not set(publication_decisions.hint_result_sha256s) <= set(
+                request.declaration.plan.observation_result_sha256s
+            ):
+                raise ValueError("accepted hint evidence is absent from the target plan")
         except ValueError as error:
             raise RuntimeError("media projection differs from the target plan evidence") from error
 
@@ -186,7 +237,7 @@ class OpusTargetService(PersistentTargetService):
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
                     try:
-                        relative = item.archive_path
+                        relative = f"audio/{item.input_artifact_id}/archive.opus"
                         destination = workspace.resolve(f"output/{relative}")
                         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         temporary = destination.with_name(f".{destination.name}.part.opus")
@@ -230,16 +281,21 @@ class OpusTargetService(PersistentTargetService):
                             )
                         )
                         outputs.append(output)
+                        output_decision = publication_decisions.decision_for(output.id)
                         publication.append(
                             ProducerFile(
                                 destination,
                                 output.artifact_id,
-                                materialization_hint=PurePosixPath(relative).parts,
+                                materialization_hint=output_decision.components,
+                                allow_missing_materialization_hint=(
+                                    output_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             output,
                             derived_from=item.derived_from,
                         )
-                        xmp = workspace.resolve(f"output/{item.xmp_path}")
+                        xmp_relative = f"audio/{item.input_artifact_id}/archive.opus.xmp"
+                        xmp = workspace.resolve(f"output/{xmp_relative}")
                         xmp.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         xmp.write_bytes(
                             render_projection_xmp(item, tags=intent.metadata_projection.tags)
@@ -258,11 +314,15 @@ class OpusTargetService(PersistentTargetService):
                             )
                         )
                         outputs.append(xmp_output)
+                        xmp_decision = publication_decisions.decision_for(xmp_output.id)
                         publication.append(
                             ProducerFile(
                                 xmp,
                                 xmp_output.artifact_id,
-                                materialization_hint=PurePosixPath(item.xmp_path).parts,
+                                materialization_hint=xmp_decision.components,
+                                allow_missing_materialization_hint=(
+                                    xmp_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             xmp_output,
                             derived_from=item.derived_from,
@@ -276,7 +336,10 @@ class OpusTargetService(PersistentTargetService):
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
                     try:
-                        destination = workspace.resolve(f"output/{retained.output_path}")
+                        retained_relative = (
+                            f"audio/~source-artifacts/{retained.input_artifact_id}.xmp"
+                        )
+                        destination = workspace.resolve(f"output/{retained_relative}")
                         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         shutil.copyfile(source, destination)
                         retained_size, retained_sha256 = file_identity(destination)
@@ -293,11 +356,17 @@ class OpusTargetService(PersistentTargetService):
                             )
                         )
                         outputs.append(retained_output)
+                        retained_decision = publication_decisions.decision_for(
+                            retained_output.id
+                        )
                         publication.append(
                             ProducerFile(
                                 destination,
                                 retained_output.artifact_id,
-                                materialization_hint=PurePosixPath(retained.output_path).parts,
+                                materialization_hint=retained_decision.components,
+                                allow_missing_materialization_hint=(
+                                    retained_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             retained_output,
                             derived_from=(retained.input_artifact_id,),
@@ -305,6 +374,7 @@ class OpusTargetService(PersistentTargetService):
                     finally:
                         source.unlink(missing_ok=True)
                 declared = tuple(sorted(outputs, key=lambda item: item.id))
+                publication_decisions.require_exact_outputs(tuple(item.id for item in declared))
                 for input_id in sorted(resolved_by_id):
                     execution.declare_disposition(input_id, "transformed")
                 execution_sha256 = _execution_sha256(

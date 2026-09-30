@@ -7,7 +7,7 @@ import os
 import shutil
 import threading
 from collections.abc import Sequence
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from a_stove0_media_archive_contract_lib import (
     AV1_OPUS_ARCHIVE_OPERATION,
@@ -18,11 +18,18 @@ from a_stove0_media_archive_contract_lib import (
     validate_av1_opus_archive_intent,
 )
 from a_stove0_media_archive_lib import (
+    MaterializationDecisionRequired,
     MediaArchiveProjection,
     MediaProjectionItem,
+    MediaPublicationPlan,
+    accepted_source_hints,
+    append_leaf_suffix,
     ffmpeg_container_metadata_args,
     render_projection_xmp,
+    replace_final_suffix,
     resolve_media_archive_preflight_projection,
+    seal_publication_plan,
+    sibling_hint,
 )
 from riverhog_client import ProducerFile
 from riverhog_protocol import canonical_json_sha256
@@ -55,6 +62,7 @@ from a_stove0_nvenc_av1_opus_target.common import (
 from a_stove0_nvenc_av1_opus_target.media_source_artifacts import build_strict_source_artifacts
 
 _PROJECTION_SCHEMA = MediaArchiveProjection.model_json_schema()
+_PUBLICATION_SCHEMA = MediaPublicationPlan.model_json_schema()
 OPTIONS = JsonSchemaValidationProfile.from_schema(
     "a-stove0-nvenc-av1-opus-target-options/v1",
     {
@@ -66,8 +74,15 @@ OPTIONS = JsonSchemaValidationProfile.from_schema(
             "media_projection": {
                 key: value for key, value in _PROJECTION_SCHEMA.items() if key != "$defs"
             },
+            "publication_decisions": {
+                key: value for key, value in _PUBLICATION_SCHEMA.items() if key != "$defs"
+            },
+            "allow_missing_materialization_hint": {"type": "boolean"},
         },
-        "$defs": _PROJECTION_SCHEMA.get("$defs", {}),
+        "$defs": {
+            **_PROJECTION_SCHEMA.get("$defs", {}),
+            **_PUBLICATION_SCHEMA.get("$defs", {}),
+        },
         "additionalProperties": False,
     },
 )
@@ -130,8 +145,29 @@ class NvencAv1OpusTargetService(PersistentTargetService):
             projection = resolve_media_archive_preflight_projection(
                 request,
                 policy=intent.metadata_projection,
-                archive_directory="video",
-                archive_suffix=".mkv",
+            )
+            hints, hint_results = accepted_source_hints(request)
+            allow_missing = request.target_options.get("allow_missing_materialization_hint", False)
+            if type(allow_missing) is not bool:
+                raise ValueError("allow_missing_materialization_hint must be a JSON boolean")
+            proposals: dict[str, tuple[str, ...] | None] = {}
+            for item in projection.items:
+                media_hint = replace_final_suffix(hints[item.input_artifact_id], ".mkv")
+                proposals[_output_id("video", item.derived_from)] = media_hint
+                proposals[_output_id("metadata-xmp", item.derived_from)] = (
+                    append_leaf_suffix(media_hint, ".xmp")
+                )
+                proposals[_output_id("source-artifacts", (item.input_artifact_id,))] = (
+                    sibling_hint(media_hint, "source-artifacts.tar.zst")
+                )
+            for retained in projection.retained_xmp_sidecars:
+                proposals[_output_id("source-xmp", (retained.input_artifact_id,))] = hints[
+                    retained.input_artifact_id
+                ]
+            publication_decisions = seal_publication_plan(
+                proposals,
+                hint_result_sha256s=hint_results,
+                allow_missing=allow_missing,
             )
             supplied = request.target_options.get("media_projection")
             if (
@@ -139,6 +175,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 and MediaArchiveProjection.model_validate(supplied) != projection
             ):
                 raise ValueError("supplied media projection differs from target preflight")
+            supplied_decisions = request.target_options.get("publication_decisions")
+            if (
+                supplied_decisions is not None
+                and MediaPublicationPlan.from_json_value(supplied_decisions)
+                != publication_decisions
+            ):
+                raise ValueError("supplied publication decisions differ from accepted hints")
+        except MaterializationDecisionRequired as exc:
+            raise TargetServiceError(400, "materialization_decision_required", str(exc)) from exc
         except (KeyError, ValueError) as exc:
             raise TargetServiceError(400, "invalid_target_request", str(exc)) from exc
         effective = request.model_copy(
@@ -146,6 +191,9 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 "target_options": {
                     **request.target_options,
                     "media_projection": projection.model_dump(mode="json"),
+                    "publication_decisions": publication_decisions.model_dump(
+                        mode="json", exclude_none=True
+                    ),
                 }
             }
         )
@@ -165,8 +213,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
             raise ValueError("ffmpeg_timeout_seconds must be an integer")
         preset = str(options.get("preset", "p7"))
         projection = MediaArchiveProjection.model_validate(options["media_projection"])
+        publication_decisions = MediaPublicationPlan.from_json_value(
+            options["publication_decisions"]
+        )
         try:
             projection.validate_plan_evidence(request.declaration.plan.observation_result_sha256s)
+            if not set(publication_decisions.hint_result_sha256s) <= set(
+                request.declaration.plan.observation_result_sha256s
+            ):
+                raise ValueError("accepted hint evidence is absent from the target plan")
         except ValueError as error:
             raise RuntimeError("media projection differs from the target plan evidence") from error
 
@@ -196,7 +251,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
                     try:
-                        relative = item.archive_path
+                        relative = f"video/{item.input_artifact_id}/archive.mkv"
                         destination = workspace.resolve(f"output/{relative}")
                         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         command = self._command(source, destination, intent, preset, item)
@@ -260,7 +315,8 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             role=AV1_OPUS_ARCHIVE_ROLE,
                         )
                         outputs.append(video)
-                        xmp = workspace.resolve(f"output/{item.xmp_path}")
+                        xmp_relative = f"video/{item.input_artifact_id}/archive.mkv.xmp"
+                        xmp = workspace.resolve(f"output/{xmp_relative}")
                         xmp.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         xmp.write_bytes(
                             render_projection_xmp(item, tags=intent.metadata_projection.tags)
@@ -273,7 +329,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                         )
                         outputs.append(xmp_output)
                         bundle_relative = (
-                            f"{PurePosixPath(item.archive_path).parent}/source-artifacts.tar.zst"
+                            f"video/{item.input_artifact_id}/source-artifacts.tar.zst"
                         )
                         bundle = workspace.resolve(f"output/{bundle_relative}")
                         build_strict_source_artifacts(
@@ -296,29 +352,41 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             role=SOURCE_ARTIFACT_ROLE,
                         )
                         outputs.append(source_artifact)
+                        video_decision = publication_decisions.decision_for(video.id)
                         publication.append(
                             ProducerFile(
                                 destination,
                                 video.artifact_id,
-                                materialization_hint=PurePosixPath(relative).parts,
+                                materialization_hint=video_decision.components,
+                                allow_missing_materialization_hint=(
+                                    video_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             video,
                             derived_from=item.derived_from,
                         )
+                        xmp_decision = publication_decisions.decision_for(xmp_output.id)
                         publication.append(
                             ProducerFile(
                                 xmp,
                                 xmp_output.artifact_id,
-                                materialization_hint=PurePosixPath(item.xmp_path).parts,
+                                materialization_hint=xmp_decision.components,
+                                allow_missing_materialization_hint=(
+                                    xmp_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             xmp_output,
                             derived_from=item.derived_from,
                         )
+                        bundle_decision = publication_decisions.decision_for(source_artifact.id)
                         publication.append(
                             ProducerFile(
                                 bundle,
                                 source_artifact.artifact_id,
-                                materialization_hint=PurePosixPath(bundle_relative).parts,
+                                materialization_hint=bundle_decision.components,
+                                allow_missing_materialization_hint=(
+                                    bundle_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             source_artifact,
                             derived_from=(item.input_artifact_id,),
@@ -332,7 +400,10 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     with execution.prepare_inputs((artifact,)) as retrieval:
                         retrieval.download(claimed, source)
                     try:
-                        destination = workspace.resolve(f"output/{retained.output_path}")
+                        retained_relative = (
+                            f"video/~source-artifacts/{retained.input_artifact_id}.xmp"
+                        )
+                        destination = workspace.resolve(f"output/{retained_relative}")
                         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         shutil.copyfile(source, destination)
                         retained_output = self._output(
@@ -345,11 +416,17 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             role=SOURCE_ARTIFACT_ROLE,
                         )
                         outputs.append(retained_output)
+                        retained_decision = publication_decisions.decision_for(
+                            retained_output.id
+                        )
                         publication.append(
                             ProducerFile(
                                 destination,
                                 retained_output.artifact_id,
-                                materialization_hint=PurePosixPath(retained.output_path).parts,
+                                materialization_hint=retained_decision.components,
+                                allow_missing_materialization_hint=(
+                                    retained_decision.allow_missing_materialization_hint
+                                ),
                             ),
                             retained_output,
                             derived_from=(retained.input_artifact_id,),
@@ -357,6 +434,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                     finally:
                         source.unlink(missing_ok=True)
                 declared = tuple(sorted(outputs, key=lambda item: item.id))
+                publication_decisions.require_exact_outputs(tuple(item.id for item in declared))
                 for input_id in sorted(resolved_by_id):
                     execution.declare_disposition(input_id, "transformed")
                 execution_sha256 = _execution_sha256(

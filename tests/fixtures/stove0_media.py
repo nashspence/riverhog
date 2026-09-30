@@ -1,5 +1,8 @@
 """Exact public media evidence fixtures shared by maintained target tests."""
 
+from a_stove0_materialization_hint_evidence_contract_lib import (
+    MATERIALIZATION_HINT_OBSERVER_CONTRACT,
+)
 from a_stove0_media_archive_contract_lib import (
     SOURCE_ROLE,
     XMP_SOURCE_ROLE,
@@ -24,6 +27,7 @@ from stove0_protocol import (
     ArtifactSelection,
     CollectionRootIdentityRef,
     WorkArtifactSubject,
+    WorkInputGroup,
     canonical_json_sha256,
 )
 from stove0_target_protocol import (
@@ -44,30 +48,30 @@ def media_preflight_request(
     *,
     sidecar_capture_time: str = "2025:02:03 04:05:06-0800",
     target_options: dict[str, object] | None = None,
+    primary_hint: tuple[str, ...] | None = ("Camera", "clip.mov"),
+    sidecar_hint: tuple[str, ...] | None = ("Camera", "clip.xmp"),
 ) -> TargetPreflightRequest:
     root = CollectionRootIdentityRef(
         collection_id="11",
         archive_root_sha256=sha("1"),
-        content_identity=sha("2"),
+        artifact_set_identity=sha("2"),
     )
     inputs = (
         InputArtifact(
             id="primary",
             role=SOURCE_ROLE,
             collection=root,
-            path="camera/clip.mov",
+            artifact_id=sha("7"),
             bytes=str(100),
             sha256=sha("3"),
-            media_type="video/quicktime",
         ),
         InputArtifact(
             id="sidecar",
             role=XMP_SOURCE_ROLE,
             collection=root,
-            path="camera/clip.xmp",
+            artifact_id=sha("8"),
             bytes=str(20),
             sha256=sha("4"),
-            media_type="application/rdf+xml",
         ),
     )
     subjects = tuple(
@@ -75,10 +79,9 @@ def media_preflight_request(
             id=item.id,
             role=item.role,
             collection=item.collection,
-            path=item.path,
+            artifact_id=item.artifact_id,
             bytes=str(item.bytes),
             sha256=item.sha256,
-            media_type=item.media_type,
         )
         for item in inputs
     )
@@ -142,13 +145,89 @@ def media_preflight_request(
             facts_sha256=canonical_json_sha256(facts),
         )
     )
+    hint_request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
+            work_id=sha("5"),
+            observer_registration_id="canonical-hint",
+            observer_descriptor_sha256=sha("9"),
+            observer_contract_id=MATERIALIZATION_HINT_OBSERVER_CONTRACT.id,
+            observer_contract_sha256=MATERIALIZATION_HINT_OBSERVER_CONTRACT.contract_sha256,
+            read_actions=("read-provenance",),
+            subjects=subjects,
+        )
+    )
+    entry = {
+        "entry_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+        "sequence": "0",
+        "json_sha256": sha("a"),
+    }
+    journal_id = "urn:uuid:22222222-2222-4222-8222-222222222222"
+    hint_facts = {
+        "artifacts": [
+            {
+                "subject_id": subject.id,
+                "primary_binding": {
+                    "artifact_id": str(subject.artifact_id),
+                    "journal": {
+                        "journal_id": journal_id,
+                        "through": entry,
+                        "prefix_sha256": sha("b"),
+                        "prefix_bytes": "100",
+                    },
+                    "delivery_association_id": (
+                        "urn:uuid:33333333-3333-4333-8333-333333333333"
+                    ),
+                },
+                "occurrence": {
+                    "scope": "external",
+                    "journal_id": journal_id,
+                    "entry": entry,
+                    "assertion_id": "urn:uuid:44444444-4444-4444-8444-444444444444",
+                    "object_id": "urn:uuid:55555555-5555-4555-8555-555555555555",
+                    "object_type": "occurrence",
+                },
+                "materialization_hint": (
+                    {"components": list(hint)} if hint is not None else None
+                ),
+            }
+            for subject, hint in zip(subjects, (primary_hint, sidecar_hint), strict=True)
+        ]
+    }
+    hint_result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
+            request_id=hint_request.request_id,
+            state="observed",
+            observer=ObserverImplementation(
+                id="fixture.canonical-hint/v1",
+                version="1.0.0",
+                source_revision="fixture",
+                descriptor_sha256=sha("9"),
+            ),
+            observer_contract_id=MATERIALIZATION_HINT_OBSERVER_CONTRACT.id,
+            observer_contract_sha256=MATERIALIZATION_HINT_OBSERVER_CONTRACT.contract_sha256,
+            subjects=subjects,
+            facts_schema=MATERIALIZATION_HINT_OBSERVER_CONTRACT.facts_schema,
+            facts=hint_facts,
+            facts_sha256=canonical_json_sha256(hint_facts),
+        )
+    )
+    evidence = tuple(
+        sorted(
+            (
+                ContentObservationEvidence(request=request, result=result),
+                ContentObservationEvidence(request=hint_request, result=hint_result),
+            ),
+            key=lambda item: item.request.request_id,
+        )
+    )
     return TargetPreflightRequest(
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
         inputs=TargetInputAuthority.from_selection(ArtifactSelection.seal(subjects)),
+        input_groups=(WorkInputGroup(primary_id="primary", associated_ids=("sidecar",)),),
         intent=intent,
         target_options=dict(target_options or {}),
-        observations=(ContentObservationEvidence(request=request, result=result),),
+        observations=evidence,
     )
 
 

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
 from a_review0_opus_sampler import OpusReviewSampler
 from a_review0_opus_sampler.app import create_app as create_sampler_app
 from a_stove0_media_archive_contract_lib import (
@@ -14,6 +15,7 @@ from a_stove0_media_archive_contract_lib import (
 )
 from a_stove0_media_archive_lib import (
     MediaArchiveProjection,
+    MediaPublicationPlan,
 )
 from a_stove0_opus_target import OpusTargetService
 from a_stove0_opus_target import app as opus_app
@@ -30,6 +32,7 @@ from riverhog_protocol import canonical_json_sha256
 from stove0_target_support import (
     OutputArtifact,
     TargetHttpBinding,
+    TargetServiceError,
     validate_preflight_response_against_request,
 )
 
@@ -151,15 +154,19 @@ def test_opus_preflight_fixes_exact_unbounded_metadata_projection(tmp_path: Path
         response.plan.target_options["media_projection"]
     )
 
-    assert response.plan.observation_result_sha256s == (
-        request.observations[0].result.result_sha256,
+    assert response.plan.observation_result_sha256s == tuple(
+        sorted(item.result.result_sha256 for item in request.observations)
     )
-    assert projection.items[0].archive_path == "audio/primary/archive.opus"
-    assert projection.items[0].xmp_path == "audio/primary/archive.opus.xmp"
+    publication = MediaPublicationPlan.from_json_value(
+        response.plan.target_options["publication_decisions"]
+    )
+    assert {item.components for item in publication.decisions} == {
+        ("Camera", "clip.opus"),
+        ("Camera", "clip.opus.xmp"),
+        ("Camera", "clip.xmp"),
+    }
     assert projection.items[0].derived_from == ("primary", "sidecar")
-    assert projection.retained_xmp_sidecars[0].output_path == (
-        "audio/~source-artifacts/sidecar.xmp"
-    )
+    assert projection.retained_xmp_sidecars[0].input_artifact_id == "sidecar"
     assert {output.role for output in AUDIO_ARCHIVE_OPERATION.outputs} == {
         "stove0.media.audio-archive/v1",
         METADATA_XMP_ROLE,
@@ -179,14 +186,48 @@ def test_opus_preflight_fixes_exact_unbounded_metadata_projection(tmp_path: Path
     target.close()
 
 
+def test_opus_missing_canonical_hint_requires_an_explicit_output_decision(tmp_path: Path) -> None:
+    target = OpusTargetService(
+        state_root=tmp_path / "state",
+        workspace_root=tmp_path / "workspace",
+        source_revision="fixture",
+        image_id="sha256:" + _sha("9"),
+    )
+    intent = {"codec": "opus", "container": "opus", "bitrate_kbps": 128}
+    with pytest.raises(TargetServiceError) as error:
+        target.preflight(
+            media_preflight_request(AUDIO_ARCHIVE_OPERATION, intent, primary_hint=None)
+        )
+    assert error.value.code == "materialization_decision_required"
+    request = media_preflight_request(
+        AUDIO_ARCHIVE_OPERATION,
+        intent,
+        primary_hint=None,
+        target_options={"allow_missing_materialization_hint": True},
+    )
+    response = target.preflight(request)
+    publication = MediaPublicationPlan.from_json_value(
+        response.plan.target_options["publication_decisions"]
+    )
+    assert sorted(item.components for item in publication.decisions if item.components) == [
+        ("Camera", "clip.xmp")
+    ]
+    assert sum(item.allow_missing_materialization_hint for item in publication.decisions) == 2
+    assert all(
+        "materialization_hint" not in decision
+        for decision in response.plan.target_options["publication_decisions"]["decisions"]
+        if decision["allow_missing_materialization_hint"]
+    )
+    target.close()
+
+
 def test_opus_execution_identity_is_the_canonical_semantic_result() -> None:
     output = OutputArtifact(
         id="opus-source",
         role="stove0.media.audio-archive/v1",
-        path="audio/source.opus",
+        artifact_id=_sha("2"),
         bytes=str(12),
         sha256=_sha("3"),
-        media_type="audio/ogg",
     )
     expected = canonical_json_sha256(
         {
