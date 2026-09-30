@@ -77,13 +77,17 @@ def media_preflight_request(
     subjects = tuple(
         WorkArtifactSubject(
             id=item.id,
-            role=item.role,
+            role="stove0.source/v1",
             collection=item.collection,
             artifact_id=item.artifact_id,
             bytes=str(item.bytes),
             sha256=item.sha256,
         )
         for item in inputs
+    )
+    routed_subjects = tuple(
+        subject.model_copy(update={"role": item.role})
+        for subject, item in zip(subjects, inputs, strict=True)
     )
     request = ContentObservationRequest.seal(
         ContentObservationRequestPayload(
@@ -223,7 +227,7 @@ def media_preflight_request(
     return TargetPreflightRequest(
         operation_id=operation.id,
         operation_contract_sha256=operation.contract_sha256,
-        inputs=TargetInputAuthority.from_selection(ArtifactSelection.seal(subjects)),
+        inputs=TargetInputAuthority.from_selection(ArtifactSelection.seal(routed_subjects)),
         input_groups=(WorkInputGroup(primary_id="primary", associated_ids=("sidecar",)),),
         intent=intent,
         target_options=dict(target_options or {}),

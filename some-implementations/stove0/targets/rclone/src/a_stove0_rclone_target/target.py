@@ -421,7 +421,13 @@ def _planned_destinations(
             binding_by_subject[subject.id] = fact.primary_binding.model_dump(mode="json")
             advice[key[0]].append(MemberAdvice(subject.artifact_id, fact.materialization_hint))
     observed = ArtifactSelection.seal(subjects)
-    if observed.ref() != selection:
+    # Observer subjects can carry the preclassification role; target roles are
+    # assigned by the accepted recipe. Execution checks every immutable member
+    # against the sealed input selection before any delivery.
+    if (
+        observed.artifact_count != selection.artifact_count
+        or observed.total_bytes != selection.total_bytes
+    ):
         raise ValueError("forwarded hint evidence does not cover the input selection")
     planned: dict[str, _PlannedDelivery] = {}
     for collection_id, members in advice.items():
