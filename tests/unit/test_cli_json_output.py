@@ -33,7 +33,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
                 "tag_revision": 1,
                 "tag_set_identity": "b" * 64,
                 "tag_publication": "current",
-                "content_identity": "c" * 64,
+                "artifact_set_identity": "c" * 64,
                 "archive_root_sha256": "d" * 64,
                 "files": 2,
                 "bytes": 100,

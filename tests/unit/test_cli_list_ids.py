@@ -141,21 +141,21 @@ def test_collection_upload_list_ids_forwards_bounded_page_and_filters(monkeypatc
     assert result.stdout == "41\n42\n"
 
 
-def test_find_selectors_emits_pipeable_file_identities_from_one_page(monkeypatch) -> None:
+def test_find_selectors_emits_pipeable_artifact_identities_from_one_page(monkeypatch) -> None:
     class FakeClient:
         def search(self, query: str | None, **kwargs: Any) -> dict[str, object]:
             assert query == "invoice"
             return {
-                "files": [
+                "artifacts": [
                     {
                         "collection_id": 41,
-                        "path": "tax/invoice.pdf",
-                        "file_ref": "41/tax/invoice.pdf",
+                        "artifact_id": "a" * 64,
+                        "artifact_ref": "41/" + "a" * 64,
                     },
                     {
                         "collection_id": 42,
-                        "path": "tax/invoice.pdf",
-                        "file_ref": "42/tax/invoice.pdf",
+                        "artifact_id": "b" * 64,
+                        "artifact_ref": "42/" + "b" * 64,
                     },
                 ],
                 "page_size": 25,
@@ -167,12 +167,12 @@ def test_find_selectors_emits_pipeable_file_identities_from_one_page(monkeypatch
     result = runner.invoke(app, ["find", "-q", "invoice", "--selectors"])
 
     assert result.exit_code == 0
-    assert result.stdout == ("41::tax/invoice.pdf\n42::tax/invoice.pdf\n")
+    assert result.stdout == (f"41::{'a' * 64}\n42::{'b' * 64}\n")
     human = runner.invoke(app, ["find", "-q", "invoice"])
     structured = runner.invoke(app, ["find", "-q", "invoice", "--json"])
     assert human.exit_code == structured.exit_code == 0
-    assert "tax/invoice.pdf" in human.stdout
-    assert json.loads(structured.stdout)["files"][0]["collection_id"] == 41
+    assert "41/" + "a" * 64 in human.stdout
+    assert json.loads(structured.stdout)["artifacts"][0]["collection_id"] == 41
 
 
 def test_riverhog_closes_its_shared_api_client(monkeypatch) -> None:

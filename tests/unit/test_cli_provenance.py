@@ -10,51 +10,52 @@ from a_riverhog_cli.main import app
 from typer.testing import CliRunner
 
 RUNNER = CliRunner()
+ARTIFACT_ID = "a" * 64
 JOURNAL_ID = "urn:uuid:00000000-0000-4000-8000-000000000042"
 JOURNAL = b'\x1e{"exact":"journal"}\n'
 
 
-def test_provenance_list_show_trace_export_and_verify_share_one_cli_surface(
+def test_provenance_artifacts_journals_and_export_share_one_cli_surface(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
     calls: list[tuple[str, object]] = []
-    binding = {
-        "status": "captured",
-        "journal_id": JOURNAL_ID,
-        "current_state_id": "urn:uuid:00000000-0000-4000-8000-000000000043",
-    }
     shown = {
         "collection_id": 41,
-        "path": "media/movie.mov",
-        "bytes": 7,
-        "sha256": "a" * 64,
-        "provenance": binding,
-        "journal": {"journal_id": JOURNAL_ID, "entries": 2},
+        "archive_root_sha256": "b" * 64,
+        "artifact": {"artifact_id": ARTIFACT_ID, "bytes": 7, "sha256": "c" * 64},
+        "binding": {
+            "journal": {"journal_id": JOURNAL_ID, "prefix_sha256": "d" * 64},
+            "delivery_association_id": "urn:uuid:00000000-0000-4000-8000-000000000043",
+        },
+    }
+    artifacts = {
+        "artifacts": [{"collection_id": 41, "artifact_id": ARTIFACT_ID}],
+        "next_artifact_id": None,
+    }
+    journals = {
+        "journals": [{"journal_id": JOURNAL_ID, "bytes": len(JOURNAL)}],
+        "next_journal_id": None,
     }
 
     class FakeClient:
-        def list_collection_provenance(self, collection_id: int, **kwargs: Any) -> dict[str, Any]:
+        def list_collection_artifact_provenance(
+            self, collection_id: int, **kwargs: Any
+        ) -> dict[str, Any]:
             calls.append(("list", (collection_id, kwargs)))
-            return {"files": [shown], "page_size": 25, "next_page_token": None}
+            return artifacts
 
-        def get_collection_file_provenance(self, collection_id: int, path: str) -> dict[str, Any]:
-            calls.append(("show", (collection_id, path)))
+        def get_collection_artifact_provenance(
+            self, collection_id: int, artifact_id: str
+        ) -> dict[str, Any]:
+            calls.append(("show", (collection_id, artifact_id)))
             return shown
 
-        def trace_collection_file_provenance(
-            self,
-            collection_id: int,
-            path: str,
-            **kwargs: Any,
+        def list_collection_provenance_journals(
+            self, collection_id: int, **kwargs: Any
         ) -> dict[str, Any]:
-            calls.append(("trace", (collection_id, path, kwargs)))
-            return {
-                **shown,
-                "page_size": kwargs["page_size"],
-                "next_page_token": None,
-                "items": [{"kind": "journal", "journal": shown["journal"]}],
-            }
+            calls.append(("journals", (collection_id, kwargs)))
+            return journals
 
         def download_collection_provenance_journal(
             self,
@@ -67,154 +68,71 @@ def test_provenance_list_show_trace_export_and_verify_share_one_cli_surface(
             output.write_bytes(JOURNAL)
             return len(JOURNAL), hashlib.sha256(JOURNAL).hexdigest()
 
-        def request_collection_provenance_verification(self, collection_id: int) -> dict[str, Any]:
-            calls.append(("verify", collection_id))
-            return {
-                "collection_id": collection_id,
-                "state": "succeeded",
-                "requested_at": "2026-08-29T00:00:00.000000000Z",
-                "started_at": "2026-08-29T00:00:00.000000000Z",
-                "finished_at": "2026-08-29T00:00:01.000000000Z",
-                "attempts": 1,
-                "failure": None,
-                "result": {
-                    "collection_id": collection_id,
-                    "valid": True,
-                    "provenance_mode": "captured",
-                    "provenance_identity": "b" * 64,
-                    "files": 1,
-                    "journals": 1,
-                    "entities": 4,
-                },
-            }
-
     monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
-    output = tmp_path / "movie.json-seq"
-    json_output = tmp_path / "movie-json.json-seq"
+    output = tmp_path / "journal.json-seq"
 
-    listed = RUNNER.invoke(
-        app,
-        [
-            "collection",
-            "provenance",
-            "list",
-            "41",
-            "--query",
-            "movie",
-            "--status",
-            "captured",
-            "--json",
-        ],
-    )
+    listed = RUNNER.invoke(app, ["collection", "provenance", "list", "41", "--json"])
     shown_result = RUNNER.invoke(
-        app,
-        ["collection", "provenance", "show", "41", "media/movie.mov", "--json"],
+        app, ["collection", "provenance", "show", "41", ARTIFACT_ID, "--json"]
     )
-    traced = RUNNER.invoke(
-        app,
-        ["collection", "provenance", "trace", "41", "media/movie.mov", "--json"],
-    )
+    journal_page = RUNNER.invoke(app, ["collection", "provenance", "journals", "41", "--json"])
     exported = RUNNER.invoke(
         app,
-        [
-            "collection",
-            "provenance",
-            "export",
-            "41",
-            JOURNAL_ID,
-            "--output",
-            str(output),
-        ],
-    )
-    exported_json = RUNNER.invoke(
-        app,
-        [
-            "collection",
-            "provenance",
-            "export",
-            "41",
-            JOURNAL_ID,
-            "--output",
-            str(json_output),
-            "--json",
-        ],
-    )
-    verified = RUNNER.invoke(
-        app,
-        ["collection", "provenance", "verify", "41", "--json"],
+        ["collection", "provenance", "export", "41", JOURNAL_ID, "--output", str(output), "--json"],
     )
 
-    assert listed.exit_code == 0
-    assert json.loads(listed.stdout)["files"] == [shown]
-    assert shown_result.exit_code == 0
+    assert (
+        listed.exit_code
+        == shown_result.exit_code
+        == journal_page.exit_code
+        == exported.exit_code
+        == 0
+    )
+    assert json.loads(listed.stdout) == artifacts
     assert json.loads(shown_result.stdout) == shown
-    assert traced.exit_code == 0
-    assert json.loads(traced.stdout)["items"] == [{"kind": "journal", "journal": shown["journal"]}]
-    assert exported.exit_code == 0
+    assert json.loads(journal_page.stdout) == journals
     assert output.read_bytes() == JOURNAL
-    assert exported_json.exit_code == 0
-    assert json_output.read_bytes() == JOURNAL
-    assert json.loads(exported_json.stdout) == {
+    assert json.loads(exported.stdout) == {
         "collection_id": 41,
         "journal_id": JOURNAL_ID,
-        "output": str(json_output.resolve()),
+        "output": str(output.resolve()),
         "bytes": len(JOURNAL),
         "sha256": hashlib.sha256(JOURNAL).hexdigest(),
     }
-    assert verified.exit_code == 0
-    assert json.loads(verified.stdout)["result"]["valid"] is True
     assert calls == [
+        ("list", (41, {"page_size": 50, "after_artifact_id": None, "archive_root_sha256": None})),
+        ("show", (41, ARTIFACT_ID)),
         (
-            "list",
-            (
-                41,
-                {
-                    "page_size": 25,
-                    "page_token": None,
-                    "q": "movie",
-                    "status": "captured",
-                    "sort": "path",
-                    "order": "asc",
-                },
-            ),
+            "journals",
+            (41, {"page_size": 50, "after_journal_id": None, "archive_root_sha256": None}),
         ),
-        ("show", (41, "media/movie.mov")),
-        ("trace", (41, "media/movie.mov", {"page_size": 25, "page_token": None})),
         ("export", (41, JOURNAL_ID)),
-        ("export", (41, JOURNAL_ID)),
-        ("verify", 41),
     ]
-    shown_human = RUNNER.invoke(app, ["collection", "provenance", "show", "41", "media/movie.mov"])
-    traced_human = RUNNER.invoke(
-        app, ["collection", "provenance", "trace", "41", "media/movie.mov"]
-    )
-    verified_human = RUNNER.invoke(app, ["collection", "provenance", "verify", "41"])
-    assert shown_human.exit_code == traced_human.exit_code == verified_human.exit_code == 0
-    assert "media/movie.mov" in shown_human.stdout
-    assert "media/movie.mov" in traced_human.stdout
-    assert "trace items" in traced_human.stdout
-    assert "valid" in verified_human.stdout
+
+    human = RUNNER.invoke(app, ["collection", "provenance", "show", "41", ARTIFACT_ID])
+    journal_human = RUNNER.invoke(app, ["collection", "provenance", "journals", "41"])
+    assert human.exit_code == journal_human.exit_code == 0
+    assert ARTIFACT_ID in human.stdout
+    assert JOURNAL_ID in human.stdout
+    assert JOURNAL_ID in journal_human.stdout
 
 
-def test_provenance_list_selectors_match_other_file_list_commands(monkeypatch) -> None:
+def test_provenance_list_selectors_emit_exact_artifact_ids(monkeypatch) -> None:
     class FakeClient:
-        def list_collection_provenance(self, collection_id: int, **kwargs: Any) -> dict[str, Any]:
+        def list_collection_artifact_provenance(
+            self, collection_id: int, **_kwargs: Any
+        ) -> dict[str, Any]:
             assert collection_id == 41
             return {
-                "files": [
-                    {"collection_id": 41, "path": "one.mov"},
-                    {"collection_id": 41, "path": "nested/two.mov"},
+                "artifacts": [
+                    {"collection_id": 41, "artifact_id": "a" * 64},
+                    {"collection_id": 41, "artifact_id": "b" * 64},
                 ],
-                "page_size": 25,
-                "next_page_token": None,
+                "next_artifact_id": None,
             }
 
     monkeypatch.setattr(a_riverhog_cli.main, "client", FakeClient)
-
-    result = RUNNER.invoke(
-        app,
-        ["collection", "provenance", "list", "41", "--selectors"],
-    )
+    result = RUNNER.invoke(app, ["collection", "provenance", "list", "41", "--selectors"])
 
     assert result.exit_code == 0
-    assert result.stdout == "41::one.mov\n41::nested/two.mov\n"
+    assert result.stdout == f"41::{'a' * 64}\n41::{'b' * 64}\n"

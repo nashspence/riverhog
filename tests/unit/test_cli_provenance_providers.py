@@ -47,20 +47,30 @@ def test_local_provenance_observer_show_reports_exact_contract_identity() -> Non
     assert payload["contract_sha256"] in human.stdout
 
 
-def test_upload_requires_explicit_capture_composition_before_opening_session(
+def test_upload_requires_source_host_for_selected_native_observer_before_opening_session(
     tmp_path: Path,
 ) -> None:
     root = tmp_path / "collection"
     root.mkdir()
     (root / "payload.bin").write_bytes(b"payload")
 
-    result = RUNNER.invoke(app, ["collection", "upload", "start", str(root)])
+    result = RUNNER.invoke(
+        app,
+        [
+            "collection",
+            "upload",
+            "start",
+            str(root),
+            "--provenance-observer",
+            "a-riverhog-linux-provenance-observer",
+        ],
+    )
 
     assert result.exit_code != 0
-    assert "provenance capture requires" in result.output
+    assert "requires --source-host-id" in result.output
 
 
-def test_upload_dry_run_reports_the_exact_selected_provider_in_both_outputs(
+def test_upload_dry_run_reports_opaque_artifacts_in_both_outputs(
     tmp_path: Path,
 ) -> None:
     root = tmp_path / "collection"
@@ -80,14 +90,15 @@ def test_upload_dry_run_reports_the_exact_selected_provider_in_both_outputs(
 
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
-    assert payload["provenance_observer"]["name"] == "a-riverhog-linux-provenance-observer"
+    assert payload["artifact_count"] == 1
+    assert payload["total_bytes"] == len(b"payload")
+    assert payload["sources"][0]["relative_components"] == ["payload.bin"]
     human = RUNNER.invoke(app, arguments)
     assert human.exit_code == 0
-    assert "provenance observer: a-riverhog-linux-provenance-observer" in human.stdout
-    assert payload["provenance_observer"]["contract_sha256"] in human.stdout
+    assert "would upload 1 artifacts" in human.stdout
 
 
-def test_upload_provider_environment_selection_is_connected(
+def test_upload_provider_environment_selection_requires_source_host(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -98,11 +109,8 @@ def test_upload_provider_environment_selection_is_connected(
 
     result = RUNNER.invoke(
         app,
-        ["collection", "upload", "start", str(root), "--dry-run", "--json"],
+        ["collection", "upload", "start", str(root)],
     )
 
-    assert result.exit_code == 0
-    assert (
-        json.loads(result.stdout)["provenance_observer"]["name"]
-        == "a-riverhog-linux-provenance-observer"
-    )
+    assert result.exit_code != 0
+    assert "requires --source-host-id" in result.output
