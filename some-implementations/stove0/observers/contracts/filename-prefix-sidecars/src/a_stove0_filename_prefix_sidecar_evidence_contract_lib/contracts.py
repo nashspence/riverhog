@@ -38,7 +38,7 @@ def _support_keys(rows: Sequence[AssertionSupport]) -> tuple[bytes, ...]:
 
 
 class FilenameQuestion(_Model):
-    provenance_slot: str = Field(min_length=1, max_length=160)
+    provenance_slots: tuple[str, ...] = Field(min_length=1)
     primary_ids: tuple[str, ...] = Field(min_length=1)
     sidecar_ids: tuple[str, ...] = Field(min_length=1)
     sidecar_suffix: str
@@ -49,6 +49,8 @@ class FilenameQuestion(_Model):
             self.primary_ids != tuple(sorted(set(self.primary_ids)))
             or self.sidecar_ids != tuple(sorted(set(self.sidecar_ids)))
             or set(self.primary_ids) & set(self.sidecar_ids)
+            or self.provenance_slots != tuple(sorted(set(self.provenance_slots)))
+            or any(not slot or len(slot) > 160 for slot in self.provenance_slots)
             or _SUFFIX.fullmatch(self.sidecar_suffix) is None
         ):
             raise ValueError("filename partitions or sidecar suffix are invalid")
@@ -77,19 +79,30 @@ class FilenameCandidate(_Model):
     support: tuple[AssertionSupport, ...] = Field(min_length=1)
 
 
+class FilenameProvenanceResult(_Model):
+    request_id: str
+    result_sha256: str
+
+    @model_validator(mode="after")
+    def exact_digests(self) -> Self:
+        if (
+            _DIGEST.fullmatch(self.request_id) is None
+            or _DIGEST.fullmatch(self.result_sha256) is None
+        ):
+            raise ValueError("filename evidence requires exact predecessor identities")
+        return self
+
+
 class FilenameFacts(_Model):
-    provenance_request_id: str
-    provenance_result_sha256: str
+    provenance_results: tuple[FilenameProvenanceResult, ...] = Field(min_length=1)
     statuses: tuple[FilenameSourceStatus, ...]
     candidates: tuple[FilenameCandidate, ...]
 
     @model_validator(mode="after")
     def canonical_rows(self) -> Self:
-        if (
-            _DIGEST.fullmatch(self.provenance_request_id) is None
-            or _DIGEST.fullmatch(self.provenance_result_sha256) is None
-        ):
-            raise ValueError("filename evidence requires exact predecessor identities")
+        request_ids = tuple(item.request_id for item in self.provenance_results)
+        if request_ids != tuple(sorted(set(request_ids))):
+            raise ValueError("filename predecessor identities must be unique and ordered")
         status_ids = tuple(item.subject_id for item in self.statuses)
         if status_ids != tuple(sorted(set(status_ids))):
             raise ValueError("filename status rows must be unique and ordered")
@@ -134,11 +147,12 @@ def validate_filename_facts(
     if request is not None:
         slots = tuple(request.evidence_slots or ())
         if (
-            len(slots) != 1
-            or slots[0].slot != question.provenance_slot
-            or slots[0].observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id
-            or slots[0].request_id != document.provenance_request_id
-            or slots[0].result_sha256 != document.provenance_result_sha256
+            tuple(item.slot for item in slots) != question.provenance_slots
+            or any(
+                item.observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id for item in slots
+            )
+            or tuple((item.request_id, item.result_sha256) for item in slots)
+            != tuple((item.request_id, item.result_sha256) for item in document.provenance_results)
         ):
             raise ValueError("filename facts differ from the accepted provenance slot")
     return document
@@ -167,7 +181,7 @@ _SAMPLE_SUBJECT = {
     "sha256": "d" * 64,
 }
 _SAMPLE_OPTIONS = {
-    "provenance_slot": "core",
+    "provenance_slots": ["core"],
     "primary_ids": ["sample"],
     "sidecar_ids": ["sidecar"],
     "sidecar_suffix": ".xmp",
@@ -183,8 +197,7 @@ FILENAME_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate(
                 "subjects": [_SAMPLE_SUBJECT, _SAMPLE_SIDECAR],
                 "options": _SAMPLE_OPTIONS,
                 "facts": {
-                    "provenance_request_id": "f" * 64,
-                    "provenance_result_sha256": "0" * 64,
+                    "provenance_results": [{"request_id": "f" * 64, "result_sha256": "0" * 64}],
                     "statuses": [
                         {"subject_id": "sample", "status": "no-locator", "support": []},
                         {"subject_id": "sidecar", "status": "no-locator", "support": []},
@@ -198,8 +211,7 @@ FILENAME_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate(
                 "subjects": [_SAMPLE_SUBJECT, _SAMPLE_SIDECAR],
                 "options": _SAMPLE_OPTIONS,
                 "facts": {
-                    "provenance_request_id": "f" * 64,
-                    "provenance_result_sha256": "0" * 64,
+                    "provenance_results": [{"request_id": "f" * 64, "result_sha256": "0" * 64}],
                     "statuses": [{"subject_id": "sample", "status": "no-locator", "support": []}],
                     "candidates": [],
                 },
@@ -243,6 +255,7 @@ __all__ = [
     "FILENAME_SEMANTIC_VALIDATOR",
     "FilenameCandidate",
     "FilenameFacts",
+    "FilenameProvenanceResult",
     "FilenameQuestion",
     "FilenameSourceStatus",
     "validate_filename_facts",

@@ -118,7 +118,7 @@ def _request(
     subjects: tuple[WorkArtifactSubject, ...],
     descriptor: ObserverDescriptor,
     options: dict[str, Any],
-    evidence_slot: ObservationEvidenceSlot | None = None,
+    evidence_slots: tuple[ObservationEvidenceSlot, ...] = (),
     core: bool = False,
 ) -> ContentObservationRequest:
     contract = CORE_PROVENANCE_OBSERVER_CONTRACT if core else FILENAME_OBSERVER_CONTRACT
@@ -131,7 +131,7 @@ def _request(
             observer_contract_sha256=contract.contract_sha256,
             read_actions=("read-provenance",) if core else ("read-evidence",),
             subjects=subjects,
-            evidence_slots=None if core else (evidence_slot,),
+            evidence_slots=None if core else evidence_slots,
             options=options,
         )
     )
@@ -162,16 +162,18 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         subjects=subjects,
         descriptor=observer.descriptor(),
         options={
-            "provenance_slot": "core",
+            "provenance_slots": ["core"],
             "primary_ids": [primary.id],
             "sidecar_ids": [sidecar.id],
             "sidecar_suffix": ".xmp",
         },
-        evidence_slot=ObservationEvidenceSlot(
-            slot="core",
-            request_id=core_request.request_id,
-            result_sha256=core_result.result_sha256,
-            observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
+        evidence_slots=(
+            ObservationEvidenceSlot(
+                slot="core",
+                request_id=core_request.request_id,
+                result_sha256=core_result.result_sha256,
+                observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
+            ),
         ),
     )
     runtime = SimpleNamespace(open_evidence=lambda slot: evidence)
@@ -182,12 +184,10 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
     assert [(row.primary_id, row.sidecar_id, row.rule) for row in accepted.candidates] == [
         (primary.id, sidecar.id, "stem")
     ]
-    assert accepted.provenance_result_sha256 == core_result.result_sha256
+    assert accepted.provenance_results[0].result_sha256 == core_result.result_sha256
 
     forged_support = accepted.model_dump(mode="json")
-    forged_support["candidates"][0]["support"] = forged_support["candidates"][0][
-        "support"
-    ][:1]
+    forged_support["candidates"][0]["support"] = forged_support["candidates"][0]["support"][:1]
     with pytest.raises(ValueError, match="support differs"):
         validate_filename_facts(forged_support, subjects, request.options, request=request)
 
@@ -200,11 +200,13 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
         subjects=(primary, missing),
         descriptor=observer.descriptor(),
         options=request.options,
-        evidence_slot=ObservationEvidenceSlot(
-            slot="core",
-            request_id=core_request.request_id,
-            result_sha256=missing_result.result_sha256,
-            observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
+        evidence_slots=(
+            ObservationEvidenceSlot(
+                slot="core",
+                request_id=core_request.request_id,
+                result_sha256=missing_result.result_sha256,
+                observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
+            ),
         ),
     )
     missing_runtime = SimpleNamespace(open_evidence=lambda slot: missing_evidence)
@@ -220,3 +222,65 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
     failed = observer.observe(request, cast(ContentObservationRuntime, unavailable))
     assert failed.state == "failed"
     assert failed.facts is None
+
+
+def test_observer_combines_exact_core_predecessors_without_reopening_provenance() -> None:
+    primary, primary_fact = _fact("c" * 64, "/camera/clip.mov")
+    sidecar, sidecar_fact = _fact("d" * 64, "/camera/clip.xmp")
+    core_descriptor = ObserverDescriptor.seal(
+        ObserverDescriptorPayload(
+            implementation_id="core-fixture/v1",
+            implementation_version="test",
+            source_revision="test",
+            image_id="sha256:" + "e" * 64,
+            contracts=(ObserverContractSupport.from_contract(CORE_PROVENANCE_OBSERVER_CONTRACT),),
+        )
+    )
+    predecessors = []
+    for subject, fact in ((primary, primary_fact), (sidecar, sidecar_fact)):
+        core_request = _request(
+            subjects=(subject,),
+            descriptor=core_descriptor,
+            options={"predicates": []},
+            core=True,
+        )
+        core_result = ContentObservationResultBuilder(core_descriptor, core_request).observed(
+            {"artifacts": [fact]}
+        )
+        predecessors.append(ContentObservationEvidence(request=core_request, result=core_result))
+    selected = tuple(sorted(predecessors, key=lambda item: item.request.request_id))
+    slots = tuple(
+        ObservationEvidenceSlot(
+            slot="evidence." + item.request.request_id,
+            request_id=item.request.request_id,
+            result_sha256=item.result.result_sha256,
+            observer_contract_id=CORE_PROVENANCE_OBSERVER_CONTRACT.id,
+        )
+        for item in selected
+    )
+    observer = FilenamePrefixSidecarObserver(image_id="sha256:" + "f" * 64)
+    request = _request(
+        subjects=(primary, sidecar),
+        descriptor=observer.descriptor(),
+        options={
+            "provenance_slots": [item.slot for item in slots],
+            "primary_ids": [primary.id],
+            "sidecar_ids": [sidecar.id],
+            "sidecar_suffix": ".xmp",
+        },
+        evidence_slots=slots,
+    )
+    available = dict(zip((item.slot for item in slots), selected, strict=True))
+    runtime = SimpleNamespace(open_evidence=available.__getitem__)
+    result = observer.observe(request, cast(ContentObservationRuntime, runtime))
+    assert result.state == "observed"
+    assert result.facts is not None
+    accepted = validate_filename_facts(
+        result.facts, request.subjects, request.options, request=request
+    )
+    assert [(row.primary_id, row.sidecar_id, row.rule) for row in accepted.candidates] == [
+        (primary.id, sidecar.id, "stem")
+    ]
+    assert tuple(item.request_id for item in accepted.provenance_results) == tuple(
+        item.request.request_id for item in selected
+    )

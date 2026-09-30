@@ -191,6 +191,7 @@ class PlanningPort(Protocol):
     def observation_requests(
         self,
         work: WorkIdentity,
+        observations: tuple[ContentObservationEvidence, ...] = (),
     ) -> tuple[ContentObservationRequest, ...]: ...
 
     def workflow_plan(
@@ -480,6 +481,13 @@ class Stove0Coordinator:
                     strict=True,
                 )
             )
+            next_stage = self.planning.observation_requests(record.work, evidence)
+            if next_stage:
+                return self.work.begin_observations(
+                    work_id,
+                    next_stage,
+                    expected_revision=record.revision,
+                )
             try:
                 decision = self.planning.workflow_plan(
                     record.work,
@@ -790,49 +798,60 @@ class Stove0Coordinator:
         if parent.claim is None:
             raise RuntimeError("nested planning requires the root coordination claim")
         evidence: list[ContentObservationEvidence] = []
-        for request in self.planning.observation_requests(work):
-            if request.work_id != work.work_id:
-                raise RuntimeError("nested observation request differs from its work identity")
-            descriptor = self.observers.descriptor(request.observer_registration_id)
-            if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
-                raise RuntimeError("configured observer descriptor changed during tree planning")
-            validate_observation_request(request, descriptor)
-            predecessors = _selected_observation_evidence(request, evidence)
-            authority = self.riverhog.observation_authority(parent.claim, request)
-            result = self.observers.observe(
-                request.observer_registration_id,
-                ContentObservationInvocation(
-                    request=request,
-                    claim_id=parent.claim.claim_id,
-                    fence=parent.claim.fence,
-                    runtime=authority,
-                    evidence=predecessors,
-                ),
-                descriptor=descriptor,
-            )
-            if result.state == "inapplicable":
-                assert result.inapplicable is not None
-                raise PlanningObservationTerminal(
-                    state="inapplicable",
-                    code=result.inapplicable.code,
-                    message=result.inapplicable.message,
-                )
-            if result.state == "failed":
-                assert result.failure is not None
-                raise PlanningObservationTerminal(
-                    state="failed",
-                    code=result.failure.code,
-                    message=result.failure.message,
-                    retryable=result.failure.retryable,
-                )
-            if result.state == "canceled":
-                raise PlanningObservationTerminal(
-                    state="canceled",
-                    code="observer-canceled",
-                    message="A required nested content observation was canceled.",
-                )
-            evidence.append(ContentObservationEvidence(request=request, result=result))
+        while requests := self.planning.observation_requests(work, tuple(evidence)):
+            for request in requests:
+                result = self._observe_nested_request(parent, work, request, evidence)
+                if result.state == "inapplicable":
+                    assert result.inapplicable is not None
+                    raise PlanningObservationTerminal(
+                        state="inapplicable",
+                        code=result.inapplicable.code,
+                        message=result.inapplicable.message,
+                    )
+                if result.state == "failed":
+                    assert result.failure is not None
+                    raise PlanningObservationTerminal(
+                        state="failed",
+                        code=result.failure.code,
+                        message=result.failure.message,
+                        retryable=result.failure.retryable,
+                    )
+                if result.state == "canceled":
+                    raise PlanningObservationTerminal(
+                        state="canceled",
+                        code="observer-canceled",
+                        message="A required nested content observation was canceled.",
+                    )
+                evidence.append(ContentObservationEvidence(request=request, result=result))
         return tuple(sorted(evidence, key=lambda item: item.request.request_id))
+
+    def _observe_nested_request(
+        self,
+        parent: WorkRecord,
+        work: WorkIdentity,
+        request: ContentObservationRequest,
+        evidence: list[ContentObservationEvidence],
+    ) -> ContentObservationResult:
+        assert parent.claim is not None
+        if request.work_id != work.work_id:
+            raise RuntimeError("nested observation request differs from its work identity")
+        descriptor = self.observers.descriptor(request.observer_registration_id)
+        if descriptor.descriptor_sha256 != request.observer_descriptor_sha256:
+            raise RuntimeError("configured observer descriptor changed during tree planning")
+        validate_observation_request(request, descriptor)
+        predecessors = _selected_observation_evidence(request, evidence)
+        authority = self.riverhog.observation_authority(parent.claim, request)
+        return self.observers.observe(
+            request.observer_registration_id,
+            ContentObservationInvocation(
+                request=request,
+                claim_id=parent.claim.claim_id,
+                fence=parent.claim.fence,
+                runtime=authority,
+                evidence=predecessors,
+            ),
+            descriptor=descriptor,
+        )
 
     def _preflight(self, record: WorkRecord) -> WorkRecord:
         plan = record.workflow_plan
