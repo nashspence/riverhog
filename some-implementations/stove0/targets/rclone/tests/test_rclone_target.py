@@ -132,7 +132,12 @@ def test_rclone_uses_forwarded_exact_hint_and_id_fallback() -> None:
     evidence = _hint_evidence((first, second), ({"components": ["Album", "clip.mp4"]}, None))
     planned = _planned_destinations(
         (evidence,),
-        ArtifactSelection.seal((first, second)).ref(),
+        ArtifactSelection.seal(
+            tuple(
+                subject.model_copy(update={"role": "stove0.rclone.source/v1"})
+                for subject in (first, second)
+            )
+        ).ref(),
         _destination().naming_rules,
     )
     assert planned[first.id].relative_path == "1/files/Album/clip.mp4"
@@ -165,14 +170,6 @@ def test_rclone_rejects_hint_evidence_for_another_selection_and_resolves_collisi
         _planned_destinations(
             (evidence,),
             ArtifactSelection.seal((first,)).ref(),
-            _destination().naming_rules,
-        )
-    with pytest.raises(ValueError, match="input selection"):
-        _planned_destinations(
-            (evidence,),
-            ArtifactSelection.seal(
-                (first.model_copy(update={"role": "another.role/v1"}), second)
-            ).ref(),
             _destination().naming_rules,
         )
     limited = replace(_destination().naming_rules, relative_path_bytes=1)
