@@ -18,9 +18,11 @@ ATTENTION_STYLE = "bold yellow"
 
 
 def format_find(payload: Mapping[str, object]) -> str:
-    lines = [_page_line(payload, "files")]
-    for file in _items(payload, "files"):
-        lines.append(f"- {file.get('file_ref', 'unknown')}  {_bytes(file.get('bytes'))}")
+    lines = [_page_line(payload, "artifacts")]
+    for artifact in _items(payload, "artifacts"):
+        lines.append(
+            f"- {artifact.get('artifact_ref', 'unknown')}  {_bytes(artifact.get('bytes'))}"
+        )
     return "\n".join(lines)
 
 
@@ -56,7 +58,7 @@ def format_local_collections(payload: Mapping[str, object]) -> str:
             f"- {collection.get('collection_id', 'unknown')}  "
             f"status={collection.get('status', 'unknown')}  "
             f"created={collection.get('created_at', 'unknown')}  "
-            f"files={collection.get('files', 0)}  "
+            f"artifacts={collection.get('artifacts', 0)}  "
             f"tags={collection.get('tag_count', 0)}  "
             f"bytes={_bytes(collection.get('bytes'))}"
         )
@@ -69,7 +71,8 @@ def format_local_collection(payload: Mapping[str, object]) -> str:
             f"local collection {payload.get('collection_id', 'unknown')}",
             f"status: {payload.get('status', 'unknown')}",
             f"created: {payload.get('created_at', 'unknown')}",
-            f"files: {payload.get('files', 0)}",
+            f"artifacts: {payload.get('artifacts', 0)}",
+            f"layout: {payload.get('layout_mode', 'unknown')}",
             f"tags: {payload.get('tag_count', 0)}",
             f"bytes: {_bytes(payload.get('bytes'))}",
         ]
@@ -335,16 +338,16 @@ def format_collection_uploads(payload: Mapping[str, object]) -> str:
     return "\n".join(lines)
 
 
-def format_collection_upload_files(payload: Mapping[str, object]) -> str:
-    lines = [_page_line(payload, "files")]
-    for file in _items(payload, "files"):
-        receipt = file.get("custody_receipt")
+def format_collection_upload_artifacts(payload: Mapping[str, object]) -> str:
+    lines = [_page_line(payload, "artifacts")]
+    for artifact in _items(payload, "artifacts"):
+        receipt = artifact.get("custody_receipt")
         custody = "custodied" if isinstance(receipt, Mapping) else "pending"
         lines.append(
-            f"- {file.get('path', 'unknown')}  "
+            f"- {artifact.get('artifact_id', 'unknown')}  "
             f"custody={custody}  "
-            f"bytes={_bytes(file.get('bytes'))}  "
-            f"sha256={file.get('sha256', 'unknown')}"
+            f"bytes={_bytes(artifact.get('bytes'))}  "
+            f"sha256={artifact.get('sha256', 'unknown')}"
         )
     return "\n".join(lines)
 
@@ -682,106 +685,48 @@ def format_archive_copy_selectors(payload: Mapping[str, object]) -> str:
     )
 
 
-def format_file_selectors(
+def format_artifact_selectors(
     payload: Mapping[str, object],
-    key: str = "files",
+    key: str = "artifacts",
 ) -> str:
     return "\n".join(
-        f"{item['collection_id']}::{item['path']}"
+        f"{item['collection_id']}::{item['artifact_id']}"
         for item in _items(payload, key)
-        if item.get("collection_id") not in {None, ""} and item.get("path") not in {None, ""}
+        if item.get("collection_id") not in {None, ""} and item.get("artifact_id") not in {None, ""}
     )
 
 
-def format_provenance_files(payload: Mapping[str, object]) -> str:
-    lines = [_page_line(payload, "files")]
-    for file in _items(payload, "files"):
-        provenance = file.get("provenance")
-        status = (
-            provenance.get("status", "unknown") if isinstance(provenance, Mapping) else "unknown"
-        )
-        journal = provenance.get("journal_id", "") if isinstance(provenance, Mapping) else ""
+def format_provenance_artifacts(payload: Mapping[str, object]) -> str:
+    artifacts = _items(payload, "artifacts")
+    lines = [
+        f"artifacts: {len(artifacts)} in this page; "
+        f"next artifact id: {payload.get('next_artifact_id') or '-'}"
+    ]
+    for artifact in _items(payload, "artifacts"):
         lines.append(
-            f"- {file.get('path', 'unknown')}  status={status}  "
-            f"bytes={_bytes(file.get('bytes'))}" + (f"  journal={journal}" if journal else "")
+            f"- {artifact.get('artifact_id', 'unknown')}  "
+            f"bytes={_bytes(artifact.get('bytes'))}  "
+            f"sha256={artifact.get('sha256', 'unknown')}"
         )
     return "\n".join(lines)
 
 
-def format_file_provenance(payload: Mapping[str, object]) -> str:
-    provenance = payload.get("provenance")
-    current = provenance if isinstance(provenance, Mapping) else {}
+def format_artifact_provenance(payload: Mapping[str, object]) -> str:
+    artifact = payload.get("artifact")
+    member = artifact if isinstance(artifact, Mapping) else {}
+    binding = payload.get("binding")
+    current = binding if isinstance(binding, Mapping) else {}
+    journal = current.get("journal")
+    anchor = journal if isinstance(journal, Mapping) else {}
     lines = [
         (
-            f"collection file {payload.get('collection_id', 'unknown')}::"
-            f"{payload.get('path', 'unknown')}"
+            f"collection artifact {payload.get('collection_id', 'unknown')}::"
+            f"{member.get('artifact_id', 'unknown')}"
         ),
-        f"payload: {_bytes(payload.get('bytes'))} sha256={payload.get('sha256', 'unknown')}",
-        f"provenance: {current.get('status', 'unknown')}",
+        f"payload: {_bytes(member.get('bytes'))} sha256={member.get('sha256', 'unknown')}",
+        f"archive root: {payload.get('archive_root_sha256', 'unknown')}",
+        f"primary journal: {anchor.get('journal_id', 'unknown')}",
+        f"primary prefix: {anchor.get('prefix_sha256', 'unknown')}",
+        f"delivery association: {current.get('delivery_association_id', 'unknown')}",
     ]
-    if current.get("journal_id"):
-        lines.append(f"journal: {current['journal_id']}")
-        lines.append(f"current state: {current.get('current_state_id', 'unknown')}")
-    if current.get("omission_reason"):
-        lines.append(f"omission: {current['omission_reason']}")
-    return "\n".join(lines)
-
-
-def format_provenance_trace(payload: Mapping[str, object]) -> str:
-    lines = []
-    if payload.get("path") is not None:
-        lines.extend(format_file_provenance(payload).splitlines())
-    lines.append(_page_line(payload, "trace items"))
-    for item in _items(payload, "items"):
-        kind = item.get("kind")
-        if kind == "journal":
-            value = item.get("journal")
-            journal = value if isinstance(value, Mapping) else {}
-            lines.append(
-                f"- journal {journal.get('journal_id', 'unknown')}  "
-                f"entries={journal.get('entries', 0)}  "
-                f"current={journal.get('current_state_id', 'unknown')}"
-            )
-        elif kind == "external_state_reference":
-            value = item.get("reference")
-            reference = value if isinstance(value, Mapping) else {}
-            lines.append(
-                f"- reference {reference.get('from_journal_id', 'unknown')} -> "
-                f"{reference.get('to_journal_id', 'unknown')}  "
-                f"state={reference.get('state_id', 'unknown')}"
-            )
-    return "\n".join(lines)
-
-
-def format_provenance_journal_agents(payload: Mapping[str, object]) -> str:
-    lines = [_page_line(payload, "agents")]
-    lines.extend(f"- {item.get('agent_id', 'unknown')}" for item in _items(payload, "agents"))
-    return "\n".join(lines)
-
-
-def format_provenance_verification(payload: Mapping[str, object]) -> str:
-    return "\n".join(
-        [
-            f"collection provenance {payload.get('collection_id', 'unknown')}: "
-            f"{'valid' if payload.get('valid') else 'invalid'}",
-            f"mode: {payload.get('provenance_mode', 'unknown')}",
-            f"identity: {payload.get('provenance_identity') or 'omitted'}",
-            f"files: {payload.get('files', 0)}",
-            f"journals: {payload.get('journals', 0)}",
-            f"projected entities: {payload.get('entities', 0)}",
-        ]
-    )
-
-
-def format_provenance_verification_job(payload: Mapping[str, object]) -> str:
-    result = payload.get("result")
-    if payload.get("state") == "succeeded" and isinstance(result, Mapping):
-        return format_provenance_verification(result)
-    lines = [
-        f"collection provenance verification {payload.get('collection_id', 'unknown')}",
-        f"state: {payload.get('state', 'unknown')}",
-        f"attempts: {payload.get('attempts', 0)}",
-    ]
-    if payload.get("failure"):
-        lines.append(f"failure: {payload['failure']}")
     return "\n".join(lines)

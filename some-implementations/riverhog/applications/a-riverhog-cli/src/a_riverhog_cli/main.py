@@ -57,6 +57,8 @@ from a_riverhog_cli.output import (
     format_archive_copy_selectors,
     format_archive_store,
     format_archive_stores,
+    format_artifact_provenance,
+    format_artifact_selectors,
     format_collection_archive_copies,
     format_collection_deletion_plan,
     format_collection_deletion_result,
@@ -66,20 +68,15 @@ from a_riverhog_cli.output import (
     format_collection_tag_mutation,
     format_collection_tags,
     format_collection_upload,
+    format_collection_upload_artifacts,
     format_collection_upload_discard_plan,
     format_collection_upload_discard_result,
-    format_collection_upload_files,
     format_collection_uploads,
     format_collections,
     format_download_quota,
     format_download_quotas,
-    format_file_provenance,
-    format_file_selectors,
     format_find,
-    format_provenance_files,
-    format_provenance_journal_agents,
-    format_provenance_trace,
-    format_provenance_verification_job,
+    format_provenance_artifacts,
     format_retrieval_cache_object,
     format_retrieval_cache_objects,
     format_retrieval_cache_selectors,
@@ -117,13 +114,24 @@ _STATE_STATUS_OUTPUT = _cli_local_json(
 _LOCAL_COLLECTION_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["collection_id", "created_at", "tag_count", "status", "files", "bytes"],
+    "required": [
+        "collection_id",
+        "created_at",
+        "archive_root_sha256",
+        "layout_mode",
+        "tag_count",
+        "status",
+        "artifacts",
+        "bytes",
+    ],
     "properties": {
         "collection_id": {"type": "integer", "minimum": 1},
         "created_at": {"type": "string"},
         "tag_count": {"type": "integer", "minimum": 0},
-        "status": {"enum": ["desired", "remote-deleted", "synchronizing"]},
-        "files": {"type": "integer", "minimum": 0},
+        "archive_root_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "layout_mode": {"enum": ["declared-hints", "id-layout"]},
+        "status": {"enum": ["desired", "remote-unavailable"]},
+        "artifacts": {"type": "integer", "minimum": 0},
         "bytes": {"type": "integer", "minimum": 0},
     },
 }
@@ -131,7 +139,7 @@ _LOCAL_SYNC_OUTPUT = _cli_local_json(
     "a-riverhog-cli-local-sync-result/v1",
     {
         "type": "object",
-        "required": ["status", "materialized_files"],
+        "required": ["status", "materialized_artifacts"],
         "properties": {
             "status": {
                 "enum": [
@@ -142,10 +150,8 @@ _LOCAL_SYNC_OUTPUT = _cli_local_json(
                     "materialized",
                 ]
             },
-            "materialized_files": {"type": "integer", "minimum": 0},
-            "restore_policy": {"enum": ["allow", "never"]},
-            "unavailable_files": {"type": "integer", "minimum": 0},
-            "retrieval_id": {"type": "string"},
+            "materialized_artifacts": {"type": "integer", "minimum": 0},
+            "unavailable_artifacts": {"type": "integer", "minimum": 0},
             "retrieval": {"type": "object"},
         },
         "additionalProperties": False,
@@ -471,10 +477,6 @@ _CLI_RESULT_CONTRACT = {
             "kind": "operation-response",
             "operation_id": "replace_collection_description",
         },
-        "collection provenance verify": {
-            "kind": "openapi-schema",
-            "schema": "CollectionProvenanceVerificationJobOut",
-        },
         "collection tag add": {
             "kind": "operation-response",
             "operation_id": "add_collection_tag",
@@ -517,7 +519,7 @@ _CLI_RESULT_CONTRACT = {
                 "additionalProperties": False,
                 "required": ["status", "collection"],
                 "properties": {
-                    "status": {"const": "added"},
+                    "status": {"enum": ["added", "already-added"]},
                     "collection": _LOCAL_COLLECTION_SCHEMA,
                 },
             },
@@ -527,11 +529,11 @@ _CLI_RESULT_CONTRACT = {
             {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["status", "collection_id", "local_files", "retrievals_canceled"],
+                "required": ["status", "collection_id", "local_artifacts", "retrievals_canceled"],
                 "properties": {
                     "status": {"const": "removed"},
                     "collection_id": {"type": "integer", "minimum": 1},
-                    "local_files": {"const": "retained"},
+                    "local_artifacts": {"const": "retained"},
                     "retrievals_canceled": {"type": "array", "items": {"type": "string"}},
                 },
             },
@@ -541,10 +543,11 @@ _CLI_RESULT_CONTRACT = {
             {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["status", "collection_id", "retrievals_canceled"],
+                "required": ["status", "collection_id", "artifacts", "retrievals_canceled"],
                 "properties": {
                     "status": {"const": "evicted"},
                     "collection_id": {"type": "integer", "minimum": 1},
+                    "artifacts": {"type": "integer", "minimum": 0},
                     "retrievals_canceled": {"type": "array", "items": {"type": "string"}},
                 },
             },
@@ -554,20 +557,10 @@ _CLI_RESULT_CONTRACT = {
             {
                 "type": "object",
                 "additionalProperties": False,
-                "required": [
-                    "page_size",
-                    "next_page_token",
-                    "sort",
-                    "order",
-                    "query",
-                    "collections",
-                ],
+                "required": ["page_size", "next_page_token", "collections"],
                 "properties": {
                     "page_size": {"type": "integer", "minimum": 1, "maximum": 100},
                     "next_page_token": {"type": ["string", "null"]},
-                    "sort": {"enum": ["bytes", "collection_id", "created_at", "files", "status"]},
-                    "order": {"enum": ["asc", "desc"]},
-                    "query": {"type": ["string", "null"]},
                     "collections": {"type": "array", "items": _LOCAL_COLLECTION_SCHEMA},
                 },
             },
@@ -1402,9 +1395,9 @@ _COLLECTION_SORT_FIELDS = {
     "files",
 }
 _FIND_SORT_FIELDS = {
-    "file_ref",
+    "artifact_ref",
     "collection_id",
-    "path",
+    "artifact_id",
     "bytes",
 }
 
@@ -1520,7 +1513,7 @@ def upload_cmd(
                 "format": "a-riverhog-cli-upload-preview/v1",
                 "idempotency_key": key,
                 "artifact_count": len(preview),
-                "total_bytes": sum(int(item["bytes"]) for item in preview),
+                "total_bytes": sum(int(str(item["bytes"])) for item in preview),
                 "sources": preview[:5],
             }
             emit(
@@ -1650,8 +1643,8 @@ def upload_show_cmd(
     emit(payload if json_mode else format_collection_upload(payload), json_mode=json_mode)
 
 
-@collection_upload_app.command("files")
-def upload_files_cmd(
+@collection_upload_app.command("artifacts")
+def upload_artifacts_cmd(
     collection_id: Annotated[int, typer.Argument(help="Collection upload session id")],
     page_size: Annotated[int, typer.Option("--page-size", min=1, max=100)] = 25,
     page_token: Annotated[str | None, typer.Option("--page-token")] = None,
@@ -1660,12 +1653,12 @@ def upload_files_cmd(
     """List exact registered artifacts and their Riverhog custody state."""
 
     api = client()
-    payload = api.list_collection_upload_session_files(
+    payload = api.list_collection_upload_session_artifacts(
         collection_id,
         page_size=page_size,
         page_token=page_token,
     )
-    emit(payload if json_mode else format_collection_upload_files(payload), json_mode=json_mode)
+    emit(payload if json_mode else format_collection_upload_artifacts(payload), json_mode=json_mode)
 
 
 @collection_upload_app.command("cancel")
@@ -1757,11 +1750,11 @@ def upload_discard_cmd(
 def find_cmd(
     query: Annotated[
         str | None,
-        typer.Option("--query", "-q", help="Substring match over collection file references"),
+        typer.Option("--query", "-q", help="Substring match over collection artifact references"),
     ] = None,
     page_size: Annotated[int, typer.Option("--page-size", min=1, max=100)] = 25,
     page_token: Annotated[str | None, typer.Option("--page-token")] = None,
-    sort: Annotated[str, typer.Option("--sort", help="Sort field")] = "file_ref",
+    sort: Annotated[str, typer.Option("--sort", help="Sort field")] = "artifact_ref",
     order: Annotated[str, typer.Option("--order", help="Sort order")] = "asc",
     collection: Annotated[
         int | None,
@@ -1769,11 +1762,11 @@ def find_cmd(
     ] = None,
     selectors: Annotated[
         bool,
-        typer.Option("--selectors", help="Emit one COLLECTION_ID::PATH selector per line"),
+        typer.Option("--selectors", help="Emit one COLLECTION_ID::ARTIFACT_ID selector per line"),
     ] = False,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    """Search files across collections."""
+    """Search artifacts across collections."""
 
     if selectors and json_mode:
         raise typer.BadParameter("--selectors and --json cannot be used together")
@@ -1795,7 +1788,7 @@ def find_cmd(
         collection=collection,
     )
     if selectors:
-        emit(format_file_selectors(payload), json_mode=False)
+        emit(format_artifact_selectors(payload), json_mode=False)
         return
     emit(payload if json_mode else format_find(payload), json_mode=json_mode)
 
@@ -1851,103 +1844,77 @@ def collection_describe_cmd(
     emit(payload if json_mode else format_collection_description(payload), json_mode=json_mode)
 
 
-_PROVENANCE_SORT_FIELDS = {"path", "bytes", "status"}
-
-
 @collection_provenance_app.command("list")
 def provenance_list_cmd(
     collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    page_size: Annotated[int, typer.Option("--page-size", min=1, max=100)] = 25,
-    page_token: Annotated[str | None, typer.Option("--page-token")] = None,
-    sort: Annotated[str, typer.Option("--sort", help="Sort field")] = "path",
-    order: Annotated[str, typer.Option("--order", help="Sort order")] = "asc",
-    query: Annotated[
-        str | None,
-        typer.Option("--query", "-q", help="Substring match over collection paths"),
-    ] = None,
-    status: Annotated[
-        str | None,
-        typer.Option("--status", help="Restrict to captured or omitted files"),
-    ] = None,
+    page_size: Annotated[int, typer.Option("--page-size", min=1, max=200)] = 50,
+    after_artifact_id: Annotated[str | None, typer.Option("--after-artifact-id")] = None,
+    archive_root_sha256: Annotated[str | None, typer.Option("--archive-root-sha256")] = None,
     selectors: Annotated[
         bool,
-        typer.Option("--selectors", help="Emit one COLLECTION_ID::PATH selector per line"),
+        typer.Option("--selectors", help="Emit one COLLECTION_ID::ARTIFACT_ID selector per line"),
     ] = False,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    """List one bounded page of file provenance accounting."""
+    """List one bounded page of exact collection artifact identities."""
 
     if selectors and json_mode:
         raise typer.BadParameter("--selectors and --json cannot be used together")
-    normalized_order = _list_order(sort, order, fields=_PROVENANCE_SORT_FIELDS)
-    if status is not None and status not in {"captured", "omitted"}:
-        raise typer.BadParameter("status must be captured or omitted", param_hint="--status")
+    if (after_artifact_id is None) != (archive_root_sha256 is None):
+        raise typer.BadParameter("continuation requires both artifact id and archive root")
     api = client()
-    payload = api.list_collection_provenance(
+    payload = api.list_collection_artifact_provenance(
         collection_id,
         page_size=page_size,
-        page_token=page_token,
-        q=query,
-        status=cast(Any, status),
-        sort=cast(Any, sort),
-        order=cast(Any, normalized_order),
+        after_artifact_id=cast(Any, after_artifact_id),
+        archive_root_sha256=archive_root_sha256,
     )
     if selectors:
-        emit(format_file_selectors(payload), json_mode=False)
+        emit(format_artifact_selectors(payload), json_mode=False)
         return
-    emit(payload if json_mode else format_provenance_files(payload), json_mode=json_mode)
+    emit(payload if json_mode else format_provenance_artifacts(payload), json_mode=json_mode)
 
 
 @collection_provenance_app.command("show")
 def provenance_show_cmd(
     collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    path: Annotated[str, typer.Argument(help="Collection-relative file path")],
+    artifact_id: Annotated[str, typer.Argument(help="Exact collection artifact id")],
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    """Show one file's current provenance binding and journal summary."""
+    """Show one artifact's exact primary provenance binding."""
 
-    payload = client().get_collection_file_provenance(collection_id, path)
-    emit(payload if json_mode else format_file_provenance(payload), json_mode=json_mode)
+    payload = client().get_collection_artifact_provenance(collection_id, cast(Any, artifact_id))
+    emit(payload if json_mode else format_artifact_provenance(payload), json_mode=json_mode)
 
 
-@collection_provenance_app.command("trace")
-def provenance_trace_cmd(
+@collection_provenance_app.command("journals")
+def provenance_journals_cmd(
     collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    path: Annotated[str, typer.Argument(help="Collection-relative file path")],
-    page_size: Annotated[int, typer.Option("--page-size", min=1, max=100)] = 25,
-    page_token: Annotated[str | None, typer.Option("--page-token")] = None,
+    page_size: Annotated[int, typer.Option("--page-size", min=1, max=200)] = 50,
+    after_journal_id: Annotated[str | None, typer.Option("--after-journal-id")] = None,
+    archive_root_sha256: Annotated[str | None, typer.Option("--archive-root-sha256")] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    """Trace one file through reachable provenance journals and references."""
+    """List exact canonical journals retained by a collection."""
 
-    api = client()
-    payload = api.trace_collection_file_provenance(
+    if (after_journal_id is None) != (archive_root_sha256 is None):
+        raise typer.BadParameter("continuation requires both journal id and archive root")
+    payload = client().list_collection_provenance_journals(
         collection_id,
-        path,
         page_size=page_size,
-        page_token=page_token,
+        after_journal_id=cast(Any, after_journal_id),
+        archive_root_sha256=archive_root_sha256,
     )
-    emit(payload if json_mode else format_provenance_trace(payload), json_mode=json_mode)
-
-
-@collection_provenance_app.command("agents")
-def provenance_agents_cmd(
-    collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    journal_id: Annotated[str, typer.Argument(help="Exact provenance journal id")],
-    page_size: Annotated[int, typer.Option("--page-size", min=1, max=100)] = 25,
-    page_token: Annotated[str | None, typer.Option("--page-token")] = None,
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-) -> None:
-    """List agents asserted by one exact provenance journal."""
-
-    api = client()
-    payload = api.list_collection_provenance_journal_agents(
-        collection_id,
-        journal_id,
-        page_size=page_size,
-        page_token=page_token,
-    )
-    emit(payload if json_mode else format_provenance_journal_agents(payload), json_mode=json_mode)
+    if json_mode:
+        emit(payload, json_mode=True)
+        return
+    journals = payload.get("journals") or []
+    lines = [
+        f"journals: {len(journals)} in this page; next journal id: "
+        f"{payload.get('next_journal_id') or '-'}"
+    ]
+    lines.extend(f"- {journal['journal_id']}  bytes={journal['bytes']}" for journal in journals)
+    emit("\n".join(lines), json_mode=False)
 
 
 @collection_provenance_app.command("export")
@@ -1979,47 +1946,6 @@ def provenance_export_cmd(
         )
         return
     typer.echo(str(destination))
-
-
-@collection_provenance_app.command("verify")
-def provenance_verify_cmd(
-    collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    wait: Annotated[
-        bool,
-        typer.Option("--wait/--no-wait", help="Wait for the server-owned verification job"),
-    ] = True,
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-) -> None:
-    """Start verification of exact journals, bindings, identity, and projection."""
-
-    api = client()
-    payload = api.request_collection_provenance_verification(collection_id)
-    while wait and payload["state"] in {"queued", "running", "canceling"}:
-        time.sleep(0.25)
-        payload = api.get_collection_provenance_verification(collection_id)
-    emit(payload if json_mode else format_provenance_verification_job(payload), json_mode=json_mode)
-
-
-@collection_provenance_app.command("verification-show")
-def provenance_verification_show_cmd(
-    collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-) -> None:
-    """Show the current server-owned provenance verification job."""
-
-    payload = client().get_collection_provenance_verification(collection_id)
-    emit(payload if json_mode else format_provenance_verification_job(payload), json_mode=json_mode)
-
-
-@collection_provenance_app.command("verification-cancel")
-def provenance_verification_cancel_cmd(
-    collection_id: Annotated[int, typer.Argument(help="Collection id")],
-    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
-) -> None:
-    """Cancel the current server-owned provenance verification job."""
-
-    payload = client().cancel_collection_provenance_verification(collection_id)
-    emit(payload if json_mode else format_provenance_verification_job(payload), json_mode=json_mode)
 
 
 _ARCHIVE_STORE_SORT_FIELDS = {

@@ -1,3 +1,5 @@
+"""Exact current local materialization state; pre-v1 state is rebaselined."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,8 +26,8 @@ from state_schema import (
 
 STATE_VERSION_TABLE = "state_schema_revision"
 STATE_MIGRATIONS = Path(__file__).with_name("state_migrations")
-
 LOCAL_STATE_METADATA = MetaData()
+
 Table(
     "settings",
     LOCAL_STATE_METADATA,
@@ -36,32 +38,19 @@ Table(
     "desired_collections",
     LOCAL_STATE_METADATA,
     Column("collection_id", Integer, primary_key=True),
+    Column("archive_root_sha256", Text, nullable=False),
     Column("inventory_identity", Text, nullable=False),
-    Column("inventory_cursor", Text),
-    Column("inventory_complete", Integer, nullable=False, server_default=text("0")),
-    Column("tag_revision", Integer, nullable=False),
-    Column("tag_set_identity", Text, nullable=False),
-    Column("tag_page_token", Text),
-    Column("tags_complete", Integer, nullable=False, server_default=text("0")),
+    Column("artifact_set_identity", Text, nullable=False),
+    Column("provenance_identity", Text, nullable=False),
     Column("created_at", Text, nullable=False),
-    Column("remote_deleted", Integer, nullable=False, server_default=text("0")),
+    Column("layout_mode", Text, nullable=False),
+    Column("rules_json", Text, nullable=False),
+    Column("remote_unavailable", Integer, nullable=False, server_default=text("0")),
     CheckConstraint("collection_id > 0", name="ck_desired_collections_id"),
     CheckConstraint(
-        "length(inventory_identity) = 64 AND inventory_identity = lower(inventory_identity) "
-        "AND inventory_identity NOT GLOB '*[^0-9a-f]*'",
-        name="ck_desired_collections_etag",
+        "layout_mode IN ('declared-hints', 'id-layout')", name="ck_desired_collections_layout"
     ),
-    CheckConstraint(
-        "inventory_complete IN (0, 1)", name="ck_desired_collections_inventory_complete"
-    ),
-    CheckConstraint("tag_revision >= 1", name="ck_desired_collections_tag_revision"),
-    CheckConstraint(
-        "length(tag_set_identity) = 64 AND tag_set_identity = lower(tag_set_identity) "
-        "AND tag_set_identity NOT GLOB '*[^0-9a-f]*'",
-        name="ck_desired_collections_tag_set_identity",
-    ),
-    CheckConstraint("tags_complete IN (0, 1)", name="ck_desired_collections_tags_complete"),
-    CheckConstraint("remote_deleted IN (0, 1)", name="ck_desired_collections_remote_deleted"),
+    CheckConstraint("remote_unavailable IN (0, 1)", name="ck_desired_collections_unavailable"),
 )
 Table(
     "desired_collection_tags",
@@ -75,7 +64,7 @@ Table(
     Column("tag", Text, primary_key=True),
 )
 Table(
-    "desired_files",
+    "desired_artifacts",
     LOCAL_STATE_METADATA,
     Column(
         "collection_id",
@@ -83,14 +72,32 @@ Table(
         ForeignKey("desired_collections.collection_id", ondelete="CASCADE"),
         primary_key=True,
     ),
-    Column("path", Text, primary_key=True),
+    Column("artifact_id", Text, primary_key=True),
     Column("bytes", Integer, nullable=False),
     Column("sha256", Text, nullable=False),
-    CheckConstraint("bytes >= 0", name="ck_desired_files_bytes"),
-    CheckConstraint(
-        "length(sha256) = 64 AND sha256 = lower(sha256) AND sha256 NOT GLOB '*[^0-9a-f]*'",
-        name="ck_desired_files_sha256",
+    Column("destination_json", Text, nullable=False),
+    Column("reason", Text, nullable=False),
+    Column("hint_json", Text),
+    Column("binding_json", Text, nullable=False),
+    Column("primary_bytes", Integer, nullable=False),
+    Column("primary_sha256", Text, nullable=False),
+    CheckConstraint("bytes >= 0", name="ck_desired_artifacts_bytes"),
+    CheckConstraint("primary_bytes > 0", name="ck_desired_artifacts_primary_bytes"),
+    UniqueConstraint("collection_id", "destination_json", name="uq_desired_artifact_destination"),
+)
+Table(
+    "desired_journals",
+    LOCAL_STATE_METADATA,
+    Column(
+        "collection_id",
+        Integer,
+        ForeignKey("desired_collections.collection_id", ondelete="CASCADE"),
+        primary_key=True,
     ),
+    Column("journal_id", Text, primary_key=True),
+    Column("bytes", Integer, nullable=False),
+    Column("sha256", Text, nullable=False),
+    CheckConstraint("bytes > 0", name="ck_desired_journals_bytes"),
 )
 Table(
     "retrieval_jobs",
@@ -104,7 +111,7 @@ Table(
     ),
 )
 Table(
-    "retrieval_job_files",
+    "retrieval_job_artifacts",
     LOCAL_STATE_METADATA,
     Column(
         "retrieval_job_id",
@@ -114,21 +121,14 @@ Table(
     ),
     Column("ordinal", Integer, primary_key=True),
     Column("collection_id", Integer, nullable=False),
-    Column("path", Text, nullable=False),
+    Column("artifact_id", Text, nullable=False),
     Column("bytes", Integer, nullable=False),
     Column("sha256", Text, nullable=False),
-    CheckConstraint("ordinal >= 0", name="ck_retrieval_job_files_ordinal"),
-    CheckConstraint("collection_id > 0", name="ck_retrieval_job_files_collection"),
-    CheckConstraint("bytes >= 0", name="ck_retrieval_job_files_bytes"),
-    CheckConstraint(
-        "length(sha256) = 64 AND sha256 = lower(sha256) AND sha256 NOT GLOB '*[^0-9a-f]*'",
-        name="ck_retrieval_job_files_sha256",
-    ),
+    CheckConstraint("ordinal >= 0", name="ck_retrieval_job_artifacts_ordinal"),
+    CheckConstraint("collection_id > 0", name="ck_retrieval_job_artifacts_collection"),
+    CheckConstraint("bytes >= 0", name="ck_retrieval_job_artifacts_bytes"),
     UniqueConstraint(
-        "retrieval_job_id",
-        "collection_id",
-        "path",
-        name="uq_retrieval_job_files_artifact",
+        "retrieval_job_id", "collection_id", "artifact_id", name="uq_retrieval_job_artifacts_member"
     ),
 )
 

@@ -13,7 +13,7 @@ from .common import (
 )
 from .constants import PACKAGE_VERSION as __version__
 from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
-from .delivery import verify_delivery
+from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
     ConcurrentJournalChangeError,
     IncompleteSourceError,
@@ -78,6 +78,7 @@ __all__ = [
     "software_agent_id",
     "utc_now",
     "verify_delivery",
+    "selected_delivery_occurrence",
     "ConcurrentJournalChangeError",
     "IncompleteSourceError",
     "ObservationError",
