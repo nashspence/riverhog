@@ -17,7 +17,6 @@ from a_riverhog_minisign_witness.schema import state_schema as minisign_witness_
 from a_riverhog_opentimestamps_witness.schema import state_schema as ots_witness_schema
 from gogurt_listener_runtime import ListenerStore
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
-from riverhog_provenance import load_or_create_installation_id
 from sqlalchemy.dialects import postgresql
 from stove0_core.state_migrations.v1_ddl import POSTGRESQL_DDL as STOVE0_POSTGRESQL_DDL
 
@@ -162,16 +161,6 @@ def test_gogurt_listener_v1_fixture_preserves_uncertain_dispatch_custody(
     }
 
 
-def test_provenance_installation_v1_fixture_retains_exact_identity(tmp_path: Path) -> None:
-    fixture = FIXTURES / "provenance-installation-id"
-    destination = tmp_path / "provenance-installation-id"
-    destination.write_bytes(fixture.read_bytes())
-
-    assert load_or_create_installation_id(destination) == (
-        "urn:uuid:00000000-0000-4000-8000-000000000001"
-    )
-
-
 def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     inventory = release["state"]
@@ -181,7 +170,6 @@ def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
         "durable-user-content",
         "durable-user-evidence",
         "operational-state",
-        "installation-identity",
     }
     assert all(
         set(owner)
@@ -200,7 +188,6 @@ def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
     assert {owner["transition"] for owner in owners} == {
         "forward-migration-chain",
         "backward-readable-documents",
-        "immutable-identity",
     }
     fixture_paths = {fixture for owner in owners for fixture in owner["fixtures"]}
     assert fixture_paths == {
@@ -261,19 +248,6 @@ def test_every_v1_state_owner_projects_its_component_owned_exact_structure() -> 
         == "relational-schema"
     )
 
-    assert projected["riverhog-provenance-installation"]["structure"] == {
-        "kind": "text-document",
-        "encoding": "ascii",
-        "line_count": 1,
-        "value": {
-            "kind": "canonical-uuid-urn",
-            "pattern": (
-                r"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
-                r"[0-9a-f]{4}-[0-9a-f]{12}$"
-            ),
-        },
-        "terminator": "LF",
-    }
     assert projected["gogurt-listener"]["structure"]["dialect"] == "sqlite"
 
 
