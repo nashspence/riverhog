@@ -32,10 +32,11 @@ REPO_ROOT = Path(__file__).resolve().parents[5]
 
 def _config(tmp_path: Path) -> FtpSpoolConfig:
     return FtpSpoolConfig(
-        host_id="test-host",
+        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
         api_token="adapter-token",
+        provenance_observer="a-riverhog-linux-provenance-observer",
         sources=(
             SourceConfig(
                 id="camera-a",
@@ -45,8 +46,6 @@ def _config(tmp_path: Path) -> FtpSpoolConfig:
                 tags=("source:ftp", "camera:a"),
                 max_files=10,
                 max_bytes=1024 * 1024,
-                provenance="omit",
-                provenance_omission_reason="Fixture intentionally has no host provenance.",
             ),
         ),
     )
@@ -931,7 +930,8 @@ def test_explicit_flush_is_the_same_bounded_claim_and_receipt_path(
 
     assert adapter.run_once()["completed"] == 0
     assert adapter.flush(source.id)["completed"] == 1
-    assert [item[:3] for item in _Producer.calls[0]["files"]] == [("current.bin", b"current", None)]
+    assert [item[:2] for item in _Producer.calls[0]["files"]] == [("current.bin", b"current")]
+    assert _Producer.calls[0]["files"][0][2].graph_fragment()["locator_bindings"]
     assert len(_Producer.calls[0]["files"][0][3]) == 64
 
 
@@ -989,13 +989,7 @@ def test_captured_provenance_is_identity_checked_and_projected_for_the_producer(
     tmp_path: Path,
 ) -> None:
     base = _config(tmp_path)
-    source = base.sources[0].model_copy(
-        update={
-            "close_mode": "explicit-flush",
-            "provenance": "capture",
-            "provenance_omission_reason": None,
-        }
-    )
+    source = base.sources[0].model_copy(update={"close_mode": "explicit-flush"})
     config = base.model_copy(
         update={
             "host_id": "urn:uuid:00000000-0000-4000-8000-000000000522",
@@ -1023,9 +1017,7 @@ def test_captured_provenance_is_identity_checked_and_projected_for_the_producer(
 
 def test_captured_observation_cannot_change_before_publication(tmp_path: Path) -> None:
     base = _config(tmp_path)
-    source = base.sources[0].model_copy(
-        update={"provenance": "capture", "provenance_omission_reason": None}
-    )
+    source = base.sources[0]
     config = base.model_copy(
         update={
             "host_id": "urn:uuid:00000000-0000-4000-8000-000000000522",
@@ -1085,13 +1077,7 @@ def test_completion_source_names_share_persisted_view_across_independent_observa
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     base = _config(tmp_path)
-    source = base.sources[0].model_copy(
-        update={
-            "close_mode": "explicit-flush",
-            "provenance": "capture",
-            "provenance_omission_reason": None,
-        }
-    )
+    source = base.sources[0].model_copy(update={"close_mode": "explicit-flush"})
     config = base.model_copy(
         update={
             "host_id": "urn:uuid:00000000-0000-4000-8000-000000000522",

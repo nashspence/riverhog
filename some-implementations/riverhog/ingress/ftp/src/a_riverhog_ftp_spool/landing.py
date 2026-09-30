@@ -38,6 +38,7 @@ from riverhog_provenance import (
     assertion,
     evidence,
     reference,
+    resolve_provenance_observer,
     software_agent_id,
     validate_graph,
 )
@@ -160,6 +161,13 @@ class FtpSpool:
         self._custody_pass_lock = threading.Lock()
         for source in config.sources:
             self._initialize_source(source)
+
+    def _native_observer(self) -> NativeObservationPort:
+        observer = self._provenance_observer
+        if observer is None:
+            observer = resolve_provenance_observer(self.config.provenance_observer)
+            self._provenance_observer = observer
+        return observer
 
     def _control_root(self, source: SourceConfig) -> Path:
         return source.root / _CONTROL_DIR
@@ -489,7 +497,6 @@ class FtpSpool:
                     "close_mode": source.close_mode,
                     "max_files": source.max_files,
                     "max_bytes": source.max_bytes,
-                    "provenance": source.provenance,
                     "pending_claim_capacity": self.config.pending_claim_capacity,
                     "completion_failures": failure_count,
                     "completion_failure_capacity": self.config.completion_failure_capacity,
@@ -1301,12 +1308,8 @@ class FtpSpool:
         artifact_id: str,
         completion_record: CompletionRecord | None = None,
         source_view_path: bool = False,
-    ) -> dict[str, object] | None:
-        if source.provenance == "omit":
-            return None
-        observer = self._provenance_observer
-        if observer is None:
-            raise FtpSpoolError("configured provenance observer is unavailable")
+    ) -> dict[str, object]:
+        observer = self._native_observer()
         with closing(self._open_state(source)) as connection:
             naming_view_id = _state_value(connection, "naming_view_id")
         if naming_view_id is None:
@@ -1340,16 +1343,14 @@ class FtpSpool:
             "contract_sha256": observer.contract.contract_sha256,
         }
 
-    def _load_observation(
-        self, claim_root: Path, row: Mapping[str, object]
-    ) -> ObservationResult | None:
+    def _load_observation(self, claim_root: Path, row: Mapping[str, object]) -> ObservationResult:
         details = row.get("observation")
         if details is None:
-            return None
+            raise FtpSpoolError("FTP claim lacks its required canonical observation")
         if not isinstance(details, Mapping):
             raise FtpSpoolError("FTP claim observation is invalid")
-        observer = self._provenance_observer
-        if observer is None or observer.contract.contract_sha256 != details.get("contract_sha256"):
+        observer = self._native_observer()
+        if observer.contract.contract_sha256 != details.get("contract_sha256"):
             raise FtpSpoolError("FTP claim observer contract is unavailable")
         expected_path = f"provenance/observations/{row['artifact_id']}.json"
         if details.get("graph_path") != expected_path:

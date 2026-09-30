@@ -115,14 +115,13 @@ def exercise(application: str, phase: str, root: Path) -> dict[str, object]:
                 id="cursor-fixture",
                 root=root / "ftp-landing",
                 ingest_source="ftp:cursor-fixture",
-                provenance="omit",
-                provenance_omission_reason="Fixture has no host provenance.",
             )
             config = FtpSpoolConfig(
-                host_id="cursor-fixture",
+                host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
                 riverhog_base_url="https://riverhog.invalid",
                 riverhog_token="riverhog-token",
                 api_token="ftp-test-token",
+                provenance_observer="a-riverhog-linux-provenance-observer",
                 sources=(source,),
             )
             owner = FtpSpool(_RiverhogApi(), config)  # type: ignore[arg-type]

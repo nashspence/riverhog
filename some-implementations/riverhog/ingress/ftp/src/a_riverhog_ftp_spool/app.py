@@ -136,11 +136,7 @@ class FtpSpoolComposition:
 
     @classmethod
     def build(cls, config: FtpSpoolConfig) -> FtpSpoolComposition:
-        observer = (
-            resolve_provenance_observer(config.provenance_observer)
-            if config.provenance_observer is not None
-            else None
-        )
+        observer = resolve_provenance_observer(config.provenance_observer)
         api = ApiClient(
             base_url=config.riverhog_base_url,
             token=config.riverhog_token,
