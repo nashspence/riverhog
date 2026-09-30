@@ -56,6 +56,7 @@ def _anchored_snapshot(
                 expected_anchor=anchor,
                 require_exact_tail=True,
                 catalog=catalog,
+                require_profiles=False,
             )
     raise ProvenanceValidationError("foreign prefix anchor is absent")
 
