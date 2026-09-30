@@ -2716,7 +2716,7 @@ class CollectionUploadRecord(Base):
             "catalog_phase IN ("
             "'artifact-set-identity','inventory-identity','collection','tags','artifacts','journals',"
             "'bindings','provenance-segments','archive-objects','artifact-objects',"
-            "'terminal','complete')",
+            "'index','terminal','complete')",
             name="ck_collection_uploads_catalog_phase",
         ),
         CheckConstraint("artifact_bytes >= 0", name="ck_collection_uploads_artifact_bytes"),
@@ -3033,8 +3033,8 @@ class CollectionUploadArtifactMaterializationDecisionRecord(Base):
             ondelete="CASCADE",
         ),
         CheckConstraint(
-            "(hint_json IS NULL AND allow_missing_materialization_hint) OR "
-            "(hint_json IS NOT NULL AND NOT allow_missing_materialization_hint)",
+            "hint_json IS NULL AND allow_missing_materialization_hint OR "
+            "hint_json IS NOT NULL AND NOT allow_missing_materialization_hint",
             name="ck_upload_artifact_materialization_decision_choice",
         ),
     )

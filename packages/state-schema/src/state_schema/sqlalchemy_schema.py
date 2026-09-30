@@ -77,12 +77,12 @@ def _check_expression(value: object | None) -> str:
     # quoted strings with an explicit integer cast.  Normalize that representation
     # before removing dialect-added casts, while preserving genuine quoted text.
     expression = re.sub(
-        r"'([0-9]+)'::(?:bigint|integer)",
+        r"'([0-9]+)'::(?:bigint|integer|numeric)",
         r"\1",
         expression,
     )
     expression = re.sub(
-        r"::(?:character varying|text|bigint|integer)(?:\[\])?",
+        r"::(?:character varying|text|bigint|integer|numeric)(?:\[\])?",
         "",
         expression,
     )

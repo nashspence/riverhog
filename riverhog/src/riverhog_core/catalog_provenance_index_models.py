@@ -64,7 +64,7 @@ class CollectionProvenanceIndexGenerationRecord(Base):
         ForeignKeyConstraint(["collection_id"], ["collections.id"], ondelete="CASCADE"),
         CheckConstraint("expected_epoch >= 1", name="ck_provenance_index_generation_epoch"),
         CheckConstraint(
-            "complete = false OR (dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL)",
+            "complete = false OR dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL",
             name="ck_provenance_index_generation_complete",
         ),
         Index("ix_provenance_index_generations_collection", "collection_id", "complete"),

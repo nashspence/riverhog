@@ -617,7 +617,7 @@ CREATE TABLE collection_provenance_index_generations (
 	PRIMARY KEY (build_id),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
 	CONSTRAINT ck_provenance_index_generation_epoch CHECK (expected_epoch >= 1),
-	CONSTRAINT ck_provenance_index_generation_complete CHECK (complete = false OR (dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL)),
+	CONSTRAINT ck_provenance_index_generation_complete CHECK (complete = false OR dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL),
 	CONSTRAINT ck_sha256_a31549d68f2cf907 CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_38d95a1c5333b85a CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_2186884c8f926f01 CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -902,7 +902,7 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_artifact_order >= 0),
 	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_artifact_order >= 0 AND provenance_archive_next_artifact_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','terminal','complete')),
+	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','index','terminal','complete')),
 	CONSTRAINT ck_collection_uploads_artifact_bytes CHECK (artifact_bytes >= 0),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_count CHECK (payload_sealed_artifact_count >= 0 AND payload_sealed_artifact_count <= artifact_count),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_bytes CHECK (payload_sealed_artifact_bytes >= 0 AND payload_sealed_artifact_bytes <= artifact_bytes),
@@ -2154,7 +2154,7 @@ CREATE TABLE collection_upload_artifact_materialization_decisions (
 	allow_missing_materialization_hint BOOLEAN NOT NULL,
 	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK ((hint_json IS NULL AND allow_missing_materialization_hint) OR (hint_json IS NOT NULL AND NOT allow_missing_materialization_hint)),
+	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK (hint_json IS NULL AND allow_missing_materialization_hint OR hint_json IS NOT NULL AND NOT allow_missing_materialization_hint),
 	CONSTRAINT ck_sha256_fb5e4ae93fbc40f2 CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
     """.strip(),
@@ -3182,7 +3182,7 @@ CREATE TABLE collection_provenance_index_generations (
 	PRIMARY KEY (build_id),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
 	CONSTRAINT ck_provenance_index_generation_epoch CHECK (expected_epoch >= 1),
-	CONSTRAINT ck_provenance_index_generation_complete CHECK (complete = false OR (dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL)),
+	CONSTRAINT ck_provenance_index_generation_complete CHECK (complete = false OR dataset_sha256 IS NOT NULL AND generation_id IS NOT NULL),
 	CONSTRAINT ck_sha256_a31549d68f2cf907 CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_38d95a1c5333b85a CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_2186884c8f926f01 CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
@@ -3468,7 +3468,7 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_artifact_order >= 0),
 	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_artifact_order >= 0 AND provenance_archive_next_artifact_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','terminal','complete')),
+	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','index','terminal','complete')),
 	CONSTRAINT ck_collection_uploads_artifact_bytes CHECK (artifact_bytes >= 0),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_count CHECK (payload_sealed_artifact_count >= 0 AND payload_sealed_artifact_count <= artifact_count),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_bytes CHECK (payload_sealed_artifact_bytes >= 0 AND payload_sealed_artifact_bytes <= artifact_bytes),
@@ -4720,7 +4720,7 @@ CREATE TABLE collection_upload_artifact_materialization_decisions (
 	allow_missing_materialization_hint BOOLEAN NOT NULL,
 	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
-	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK ((hint_json IS NULL AND allow_missing_materialization_hint) OR (hint_json IS NOT NULL AND NOT allow_missing_materialization_hint)),
+	CONSTRAINT ck_upload_artifact_materialization_decision_choice CHECK (hint_json IS NULL AND allow_missing_materialization_hint OR hint_json IS NOT NULL AND NOT allow_missing_materialization_hint),
 	CONSTRAINT ck_sha256_fb5e4ae93fbc40f2 CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
     """.strip(),

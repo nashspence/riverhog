@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import uuid
 
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_core.canonical_discovery_index import (
@@ -17,14 +18,24 @@ from riverhog_core.canonical_discovery_index import (
 from riverhog_core.canonical_discovery_relevance import member_relevance, relevance_row_keys
 from riverhog_core.canonical_discovery_rows import iter_index_assertions
 from riverhog_core.catalog_db import Base, create_catalog_engine
-from riverhog_core.catalog_models import CollectionRecord
+from riverhog_core.catalog_models import (
+    CollectionRecord,
+    CollectionUploadArtifactProvenanceBindingRecord,
+    CollectionUploadArtifactRecord,
+    CollectionUploadProvenanceJournalChunkRecord,
+    CollectionUploadProvenanceJournalRecord,
+    CollectionUploadRecord,
+    StorageIncarnationRecord,
+)
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexAssertionRecord,
+    CollectionProvenanceIndexMembershipRecord,
     CollectionProvenanceIndexStateRecord,
     CollectionProvenanceIndexTextChunkRecord,
     CollectionProvenanceIndexValueRecord,
 )
-from riverhog_protocol import ArtifactMemberIdentityDocument
+from riverhog_core.services.collection_uploads import _advance_catalog_canonical_index
+from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set_identity
 from riverhog_protocol.collection_production_provenance import collection_production_contract
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
 from riverhog_provenance_contracts import ContractCatalog
@@ -169,4 +180,116 @@ def test_complete_generation_requires_every_snapshot_row_and_has_content_identit
         assert generation_ids[0] == generation_ids[1]
         state = session.get(CollectionProvenanceIndexStateRecord, collection.id)
         assert state is not None and state.phase == "ready" and state.active_build_id == build_id
+    engine.dispose()
+
+
+def test_initial_catalog_publication_waits_for_exact_canonical_index() -> None:
+    engine = create_catalog_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    payload = b"indexed opaque member"
+    member = ArtifactMemberIdentityDocument(
+        artifact_id="ab" * 32, bytes=str(len(payload)), sha256=hashlib.sha256(payload).hexdigest()
+    )
+    collection = _collection()
+    collection.is_published = False
+    produced = build_member_journal(
+        member=member,
+        observation=BoundedSourceObserver().observe(BytesSource(payload)),
+        delivery_context_id=collection.delivery_context_id,
+        attribution=ProducerAttribution("example", "bytes", "v1", "event", "test", {}, "a1" * 32),
+        materialization_hint=None,
+    )
+    anchor = produced.binding.journal
+    with Session(engine) as session:
+        session.add(collection)
+        incarnation_id = str(uuid.uuid4())
+        session.add(
+            StorageIncarnationRecord(
+                id=incarnation_id,
+                kind="archive",
+                name="archive",
+                state="bound",
+                created_at="2026-01-01T00:00:00Z",
+            )
+        )
+        session.flush()
+        upload = CollectionUploadRecord(
+            collection_id=collection.id,
+            idempotency_key="indexed-upload",
+            creation_identity_sha256="a" * 64,
+            initial_tag_set_identity=collection_tag_set_identity(None),
+            archive_generation=collection.archive_generation,
+            encryption_format="age-v1-scrypt",
+            passphrase_id="test-key",
+            archive_store="archive",
+            archive_incarnation_id=incarnation_id,
+            opened_at="2026-01-01T00:00:00Z",
+            last_activity_at="2026-01-01T00:00:00Z",
+            archive_phase_updated_at="2026-01-01T00:00:00Z",
+            archive_storage_prefix="collections/1",
+            delivery_context_id=collection.delivery_context_id,
+            planner_checkpoint_json="{}",
+            catalog_phase="index",
+            artifact_count=1,
+        )
+        session.add(upload)
+        session.flush()
+        session.add(
+            CollectionUploadArtifactRecord(
+                collection_id=1,
+                artifact_id=member.artifact_id,
+                artifact_order=0,
+                bytes=int(member.bytes),
+                sha256=member.sha256,
+            )
+        )
+        session.add(
+            CollectionUploadProvenanceJournalRecord(
+                collection_id=1,
+                journal_id=produced.journal_id,
+                bytes=len(produced.content),
+                sha256=hashlib.sha256(produced.content).hexdigest(),
+                state="sealed",
+                accepted_bytes=len(produced.content),
+                content_hash_state="{}",
+            )
+        )
+        session.flush()
+        session.add(
+            CollectionUploadProvenanceJournalChunkRecord(
+                collection_id=1,
+                journal_id=produced.journal_id,
+                ordinal=0,
+                byte_offset=0,
+                content=produced.content,
+            )
+        )
+        session.add(
+            CollectionUploadArtifactProvenanceBindingRecord(
+                collection_id=1,
+                artifact_id=member.artifact_id,
+                journal_id=anchor.journal_id,
+                through_entry_id=anchor.through.entry_id,
+                through_sequence=int(anchor.through.sequence),
+                through_json_sha256=anchor.through.json_sha256,
+                prefix_sha256=anchor.prefix_sha256,
+                prefix_bytes=int(anchor.prefix_bytes),
+                delivery_association_id=produced.binding.delivery_association_id,
+            )
+        )
+        session.commit()
+        for _ in range(3):
+            _advance_catalog_canonical_index(session, upload)
+            session.commit()
+        assert upload.catalog_phase == "terminal"
+        assert collection.is_published is False
+        state = session.get(CollectionProvenanceIndexStateRecord, collection.id)
+        assert state is not None and state.phase == "ready"
+        assert state.active_build_id is not None
+        assert (
+            session.scalar(
+                select(func.count()).select_from(CollectionProvenanceIndexMembershipRecord)
+            )
+            > 0
+        )
     engine.dispose()
