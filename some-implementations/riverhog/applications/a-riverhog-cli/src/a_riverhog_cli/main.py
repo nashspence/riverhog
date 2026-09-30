@@ -14,6 +14,7 @@ import httpx
 import typer
 from http_api_contracts import ErrorOut
 from riverhog_application_access import ApplicationPermission
+from riverhog_canonical_json import parse_identity_json
 from riverhog_client import (
     COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
     ApiClient,
@@ -621,6 +622,7 @@ _CLI_RESULT_CONTRACT = {
     "version_distribution": "a-riverhog-cli",
 }
 collection_app = typer.Typer(help="Collection catalog and upload operations.")
+artifact_app = typer.Typer(help="Exact opaque artifact discovery and inspection.")
 collection_tag_app = typer.Typer(help="Exact collection tag authority.")
 collection_upload_app = typer.Typer(help="Collection upload sessions.")
 collection_provenance_app = typer.Typer(help="Collection file provenance.")
@@ -640,6 +642,7 @@ app_key_app.add_typer(app_key_access_app, name="access")
 app_key_app.add_typer(app_key_quota_app, name="quota")
 application_app.add_typer(app_key_app, name="key")
 app.add_typer(collection_app, name="collection")
+app.add_typer(artifact_app, name="artifact")
 collection_app.add_typer(collection_tag_app, name="tag")
 collection_app.add_typer(collection_upload_app, name="upload")
 collection_app.add_typer(collection_provenance_app, name="provenance")
@@ -1791,6 +1794,70 @@ def find_cmd(
         emit(format_artifact_selectors(payload), json_mode=False)
         return
     emit(payload if json_mode else format_find(payload), json_mode=json_mode)
+
+
+@artifact_app.command("locate")
+def artifact_locate_cmd(
+    query_file: Annotated[
+        str | None,
+        typer.Option(
+            "--query-file",
+            help="Closed artifact-discovery JSON request file, or '-' for standard input",
+        ),
+    ] = None,
+    page_token: Annotated[str | None, typer.Option("--page-token")] = None,
+    selectors: Annotated[
+        bool,
+        typer.Option("--selectors", help="Emit one COLLECTION_ID::ARTIFACT_ID selector per line"),
+    ] = False,
+    json_mode: Annotated[
+        bool, typer.Option("--json", help="Emit the full page and support")
+    ] = False,
+) -> None:
+    """Locate members through Riverhog's exact canonical discovery index."""
+
+    if selectors and json_mode:
+        raise typer.BadParameter("--selectors and --json cannot be used together")
+    raw = (
+        sys.stdin.buffer.read()
+        if query_file == "-"
+        else Path(query_file).expanduser().read_bytes()
+        if query_file is not None
+        else b"{}"
+    )
+    try:
+        request = parse_identity_json(raw)
+    except ValueError as exc:
+        raise typer.BadParameter(f"discovery request is invalid JSON: {exc}") from exc
+    if not isinstance(request, dict):
+        raise typer.BadParameter("discovery request must be a JSON object")
+    page = client().discover_artifacts(request, page_token=page_token)
+    if selectors:
+        for hit in cast(list[dict[str, Any]], page["artifacts"]):
+            artifact = cast(dict[str, Any], hit["artifact"])
+            typer.echo(f"{hit['collection_id']}::{artifact['artifact_id']}")
+        return
+    if json_mode:
+        emit(page, json_mode=True)
+        return
+    lines = [
+        f"read={page['read_identity']}  complete={page['complete']}  "
+        f"artifacts={len(cast(list[object], page['artifacts']))}"
+    ]
+    for hit in cast(list[dict[str, Any]], page["artifacts"]):
+        artifact = cast(dict[str, Any], hit["artifact"])
+        lines.append(
+            f"- {hit['collection_id']}::{artifact['artifact_id']}  bytes={artifact['bytes']}"
+        )
+        for match in cast(list[dict[str, Any]], hit["matches"]):
+            entry = cast(dict[str, Any], match["entry"])
+            lines.append(
+                f"  {match['relationship']} {match['assertion_kind']} "
+                f"{match['pointer']}  {match['assertion_id']}@{entry['entry_id']}"
+            )
+    if page.get("next_page_token") is not None:
+        lines.append(f"next_page_token={page['next_page_token']}")
+    typer.echo("\n".join(lines))
 
 
 @collection_app.command("show")

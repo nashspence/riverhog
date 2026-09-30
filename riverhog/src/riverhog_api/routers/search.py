@@ -22,7 +22,7 @@ router = RiverhogRouter(tags=["search"])
 
 
 @router.post("/artifacts/discover", response_model=DiscoveryPageOut)
-def discover(
+def discover_artifacts(
     request: ArtifactDiscoveryRequest,
     container: ContainerDep,
     principal: CatalogReader,
