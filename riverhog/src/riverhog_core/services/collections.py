@@ -344,8 +344,8 @@ def _collection_position(row: Any, *, sort: str) -> tuple[str | int, ...]:
     value = {
         "id": collection.id,
         "created_at": collection.created_at,
-        "bytes": collection.file_bytes,
-        "files": collection.file_count,
+        "bytes": collection.artifact_bytes,
+        "files": collection.artifact_count,
     }[sort]
     return (value,) if sort == "id" else (value, collection.id)
 
