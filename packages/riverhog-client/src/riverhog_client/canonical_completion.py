@@ -8,7 +8,8 @@ import hashlib
 import uuid
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from typing import Any
+from io import BytesIO
+from typing import Any, BinaryIO
 
 from riverhog_protocol.collection_completion import CollectionCompletionRequirementDocument
 from riverhog_protocol.collection_production_provenance import (
@@ -21,13 +22,14 @@ from riverhog_protocol.collection_production_provenance import (
     collection_production_profile,
 )
 from riverhog_provenance import (
-    append_assertion_batches,
+    JournalSummary,
     assertion,
     create_journal,
     evidence,
     new_id,
     reference,
     software_agent_id,
+    write_assertion_batches,
 )
 from riverhog_provenance_contracts import ContractCatalog
 
@@ -45,7 +47,8 @@ class CompletionRecord:
         return cls(kind, len(raw), hashlib.sha256(raw).hexdigest(), lambda: (raw,))
 
 
-def build_completion_journal(
+def write_completion_journal(
+    destination: BinaryIO,
     *,
     requirement: CollectionCompletionRequirementDocument,
     records: Iterable[CompletionRecord],
@@ -58,7 +61,7 @@ def build_completion_journal(
     late_assertions: Iterable[Mapping[str, Any]] = (),
     journal_id: str | None = None,
     recorded_at: str | None = None,
-) -> bytes:
+) -> JournalSummary:
     """Record late evidence through a distinct recording activity, never a new generation.
 
     Record preimages are supplied exactly, before the final H/corpus/archive root.
@@ -233,7 +236,8 @@ def build_completion_journal(
             raise ValueError("accepted completion record preimage is missing")
         yield from late_assertions
 
-    return append_assertion_batches(
+    return write_assertion_batches(
+        destination,
         raw,
         batches(),
         recorded_by_agent_id=who,
@@ -243,4 +247,37 @@ def build_completion_journal(
     )
 
 
-__all__ = ["CompletionRecord", "build_completion_journal"]
+def build_completion_journal(
+    *,
+    requirement: CollectionCompletionRequirementDocument,
+    records: Iterable[CompletionRecord],
+    execution_sha256: str,
+    output_bindings_sha256: str,
+    input_history_bindings_sha256: str,
+    disposition_set_sha256: str,
+    producer_app: str,
+    producer_version: str,
+    late_assertions: Iterable[Mapping[str, Any]] = (),
+    journal_id: str | None = None,
+    recorded_at: str | None = None,
+) -> bytes:
+    """Materialize a completion journal for callers that explicitly need bytes."""
+    with BytesIO() as destination:
+        write_completion_journal(
+            destination,
+            requirement=requirement,
+            records=records,
+            execution_sha256=execution_sha256,
+            output_bindings_sha256=output_bindings_sha256,
+            input_history_bindings_sha256=input_history_bindings_sha256,
+            disposition_set_sha256=disposition_set_sha256,
+            producer_app=producer_app,
+            producer_version=producer_version,
+            late_assertions=late_assertions,
+            journal_id=journal_id,
+            recorded_at=recorded_at,
+        )
+        return destination.getvalue()
+
+
+__all__ = ["CompletionRecord", "build_completion_journal", "write_completion_journal"]

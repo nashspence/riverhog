@@ -2599,12 +2599,6 @@ class CollectionUploadRecord(Base):
     provenance_histories_sealed: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default=text("false")
     )
-    derivative_provenance_state: Mapped[str] = mapped_column(
-        String, default="not-required", server_default=text("'not-required'")
-    )
-    derivative_provenance_cursor_json: Mapped[str] = mapped_column(
-        Text, default="{}", server_default=text("'{}'")
-    )
     provenance_archive_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
@@ -2777,11 +2771,6 @@ class CollectionUploadRecord(Base):
         CheckConstraint(
             "custody_mode IN ('producer-retained','custody-transfer')",
             name="ck_collection_uploads_custody_mode",
-        ),
-        CheckConstraint(
-            "derivative_provenance_state IN ("
-            "'not-required','discovering','copying','generating','complete','failed')",
-            name="ck_collection_uploads_derivative_provenance_state",
         ),
         CheckConstraint(
             "archive_phase IN ('planning','uploading','finalization_queued','finalizing',"
@@ -3269,47 +3258,6 @@ class CollectionUploadProvenanceCustodyObjectRecord(Base):
             name="ck_provenance_custody_segment_extent",
         ),
         Index("ix_provenance_custody_objects_path", "collection_id", "relative_path"),
-    )
-
-
-class CollectionUploadProvenanceSourceRecord(Base):
-    """One exact source journal in a server-generated derivative closure."""
-
-    __tablename__ = "collection_upload_provenance_sources"
-
-    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    source_collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
-    journal_id: Mapped[str] = mapped_column(String, primary_key=True)
-    expanded: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
-    after_to_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    after_entry_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    after_state_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    copied: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
-    copy_offset: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["collection_id"],
-            ["collection_uploads.collection_id"],
-            ondelete="CASCADE",
-        ),
-        ForeignKeyConstraint(
-            ["source_collection_id", "journal_id"],
-            [
-                "collection_provenance_journals.collection_id",
-                "collection_provenance_journals.journal_id",
-            ],
-            ondelete="RESTRICT",
-        ),
-        CheckConstraint("copy_offset >= 0", name="ck_upload_provenance_sources_offset"),
-        Index(
-            "ix_collection_upload_provenance_sources_work",
-            "collection_id",
-            "expanded",
-            "copied",
-            "source_collection_id",
-            "journal_id",
-        ),
     )
 
 

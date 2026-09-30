@@ -11,15 +11,27 @@ from riverhog_age import encrypt_age_scrypt
 from riverhog_archive_contracts import (
     ARCHIVE_ENCRYPTION_FORMAT,
     PROVENANCE_BINDINGS_FORMAT,
+    RETAINED_HISTORY_EXTENT,
     ArchiveRootCiphertextIdentity,
     CollectionEncryptionBinding,
+    HistoryJournalAnchor,
+    MemberHistoryBinding,
+    MemberHistoryBuilder,
+    MemberHistoryDocument,
+    MemberHistoryImport,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+    MemberHistoryStore,
     ProvenancePayload,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     RecoveryDescriptor,
+    SourceMemberHistoryBindingProof,
+    binding_tree_commitment,
     format_archive_sequence,
     ordered_provenance_commitment,
+    provenance_structure_identity,
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
@@ -47,8 +59,22 @@ from riverhog_protocol import (
     MemoryCollectionTagNodeStore,
     collection_tag_node_path,
 )
+from riverhog_protocol.collection_production_provenance import (
+    COLLECTION_MEMBER_ROLE,
+    collection_production_contract,
+)
 from riverhog_protocol.manifest import artifact_set_identity
-from riverhog_provenance import BoundedSourceObserver, BytesSource, new_id
+from riverhog_provenance import (
+    BoundedSourceObserver,
+    BytesSource,
+    MemberHistoryClosure,
+    assertion,
+    create_journal,
+    external_reference,
+    new_id,
+    validate_journal,
+)
+from riverhog_provenance_contracts import ContractCatalog
 
 from tests.fixtures.archive import age_state_json
 
@@ -65,6 +91,10 @@ class FixtureArchive:
     archive_root_sha256: str
     description_sha256: str | None
     tag_head_sha256: str
+    history_objects: Mapping[str, bytes]
+    history_bindings: tuple[MemberHistoryBinding, ...]
+    archive_root: bytes
+    provenance_root: bytes
 
 
 def _sha256(content: bytes) -> str:
@@ -88,6 +118,66 @@ def _encrypt(value: bytes, passphrase: str) -> bytes:
     return encrypt_age_scrypt(value, passphrase, log_n=1)
 
 
+def _inherited_selection(source: FixtureArchive):
+    binding = source.history_bindings[0]
+    proof_tree = binding_tree_commitment(
+        source.history_bindings, target_artifact_id=binding.artifact_id
+    )
+    assert proof_tree.target_index is not None
+    proof = SourceMemberHistoryBindingProof(
+        source_identity="e3" * 32,
+        collection_id=1,
+        archive_root=source.archive_root,
+        provenance_root=source.provenance_root,
+        binding=binding,
+        index=proof_tree.target_index,
+        siblings=proof_tree.target_siblings,
+    )
+    history = MemberHistoryDocument.from_json_bytes(
+        next(
+            value
+            for value in source.history_objects.values()
+            if hashlib.sha256(value).hexdigest() == binding.history_sha256
+        )
+    )
+    primary = validate_journal(
+        source.journals[history.primary.journal.journal_id],
+        catalog=ContractCatalog((collection_production_contract(),)),
+    )
+    state = primary.graph_validation.objects[history.primary.delivery_association_id]["state"]
+    imported = MemberHistoryImport(
+        source_identity="e3" * 32,
+        source_collection_id=1,
+        source_archive_root_sha256=source.archive_root_sha256,
+        source_artifact_set_sha256=ProvenanceRootDocument.from_json_bytes(
+            source.provenance_root
+        ).artifact_set_sha256,
+        source_artifact_id=binding.artifact_id,
+        source_history_sha256=binding.history_sha256,
+        source_binding_proof_sha256=proof.identity,
+        extent=RETAINED_HISTORY_EXTENT,
+        input_state=external_reference(primary, state["object_id"]),
+    )
+    with MemberHistoryClosure(
+        MemberHistoryStore(lambda path: (source.history_objects[path],)),
+        lambda journal_id, end: (source.journals[journal_id],),
+        member_role=COLLECTION_MEMBER_ROLE,
+    ) as closure:
+        closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
+        objects = {
+            provenance_structure_identity(raw).relative_path: raw
+            for raw in closure.structure_objects()
+        }
+        journals = {
+            anchor.journal_id: source.journals[anchor.journal_id][: anchor.prefix_bytes]
+            for anchor in closure.journal_anchors()
+        }
+    objects[provenance_structure_identity(proof.to_json_bytes()).relative_path] = (
+        proof.to_json_bytes()
+    )
+    return imported, objects, journals
+
+
 def write_archive(
     root: Path,
     *,
@@ -97,6 +187,8 @@ def write_archive(
     description_document: bool = True,
     tags: Sequence[str] = (),
     hints: Mapping[str, tuple[str, ...] | None] | None = None,
+    late_shared_history: bool = False,
+    inherited_history: FixtureArchive | None = None,
 ) -> FixtureArchive:
     root.mkdir(parents=True, exist_ok=True)
     contents = {
@@ -145,10 +237,81 @@ def write_archive(
         )
         bindings.append(produced.binding)
         journals[produced.journal_id] = produced.content
+    history_objects: dict[str, bytes] = {}
+    inherited = None
+    if inherited_history is not None:
+        inherited, inherited_objects, inherited_journals = _inherited_selection(inherited_history)
+        history_objects.update(inherited_objects)
+        journals.update(inherited_journals)
+    final_bindings: list[MemberHistoryBinding] = []
+    supplemental = None
+    if late_shared_history:
+        agent_id = new_id()
+        primary = validate_journal(
+            journals[bindings[0].journal.journal_id],
+            catalog=ContractCatalog((collection_production_contract(),)),
+        )
+        state = primary.graph_validation.objects[bindings[0].delivery_association_id]["state"]
+        recorded = create_journal(
+            {
+                "agents": [
+                    assertion(
+                        "agent",
+                        agent_id,
+                        object_id=agent_id,
+                        kind="software",
+                        name="fixture-recorder",
+                    )
+                ],
+                "extensions": [
+                    assertion(
+                        "extension",
+                        agent_id,
+                        subject=external_reference(primary, state["object_id"]),
+                        property="urn:test:late-operation-fact",
+                        value={"type": "text", "value": "required late evidence"},
+                    )
+                ],
+            },
+            recorded_by_agent_id=agent_id,
+        )
+        supplemental = validate_journal(recorded)
+        journals[supplemental.journal_id] = recorded
+    for member, binding in zip(artifacts, bindings, strict=True):
+        with MemberHistoryBuilder(
+            artifact_id=member.artifact_id,
+            bytes=member.bytes,
+            sha256=member.sha256,
+            primary=MemberHistoryPrimary.from_mapping(
+                {
+                    "journal": binding.journal.model_dump(mode="json"),
+                    "delivery_association_id": binding.delivery_association_id,
+                }
+            ),
+        ) as builder:
+            if inherited is not None and member.artifact_id == artifacts[0].artifact_id:
+                builder.add_import(inherited)
+            if supplemental is not None:
+                builder.add_root(
+                    MemberHistoryRoot(
+                        HistoryJournalAnchor.from_mapping(supplemental.anchor), "bound"
+                    )
+                )
+            selected, history = builder.seal()
+            final_bindings.append(selected)
+            for raw in (
+                history.to_json_bytes(),
+                *(
+                    page.to_json_bytes()
+                    for authority in (history.roots, history.imports)
+                    for page in builder.pages(authority)
+                ),
+            ):
+                history_objects[provenance_structure_identity(raw).relative_path] = raw
     binding_page = canonical_json_bytes(
         {
             "format": PROVENANCE_BINDINGS_FORMAT,
-            "bindings": [item.model_dump(mode="json") for item in bindings],
+            "bindings": [selected.to_mapping() for selected in final_bindings],
         }
     )
     provenance_docs: list[ProvenanceVolumeDocument] = []
@@ -196,6 +359,7 @@ def write_archive(
         artifact_set_sha256=artifact_set_sha256,
         delivery_context_id=delivery_context_id,
         binding_count=len(bindings),
+        binding_tree_sha256=binding_tree_commitment(final_bindings).root_sha256,
         journal_count=len(journals),
         ordered_volume_sha256=ordered_provenance_commitment(
             (*provenance_docs, provenance_terminal)
@@ -322,12 +486,23 @@ def write_archive(
     archive_objects[COLLECTION_TAG_HEAD_RELATIVE_PATH] = _encrypt(head_raw, passphrase)
     for digest, raw in tag_store.nodes.items():
         archive_objects[collection_tag_node_path(digest)] = _encrypt(raw, passphrase)
+    for relative, raw in history_objects.items():
+        archive_objects[relative] = _encrypt(raw, passphrase)
     for relative, content in archive_objects.items():
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content)
     return FixtureArchive(
-        contents, suggested, journals, root_sha256, description_sha256, _sha256(head_raw)
+        contents,
+        suggested,
+        journals,
+        root_sha256,
+        description_sha256,
+        _sha256(head_raw),
+        history_objects,
+        tuple(final_bindings),
+        manifest_raw,
+        provenance_root_raw,
     )
 
 

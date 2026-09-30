@@ -632,9 +632,6 @@ class SqlAlchemyCollectionUploadService:
                 planner_checkpoint_json=(
                     incremental_volume_planner_checkpoint_bytes(checkpoint).decode("utf-8")
                 ),
-                derivative_provenance_state=(
-                    "discovering" if initiator.id.startswith("processing:") else "not-required"
-                ),
             )
             session.add(upload)
             session.flush()
@@ -1401,7 +1398,10 @@ class SqlAlchemyCollectionUploadService:
                 )
                 if history.primary != primary:
                     raise Conflict("final history cannot replace the accepted early primary")
-                if upload.completion_requirement_json is not None and early.history_imports_ref_json is None:
+                if (
+                    upload.completion_requirement_json is not None
+                    and early.history_imports_ref_json is None
+                ):
                     raise Conflict("final execution history lacks its accepted input selection")
                 if (
                     early.history_imports_ref_json is not None
@@ -2945,11 +2945,11 @@ class SqlAlchemyCollectionUploadService:
                     delivery_context_id=upload.delivery_context_id,
                 )
                 validate_collection_production_records(
-                    summary.graph, delivery_context_id=upload.delivery_context_id
+                    summary.graph_validation.view, delivery_context_id=upload.delivery_context_id
                 )
                 association = summary.graph_validation.objects[primary.delivery_association_id]
                 output_id = validate_member_completion_requirement(
-                    summary.graph,
+                    summary.graph_validation.view,
                     delivery_context_id=upload.delivery_context_id,
                     state_id=association["state"]["object_id"],
                     requirement=requirement,
@@ -4189,11 +4189,12 @@ class SqlAlchemyCollectionUploadService:
                                 require_profiles=False,
                             )
                     validate_collection_production_records(
-                        summary.graph, delivery_context_id=upload.delivery_context_id
+                        summary.graph_validation.view,
+                        delivery_context_id=upload.delivery_context_id,
                     )
                     association = summary.graph_validation.objects[binding.delivery_association_id]
                     binding_row.completion_output_id = validate_member_completion_requirement(
-                        summary.graph,
+                        summary.graph_validation.view,
                         delivery_context_id=upload.delivery_context_id,
                         state_id=association["state"]["object_id"],
                         requirement=(
@@ -5436,55 +5437,65 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
             "sha256": member_record.sha256,
         }
     )
-    relevance = member_relevance(
-        member=member,
-        binding=binding,
-        primary=primary,
-        corpus=corpus,
-        delivery_context_id=upload.delivery_context_id,
-        catalog=admission_provenance_catalog(),
+    history_record = session.get(
+        CollectionUploadMemberHistoryRecord, (upload.collection_id, member_record.artifact_id)
     )
-    for summary in snapshots_for_relevance(
-        relevance, corpus=corpus, catalog=admission_provenance_catalog()
+    if history_record is None:
+        raise RuntimeError("canonical discovery member has no exact final history selection")
+    with (
+        _staged_history_closure(session, upload.collection_id) as closure,
+        member_relevance(
+            member=member,
+            binding=binding,
+            primary=primary,
+            corpus=corpus,
+            delivery_context_id=upload.delivery_context_id,
+            history_binding=_member_history_binding_row(history_record),
+            closure=closure,
+            catalog=admission_provenance_catalog(),
+        ) as relevance,
     ):
-        snapshot_key = (build_id, summary.journal_id, summary.journal_sha256)
-        if session.get(CollectionProvenanceIndexSnapshotRecord, snapshot_key) is not None:
-            continue
-        stage_snapshot_header(session, build_id=build_id, summary=summary)
+        for summary in snapshots_for_relevance(
+            relevance, corpus=corpus, catalog=admission_provenance_catalog()
+        ):
+            snapshot_key = (build_id, summary.journal_id, summary.journal_sha256)
+            if session.get(CollectionProvenanceIndexSnapshotRecord, snapshot_key) is not None:
+                continue
+            stage_snapshot_header(session, build_id=build_id, summary=summary)
+            session.flush()
+            for start in range(0, len(summary.frames), 128):
+                stage_entry_page(session, build_id=build_id, summary=summary, start=start)
+            session.flush()
+            rows = iter_index_assertions(summary)
+            while batch := tuple(islice(rows, 2)):
+                stage_assertion_page(session, build_id=build_id, rows=batch)
+        stage_member(
+            session,
+            build_id=build_id,
+            artifact_id=member_record.artifact_id,
+            bytes=member_record.bytes,
+            sha256=member_record.sha256,
+            journal_id=primary.journal_id,
+            prefix_sha256=primary.journal_sha256,
+            delivery_association_id=binding.delivery_association_id,
+        )
         session.flush()
-        for start in range(0, len(summary.frames), 128):
-            stage_entry_page(session, build_id=build_id, summary=summary, start=start)
-        session.flush()
-        rows = iter_index_assertions(summary)
-        while batch := tuple(islice(rows, 2)):
-            stage_assertion_page(session, build_id=build_id, rows=batch)
-    stage_member(
-        session,
-        build_id=build_id,
-        artifact_id=member_record.artifact_id,
-        bytes=member_record.bytes,
-        sha256=member_record.sha256,
-        journal_id=primary.journal_id,
-        prefix_sha256=primary.journal_sha256,
-        delivery_association_id=binding.delivery_association_id,
-    )
-    session.flush()
-    membership_rows = (
-        (member_record.artifact_id, row_key, scope)
-        for row_key, scope in relevance_row_keys(relevance)
-    )
-    while membership_batch := tuple(islice(membership_rows, 1024)):
-        stage_membership_page(session, build_id=build_id, rows=membership_batch)
-        memberships_indexed += len(membership_batch)
-    _set_catalog_cursor(
-        upload,
-        {
-            "build_id": build_id,
-            "after_artifact_id": member_record.artifact_id,
-            "members_indexed": indexed + 1,
-            "memberships_indexed": memberships_indexed,
-        },
-    )
+        membership_rows = (
+            (member_record.artifact_id, row_key, scope)
+            for row_key, scope in relevance_row_keys(relevance)
+        )
+        while membership_batch := tuple(islice(membership_rows, 1024)):
+            stage_membership_page(session, build_id=build_id, rows=membership_batch)
+            memberships_indexed += len(membership_batch)
+        _set_catalog_cursor(
+            upload,
+            {
+                "build_id": build_id,
+                "after_artifact_id": member_record.artifact_id,
+                "members_indexed": indexed + 1,
+                "memberships_indexed": memberships_indexed,
+            },
+        )
 
 
 def _collection_id(value: int) -> int:
@@ -5963,11 +5974,17 @@ def _validate_staged_execution_completion(
         frame.document["recorded_at"] != upload.completion_recorded_at for frame in summary.frames
     ):
         raise Conflict("completion metadata differs from its accepted recording context")
-    facts = [
-        row
-        for row in summary.graph.get("extensions", ())
-        if row["property"] == COLLECTION_PRODUCTION_CONTRACT_ID + "/execution-completion"
-    ]
+    facts = list(
+        islice(
+            (
+                row
+                for category, row in summary.graph_validation.iter_assertions()
+                if category == "extensions"
+                and row["property"] == COLLECTION_PRODUCTION_CONTRACT_ID + "/execution-completion"
+            ),
+            2,
+        )
+    )
     if len(facts) != 1:
         raise Conflict("required canonical execution completion is absent or ambiguous")
     fact = facts[0]
@@ -6059,7 +6076,11 @@ def _validate_staged_execution_completion(
     validate_completion_preimages(
         requirement=requirement,
         completion=fact["value"]["value"]["data"],
-        extensions=summary.graph["extensions"],
+        extensions=(
+            row
+            for category, row in summary.graph_validation.iter_assertions()
+            if category == "extensions"
+        ),
         subject=subject,
         expected_construction={
             "format": "riverhog-execution-construction/v1",

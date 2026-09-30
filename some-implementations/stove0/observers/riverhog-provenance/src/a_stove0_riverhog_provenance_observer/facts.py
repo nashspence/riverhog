@@ -16,16 +16,8 @@ from riverhog_provenance import JournalSummary, selected_delivery_occurrence
 from stove0_observer_protocol import WorkArtifactSubject
 
 
-def _origins(summary: JournalSummary) -> dict[str, dict[str, str]]:
-    origins: dict[str, dict[str, str]] = {}
-    for frame in summary.frames:
-        for rows in frame.document["body"].get("assertions", {}).values():
-            for row in rows:
-                assertion_id = row["assertion_id"]
-                if assertion_id in origins:
-                    raise ValueError("canonical assertion identity appears more than once")
-                origins[assertion_id] = frame.reference
-    return origins
+def _origins(summary: JournalSummary) -> Mapping[str, dict[str, str]]:
+    return summary.assertion_entries
 
 
 def _endpoint(
@@ -80,7 +72,7 @@ def _delivered_occurrence(
     summary: JournalSummary,
 ) -> tuple[
     Mapping[str, dict[str, Any]],
-    dict[str, dict[str, str]],
+    Mapping[str, dict[str, str]],
     dict[str, Any],
     dict[str, Any],
 ]:
@@ -139,7 +131,7 @@ def extract_core_facts(
     endpoints = [state_endpoint, occurrence_endpoint, artifact_endpoint]
     producing_activity = None
     generation_support = None
-    for relation in summary.graph.get("relations", ()):
+    for relation in summary.graph_validation.view.get("relations", ()):
         if relation["type"] == "generation" and relation["state"] == reference_endpoint(
             state_endpoint
         ):
@@ -148,7 +140,7 @@ def extract_core_facts(
             generation_support = _support(summary, origins, relation)
             endpoints.append(producing_activity)
     locators: list[dict[str, Any]] = []
-    for row in summary.graph.get("locator_bindings", ()):
+    for row in summary.graph_validation.view.get("locator_bindings", ()):
         if row["type"] != "locator_binding":
             continue
         target = row["target"]
@@ -157,7 +149,8 @@ def extract_core_facts(
             occurrence["id"],
         }:
             continue
-        observation = objects.get(row.get("observation_id"))
+        observation_id = row.get("observation_id")
+        observation = objects.get(observation_id) if isinstance(observation_id, str) else None
         if (
             observation is None
             or observation["type"] != "observation"
@@ -190,7 +183,7 @@ def extract_core_facts(
             primary_seen = True
         selected_objects = selected.graph_validation.objects
         selected_origins = _origins(selected)
-        for row in selected.graph.get("extensions", ()):
+        for row in selected.graph_validation.view.get("extensions", ()):
             if row["property"] not in requested:
                 continue
             attached = row["subject"]

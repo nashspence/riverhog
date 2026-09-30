@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import copy
 import hashlib
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Iterable, Iterator, Mapping, Sequence, Set
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any, BinaryIO, cast
 
 from riverhog_provenance_contracts import (
     ENTRY_SCHEMA,
@@ -32,7 +32,6 @@ from .graph import (
     graph_from_assertions,
     iter_assertions,
     time_ns,
-    validate_graph,
 )
 
 RS, LF = b"\x1e", b"\n"
@@ -147,11 +146,12 @@ def _identity_signature(row: Mapping[str, Any]) -> bytes:
 @dataclass(frozen=True, slots=True)
 class JournalSummary:
     journal_id: str
-    frames: tuple[JournalFrame, ...]
+    frames: Sequence[JournalFrame]
     graph_validation: GraphValidation
-    retracted_assertion_ids: frozenset[str]
+    retracted_assertion_ids: Set[str]
     journal_sha256: str
     journal_bytes: int
+    assertion_entries: Mapping[str, dict[str, str]]
 
     @property
     def tail(self) -> JournalFrame:
@@ -172,14 +172,14 @@ class JournalSummary:
 
     @property
     def states(self) -> tuple[dict[str, Any], ...]:
-        return tuple(self.graph.get("states", []))
+        return tuple(self.graph_validation.view.get("states", []))
 
     @property
     def delivery_associations(self) -> tuple[dict[str, Any], ...]:
-        return tuple(self.graph.get("delivery_associations", []))
+        return tuple(self.graph_validation.view.get("delivery_associations", []))
 
     @property
-    def findings(self) -> tuple[str, ...]:
+    def findings(self) -> Sequence[str]:
         return self.graph_validation.findings
 
     def materialize(self) -> dict[str, Any]:
@@ -201,140 +201,90 @@ def validate_journal_chunks(
     expected_anchor: Mapping[str, Any] | None = None,
     require_exact_tail: bool = False,
 ) -> JournalSummary:
+    from .journal_store import JournalStore
+
     selected = catalog or ContractCatalog()
-    frames: list[JournalFrame] = []
-    ledger: dict[str, tuple[str, dict[str, Any], JournalFrame]] = {}
-    active: dict[str, tuple[str, dict[str, Any]]] = {}
-    retired: set[str] = set()
-    entity_history: dict[str, bytes] = {}
-    entry_ids: set[str] = set()
+    store = JournalStore()
     journal_id: str | None = None
+    previous: JournalFrame | None = None
     prefix = hashlib.sha256()
     byte_count = 0
-    graph_validation: GraphValidation | None = None
     matched_anchor = False
-    for sequence, frame in enumerate(iter_journal_frames(chunks)):
-        document = frame.document
-        try:
-            selected.validate(ENTRY_SCHEMA, document)
-            time_ns(document["recorded_at"])
-        except (ValueError, TypeError) as exc:
-            raise ProvenanceValidationError(f"entry {sequence}: {exc}") from exc
-        if int(document["sequence"]) != sequence:
-            raise ProvenanceValidationError("noncontiguous journal sequence")
-        if document["id"] in entry_ids:
-            raise ProvenanceValidationError("entry identity reused")
-        entry_ids.add(document["id"])
-        if journal_id is None:
-            journal_id = document["journal_id"]
-            if (
-                document["entry_kind"] != "journal_init"
-                or document["body"]["journal"]["id"] != journal_id
-            ):
-                raise ProvenanceValidationError("first entry must initialize this journal")
-            parent = document["body"]["journal"].get("forked_from")
-            if parent and parent["journal_id"] == journal_id:
-                raise ProvenanceValidationError(
-                    "independent journal fork requires a distinct journal identity"
-                )
-        else:
-            if document["journal_id"] != journal_id or document["entry_kind"] == "journal_init":
-                raise ProvenanceValidationError("journal identity or initialization changed")
-            if document["previous_entry"] != frames[-1].reference:
-                raise ProvenanceValidationError(
-                    "predecessor does not match exact previous JSON text"
-                )
-        kind, body = document["entry_kind"], document["body"]
-        if kind == "checkpoint":
-            if body["covered_through"] != frames[-1].reference:
-                raise ProvenanceValidationError(
-                    "checkpoint must cover the immediately preceding entry"
-                )
-            if (
-                body["prefix_sha256"] != prefix.hexdigest()
-                or int(body["prefix_bytes"]) != byte_count
-            ):
-                raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
-        if kind == "correction":
-            target_ids = [target["assertion_id"] for target in body["retracts"]]
-            if len(set(target_ids)) != len(target_ids):
-                raise ProvenanceValidationError("duplicate correction target")
-            for target in body["retracts"]:
-                identity = target["assertion_id"]
-                prior = ledger.get(identity)
-                if prior is None or prior[2].reference != target["entry"]:
+    try:
+        for sequence, frame in enumerate(iter_journal_frames(chunks)):
+            document = frame.document
+            try:
+                selected.validate(ENTRY_SCHEMA, document)
+                time_ns(document["recorded_at"])
+            except (ValueError, TypeError) as exc:
+                raise ProvenanceValidationError(f"entry {sequence}: {exc}") from exc
+            if int(document["sequence"]) != sequence:
+                raise ProvenanceValidationError("noncontiguous journal sequence")
+            if journal_id is None:
+                journal_id = document["journal_id"]
+                if (
+                    document["entry_kind"] != "journal_init"
+                    or document["body"]["journal"]["id"] != journal_id
+                ):
+                    raise ProvenanceValidationError("first entry must initialize this journal")
+                parent = document["body"]["journal"].get("forked_from")
+                if parent and parent["journal_id"] == journal_id:
                     raise ProvenanceValidationError(
-                        "correction target has no exact earlier assertion"
+                        "independent journal fork requires a distinct journal identity"
                     )
-                if identity not in active:
+            else:
+                if document["journal_id"] != journal_id or document["entry_kind"] == "journal_init":
+                    raise ProvenanceValidationError("journal identity or initialization changed")
+                if previous is None or document["previous_entry"] != previous.reference:
                     raise ProvenanceValidationError(
-                        "correction cannot reactivate or retract an already retired assertion"
+                        "predecessor does not match exact previous JSON text"
                     )
-                del active[identity]
-                retired.add(identity)
-        for category, row in iter_assertions(_body_assertions(document)):
-            assertion_id, object_id = row["assertion_id"], row["id"]
-            if assertion_id in ledger:
-                raise ProvenanceValidationError(
-                    "assertion identities cannot be reused, including after correction"
-                )
-            signature = _identity_signature(row)
-            if object_id in entity_history and entity_history[object_id] != signature:
-                raise ProvenanceValidationError(
-                    "an immutable referent or record was redefined; mint a distinct identity"
-                )
-            entity_history[object_id] = signature
-            ledger[assertion_id] = category, copy.deepcopy(row), frame
-            active[assertion_id] = category, copy.deepcopy(row)
-        if entry_ids & (ledger.keys() | entity_history.keys()):
-            raise ProvenanceValidationError(
-                "entry, assertion and referent identities must be distinct"
-            )
-        if journal_id in ledger or journal_id in entity_history or journal_id in entry_ids:
-            raise ProvenanceValidationError(
-                "journal identity cannot also identify a graph object or entry"
-            )
-        graph = graph_from_assertions(active.values())
-        graph_validation = validate_graph(
-            graph, catalog=selected, journal_id=journal_id, require_profiles=require_profiles
+            if document["entry_kind"] == "checkpoint":
+                body = document["body"]
+                if previous is None or body["covered_through"] != previous.reference:
+                    raise ProvenanceValidationError(
+                        "checkpoint must cover the immediately preceding entry"
+                    )
+                if (
+                    body["prefix_sha256"] != prefix.hexdigest()
+                    or int(body["prefix_bytes"]) != byte_count
+                ):
+                    raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
+            store.accept(document, frame, catalog=selected, require_profiles=require_profiles)
+            previous = frame
+            prefix.update(frame.encoded)
+            byte_count += len(frame.encoded)
+            if expected_anchor and document["id"] == expected_anchor["through"]["entry_id"]:
+                candidate = {
+                    "journal_id": journal_id,
+                    "through": frame.reference,
+                    "prefix_sha256": prefix.hexdigest(),
+                    "prefix_bytes": str(byte_count),
+                }
+                if candidate != dict(expected_anchor):
+                    raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
+                matched_anchor = True
+        if previous is None or journal_id is None:
+            raise ProvenanceValidationError("journal is empty")
+        if expected_anchor and not matched_anchor:
+            raise ProvenanceValidationError("journal does not contain the expected anchored prefix")
+        if require_exact_tail and (
+            expected_anchor is None or previous.reference != expected_anchor["through"]
+        ):
+            raise ProvenanceValidationError("an exact tail anchor was required")
+        store.freeze()
+        return JournalSummary(
+            journal_id,
+            store.frames,
+            store.graph_validation,
+            store.retired,
+            prefix.hexdigest(),
+            byte_count,
+            store.origins,
         )
-        objects = graph_validation.objects
-        recorder = objects.get(document["recorded_by_agent_id"])
-        if recorder is None or recorder["type"] != "agent":
-            raise ProvenanceValidationError("entry recorder must resolve to an effective agent")
-        if "recording_context_id" in document:
-            context = objects.get(document["recording_context_id"])
-            if context is None or context["type"] != "context":
-                raise ProvenanceValidationError("recording context does not resolve")
-        frames.append(frame)
-        prefix.update(frame.encoded)
-        byte_count += len(frame.encoded)
-        if expected_anchor and document["id"] == expected_anchor["through"]["entry_id"]:
-            candidate = {
-                "journal_id": journal_id,
-                "through": frame.reference,
-                "prefix_sha256": prefix.hexdigest(),
-                "prefix_bytes": str(byte_count),
-            }
-            if candidate != dict(expected_anchor):
-                raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
-            matched_anchor = True
-    if not frames or graph_validation is None or journal_id is None:
-        raise ProvenanceValidationError("journal is empty")
-    if expected_anchor and not matched_anchor:
-        raise ProvenanceValidationError("journal does not contain the expected anchored prefix")
-    if require_exact_tail and (
-        expected_anchor is None or frames[-1].reference != expected_anchor["through"]
-    ):
-        raise ProvenanceValidationError("an exact tail anchor was required")
-    return JournalSummary(
-        journal_id,
-        tuple(frames),
-        graph_validation,
-        frozenset(retired),
-        prefix.hexdigest(),
-        byte_count,
-    )
+    except BaseException:
+        store.close()
+        raise
 
 
 def validate_journal(raw: bytes, **options: Any) -> JournalSummary:
@@ -458,28 +408,20 @@ def append_assertions(
     )
 
 
-def append_assertion_batches(
+def _assertion_batch_entries(
     raw: bytes,
     batches: Iterable[Mapping[str, Any]],
     *,
     recorded_by_agent_id: str,
-    catalog: ContractCatalog | None = None,
-    recorded_at: str | None = None,
-    entry_ids: Iterable[str] | None = None,
-) -> bytes:
-    """Append bounded assertion entries with one final journal validation.
-
-    Each entry is independently schema/size checked before it is added. The
-    resulting chain is validated as a whole before any bytes are returned.
-    This avoids repeatedly parsing an ever-growing exact record when a large
-    required preimage needs several journal entries.
-    """
-
+    catalog: ContractCatalog | None,
+    recorded_at: str | None,
+    entry_ids: Iterable[str] | None,
+) -> Iterator[bytes]:
     summary = validate_journal(raw, catalog=catalog)
     previous = summary.tail.reference
-    frames = [raw]
     sequence = len(summary.frames)
     identities = None if entry_ids is None else iter(entry_ids)
+    yield raw
     for assertions in batches:
         document = _entry(
             journal_id=summary.journal_id,
@@ -492,12 +434,68 @@ def append_assertion_batches(
             recorded_at=recorded_at,
         )
         encoded = encode_entry(document, catalog=catalog)
-        frames.append(encoded)
+        yield encoded
         previous = JournalFrame(encoded[1:-1]).reference
         sequence += 1
-    if sequence == len(summary.frames):
-        return raw
-    result = b"".join(frames)
+
+
+def write_assertion_batches(
+    destination: BinaryIO,
+    raw: bytes,
+    batches: Iterable[Mapping[str, Any]],
+    *,
+    recorded_by_agent_id: str,
+    catalog: ContractCatalog | None = None,
+    recorded_at: str | None = None,
+    entry_ids: Iterable[str] | None = None,
+) -> JournalSummary:
+    """Write bounded entries to an empty seekable spool and validate every prefix.
+
+    The caller publishes only after this returns. Neither recorded bytes nor the
+    effective assertion set are collected into one in-memory journal.
+    """
+    if destination.seek(0, 2) != 0:
+        raise ValueError("journal destination must be empty")
+    destination.seek(0)
+    for encoded in _assertion_batch_entries(
+        raw,
+        batches,
+        recorded_by_agent_id=recorded_by_agent_id,
+        catalog=catalog,
+        recorded_at=recorded_at,
+        entry_ids=entry_ids,
+    ):
+        if destination.write(encoded) != len(encoded):
+            raise OSError("short journal spool write")
+    destination.flush()
+    destination.seek(0)
+    summary = validate_journal_chunks(
+        iter(lambda: destination.read(1024 * 1024), b""), catalog=catalog
+    )
+    destination.seek(0)
+    return summary
+
+
+def append_assertion_batches(
+    raw: bytes,
+    batches: Iterable[Mapping[str, Any]],
+    *,
+    recorded_by_agent_id: str,
+    catalog: ContractCatalog | None = None,
+    recorded_at: str | None = None,
+    entry_ids: Iterable[str] | None = None,
+) -> bytes:
+    """Materialize appended bytes when the caller explicitly wants a bytes value."""
+    result = b"".join(
+        _assertion_batch_entries(
+            raw,
+            batches,
+            recorded_by_agent_id=recorded_by_agent_id,
+            catalog=catalog,
+            recorded_at=recorded_at,
+            entry_ids=entry_ids,
+        )
+    )
     validate_journal(result, catalog=catalog)
     return result
 
@@ -548,11 +546,7 @@ def append_checkpoint(
 
 
 def assertion_reference(summary: JournalSummary, assertion_id: str) -> dict[str, Any]:
-    for frame in summary.frames:
-        for _, row in iter_assertions(_body_assertions(frame.document)):
-            if row["assertion_id"] == assertion_id:
-                return {"entry": frame.reference, "assertion_id": assertion_id}
-    raise KeyError(assertion_id)
+    return {"entry": summary.assertion_entries[assertion_id], "assertion_id": assertion_id}
 
 
 def external_reference(summary: JournalSummary, object_id: str) -> dict[str, Any]:

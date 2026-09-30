@@ -54,6 +54,69 @@ def _records(path: Path) -> list[dict[str, object]]:
     return [json.loads(line) for line in path.read_bytes().splitlines()]
 
 
+@pytest.mark.parametrize("layout", ["declared-hints", "id-layout"])
+def test_full_recovery_preserves_explicit_supplementary_history_and_structural_sets(
+    tmp_path: Path, layout: str
+) -> None:
+    archive = tmp_path / "archive"
+    fixture = write_archive(archive, late_shared_history=True, tags=("retained:history",))
+    output = tmp_path / "recovered"
+    summary = recover_archive(archive, output, passphrases=_KEYS, layout_mode=layout)
+    assert summary.provenance_journals == 4
+    for path, raw in fixture.history_objects.items():
+        restored = output / "structure" / path.removesuffix(".age")
+        assert restored.read_bytes() == raw
+    for raw in fixture.journals.values():
+        digest = hashlib.sha256(raw).hexdigest()
+        assert (output / "provenance" / "journals" / (digest + ".jsonseq")).read_bytes() == raw
+    for row in _records(output / "recovery-members.jsonseq"):
+        history = json.loads(output.joinpath(*row["history"]).read_bytes())
+        assert history["artifact_id"] == row["artifact_id"]
+        assert int(history["roots"]["record_count"]) == 2
+        assert (
+            output.joinpath(*row["sidecar"]).read_bytes()
+            == fixture.journals[history["primary"]["journal"]["journal_id"]]
+        )
+
+
+def test_full_recovery_cannot_substitute_payload_plus_primary_for_missing_selected_history(
+    tmp_path: Path,
+) -> None:
+    archive = tmp_path / "archive"
+    fixture = write_archive(archive, late_shared_history=True)
+    required = next(path for path in fixture.history_objects if path.startswith("provenance/sets/"))
+    (archive / required).unlink()
+    output = tmp_path / "recovered"
+    with pytest.raises(RecoveryError):
+        recover_archive(archive, output, passphrases=_KEYS)
+    assert not output.exists()
+    assert not (tmp_path / "recovered.partial" / "recovery.json").exists()
+
+
+@pytest.mark.parametrize("layout", ["declared-hints", "id-layout"])
+def test_full_recovery_preserves_inherited_late_history_without_the_source_archive(
+    tmp_path: Path, layout: str
+) -> None:
+    source_dir = tmp_path / "source"
+    source = write_archive(source_dir, late_shared_history=True)
+    archive = tmp_path / "derived"
+    derived = write_archive(archive, inherited_history=source)
+    shutil.rmtree(source_dir)
+    output = tmp_path / "recovered"
+    summary = recover_archive(archive, output, passphrases=_KEYS, layout_mode=layout)
+    assert summary.provenance_journals == 5
+    proofs = [
+        path for path in derived.history_objects if path.startswith("provenance/source-proofs/")
+    ]
+    assert len(proofs) == 1
+    for path, raw in derived.history_objects.items():
+        assert (output / "structure" / path.removesuffix(".age")).read_bytes() == raw
+    for raw in derived.journals.values():
+        digest = hashlib.sha256(raw).hexdigest()
+        assert (output / "provenance" / "journals" / (digest + ".jsonseq")).read_bytes() == raw
+    assert not source_dir.exists()
+
+
 def test_complete_recovery_preserves_members_history_description_and_tags(
     source_archive: tuple[Path, FixtureArchive], tmp_path: Path
 ) -> None:
@@ -87,7 +150,8 @@ def test_complete_recovery_preserves_members_history_description_and_tags(
         artifact_id = str(row["artifact_id"])
         payload = output.joinpath(*row["components"])
         assert payload.read_bytes() == fixture.members[artifact_id]
-        journal_id = row["binding"]["journal"]["journal_id"]
+        history = json.loads(output.joinpath(*row["history"]).read_bytes())
+        journal_id = history["primary"]["journal"]["journal_id"]
         assert output.joinpath(*row["sidecar"]).read_bytes() == fixture.journals[journal_id]
     for content in fixture.journals.values():
         sha256 = hashlib.sha256(content).hexdigest()

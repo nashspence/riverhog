@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import uuid
 
+from riverhog_archive_contracts import provenance_structure_identity
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_core.canonical_discovery_index import (
     StaleIndexBuild,
@@ -22,8 +24,10 @@ from riverhog_core.catalog_models import (
     CollectionRecord,
     CollectionUploadArtifactProvenanceBindingRecord,
     CollectionUploadArtifactRecord,
+    CollectionUploadMemberHistoryRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
+    CollectionUploadProvenanceStructureRecord,
     CollectionUploadRecord,
     StorageIncarnationRecord,
 )
@@ -41,6 +45,8 @@ from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journ
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+
+from tests.support.member_history import member_history_selection_fixture
 
 
 def _collection() -> CollectionRecord:
@@ -123,14 +129,21 @@ def test_complete_generation_requires_every_snapshot_row_and_has_content_identit
     catalog = ContractCatalog((collection_production_contract(),))
     summary = validate_journal(produced.content, catalog=catalog)
     rows = tuple(iter_index_assertions(summary))
-    relevance = member_relevance(
-        member=member,
-        binding=produced.binding,
-        primary=summary,
-        corpus={summary.journal_id: summary},
-        delivery_context_id=collection.delivery_context_id,
-        catalog=catalog,
+    history_binding, history_closure, _ = member_history_selection_fixture(
+        member, produced.binding, {summary.journal_id: summary}
     )
+    with history_closure:
+        relevance = member_relevance(
+            member=member,
+            binding=produced.binding,
+            primary=summary,
+            corpus={summary.journal_id: summary},
+            delivery_context_id=collection.delivery_context_id,
+            catalog=catalog,
+            history_binding=history_binding,
+            closure=history_closure,
+        )
+
     memberships = tuple(
         (member.artifact_id, row_key, scope) for row_key, scope in relevance_row_keys(relevance)
     )
@@ -275,6 +288,37 @@ def test_initial_catalog_publication_waits_for_exact_canonical_index() -> None:
                 prefix_sha256=anchor.prefix_sha256,
                 prefix_bytes=int(anchor.prefix_bytes),
                 delivery_association_id=produced.binding.delivery_association_id,
+            )
+        )
+        selected, history_closure, structures = member_history_selection_fixture(
+            member,
+            produced.binding,
+            {
+                produced.journal_id: validate_journal(
+                    produced.content, catalog=ContractCatalog((collection_production_contract(),))
+                )
+            },
+        )
+        with history_closure:
+            pass
+        for path, content in structures.items():
+            identity = provenance_structure_identity(content)
+            session.add(
+                CollectionUploadProvenanceStructureRecord(
+                    collection_id=1,
+                    object_id=identity.object_id,
+                    kind=identity.kind,
+                    relative_path=path,
+                    content=content,
+                )
+            )
+        session.add(
+            CollectionUploadMemberHistoryRecord(
+                collection_id=1,
+                artifact_id=member.artifact_id,
+                history_sha256=selected.history_sha256,
+                history_bytes=selected.history_bytes,
+                binding_json=canonical_json_bytes(selected.to_mapping()).decode(),
             )
         )
         session.commit()

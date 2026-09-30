@@ -23,6 +23,8 @@ from riverhog_provenance import (
 )
 from riverhog_provenance_contracts import PROFILE
 
+from tests.support.member_history import member_history_selection_fixture
+
 _COLLECTION_PROFILE = PROFILE + "/profiles/collection-production"
 _MEMBER_ID = "ab" * 32
 
@@ -172,19 +174,26 @@ def test_member_discovery_relevance_does_not_import_unrelated_co_resident_facts(
             "delivery_association_id": binding.delivery_association_id,
         }
     )
-    relevance = member_relevance(
-        member=member,
-        binding=binding,
-        primary=summary,
-        corpus={summary.journal_id: summary},
-        delivery_context_id=context_id,
+    history_binding, history_closure, _ = member_history_selection_fixture(
+        member, binding, {summary.journal_id: summary}
     )
-    assert (summary.journal_id, summary.journal_sha256, unrelated["assertion_id"]) not in relevance
-    assert (
-        summary.journal_id,
-        summary.journal_sha256,
-        unrelated_context["assertion_id"],
-    ) not in relevance
+    with history_closure:
+        relevance = member_relevance(
+            member=member,
+            binding=binding,
+            primary=summary,
+            corpus={summary.journal_id: summary},
+            delivery_context_id=context_id,
+            history_binding=history_binding,
+            closure=history_closure,
+        )
+
+    assert relevance[
+        (summary.journal_id, summary.journal_sha256, unrelated["assertion_id"])
+    ] == frozenset({"recorded-history"})
+    assert relevance[
+        (summary.journal_id, summary.journal_sha256, unrelated_context["assertion_id"])
+    ] == frozenset({"recorded-history"})
     association = summary.graph_validation.objects[binding.delivery_association_id]
     assert (
         "member"

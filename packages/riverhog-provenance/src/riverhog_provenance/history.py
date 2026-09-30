@@ -216,7 +216,9 @@ class MemberHistoryClosure:
         state, _ = selected_delivery_occurrence(
             primary,
             binding={"artifact_id": source.artifact_id, **source.primary.to_mapping()},
-            artifact_id=source.artifact_id, byte_count=source.bytes, sha256=source.sha256,
+            artifact_id=source.artifact_id,
+            byte_count=source.bytes,
+            sha256=source.sha256,
             member_role=self.member_role,
         )
         if external_reference(primary, state["id"]) != imported.input_state:
@@ -276,6 +278,11 @@ class MemberHistoryClosure:
     def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
         """Largest required exact prefix per journal, never a substituted current head."""
         for (encoded,) in self._db.execute("SELECT anchor FROM journals ORDER BY identity"):
+            yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
+
+    def snapshots(self) -> Iterator[HistoryJournalAnchor]:
+        """Every exact selected or required snapshot, without a latest-head union."""
+        for (encoded,) in self._db.execute("SELECT anchor FROM snapshots ORDER BY identity"):
             yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
 
     def contains_journal(self, journal_id: str) -> bool:

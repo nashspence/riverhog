@@ -792,8 +792,6 @@ CREATE TABLE collection_uploads (
 	provenance_closure_validated BOOLEAN DEFAULT false NOT NULL,
 	provenance_history_after_artifact_id VARCHAR(64),
 	provenance_histories_sealed BOOLEAN DEFAULT false NOT NULL,
-	derivative_provenance_state VARCHAR DEFAULT 'not-required' NOT NULL,
-	derivative_provenance_cursor_json TEXT DEFAULT '{}' NOT NULL,
 	provenance_archive_next_artifact_order BIGINT DEFAULT 0 NOT NULL,
 	provenance_archive_after_artifact_id VARCHAR(64),
 	provenance_archive_last_journal_id VARCHAR,
@@ -833,7 +831,6 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_collection_uploads_uploaded_payload_bytes CHECK (uploaded_payload_bytes >= 0),
 	CONSTRAINT ck_collection_uploads_state CHECK (state IN ('open','closing','uploading','finalizing','orphaned','discarding')),
 	CONSTRAINT ck_collection_uploads_custody_mode CHECK (custody_mode IN ('producer-retained','custody-transfer')),
-	CONSTRAINT ck_collection_uploads_derivative_provenance_state CHECK (derivative_provenance_state IN ('not-required','discovering','copying','generating','complete','failed')),
 	CONSTRAINT ck_collection_uploads_archive_phase CHECK (archive_phase IN ('planning','uploading','finalization_queued','finalizing','retry_wait','orphaned','discarding')),
 	CONSTRAINT ck_collection_uploads_description_bytes CHECK (description IS NULL OR octet_length(description) <= 32768),
 	CONSTRAINT ck_collection_uploads_description_state CHECK (description_revision IS NULL AND description_identity IS NULL OR description_revision >= 0 AND description_revision <= 9007199254740991 AND description_identity IS NOT NULL),
@@ -1699,24 +1696,6 @@ CREATE TABLE collection_upload_provenance_journals (
 	CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_079f7a2aeed5fb0d CHECK (terminal_json_sha256 IS NULL OR length(terminal_json_sha256) = 64 AND lower(terminal_json_sha256) = terminal_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
-
-CREATE TABLE collection_upload_provenance_sources (
-	collection_id BIGINT NOT NULL,
-	source_collection_id BIGINT NOT NULL,
-	journal_id VARCHAR NOT NULL,
-	expanded BOOLEAN DEFAULT false NOT NULL,
-	after_to_journal_id VARCHAR,
-	after_entry_id VARCHAR,
-	after_state_id VARCHAR,
-	copied BOOLEAN DEFAULT false NOT NULL,
-	copy_offset BIGINT DEFAULT 0 NOT NULL,
-	PRIMARY KEY (collection_id, source_collection_id, journal_id),
-	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
-	FOREIGN KEY(source_collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE RESTRICT,
-	CONSTRAINT ck_upload_provenance_sources_offset CHECK (copy_offset >= 0)
-);
-
-CREATE INDEX ix_collection_upload_provenance_sources_work ON collection_upload_provenance_sources (collection_id, expanded, copied, source_collection_id, journal_id);
 
 CREATE TABLE collection_upload_provenance_structure (
 	collection_id BIGINT NOT NULL,

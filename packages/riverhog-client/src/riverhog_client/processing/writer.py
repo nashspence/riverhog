@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from dataclasses import replace
+from tempfile import TemporaryFile
 from typing import Any, cast
 
 from riverhog_archive_contracts import (
@@ -36,11 +36,10 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_provenance import (
     external_reference,
     selected_delivery_occurrence,
-    validate_journal,
     validate_journal_chunks,
 )
 
-from riverhog_client.canonical_completion import CompletionRecord, build_completion_journal
+from riverhog_client.canonical_completion import CompletionRecord, write_completion_journal
 from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_client.processing.models import (
@@ -391,27 +390,28 @@ class IncrementalDerivedCollectionWriter:
                     ),
                 ),
             )
-            raw = build_completion_journal(
-                requirement=self.requirement,
-                records=records.records(),
-                journal_id=recording.journal_id,
-                recorded_at=recording.recorded_at,
-                execution_sha256=execution_sha256,
-                output_bindings_sha256=records.record("output-bindings").sha256,
-                input_history_bindings_sha256=records.record("input-history-bindings").sha256,
-                disposition_set_sha256=disposition.sha256,
-                producer_app=self.producer_app,
-                producer_version=self.producer_version,
-            )
-            summary = validate_journal(raw, require_profiles=False)
-            self.api.upload_collection_upload_session_provenance_journal(
-                self.producer.collection_id,
-                summary.journal_id,
-                content=(raw,),
-                byte_count=len(raw),
-                sha256=hashlib.sha256(raw).hexdigest(),
-                selection_role="completion",
-            )
+            with TemporaryFile("w+b") as journal:
+                summary = write_completion_journal(
+                    journal,
+                    requirement=self.requirement,
+                    records=records.records(),
+                    journal_id=recording.journal_id,
+                    recorded_at=recording.recorded_at,
+                    execution_sha256=execution_sha256,
+                    output_bindings_sha256=records.record("output-bindings").sha256,
+                    input_history_bindings_sha256=records.record("input-history-bindings").sha256,
+                    disposition_set_sha256=disposition.sha256,
+                    producer_app=self.producer_app,
+                    producer_version=self.producer_version,
+                )
+                self.api.upload_collection_upload_session_provenance_journal(
+                    self.producer.collection_id,
+                    summary.journal_id,
+                    content=iter(lambda: journal.read(1024 * 1024), b""),
+                    byte_count=summary.journal_bytes,
+                    sha256=summary.journal_sha256,
+                    selection_role="completion",
+                )
 
     def _disposition_pages(
         self, identity: ArtifactDispositionSetIdentity
