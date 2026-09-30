@@ -3,10 +3,29 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
+from a_stove0_ffprobe_observer import FfprobeObserver
+from a_stove0_riverhog_provenance_observer import RiverhogProvenanceObserver
+from stove0_observer_client import load_semantic_validator_registry
+from stove0_observer_protocol import require_semantic_validators
 
 REPO_ROOT = Path(__file__).parents[4]
 COMPOSE = REPO_ROOT / "some-implementations/stove0/application/compose.yaml"
 CONFIG = REPO_ROOT / "qualification/fixtures/stove0/config.yaml"
+
+
+def test_supplied_multi_contract_observers_have_controller_acceptance_profiles() -> None:
+    registrations = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))["observers"]
+    image_id = "sha256:" + "a" * 64
+    for registration, descriptor in (
+        ("ffprobe-sampling", FfprobeObserver(image_id=image_id).descriptor()),
+        ("ffprobe-streams", FfprobeObserver(image_id=image_id).descriptor()),
+        ("canonical-hint", RiverhogProvenanceObserver(image_id=image_id).descriptor()),
+        ("canonical-provenance", RiverhogProvenanceObserver(image_id=image_id).descriptor()),
+    ):
+        registry = load_semantic_validator_registry(
+            registrations[registration]["semantic_validator_providers"]
+        )
+        require_semantic_validators(registry, descriptor)
 
 
 def test_supplied_topology_uses_one_postgres_authority_and_distinct_roles() -> None:

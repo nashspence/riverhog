@@ -558,10 +558,12 @@ class IncrementalCollectionProducer:
                     bind_produced_member(
                         self.api,
                         collection_id=self.collection_id,
-                        member=ArtifactMemberIdentityDocument(
-                            artifact_id=source.artifact_id,
-                            bytes=str(source.bytes),
-                            sha256=source.sha256,
+                        member=ArtifactMemberIdentityDocument.model_validate(
+                            {
+                                "artifact_id": source.artifact_id,
+                                "bytes": str(source.bytes),
+                                "sha256": source.sha256,
+                            }
                         ),
                         observation=observation,
                         delivery_context_id=self.delivery_context_id,
