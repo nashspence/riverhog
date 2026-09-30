@@ -78,11 +78,11 @@ def _seed(factory: object, collection_id: int) -> None:
             creation_identity_sha256=root,
             creation_custody_mode="producer-retained",
             archive_generation=root,
-            content_identity=root,
+            delivery_context_id="urn:uuid:cabfc827-91d5-4cde-8f0f-81255b75b1c4",
+            artifact_set_identity=root,
             encryption_format="age-v1-scrypt",
             passphrase_id="test-key",
-            provenance_mode="omitted",
-            provenance_identity=None,
+            provenance_identity=root,
             inventory_identity=root,
             archive_root_sha256=root,
             description_revision=0,
@@ -94,8 +94,8 @@ def _seed(factory: object, collection_id: int) -> None:
             created_by_principal_id="fixture",
             created_at=NOW,
             is_published=True,
-            file_count=0,
-            file_bytes=0,
+            artifact_count=0,
+            artifact_bytes=0,
         )
         session.add(collection)
         session.flush()
@@ -156,7 +156,7 @@ def test_catalog_sync_bootstrap_and_follow_are_exact_bounded_authorities(
         CatalogSyncUpsert(
             collection_id="4",
             archive_root_sha256=f"{4:064x}",
-            content_identity=f"{4:064x}",
+            artifact_set_identity=f"{4:064x}",
             description=None,
             description_revision=0,
             description_identity=collection_description_identity(
@@ -345,7 +345,7 @@ class _ReplicaApi:
                 CatalogSyncDescriptor(
                     collection_id="1",
                     archive_root_sha256="c" * 64,
-                    content_identity="d" * 64,
+                    artifact_set_identity="d" * 64,
                     description="Reference collection",
                     description_revision=2,
                     description_identity="e" * 64,
@@ -519,7 +519,7 @@ def test_catalog_replica_rejects_cross_page_reordering(tmp_path: Path) -> None:
                         CatalogSyncDescriptor(
                             collection_id="2",
                             archive_root_sha256="c" * 64,
-                            content_identity="d" * 64,
+                            artifact_set_identity="d" * 64,
                             description=None,
                             description_revision=0,
                             description_identity="1" * 64,
@@ -538,7 +538,7 @@ def test_catalog_replica_rejects_cross_page_reordering(tmp_path: Path) -> None:
                     CatalogSyncDescriptor(
                         collection_id="1",
                         archive_root_sha256="e" * 64,
-                        content_identity="f" * 64,
+                        artifact_set_identity="f" * 64,
                         description=None,
                         description_revision=0,
                         description_identity="2" * 64,
@@ -675,7 +675,7 @@ def test_catalog_sync_documents_fail_closed_on_ambiguous_continuations() -> None
         CatalogSyncDescriptor(
             collection_id="1",
             archive_root_sha256="c" * 64,
-            content_identity="d" * 64,
+            artifact_set_identity="d" * 64,
             description=None,
             description_revision=0,
             description_identity="1" * 64,
@@ -686,7 +686,7 @@ def test_catalog_sync_documents_fail_closed_on_ambiguous_continuations() -> None
     boundary = CatalogSyncDescriptor(
         collection_id="1",
         archive_root_sha256="c" * 64,
-        content_identity="d" * 64,
+        artifact_set_identity="d" * 64,
         description=None,
         description_revision=0,
         description_identity="1" * 64,
@@ -699,7 +699,7 @@ def test_catalog_sync_documents_fail_closed_on_ambiguous_continuations() -> None
         CatalogSyncDescriptor(
             collection_id="1",
             archive_root_sha256="c" * 64,
-            content_identity="d" * 64,
+            artifact_set_identity="d" * 64,
             description=None,
             description_revision=0,
             description_identity="1" * 64,
