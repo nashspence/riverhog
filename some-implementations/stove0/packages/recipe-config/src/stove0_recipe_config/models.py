@@ -68,6 +68,7 @@ class ObserverUse(RecipeModel):
     )
     subject_roles: tuple[SemanticId, ...] = ()
     partitions: tuple[ObservationPartition, ...] = ()
+    subject_batch_size: int | None = Field(default=None, ge=1)
     timeout_seconds: int = Field(default=300, ge=1, le=86400)
     maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
     retrieval_policy: Literal["available-only", "allow"] = "available-only"
@@ -151,6 +152,8 @@ class AssociationEvidenceSource(RecipeModel):
     observation_contract_id: SemanticId
     observation_contract_sha256: Sha256
     records_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
+    record_array_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    where: tuple[FactPredicate, ...] = ()
     associated_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
     primary_pointer: str = Field(pattern=_JSON_POINTER_PATTERN)
     endpoint_mode: Literal["subject-id", "exact-endpoint"]
@@ -160,6 +163,9 @@ class AssociationEvidenceSource(RecipeModel):
     endpoint_pointers: tuple[str, ...] = ("/state", "/occurrence")
     primary_partition_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
     associated_partition_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    evidence_slots_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    status_records_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
+    status_subject_pointer: str = Field(default="/subject_id", pattern=_JSON_POINTER_PATTERN)
     status_pointer: str | None = Field(default=None, pattern=_JSON_POINTER_PATTERN)
     required: tuple[FactPredicate, ...] = ()
     expected_options: dict[str, JsonValue] = Field(default_factory=dict)
@@ -170,6 +176,15 @@ class AssociationEvidenceSource(RecipeModel):
             self.endpoint_observation_contract_id is not None
         ):
             raise ValueError("exact relation endpoints require their selected observer contract")
+        if (self.status_records_pointer is None) != (self.status_pointer is None):
+            raise ValueError("relation status records and status value pointer must be paired")
+        if any(
+            rule.observation_contract_id != self.observation_contract_id
+            or rule.artifact_roles
+            or rule.artifact_facts is not None
+            for rule in (*self.where, *self.required)
+        ):
+            raise ValueError("relation row predicates must use the selected observer's row facts")
         return self
 
 

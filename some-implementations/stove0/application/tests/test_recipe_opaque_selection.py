@@ -125,6 +125,74 @@ def test_missing_or_partial_relation_evidence_cannot_be_a_negative() -> None:
         )
 
 
+def test_nested_filename_candidates_follow_declared_tiers_and_complete_statuses() -> None:
+    primary = _subject("3", "fixture.primary/v1")
+    sidecar = _subject("4", "fixture.sidecar/v1")
+    contract = "fixture.filename/v1"
+
+    def source(rule: str) -> AssociationEvidenceSource:
+        return AssociationEvidenceSource(
+            observation_contract_id=contract,
+            observation_contract_sha256="a" * 64,
+            records_pointer="/records",
+            record_array_pointer="/candidates",
+            where=(FactPredicate(observation_contract_id=contract, pointer="/rule", value=rule),),
+            associated_pointer="/sidecar_id",
+            primary_pointer="/primary_id",
+            endpoint_mode="subject-id",
+            primary_partition_pointer="/primary_subject_ids",
+            associated_partition_pointer="/associated_subject_ids",
+            status_records_pointer="/statuses",
+            status_pointer="/status",
+        )
+
+    association = ArtifactAssociation(
+        primary_role=primary.role,
+        associated_roles=(sidecar.role,),
+        sources=(source("full-leaf"), source("stem")),
+    )
+
+    def evidence(status: str, candidates: list[dict[str, str]]) -> Any:
+        return SimpleNamespace(
+            request=SimpleNamespace(
+                observer_contract_id=contract,
+                observer_contract_sha256="a" * 64,
+                subjects=(primary, sidecar),
+                options={
+                    "primary_subject_ids": [primary.id],
+                    "associated_subject_ids": [sidecar.id],
+                },
+            ),
+            result=SimpleNamespace(
+                facts={
+                    "records": [{"candidates": candidates}],
+                    "statuses": [
+                        {"subject_id": primary.id, "status": "usable"},
+                        {"subject_id": sidecar.id, "status": status},
+                    ],
+                }
+            ),
+        )
+
+    stem = {"primary_id": primary.id, "sidecar_id": sidecar.id, "rule": "stem"}
+    full_leaf = {**stem, "rule": "full-leaf"}
+    links, blocked = _accepted_relationships(
+        (primary,), (sidecar,), association, (evidence("usable", [stem, full_leaf]),)
+    )
+    assert links == {primary.id: [sidecar]}
+    assert blocked == set()
+    links, blocked = _accepted_relationships(
+        (primary,), (sidecar,), association, (evidence("usable", [stem]),)
+    )
+    assert links == {primary.id: [sidecar]}
+    assert blocked == set()
+    links, blocked = _accepted_relationships(
+        (primary,), (sidecar,), association, (evidence("ambiguous", [stem]),)
+    )
+    assert links == {}
+    assert blocked == {primary.id}
+
+
 def test_nested_metadata_rows_are_tested_without_position_or_filename_rules() -> None:
     document = {
         "subject_id": "a-" + "3" * 32,

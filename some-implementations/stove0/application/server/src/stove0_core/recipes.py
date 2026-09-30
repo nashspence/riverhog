@@ -152,6 +152,11 @@ class RecipePlanner:
             )
             if not subjects:
                 continue
+            if use.partitions and any(
+                not any(subject.role in set(partition.roles) for subject in subjects)
+                for partition in use.partitions
+            ):
+                continue
             options = deepcopy(use.options)
             for partition in use.partitions:
                 if _json_pointer(options, partition.pointer)[0]:
@@ -197,7 +202,7 @@ class RecipePlanner:
                 raise ValueError("read-evidence stage requires declared accepted predecessors")
             elif use.evidence_slots_pointer is not None:
                 raise ValueError("non-evidence stage declares evidence slots")
-            batch_size = support.preferred_subject_batch_size
+            batch_size = use.subject_batch_size or support.preferred_subject_batch_size
             if use.partitions or use.evidence_from:
                 # A relation question must see its entire exact candidate scope.
                 # The descriptor's preferred batch size is operational advice,
@@ -857,21 +862,17 @@ def _accepted_relationships(
     blocked: set[str] = set()
     for sidecar in associated:
         for source in association.sources:
-            records, endpoint_map = _relationship_source(
+            records, endpoint_map, statuses = _relationship_source(
                 source, observations, set(primary_by_id), set(associated_by_id)
             )
             matches: set[str] = set()
-            unsupported = False
+            unsupported = any(
+                statuses.get(subject_id) in {"unsupported", "ambiguous", "insufficient"}
+                for subject_id in (*primary_by_id, sidecar.id)
+            )
             for record in records:
-                if source.status_pointer is not None:
-                    present, status = _json_pointer(record, source.status_pointer)
-                    if (
-                        present
-                        and isinstance(status, str)
-                        and status in {"unsupported", "ambiguous"}
-                    ):
-                        unsupported = True
-                        continue
+                if not all(_document_matches_predicate(rule, record) for rule in source.where):
+                    continue
                 left_present, left = _json_pointer(record, source.associated_pointer)
                 if not left_present:
                     raise ValueError("accepted relation record has no associated endpoint")
@@ -905,7 +906,7 @@ def _relationship_source(
     observations: Sequence[ContentObservationEvidence],
     primary_ids: set[str],
     associated_ids: set[str],
-) -> tuple[list[dict[str, JsonValue]], dict[str, str]]:
+) -> tuple[list[dict[str, JsonValue]], dict[str, str], dict[str, str]]:
     evidence = [
         item
         for item in observations
@@ -916,10 +917,14 @@ def _relationship_source(
         raise ValueError("declared relationship evidence was not accepted")
     records: list[dict[str, JsonValue]] = []
     covered_subject_ids: set[str] = set()
+    statuses: dict[str, str] = {}
     for item in evidence:
         if item.result.facts is None:
             raise ValueError("accepted relationship evidence has no facts")
-        covered_subject_ids.update(subject.id for subject in item.request.subjects)
+        subject_ids = {subject.id for subject in item.request.subjects}
+        if covered_subject_ids & subject_ids:
+            raise ValueError("accepted relationship evidence repeats a candidate subject")
+        covered_subject_ids.update(subject_ids)
         static_options = deepcopy(item.request.options)
         for pointer, expected in (
             (source.primary_partition_pointer, primary_ids),
@@ -937,6 +942,11 @@ def _relationship_source(
             ):
                 raise ValueError("accepted relationship question covers another subject partition")
             _delete_json_pointer(static_options, pointer)
+        if source.evidence_slots_pointer is not None:
+            present, actual = _json_pointer(item.request.options, source.evidence_slots_pointer)
+            if not present or actual != [slot.slot for slot in item.request.evidence_slots or ()]:
+                raise ValueError("accepted relationship question differs from its evidence slots")
+            _delete_json_pointer(static_options, source.evidence_slots_pointer)
         if canonical_json_bytes(static_options) != canonical_json_bytes(source.expected_options):
             raise ValueError("accepted relationship question differs from the recipe")
         present, value = _json_pointer(item.result.facts, source.records_pointer)
@@ -946,9 +956,41 @@ def _relationship_source(
             or any(not isinstance(row, dict) for row in value)
         ):
             raise ValueError("accepted relationship facts lack their declared records")
-        records.extend(cast(list[dict[str, JsonValue]], value))
+        for row in cast(list[dict[str, JsonValue]], value):
+            if source.record_array_pointer is None:
+                records.append(row)
+                continue
+            present, nested = _json_pointer(row, source.record_array_pointer)
+            if (
+                not present
+                or not isinstance(nested, list)
+                or any(not isinstance(nested_row, dict) for nested_row in nested)
+            ):
+                raise ValueError("accepted relationship facts lack their declared nested records")
+            records.extend(cast(list[dict[str, JsonValue]], nested))
+        if source.status_records_pointer is not None:
+            present, status_rows = _json_pointer(item.result.facts, source.status_records_pointer)
+            if not present or not isinstance(status_rows, list):
+                raise ValueError("accepted relationship facts lack complete status records")
+            assert source.status_pointer is not None
+            for status_row in status_rows:
+                if not isinstance(status_row, dict):
+                    raise ValueError("accepted relationship status row is malformed")
+                has_id, subject_id = _json_pointer(status_row, source.status_subject_pointer)
+                has_status, status = _json_pointer(status_row, source.status_pointer)
+                if (
+                    not has_id
+                    or not isinstance(subject_id, str)
+                    or not has_status
+                    or not isinstance(status, str)
+                    or subject_id in statuses
+                ):
+                    raise ValueError("accepted relationship status is incomplete or repeated")
+                statuses[subject_id] = status
     if covered_subject_ids != primary_ids | associated_ids:
         raise ValueError("accepted relationship evidence differs from its exact subject scope")
+    if source.status_records_pointer is not None and set(statuses) != covered_subject_ids:
+        raise ValueError("accepted relationship statuses differ from the exact subject scope")
     endpoint_map: dict[str, str] = {}
     if source.endpoint_mode == "exact-endpoint":
         for item in observations:
@@ -959,14 +1001,14 @@ def _relationship_source(
             present, value = _json_pointer(item.result.facts, source.endpoint_records_pointer)
             if not present or not isinstance(value, list):
                 raise ValueError("accepted endpoint evidence lacks its subject records")
-            for row in value:
-                if not isinstance(row, dict):
+            for endpoint_row in value:
+                if not isinstance(endpoint_row, dict):
                     raise ValueError("accepted endpoint record is malformed")
-                present, subject_id = _json_pointer(row, source.endpoint_subject_pointer)
+                present, subject_id = _json_pointer(endpoint_row, source.endpoint_subject_pointer)
                 if not present or not isinstance(subject_id, str):
                     raise ValueError("accepted endpoint record has no subject identity")
                 for pointer in source.endpoint_pointers:
-                    present, endpoint = _json_pointer(row, pointer)
+                    present, endpoint = _json_pointer(endpoint_row, pointer)
                     if not present:
                         raise ValueError("accepted endpoint record lacks its declared endpoint")
                     identity = canonical_json_sha256(endpoint)
@@ -977,7 +1019,7 @@ def _relationship_source(
             raise ValueError("declared exact endpoint evidence was not accepted")
         if not (primary_ids | associated_ids) <= set(endpoint_map.values()):
             raise ValueError("declared exact endpoint evidence omits a candidate subject")
-    return records, endpoint_map
+    return records, endpoint_map, statuses
 
 
 def _delete_json_pointer(document: dict[str, JsonValue], pointer: str) -> None:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 
@@ -23,6 +24,7 @@ from stove0_recipe_config import (
     FactPredicate,
     ObservationPartition,
     ObserverUse,
+    RecipeCatalog,
     RecipeDefinition,
     RecipeRoute,
 )
@@ -171,3 +173,91 @@ def test_dependent_stage_receives_complete_role_partitions_and_exact_predecessor
     assert {item.request_id for item in request.evidence_slots or ()} == {
         item.request.request_id for item in evidence
     }
+
+
+def test_supplied_media_recipe_classifies_before_probe_and_exact_provenance() -> None:
+    from a_stove0_exiftool_observer import ExiftoolObserver
+    from a_stove0_ffprobe_observer import FfprobeObserver
+    from a_stove0_filename_prefix_sidecar_observer import FilenamePrefixSidecarObserver
+    from a_stove0_riverhog_provenance_observer import RiverhogProvenanceObserver
+    from stove0_observer_protocol import validate_observation_request
+
+    catalog = RecipeCatalog.load(
+        Path(__file__).resolve().parents[4] / "qualification/fixtures/stove0/recipes.yaml"
+    )
+    image_id = "sha256:" + "f" * 64
+    exiftool = ExiftoolObserver(image_id=image_id).descriptor()
+    ffprobe = FfprobeObserver(image_id=image_id).descriptor()
+    provenance = RiverhogProvenanceObserver(image_id=image_id).descriptor()
+    filename = FilenamePrefixSidecarObserver(image_id=image_id).descriptor()
+    descriptors = {
+        "exiftool": exiftool,
+        "ffprobe-streams": ffprobe,
+        "canonical-provenance": provenance,
+        "canonical-hint": provenance,
+        "filename-prefix-sidecars": filename,
+    }
+    root = CollectionRootIdentityRef(
+        collection_id=cast(Any, "1"),
+        archive_root_sha256="a" * 64,
+        artifact_set_identity="b" * 64,
+    )
+    inventory = tuple(
+        {"collection": root, "artifact_id": digit * 64, "bytes": 3, "sha256": "e" * 64}
+        for digit in ("1", "2")
+    )
+    planner = RecipePlanner(
+        catalog=catalog,
+        riverhog=cast(Any, object()),
+        observers=cast(
+            Any, SimpleNamespace(descriptor=lambda registration: descriptors[registration])
+        ),
+        targets=cast(Any, object()),
+    )
+    planner.__dict__["_inventory"] = lambda _: inventory
+    work = planner.create_work("stove0.conformance-media/v1", (root,))
+    first_stage = planner.observation_requests(work)
+    assert len(first_stage) == 2
+    assert {item.observer_registration_id for item in first_stage} == {"exiftool"}
+    evidence = tuple(
+        ContentObservationEvidence(
+            request=request,
+            result=ContentObservationResultBuilder(exiftool, request).observed(
+                {
+                    "artifacts": [
+                        {
+                            "artifact_id": request.subjects[0].id,
+                            "state": "observed",
+                            "facts": [
+                                {
+                                    "name": "container-format",
+                                    "value": (
+                                        "XMP"
+                                        if request.subjects[0].artifact_id == "2" * 64
+                                        else "video/quicktime"
+                                    ),
+                                    "evidence": {
+                                        "artifact_id": request.subjects[0].id,
+                                        "field": "File:FileType",
+                                    },
+                                }
+                            ],
+                        }
+                    ]
+                }
+            ),
+        )
+        for request in first_stage
+    )
+    next_stage = planner.observation_requests(work, evidence)
+    assert {item.observer_registration_id for item in next_stage} == {
+        "ffprobe-streams",
+        "canonical-provenance",
+        "canonical-hint",
+    }
+    assert (
+        len([item for item in next_stage if item.observer_registration_id == "ffprobe-streams"])
+        == 1
+    )
+    for request in next_stage:
+        validate_observation_request(request, descriptors[request.observer_registration_id])

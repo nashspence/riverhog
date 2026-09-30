@@ -165,7 +165,7 @@ def test_observer_uses_only_accepted_exact_locator_evidence() -> None:
             "provenance_slots": ["core"],
             "primary_ids": [primary.id],
             "sidecar_ids": [sidecar.id],
-            "sidecar_suffix": ".xmp",
+            "sidecar_suffixes": [".XMP", ".xmp"],
         },
         evidence_slots=(
             ObservationEvidenceSlot(
@@ -266,7 +266,7 @@ def test_observer_combines_exact_core_predecessors_without_reopening_provenance(
             "provenance_slots": [item.slot for item in slots],
             "primary_ids": [primary.id],
             "sidecar_ids": [sidecar.id],
-            "sidecar_suffix": ".xmp",
+            "sidecar_suffixes": [".XMP", ".xmp"],
         },
         evidence_slots=slots,
     )

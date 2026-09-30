@@ -65,14 +65,14 @@ class FilenamePrefixSidecarObserver:
             predecessor_ids: list[dict[str, str]] = []
             for slot in question.provenance_slots:
                 predecessor = runtime.open_evidence(slot)
+                CoreProvenanceOptions.model_validate_json(
+                    canonical_json_bytes(predecessor.request.options)
+                )
                 if (
                     predecessor.request.observer_contract_id != CORE_PROVENANCE_OBSERVER_CONTRACT.id
                     or predecessor.request.observer_contract_sha256
                     != CORE_PROVENANCE_OBSERVER_CONTRACT.contract_sha256
                     or predecessor.request.read_actions != ("read-provenance",)
-                    or CoreProvenanceOptions.model_validate_json(
-                        canonical_json_bytes(predecessor.request.options)
-                    ).predicates
                     or predecessor.result.facts_schema
                     != CORE_PROVENANCE_OBSERVER_CONTRACT.facts_schema
                     or predecessor.result.facts is None
@@ -109,7 +109,7 @@ class FilenamePrefixSidecarObserver:
                 locators,
                 primary_ids=question.primary_ids,
                 sidecar_ids=question.sidecar_ids,
-                sidecar_suffix=question.sidecar_suffix,
+                sidecar_suffixes=question.sidecar_suffixes,
             )
             document = {
                 "provenance_results": sorted(predecessor_ids, key=lambda item: item["request_id"]),

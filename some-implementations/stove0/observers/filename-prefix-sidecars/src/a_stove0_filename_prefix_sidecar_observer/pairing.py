@@ -248,7 +248,7 @@ def compare_filenames(
     *,
     primary_ids: Sequence[str],
     sidecar_ids: Sequence[str],
-    sidecar_suffix: str,
+    sidecar_suffixes: Sequence[str],
 ) -> tuple[tuple[SourceStatus, ...], tuple[FilenameCandidate, ...]]:
     """Report all candidates and complete/insufficient source comparison status."""
 
@@ -261,7 +261,9 @@ def compare_filenames(
         or set(primary) | set(sidecar) != set(facts)
     ):
         raise ValueError("filename candidate partitions must be exact and disjoint")
-    if re.fullmatch(r"\.[A-Za-z0-9_-]{1,32}", sidecar_suffix) is None:
+    if not sidecar_suffixes or any(
+        re.fullmatch(r"\.[A-Za-z0-9_-]{1,32}", suffix) is None for suffix in sidecar_suffixes
+    ):
         raise ValueError("filename sidecar suffix must be explicit bounded ASCII")
     statuses: list[SourceStatus] = []
     selected: dict[str, _Selected] = {}
@@ -275,11 +277,15 @@ def compare_filenames(
         sidecar_name = selected.get(sidecar_id)
         if sidecar_name is None:
             continue
-        suffix = sidecar_suffix.encode("utf-8" if sidecar_name.name.width == 1 else "utf-16le")
         leaf = sidecar_name.name.leaf
-        if not leaf.endswith(suffix) or len(leaf) == len(suffix):
+        matching = [
+            suffix.encode("utf-8" if sidecar_name.name.width == 1 else "utf-16le")
+            for suffix in sidecar_suffixes
+            if leaf.endswith(suffix.encode("utf-8" if sidecar_name.name.width == 1 else "utf-16le"))
+        ]
+        if len(matching) != 1 or len(leaf) == len(matching[0]):
             continue
-        base = leaf[: -len(suffix)]
+        base = leaf[: -len(matching[0])]
         for primary_id in primary:
             primary_name = selected.get(primary_id)
             if primary_name is None or not _comparable(sidecar_name, primary_name):
