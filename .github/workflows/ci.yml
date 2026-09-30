@@ -137,6 +137,7 @@ jobs:
           - a-stove0-exiftool-observer
           - a-stove0-ffprobe-observer
           - a-stove0-magic-observer
+          - a-stove0-filename-prefix-sidecar-observer
           - a-stove0-riverhog-provenance-observer
           - a-stove0-nvenc-av1-opus-target
           - a-stove0-opus-target

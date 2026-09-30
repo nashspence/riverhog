@@ -849,6 +849,7 @@ CLI_MODULES = {
     "a-stove0-exiftool-observer": "a_stove0_exiftool_observer.app",
     "a-stove0-ffprobe-observer": "a_stove0_ffprobe_observer.app",
     "a-stove0-magic-observer": "a_stove0_magic_observer.app",
+    "a-stove0-filename-prefix-sidecar-observer": "a_stove0_filename_prefix_sidecar_observer.app",
     "a-stove0-riverhog-provenance-observer": "a_stove0_riverhog_provenance_observer.app",
     "a-review0-nvenc-av1-opus-sampler": "a_review0_nvenc_av1_opus_sampler.app",
     "a-stove0-nvenc-av1-opus-target": "a_stove0_nvenc_av1_opus_target.app",

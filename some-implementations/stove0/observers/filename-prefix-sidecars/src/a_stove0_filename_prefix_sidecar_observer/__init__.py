@@ -1,3 +1,4 @@
+from .observer import FilenamePrefixSidecarObserver
 from .pairing import (
     FilenameCandidate,
     LocatorEvidence,
@@ -8,6 +9,7 @@ from .pairing import (
 )
 
 __all__ = [
+    "FilenamePrefixSidecarObserver",
     "FilenameCandidate",
     "LocatorEvidence",
     "SourceStatus",

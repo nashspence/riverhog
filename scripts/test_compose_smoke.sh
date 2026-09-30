@@ -225,6 +225,7 @@ printf '%s\n' "${smoke_token}" > "${secret_root}/stove0-controller-riverhog-toke
 printf '%s\n' "${smoke_token}" > "${secret_root}/stove0-worker-riverhog-token"
 printf '%s\n' 'stove0-compose-ffprobe-observer-token' > "${secret_root}/a-stove0-ffprobe-observer-token"
 printf '%s\n' 'stove0-compose-magic-observer-token' > "${secret_root}/a-stove0-magic-observer-token"
+printf '%s\n' 'stove0-compose-filename-observer-token' > "${secret_root}/a-stove0-filename-prefix-sidecar-observer-token"
 printf '%s\n' 'stove0-compose-canonical-hint-observer-token' > "${secret_root}/a-stove0-riverhog-provenance-observer-token"
 printf '%s\n' 'stove0-compose-exiftool-observer-token' > "${secret_root}/a-stove0-exiftool-observer-token"
 printf '%s\n' 'stove0-compose-nvenc-target-token' > "${secret_root}/a-stove0-nvenc-av1-opus-target-token"
@@ -290,6 +291,7 @@ export STOVE0_WORKER_RIVERHOG_TOKEN_FILE="${secret_root}/stove0-worker-riverhog-
 export A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE="${secret_root}/a-stove0-ffprobe-observer-token"
 export A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_TOKEN_FILE="${secret_root}/a-stove0-riverhog-provenance-observer-token"
 export A_STOVE0_MAGIC_OBSERVER_TOKEN_FILE="${secret_root}/a-stove0-magic-observer-token"
+export A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_TOKEN_FILE="${secret_root}/a-stove0-filename-prefix-sidecar-observer-token"
 export A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE="${secret_root}/a-stove0-exiftool-observer-token"
 export A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE="${secret_root}/a-stove0-nvenc-av1-opus-target-token"
 export A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE="${secret_root}/a-review0-nvenc-av1-opus-sampler-token"
@@ -300,6 +302,7 @@ export A_STOVE0_RCLONE_TARGET_TOKEN_FILE="${secret_root}/a-stove0-rclone-target-
 export A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID="sha256:$(printf '1%.0s' {1..64})"
 export A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID="sha256:$(printf '8%.0s' {1..64})"
 export A_STOVE0_MAGIC_OBSERVER_IMAGE_ID="sha256:$(printf '9%.0s' {1..64})"
+export A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID="sha256:$(printf 'a%.0s' {1..64})"
 export A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID="sha256:$(printf '6%.0s' {1..64})"
 export A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID="sha256:$(printf '2%.0s' {1..64})"
 export A_STOVE0_OPUS_TARGET_IMAGE_ID="sha256:$(printf '3%.0s' {1..64})"
@@ -356,7 +359,7 @@ client_environment=(
   --env "RIVERHOG_TOKEN=${smoke_token}"
 )
 stove0_compose up --detach --build --wait \
-  state api controller worker a-stove0-ffprobe-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer a-stove0-opus-target \
+  state api controller worker a-stove0-ffprobe-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer a-stove0-opus-target \
   a-review0-opus-sampler
 sampler_descriptor_code="import json, urllib.request
 request = urllib.request.Request(
@@ -1189,10 +1192,10 @@ print(json.dumps({'format': 'stove0-transfer-phases/v1', **asdict(summary)}, sor
 fi
 
 stove0_compose restart \
-  api controller worker a-stove0-ffprobe-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
+  api controller worker a-stove0-ffprobe-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
   a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose up --detach --wait \
-  api controller worker a-stove0-ffprobe-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
+  api controller worker a-stove0-ffprobe-observer a-stove0-filename-prefix-sidecar-observer a-stove0-riverhog-provenance-observer a-stove0-exiftool-observer \
   a-stove0-opus-target a-review0-opus-sampler review0 a-stove0-rclone-target
 stove0_compose exec -T api python -c "${wait_code}"
 

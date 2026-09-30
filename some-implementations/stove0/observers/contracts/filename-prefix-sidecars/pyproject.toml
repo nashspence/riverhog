@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-stove0-filename-prefix-sidecar-evidence-contract-lib"
+version = "0.1.0"
+description = "Exact accepted-locator filename candidate evidence for Stove0."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Exact accepted-locator filename candidate evidence for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "a-stove0-riverhog-provenance-evidence-contract-lib>=0.1,<0.2",
+  "pydantic>=2.7,<3.0",
+  "stove0-observer-protocol>=0.1,<0.2",
+]
+
+[project.entry-points."stove0.observer-semantic-validators"]
+filename-prefix-sidecars = "a_stove0_filename_prefix_sidecar_evidence_contract_lib:FILENAME_SEMANTIC_VALIDATOR"
+
+[tool.uv.sources]
+a-stove0-riverhog-provenance-evidence-contract-lib = { workspace = true }
+stove0-observer-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_stove0_filename_prefix_sidecar_evidence_contract_lib"]
