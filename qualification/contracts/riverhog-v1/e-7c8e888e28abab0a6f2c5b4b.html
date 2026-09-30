@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_archive_contracts.ProvenanceVolumeDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-4efc13a0fac247c0be41c895.html">riverhog-archive-contracts</a> / <a href="i-d9f1b11ab58182f717f11c20.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog_archive_contracts.ProvenanceVolumeDocument</h1>
+<p class="context">Dependency-light immutable Riverhog archive recovery contracts. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:riverhog-archive-contracts:riverhog-archive-contracts-provenancevolumedocument:1299229ac0">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-archive-contracts</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_archive_contracts</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ProvenanceVolumeDocument</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(archive_generation: &#x27;str&#x27;, artifact_set_sha256: &#x27;str&#x27;, sequence: &#x27;int&#x27;, payload: &#x27;ProvenancePayload&#x27;, first_artifact_id: &#x27;str | None&#x27; = None, last_artifact_id: &#x27;str | None&#x27; = None, binding_count: &#x27;int | None&#x27; = None, journal_id: &#x27;str | None&#x27; = None, journal_offset: &#x27;int | None&#x27; = None, journal_bytes: &#x27;int | None&#x27; = None, journal_sha256: &#x27;str | None&#x27; = None) -&gt; None&quot;</code>
+</dd>
+</dl>
+<h4>Dataclass fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Type</th>
+<th scope="col">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>archive_generation</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>artifact_set_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>payload</code></td>
+<td data-label="Type">
+<code>&#x27;ProvenancePayload&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>first_artifact_id</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>last_artifact_id</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>binding_count</code></td>
+<td data-label="Type">
+<code>&#x27;int | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal_offset</code></td>
+<td data-label="Type">
+<code>&#x27;int | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal_bytes</code></td>
+<td data-label="Type">
+<code>&#x27;int | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument</code>
+</h4>
+<table id="v-122aa441a63eda43914c9800">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-8b3cdfe9bd572286155fceae">
+<tbody>
+<tr>
+<th scope="row">
+<code>fields</code>
+</th>
+<td>
+<table id="v-1bfdeb0d3d38c9355737271e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-38d58c467ec11961cc96b368">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-485f4fe62bb93dcbc36d1e9b">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/0/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-ae15861a6baddc35cb93a948">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/0/name">archive_generation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f470d5aeeec208d97eebdf4b">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/0/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-805f0af1c32fef2ce011fa99">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5ffcc39015d047c17420d118">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/1/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-e7fc91f969b255c8036d1feb">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/1/name">artifact_set_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8cdf2d67cd918f1a54023642">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/1/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-4282303cae07ab00fb82db6f">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-be5e4cd8ad313a746a2af717">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/2/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-2b5ec9cad47d622caf25ae39">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/2/name">sequence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d4d1cb302c774105492ff129">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/2/type">&#x27;int&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-58af7e9622702ef67ed5de49">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6092c93435616fca3053c862">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/3/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-9f8fd8f5c349cb0bf979ce7c">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/3/name">payload</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2560c9ee6938a677d7d6af9b">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/3/type">&#x27;ProvenancePayload&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-07968063f780c0fd33cb58dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-df38bc65860fe007333b36b1">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/4/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a53658e4b59df5be7e8d094c">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/4/name">first_artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b619f5013cd506668d76eaa2">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/4/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-a0a7b110d45a2cffab447ee0">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-cdad14a8fde3ff18f4c0409b">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/5/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-099f2bbeaa366326fbc780ed">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/5/name">last_artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-54743c246692531d6328b61f">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/5/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-94b99a6bb5f5b472ebb1db19">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-84b7dc97639dd745aa5c0566">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/6/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-d190ecc35d87f11a19d5b763">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/6/name">binding_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7d3c2ce5d677d2fbd39faaee">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/6/type">&#x27;int | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-56b6a7c3138ec5d524c0edfc">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f469ac54f6e6e53de9770175">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/7/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-eb524ef64ef58767dd3be03d">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/7/name">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9fa0259ca4c4984c0b915379">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/7/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<table id="v-4fdde3d356c612bc603e961f">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a351340fb3e8d34e75842757">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/8/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-cd5ab59fa687b3fde65cbe20">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/8/name">journal_offset</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c6e136338aebc43d225576c4">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/8/type">&#x27;int | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<table id="v-d7e2bc38b2d8dba126b50d7e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3c482922fdf33c69f2012044">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/9/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-54c5a42964bdf0341db63100">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/9/name">journal_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1dd92cb04673525aee85be4b">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/9/type">&#x27;int | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<table id="v-4ca60f477d9bc15857480113">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-246a83d98e2586c051a4265b">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/10/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a1bf5f60762d927fdae7a5b4">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/10/name">journal_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-25d9c5e68508c9e8bf24b516">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/fields/10/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-f4bf273383065432e0814e3a">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-4f508053ac1a3566fe29d3a6">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/contract/signature">&quot;(archive_generation: &#x27;str&#x27;, artifact_set_sha256: &#x27;str&#x27;, sequence: &#x27;int&#x27;, payload: &#x27;ProvenancePayload&#x27;, first_artifact_id: &#x27;str | None&#x27; = None, last_artifact_id: &#x27;str | None&#x27; = None, binding_count: &#x27;int | None&#x27; = None, journal_id: &#x27;str | None&#x27; = None, journal_offset: &#x27;int | None&#x27; = None, journal_bytes: &#x27;int | None&#x27; = None, journal_sha256: &#x27;str | None&#x27; = None) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-9c730daef1527d46117d13a0">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/distribution">riverhog-archive-contracts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-8636e79a09ea9952f90659b9">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/module">riverhog_archive_contracts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-2675c70302abe57091963f2d">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/name">ProvenanceVolumeDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-354dde251aacbc77febce92e">
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceVolumeDocument/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-325da7620f9e06bb3aaeaa10.html">riverhog_archive_contracts.ProvenanceVolumeDocument.to_mapping</a>
+</li>
+<li>
+<a href="e-1d8fca3c050384b62ac33ac1.html">riverhog_archive_contracts.ProvenanceVolumeDocument.metadata_path</a>
+</li>
+<li>
+<a href="e-628ff01bda257e0cc404a68c.html">riverhog_archive_contracts.ProvenanceVolumeDocument.from_json_bytes</a>
+</li>
+<li>
+<a href="e-6b47660b3c2ae63784888131.html">riverhog_archive_contracts.ProvenanceVolumeDocument.to_json_bytes</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-4557222ddc30f40eac3729ac">python:riverhog-archive-contracts:riverhog_archive_contracts</a> — <code data-source-path="packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py">packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

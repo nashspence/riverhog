@@ -47,7 +47,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;source_event_id&quot;,&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;riverhog_receipt&quot;]</code>
+<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;source_event_id&quot;,&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;riverhog_receipt&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -82,6 +82,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>artifact_set_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>claim_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -95,15 +104,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-52aca880ef4bf8effecd33db.html#v-5d80024177ddc3d6d8601968">#/$defs/CollectionId</a></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>content_identity</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -375,6 +375,46 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-727d1f1454e80319c4ce6902">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9b15f7d6b6977fb9e83bedd0">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b2e7a1e6288a6dda1172d9c9">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/artifact_set_identity/title">Artifact Set Identity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a04aae97b448849f51c2b719">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>claim_id</code>
 </th>
 <td>
@@ -428,46 +468,6 @@
 <span id="v-1b492c27baa5b72515eb22a3">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-52aca880ef4bf8effecd33db.html#v-5d80024177ddc3d6d8601968">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-0750752ce5e93567668e9dca">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-dd1f1a17be6c4fd4e99fa324">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-08a01c6b116ffd59d75feb13">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/content_identity/title">Content Identity</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-e4f4a4bae6877d51779b77df">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -659,7 +659,7 @@
 </th>
 <td>
 <span id="v-22c284b797194bb9456814fc">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/5">content_identity</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/3/schema/required/5">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -747,7 +747,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

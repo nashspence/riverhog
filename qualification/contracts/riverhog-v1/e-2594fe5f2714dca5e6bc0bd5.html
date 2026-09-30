@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>macos native descriptor capture evidence · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-fb2358ad47710133b38954e0.html">a-riverhog-macos-provenance-contract-lib</a> / <a href="i-e3200ee3f01e1a038985b99b.html">Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>macos native descriptor capture evidence</h1>
+<p class="context">macOS filesystem observation contracts for Riverhog provenance. Standalone structured-value contracts; these do not define an interaction.</p>
+<section id="contract" data-contract="schema:a-riverhog-macos-provenance-contract-lib:macos-native-descriptor-capture-evidence:aaaeea4a79">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-d47a0297b82124db46873913">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-native-capture.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>macos native descriptor capture evidence</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;object_kind&quot;,&quot;environment&quot;,&quot;timestamps&quot;,&quot;access&quot;,&quot;native_identifiers&quot;,&quot;native_metadata&quot;,&quot;coverage&quot;,&quot;diagnostics&quot;,&quot;noatime_effective&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>access</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>[&quot;object&quot;,&quot;null&quot;]</code>; nullable</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-8743875d2fdb3a60ced2a39a">coverage</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-6d67b6430147b379c9da9566">diagnostics</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>environment</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-2944f11560d0103969fb1681">native_identifiers</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f641346886c432b2872d95aa">native_metadata</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>noatime_effective</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>object_kind</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">const: <code>regular_file</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-44c9733f68d7f75faefbea38">timestamps</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8743875d2fdb3a60ced2a39a">
+<h3>Field: coverage</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <code>string</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;type&quot;:&quot;string&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-6d67b6430147b379c9da9566">
+<h3>Field: diagnostics</h3>
+<p class="shape">
+<code>array</code>; items: <code>object</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-2944f11560d0103969fb1681">
+<h3>Field: native_identifiers</h3>
+<p class="shape">
+<code>array</code>; items: <code>object</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f641346886c432b2872d95aa">
+<h3>Field: native_metadata</h3>
+<p class="shape">
+<code>array</code>; items: <code>object</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-44c9733f68d7f75faefbea38">
+<h3>Field: timestamps</h3>
+<p class="shape">
+<code>array</code>; items: <code>object</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json</code>
+</h4>
+<table id="v-d47a0297b82124db46873913">
+<tbody>
+<tr>
+<th scope="row">
+<code>$id</code>
+</th>
+<td>
+<span id="v-8364c91c89301f8ff86a3fe2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/$id">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-native-capture.json</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>$schema</code>
+</th>
+<td>
+<span id="v-f7ae3e7b9941c80d4c52d550">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/$schema">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-1bda6511aa3641a9620533d8">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-10ad3bc3f8cc7b29aa994848">
+<tbody>
+<tr>
+<th scope="row">
+<code>access</code>
+</th>
+<td>
+<table id="v-252a2ac02575c0ff9f2f5ccb">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<table id="v-deb8b0361cbb0496958889f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7755b1eded3d18d74af4dca9">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/access/type/0">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e9368252478e8dd58444d440">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/access/type/1">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>coverage</code>
+</th>
+<td>
+<table id="v-8743875d2fdb3a60ced2a39a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-abfd6c3484ae7a3fbf45dd49">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e5241a02317c6f3800a35a57">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/coverage/additionalProperties/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-050de2ccf253ab75351da378">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/coverage/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>diagnostics</code>
+</th>
+<td>
+<table id="v-6d67b6430147b379c9da9566">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-40d90fbefae02c575a479503">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-27e4365345df71c055d34741">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/diagnostics/items/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d2b147fb38de18fd3532b1c3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/diagnostics/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>environment</code>
+</th>
+<td>
+<table id="v-d04132237588a7a17828495e">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3ee30626272974f0d587b311">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/environment/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>native_identifiers</code>
+</th>
+<td>
+<table id="v-2944f11560d0103969fb1681">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-2221e661db100234aed583de">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f7605ce94b25158970944218">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/native_identifiers/items/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-15032991b40301f72833cdbe">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/native_identifiers/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>native_metadata</code>
+</th>
+<td>
+<table id="v-f641346886c432b2872d95aa">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-743f21ca240a29081332e208">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8c8a92ccb44075bca70d8a44">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/native_metadata/items/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0487f7f6f37fc8f37bf40c7b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/native_metadata/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>noatime_effective</code>
+</th>
+<td>
+<table id="v-1b3ea65b03efcf29abda6ddc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9f6a96188206c453f9aaae3e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/noatime_effective/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>object_kind</code>
+</th>
+<td>
+<table id="v-91a8db0627f37962b276d297">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-9b18a9e676ba7d16e161a4ef">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/object_kind/const">regular_file</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>timestamps</code>
+</th>
+<td>
+<table id="v-44c9733f68d7f75faefbea38">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e0795be5a188af82f518c660">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a95070058c096c95a1fd9fa5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/timestamps/items/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-36ef11ef77c484339f94584f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/timestamps/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-1eb3af1311d5c88d4fa00036">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-61bf23609a04ad8fdcf08172">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/0">object_kind</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-b1145c6d65b2d6171c1ceea4">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/1">environment</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-4ca69df80ce6b721c6e06207">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/2">timestamps</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4fb4f0dffbac71dbec1e00f6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/3">access</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-266cc5f0930ffe80a2c47d9b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/4">native_identifiers</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-7697cfd09a2001146cfc477a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/5">native_metadata</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-835463834155dd125d4caf35">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/6">coverage</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-4085b0458918a56a85a834d3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/7">diagnostics</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-f4fd76561cb3289a272c884c">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/required/8">noatime_effective</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-880c3b230f6c0a4e8c19f4d8">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/title">macos native descriptor capture evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7102cdea604260b622037772">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-e11e8aa8a7cf10211214e0fe.html">compatibility/components/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-53ff957c06ae5724fab66c37">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-native-capture.json</a> — <code data-source-path="some-implementations/riverhog/provenance/contracts/macos/src/a_riverhog_macos_provenance_contract_lib/schemas/macos-native-capture.schema.json">some-implementations/riverhog/provenance/contracts/macos/src/a_riverhog_macos_provenance_contract_lib/schemas/macos-native-capture.schema.json</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/coverage</code></td>
+<td data-label="Governing rule">
+<a href="e-deac65178b87fc43fb5c3251.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · entries · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/diagnostics</code></td>
+<td data-label="Governing rule">
+<a href="e-deac65178b87fc43fb5c3251.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/native_identifiers</code></td>
+<td data-label="Governing rule">
+<a href="e-deac65178b87fc43fb5c3251.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/native_metadata</code></td>
+<td data-label="Governing rule">
+<a href="e-deac65178b87fc43fb5c3251.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1macos-native-capture.json/properties/timestamps</code></td>
+<td data-label="Governing rule">
+<a href="e-deac65178b87fc43fb5c3251.html">extent-rule/extension-contract/v1</a></td>
+<td data-label="Decision">cardinality · items · extension_owned</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

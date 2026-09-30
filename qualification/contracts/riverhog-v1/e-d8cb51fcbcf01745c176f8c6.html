@@ -158,6 +158,9 @@
 <a href="#s-18ab1fe48a01b1062d9f59d2">NonnegativeDecimal</a>
 </li>
 <li>
+<a href="#s-67cb521c26c2073a0ae7cc0f">ObservationEvidenceSlot</a>
+</li>
+<li>
 <a href="#s-3dec6c64ddbf8270a7dee88b">ObserverImplementation</a>
 </li>
 <li>
@@ -189,6 +192,9 @@
 </li>
 <li>
 <a href="#s-2694c1c67086b8dc91ca59c8">WorkIdentity</a>
+</li>
+<li>
+<a href="#s-e54888ce547729dd047af421">WorkInputGroup</a>
 </li>
 <li>
 <a href="#s-15f125a0940c1340aeb847c7">WorkflowPlan</a>
@@ -414,7 +420,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -449,19 +455,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-d8cb51fcbcf01745c176f8c6.html#v-ab8f7c159aab043ca7a6004e">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-d8cb51fcbcf01745c176f8c6.html#v-ab8f7c159aab043ca7a6004e">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -690,7 +696,7 @@
 <section class="schema-section" id="s-3cb93280f27ab97c784b1b31">
 <h3>Definition: ContentObservationRequest</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -723,6 +729,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-c15cbef2387e879b5a99dd34">evidence_slots</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-67cb521c26c2073a0ae7cc0f">#/$defs/ObservationEvidenceSlot</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>format</code></td>
@@ -786,6 +801,16 @@
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-6ffc48ee1ceb96f2f8c3a888">#/$defs/JsonValue</a></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-14ef12964c8ec9f8f15ba71d">read_actions</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Default">
+<code>[&quot;read-inputs&quot;]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -1097,7 +1122,7 @@
 <section class="schema-section" id="s-7dbe757072bd5c04dca6283b">
 <h3>Definition: EffectPlan</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -1130,6 +1155,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-76cd159817fed86040a0af36">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -1668,6 +1703,86 @@
 <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 </dd>
 </dl>
+</section>
+<section class="schema-section" id="s-67cb521c26c2073a0ae7cc0f">
+<h3>Definition: ObservationEvidenceSlot</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ObservationEvidenceSlot</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One controller-accepted predecessor selected by a sealed observation request.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;slot&quot;,&quot;request_id&quot;,&quot;result_sha256&quot;,&quot;observer_contract_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>observer_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>request_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>slot</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-3dec6c64ddbf8270a7dee88b">
 <h3>Definition: ObserverImplementation</h3>
@@ -2296,7 +2411,7 @@ identity while preserving the full document in the execution envelope.</code>
 <section class="schema-section" id="s-877870ac70b49d9a40e37ce1">
 <h3>Definition: TransformPlan</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -2329,6 +2444,16 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-fec06c21ee73c9a5dbebeeb2">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -2428,7 +2553,7 @@ identity while preserving the full document in the execution envelope.</code>
 <section class="schema-section" id="s-008addac063e78c165b9126f">
 <h3>Definition: WorkArtifactSubject</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -2437,11 +2562,11 @@ identity while preserving the full document in the execution envelope.</code>
 </dd>
 <dt>description</dt>
 <dd>
-<code>A collection logical file assigned an ID and role within one Stove0 work.</code>
+<code>A source-qualified opaque member assigned a subject and role for one work.</code>
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -2467,6 +2592,15 @@ identity while preserving the full document in the execution envelope.</code>
 <tbody>
 <tr>
 <td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -2489,24 +2623,6 @@ identity while preserving the full document in the execution envelope.</code>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-a9a29920e7314a6239aa42b3">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2636,10 +2752,73 @@ identity while preserving the full document in the execution envelope.</code>
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-e54888ce547729dd047af421">
+<h3>Definition: WorkInputGroup</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>WorkInputGroup</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One recipe-selected primary and its exact associated subjects.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-f9ce6119f8e8bf87cc26722d">associated_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-15f125a0940c1340aeb847c7">
 <h3>Definition: WorkflowPlan</h3>
 <p class="shape">
-<code>object</code>; 13 fields; additionalProperties: <code>false</code>
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -2680,6 +2859,16 @@ identity while preserving the full document in the execution envelope.</code>
 <code>string</code>; const: <code>stove0-workflow-plan/v1</code>; default: <code>stove0-workflow-plan/v1</code></td>
 <td data-label="Default">
 <code>stove0-workflow-plan/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-7aa1575153547a8e288bd220">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -2799,6 +2988,41 @@ identity while preserving the full document in the execution envelope.</code>
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-c15cbef2387e879b5a99dd34">
+<h3>Field: evidence_slots</h3>
+<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-67cb521c26c2073a0ae7cc0f">#/$defs/ObservationEvidenceSlot</a>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Evidence Slots</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-441ca5c124873d358adad82a">1</a></td>
+<td data-label="Schema">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-67cb521c26c2073a0ae7cc0f">#/$defs/ObservationEvidenceSlot</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-c2c471c30d2cba44383e72b0">
 <h3>Field: options</h3>
 <p class="shape">
@@ -2816,6 +3040,30 @@ identity while preserving the full document in the execution envelope.</code>
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-14ef12964c8ec9f8f15ba71d">
+<h3>Field: read_actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Read Actions</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>1</code>
 </dd>
 </dl>
 </section>
@@ -3029,6 +3277,22 @@ identity while preserving the full document in the execution envelope.</code>
 <dt>minItems</dt>
 <dd>
 <code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-76cd159817fed86040a0af36">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Input Groups</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -3354,6 +3618,22 @@ identity while preserving the full document in the execution envelope.</code>
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-fec06c21ee73c9a5dbebeeb2">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Input Groups</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-1843c4ae94e186b62b640973">
 <h3>Field: intent</h3>
 <p class="shape">
@@ -3409,40 +3689,6 @@ identity while preserving the full document in the execution envelope.</code>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
 </dd>
 </dl>
-</section>
-<section class="schema-section" id="s-a9a29920e7314a6239aa42b3">
-<h3>Field: media_type</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Media Type</code>
-</dd>
-</dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-11678610e40d533b0e585b8d">
 <h3>Field: effective_intent</h3>
@@ -3546,6 +3792,38 @@ identity while preserving the full document in the execution envelope.</code>
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-f9ce6119f8e8bf87cc26722d">
+<h3>Field: associated_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Associated Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-7aa1575153547a8e288bd220">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Input Groups</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-44bb80a8402fc55d798c399c">
 <h3>Field: observations</h3>
 <p class="shape">
@@ -3579,6 +3857,18 @@ identity while preserving the full document in the execution envelope.</code>
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-441ca5c124873d358adad82a">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d8cb51fcbcf01745c176f8c6.html#v-67cb521c26c2073a0ae7cc0f">#/$defs/ObservationEvidenceSlot</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -4381,6 +4671,46 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-b5d32be7e9e922f4247a94d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a6dc7c7b1100ec210437b476">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-96da359e849869e0f88c332a">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/title">Artifact Set Identity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d237f38764755fbab86754df">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -4394,46 +4724,6 @@ identity while preserving the full document in the execution envelope.</code>
 <span id="v-ac3423c508ea1af6306cddac">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-d8cb51fcbcf01745c176f8c6.html#v-ab8f7c159aab043ca7a6004e">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-36aec6601b582a88615128e3">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-08eb164de4b7b03725860062">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-142656aeb963efcb7fbdac92">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/content_identity/title">Content Identity</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-31898a7e58124f2bee3628e3">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -4475,7 +4765,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-0fbcf454ad862fd414d67d36">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/CollectionRootIdentityRef/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5131,6 +5421,106 @@ identity while preserving the full document in the execution envelope.</code>
 <tbody>
 <tr>
 <th scope="row">
+<code>evidence_slots</code>
+</th>
+<td>
+<table id="v-c15cbef2387e879b5a99dd34">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d8a11296e12edee98cd1793b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-441ca5c124873d358adad82a">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b18a5720062468aed1f73b1a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8add1371e58db1ac77141b65">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/0/items/$ref">#/$defs/ObservationEvidenceSlot</code>
+<span class="kind">string</span> <a href="e-d8cb51fcbcf01745c176f8c6.html#v-67cb521c26c2073a0ae7cc0f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bb9153115f02da46ef222538">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/0/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-1332ad7223bd937aecb1cc97">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b5f48ff77b3a6990cacb055a">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-7208e647140a3a503e1c886e">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/evidence_slots/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b652df8ac8605ac2ca1b88d8">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/evidence_slots/title">Evidence Slots</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>format</code>
 </th>
 <td>
@@ -5443,6 +5833,136 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <span id="v-0253d4fdb40bf5e07d846885">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/options/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_actions</code>
+</th>
+<td>
+<table id="v-14ef12964c8ec9f8f15ba71d">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-248c3eeea24655703f96041e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-22a39a8f767208a66cc71ac9">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/default/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e7f5df7a722d3c1d35a79d47">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-09deca9de345fe481e68dd89">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-cf6dbe637077009a5339a52d">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-6e5a0359f502b32ed242115b">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-5678efd95406027e7cb84f2e">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/2">read-evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4935c3a0b827e57c154c8ac6">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-25174af5ddb7631fab1bdf17">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/maxItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-ac9dbc3903b6c9e5380da16d">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e12835d7d5bf8049c469ce42">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/title">Read Actions</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-74d6fa1494976f327a09794f">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ContentObservationRequest/properties/read_actions/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7049,6 +7569,66 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <table id="v-1ad841f593683bb2306aa5f8">
 <tbody>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-76cd159817fed86040a0af36">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-522d3fa07ff8df791afa4ea8">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/EffectPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-3c843017739892cb41220ecf">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f30c775367fbc86ec1d484d5">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/EffectPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b207ad48b47c49e79523688f">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/EffectPlan/properties/input_groups/title">Input Groups</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-abef9caa954f6a77148ddad0">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/EffectPlan/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>inputs</code>
@@ -9149,6 +9729,276 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <span id="v-bb01c9b368c4f2b82e2a889f">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ObservationEvidenceSlot</code>
+</th>
+<td>
+<table id="v-67cb521c26c2073a0ae7cc0f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a7a86caf2ad29b56cc0ec8d0">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-6526d6ec4e9ae98f57188b6d">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/description">One controller-accepted predecessor selected by a sealed observation request.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-5cae00449f01887eb117a4bc">
+<tbody>
+<tr>
+<th scope="row">
+<code>observer_contract_id</code>
+</th>
+<td>
+<table id="v-d120c5eee476a88fed0f268c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-02e9d3b8b88c10f2187e1d2e">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2343222bf61c97cbe29346b0">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/title">Observer Contract Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b4d4db0086f9d2c50b7d1a3b">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>request_id</code>
+</th>
+<td>
+<table id="v-4764ed82e7edd6dc8cec8fb5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-aaf33481b9429e3f6a802b99">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/request_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-7407af64778f34f3f545f7fd">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/request_id/title">Request Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-43881cf85a9a4a2db6ee0bbf">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/request_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_sha256</code>
+</th>
+<td>
+<table id="v-f18579f58c4119a0ad0bcc09">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fb96b5edf8e2a5948b3b0727">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-350669c151dbae4f2e38659f">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/title">Result Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b6e25529aa1bb147c7a516c7">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>slot</code>
+</th>
+<td>
+<table id="v-b42de5d1bfd2da4ff8061b13">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9a661afc64502577cd3814f0">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/slot/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-64474316f58140e77a0456cb">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/slot/title">Slot</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f0d8657df592c72e8669f3b3">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/properties/slot/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-293239af3ace456d6f6a25ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-90f34aa8ffc3dba1b037be72">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/required/0">slot</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f8b4698e59efa005a3c05455">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/required/1">request_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-5f6df08fb00487d66d3921f6">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/required/2">result_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-d8a4341a2d6ea22a5cb8dd91">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/required/3">observer_contract_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fdb8c254fad863bbcb178511">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/title">ObservationEvidenceSlot</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-946b32d4368dd5f182d125f3">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/ObservationEvidenceSlot/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11391,6 +12241,66 @@ identity while preserving the full document in the execution envelope.</code>
 <tbody>
 <tr>
 <th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-fec06c21ee73c9a5dbebeeb2">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-295372d0abb83ea2f42fd9f7">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/TransformPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-dccbcb256e7d0b4224afe7a7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2b716dc1098e4ded6f009171">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/TransformPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2d5e5d7c45c0479f1e9cc9af">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/TransformPlan/properties/input_groups/title">Input Groups</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-68db0a1397740ffec9440146">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/TransformPlan/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>inputs</code>
 </th>
 <td>
@@ -11958,7 +12868,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-4e7670633eead4fae568fd8d">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/description">A collection logical file assigned an ID and role within one Stove0 work.</code>
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/description">A source-qualified opaque member assigned a subject and role for one work.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11969,6 +12879,46 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <table id="v-35c01c94e5e1248be1e9b5eb">
 <tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-79b27f88d70298759134fa4b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0d84048d3ab6c237781d3ded">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d2b3cdd618692e1d2b555eba">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/artifact_id/title">Artifact Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f0fbdb6e4c3e308da57ba945">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>bytes</code>
@@ -12053,156 +13003,6 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <span id="v-7bbcbd4f40e7f5f6dea9aecf">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-a9a29920e7314a6239aa42b3">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-91bec616ef322df62c57f678">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-8bbe06cdbf4dd992335970e0">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-9e8acea9e4b0f0dca36117ce">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/maxLength">255</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-c26ac0ceb6f463e0003f27aa">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c596a9a0f7ce46526c400c16">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-b31b1c10b83620bcea8ff349">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-44e753b27c1d9422b5aff644">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-8a00b30f403d453fe795f2b0">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/media_type/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-5cff1eb89cb6fbadae7573d2">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/media_type/title">Media Type</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-cf7e2a049e6b3b74b73f8ba5">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-2e45f920c397de6db9e5f38b">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-89d62d44df5bf50a334214d2">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-d2c8352bc36060a00d17d9cb">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/path/title">Path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-a576b53438a7b585222b30b6">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/properties/path/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12335,7 +13135,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-237b42e70806b95e69a2fcf9">
-<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/required/3">path</code>
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkArtifactSubject/required/3">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12937,6 +13737,186 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 <tr>
 <th scope="row">
+<code>WorkInputGroup</code>
+</th>
+<td>
+<table id="v-e54888ce547729dd047af421">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-12ae35bf7a70b216785edfd6">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-267cbbdb417cfe8172e13d35">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/description">One recipe-selected primary and its exact associated subjects.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-047564269772af4be54ce13b">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_ids</code>
+</th>
+<td>
+<table id="v-f9ce6119f8e8bf87cc26722d">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1efbfbb983e6deadfb810bc7">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/associated_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b51caa42a109f3636c7b0794">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-354a47d3e196a4334b389540">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/associated_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d63cb796a1adbf0223ab0e1b">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/associated_ids/title">Associated Ids</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6162ada4d198eb15a97524a4">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/associated_ids/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_id</code>
+</th>
+<td>
+<table id="v-0a844f6e130297371c8f28b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6c78219a1968f8f95b5b8263">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/primary_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-c39ee5a99637029204e819ee">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/primary_id/title">Primary Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e95c17e003b50353e4ccb53b">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/properties/primary_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-160580a61a603e2fd2a63dbb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-938f60d37d625df8cbb42c61">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/required/0">primary_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e3718a700e7c003d71f36041">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/title">WorkInputGroup</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fc54db686978b8bfe183948b">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkInputGroup/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>WorkflowPlan</code>
 </th>
 <td>
@@ -13003,6 +13983,66 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <span id="v-1b9057db1aebf774cacb1833">
 <code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkflowPlan/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-7aa1575153547a8e288bd220">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-143296181577525aeba8f879">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkflowPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-fc2ecbb78fed4dd68a7bee38">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ee8458c681ca36d6f44e0b01">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkflowPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-d8cb51fcbcf01745c176f8c6.html#v-e54888ce547729dd047af421">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-20c5f8f05d8a68c96b7bcab5">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkflowPlan/properties/input_groups/title">Input Groups</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-013332324ce93fb49d5711c3">
+<code data-value-pointer="/external_contract/durable_state/owners/7/structure/documents/0/schema/$defs/WorkflowPlan/properties/input_groups/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -13855,7 +14895,7 @@ identity while preserving the full document in the execution envelope.</code>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

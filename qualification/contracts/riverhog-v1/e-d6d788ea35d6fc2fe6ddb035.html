@@ -209,7 +209,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -244,19 +244,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-d6d788ea35d6fc2fe6ddb035.html#v-8af81cd1e6859822f273e7df">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<a href="e-d6d788ea35d6fc2fe6ddb035.html#v-8af81cd1e6859822f273e7df">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -518,6 +518,56 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-7ca2498e725764a0bf403922">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-b9e96d67125f5d1beee65c3e">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-51668b67167f24b1e6503ef6">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0bee90484caec3c8427eb5a9">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fdcc8f0ac6ddb95b92fbbeb6">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -531,56 +581,6 @@
 <span id="v-124dd5c84028c291c129532f">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-d6d788ea35d6fc2fe6ddb035.html#v-8af81cd1e6859822f273e7df">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-df1cbb7b037f1ea165d8cdad">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-0643e02f8bf0a7d4df65739a">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/maxLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-7bf71c88d15c76581cf1791a">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/minLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-72e14d909ec8211dfa3e884d">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-d2669fe4fc12ac0c254e37aa">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -912,7 +912,7 @@
 </th>
 <td>
 <span id="v-7b7a28e3d4185b958f4921b5">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.DepartureEffectIntentPayload/contract/schema/$defs/CatalogSyncDescriptor/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1825,7 +1825,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

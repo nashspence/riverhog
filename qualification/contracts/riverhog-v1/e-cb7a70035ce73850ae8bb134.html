@@ -197,7 +197,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;derivation_sha256&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;derivation_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -232,19 +232,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-cb7a70035ce73850ae8bb134.html#v-2e65c4ee9eb4d1032f160441">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-cb7a70035ce73850ae8bb134.html#v-2e65c4ee9eb4d1032f160441">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -437,6 +437,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-c1eef51b9cedd82b4d760dba">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-da08c5e85b8b2626dbebd190">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fe85ffb8302db875f285d93e">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -450,36 +480,6 @@
 <span id="v-530d6a4c9e55e1c39217a33b">
 <code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-cb7a70035ce73850ae8bb134.html#v-2e65c4ee9eb4d1032f160441">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-290555e3cdfa3745b1636d74">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-c9946c9583f9c79fa0e716c3">
-<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-ea876ee6dc61d9af01db4b5d">
-<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -551,7 +551,7 @@
 </th>
 <td>
 <span id="v-6774f076fdba9205c55e7dd4">
-<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -994,7 +994,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

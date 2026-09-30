@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-5dba419c3668b0beec317f1b">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -36,7 +36,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;ingest_source&quot;,&quot;claims&quot;,&quot;claim_bytes&quot;,&quot;close_mode&quot;,&quot;max_files&quot;,&quot;max_bytes&quot;,&quot;provenance&quot;,&quot;pending_claim_capacity&quot;,&quot;completion_failures&quot;,&quot;completion_failure_capacity&quot;,&quot;oldest_completion_failure&quot;]</code>
+<code>[&quot;id&quot;,&quot;ingest_source&quot;,&quot;claims&quot;,&quot;claim_bytes&quot;,&quot;close_mode&quot;,&quot;max_files&quot;,&quot;max_bytes&quot;,&quot;pending_claim_capacity&quot;,&quot;completion_failures&quot;,&quot;completion_failure_capacity&quot;,&quot;oldest_completion_failure&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -155,15 +155,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>integer</code>; minimum: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>provenance</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -695,66 +686,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>provenance</code>
-</th>
-<td>
-<table id="v-865a2cc4c8c41b37b46732b0">
-<tbody>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-d921f10ae55dfd9737977b43">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-1adbbf653c8ac141d725e8f4">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/properties/provenance/enum/0">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-99226ffa07d615f304610347">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/properties/provenance/enum/1">omit</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-c5d49f896c5d70aa74205c9f">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/properties/provenance/title">Provenance</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-717a332903548e7d34b1dc1d">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/properties/provenance/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -841,7 +772,7 @@
 </th>
 <td>
 <span id="v-13b32ba576c90ab5e74d21c5">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/7">provenance</code>
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/7">pending_claim_capacity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -851,7 +782,7 @@
 </th>
 <td>
 <span id="v-1d05d16ecaa503433566e1ff">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/8">pending_claim_capacity</code>
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/8">completion_failures</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -861,7 +792,7 @@
 </th>
 <td>
 <span id="v-5321c46f8497e53ea0681fde">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/9">completion_failures</code>
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/9">completion_failure_capacity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -871,17 +802,7 @@
 </th>
 <td>
 <span id="v-5adfd04206e5329561a9026f">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/10">completion_failure_capacity</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>11</code>
-</th>
-<td>
-<span id="v-3fe5a446797085ea444dd785">
-<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/11">oldest_completion_failure</code>
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/SourceStatus/required/10">oldest_completion_failure</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -927,7 +848,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-fdb5f95db76e4741f768b51b">openapi:a-riverhog-ftp-spool</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-fdb5f95db76e4741f768b51b">openapi:a-riverhog-ftp-spool</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -944,7 +865,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -44,7 +44,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;format&quot;,&quot;archive_generation&quot;,&quot;archive_tree_sha256&quot;,&quot;volume&quot;]</code>
+<code>[&quot;format&quot;,&quot;archive_generation&quot;,&quot;artifact_set_sha256&quot;,&quot;volume&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -79,7 +79,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>archive_tree_sha256</code></td>
+<code>artifact_set_sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">#/$defs/sha256</a></td>
@@ -126,7 +126,7 @@
 <a href="#s-ebbbf2c54616a096bea3425e">segment</a>
 </li>
 <li>
-<a href="#s-e6e7129d1bb54638624d3608">segment_file</a>
+<a href="#s-6de8e65d4d0c2f6e670a1361">segment_artifact</a>
 </li>
 <li>
 <a href="#s-b18c6e158b8baad39b0b53ce">sequence</a>
@@ -259,7 +259,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;sequence&quot;,&quot;kind&quot;,&quot;path&quot;,&quot;files&quot;,&quot;source_bytes&quot;,&quot;plaintext_bytes&quot;,&quot;age_state&quot;,&quot;index_sha256&quot;,&quot;plan_sha256&quot;,&quot;parts&quot;]</code>
+<code>[&quot;id&quot;,&quot;sequence&quot;,&quot;kind&quot;,&quot;path&quot;,&quot;artifacts&quot;,&quot;source_bytes&quot;,&quot;plaintext_bytes&quot;,&quot;age_state&quot;,&quot;index_sha256&quot;,&quot;plan_sha256&quot;,&quot;parts&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -294,7 +294,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>files</code></td>
+<code>artifacts</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>integer</code>; minimum: <code>1</code>; maximum: <code>50000</code></td>
@@ -499,7 +499,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;sequence&quot;,&quot;kind&quot;,&quot;path&quot;,&quot;plaintext_bytes&quot;,&quot;age_state&quot;,&quot;file&quot;,&quot;parts&quot;]</code>
+<code>[&quot;id&quot;,&quot;sequence&quot;,&quot;kind&quot;,&quot;path&quot;,&quot;plaintext_bytes&quot;,&quot;age_state&quot;,&quot;artifact&quot;,&quot;parts&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -534,10 +534,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>file</code></td>
+<code>artifact</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-7d86cb92f34fb9e22b377799.html#v-e6e7129d1bb54638624d3608">#/$defs/segment_file</a></td>
+<a href="e-7d86cb92f34fb9e22b377799.html#v-6de8e65d4d0c2f6e670a1361">#/$defs/segment_artifact</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -598,15 +598,15 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-e6e7129d1bb54638624d3608">
-<h3>Definition: segment_file</h3>
+<section class="schema-section" id="s-6de8e65d4d0c2f6e670a1361">
+<h3>Definition: segment_artifact</h3>
 <p class="shape">
 <code>object</code>; 5 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;path&quot;,&quot;offset&quot;,&quot;bytes&quot;,&quot;file_bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;artifact_id&quot;,&quot;offset&quot;,&quot;bytes&quot;,&quot;artifact_bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -632,7 +632,7 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<code>bytes</code></td>
+<code>artifact_bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">#/$defs/nonnegative_count</a></td>
@@ -641,7 +641,16 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>file_bytes</code></td>
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">#/$defs/sha256</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">#/$defs/nonnegative_count</a></td>
@@ -654,15 +663,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">#/$defs/nonnegative_count</a></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-ff0c8b1f5259fb06c86d9643">path</a></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; format: <code>riverhog-canonical-relpath-v1</code>; pattern: <code>^(?!/)(?!\.riverhog/)(?!.*\\)(?!.*(?:^|/)\.\.?(?:/|$))[^/]+(?:/[^/]+)*$</code>; maxLength: <code>4096</code>; x-unicode-normalization: <code>NFC</code>; all of: structured schema; structured schema; structured schema</td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -756,58 +756,6 @@
 <code>{&quot;policy&quot;:&quot;segmented_no_total_max&quot;,&quot;progression&quot;:&quot;ordered-archive-volume-sequence&quot;,&quot;reason&quot;:&quot;bounded-archive-volume-parts&quot;}</code>
 </dd>
 </dl>
-</section>
-<section class="schema-section" id="s-ff0c8b1f5259fb06c86d9643">
-<h3>Field: path</h3>
-<p class="shape">
-<code>string</code>; format: <code>riverhog-canonical-relpath-v1</code>; pattern: <code>^(?!/)(?!\.riverhog/)(?!.*\\)(?!.*(?:^|/)\.\.?(?:/|$))[^/]+(?:/[^/]+)*$</code>; maxLength: <code>4096</code>; x-unicode-normalization: <code>NFC</code>; all of: structured schema; structured schema; structured schema</p>
-<dl class="facts">
-<dt>type</dt>
-<dd>
-<code>string</code>
-</dd>
-<dt>format</dt>
-<dd>
-<code>riverhog-canonical-relpath-v1</code>
-</dd>
-<dt>maxLength</dt>
-<dd>
-<code>4096</code>
-</dd>
-<dt>pattern</dt>
-<dd>
-<code>^(?!/)(?!\.riverhog/)(?!.*\\)(?!.*(?:^|/)\.\.?(?:/|$))[^/]+(?:/[^/]+)*$</code>
-</dd>
-<dt>x-unicode-normalization</dt>
-<dd>
-<code>NFC</code>
-</dd>
-</dl>
-<h4>All must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">structured schema</td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">structured schema</td>
-</tr>
-<tr>
-<td data-label="Alternative">3</td>
-<td data-label="Schema">structured schema</td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 </div>
 <details class="exact">
@@ -1101,18 +1049,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>files</code>
+<code>artifacts</code>
 </th>
 <td>
-<table id="v-a00b69b25682fca81cf7a345">
+<table id="v-11d807d7d32f0451e857d5fe">
 <tbody>
 <tr>
 <th scope="row">
 <code>maximum</code>
 </th>
 <td>
-<span id="v-6efe08d953b13acb1dfc7ba5">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files/maximum">50000</code>
+<span id="v-764ddc9c36a3fafd645e31b9">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/artifacts/maximum">50000</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1121,8 +1069,8 @@
 <code>minimum</code>
 </th>
 <td>
-<span id="v-647173f8994f29c7c5380fed">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files/minimum">1</code>
+<span id="v-e0fbae8fd4dcf9c14a50706c">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/artifacts/minimum">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1131,8 +1079,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-214de0d4856528e509f3c036">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files/type">integer</code>
+<span id="v-cc50b034671196c0680e5316">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/artifacts/type">integer</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1475,7 +1423,7 @@
 </th>
 <td>
 <span id="v-e1fa8ba5c32f1335d19f7eba">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/4">files</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/4">artifacts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1871,19 +1819,19 @@
 </tr>
 <tr>
 <th scope="row">
-<code>file</code>
+<code>artifact</code>
 </th>
 <td>
-<table id="v-be6bf5af63f1f7cce74381f0">
+<table id="v-28f31076d409995c716df45b">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-16e4bd4eaf83ec06f7f3088b">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/file/$ref">#/$defs/segment_file</code>
-<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-e6e7129d1bb54638624d3608">Definition</a>
+<span id="v-a203a9711313dd29e51c1ab5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/artifact/$ref">#/$defs/segment_artifact</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-6de8e65d4d0c2f6e670a1361">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -2185,7 +2133,7 @@
 </th>
 <td>
 <span id="v-49d252ccd3cfb41242051081">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/6">file</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/6">artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2217,18 +2165,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>segment_file</code>
+<code>segment_artifact</code>
 </th>
 <td>
-<table id="v-e6e7129d1bb54638624d3608">
+<table id="v-6de8e65d4d0c2f6e670a1361">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-3460a5c53100c8ab85988808">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/additionalProperties">false</code>
+<span id="v-4842694e1a44fce4968eb908">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -2237,22 +2185,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-dbcdca508a93c4024344fbe2">
+<table id="v-ed1af5edc29d89be0b6fd61d">
 <tbody>
 <tr>
 <th scope="row">
-<code>bytes</code>
+<code>artifact_bytes</code>
 </th>
 <td>
-<table id="v-bffb1edd6d6578544513bd87">
+<table id="v-c6bf51074324a0eafba9cf51">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-51359ddb3eec1d1913896b0f">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/bytes/$ref">#/$defs/nonnegative_count</code>
+<span id="v-e1388b1350b38b2893fed040">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/properties/artifact_bytes/$ref">#/$defs/nonnegative_count</code>
 <span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
 </span></td>
 </tr>
@@ -2261,18 +2209,38 @@
 </tr>
 <tr>
 <th scope="row">
-<code>file_bytes</code>
+<code>artifact_id</code>
 </th>
 <td>
-<table id="v-dd97b15ddc2de0e4be6da91c">
+<table id="v-e4b189803177e5e9af684fe9">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-5678f31b9f16018e21530771">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/file_bytes/$ref">#/$defs/nonnegative_count</code>
+<span id="v-59134722034f31469cfb061c">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/properties/artifact_id/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>bytes</code>
+</th>
+<td>
+<table id="v-be5018969201b780c019e721">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d666b0165158edcea2bd76e4">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/properties/bytes/$ref">#/$defs/nonnegative_count</code>
 <span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
 </span></td>
 </tr>
@@ -2284,176 +2252,16 @@
 <code>offset</code>
 </th>
 <td>
-<table id="v-bccb340a336e96b145fd9a1b">
+<table id="v-e13d559d174b40d6bdeb80cb">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-b306b0ec912895a9d1f97a13">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/offset/$ref">#/$defs/nonnegative_count</code>
+<span id="v-0cffc6ccbf7392683d934ebb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/properties/offset/$ref">#/$defs/nonnegative_count</code>
 <span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-ff0c8b1f5259fb06c86d9643">
-<tbody>
-<tr>
-<th scope="row">
-<code>allOf</code>
-</th>
-<td>
-<table id="v-cdae34def8f8ee5bcb152281">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-a00e76d4437d76841bbf8bca">
-<tbody>
-<tr>
-<th scope="row">
-<code>not</code>
-</th>
-<td>
-<table id="v-07432745ab35f7e54fa55889">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-4ed09d557195b9053dfdd811">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/allOf/0/not/pattern">^\s|\s$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-9ef96da024597f6af4f8d57c">
-<tbody>
-<tr>
-<th scope="row">
-<code>not</code>
-</th>
-<td>
-<table id="v-a41956810cab1dce95dc50af">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-223079b8611c144dbcfc14e8">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/allOf/1/not/pattern">\u0000</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>2</code>
-</th>
-<td>
-<table id="v-2269fcd532870410cf352934">
-<tbody>
-<tr>
-<th scope="row">
-<code>not</code>
-</th>
-<td>
-<table id="v-bf35a903bd8333fac531461b">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-7e97f6222884e324435c172d">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/allOf/2/not/pattern">[\ud800-\udfff]</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>format</code>
-</th>
-<td>
-<span id="v-fe6032fa1d8ec44334980c14">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/format">riverhog-canonical-relpath-v1</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-c91f2fd89e21ba0bb546783e">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-4f8a4b77fc3988a293bae497">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/pattern">^(?!/)(?!\.riverhog/)(?!.*\\)(?!.*(?:^|/)\.\.?(?:/|$))[^/]+(?:/[^/]+)*$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-7fea62184c9c4ea154f0bcc8">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>x-unicode-normalization</code>
-</th>
-<td>
-<span id="v-53ce49d4c9337809e3247e80">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/x-unicode-normalization">NFC</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -2464,15 +2272,15 @@
 <code>sha256</code>
 </th>
 <td>
-<table id="v-2862954f72f9a09d24c552b3">
+<table id="v-d4891eff440cd4462301b7c9">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-d6bd820976f5b7fce5b2c848">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/sha256/$ref">#/$defs/sha256</code>
+<span id="v-360baed61b9a6d7d37836cf9">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/properties/sha256/$ref">#/$defs/sha256</code>
 <span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
 </span></td>
 </tr>
@@ -2487,15 +2295,15 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-08eeb70537c7b93498300237">
+<table id="v-883eab274a107c68b8c7e963">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-3711c953453b3bc4d2fd8e12">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/0">path</code>
+<span id="v-4d5c1880c76561ed903c66ef">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/required/0">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2504,8 +2312,8 @@
 <code>1</code>
 </th>
 <td>
-<span id="v-9ccf308d8b9be8806295a808">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/1">offset</code>
+<span id="v-90a349c1cfa9f98078b3b9a3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/required/1">offset</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2514,8 +2322,8 @@
 <code>2</code>
 </th>
 <td>
-<span id="v-a21c6e55424d5689b2e19c19">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/2">bytes</code>
+<span id="v-0d0d62a3a3379d5e1a06538a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/required/2">bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2524,8 +2332,8 @@
 <code>3</code>
 </th>
 <td>
-<span id="v-344e070a34b3a63fb679b9a0">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/3">file_bytes</code>
+<span id="v-0cd4fff6c94bf69eb3172002">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/required/3">artifact_bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2534,8 +2342,8 @@
 <code>4</code>
 </th>
 <td>
-<span id="v-2f117bde6bcc47eac8c21967">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/4">sha256</code>
+<span id="v-7896990b54b018f7b9a82776">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/required/4">sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2547,8 +2355,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-615b559bc88ef242742cc221">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/type">object</code>
+<span id="v-213dfcecb35f3595635cfbc3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_artifact/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2677,18 +2485,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>archive_tree_sha256</code>
+<code>artifact_set_sha256</code>
 </th>
 <td>
-<table id="v-2b2ac22425070493aca97e2a">
+<table id="v-03cc205a18a4dad45d2b5cf3">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-9180ea0ee60d7424c5a7ade7">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/archive_tree_sha256/$ref">#/$defs/sha256</code>
+<span id="v-4d3fe4bd73a66c1d6fa05caf">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/artifact_set_sha256/$ref">#/$defs/sha256</code>
 <span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
 </span></td>
 </tr>
@@ -2811,7 +2619,7 @@
 </th>
 <td>
 <span id="v-54dc738aab28bba999ce8584">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/required/2">archive_tree_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/required/2">artifact_set_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2899,7 +2707,7 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files</code></td>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/artifacts</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
 <td data-label="Decision">value · schema-value · contract_max</td>
@@ -2923,15 +2731,6 @@
 <td data-label="Decision">cardinality · items · segmented_no_total_max</td>
 <td data-label="Bounds or reason">
 <code>{&quot;maximum&quot;:1024,&quot;minimum&quot;:1,&quot;progression&quot;:{&quot;progression&quot;:&quot;ordered-archive-volume-sequence&quot;},&quot;reason&quot;:&quot;bounded-archive-volume-parts&quot;}</code></td>
-</tr>
-<tr>
-<td data-label="Exact subject">
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path</code></td>
-<td data-label="Governing rule">
-<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
-<td data-label="Decision">length · characters · contract_max</td>
-<td data-label="Bounds or reason">
-<code>{&quot;maximum&quot;:4096,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
 <tr>
 <td data-label="Exact subject">
@@ -2959,7 +2758,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

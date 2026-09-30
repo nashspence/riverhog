@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog-catalog: collection_deletions · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-919a34a8115bd878cd846124.html">riverhog-catalog</a> / <a href="i-5548924e3ea02159ee650edb.html">Durable State</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog-catalog: collection_deletions</h1>
+<p class="context">Encrypted archive management, catalog, and retrieval. Persisted structures, schema heads, and v1 transition obligations.</p>
+<section id="contract" data-contract="durable-state:riverhog-catalog:riverhog-catalog-collection-deletions:79a632e711">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Table: <code>collection_deletions</code>
+</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Column</th>
+<th scope="col">Type</th>
+<th scope="col">Nullable</th>
+<th scope="col">Default</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Column">
+<code>collection_id</code></td>
+<td data-label="Type">
+<code>BIGSERIAL</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>collection_id BIGSERIAL NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>challenge</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>challenge VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>plan_json</code></td>
+<td data-label="Type">
+<code>TEXT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>plan_json TEXT NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>started_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>started_at VARCHAR NOT NULL</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Table constraints</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Name</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Kind">
+<code>primary-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>PRIMARY KEY (collection_id)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/durable_state/owners/0/structure/tables/4</code>
+</h4>
+<table id="v-f811bc04ba61727d1e0c359a">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-a14d5ad00153ee2f0ba9f3e8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-07e2993f28f25d94d3f25bf6">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-3d042e931252cc9a6de0104b">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/0/definition">collection_id BIGSERIAL NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-cf9279b7087a05082c14d645">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/0/name">collection_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-fc069588ffc1bfbd596b647a">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/0/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b3167ccfc8603dc149f7e18f">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/0/type">BIGSERIAL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-06a852d00a26494ed1369c48">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-29979fd1233bb028f23f4313">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/1/definition">challenge VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-62d5709e6ae72459cbd484f2">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/1/name">challenge</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-14e472bb45465bf100bad634">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/1/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-67ef29516f4851f9a28be2b9">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/1/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-902e86644ee247bf8c69829b">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-2b382bfbb32cd513e2c9abb5">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/2/definition">plan_json TEXT NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-0693f935eaf54c59ce9c42a5">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/2/name">plan_json</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-b3c2c8ca501294d6f2ccce54">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/2/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e95dc9a85bf25662f3a559ac">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/2/type">TEXT</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-641cebaa4caa5be23b1473c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-4e7b6faff0c58d0a5dac8a72">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/3/definition">started_at VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-1ba93c28874091efa7831d92">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/3/name">started_at</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-266d8dfc52cc0245cd6bb804">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/3/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ab1249550fa03709d9e6054b">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/columns/3/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>constraints</code>
+</th>
+<td>
+<table id="v-3ae8cdfd6c38bbe7451b4909">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-60f0632d57e230fb79d907c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-14d37fff007581cad81f5039">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-201ef33e39b9c957979152db">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/constraints/0/columns/0">collection_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-c892c084a4e284dbbadb10d6">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/constraints/0/definition">PRIMARY KEY (collection_id)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-05a004afc05a797157e421dc">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/constraints/0/kind">primary-key</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-2eb84ec8335a28739187675f">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/4/name">collection_deletions</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-a2fe2d1eadc5db45b470b976.html">riverhog-catalog durable-state identity</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-acb5adfdf32642afdb0b8381.html">compatibility/durable-state/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-d8b4a1467008c6c4fef8d47d">state:riverhog-catalog</a> — <code data-source-path="riverhog/src/riverhog_core/state_migrations/v1_ddl.py">riverhog/src/riverhog_core/state_migrations/v1_ddl.py::POSTGRESQL_DDL</code>
+<br>
+<code data-source-path="tests/fixtures/state/v1_0001/riverhog.postgresql.sql">tests/fixtures/state/v1_0001/riverhog.postgresql.sql</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
+</li>
+<li>
+<a href="source-commands.html#route-27f281b51ec606c43bd87cc5">make database-qualification</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

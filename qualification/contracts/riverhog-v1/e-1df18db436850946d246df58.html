@@ -1,0 +1,2168 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-98b92b8816e8b3009255e207.html">a-stove0-materialization-hint-evidence-contract-lib</a> / <a href="i-d2c2de5df2d03bebc6aa58c0.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact</h1>
+<p class="context">Accepted Stove0 evidence for a selected Riverhog Occurrence materialization hint. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:a-stove0-materialization-hint-e-98b92b8816:a-stove0-materialization-hint-evidence-co-51da5de53b:2b2505959b">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-materialization-hint-evidence-contract-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_materialization_hint_evidence_contract_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>MaterializationHintFact</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, subject_id: Annotated[str, MinLen(min_length=1)], primary_binding: riverhog_protocol.provenance_transport.CollectionArtifactProvenanceBindingDocument, occurrence: riverhog_provenance_contracts.references.ExternalReference, materialization_hint: dict[str, JsonValue] | None) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-16a4b644901e9be8e01f03f3">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;subject_id&quot;,&quot;primary_binding&quot;,&quot;occurrence&quot;,&quot;materialization_hint&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-96b4c5dabc9ff1fde8000414">materialization_hint</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>object</code>; additionalProperties: <a href="e-1df18db436850946d246df58.html#v-33f6e4bc1be63806fa0b9f9f">#/$defs/JsonValue</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>occurrence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-efda210cec404e615539334a">#/$defs/ExternalReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_binding</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-2a08e11dc4350095a7e252ee">#/$defs/CollectionArtifactProvenanceBindingDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>subject_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-2a08e11dc4350095a7e252ee">CollectionArtifactProvenanceBindingDocument</a>
+</li>
+<li>
+<a href="#s-74b7aa7b62b1c66d1390f4e6">EntryReference</a>
+</li>
+<li>
+<a href="#s-efda210cec404e615539334a">ExternalReference</a>
+</li>
+<li>
+<a href="#s-9ec24a1957693e208f22acd4">JournalAnchorDocument</a>
+</li>
+<li>
+<a href="#s-33f6e4bc1be63806fa0b9f9f">JsonValue</a>
+</li>
+<li>
+<a href="#s-6c6c0214a482dcf3786d665c">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-5e8ea4455cbc474fe474b0f6">ObjectType</a>
+</li>
+<li>
+<a href="#s-fa6913e96ed81914be956582">ProvenanceAssertionId</a>
+</li>
+<li>
+<a href="#s-ea83643f66a1f0343549d14a">ProvenanceEntryId</a>
+</li>
+<li>
+<a href="#s-217fe0b604e754f2feea17da">ProvenanceId</a>
+</li>
+<li>
+<a href="#s-ea3af239a44ea663897df2a8">ProvenanceJournalId</a>
+</li>
+<li>
+<a href="#s-4344b27a9d083cc6be0d0549">Sha256</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-96b4c5dabc9ff1fde8000414">
+<h3>Field: materialization_hint</h3>
+<p class="shape">any of: <code>object</code>; additionalProperties: <a href="e-1df18db436850946d246df58.html#v-33f6e4bc1be63806fa0b9f9f">#/$defs/JsonValue</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-551ecff1e7770a0305ea32a1">1</a></td>
+<td data-label="Schema">
+<code>object</code>; additionalProperties: <a href="e-1df18db436850946d246df58.html#v-33f6e4bc1be63806fa0b9f9f">#/$defs/JsonValue</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2a08e11dc4350095a7e252ee">
+<h3>Definition: CollectionArtifactProvenanceBindingDocument</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;journal&quot;,&quot;delivery_association_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>delivery_association_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-217fe0b604e754f2feea17da">#/$defs/ProvenanceId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-9ec24a1957693e208f22acd4">#/$defs/JournalAnchorDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-74b7aa7b62b1c66d1390f4e6">
+<h3>Definition: EntryReference</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;entry_id&quot;,&quot;sequence&quot;,&quot;json_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>entry_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-ea83643f66a1f0343549d14a">#/$defs/ProvenanceEntryId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>json_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-4344b27a9d083cc6be0d0549">#/$defs/Sha256</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-efda210cec404e615539334a">
+<h3>Definition: ExternalReference</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal_id&quot;,&quot;entry&quot;,&quot;assertion_id&quot;,&quot;object_id&quot;,&quot;object_type&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>assertion_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-fa6913e96ed81914be956582">#/$defs/ProvenanceAssertionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>entry</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-74b7aa7b62b1c66d1390f4e6">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-ea3af239a44ea663897df2a8">#/$defs/ProvenanceJournalId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>object_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-217fe0b604e754f2feea17da">#/$defs/ProvenanceId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>object_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-5e8ea4455cbc474fe474b0f6">#/$defs/ObjectType</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>scope</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>external</code>; default: <code>external</code></td>
+<td data-label="Default">
+<code>external</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9ec24a1957693e208f22acd4">
+<h3>Definition: JournalAnchorDocument</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal_id&quot;,&quot;through&quot;,&quot;prefix_sha256&quot;,&quot;prefix_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-ea3af239a44ea663897df2a8">#/$defs/ProvenanceJournalId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-6c6c0214a482dcf3786d665c">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>through</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-1df18db436850946d246df58.html#v-74b7aa7b62b1c66d1390f4e6">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-33f6e4bc1be63806fa0b9f9f">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-6c6c0214a482dcf3786d665c">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5e8ea4455cbc474fe474b0f6">
+<h3>Definition: ObjectType</h3>
+<p class="shape">
+<code>string</code>; enum: <code>[&quot;artifact&quot;,&quot;occurrence&quot;,&quot;state&quot;,&quot;agent&quot;,&quot;context&quot;,&quot;activity&quot;,&quot;observation&quot;,&quot;reported_description&quot;,&quot;usage&quot;,&quot;generation&quot;,&quot;invalidation&quot;,&quot;derivation&quot;,&quot;specialization&quot;,&quot;continuity&quot;,&quot;content_comparison&quot;,&quot;locator_binding&quot;,&quot;locator_binding_end&quot;,&quot;delivery_association&quot;,&quot;custody_assertion&quot;,&quot;availability_assertion&quot;,&quot;journal_subject&quot;,&quot;extension&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>enum</dt>
+<dd>
+<code>[&quot;artifact&quot;,&quot;occurrence&quot;,&quot;state&quot;,&quot;agent&quot;,&quot;context&quot;,&quot;activity&quot;,&quot;observation&quot;,&quot;reported_description&quot;,&quot;usage&quot;,&quot;generation&quot;,&quot;invalidation&quot;,&quot;derivation&quot;,&quot;specialization&quot;,&quot;continuity&quot;,&quot;content_comparison&quot;,&quot;locator_binding&quot;,&quot;locator_binding_end&quot;,&quot;delivery_association&quot;,&quot;custody_assertion&quot;,&quot;availability_assertion&quot;,&quot;journal_subject&quot;,&quot;extension&quot;]</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-fa6913e96ed81914be956582">
+<h3>Definition: ProvenanceAssertionId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ea83643f66a1f0343549d14a">
+<h3>Definition: ProvenanceEntryId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-217fe0b604e754f2feea17da">
+<h3>Definition: ProvenanceId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ea3af239a44ea663897df2a8">
+<h3>Definition: ProvenanceJournalId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4344b27a9d083cc6be0d0549">
+<h3>Definition: Sha256</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[0-9a-f]{64}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-551ecff1e7770a0305ea32a1">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-1df18db436850946d246df58.html#v-33f6e4bc1be63806fa0b9f9f">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact</code>
+</h4>
+<table id="v-b4ac1499dec2e3c010566397">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-58dec51926db60bd9cd58aa2">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-b8eb61ed5afcf34f8cef37cf">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-16a4b644901e9be8e01f03f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-7526d2909fd5b5b04c089956">
+<tbody>
+<tr>
+<th scope="row">
+<code>CollectionArtifactProvenanceBindingDocument</code>
+</th>
+<td>
+<table id="v-2a08e11dc4350095a7e252ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-79b14594fffb2b4de8da1bda">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-67166273111e5be2a0d61a89">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-286cc6669f2f2edc93d15f7d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-12921d709c2c037b8bb35dd3">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-86414d31b86a524f46660ba5">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>delivery_association_id</code>
+</th>
+<td>
+<table id="v-50d4bd7bed46ef52a1d8ba28">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ee6c4f25eb4e7625ed677a58">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/delivery_association_id/$ref">#/$defs/ProvenanceId</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-217fe0b604e754f2feea17da">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>journal</code>
+</th>
+<td>
+<table id="v-a680abb087427a08c2fa9bd5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-bc23683b548ad200177402d9">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/journal/$ref">#/$defs/JournalAnchorDocument</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-9ec24a1957693e208f22acd4">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-fe3265d21688687be234f119">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-15675636c28e7aa2799e947f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/required/0">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d50135e34abca4a980dcf5a5">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/required/1">journal</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b9cd65bccb822d8517396836">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/required/2">delivery_association_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0081e103aa2c90f3c43433aa">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>EntryReference</code>
+</th>
+<td>
+<table id="v-74b7aa7b62b1c66d1390f4e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-d03af3b06e3a3a26b4b0e864">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-30e16ba86a3b64c41468716d">
+<tbody>
+<tr>
+<th scope="row">
+<code>entry_id</code>
+</th>
+<td>
+<table id="v-663a419482ecb6ca29ffef51">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f81cc11a10746de1e1bbc1a6">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/properties/entry_id/$ref">#/$defs/ProvenanceEntryId</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-ea83643f66a1f0343549d14a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>json_sha256</code>
+</th>
+<td>
+<table id="v-3e450678c9e4aa7198c47c99">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-acdfecb5ca97ac88e43ae25a">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/properties/json_sha256/$ref">#/$defs/Sha256</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-4344b27a9d083cc6be0d0549">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-3f8cf1d018cd29c393c23922">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-03fb9780caba27857f16dc66">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/properties/sequence/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b53b78d7c54f44d30a4943fb">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/properties/sequence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-7cb8be12d20dc56483ef59ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f8a1b4b95725a4246808193d">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/required/0">entry_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-db6cef0bfb6e4cf37774f5cb">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/required/1">sequence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-3de3217125d344ac3f353d5b">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/required/2">json_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2066b81d628aa0b86ebff491">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/EntryReference/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ExternalReference</code>
+</th>
+<td>
+<table id="v-efda210cec404e615539334a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7c07691a1a3fdfca3656d517">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f0eb480d3df64d519aa79b42">
+<tbody>
+<tr>
+<th scope="row">
+<code>assertion_id</code>
+</th>
+<td>
+<table id="v-24488446a77e621fec278970">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-fdff47b7bc3ef2786ca4a001">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/assertion_id/$ref">#/$defs/ProvenanceAssertionId</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-fa6913e96ed81914be956582">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>entry</code>
+</th>
+<td>
+<table id="v-86922a019c5f55498e819aec">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e9f742174d32758dfff9d1b9">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/entry/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-74b7aa7b62b1c66d1390f4e6">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-e300c426746430cb991d7f6b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-25fc7df3697ba546cc11c6ee">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-ea3af239a44ea663897df2a8">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>object_id</code>
+</th>
+<td>
+<table id="v-dbda9a2c4b82afa673747c8e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c1234a23d888217f3d30dec3">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/object_id/$ref">#/$defs/ProvenanceId</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-217fe0b604e754f2feea17da">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>object_type</code>
+</th>
+<td>
+<table id="v-e773902aab426bc6d2c5b622">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a74942d0017c464368a61016">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/object_type/$ref">#/$defs/ObjectType</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-5e8ea4455cbc474fe474b0f6">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>scope</code>
+</th>
+<td>
+<table id="v-091bfad2db1639f6cd812803">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-043cecb7452ac932472105df">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/scope/const">external</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-06cb31a228969932c5a41780">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/scope/default">external</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0f72034f3ba2567fe7e3a3d4">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/properties/scope/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-82b924ac471f4042faeafc57">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-91a49dfcb56d0d1065ee4c9a">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/required/0">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-12c4b41b608d66d841a6e81f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/required/1">entry</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-30bf96addb7071ce673aec8c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/required/2">assertion_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-36d3f241b9a8c0db0821be25">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/required/3">object_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-2de94e12a7f5f30eb5f7da83">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/required/4">object_type</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4234d4d1815c0905f9882998">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ExternalReference/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>JournalAnchorDocument</code>
+</th>
+<td>
+<table id="v-9ec24a1957693e208f22acd4">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-5671024685f381d67b4504c5">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-845a5e1a16440ff307b87264">
+<tbody>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-8e0755bcbbc102ea200aa421">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-98293f7a7c765f7a9a0bca42">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-ea3af239a44ea663897df2a8">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_bytes</code>
+</th>
+<td>
+<table id="v-df05fcb2e9eeeedb75b2eb9e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a6bd1a0d27d16dbb0c443c9c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-6c6c0214a482dcf3786d665c">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-b49d639299fdf2582aa67a9c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_sha256</code>
+</th>
+<td>
+<table id="v-26787f468350ec28e20047d5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c8941936eac13a6ac1dfb10f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-51bb318ef67055d166bfeb94">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>through</code>
+</th>
+<td>
+<table id="v-a34bc0ea4b1bfa79a79f7360">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9e7ddcc506ac14517ac925cc">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/properties/through/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-74b7aa7b62b1c66d1390f4e6">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-616d60eade93dfa934d9261f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e9ed6b969434161c37aacbfa">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/required/0">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-186cad0a8daee6a7b5df9b68">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/required/1">through</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-f43a40a5af763850874d860d">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/required/2">prefix_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-3d5c98fed5faf2c4dacf725c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/required/3">prefix_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0bd2d02f7597ec5ddffb1b37">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JournalAnchorDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>JsonValue</code>
+</th>
+<td>
+<span id="v-33f6e4bc1be63806fa0b9f9f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/JsonValue">{}</code>
+<span class="kind">object</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-6c6c0214a482dcf3786d665c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-04825b1f5484d758937d461c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-69c55846a11a9e397953d449">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ObjectType</code>
+</th>
+<td>
+<table id="v-5e8ea4455cbc474fe474b0f6">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-abdcf6ef6222632d384436aa">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d176b32406484d02c51eca73">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/0">artifact</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4d2cb9df676537b50c97499d">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/1">occurrence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-5f41769316f349b11fa54928">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/2">state</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c920bd4b9f2c37b27d02f472">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/3">agent</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-7d54c5cbbf2bac57ddf541c5">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/4">context</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-435c26140d4756c6830ae847">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/5">activity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-8b3a2b165b5c40bd2637c0d7">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/6">observation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-4d563210220a59f4e7640c86">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/7">reported_description</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-63aba8afa055836587062df5">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/8">usage</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-d07591822f0bc4949693c111">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/9">generation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-2d2827ed991a6e40e82b004a">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/10">invalidation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-0776911f4abc083e7ec8b1f5">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/11">derivation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-b036aff7883347e6b924b16c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/12">specialization</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>13</code>
+</th>
+<td>
+<span id="v-dc5bb80f77966ec9f3f4349f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/13">continuity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>14</code>
+</th>
+<td>
+<span id="v-51e5809e728cabe310e53cbc">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/14">content_comparison</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>15</code>
+</th>
+<td>
+<span id="v-1e1d333784f2b7958ad73751">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/15">locator_binding</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>16</code>
+</th>
+<td>
+<span id="v-58fe5d44d299014fe8669d59">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/16">locator_binding_end</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>17</code>
+</th>
+<td>
+<span id="v-ce4042b31d38d7a756d271ab">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/17">delivery_association</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-c98781233732291874f93936">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/18">custody_assertion</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>19</code>
+</th>
+<td>
+<span id="v-6aa46cd1c32c69428ddd285c">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/19">availability_assertion</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>20</code>
+</th>
+<td>
+<span id="v-f96b1eac12378a5b728fec9f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/20">journal_subject</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>21</code>
+</th>
+<td>
+<span id="v-09eef2a833afa86f557e977b">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/enum/21">extension</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6248cb5d6ed86a987900cf89">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ObjectType/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceAssertionId</code>
+</th>
+<td>
+<table id="v-fa6913e96ed81914be956582">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ed0759b1e9fc5fab2acc104f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceAssertionId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c799b86fc34fa7d362af1fb4">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceAssertionId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceEntryId</code>
+</th>
+<td>
+<table id="v-ea83643f66a1f0343549d14a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3808f1ca74424e4746b0334d">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceEntryId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-11d46e59cc8891f27d3e206f">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceEntryId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceId</code>
+</th>
+<td>
+<table id="v-217fe0b604e754f2feea17da">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2e13cb2d7967bb12dc348c94">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-20a97649b20c723032cac5c4">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceJournalId</code>
+</th>
+<td>
+<table id="v-ea3af239a44ea663897df2a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d099fae4e9821711196543ef">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-53a4ca88c859b30553c3806d">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/ProvenanceJournalId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>Sha256</code>
+</th>
+<td>
+<table id="v-4344b27a9d083cc6be0d0549">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-83b90efaed1d84c29e15fb22">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/Sha256/pattern">^[0-9a-f]{64}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0a109282a094ff96ca748cf1">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/$defs/Sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-de3138bb368eae1f8a77eccc">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1d9c1309fa638c93648a2964">
+<tbody>
+<tr>
+<th scope="row">
+<code>materialization_hint</code>
+</th>
+<td>
+<table id="v-96b4c5dabc9ff1fde8000414">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-2eb9ea176b97870ef77f7476">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-551ecff1e7770a0305ea32a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-ac898819a29365b687fa979b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6f6ff3f4e738f1fb3f68a914">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/materialization_hint/anyOf/0/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-33f6e4bc1be63806fa0b9f9f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5281518145b01fd331a1d5cf">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/materialization_hint/anyOf/0/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-65f053272c41f4fa76c1a24d">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cc2dca1c1cf2fca162c23e72">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/materialization_hint/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>occurrence</code>
+</th>
+<td>
+<table id="v-af782c44d1a8f75a62b49279">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cf79feb032cd4a2399d7b46e">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/occurrence/$ref">#/$defs/ExternalReference</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-efda210cec404e615539334a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_binding</code>
+</th>
+<td>
+<table id="v-9425f828b152a1c67b8e6195">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1bdc4661386a9c7d8718a5a3">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/primary_binding/$ref">#/$defs/CollectionArtifactProvenanceBindingDocument</code>
+<span class="kind">string</span> <a href="e-1df18db436850946d246df58.html#v-2a08e11dc4350095a7e252ee">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>subject_id</code>
+</th>
+<td>
+<table id="v-daec1f6c724427d3357a3cb9">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-29fde49582c545750a981b75">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/subject_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c164f47181403f3c575ab209">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/properties/subject_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f33abd10442001d717d249b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b02c72ab950a9ba8c71e77f2">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/required/0">subject_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-8e6aa429d02ccbabef0447bf">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/required/1">primary_binding</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b53d419cbf0248a6e1288f7e">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/required/2">occurrence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-d2934327eb81b33ca3cf0d64">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/required/3">materialization_hint</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3e11fb1a92af983561a610e2">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-61644a7179a64a3728bab405">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/contract/signature">&#x27;(*, subject_id: Annotated[str, MinLen(min_length=1)], primary_binding: riverhog_protocol.provenance_transport.CollectionArtifactProvenanceBindingDocument, occurrence: riverhog_provenance_contracts.references.ExternalReference, materialization_hint: dict[str, JsonValue] | None) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-ec1dd06a977d5405ac25f1fd">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/distribution">a-stove0-materialization-hint-evidence-contract-lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-34b3f18c7f829ff205248865">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/module">a_stove0_materialization_hint_evidence_contract_lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-fbba3262bde25adbfc23b25d">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/name">MaterializationHintFact</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-b07e34c9d084e3ebee3ec2ed">
+<code data-value-pointer="/external_contract/python/a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-7e5584ceb4465e812e9cc8af.html">a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact.exact_occurrence</a>
+</li>
+<li>
+<a href="e-294e9332e729cd0ecd89cc24.html">a_stove0_materialization_hint_evidence_contract_lib.MaterializationHintFact.canonical_hint</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-7fb3ac4c674d5f1db39936ca">python:a-stove0-materialization-hint-evidence-contract-lib:a_stove0_materialization_hint_evidence_contract_lib</a> — <code data-source-path="some-implementations/stove0/observers/contracts/materialization-hint/src/a_stove0_materialization_hint_evidence_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/materialization-hint/src/a_stove0_materialization_hint_evidence_contract_lib/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

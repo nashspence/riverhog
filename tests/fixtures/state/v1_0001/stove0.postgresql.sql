@@ -306,19 +306,20 @@ CREATE TABLE stove0_target_outputs (
 	work_id VARCHAR(64) NOT NULL,
 	job_id VARCHAR(64) NOT NULL,
 	output_id VARCHAR(160) NOT NULL,
-	output_path VARCHAR(4096) NOT NULL,
+	artifact_id VARCHAR(64) NOT NULL,
 	document_bytes BIGINT NOT NULL,
 	document_json TEXT NOT NULL,
 	PRIMARY KEY (work_id, job_id, output_id),
 	CONSTRAINT ck_stove0_target_outputs_id CHECK (length(output_id) >= 1),
-	CONSTRAINT ck_stove0_target_outputs_path CHECK (length(output_path) >= 1),
+	CONSTRAINT ck_stove0_target_outputs_artifact_id CHECK (length(artifact_id) = 64),
 	CONSTRAINT ck_stove0_target_outputs_document_bytes CHECK (document_bytes >= 0),
 	FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE,
 	CONSTRAINT ck_stove0_target_outputs_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_stove0_target_outputs_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_stove0_target_outputs_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_stove0_target_outputs_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE UNIQUE INDEX uq_stove0_target_outputs_path ON stove0_target_outputs (work_id, job_id, output_path);
+CREATE UNIQUE INDEX uq_stove0_target_outputs_artifact_id ON stove0_target_outputs (work_id, job_id, artifact_id);
 
 CREATE TABLE stove0_target_source_edges (
 	work_id VARCHAR(64) NOT NULL,

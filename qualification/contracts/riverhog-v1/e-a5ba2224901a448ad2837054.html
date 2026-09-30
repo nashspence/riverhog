@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&#x27;(id: \&#x27;str\&#x27;, sequence: \&#x27;int\&#x27;, path: \&#x27;str\&#x27;, plaintext_bytes: \&#x27;int\&#x27;, age_state: \&#x27;AgeUploadState\&#x27;, file: \&#x27;SegmentFilePlacement\&#x27;, parts: \&#x27;tuple[StoredPartIdentity, ...]\&#x27;, kind: &quot;Literal[\&#x27;segment\&#x27;]&quot; = \&#x27;segment\&#x27;) -&gt; None&#x27;</code>
+<code>&#x27;(id: \&#x27;str\&#x27;, sequence: \&#x27;int\&#x27;, path: \&#x27;str\&#x27;, plaintext_bytes: \&#x27;int\&#x27;, age_state: \&#x27;AgeUploadState\&#x27;, artifact: \&#x27;SegmentArtifactPlacement\&#x27;, parts: \&#x27;tuple[StoredPartIdentity, ...]\&#x27;, kind: &quot;Literal[\&#x27;segment\&#x27;]&quot; = \&#x27;segment\&#x27;) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -106,9 +106,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>file</code></td>
+<code>artifact</code></td>
 <td data-label="Type">
-<code>&#x27;SegmentFilePlacement&#x27;</code></td>
+<code>&#x27;SegmentArtifactPlacement&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -377,7 +377,7 @@
 </th>
 <td>
 <span id="v-4e195eb8722b6c9d9a02d693">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.SegmentArchiveVolume/contract/fields/5/name">file</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.SegmentArchiveVolume/contract/fields/5/name">artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -387,7 +387,7 @@
 </th>
 <td>
 <span id="v-abf0210d45560ae8af66eb7e">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.SegmentArchiveVolume/contract/fields/5/type">&#x27;SegmentFilePlacement&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.SegmentArchiveVolume/contract/fields/5/type">&#x27;SegmentArtifactPlacement&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -493,7 +493,7 @@
 </th>
 <td>
 <span id="v-e335e4153f2aeebc91abbd6e">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.SegmentArchiveVolume/contract/signature">&#x27;(id: \&#x27;str\&#x27;, sequence: \&#x27;int\&#x27;, path: \&#x27;str\&#x27;, plaintext_bytes: \&#x27;int\&#x27;, age_state: \&#x27;AgeUploadState\&#x27;, file: \&#x27;SegmentFilePlacement\&#x27;, parts: \&#x27;tuple[StoredPartIdentity, ...]\&#x27;, kind: &quot;Literal[\&#x27;segment\&#x27;]&quot; = \&#x27;segment\&#x27;) -&gt; None&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.SegmentArchiveVolume/contract/signature">&#x27;(id: \&#x27;str\&#x27;, sequence: \&#x27;int\&#x27;, path: \&#x27;str\&#x27;, plaintext_bytes: \&#x27;int\&#x27;, age_state: \&#x27;AgeUploadState\&#x27;, artifact: \&#x27;SegmentArtifactPlacement\&#x27;, parts: \&#x27;tuple[StoredPartIdentity, ...]\&#x27;, kind: &quot;Literal[\&#x27;segment\&#x27;]&quot; = \&#x27;segment\&#x27;) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -555,7 +555,7 @@
 <a href="e-ab8d531b94e27e11af4c4acd.html">riverhog_archive_contracts.SegmentArchiveVolume.to_mapping</a>
 </li>
 <li>
-<a href="e-9902cd80de6b43fda7bfa737.html">riverhog_archive_contracts.SegmentArchiveVolume.source_file</a>
+<a href="e-7180c525389bd6a48176d7b6.html">riverhog_archive_contracts.SegmentArchiveVolume.source_artifact</a>
 </li>
 </ul>
 </section>
@@ -590,7 +590,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

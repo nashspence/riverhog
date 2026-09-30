@@ -188,7 +188,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -223,19 +223,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-658fe68e1012dad0c992e54e.html#v-684234679bfc2ee2cf59993c">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-658fe68e1012dad0c992e54e.html#v-684234679bfc2ee2cf59993c">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -347,12 +347,12 @@
 <section class="schema-section" id="s-2e2e04ae5d0b13a626b3fba3">
 <h3>Definition: WorkArtifactSubject</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -378,6 +378,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -400,24 +409,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-0e374f2478ce377793d72edf">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -490,34 +481,6 @@
 <code>1</code>
 </dd>
 </dl>
-</section>
-<section class="schema-section" id="s-0e374f2478ce377793d72edf">
-<h3>Field: media_type</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 </div>
 <details class="exact">
@@ -695,6 +658,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-ad80a716b6185b37c3460d46">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-56a2b80f531d16fc23052386">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6af43c43fefa57a79943ccdd">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -708,36 +701,6 @@
 <span id="v-2e2abefe7c3dc5965569539b">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-658fe68e1012dad0c992e54e.html#v-684234679bfc2ee2cf59993c">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-0e6bcb810bac23f8c0f311d3">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-878d9d91942587b2f6a6546e">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-3b5a6a074e63c1e3e3ab0dac">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -779,7 +742,7 @@
 </th>
 <td>
 <span id="v-17012de5048116d31d7cc4f7">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/CollectionRootIdentityRef/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1135,6 +1098,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-036fdd541a6f5dfd704e0cf6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e108c4af3df05ba3d4be4562">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d4b28594609e10f14c7d2db6">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>bytes</code>
 </th>
 <td>
@@ -1207,136 +1200,6 @@
 <td>
 <span id="v-d72e0b45e985750da981a639">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-0e374f2478ce377793d72edf">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-9c13bdd3d08741037eeab64b">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-23fb4bd42788ffd2dc63c249">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-a1d43abddf96e47341a53f55">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/maxLength">255</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-8b7b2c9cde5042fd6017a003">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-b06b825f7a496a106cd0ff6b">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-1b785c5635c9869a087aa066">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-aebc0787a0741453e90b287b">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-a7a29013cc7fb1dd0364c727">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/media_type/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-1ed6d008ac96a1c09b056638">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-2737e71a87390b9af97a0f53">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-8163498ced1bb96a79df95f2">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-5f400bfc50dc6327b7f89eea">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/properties/path/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1449,7 +1312,7 @@
 </th>
 <td>
 <span id="v-e3e3fcd848f9e141d8185efe">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/required/3">path</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.SemanticFactsConformanceVectors/contract/schema/$defs/WorkArtifactSubject/required/3">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1778,7 +1641,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

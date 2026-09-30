@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, protocol: Literal[&#x27;stove0-effect-target/v1&#x27;] = &#x27;stove0-effect-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = ()) -&gt; None&quot;</code>
+<code>&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = (), protocol: Literal[&#x27;stove0-effect-target/v1&#x27;] = &#x27;stove0-effect-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = ()) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-d1e68b40c65acb6ff1a843e0">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -85,6 +85,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-b8743f95b237548642214531">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-0ef47445d02e2c2d248d8989.html#v-bbd4ed05e8ed944cc57e3fd7">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -188,7 +198,22 @@
 <li>
 <a href="#s-7a35047b81d1deb6c44a99d2">TargetInputRoleCount</a>
 </li>
+<li>
+<a href="#s-bbd4ed05e8ed944cc57e3fd7">WorkInputGroup</a>
+</li>
 </ul>
+</section>
+<section class="schema-section" id="s-b8743f95b237548642214531">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-0ef47445d02e2c2d248d8989.html#v-bbd4ed05e8ed944cc57e3fd7">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-c87e81cf854d38546102698f">
 <h3>Field: intent</h3>
@@ -425,6 +450,61 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-bbd4ed05e8ed944cc57e3fd7">
+<h3>Definition: WorkInputGroup</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-1f85d0a3b5bf24b6afabd6c3">associated_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-e54915ab69843e90f48452eb">
 <h3>Field: roles</h3>
 <p class="shape">
@@ -438,6 +518,18 @@
 <dt>minItems</dt>
 <dd>
 <code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-1f85d0a3b5bf24b6afabd6c3">
+<h3>Field: associated_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -961,6 +1053,146 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>WorkInputGroup</code>
+</th>
+<td>
+<table id="v-bbd4ed05e8ed944cc57e3fd7">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-799b9d933943048f671951e2">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-08b14ab3f53d228ab9f3998a">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_ids</code>
+</th>
+<td>
+<table id="v-1f85d0a3b5bf24b6afabd6c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6135e14544329e1eafd5c69f">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/properties/associated_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-253bb21ba91f6d0c524ec8fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f9f410cb2822eabaefd8fd24">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/properties/associated_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e82028b4bc95a3a213bbaf17">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/properties/associated_ids/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_id</code>
+</th>
+<td>
+<table id="v-254acbd0467898418a9388a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2d4c0fe58c49ee9069a84e65">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/properties/primary_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d9e2fb20e4b239533625c8dd">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/properties/primary_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c2c6eb4af418eacd70e0e3e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7dfe2adecab442e3bae403cf">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/required/0">primary_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dfc8513b5a478c3c94970b2e">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/$defs/WorkInputGroup/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -981,6 +1213,56 @@
 <td>
 <table id="v-345897e49cb60075d9891c3b">
 <tbody>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-b8743f95b237548642214531">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-2812f6353842baee4b35aa74">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-d1f928b0e408e88b43e46946">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9bb3d0250bc830e653fc82b7">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-0ef47445d02e2c2d248d8989.html#v-bbd4ed05e8ed944cc57e3fd7">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a5994dbd1942abefd2e7701a">
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/schema/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>inputs</code>
@@ -1393,7 +1675,7 @@
 </th>
 <td>
 <span id="v-d353c85d63e8326272b2f8b4">
-<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/signature">&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, protocol: Literal[&#x27;stove0-effect-target/v1&#x27;] = &#x27;stove0-effect-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = ()) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.EffectPlanPayload/contract/signature">&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = (), protocol: Literal[&#x27;stove0-effect-target/v1&#x27;] = &#x27;stove0-effect-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = ()) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1451,6 +1733,9 @@
 <li>
 <a href="e-bc4a8e88e8d632bd0efc525c.html">stove0_target_support.EffectPlanPayload.canonical_observation_results</a>
 </li>
+<li>
+<a href="e-7f803c0c71db0e8655d6547a.html">stove0_target_support.EffectPlanPayload.canonical_groups</a>
+</li>
 </ul>
 </section>
 <aside class="audit" id="audit">
@@ -1484,7 +1769,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a_stove0_magic_facts_contract_lib.MagicFacts · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-bfd60f6b1ed14dccb45d73d2.html">a-stove0-magic-facts-contract-lib</a> / <a href="i-26463ade8d6312aac98d8c6f.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a_stove0_magic_facts_contract_lib.MagicFacts</h1>
+<p class="context">Bounded byte-classification facts for a selected Stove0 subject. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:a-stove0-magic-facts-contract-lib:a-stove0-magic-facts-contract-lib-magicfacts:b2a699623b">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-magic-facts-contract-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_magic_facts_contract_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>MagicFacts</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, artifacts: Annotated[tuple[a_stove0_magic_facts_contract_lib.contracts.MagicArtifactFacts, ...], MinLen(min_length=1)]) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-79b8ef525d8bf0f09f0fba38">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifacts&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-dae4ffaf58d65ea2de67628c">artifacts</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-3b472511dd048cf6bea26120.html#v-572c69845c86016c0bee3b01">#/$defs/MagicArtifactFacts</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-572c69845c86016c0bee3b01">MagicArtifactFacts</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-dae4ffaf58d65ea2de67628c">
+<h3>Field: artifacts</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-3b472511dd048cf6bea26120.html#v-572c69845c86016c0bee3b01">#/$defs/MagicArtifactFacts</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-572c69845c86016c0bee3b01">
+<h3>Definition: MagicArtifactFacts</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;subject_id&quot;,&quot;mime_type&quot;,&quot;description&quot;,&quot;sampled_bytes&quot;,&quot;sample_sha256&quot;,&quot;complete_payload&quot;,&quot;file_version&quot;,&quot;executable_sha256&quot;,&quot;database_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>complete_payload</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>database_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>description</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>executable_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>file_version</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>mime_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sample_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sampled_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; maximum: <code>1048576</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>subject_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts</code>
+</h4>
+<table id="v-f99b61e4d63e77b96452a1be">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-43b96d1f0e4b471bcd309c99">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-a6407df4733d5c63bcb8930e">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-79b8ef525d8bf0f09f0fba38">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-4051b6945e754126d60a7c88">
+<tbody>
+<tr>
+<th scope="row">
+<code>MagicArtifactFacts</code>
+</th>
+<td>
+<table id="v-572c69845c86016c0bee3b01">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-5d507dd24f2c2f1b0bc2b5b7">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a5865d0ad79af067042a6a28">
+<tbody>
+<tr>
+<th scope="row">
+<code>complete_payload</code>
+</th>
+<td>
+<table id="v-54bd7e5dacb9e46f18e1e068">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d66bd950be70640f814b5f33">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/complete_payload/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>database_sha256</code>
+</th>
+<td>
+<table id="v-6abfdd1ab20fd18dae545f14">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-966e118329cd9056c33bd5a0">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/database_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6c1d3ddb3d8733afda682bd2">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/database_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<table id="v-c2a691a3d5ae9c3e6b55f96e">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-5a48dc7e269f9ea55f23f751">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/description/maxLength">4096</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-6520ae07f7617fd7b821097b">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/description/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5a85b6e3cf48e245192635fd">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/description/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable_sha256</code>
+</th>
+<td>
+<table id="v-3c38d68064bf9ea7dc09eb27">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2db863f553097b4f6107f735">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/executable_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5db52b440ce9d50c648424ea">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/executable_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>file_version</code>
+</th>
+<td>
+<table id="v-68f699ea4f6b562296633f1f">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-2d72aa8947c767f4b59edd02">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/file_version/maxLength">200</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-20c23236f3bb6f923d7f3f28">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/file_version/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d8a49875f30bbb333b64e5f4">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/file_version/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>mime_type</code>
+</th>
+<td>
+<table id="v-2e71d71a8cd4e01aa29e998c">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-9e7fd455f12c690f57db075f">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/mime_type/maxLength">255</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-927cfa9a909696c729dc5343">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/mime_type/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-63df828ddc03335971cc5c24">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/mime_type/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sample_sha256</code>
+</th>
+<td>
+<table id="v-18f1ac88fb787de220af154b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-50d8adebbcba4b7e22057856">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/sample_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b71b1447a944a79cef0470a6">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/sample_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sampled_bytes</code>
+</th>
+<td>
+<table id="v-f54742a6fc5966fad3979fd7">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-20de521014b98b0195ef8c5c">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/sampled_bytes/maximum">1048576</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-49077309adab5911dceb2248">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/sampled_bytes/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-af9e96ecfbb5045bc1c5dd60">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/sampled_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>subject_id</code>
+</th>
+<td>
+<table id="v-170aad914109f41938b7194a">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-9aa93201be2d280e49a56abb">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/subject_id/maxLength">160</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-c11052bcfb9a8c5ccd37f592">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/subject_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7afa3734d88410c8ef3c35c7">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/properties/subject_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-6913b5f2809f5e3cba8b810f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d83d45e0f5dd5f28deaabffc">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/0">subject_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-37156c4a40525ad89f4a7417">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/1">mime_type</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-18d8b4356eda77f67b04513e">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/2">description</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-6f466366556a3e6ba6677cfd">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/3">sampled_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-fd7a2d79558fbf05971e3b3a">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/4">sample_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-d0778b78ca13addecd0a0693">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/5">complete_payload</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-8e207ba9e0c4a114fcbf8322">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/6">file_version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-5e3308b95c288c7cd9126397">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/7">executable_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-ddd4cb5d15128161b85d7523">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/required/8">database_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2cd1b6cbf6ae7f7f20779364">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/$defs/MagicArtifactFacts/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-596e59b1f137c30e0db79c3f">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f4b22643587258c078a84b92">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifacts</code>
+</th>
+<td>
+<table id="v-dae4ffaf58d65ea2de67628c">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-2f84d82de452c0090694dcea">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a7a60866e09fb3cb0016111c">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/properties/artifacts/items/$ref">#/$defs/MagicArtifactFacts</code>
+<span class="kind">string</span> <a href="e-3b472511dd048cf6bea26120.html#v-572c69845c86016c0bee3b01">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-aaf458c148e7b820622735c6">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/properties/artifacts/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8924c0cbd77bc455abe35fce">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/properties/artifacts/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-6092b85699c8e0ac22258a6b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f8c28049d5297c65e0d30dd8">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/required/0">artifacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5230fe542d85a8daf9b71e0c">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-cd0e6f3e24c3f5c769039ced">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/contract/signature">&#x27;(*, artifacts: Annotated[tuple[a_stove0_magic_facts_contract_lib.contracts.MagicArtifactFacts, ...], MinLen(min_length=1)]) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-28de62046e5d539bc4a43fe9">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/distribution">a-stove0-magic-facts-contract-lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-c94086067847ae3d8daef44a">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/module">a_stove0_magic_facts_contract_lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-d1a424ca261cd2d570220760">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/name">MagicFacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-d5a82b120a12981a4a32a6a1">
+<code data-value-pointer="/external_contract/python/a_stove0_magic_facts_contract_lib.MagicFacts/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-6f7ae294d98e8d6dedd8f703.html">a_stove0_magic_facts_contract_lib.MagicFacts.ordered_unique_subjects</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-872184b45ac25a3bb2728a1e">python:a-stove0-magic-facts-contract-lib:a_stove0_magic_facts_contract_lib</a> — <code data-source-path="some-implementations/stove0/observers/contracts/magic/src/a_stove0_magic_facts_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/magic/src/a_stove0_magic_facts_contract_lib/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

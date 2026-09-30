@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: WorkInputGroup · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: WorkInputGroup</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:stove0:schemas-workinputgroup:3b9a0ab81f">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-5959b0799f1e7d1e40db7ec0">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>WorkInputGroup</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One recipe-selected primary and its exact associated subjects.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-30dac055ef64ae2bd1d0441e">associated_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-30dac055ef64ae2bd1d0441e">
+<h3>Field: associated_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Associated Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup</code>
+</h4>
+<table id="v-5959b0799f1e7d1e40db7ec0">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ad7ba8dde47abbbcfbf60acc">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-6773367ccdd3d5b4b3a6c1e5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/description">One recipe-selected primary and its exact associated subjects.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-fb142554b50389dd6f186aaa">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_ids</code>
+</th>
+<td>
+<table id="v-30dac055ef64ae2bd1d0441e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4902856e9211c1cc8bf437c0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/associated_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-2ac7ad17ee587eedae54a6a4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c0e33490558bbd4a9373b52c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/associated_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e346f45f86d58bea50a34a7f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/associated_ids/title">Associated Ids</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c0bd2f16fb41a0da2affcb33">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/associated_ids/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_id</code>
+</th>
+<td>
+<table id="v-913ee4c9f0479526f68647e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a852468cfaf639da21350533">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/primary_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-86ed043a538b9f569bf0ab30">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/primary_id/title">Primary Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-db59ef31c94b2c668661aa5c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/primary_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ca99cb9f8e92bac0f6e93f4a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7fc2451ba96d26a0acc57c8a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/required/0">primary_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d044cc9d957bac5bbaaf6e11">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/title">WorkInputGroup</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1d0d54f91b88802bc52424bc">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkInputGroup/properties/associated_ids</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

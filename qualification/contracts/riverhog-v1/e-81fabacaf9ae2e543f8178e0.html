@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-53e3911d0e22f6b70ba383ed">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>$id</dt>
@@ -44,7 +44,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;token_file&quot;,&quot;destination_identity&quot;,&quot;rclone_remote&quot;]</code>
+<code>[&quot;token_file&quot;,&quot;destination_identity&quot;,&quot;destination_naming_rules&quot;,&quot;rclone_remote&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -74,6 +74,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>destination_naming_rules</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-81fabacaf9ae2e543f8178e0.html#v-01011b8110ac07fe0f04d98f">#/$defs/RcloneNamingRules</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -117,6 +126,12 @@
 </tbody>
 </table>
 </div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-01011b8110ac07fe0f04d98f">RcloneNamingRules</a>
+</li>
+</ul>
 </section>
 <section class="schema-section" id="s-3c9c997f2933a0e7b372f200">
 <h3>Field: rclone_config_file</h3>
@@ -152,6 +167,91 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-01011b8110ac07fe0f04d98f">
+<h3>Definition: RcloneNamingRules</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>RcloneNamingRules</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;windows_names&quot;,&quot;case_sensitive&quot;,&quot;unicode_equivalence&quot;,&quot;component_bytes&quot;,&quot;relative_path_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>case_sensitive</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>component_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>relative_path_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>unicode_equivalence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;exact&quot;,&quot;NFC&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>windows_names</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </div>
 <details class="exact">
 <summary>Exact machine fields and pointers</summary>
@@ -161,6 +261,326 @@
 </h4>
 <table id="v-53e3911d0e22f6b70ba383ed">
 <tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-c2a43bbcd3ea0b83c86f915c">
+<tbody>
+<tr>
+<th scope="row">
+<code>RcloneNamingRules</code>
+</th>
+<td>
+<table id="v-01011b8110ac07fe0f04d98f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-d19211fcd16995da8ec258e4">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-76d2e5fc91b8979df8bc15aa">
+<tbody>
+<tr>
+<th scope="row">
+<code>case_sensitive</code>
+</th>
+<td>
+<table id="v-c0e043e9d1b8f9bed5544aca">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-89cf2499d795cc56d9630cd6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/case_sensitive/title">Case Sensitive</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e194e5fae1bc2ecf870d0a3a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/case_sensitive/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>component_bytes</code>
+</th>
+<td>
+<table id="v-6dc8e433106054d87bcd11af">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-6beb20186337b2588e300ec7">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/component_bytes/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-3e95f3d237e611f43b304374">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/component_bytes/title">Component Bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-72d199ae038080ed93d0d2ea">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/component_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>relative_path_bytes</code>
+</th>
+<td>
+<table id="v-9f6748645a53041383c5d9f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-674ae28c5c52afc6c8b7323a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/relative_path_bytes/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-060f2e5663079206ad811c96">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/relative_path_bytes/title">Relative Path Bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d05ba04a12c79c22e851b5e2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/relative_path_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unicode_equivalence</code>
+</th>
+<td>
+<table id="v-e6ef847be42a13c975e7a9b5">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-abea6edbace131697eec5350">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2431c876b31793e4d8b270a3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/unicode_equivalence/enum/0">exact</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-be36c3d61c8d0f16930645d1">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/unicode_equivalence/enum/1">NFC</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2e23b73970b2b66020f5bdfd">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/unicode_equivalence/title">Unicode Equivalence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bb97e1b9b20f41ad5daf3d21">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/unicode_equivalence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>windows_names</code>
+</th>
+<td>
+<table id="v-6ebd37c54db6bb416de53418">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-966353d9f4201a981e5fdf28">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/windows_names/title">Windows Names</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-621fa5ed64c3ca822a8a12e4">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/properties/windows_names/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-93b2c9871b47ccd6e74b6939">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c9137c43aa290749eebe752f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/required/0">windows_names</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4185f21929938be0e7b1f8d1">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/required/1">case_sensitive</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-db60219414f5d36388dab646">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/required/2">unicode_equivalence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-ae257bbda4af6d67c75746da">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/required/3">component_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-edb242f1f926a052cb765767">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/required/4">relative_path_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-1004c1276ad0cffd4648fabb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/title">RcloneNamingRules</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c60e5141e6af85699ef7199a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/$defs/RcloneNamingRules/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>$id</code>
@@ -233,6 +653,26 @@
 <span id="v-8a5ea813f5360bdf64f97124">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/properties/destination_identity/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>destination_naming_rules</code>
+</th>
+<td>
+<table id="v-f5906f906e74b68b37cf4b87">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-209dd0ad541a3ae5b69daf8f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/properties/destination_naming_rules/$ref">#/$defs/RcloneNamingRules</code>
+<span class="kind">string</span> <a href="e-81fabacaf9ae2e543f8178e0.html#v-01011b8110ac07fe0f04d98f">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -494,7 +934,17 @@
 </th>
 <td>
 <span id="v-dee42531e59444e735fbfa54">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/required/2">rclone_remote</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/required/2">destination_naming_rules</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-efa109b94fd10fb974f9f1ae">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-stove0-rclone-target.schema.json/required/3">rclone_remote</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -581,7 +1031,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

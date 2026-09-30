@@ -394,12 +394,12 @@
 <section class="schema-section" id="s-dde392a2fd74b06ca9bda87c">
 <h3>Definition: MediaProjectionItem</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;input_artifact_id&quot;,&quot;archive_path&quot;,&quot;xmp_path&quot;]</code>
+<code>[&quot;input_artifact_id&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -423,15 +423,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td data-label="Field">
-<code>archive_path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
 <tr>
 <td data-label="Field">
 <a href="#s-49c60782827e3d065fffae8d">assertions</a></td>
@@ -471,15 +462,6 @@
 <code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
-<tr>
-<td data-label="Field">
-<code>xmp_path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -487,12 +469,12 @@
 <section class="schema-section" id="s-ecdb45e70f4be97602d97f9c">
 <h3>Definition: RetainedXmpSidecar</h3>
 <p class="shape">
-<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;input_artifact_id&quot;,&quot;output_path&quot;]</code>
+<code>[&quot;input_artifact_id&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -519,15 +501,6 @@
 <tr>
 <td data-label="Field">
 <code>input_artifact_id</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>output_path</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code></td>
@@ -1322,26 +1295,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>archive_path</code>
-</th>
-<td>
-<table id="v-f8db988d90c360236d428665">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-8e2e5b26ce6a3ae62239b20e">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/MediaProjectionItem/properties/archive_path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>assertions</code>
 </th>
 <td>
@@ -1510,26 +1463,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>xmp_path</code>
-</th>
-<td>
-<table id="v-34c7fa8b1ee5d56cf5aeb411">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6a288bd57bd9cf9d688b3c3e">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/MediaProjectionItem/properties/xmp_path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1547,26 +1480,6 @@
 <td>
 <span id="v-84e8a7bd5fff7c026eed5268">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/MediaProjectionItem/required/0">input_artifact_id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-dc00e430e5beb48062b7ebd5">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/MediaProjectionItem/required/1">archive_path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>2</code>
-</th>
-<td>
-<span id="v-41092eb0543954da8a13d92a">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/MediaProjectionItem/required/2">xmp_path</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1630,26 +1543,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>output_path</code>
-</th>
-<td>
-<table id="v-99ce7c91b809c844da70d4e7">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-0bbbd9c1d3e7b962acd7e682">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/RetainedXmpSidecar/properties/output_path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1667,16 +1560,6 @@
 <td>
 <span id="v-a5b2cee783de415be4b193b0">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/RetainedXmpSidecar/required/0">input_artifact_id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-9803aa68ac5354dfce91f32d">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection/contract/schema/$defs/RetainedXmpSidecar/required/1">output_path</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2091,7 +1974,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

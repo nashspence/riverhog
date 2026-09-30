@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_path: &#x27;str&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None, effect_receipt_sha256: &#x27;str | None&#x27; = None, discard_approval: &#x27;ArtifactDiscardApproval | None&#x27; = None, retain_required: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
+<code>&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_artifact_id: &#x27;ArtifactId&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None, effect_receipt_sha256: &#x27;str | None&#x27; = None, discard_approval: &#x27;ArtifactDiscardApproval | None&#x27; = None, retain_required: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -82,9 +82,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>input_path</code></td>
+<code>input_artifact_id</code></td>
 <td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
+<code>&#x27;ArtifactId&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -265,7 +265,7 @@
 </th>
 <td>
 <span id="v-61a880ab651dee197a91abc1">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/2/name">input_path</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/2/name">input_artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -275,7 +275,7 @@
 </th>
 <td>
 <span id="v-b3ed6cc2d0151ab5c2891621">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/2/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/fields/2/type">&#x27;ArtifactId&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -541,7 +541,7 @@
 </th>
 <td>
 <span id="v-cb47d3bccc10782298affbfb">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/signature">&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_path: &#x27;str&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None, effect_receipt_sha256: &#x27;str | None&#x27; = None, discard_approval: &#x27;ArtifactDiscardApproval | None&#x27; = None, retain_required: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactDisposition/contract/signature">&quot;(input_collection_id: &#x27;CollectionId&#x27;, input_archive_root_sha256: &#x27;str&#x27;, input_artifact_id: &#x27;ArtifactId&#x27;, status: &#x27;DispositionState&#x27;, code: &#x27;str | None&#x27; = None, message: &#x27;str | None&#x27; = None, effect_receipt_sha256: &#x27;str | None&#x27; = None, discard_approval: &#x27;ArtifactDiscardApproval | None&#x27; = None, retain_required: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -635,7 +635,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

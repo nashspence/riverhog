@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a_stove0_media_archive_lib.MediaOutputPublicationDecision · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-ff0e298f4e542280e02e651e.html">a-stove0-media-archive-lib</a> / <a href="i-35208bc62ec4f17cd327b037.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a_stove0_media_archive_lib.MediaOutputPublicationDecision</h1>
+<p class="context">Media archive projection library for Stove0. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:a-stove0-media-archive-lib:a-stove0-media-archive-lib-mediaoutputpub-5baadb829c:0663a77752">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-media-archive-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_media_archive_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>MediaOutputPublicationDecision</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, output_id: Annotated[str, MinLen(min_length=1)], materialization_hint: riverhog_protocol.provenance_transport.MaterializationHintDocument | None = None, allow_missing_materialization_hint: bool = False) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-dab306a526ab0fe987dd56c7">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;output_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>allow_missing_materialization_hint</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-c9574c06a6300a993d1acb9b">materialization_hint</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-a08a8721e3537e467dc538fa.html#v-dbab00120561a67ad20955e6">#/$defs/MaterializationHintDocument</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-dbab00120561a67ad20955e6">MaterializationHintDocument</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-c9574c06a6300a993d1acb9b">
+<h3>Field: materialization_hint</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a08a8721e3537e467dc538fa.html#v-dbab00120561a67ad20955e6">#/$defs/MaterializationHintDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-a08a8721e3537e467dc538fa.html#v-dbab00120561a67ad20955e6">#/$defs/MaterializationHintDocument</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dbab00120561a67ad20955e6">
+<h3>Definition: MaterializationHintDocument</h3>
+<p class="shape">
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;components&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-191bed2773458cacffd63d1b">components</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-191bed2773458cacffd63d1b">
+<h3>Field: components</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision</code>
+</h4>
+<table id="v-8eab5a8a21633470992317e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-b56c28b8bf2ae5e6f4b96a97">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-b68deb1956e2ab0bd4dd99d0">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-dab306a526ab0fe987dd56c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-01f6531e0bd22c7d7f75f0c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>MaterializationHintDocument</code>
+</th>
+<td>
+<table id="v-dbab00120561a67ad20955e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-e6580beaaa2afac2461df004">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/$defs/MaterializationHintDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-389c6334573ef30a6ab2b232">
+<tbody>
+<tr>
+<th scope="row">
+<code>components</code>
+</th>
+<td>
+<table id="v-191bed2773458cacffd63d1b">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-271393e8551f61e0094ae754">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fc3f9b6cf982f26976ae8a54">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/$defs/MaterializationHintDocument/properties/components/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-aab90c9df3a3a194ad2ebc73">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/$defs/MaterializationHintDocument/properties/components/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3f6ab9366333482dddebe642">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-47c1a2f1eb8396535aad5c9e">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/$defs/MaterializationHintDocument/required/0">components</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3c2037cb131ce946dda3adae">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/$defs/MaterializationHintDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2822dab876c6bcaa656b8c8e">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-9451ea99f3e6d32aa3429f1e">
+<tbody>
+<tr>
+<th scope="row">
+<code>allow_missing_materialization_hint</code>
+</th>
+<td>
+<table id="v-a062170e6cb977de51f539b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4737f5265a81ef2236537bcf">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/allow_missing_materialization_hint/default">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2d99c615a262062a49645d5a">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/allow_missing_materialization_hint/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>materialization_hint</code>
+</th>
+<td>
+<table id="v-c9574c06a6300a993d1acb9b">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f8f63a59d768bb2ee32427b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0212506e50b3a19103ecbdf7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-808394314a7ebba39092460f">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/materialization_hint/anyOf/0/$ref">#/$defs/MaterializationHintDocument</code>
+<span class="kind">string</span> <a href="e-a08a8721e3537e467dc538fa.html#v-dbab00120561a67ad20955e6">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9288d67074e724bb581623b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cc5b277503f7377105bde5ec">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/materialization_hint/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5e22972c5523e4c66ddd6f3a">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/materialization_hint/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_id</code>
+</th>
+<td>
+<table id="v-22fb5423a360fa69aaee808b">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-4c49ea23ed3c41f42d2aa0b9">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/output_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bcfbbd921ac60e36641c68f5">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/properties/output_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-6e44ba6dc7bddb4a3dc024ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4301ed6d24e80c586da2d56f">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/required/0">output_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c49ee6cf86c1c11360dcaf24">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-70ed31e7e46e45b13f7ccd1b">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/contract/signature">&#x27;(*, output_id: Annotated[str, MinLen(min_length=1)], materialization_hint: riverhog_protocol.provenance_transport.MaterializationHintDocument | None = None, allow_missing_materialization_hint: bool = False) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-f4543b686757f708d3e11565">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/distribution">a-stove0-media-archive-lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-daf209d3837e192b614a1968">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/module">a_stove0_media_archive_lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-5401529518c90e265b3c6e49">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/name">MediaOutputPublicationDecision</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-fbb58d64d7c3d8df3ccfcbbf">
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaOutputPublicationDecision/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-1d98756ce2619579ea642d51.html">a_stove0_media_archive_lib.MediaOutputPublicationDecision.exact_choice</a>
+</li>
+<li>
+<a href="e-0d7755e4e042242f4818ed13.html">a_stove0_media_archive_lib.MediaOutputPublicationDecision.components</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-6929294187049d93109e082d">python:a-stove0-media-archive-lib:a_stove0_media_archive_lib</a> — <code data-source-path="some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py">some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

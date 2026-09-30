@@ -118,7 +118,7 @@
 <td data-label="Exit">
 <code>0</code></td>
 <td data-label="Selection">kind: <code>command-completed</code></td>
-<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>a-riverhog-cli-local-remove-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;collection_id&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;local_files&quot;:{&quot;const&quot;:&quot;retained&quot;},&quot;retrievals_canceled&quot;:{&quot;items&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;type&quot;:&quot;array&quot;},&quot;status&quot;:{&quot;const&quot;:&quot;removed&quot;}},&quot;required&quot;:[&quot;status&quot;,&quot;collection_id&quot;,&quot;local_files&quot;,&quot;retrievals_canceled&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>a-riverhog-cli-local-remove-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;collection_id&quot;:{&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},&quot;local_artifacts&quot;:{&quot;const&quot;:&quot;retained&quot;},&quot;retrievals_canceled&quot;:{&quot;items&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;type&quot;:&quot;array&quot;},&quot;status&quot;:{&quot;const&quot;:&quot;removed&quot;}},&quot;required&quot;:[&quot;status&quot;,&quot;collection_id&quot;,&quot;local_artifacts&quot;,&quot;retrievals_canceled&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
 <td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
@@ -1324,18 +1324,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>local_files</code>
+<code>local_artifacts</code>
 </th>
 <td>
-<table id="v-eb5dde2decd9e633f6ca1b6a">
+<table id="v-6b340e4fc01a313225b17c68">
 <tbody>
 <tr>
 <th scope="row">
 <code>const</code>
 </th>
 <td>
-<span id="v-b00a5f158ea06782ef4463ba">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/remove/result_contract/success/0/stdout/json/schema/properties/local_files/const">retained</code>
+<span id="v-c7724d7489dad25e4a7aedb8">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/remove/result_contract/success/0/stdout/json/schema/properties/local_artifacts/const">retained</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1438,7 +1438,7 @@
 </th>
 <td>
 <span id="v-51372a94b95f131faed8ca50">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/remove/result_contract/success/0/stdout/json/schema/required/2">local_files</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/remove/result_contract/success/0/stdout/json/schema/required/2">local_artifacts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1675,14 +1675,14 @@
 <dt>
 <code>--json</code>
 </dt>
-<dd>Emit JSON</dd>
+<dd>Emit JSON.</dd>
 </dl>
 </aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

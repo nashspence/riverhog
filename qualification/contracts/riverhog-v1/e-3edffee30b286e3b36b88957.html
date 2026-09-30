@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_provenance.ObservationSession · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a> / <a href="i-22ebf65415d1e82255f700e0.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog_provenance.ObservationSession</h1>
+<p class="context">Path-independent opaque-artifact observations, provenance journals and application validation. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:riverhog-provenance:riverhog-provenance-observationsession:abdc6c1059">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-provenance</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_provenance</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ObservationSession</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(reader: &#x27;BinaryReadable&#x27;, extent: &#x27;Mapping[str, Any]&#x27;, occurrence_kind: &#x27;str&#x27;, capabilities: &#x27;SourceCapabilities&#x27;, expected_length: &#x27;int | None&#x27; = None, source_context: &#x27;Mapping[str, Any] | None&#x27; = None, finalize: &#x27;Callable[[], SourceEvidence]&#x27; = &lt;function one_pass_evidence&gt;, repeat_reader: &#x27;Callable[[], AbstractContextManager[BinaryReadable]] | None&#x27; = None) -&gt; None&quot;</code>
+</dd>
+</dl>
+<h4>Dataclass fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Type</th>
+<th scope="col">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>reader</code></td>
+<td data-label="Type">
+<code>&#x27;BinaryReadable&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>extent</code></td>
+<td data-label="Type">
+<code>&#x27;Mapping[str, Any]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>occurrence_kind</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>capabilities</code></td>
+<td data-label="Type">
+<code>&#x27;SourceCapabilities&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>expected_length</code></td>
+<td data-label="Type">
+<code>&#x27;int | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>source_context</code></td>
+<td data-label="Type">
+<code>&#x27;Mapping[str, Any] | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>finalize</code></td>
+<td data-label="Type">
+<code>&#x27;Callable[[], SourceEvidence]&#x27;</code></td>
+<td data-label="Default">
+<code>&lt;function one_pass_evidence&gt;</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>repeat_reader</code></td>
+<td data-label="Type">
+<code>&#x27;Callable[[], AbstractContextManager[BinaryReadable]] | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/riverhog_provenance.ObservationSession</code>
+</h4>
+<table id="v-dd92a042e300d6ea96b8d0f7">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-9d9ec32194c6245fbcf412ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>fields</code>
+</th>
+<td>
+<table id="v-f4478378bfecef4b33733a00">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-5ab6ae80b6ee8687bd45217d">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-88912749a6223d54cc228ae9">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/0/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-e32d4e61887574b28b1b8e6b">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/0/name">reader</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-173e053d9220ea61ecd6b1a6">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/0/type">&#x27;BinaryReadable&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-18b60d414af6627ebd26d152">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-87d60a5428cb2ab57ccedf76">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/1/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-87814003dbdce8553a49292a">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/1/name">extent</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b90e1cd4a5d3876949f86e1a">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/1/type">&#x27;Mapping[str, Any]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-5dc34e63febc09808938b287">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f7439d159e32ec33e809df83">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/2/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-36c7b0b262e053543cb87b89">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/2/name">occurrence_kind</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6d36b0da0a5224bfe6894e09">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/2/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-ef56334253eb5adb02745cc0">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-13371bb0030f61011cdc62ed">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/3/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-51442f833cf536513d5ccbca">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/3/name">capabilities</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bae3d087e02aade6caa20fde">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/3/type">&#x27;SourceCapabilities&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-766d5f4b38e59d42345f864a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f62f26993615304afa7406cd">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/4/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-e670a5bcf9eeca95e366730b">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/4/name">expected_length</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7ea9ba390d6ede0e9bdb2bc4">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/4/type">&#x27;int | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-3eda8b75442e6554be4d1712">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-64a85622f61026d471a5427f">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/5/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-fc0315c4cc0c97771ec76a34">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/5/name">source_context</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-713b2895e55300af5b36a4e1">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/5/type">&#x27;Mapping[str, Any] | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-eb1aafa4093db2551ff79d14">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-47bd719a8b82963c3459468e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/6/default">&lt;function one_pass_evidence&gt;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-30bc62cda71215eb1a168f0e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/6/name">finalize</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-896eec8c6c96dd2d7e870fa7">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/6/type">&#x27;Callable[[], SourceEvidence]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-a1c757a6c57308a0e86b1ea5">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-53ec9e1d0746eb4d588ba965">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/7/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-aed36ed5f6de198398fdd56b">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/7/name">repeat_reader</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2508708ac9c02509179b0bb8">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/fields/7/type">&#x27;Callable[[], AbstractContextManager[BinaryReadable]] | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-1858670b52b236eebb6e8f20">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-29a518eda8b0bc3c8621da4e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/contract/signature">&quot;(reader: &#x27;BinaryReadable&#x27;, extent: &#x27;Mapping[str, Any]&#x27;, occurrence_kind: &#x27;str&#x27;, capabilities: &#x27;SourceCapabilities&#x27;, expected_length: &#x27;int | None&#x27; = None, source_context: &#x27;Mapping[str, Any] | None&#x27; = None, finalize: &#x27;Callable[[], SourceEvidence]&#x27; = &lt;function one_pass_evidence&gt;, repeat_reader: &#x27;Callable[[], AbstractContextManager[BinaryReadable]] | None&#x27; = None) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-7fe0dc788ba480390db46531">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/distribution">riverhog-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-862a8f4d53673d319c7acc76">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/module">riverhog_provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a1483e52adea6df54fe2f230">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/name">ObservationSession</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-085120da871d2bf8672830e7">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.ObservationSession/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-38ef3a6054bee6ff009d696c">python:riverhog-provenance:riverhog_provenance</a> — <code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/__init__.py">packages/riverhog-provenance/src/riverhog_provenance/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

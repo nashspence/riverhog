@@ -80,7 +80,7 @@
 <td data-label="Required">yes</td>
 <td data-label="Default">not declared</td>
 <td data-label="Schema">
-<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code></td>
+<a href="e-28be0834762b6c161b5d9c65.html#v-6e8a78a3ab20f707886a37dc">#/components/schemas/ProvenanceId</a></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -122,7 +122,7 @@
 <tr>
 <td data-label="Status">
 <code>200</code></td>
-<td data-label="Description">Exact immutable provenance journal.</td>
+<td data-label="Description">Exact immutable canonical provenance journal.</td>
 <td data-label="Media type">
 <code>application/json-seq</code></td>
 <td data-label="Schema">
@@ -132,7 +132,7 @@
 <tr>
 <td data-label="Status">
 <code>206</code></td>
-<td data-label="Description">Exact immutable provenance journal byte range.</td>
+<td data-label="Description">Exact immutable journal byte range.</td>
 <td data-label="Media type">
 <code>application/json-seq</code></td>
 <td data-label="Schema">
@@ -250,7 +250,7 @@
 <td data-label="Required">yes</td>
 <td data-label="Schema">
 <code>integer</code>; minimum: <code>0</code></td>
-<td data-label="Description">Exact response-body length in bytes.</td>
+<td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Status">
@@ -259,8 +259,8 @@
 <code>ETag</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Schema">
-<code>string</code>; pattern: <code>^&quot;[0-9a-f]{64}&quot;$</code></td>
-<td data-label="Description">Quoted SHA-256 identity of the journal bytes.</td>
+<code>string</code></td>
+<td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Status">
@@ -507,32 +507,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>pattern</code>
+<code>$ref</code>
 </th>
 <td>
-<span id="v-4da5ec1ee364094ff86a2487">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/parameters/1/schema/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-3a5807473831ba82c25075bf">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/parameters/1/schema/title">Journal Id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-154258a476640d686caf2c74">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/parameters/1/schema/type">string</code>
-<span class="kind">string</span>
+<span id="v-7b0d42da83a6e5a1180ff5ba">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/parameters/1/schema/$ref">#/components/schemas/ProvenanceId</code>
+<span class="kind">string</span> <a href="e-28be0834762b6c161b5d9c65.html#v-6e8a78a3ab20f707886a37dc">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -834,7 +814,7 @@
 </th>
 <td>
 <span id="v-23f4897a1190aaee6d3337b5">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/200/description">Exact immutable provenance journal.</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/200/description">Exact immutable canonical provenance journal.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -904,16 +884,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>description</code>
-</th>
-<td>
-<span id="v-2433d660d2a3274fcaebd557">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/200/headers/Content-Length/description">Exact response-body length in bytes.</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
 <code>required</code>
 </th>
 <td>
@@ -964,16 +934,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>description</code>
-</th>
-<td>
-<span id="v-9a264a24512ae4ba891dedbc">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/200/headers/ETag/description">Quoted SHA-256 identity of the journal bytes.</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
 <code>required</code>
 </th>
 <td>
@@ -989,16 +949,6 @@
 <td>
 <table id="v-d216ba6860b06a7bfd6bc27f">
 <tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-fde1a8794c70725e6302c570">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/200/headers/ETag/schema/pattern">^&quot;[0-9a-f]{64}&quot;$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
 <tr>
 <th scope="row">
 <code>type</code>
@@ -1084,7 +1034,7 @@
 </th>
 <td>
 <span id="v-185f32d03b356141ed52930c">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/206/description">Exact immutable provenance journal byte range.</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get/responses/206/description">Exact immutable journal byte range.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1956,6 +1906,15 @@
 <a href="e-24fc2cccebd277cbdbeb373a.html">a-riverhog-cli collection provenance export</a>
 </li>
 <li>
+<a href="e-dd544b9d04888ae761d87958.html">a-riverhog-cli local add</a>
+</li>
+<li>
+<a href="e-be5552fe3f457d83439e7042.html">a-riverhog-cli local repair</a>
+</li>
+<li>
+<a href="e-b578c61895feed802d74a0a3.html">a-riverhog-cli local sync</a>
+</li>
+<li>
 <a href="e-0742c3ef8cb6c85996bc74f7.html">riverhog_client.ApiClient.stream_collection_provenance_journal</a>
 </li>
 </ul>
@@ -1974,7 +1933,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 <li>
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
@@ -2070,7 +2029,7 @@
 </th>
 <td>
 <span id="v-0361b2024aa7bcf9883ca9aa">
-<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/0/source/line">2714</code>
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/0/source/line">2047</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -2110,6 +2069,276 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9c1fbc8ad72699212771a7c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-1ce16e071e37de1d9946e070">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/command">local add</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable</code>
+</th>
+<td>
+<span id="v-c333ff0da6ea53182d1fde18">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/executable">a-riverhog-cli</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_identity</code>
+</th>
+<td>
+<span id="v-1e037bec9f94a012f3cdf3c2">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/result_identity">a-riverhog-cli-result/local/add/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-a38f9397f6c49573d271bb57">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-759b0e824ebf2920dc1258c6">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/source/line">557</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-47a195fce015366493cd900e">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/source/module">a_riverhog_cli.local</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-ad5e6ac0694542e6bda83040">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-c93b115367a13726e896311e">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/1/source/symbol">add_collection</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-734e31b25700ff734a008a44">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-a59852997448b76b34b1a6cd">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/command">local sync</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable</code>
+</th>
+<td>
+<span id="v-3aa43b8c5047a3541754bf63">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/executable">a-riverhog-cli</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_identity</code>
+</th>
+<td>
+<span id="v-cfa4004a2e2adaf47e25be9c">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/result_identity">a-riverhog-cli-result/local/sync/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-08943e97b0429b9a342b887b">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-7bf55303735df953f1ad5f2e">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/source/line">1029</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-acbf2751dd1e3a68ba6d3f9c">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/source/module">a_riverhog_cli.local</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-a416c4d4d1835ba06239662a">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-afe5046e06500ace788398a1">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/2/source/symbol">sync</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-fd3568f4e4077dd6e8452385">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-bf78dd47dce841cf8033a44e">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/command">local repair</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable</code>
+</th>
+<td>
+<span id="v-8d2b34f5e4649325a53936b2">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/executable">a-riverhog-cli</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_identity</code>
+</th>
+<td>
+<span id="v-487486f8eec602cdfbb6f398">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/result_identity">a-riverhog-cli-result/local/repair/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-6fb3e4427cf564f564a9a594">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-6f1b9c3810ffa298a8e7e770">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/source/line">1044</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-d93e02659bdb97bbb55219e4">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/source/module">a_riverhog_cli.local</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-f9c9157e3d3e52c926641350">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-5060d19d55c4e0bbe72ad588">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_bindings/3/source/symbol">repair</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -2127,6 +2356,36 @@
 <td>
 <span id="v-710717310435ece7366bddef">
 <code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_commands/0">collection provenance export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-02aaa11f88249d3a5fbb0051">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_commands/1">local add</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-9794d5d4e5a1cd5c4d00b117">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_commands/2">local repair</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-7c73c7e22df27adb5411c52c">
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/cli_commands/3">local sync</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2180,7 +2439,7 @@
 </th>
 <td>
 <span id="v-70df7f6fc853147ce10c8e80">
-<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/client_bindings/0/source/line">1705</code>
+<code data-value-pointer="/audit/operation-qualification/stream_collection_provenance_journal/client_bindings/0/source/line">1744</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -2291,7 +2550,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

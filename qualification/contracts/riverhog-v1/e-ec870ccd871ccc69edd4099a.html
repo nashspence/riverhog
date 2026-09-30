@@ -629,7 +629,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -664,19 +664,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-ec870ccd871ccc69edd4099a.html#v-347577827039f562db2208f1">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-ec870ccd871ccc69edd4099a.html#v-347577827039f562db2208f1">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -876,6 +876,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-1bae715354304186f56c8cdf">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6fa00cf3431a0712101388ac">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-120b9c66f0c8bdde9e3a63c5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -889,36 +919,6 @@
 <span id="v-326ab16d560c5a3f3411e28d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-ec870ccd871ccc69edd4099a.html#v-347577827039f562db2208f1">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-b80ed7c06dc452292abf850d">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-10a7a33fedd53f5af521e8ef">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-ba60b3c2dacd35b7f946aad1">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -960,7 +960,7 @@
 </th>
 <td>
 <span id="v-52922e3a76e836f278a3b711">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeIdentityDocument/contract/schema/$defs/CollectionRootIdentityDocument/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2289,7 +2289,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

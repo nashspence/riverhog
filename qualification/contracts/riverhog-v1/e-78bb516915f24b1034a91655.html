@@ -25,11 +25,11 @@
 <h2>Contract</h2>
 <div class="human-contract">
 <h3>Operation</h3>
-<p class="lead">Download Retrieval File</p>
+<p class="lead">Download Retrieval Artifact</p>
 <dl class="facts">
 <dt>operationId</dt>
 <dd>
-<code>download_retrieval_file</code>
+<code>download_retrieval_artifact</code>
 </dd>
 <dt>tags</dt>
 <dd>
@@ -86,7 +86,7 @@
 </tr>
 <tr>
 <td data-label="Name">
-<code>path</code></td>
+<code>artifact_id</code></td>
 <td data-label="In">
 <code>query</code></td>
 <td data-label="Required">yes</td>
@@ -268,7 +268,7 @@
 </th>
 <td>
 <span id="v-5335e8d6ef8a7573fd888a20">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/operationId">download_retrieval_file</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/operationId">download_retrieval_artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -432,7 +432,7 @@
 </th>
 <td>
 <span id="v-ee38e032ed642404051bc834">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/parameters/2/name">path</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/parameters/2/name">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -459,7 +459,7 @@
 </th>
 <td>
 <span id="v-044e7d0e2e72f0369073fcd9">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/parameters/2/schema/title">Path</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/parameters/2/schema/title">Artifact Id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1568,7 +1568,7 @@
 </th>
 <td>
 <span id="v-b38705bf02b9512f4b4141bb">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/summary">Download Retrieval File</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get/summary">Download Retrieval Artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1657,7 +1657,7 @@
 <a href="e-b578c61895feed802d74a0a3.html">a-riverhog-cli local sync</a>
 </li>
 <li>
-<a href="e-474eff3f14a2c73d32818841.html">riverhog_client.ApiClient.download_retrieval_file</a>
+<a href="e-2b6db9c3df237e8bac081a15.html">riverhog_client.ApiClient.download_retrieval_artifact</a>
 </li>
 </ul>
 </section>
@@ -1675,7 +1675,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 <li>
 <a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
@@ -1692,15 +1692,15 @@
 </ul>
 <details>
 <summary>Structural operation bindings</summary>
-<table id="v-d1886013b5d91b8fc4acef78">
+<table id="v-a83c0e063b8c90976fbd3d4c">
 <tbody>
 <tr>
 <th scope="row">
 <code>application</code>
 </th>
 <td>
-<span id="v-a6b96ef7eeb27026095a5bb6">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/application">riverhog</code>
+<span id="v-9d37c0a52770bdb3c210cdc2">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/application">riverhog</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1709,8 +1709,8 @@
 <code>classification</code>
 </th>
 <td>
-<span id="v-decb19ba62acffd1aa242946">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/classification">client-only-primitive</code>
+<span id="v-5bb8ce9174914b8a2ba060cb">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/classification">client-only-primitive</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1719,22 +1719,22 @@
 <code>cli_bindings</code>
 </th>
 <td>
-<table id="v-ea1935efee4fcfd5a6e5f209">
+<table id="v-92e8d654318501d60cdb5ad7">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<table id="v-b662d92cbdffff0be652fc1d">
+<table id="v-5a790a4289c90c575015c25a">
 <tbody>
 <tr>
 <th scope="row">
 <code>command</code>
 </th>
 <td>
-<span id="v-6f012f820f64239bee57f327">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/command">local sync</code>
+<span id="v-7dd12733f70349ac2edf8166">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/command">local sync</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1743,8 +1743,8 @@
 <code>executable</code>
 </th>
 <td>
-<span id="v-221aa8e29a6405614403f3f6">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/executable">a-riverhog-cli</code>
+<span id="v-edb7cd471ebda531d6be8774">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/executable">a-riverhog-cli</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1753,8 +1753,8 @@
 <code>result_identity</code>
 </th>
 <td>
-<span id="v-0bd17879d3fdb93bcf71198e">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/result_identity">a-riverhog-cli-result/local/sync/v1</code>
+<span id="v-77a38278fd54ae2547e11221">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/result_identity">a-riverhog-cli-result/local/sync/v1</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1763,15 +1763,15 @@
 <code>source</code>
 </th>
 <td>
-<table id="v-466aa2e0d801eff06d670afb">
+<table id="v-a662b969e3fb9255ebc0737f">
 <tbody>
 <tr>
 <th scope="row">
 <code>line</code>
 </th>
 <td>
-<span id="v-fa862b8bdb082a9af29ab803">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/source/line">1103</code>
+<span id="v-7f9b584b906f462049c33885">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/source/line">1029</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1780,8 +1780,8 @@
 <code>module</code>
 </th>
 <td>
-<span id="v-d97a3e6ec9f8e3c95c163596">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/source/module">a_riverhog_cli.local</code>
+<span id="v-a0a9fc1b840b591f76e03a52">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/source/module">a_riverhog_cli.local</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1790,8 +1790,8 @@
 <code>path</code>
 </th>
 <td>
-<span id="v-4b80e2222b49cb0da5407344">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
+<span id="v-a4e580896d7a8f6fc2eee486">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1800,8 +1800,8 @@
 <code>symbol</code>
 </th>
 <td>
-<span id="v-2cf7689f1c71f36de481cdf7">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/0/source/symbol">sync</code>
+<span id="v-262098299075d1bded60eeb8">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/0/source/symbol">sync</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1816,15 +1816,15 @@
 <code>1</code>
 </th>
 <td>
-<table id="v-eb80439292ae96f2ff8dde56">
+<table id="v-9931199fad1a85d90de628e1">
 <tbody>
 <tr>
 <th scope="row">
 <code>command</code>
 </th>
 <td>
-<span id="v-2d679b922151200da69ded71">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/command">local repair</code>
+<span id="v-15779d25154266d4f0579b25">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/command">local repair</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1833,8 +1833,8 @@
 <code>executable</code>
 </th>
 <td>
-<span id="v-0d395a3cc6583503c1cc9dce">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/executable">a-riverhog-cli</code>
+<span id="v-7550ca84392663745c5a1f44">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/executable">a-riverhog-cli</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1843,8 +1843,8 @@
 <code>result_identity</code>
 </th>
 <td>
-<span id="v-d4ad4cf3d4f49c14d412e8e4">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/result_identity">a-riverhog-cli-result/local/repair/v1</code>
+<span id="v-e75fe519929e6b01439bea9c">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/result_identity">a-riverhog-cli-result/local/repair/v1</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1853,15 +1853,15 @@
 <code>source</code>
 </th>
 <td>
-<table id="v-37baddbe0115e33b2c120ede">
+<table id="v-2f0842a69a0ae0ef98089459">
 <tbody>
 <tr>
 <th scope="row">
 <code>line</code>
 </th>
 <td>
-<span id="v-1e0e25e247b4cbb5a2adc590">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/source/line">1124</code>
+<span id="v-e3b70f616192c5698c9e6ca1">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/source/line">1044</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1870,8 +1870,8 @@
 <code>module</code>
 </th>
 <td>
-<span id="v-2aeb8854a8f5ebe0508e0c13">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/source/module">a_riverhog_cli.local</code>
+<span id="v-62e8e07238ff641bf11b285a">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/source/module">a_riverhog_cli.local</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1880,8 +1880,8 @@
 <code>path</code>
 </th>
 <td>
-<span id="v-576f943ec16655b012716330">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
+<span id="v-87ad855c0307fe9c44e5e03b">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/local.py</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1890,8 +1890,8 @@
 <code>symbol</code>
 </th>
 <td>
-<span id="v-df1385252278149b6f2f8001">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_bindings/1/source/symbol">repair</code>
+<span id="v-c22b34f8d5248fc6a72fcbc7">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_bindings/1/source/symbol">repair</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1909,15 +1909,15 @@
 <code>cli_commands</code>
 </th>
 <td>
-<table id="v-a000ecfa12577449c3b117c4">
+<table id="v-477db6adcdfc1e456b616cfa">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-6315837e8735802bf336370e">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_commands/0">local repair</code>
+<span id="v-e02d72144f93f2b07b8773bf">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_commands/0">local repair</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1926,8 +1926,8 @@
 <code>1</code>
 </th>
 <td>
-<span id="v-77c6c857e992955b3ee6e17d">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/cli_commands/1">local sync</code>
+<span id="v-b388fd5b5f27707253980311">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/cli_commands/1">local sync</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1939,8 +1939,8 @@
 <code>client</code>
 </th>
 <td>
-<span id="v-1fbcbcae0449f39a10bfcd84">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/client">ApiClient</code>
+<span id="v-6942e15c275471633302d9e6">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/client">ApiClient</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1949,22 +1949,22 @@
 <code>client_bindings</code>
 </th>
 <td>
-<table id="v-d3b67a87b618f55f64db6ab1">
+<table id="v-4f8f05a20e5a7f404b772b0d">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<table id="v-11ff04c4e412318aa45a7bc7">
+<table id="v-7dc7ad0b2c2b67ec5a77b526">
 <tbody>
 <tr>
 <th scope="row">
 <code>public_identity</code>
 </th>
 <td>
-<span id="v-acd5458a5170ccac56740a21">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/client_bindings/0/public_identity">riverhog_client.ApiClient.download_retrieval_file</code>
+<span id="v-914eb6b1610c09b6185cb3ce">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/client_bindings/0/public_identity">riverhog_client.ApiClient.download_retrieval_artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1973,15 +1973,15 @@
 <code>source</code>
 </th>
 <td>
-<table id="v-6cd3e42f292a509889950270">
+<table id="v-4a91f3812e92819fcf20e95b">
 <tbody>
 <tr>
 <th scope="row">
 <code>line</code>
 </th>
 <td>
-<span id="v-715201d6188b6e0b0ef5109b">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/client_bindings/0/source/line">980</code>
+<span id="v-7d9f16312197c6a0765d7b70">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/client_bindings/0/source/line">961</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1990,8 +1990,8 @@
 <code>module</code>
 </th>
 <td>
-<span id="v-d2272d6e087ebe983878a125">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/client_bindings/0/source/module">riverhog_client.client</code>
+<span id="v-4f3f977b799f4ffad04def27">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/client_bindings/0/source/module">riverhog_client.client</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2000,8 +2000,8 @@
 <code>path</code>
 </th>
 <td>
-<span id="v-0810d690fc1960753a85fd7e">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
+<span id="v-aaa997838ba6480eafee3927">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2010,8 +2010,8 @@
 <code>symbol</code>
 </th>
 <td>
-<span id="v-fa3d32a5877f29525c074829">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/client_bindings/0/source/symbol">ApiClient.download_retrieval_file</code>
+<span id="v-a2330195cd16a468e248b112">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/client_bindings/0/source/symbol">ApiClient.download_retrieval_artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2029,8 +2029,8 @@
 <code>method</code>
 </th>
 <td>
-<span id="v-e7c21eb59581d66a6b65ebf2">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/method">GET</code>
+<span id="v-f38d9aa7c7aca25a9918defe">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/method">GET</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2039,8 +2039,8 @@
 <code>operation_id</code>
 </th>
 <td>
-<span id="v-a1d72e41a79688d704b7e9be">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/operation_id">download_retrieval_file</code>
+<span id="v-4e38e972090548b5357cf308">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/operation_id">download_retrieval_artifact</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2049,8 +2049,8 @@
 <code>path</code>
 </th>
 <td>
-<span id="v-089772714d391bfd7037ca36">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/path">/v1/retrieval-jobs/{job_id}/content</code>
+<span id="v-807ba888ecdf2636de61c0c6">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/path">/v1/retrieval-jobs/{job_id}/content</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2059,8 +2059,8 @@
 <code>provider_evidence</code>
 </th>
 <td>
-<span id="v-97a5a885bac796e009d8870c">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/provider_evidence">provider-qualification:#442</code>
+<span id="v-f6530a514b269db5228daddc">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/provider_evidence">provider-qualification:#442</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2069,8 +2069,8 @@
 <code>read_collection</code>
 </th>
 <td>
-<span id="v-4fbe5c32243c388b499d692a">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/read_collection">null</code>
+<span id="v-127b957240a6eea28846aa25">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/read_collection">null</code>
 <span class="kind">null</span>
 </span></td>
 </tr>
@@ -2079,8 +2079,8 @@
 <code>response_authority</code>
 </th>
 <td>
-<span id="v-8377d3ae7f8fb4d6a7379c75">
-<code data-value-pointer="/audit/operation-qualification/download_retrieval_file/response_authority">stream-or-empty</code>
+<span id="v-d674de34bd31fd5f19c984a9">
+<code data-value-pointer="/audit/operation-qualification/download_retrieval_artifact/response_authority">stream-or-empty</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2092,7 +2092,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

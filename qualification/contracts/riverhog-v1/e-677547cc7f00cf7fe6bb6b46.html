@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-c46cd23d9998f289c2c20c4b">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>$id</dt>
@@ -44,7 +44,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;token_file&quot;,&quot;destination_identity&quot;,&quot;rclone_remote&quot;]</code>
+<code>[&quot;token_file&quot;,&quot;destination_identity&quot;,&quot;destination_naming_rules&quot;,&quot;rclone_remote&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -74,6 +74,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>destination_naming_rules</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-677547cc7f00cf7fe6bb6b46.html#v-a4f05bae43eb4ac87d68d807">#/$defs/RcloneNamingRules</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -117,6 +126,12 @@
 </tbody>
 </table>
 </div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-a4f05bae43eb4ac87d68d807">RcloneNamingRules</a>
+</li>
+</ul>
 </section>
 <section class="schema-section" id="s-1bf19eb6db1300652a2ed927">
 <h3>Field: rclone_config_file</h3>
@@ -152,6 +167,91 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-a4f05bae43eb4ac87d68d807">
+<h3>Definition: RcloneNamingRules</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>RcloneNamingRules</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;windows_names&quot;,&quot;case_sensitive&quot;,&quot;unicode_equivalence&quot;,&quot;component_bytes&quot;,&quot;relative_path_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>case_sensitive</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>component_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>relative_path_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>unicode_equivalence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;exact&quot;,&quot;NFC&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>windows_names</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </div>
 <details class="exact">
 <summary>Exact machine fields and pointers</summary>
@@ -161,6 +261,326 @@
 </h4>
 <table id="v-c46cd23d9998f289c2c20c4b">
 <tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-3fedce5c8003d35497d2c70b">
+<tbody>
+<tr>
+<th scope="row">
+<code>RcloneNamingRules</code>
+</th>
+<td>
+<table id="v-a4f05bae43eb4ac87d68d807">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-176b2d37e3ff9b0dcb314f98">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-218078dcef1e70e36cee5ffb">
+<tbody>
+<tr>
+<th scope="row">
+<code>case_sensitive</code>
+</th>
+<td>
+<table id="v-6da8f3795f320cb6cd8e2351">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9414fcde8bb8afae042daa5f">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/case_sensitive/title">Case Sensitive</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5ead49a08e0d3b5db6ec51ae">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/case_sensitive/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>component_bytes</code>
+</th>
+<td>
+<table id="v-7aad74e2356af612aa27386d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-0f6410b807226217aef39361">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/component_bytes/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-1b31b5c07394af374745a025">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/component_bytes/title">Component Bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-11e73940313f7edeaca6080c">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/component_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>relative_path_bytes</code>
+</th>
+<td>
+<table id="v-dc536e523ab0986ec21c5dd7">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-fe5848b84da60ba6a65c6c6b">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/relative_path_bytes/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-99ec9ecc29e14e8db5cb2c42">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/relative_path_bytes/title">Relative Path Bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-968df6532ee42f9c14bcbe63">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/relative_path_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unicode_equivalence</code>
+</th>
+<td>
+<table id="v-f13e0093ea4baa7d92572acc">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-4b1477b802134a8c90d8b2b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6b903c0e95ae3541045d9a15">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/unicode_equivalence/enum/0">exact</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f3414703152d1bee98bf2f7a">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/unicode_equivalence/enum/1">NFC</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fe3819abecddd7944945abf6">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/unicode_equivalence/title">Unicode Equivalence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-15fbb6e3a8d4bf1e7f3ddf74">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/unicode_equivalence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>windows_names</code>
+</th>
+<td>
+<table id="v-714cd87df168b2a27ce67100">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-187910a703d6062e25ba3c63">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/windows_names/title">Windows Names</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2ffb0a9498bcf96fefeb007e">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/properties/windows_names/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-628ac5dd40b359d1cdbec206">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-bbabd5aa67b3f63bf437ea17">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/required/0">windows_names</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c802d9d1ae57d9266243bc79">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/required/1">case_sensitive</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-0f90f1a01e2b0f881b47819e">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/required/2">unicode_equivalence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-2b5bd233d57e3f566af9cf59">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/required/3">component_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-4578708bc3d51ede4ccbecf3">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/required/4">relative_path_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0be9bdaf8243b308ca47b734">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/title">RcloneNamingRules</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-039b9ab7bfe97fcc1832e0f5">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/$defs/RcloneNamingRules/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>$id</code>
@@ -233,6 +653,26 @@
 <span id="v-36f2bd3be8201b1f47deb9ff">
 <code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/destination_identity/type">string</code>
 <span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>destination_naming_rules</code>
+</th>
+<td>
+<table id="v-e0295158aea82bd27492663e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-24cedec966b1fc7fb90ad416">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/properties/destination_naming_rules/$ref">#/$defs/RcloneNamingRules</code>
+<span class="kind">string</span> <a href="e-677547cc7f00cf7fe6bb6b46.html#v-a4f05bae43eb4ac87d68d807">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -494,7 +934,17 @@
 </th>
 <td>
 <span id="v-12aff5dc99d35a8eff002bee">
-<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/required/2">rclone_remote</code>
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/required/2">destination_naming_rules</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-30742f34292e9559efa445ff">
+<code data-value-pointer="/external_contract/configuration_documents/a-stove0-rclone-target:configuration:rclone-target-config/required/3">rclone_remote</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -581,7 +1031,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

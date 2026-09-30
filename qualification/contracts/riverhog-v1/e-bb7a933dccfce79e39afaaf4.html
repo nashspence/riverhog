@@ -32,7 +32,7 @@
 </dd>
 <dt>bundle sha256</dt>
 <dd>
-<code>909715bc326f02e08248e0488225c17cc7e792cdc83f5ff80658d7c9a18e2923</code>
+<code>79bcdb41b784b438475aff3368d0799b89be43a32a25785ee85ac36a0aab18c4</code>
 </dd>
 <dt>compatibility</dt>
 <dd>
@@ -40,7 +40,7 @@
 </dd>
 <dt>departure effect</dt>
 <dd>
-<code>{&quot;http_binding&quot;:{&quot;operations&quot;:[{&quot;error_schema&quot;:&quot;ErrorOut&quot;,&quot;errors&quot;:[{&quot;code&quot;:&quot;bad_request&quot;,&quot;status&quot;:400},{&quot;code&quot;:&quot;unauthorized&quot;,&quot;status&quot;:401},{&quot;code&quot;:&quot;target_failed&quot;,&quot;status&quot;:500}],&quot;method&quot;:&quot;GET&quot;,&quot;path&quot;:&quot;/v1/departure-target&quot;,&quot;path_parameters&quot;:[],&quot;request&quot;:{&quot;kind&quot;:&quot;none&quot;,&quot;schema&quot;:null},&quot;response&quot;:{&quot;headers&quot;:[],&quot;kind&quot;:&quot;json&quot;,&quot;schema&quot;:&quot;DepartureEffectTargetDescriptor&quot;,&quot;statuses&quot;:[200]}},{&quot;error_schema&quot;:&quot;ErrorOut&quot;,&quot;errors&quot;:[{&quot;code&quot;:&quot;invalid_target_request&quot;,&quot;status&quot;:400},{&quot;code&quot;:&quot;unauthorized&quot;,&quot;status&quot;:401},{&quot;code&quot;:&quot;request_too_large&quot;,&quot;status&quot;:413},{&quot;code&quot;:&quot;target_descriptor_mismatch&quot;,&quot;status&quot;:409},{&quot;code&quot;:&quot;target_failed&quot;,&quot;status&quot;:500}],&quot;method&quot;:&quot;PUT&quot;,&quot;path&quot;:&quot;/v1/departure-effects/{departure_id}&quot;,&quot;path_parameters&quot;:[{&quot;name&quot;:&quot;departure_id&quot;,&quot;schema&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;}}],&quot;request&quot;:{&quot;kind&quot;:&quot;json&quot;,&quot;schema&quot;:&quot;DepartureEffectIntent&quot;},&quot;response&quot;:{&quot;headers&quot;:[],&quot;kind&quot;:&quot;json&quot;,&quot;schema&quot;:&quot;DepartureEffectReceipt&quot;,&quot;statuses&quot;:[200]}}]},&quot;schemas&quot;:{&quot;DepartureEffectIntent&quot;:{&quot;$defs&quot;:{&quot;CatalogSyncDescriptor&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Archive Root Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;collection_id&quot;:{&quot;$ref&quot;:&quot;#/$defs/CollectionId&quot;},&quot;content_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Content Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/$defs/CollectionDescription&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;description_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Description Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;title&quot;:&quot;Description Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;title&quot;:&quot;Tag Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Tag Set Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;],&quot;title&quot;:&quot;CatalogSyncDescriptor&quot;,&quot;type&quot;:&quot;object&quot;},&quot;CollectionDescription&quot;:{&quot;maxLength&quot;:32768,&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:32768,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-catalog-description&quot;},&quot;x-unicode-normalization&quot;:&quot;NFC&quot;},&quot;CollectionId&quot;:{&quot;allOf&quot;:[{&quot;pattern&quot;:&quot;^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;not&quot;:{&quot;const&quot;:&quot;0&quot;}}]}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;authorization_view_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Authorization View Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_cause&quot;:{&quot;enum&quot;:[&quot;collection_deleted&quot;,&quot;visibility_lost&quot;],&quot;title&quot;:&quot;Departure Cause&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_id&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Departure Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Departure Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;last_collection&quot;:{&quot;$ref&quot;:&quot;#/$defs/CatalogSyncDescriptor&quot;},&quot;policy_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Policy Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;policy_revision&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Policy Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;policy_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Policy Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Source Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_registration_id&quot;:{&quot;maxLength&quot;:160,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Target Registration Id&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;policy_id&quot;,&quot;policy_revision&quot;,&quot;policy_sha256&quot;,&quot;target_registration_id&quot;,&quot;target_identity&quot;,&quot;source_identity&quot;,&quot;authorization_view_identity&quot;,&quot;last_collection&quot;,&quot;departure_cause&quot;,&quot;departure_revision&quot;,&quot;departure_id&quot;],&quot;title&quot;:&quot;DepartureEffectIntent&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectIntentPayload&quot;:{&quot;$defs&quot;:{&quot;CatalogSyncDescriptor&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Archive Root Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;collection_id&quot;:{&quot;$ref&quot;:&quot;#/$defs/CollectionId&quot;},&quot;content_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Content Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/$defs/CollectionDescription&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;description_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Description Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;title&quot;:&quot;Description Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;title&quot;:&quot;Tag Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Tag Set Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;],&quot;title&quot;:&quot;CatalogSyncDescriptor&quot;,&quot;type&quot;:&quot;object&quot;},&quot;CollectionDescription&quot;:{&quot;maxLength&quot;:32768,&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:32768,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-catalog-description&quot;},&quot;x-unicode-normalization&quot;:&quot;NFC&quot;},&quot;CollectionId&quot;:{&quot;allOf&quot;:[{&quot;pattern&quot;:&quot;^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;not&quot;:{&quot;const&quot;:&quot;0&quot;}}]}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;authorization_view_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Authorization View Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_cause&quot;:{&quot;enum&quot;:[&quot;collection_deleted&quot;,&quot;visibility_lost&quot;],&quot;title&quot;:&quot;Departure Cause&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Departure Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;last_collection&quot;:{&quot;$ref&quot;:&quot;#/$defs/CatalogSyncDescriptor&quot;},&quot;policy_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Policy Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;policy_revision&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Policy Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;policy_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Policy Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Source Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_registration_id&quot;:{&quot;maxLength&quot;:160,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Target Registration Id&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;policy_id&quot;,&quot;policy_revision&quot;,&quot;policy_sha256&quot;,&quot;target_registration_id&quot;,&quot;target_identity&quot;,&quot;source_identity&quot;,&quot;authorization_view_identity&quot;,&quot;last_collection&quot;,&quot;departure_cause&quot;,&quot;departure_revision&quot;],&quot;title&quot;:&quot;DepartureEffectIntentPayload&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectReceipt&quot;:{&quot;$defs&quot;:{&quot;JsonValue&quot;:{}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;departure_id&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Departure Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;receipt_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Receipt Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;result&quot;:{&quot;additionalProperties&quot;:{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;},&quot;title&quot;:&quot;Result&quot;,&quot;type&quot;:&quot;object&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:65536,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-departure-effect-receipt&quot;}},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;departure_id&quot;,&quot;target_identity&quot;,&quot;result&quot;,&quot;receipt_sha256&quot;],&quot;title&quot;:&quot;DepartureEffectReceipt&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectReceiptPayload&quot;:{&quot;$defs&quot;:{&quot;JsonValue&quot;:{}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;departure_id&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Departure Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;result&quot;:{&quot;additionalProperties&quot;:{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;},&quot;title&quot;:&quot;Result&quot;,&quot;type&quot;:&quot;object&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:65536,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-departure-effect-receipt&quot;}},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;departure_id&quot;,&quot;target_identity&quot;,&quot;result&quot;],&quot;title&quot;:&quot;DepartureEffectReceiptPayload&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectTargetDescriptor&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;image_id&quot;:{&quot;pattern&quot;:&quot;^sha256:[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Image Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Implementation Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_version&quot;:{&quot;maxLength&quot;:120,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Implementation Version&quot;,&quot;type&quot;:&quot;string&quot;},&quot;scope_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Scope Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_revision&quot;:{&quot;maxLength&quot;:200,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Source Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;scope_identity&quot;,&quot;target_identity&quot;],&quot;title&quot;:&quot;DepartureEffectTargetDescriptor&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectTargetDescriptorPayload&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;image_id&quot;:{&quot;pattern&quot;:&quot;^sha256:[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Image Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Implementation Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_version&quot;:{&quot;maxLength&quot;:120,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Implementation Version&quot;,&quot;type&quot;:&quot;string&quot;},&quot;scope_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Scope Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_revision&quot;:{&quot;maxLength&quot;:200,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Source Revision&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;scope_identity&quot;],&quot;title&quot;:&quot;DepartureEffectTargetDescriptorPayload&quot;,&quot;type&quot;:&quot;object&quot;},&quot;ErrorOut&quot;:{&quot;$defs&quot;:{&quot;ErrorBody&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;code&quot;:{&quot;minLength&quot;:1,&quot;title&quot;:&quot;Code&quot;,&quot;type&quot;:&quot;string&quot;},&quot;details&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:true,&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;default&quot;:null,&quot;title&quot;:&quot;Details&quot;},&quot;message&quot;:{&quot;minLength&quot;:1,&quot;title&quot;:&quot;Message&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;code&quot;,&quot;message&quot;],&quot;title&quot;:&quot;ErrorBody&quot;,&quot;type&quot;:&quot;object&quot;}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;error&quot;:{&quot;$ref&quot;:&quot;#/$defs/ErrorBody&quot;}},&quot;required&quot;:[&quot;error&quot;],&quot;title&quot;:&quot;ErrorOut&quot;,&quot;type&quot;:&quot;object&quot;}}}</code>
+<code>{&quot;http_binding&quot;:{&quot;operations&quot;:[{&quot;error_schema&quot;:&quot;ErrorOut&quot;,&quot;errors&quot;:[{&quot;code&quot;:&quot;bad_request&quot;,&quot;status&quot;:400},{&quot;code&quot;:&quot;unauthorized&quot;,&quot;status&quot;:401},{&quot;code&quot;:&quot;target_failed&quot;,&quot;status&quot;:500}],&quot;method&quot;:&quot;GET&quot;,&quot;path&quot;:&quot;/v1/departure-target&quot;,&quot;path_parameters&quot;:[],&quot;request&quot;:{&quot;kind&quot;:&quot;none&quot;,&quot;schema&quot;:null},&quot;response&quot;:{&quot;headers&quot;:[],&quot;kind&quot;:&quot;json&quot;,&quot;schema&quot;:&quot;DepartureEffectTargetDescriptor&quot;,&quot;statuses&quot;:[200]}},{&quot;error_schema&quot;:&quot;ErrorOut&quot;,&quot;errors&quot;:[{&quot;code&quot;:&quot;invalid_target_request&quot;,&quot;status&quot;:400},{&quot;code&quot;:&quot;unauthorized&quot;,&quot;status&quot;:401},{&quot;code&quot;:&quot;request_too_large&quot;,&quot;status&quot;:413},{&quot;code&quot;:&quot;target_descriptor_mismatch&quot;,&quot;status&quot;:409},{&quot;code&quot;:&quot;target_failed&quot;,&quot;status&quot;:500}],&quot;method&quot;:&quot;PUT&quot;,&quot;path&quot;:&quot;/v1/departure-effects/{departure_id}&quot;,&quot;path_parameters&quot;:[{&quot;name&quot;:&quot;departure_id&quot;,&quot;schema&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;}}],&quot;request&quot;:{&quot;kind&quot;:&quot;json&quot;,&quot;schema&quot;:&quot;DepartureEffectIntent&quot;},&quot;response&quot;:{&quot;headers&quot;:[],&quot;kind&quot;:&quot;json&quot;,&quot;schema&quot;:&quot;DepartureEffectReceipt&quot;,&quot;statuses&quot;:[200]}}]},&quot;schemas&quot;:{&quot;DepartureEffectIntent&quot;:{&quot;$defs&quot;:{&quot;CatalogSyncDescriptor&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Archive Root Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;artifact_set_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Artifact Set Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;collection_id&quot;:{&quot;$ref&quot;:&quot;#/$defs/CollectionId&quot;},&quot;description&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/$defs/CollectionDescription&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;description_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Description Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;title&quot;:&quot;Description Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;title&quot;:&quot;Tag Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Tag Set Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;],&quot;title&quot;:&quot;CatalogSyncDescriptor&quot;,&quot;type&quot;:&quot;object&quot;},&quot;CollectionDescription&quot;:{&quot;maxLength&quot;:32768,&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:32768,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-catalog-description&quot;},&quot;x-unicode-normalization&quot;:&quot;NFC&quot;},&quot;CollectionId&quot;:{&quot;allOf&quot;:[{&quot;pattern&quot;:&quot;^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;not&quot;:{&quot;const&quot;:&quot;0&quot;}}]}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;authorization_view_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Authorization View Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_cause&quot;:{&quot;enum&quot;:[&quot;collection_deleted&quot;,&quot;visibility_lost&quot;],&quot;title&quot;:&quot;Departure Cause&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_id&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Departure Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Departure Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;last_collection&quot;:{&quot;$ref&quot;:&quot;#/$defs/CatalogSyncDescriptor&quot;},&quot;policy_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Policy Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;policy_revision&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Policy Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;policy_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Policy Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Source Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_registration_id&quot;:{&quot;maxLength&quot;:160,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Target Registration Id&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;policy_id&quot;,&quot;policy_revision&quot;,&quot;policy_sha256&quot;,&quot;target_registration_id&quot;,&quot;target_identity&quot;,&quot;source_identity&quot;,&quot;authorization_view_identity&quot;,&quot;last_collection&quot;,&quot;departure_cause&quot;,&quot;departure_revision&quot;,&quot;departure_id&quot;],&quot;title&quot;:&quot;DepartureEffectIntent&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectIntentPayload&quot;:{&quot;$defs&quot;:{&quot;CatalogSyncDescriptor&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Archive Root Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;artifact_set_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Artifact Set Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;collection_id&quot;:{&quot;$ref&quot;:&quot;#/$defs/CollectionId&quot;},&quot;description&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/$defs/CollectionDescription&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;description_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Description Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;title&quot;:&quot;Description Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_revision&quot;:{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;title&quot;:&quot;Tag Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Tag Set Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;],&quot;title&quot;:&quot;CatalogSyncDescriptor&quot;,&quot;type&quot;:&quot;object&quot;},&quot;CollectionDescription&quot;:{&quot;maxLength&quot;:32768,&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:32768,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-catalog-description&quot;},&quot;x-unicode-normalization&quot;:&quot;NFC&quot;},&quot;CollectionId&quot;:{&quot;allOf&quot;:[{&quot;pattern&quot;:&quot;^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;not&quot;:{&quot;const&quot;:&quot;0&quot;}}]}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;authorization_view_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Authorization View Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_cause&quot;:{&quot;enum&quot;:[&quot;collection_deleted&quot;,&quot;visibility_lost&quot;],&quot;title&quot;:&quot;Departure Cause&quot;,&quot;type&quot;:&quot;string&quot;},&quot;departure_revision&quot;:{&quot;maxLength&quot;:19,&quot;minLength&quot;:1,&quot;pattern&quot;:&quot;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&quot;,&quot;title&quot;:&quot;Departure Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-intent/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;last_collection&quot;:{&quot;$ref&quot;:&quot;#/$defs/CatalogSyncDescriptor&quot;},&quot;policy_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Policy Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;policy_revision&quot;:{&quot;minimum&quot;:1,&quot;title&quot;:&quot;Policy Revision&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;policy_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Policy Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_identity&quot;:{&quot;maxLength&quot;:64,&quot;minLength&quot;:64,&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Source Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_registration_id&quot;:{&quot;maxLength&quot;:160,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Target Registration Id&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;policy_id&quot;,&quot;policy_revision&quot;,&quot;policy_sha256&quot;,&quot;target_registration_id&quot;,&quot;target_identity&quot;,&quot;source_identity&quot;,&quot;authorization_view_identity&quot;,&quot;last_collection&quot;,&quot;departure_cause&quot;,&quot;departure_revision&quot;],&quot;title&quot;:&quot;DepartureEffectIntentPayload&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectReceipt&quot;:{&quot;$defs&quot;:{&quot;JsonValue&quot;:{}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;departure_id&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Departure Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;receipt_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Receipt Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;result&quot;:{&quot;additionalProperties&quot;:{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;},&quot;title&quot;:&quot;Result&quot;,&quot;type&quot;:&quot;object&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:65536,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-departure-effect-receipt&quot;}},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;departure_id&quot;,&quot;target_identity&quot;,&quot;result&quot;,&quot;receipt_sha256&quot;],&quot;title&quot;:&quot;DepartureEffectReceipt&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectReceiptPayload&quot;:{&quot;$defs&quot;:{&quot;JsonValue&quot;:{}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;departure_id&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Departure Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-receipt/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;result&quot;:{&quot;additionalProperties&quot;:{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;},&quot;title&quot;:&quot;Result&quot;,&quot;type&quot;:&quot;object&quot;,&quot;x-riverhog-encoded-bytes-max&quot;:65536,&quot;x-riverhog-extent&quot;:{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-departure-effect-receipt&quot;}},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;departure_id&quot;,&quot;target_identity&quot;,&quot;result&quot;],&quot;title&quot;:&quot;DepartureEffectReceiptPayload&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectTargetDescriptor&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;image_id&quot;:{&quot;pattern&quot;:&quot;^sha256:[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Image Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Implementation Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_version&quot;:{&quot;maxLength&quot;:120,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Implementation Version&quot;,&quot;type&quot;:&quot;string&quot;},&quot;scope_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Scope Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_revision&quot;:{&quot;maxLength&quot;:200,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Source Revision&quot;,&quot;type&quot;:&quot;string&quot;},&quot;target_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Target Identity&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;scope_identity&quot;,&quot;target_identity&quot;],&quot;title&quot;:&quot;DepartureEffectTargetDescriptor&quot;,&quot;type&quot;:&quot;object&quot;},&quot;DepartureEffectTargetDescriptorPayload&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;format&quot;:{&quot;const&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;default&quot;:&quot;stove0-departure-effect-target/v1&quot;,&quot;title&quot;:&quot;Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;image_id&quot;:{&quot;pattern&quot;:&quot;^sha256:[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Image Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_id&quot;:{&quot;pattern&quot;:&quot;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&quot;,&quot;title&quot;:&quot;Implementation Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;implementation_version&quot;:{&quot;maxLength&quot;:120,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Implementation Version&quot;,&quot;type&quot;:&quot;string&quot;},&quot;scope_identity&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Scope Identity&quot;,&quot;type&quot;:&quot;string&quot;},&quot;source_revision&quot;:{&quot;maxLength&quot;:200,&quot;minLength&quot;:1,&quot;title&quot;:&quot;Source Revision&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;scope_identity&quot;],&quot;title&quot;:&quot;DepartureEffectTargetDescriptorPayload&quot;,&quot;type&quot;:&quot;object&quot;},&quot;ErrorOut&quot;:{&quot;$defs&quot;:{&quot;ErrorBody&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;code&quot;:{&quot;minLength&quot;:1,&quot;title&quot;:&quot;Code&quot;,&quot;type&quot;:&quot;string&quot;},&quot;details&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:true,&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;default&quot;:null,&quot;title&quot;:&quot;Details&quot;},&quot;message&quot;:{&quot;minLength&quot;:1,&quot;title&quot;:&quot;Message&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;code&quot;,&quot;message&quot;],&quot;title&quot;:&quot;ErrorBody&quot;,&quot;type&quot;:&quot;object&quot;}},&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;error&quot;:{&quot;$ref&quot;:&quot;#/$defs/ErrorBody&quot;}},&quot;required&quot;:[&quot;error&quot;],&quot;title&quot;:&quot;ErrorOut&quot;,&quot;type&quot;:&quot;object&quot;}}}</code>
 </dd>
 <dt>format</dt>
 <dd>
@@ -122,7 +122,7 @@
 <code>/external_contract/protocol_schemas/generated:stove0-target/bundle_sha256</code>
 </h4>
 <span id="v-1181fd9feae6923baa5db1f7">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/bundle_sha256">909715bc326f02e08248e0488225c17cc7e792cdc83f5ff80658d7c9a18e2923</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/bundle_sha256">79bcdb41b784b438475aff3368d0799b89be43a32a25785ee85ac36a0aab18c4</code>
 <span class="kind">string</span>
 </span>
 </section>
@@ -888,6 +888,66 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-c677d22d983d6822b58f375a">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-7915eb1665a0a0774a5cc419">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-5363a7f3fb405c8a3919befc">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-08872908f83f0dd5287ddba2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bce8a0238065acfce3ac9f7f">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/title">Artifact Set Identity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-43e8d6174e8000497148b714">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -901,66 +961,6 @@
 <span id="v-5d787d1be8c2bf10ce192aa1">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-bb7a933dccfce79e39afaaf4.html#v-e7fcbcabc11b0102fa5871d6">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-870d97245eb5033f400e5ea8">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-7d6cd6ce91563dc594ebd0d5">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/content_identity/maxLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-68005b02b1c6fbc1255e9c57">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/content_identity/minLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-6dd82b49fa24aace3cb926da">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-6301a218f8ca7478f7d7cd7b">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/content_identity/title">Content Identity</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-778a9f114171cb0e4d66700f">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -1342,7 +1342,7 @@
 </th>
 <td>
 <span id="v-0d3aa2e563eb9474bf1ba714">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntent/$defs/CatalogSyncDescriptor/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2428,6 +2428,66 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-e5d936d5a861576bc70282dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-ff2f544fa0df0eb3b8f16503">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-d8fb25f491e740ef56131117">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b863e991ac2e224284a67b0d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-4f920e342a4630acefe1a28c">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/title">Artifact Set Identity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4c9e152be1a4a9f896327ba3">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -2441,66 +2501,6 @@
 <span id="v-4158c2e78274ef3221334f67">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-bb7a933dccfce79e39afaaf4.html#v-79dd50c5fd7ee2f98d375117">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-dcb11397d264508026415e2a">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-33b3bc99b655c9f254c1fc29">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/content_identity/maxLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-caa6daae143042626de9a8cc">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/content_identity/minLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-214fda095f72166abe1d87a7">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-60a46193949b9a6cb72d19fe">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/content_identity/title">Content Identity</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-0301743caa8a5798ed1c1155">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -2882,7 +2882,7 @@
 </th>
 <td>
 <span id="v-ce55896e3f383bb3ddc1c926">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/departure_effect/schemas/DepartureEffectIntentPayload/$defs/CatalogSyncDescriptor/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5878,7 +5878,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(identity: &#x27;str&#x27;, remote: &#x27;str&#x27;, config_path: &#x27;Path | None&#x27; = None, executable: &#x27;str&#x27; = &#x27;rclone&#x27;, timeout_seconds: &#x27;int&#x27; = 86400) -&gt; None&quot;</code>
+<code>&quot;(identity: &#x27;str&#x27;, remote: &#x27;str&#x27;, naming_rules: &#x27;DestinationRules&#x27;, config_path: &#x27;Path | None&#x27; = None, executable: &#x27;str&#x27; = &#x27;rclone&#x27;, timeout_seconds: &#x27;int&#x27; = 86400) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -77,6 +77,14 @@
 <code>remote</code></td>
 <td data-label="Type">
 <code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>naming_rules</code></td>
+<td data-label="Type">
+<code>&#x27;DestinationRules&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -223,7 +231,7 @@
 </th>
 <td>
 <span id="v-7b43fe936430d41045b0762a">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/2/default">None</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/2/default">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -233,7 +241,7 @@
 </th>
 <td>
 <span id="v-be89589f30d18e1e69bd4b33">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/2/name">config_path</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/2/name">naming_rules</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -243,7 +251,7 @@
 </th>
 <td>
 <span id="v-2c5eea5b68203355c654fb00">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/2/type">&#x27;Path | None&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/2/type">&#x27;DestinationRules&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -263,7 +271,7 @@
 </th>
 <td>
 <span id="v-d6844c886ae60922445bb6ae">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/3/default">&#x27;rclone&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/3/default">None</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -273,7 +281,7 @@
 </th>
 <td>
 <span id="v-0a3c822c0c0dfe1baa3d25d4">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/3/name">executable</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/3/name">config_path</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -283,7 +291,7 @@
 </th>
 <td>
 <span id="v-0b506c02e360be3888ae230a">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/3/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/3/type">&#x27;Path | None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -303,7 +311,7 @@
 </th>
 <td>
 <span id="v-9ffb9540738a527263ce2354">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/4/default">86400</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/4/default">&#x27;rclone&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -313,7 +321,7 @@
 </th>
 <td>
 <span id="v-ca0b4de0db93f267e30246cf">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/4/name">timeout_seconds</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/4/name">executable</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -323,7 +331,47 @@
 </th>
 <td>
 <span id="v-ad5974f19366520db2d1c332">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/4/type">&#x27;int&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/4/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-78d1fb2946efe675cc395d9e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1aaae227a37556dd191e7f03">
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/5/default">86400</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-9f9966b0eec0760147eda893">
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/5/name">timeout_seconds</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9bb138694b3be2e376000367">
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/fields/5/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -349,7 +397,7 @@
 </th>
 <td>
 <span id="v-ddd7182c36337ca471e860f9">
-<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/signature">&quot;(identity: &#x27;str&#x27;, remote: &#x27;str&#x27;, config_path: &#x27;Path | None&#x27; = None, executable: &#x27;str&#x27; = &#x27;rclone&#x27;, timeout_seconds: &#x27;int&#x27; = 86400) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_rclone_target.RcloneDestination/contract/signature">&quot;(identity: &#x27;str&#x27;, remote: &#x27;str&#x27;, naming_rules: &#x27;DestinationRules&#x27;, config_path: &#x27;Path | None&#x27; = None, executable: &#x27;str&#x27; = &#x27;rclone&#x27;, timeout_seconds: &#x27;int&#x27; = 86400) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -405,6 +453,9 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
+<a href="e-77b0631aff73a1b120e1e8e0.html">a_stove0_rclone_target.RcloneDestination.rules_sha256</a>
+</li>
+<li>
 <a href="e-55e49b7f246011a9e5611b8d.html">a_stove0_rclone_target.RcloneDestination.commit</a>
 </li>
 </ul>
@@ -440,7 +491,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

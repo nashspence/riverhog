@@ -131,7 +131,7 @@
 <td data-label="Exit">
 <code>0</code></td>
 <td data-label="Selection">kind: <code>command-completed</code></td>
-<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>a-riverhog-cli-local-sync-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;materialized_files&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;restore_policy&quot;:{&quot;enum&quot;:[&quot;allow&quot;,&quot;never&quot;]},&quot;retrieval&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;retrieval_id&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;status&quot;:{&quot;enum&quot;:[&quot;requested&quot;,&quot;ready&quot;,&quot;cache-miss&quot;,&quot;current&quot;,&quot;materialized&quot;]},&quot;unavailable_files&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;status&quot;,&quot;materialized_files&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>a-riverhog-cli-local-sync-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;materialized_artifacts&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;retrieval&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;status&quot;:{&quot;enum&quot;:[&quot;requested&quot;,&quot;ready&quot;,&quot;cache-miss&quot;,&quot;current&quot;,&quot;materialized&quot;]},&quot;unavailable_artifacts&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;status&quot;,&quot;materialized_artifacts&quot;],&quot;type&quot;:&quot;object&quot;}</code></td>
 <td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
@@ -1507,18 +1507,18 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>materialized_files</code>
+<code>materialized_artifacts</code>
 </th>
 <td>
-<table id="v-d0f19d323a4ad5e9e5978d80">
+<table id="v-cff6e29d97d0631f8efec4af">
 <tbody>
 <tr>
 <th scope="row">
 <code>minimum</code>
 </th>
 <td>
-<span id="v-919353636b013e71e32c142a">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/materialized_files/minimum">0</code>
+<span id="v-4a7f63435923ffcdeef1a2ab">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/materialized_artifacts/minimum">0</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1527,50 +1527,10 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-891b356dc9744dd8381dee90">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/materialized_files/type">integer</code>
+<span id="v-9d431d837172c0f02099865f">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/materialized_artifacts/type">integer</code>
 <span class="kind">string</span>
 </span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>restore_policy</code>
-</th>
-<td>
-<table id="v-abaf2179d54640eea1ca7869">
-<tbody>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-ff88d626bd17b74c1a0169c0">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-4d65e07c581c38dda11d6660">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/restore_policy/enum/0">allow</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-651374ec1a05c24879e3a640">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/restore_policy/enum/1">never</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -1589,26 +1549,6 @@
 <td>
 <span id="v-9361b3b333b48d7c675f457c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/retrieval/type">object</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>retrieval_id</code>
-</th>
-<td>
-<table id="v-d9d8af4e5346343bfd14eb39">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-22260396a4616a03f9b7777b">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/retrieval_id/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1687,18 +1627,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>unavailable_files</code>
+<code>unavailable_artifacts</code>
 </th>
 <td>
-<table id="v-b77e926bcaa79138f69691a0">
+<table id="v-d6a59d1bd6fb551747bc62f6">
 <tbody>
 <tr>
 <th scope="row">
 <code>minimum</code>
 </th>
 <td>
-<span id="v-865b9e6bef6ac551969fa94c">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/unavailable_files/minimum">0</code>
+<span id="v-97254896c8bf8d937c51f433">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/unavailable_artifacts/minimum">0</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -1707,8 +1647,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-eaf98ee71d71ffe203f89a8d">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/unavailable_files/type">integer</code>
+<span id="v-48fa4066c36f46de38171554">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/properties/unavailable_artifacts/type">integer</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1741,7 +1681,7 @@
 </th>
 <td>
 <span id="v-1a6fe4ff21ff58519663aa02">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/required/1">materialized_files</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/local/commands/sync/result_contract/success/0/stdout/json/schema/required/1">materialized_artifacts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1881,10 +1821,10 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
-<a href="e-c09b5b66ce06689c6ab9c17b.html">GET /v1/catalog/collections/{collection_id}/inventory</a>
+<a href="e-de722d1ac9ded25c07d0d215.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
 </li>
 <li>
-<a href="e-2c6abfea3daad0ed0552270d.html">GET /v1/collections/{collection_id}/tags</a>
+<a href="e-7aa56f4dc34c47583299d761.html">GET /v1/collections/{collection_id}/provenance/journals</a>
 </li>
 <li>
 <a href="e-1e63b99e5b12beb7909da8b6.html">GET /v1/collections/{collection_id}</a>
@@ -1896,7 +1836,7 @@
 <a href="e-cc73187ad6b5d6b7a7b11e3b.html">GET /v1/retrieval-jobs/{job_id}</a>
 </li>
 <li>
-<a href="e-3dce3feba3e4421ea5b60424.html">GET /v1/retrieval-plans/{plan_id}/files</a>
+<a href="e-d988e21b84d0f6249d017689.html">GET /v1/retrieval-plans/{plan_id}/artifacts</a>
 </li>
 <li>
 <a href="e-407c4fcf143bdf8b946dea7c.html">POST /v1/retrieval-jobs/{job_id}/ack</a>
@@ -1923,28 +1863,28 @@
 <a href="e-1a7ebe6dfbb9c027e24046f5.html">riverhog_client.ApiClient.create_retrieval_job</a>
 </li>
 <li>
-<a href="e-474eff3f14a2c73d32818841.html">riverhog_client.ApiClient.download_retrieval_file</a>
+<a href="e-2b6db9c3df237e8bac081a15.html">riverhog_client.ApiClient.download_retrieval_artifact</a>
 </li>
 <li>
 <a href="e-d90680020f08d3f1f26f25a6.html">riverhog_client.ApiClient.get_collection</a>
 </li>
 <li>
-<a href="e-ed9dbe1b6302fc196e71fb03.html">riverhog_client.ApiClient.get_portable_collection_inventory</a>
-</li>
-<li>
 <a href="e-dd2093a190de1bde5fee8b8e.html">riverhog_client.ApiClient.get_retrieval_job</a>
 </li>
 <li>
-<a href="e-5223bc171950afb2b17464bf.html">riverhog_client.ApiClient.list_collection_tags</a>
+<a href="e-cfb2eace021cf3a71146cc5a.html">riverhog_client.ApiClient.list_collection_provenance_journals</a>
 </li>
 <li>
-<a href="e-2b62f443990c75f1b9b2dd59.html">riverhog_client.ApiClient.list_retrieval_plan_files</a>
+<a href="e-2c9dcce307d91eec82744c47.html">riverhog_client.ApiClient.list_retrieval_plan_artifacts</a>
 </li>
 <li>
 <a href="e-a473ee629f269e976c040923.html">riverhog_client.ApiClient.plan_retrieval</a>
 </li>
 <li>
 <a href="e-d291a6b79eb9a71ad9a47e71.html">riverhog_client.ApiClient.renew_retrieval_job</a>
+</li>
+<li>
+<a href="e-0742c3ef8cb6c85996bc74f7.html">riverhog_client.ApiClient.stream_collection_provenance_journal</a>
 </li>
 </ul>
 </section>
@@ -2027,22 +1967,22 @@
 <dt>
 <code>--wait / --no-wait</code>
 </dt>
-<dd>Wait while archival retrieval is pending [default: no-wait]</dd>
+<dd>Wait while archive retrieval is pending [default: no-wait]</dd>
 <dt>
 <code>--restore-policy TEXT</code>
 </dt>
-<dd>Use allow for full retrieval or never for opportunistic-only materialization [default: allow]</dd>
+<dd>[default: allow]</dd>
 <dt>
 <code>--json</code>
 </dt>
-<dd>Emit JSON</dd>
+<dd>Emit JSON.</dd>
 </dl>
 </aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

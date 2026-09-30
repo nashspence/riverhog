@@ -207,6 +207,9 @@
 <a href="#s-60d5f25ee1ba3c9ce7f5c52d">NonnegativeDecimal</a>
 </li>
 <li>
+<a href="#s-5a73a49150d75eb307a62d17">ObservationEvidenceSlot</a>
+</li>
+<li>
 <a href="#s-2f95dafde9873ad47af58be7">ObserverImplementation</a>
 </li>
 <li>
@@ -235,6 +238,9 @@
 </li>
 <li>
 <a href="#s-58046d61153ae7faddb76c6e">WorkIdentity</a>
+</li>
+<li>
+<a href="#s-30f28ad442017c6831b19a2d">WorkInputGroup</a>
 </li>
 <li>
 <a href="#s-bc2c7a33ce528cfb1e77a3dd">WorkflowPlan</a>
@@ -470,7 +476,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -505,19 +511,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-9c1ab03a27ea112808485e1a.html#v-a68e2629c1c175b64924cce7">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-9c1ab03a27ea112808485e1a.html#v-a68e2629c1c175b64924cce7">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -730,7 +736,7 @@
 <section class="schema-section" id="s-4267e6f02b95ebcdf0a38962">
 <h3>Definition: ContentObservationRequest</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -759,6 +765,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-f3a47d5e2d75e6157b03355c">evidence_slots</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-5a73a49150d75eb307a62d17">#/$defs/ObservationEvidenceSlot</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>format</code></td>
@@ -822,6 +837,16 @@
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-9c1ab03a27ea112808485e1a.html#v-171969873add59629ad24f63">#/$defs/JsonValue</a></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-ba75e669bd3379233e3524ef">read_actions</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Default">
+<code>[&quot;read-inputs&quot;]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -1121,7 +1146,7 @@
 <section class="schema-section" id="s-dec311e248a1b5cf44770baa">
 <h3>Definition: EffectPlan</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -1150,6 +1175,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-a33b05a288c7220c97abc4c2">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -1657,6 +1692,78 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-5a73a49150d75eb307a62d17">
+<h3>Definition: ObservationEvidenceSlot</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;slot&quot;,&quot;request_id&quot;,&quot;result_sha256&quot;,&quot;observer_contract_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>observer_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>request_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>slot</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-2f95dafde9873ad47af58be7">
 <h3>Definition: ObserverImplementation</h3>
 <p class="shape">
@@ -2137,7 +2244,7 @@
 <section class="schema-section" id="s-070c476a93861deb22317136">
 <h3>Definition: TransformPlan</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -2166,6 +2273,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-4f286626841211b6e3ed1ac6">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -2265,12 +2382,12 @@
 <section class="schema-section" id="s-3129df2e4c0a6108ef17bad0">
 <h3>Definition: WorkArtifactSubject</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -2296,6 +2413,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -2318,24 +2444,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-8c4245a90e28998e907857f8">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2461,10 +2569,65 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-30f28ad442017c6831b19a2d">
+<h3>Definition: WorkInputGroup</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-d5fc5df5f5d8c2d84f043a17">associated_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-bc2c7a33ce528cfb1e77a3dd">
 <h3>Definition: WorkflowPlan</h3>
 <p class="shape">
-<code>object</code>; 13 fields; additionalProperties: <code>false</code>
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -2501,6 +2664,16 @@
 <code>string</code>; const: <code>stove0-workflow-plan/v1</code>; default: <code>stove0-workflow-plan/v1</code></td>
 <td data-label="Default">
 <code>stove0-workflow-plan/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f63b8a5e68df9ee10f2d51a8">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -2620,6 +2793,35 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-f3a47d5e2d75e6157b03355c">
+<h3>Field: evidence_slots</h3>
+<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-5a73a49150d75eb307a62d17">#/$defs/ObservationEvidenceSlot</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-ee23072ce68b6ae411e8edfe">1</a></td>
+<td data-label="Schema">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-5a73a49150d75eb307a62d17">#/$defs/ObservationEvidenceSlot</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-70d93d6cc2f597cb83222c15">
 <h3>Field: options</h3>
 <p class="shape">
@@ -2633,6 +2835,26 @@
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ba75e669bd3379233e3524ef">
+<h3>Field: read_actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>1</code>
 </dd>
 </dl>
 </section>
@@ -2822,6 +3044,18 @@
 <dt>minItems</dt>
 <dd>
 <code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-a33b05a288c7220c97abc4c2">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -3057,6 +3291,18 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-4f286626841211b6e3ed1ac6">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-38c0678ba9f16dfaaef341d5">
 <h3>Field: intent</h3>
 <p class="shape">
@@ -3100,34 +3346,6 @@
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
 </dd>
 </dl>
-</section>
-<section class="schema-section" id="s-8c4245a90e28998e907857f8">
-<h3>Field: media_type</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-fa95d9d7255d421059b85f09">
 <h3>Field: effective_intent</h3>
@@ -3217,6 +3435,30 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-d5fc5df5f5d8c2d84f043a17">
+<h3>Field: associated_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f63b8a5e68df9ee10f2d51a8">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-c1e0c004f8d1947b6988a2c1">
 <h3>Field: observations</h3>
 <p class="shape">
@@ -3242,6 +3484,18 @@
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ee23072ce68b6ae411e8edfe">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9c1ab03a27ea112808485e1a.html#v-5a73a49150d75eb307a62d17">#/$defs/ObservationEvidenceSlot</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -3921,6 +4175,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-269c12a931065240278ec730">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3419e73f4d7670ef78aca504">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-50393ea71c913fedf7fb2b9b">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -3934,36 +4218,6 @@
 <span id="v-126c1cd677017e95bbbe0f90">
 <code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-9c1ab03a27ea112808485e1a.html#v-a68e2629c1c175b64924cce7">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-61bb7f0131c83ab8f480038a">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-c61ac75eae304d19027881a3">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-55b4f461ea697f13f477dedf">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -4005,7 +4259,7 @@
 </th>
 <td>
 <span id="v-2a83e1ac662d0302fe1f6330">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/CollectionRootIdentityRef/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4561,6 +4815,96 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>evidence_slots</code>
+</th>
+<td>
+<table id="v-f3a47d5e2d75e6157b03355c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-376b840eee5505ed9e7dd8c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-ee23072ce68b6ae411e8edfe">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e045cef72fe8effaf807c1b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2dbbc1d2b1c500e3129d73a2">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/0/items/$ref">#/$defs/ObservationEvidenceSlot</code>
+<span class="kind">string</span> <a href="e-9c1ab03a27ea112808485e1a.html#v-5a73a49150d75eb307a62d17">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-010c979fbf5f6e6b3e56acf3">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/0/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-81672572bc51119537ad6cff">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-72f538c25a7e75274642edef">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-9c1515125571d8f09bdc422d">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>format</code>
 </th>
 <td>
@@ -4803,6 +5147,126 @@
 <td>
 <span id="v-8b1d402213ed0466a589770d">
 <code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/options/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_actions</code>
+</th>
+<td>
+<table id="v-ba75e669bd3379233e3524ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-bcf300bd5b6b6339078fa9dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-958bc36327c626dd5d257e80">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/default/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-cfc50a3ef5c5f88cb9b6232d">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-5d6dc270d6fff7e6e2373871">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6a0790e192ad0f52a0c58439">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0469de5cb7df260747b9dc8e">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-1b52918b6eeacce7320867df">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/2">read-evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9aff91b66fa04b807f49fe5e">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-28fc8d69e0192b17a983bd53">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/maxItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-7c1096214dd526aa2b9acfa4">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fe8e9f9a5e623b108161bc30">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ContentObservationRequest/properties/read_actions/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6199,6 +6663,56 @@
 <td>
 <table id="v-d277d21600af369fa6316e1b">
 <tbody>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-a33b05a288c7220c97abc4c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e8ed93d6dbc208a161039d4b">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/EffectPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-22a5236bea8d71bc53ebc306">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1acd34e95e2741c946417a25">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/EffectPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2cca29c8dbd46b7d1ebc132c">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/EffectPlan/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>inputs</code>
@@ -7917,6 +8431,216 @@
 </tr>
 <tr>
 <th scope="row">
+<code>ObservationEvidenceSlot</code>
+</th>
+<td>
+<table id="v-5a73a49150d75eb307a62d17">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-137dc698ba8f5fc940084801">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-21e0a7390a8eabc026a348a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>observer_contract_id</code>
+</th>
+<td>
+<table id="v-82a6d01203ae968045968963">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-188661091d444bde51098ac4">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bb87a0fa67beb8abb0587dd0">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>request_id</code>
+</th>
+<td>
+<table id="v-7467e3973365d9ce97e69cdb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b5f4e19cc175dc09d38e23c0">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/request_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-76bc1e5af3f7c95a89009059">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/request_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_sha256</code>
+</th>
+<td>
+<table id="v-24d6719787bbc5d506d36eef">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-170e6c37c924dd88ace4ac68">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fe682c8d5f968785b02b41bb">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>slot</code>
+</th>
+<td>
+<table id="v-7e434fb1cdc6de75c23c2587">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-669030cbe148dd06e2e45c12">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/slot/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f8b88352b49737c0731f5756">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/properties/slot/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-299f68a9700bef92b9241ecc">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-32ce8a287ec92cfa954226d9">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/required/0">slot</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-67cb8928d4c44e48063e642d">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/required/1">request_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-50a6d0a85c2ea9093825d759">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/required/2">result_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4ff97e0f912a373f8660d033">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/required/3">observer_contract_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-adc5e7373367760df7e796df">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/ObservationEvidenceSlot/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>ObserverImplementation</code>
 </th>
 <td>
@@ -9401,6 +10125,56 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-4f286626841211b6e3ed1ac6">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-538ce62d51b29acbb5d53123">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/TransformPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-6ce3e8df2b3da52aa2d5309a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0624daf35546bcb669c12f25">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/TransformPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-38dee3aa25613555959b0c7e">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/TransformPlan/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>inputs</code>
 </th>
 <td>
@@ -9871,6 +10645,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-d3d6d50c161baed74bec22ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-64ad84dbcdd2b61c2118bcf8">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b11a3d6d673b71439a1e78aa">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>bytes</code>
 </th>
 <td>
@@ -9943,136 +10747,6 @@
 <td>
 <span id="v-248a376661d6c9c1ee800a10">
 <code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-8c4245a90e28998e907857f8">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-271885fef1895811dc030270">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-dc4e49004dda0128081406e5">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-ce2638c49a8d5d1e83fc2d92">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/maxLength">255</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-93c4a642f69a40b7babb6ecf">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-d4f7c810f174db8e16cde7ab">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-073852ebef3f510371337aa8">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-2e95e16fb7702a3d06dd9086">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-f75750ed75a964e40af69d44">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/media_type/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-51b3b65a5f04dc9027b6876f">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-e5b3daef49b4dbabc0f195d4">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-53a030e1843f8d6bc9a9e3a4">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c8f5190e6d21d357277417ed">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/properties/path/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10185,7 +10859,7 @@
 </th>
 <td>
 <span id="v-f8dec0b062c0f49bf4e9eb64">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/required/3">path</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkArtifactSubject/required/3">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10717,6 +11391,146 @@
 </tr>
 <tr>
 <th scope="row">
+<code>WorkInputGroup</code>
+</th>
+<td>
+<table id="v-30f28ad442017c6831b19a2d">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-20ff0bba5f40859845aaa1fc">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-79a51e4e937a63f85c0a74ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_ids</code>
+</th>
+<td>
+<table id="v-d5fc5df5f5d8c2d84f043a17">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-873fe0fd643522e259191f02">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/properties/associated_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b2f359ac9e90f783be9bfebf">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-827087a2b68b4adb7b281019">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/properties/associated_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7833947c50261f6092a36706">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/properties/associated_ids/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_id</code>
+</th>
+<td>
+<table id="v-45a11cdd42404e94ed3ad169">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4cfaccc5a9e5ba640106585c">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/properties/primary_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4350baecde3bafa024942435">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/properties/primary_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-232fd9e8559cb444ae9a4491">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3c8dd6a93cde352460e76166">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/required/0">primary_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1c4b7e5407fac68891a3f86f">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkInputGroup/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>WorkflowPlan</code>
 </th>
 <td>
@@ -10773,6 +11587,56 @@
 <td>
 <span id="v-0332cb880843d4b78c110095">
 <code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkflowPlan/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-f63b8a5e68df9ee10f2d51a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a891571b3271a044e5c350f1">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkflowPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-f344f4e021dff998056bfc09">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7ed530e3cce518c65ad879fd">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkflowPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-9c1ab03a27ea112808485e1a.html#v-30f28ad442017c6831b19a2d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-228f3b7daf4f9aceb12d5ee3">
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetJobDeclaration/contract/schema/$defs/WorkflowPlan/properties/input_groups/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11771,7 +12635,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

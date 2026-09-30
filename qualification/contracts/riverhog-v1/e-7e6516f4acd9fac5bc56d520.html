@@ -70,13 +70,13 @@
 </tr>
 <tr>
 <td data-label="Column">
-<code>output_path</code></td>
+<code>artifact_id</code></td>
 <td data-label="Type">
-<code>VARCHAR(4096)</code></td>
+<code>VARCHAR(64)</code></td>
 <td data-label="Nullable">no</td>
 <td data-label="Default">not declared</td>
 <td data-label="Exact definition">
-<code>output_path VARCHAR(4096) NOT NULL</code></td>
+<code>artifact_id VARCHAR(64) NOT NULL</code></td>
 </tr>
 <tr>
 <td data-label="Column">
@@ -132,9 +132,9 @@
 <td data-label="Kind">
 <code>check</code></td>
 <td data-label="Name">
-<code>ck_stove0_target_outputs_path</code></td>
+<code>ck_stove0_target_outputs_artifact_id</code></td>
 <td data-label="Exact definition">
-<code>CONSTRAINT ck_stove0_target_outputs_path CHECK (length(output_path) &gt;= 1)</code></td>
+<code>CONSTRAINT ck_stove0_target_outputs_artifact_id CHECK (length(artifact_id) = 64)</code></td>
 </tr>
 <tr>
 <td data-label="Kind">
@@ -167,6 +167,14 @@
 <code>ck_stove0_target_outputs_job_id_hex</code></td>
 <td data-label="Exact definition">
 <code>CONSTRAINT ck_stove0_target_outputs_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code></td>
+</tr>
+<tr>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_stove0_target_outputs_artifact_id_hex</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_stove0_target_outputs_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code></td>
 </tr>
 </tbody>
 </table>
@@ -350,7 +358,7 @@
 </th>
 <td>
 <span id="v-4cd70d567e175e07f1e74f05">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/columns/3/definition">output_path VARCHAR(4096) NOT NULL</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/columns/3/definition">artifact_id VARCHAR(64) NOT NULL</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -360,7 +368,7 @@
 </th>
 <td>
 <span id="v-b48604d54271b00fbc500028">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/columns/3/name">output_path</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/columns/3/name">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -380,7 +388,7 @@
 </th>
 <td>
 <span id="v-51caaa8ca6fabcd972f49f2c">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/columns/3/type">VARCHAR(4096)</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/columns/3/type">VARCHAR(64)</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -630,7 +638,7 @@
 </th>
 <td>
 <span id="v-53f7d2e4af000ac486ebd7be">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/2/definition">CONSTRAINT ck_stove0_target_outputs_path CHECK (length(output_path) &gt;= 1)</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/2/definition">CONSTRAINT ck_stove0_target_outputs_artifact_id CHECK (length(artifact_id) = 64)</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -640,7 +648,7 @@
 </th>
 <td>
 <span id="v-7de2b4f3af2229cfe454442b">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/2/expression">(length(output_path) &gt;= 1)</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/2/expression">(length(artifact_id) = 64)</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -660,7 +668,7 @@
 </th>
 <td>
 <span id="v-1320088e0f2ca977792b91a3">
-<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/2/name">ck_stove0_target_outputs_path</code>
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/2/name">ck_stove0_target_outputs_artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -917,6 +925,56 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-2c30ca07af3cda53488fd44a">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-005835247af79b31e1a8603e">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/7/definition">CONSTRAINT ck_stove0_target_outputs_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>expression</code>
+</th>
+<td>
+<span id="v-866c1be75f985e7d3d93b7cd">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/7/expression">(length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, &#x27;0&#x27;, &#x27;&#x27;), &#x27;1&#x27;, &#x27;&#x27;), &#x27;2&#x27;, &#x27;&#x27;), &#x27;3&#x27;, &#x27;&#x27;), &#x27;4&#x27;, &#x27;&#x27;), &#x27;5&#x27;, &#x27;&#x27;), &#x27;6&#x27;, &#x27;&#x27;), &#x27;7&#x27;, &#x27;&#x27;), &#x27;8&#x27;, &#x27;&#x27;), &#x27;9&#x27;, &#x27;&#x27;), &#x27;a&#x27;, &#x27;&#x27;), &#x27;b&#x27;, &#x27;&#x27;), &#x27;c&#x27;, &#x27;&#x27;), &#x27;d&#x27;, &#x27;&#x27;), &#x27;e&#x27;, &#x27;&#x27;), &#x27;f&#x27;, &#x27;&#x27;) = &#x27;&#x27;)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-c4bc1b10c6dce342071af6a5">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/7/kind">check</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-1b4df9dc8678e6eb3e3962ff">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/tables/15/constraints/7/name">ck_stove0_target_outputs_artifact_id_hex</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -976,7 +1034,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code>&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = ()) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-37219e2d2e0011355d9d5df4">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -85,6 +85,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-83d9e0e3c4b452bee2881ace">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-08d51917d5510fe7ce3bd1b0.html#v-7da859c7c444e17fbd72fe25">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -150,7 +160,22 @@
 <li>
 <a href="#s-7b067f8b3ba03c2e39df7ccc">TargetInputRoleCount</a>
 </li>
+<li>
+<a href="#s-7da859c7c444e17fbd72fe25">WorkInputGroup</a>
+</li>
 </ul>
+</section>
+<section class="schema-section" id="s-83d9e0e3c4b452bee2881ace">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-08d51917d5510fe7ce3bd1b0.html#v-7da859c7c444e17fbd72fe25">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-9cbcf143174645fc3cefcc7d">
 <h3>Field: intent</h3>
@@ -375,6 +400,61 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-7da859c7c444e17fbd72fe25">
+<h3>Definition: WorkInputGroup</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-f7f7553cf38cf9bbc741bf21">associated_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-fb6f116f737188f8797d954f">
 <h3>Field: roles</h3>
 <p class="shape">
@@ -388,6 +468,18 @@
 <dt>minItems</dt>
 <dd>
 <code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f7f7553cf38cf9bbc741bf21">
+<h3>Field: associated_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -911,6 +1003,146 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>WorkInputGroup</code>
+</th>
+<td>
+<table id="v-7da859c7c444e17fbd72fe25">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ef51e6969e00131c35cf590a">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-57e55a88fc6abf6786977c64">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_ids</code>
+</th>
+<td>
+<table id="v-f7f7553cf38cf9bbc741bf21">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-18d121c8ff7527bb66f078ec">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/properties/associated_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-c1d35f9406eb0e6f563fbf1e">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-49969e24d656b9bc6f17744f">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/properties/associated_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-457e6fab9183d484a5ef9cb8">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/properties/associated_ids/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_id</code>
+</th>
+<td>
+<table id="v-46f9aaf216718e5ced2115e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-45a85031b54c747bfa31b81d">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/properties/primary_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-371c782afd62e269c7b3bf35">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/properties/primary_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-421c1d66d37a069e3b9ca9c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-38e9631f0a33e0630d486ff9">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/required/0">primary_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9a2b05babbe7de21db4f4adf">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/$defs/WorkInputGroup/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -931,6 +1163,56 @@
 <td>
 <table id="v-9b85aec8ee589f75c8098c48">
 <tbody>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-83d9e0e3c4b452bee2881ace">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-13f7872f60b8ce97c7df47f3">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-8c1ede926f7dcdaa9acf827d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e796f2dbbc367f7bc40e23ce">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-08d51917d5510fe7ce3bd1b0.html#v-7da859c7c444e17fbd72fe25">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66b64d35c41046640711310c">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/schema/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>inputs</code>
@@ -1163,7 +1445,7 @@
 </th>
 <td>
 <span id="v-5741c28e26a2bd511713eeed">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/signature">&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetDeclaration/contract/signature">&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = ()) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1215,6 +1497,14 @@
 </section>
 </details>
 </section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-c523e46533ee9c06b59bfd60.html">stove0_target_protocol.TargetDeclaration.canonical_groups</a>
+</li>
+</ul>
+</section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Governing policies</h3>
@@ -1246,7 +1536,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

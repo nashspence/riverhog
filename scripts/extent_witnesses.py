@@ -42,7 +42,7 @@ WITNESSES = (
         source_pointers=(_http_subject("riverhog", "CollectionUploadWorkBatchDocument", "work"),),
         test_node_ids=(
             "packages/riverhog-protocol/tests/test_collection_upload_transport.py::"
-            "test_bounded_upload_work_batch_binds_assignment_and_checkpoint_state",
+            "test_server_planned_work_uses_artifact_ids_and_exact_unit_coverage",
             "tests/unit/test_archive_write_reaper.py::"
             "test_archive_maintenance_drains_bounded_progress_before_idle_interval",
             "tests/unit/test_incremental_collection_producer.py::"
@@ -71,7 +71,7 @@ WITNESSES = (
         ),
         test_node_ids=(
             "tests/unit/test_incremental_plan.py::"
-            "test_artifact_at_a_time_construction_seals_the_exact_one_shot_v1_plans",
+            "test_incremental_restart_matches_one_shot_physical_volumes",
             "tests/unit/test_pack_upload.py::"
             "test_checkpoint_resumes_across_riverhog_and_adapter_restart",
             "tests/unit/test_raw_upload.py::"
@@ -147,28 +147,50 @@ WITNESSES = (
         gates=("make unit", "make postgres-concurrency", "make compose-smoke"),
     ),
     SegmentedExtentWitness(
-        id="riverhog-provenance-volume-progression/v1",
-        owner=(
-            "https://nashspence.github.io/riverhog/v1/schemas/"
-            "riverhog-provenance-bindings-v1.schema.json"
-        ),
+        id="riverhog-provenance-construction-progression/v1",
+        owner="riverhog",
         rule_id="bounded-segment/v1",
         source_pointers=(
-            _protocol_subject(
-                "https://nashspence.github.io/riverhog/v1/schemas/"
-                "riverhog-provenance-bindings-v1.schema.json",
-                "properties/files",
+            _http_subject("riverhog", "ArtifactMaterializationDecisionBatchDocument", "decisions"),
+            _http_subject(
+                "riverhog", "CollectionArtifactProvenanceBindingBatchDocument", "bindings"
             ),
         ),
         test_node_ids=(
-            "packages/riverhog-provenance/tests/test_segmented_archive.py::"
-            "test_ordered_segmented_provenance_authority_round_trips",
-            "packages/riverhog-provenance/tests/test_segmented_archive.py::"
-            "test_provenance_segmentation_limits_one_volume_not_the_logical_total",
-            "tests/unit/test_collection_uploads.py::"
-            "test_provenance_append_persists_next_ordinal_across_retry_and_restart",
+            "packages/riverhog-protocol/tests/test_collection_upload_transport.py::"
+            "test_provenance_status_and_binding_select_exact_journal_anchor",
+            "tests/unit/test_provenance_binding.py::test_exact_member_binding_and_hint",
         ),
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
+    ),
+    SegmentedExtentWitness(
+        id="riverhog-provenance-read-progression/v1",
+        owner="riverhog",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "ListCollectionArtifactProvenanceOut", "artifacts"),
+            _http_subject("riverhog", "ListCollectionProvenanceJournalsOut", "journals"),
+        ),
+        test_node_ids=(
+            "tests/unit/test_canonical_provenance_service.py::"
+            "test_exact_journal_corpus_is_root_fenced_and_export_authorized",
+            "tests/unit/test_canonical_provenance_service.py::"
+            "test_member_provenance_requires_root_selected_binding_and_read_permission",
+            "tests/unit/test_provenance_archive_read.py::"
+            "test_root_bound_reader_streams_exact_journal_and_member_bindings",
+        ),
+        gates=("make unit", "make compose-smoke"),
+    ),
+    SegmentedExtentWitness(
+        id="riverhog-discovery-read-progression/v1",
+        owner="riverhog",
+        rule_id="bounded-segment/v1",
+        source_pointers=(_http_subject("riverhog", "DiscoveryPageOut", "artifacts"),),
+        test_node_ids=(
+            "tests/unit/test_canonical_discovery_search.py::"
+            "test_discovery_http_authentication_paging_and_metadata_fence",
+        ),
+        gates=("make unit", "make database-qualification"),
     ),
     SegmentedExtentWitness(
         id="riverhog-raw-digest-progression/v1",
@@ -189,7 +211,7 @@ WITNESSES = (
         id="riverhog-retrieval-work-progression/v1",
         owner="riverhog",
         rule_id="bounded-segment/v1",
-        source_pointers=(_http_subject("riverhog", "RetrievalPlanRequest", "files"),),
+        source_pointers=(_http_subject("riverhog", "RetrievalPlanRequest", "artifacts"),),
         test_node_ids=(
             "tests/unit/test_retrieval_service.py::"
             "test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages",
@@ -318,7 +340,7 @@ WITNESSES = (
             "some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_intent_retirement_and_adapter_acquisition_race_converges_repeatedly",
             "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
-            "test_completed_portable_sidecar_follows_payload_into_claim",
+            "test_completed_metadata_sidecar_is_an_ordinary_member",
             "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::"
             "test_management_api_and_client_share_versioned_routes",
         ),
@@ -329,7 +351,9 @@ WITNESSES = (
         owner="riverhog",
         rule_id="bounded-segment/v1",
         source_pointers=(
-            _http_subject("riverhog", "RegisterCollectionUploadSessionFilesRequest", "files"),
+            _http_subject(
+                "riverhog", "RegisterCollectionUploadSessionArtifactsRequest", "artifacts"
+            ),
         ),
         test_node_ids=(
             "packages/riverhog-client/tests/test_transform.py::"
@@ -376,7 +400,7 @@ WITNESSES = (
             "tests/unit/test_incremental_collection_producer.py::"
             "test_many_artifact_publication_retains_only_the_unsealed_pack_window",
             "tests/unit/test_pack_volume.py::"
-            "test_pack_unit_wire_payload_is_only_concatenated_source_bytes",
+            "test_pack_upload_unit_payload_and_checkpoint_round_trip",
             "tests/unit/test_pack_upload.py::"
             "test_checkpoint_resumes_across_riverhog_and_adapter_restart",
         ),

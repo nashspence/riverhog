@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bounded-source observation policy · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-bc20dd7716669253f524a47d.html">riverhog-provenance-contracts</a> / <a href="i-90d5e6e4f3282edb23baf90d.html">Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>Bounded-source observation policy</h1>
+<p class="context">Closed schema packs and formal contracts for path-independent artifact provenance. Standalone structured-value contracts; these do not define an interaction.</p>
+<section id="contract" data-contract="schema:riverhog-provenance-contracts:bounded-source-observation-policy:02bc290ce1">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-73d5738dc10847bbdcc88d4e">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>Bounded-source observation policy</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;hash_chunk_bytes&quot;,&quot;maximum_content_bytes&quot;,&quot;second_content_hash&quot;,&quot;include_sha512&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>hash_chunk_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-bd9eed9d2686fb44fb46f947.html#v-ea73d6152f0e02cf0926f03c">https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>include_sha512</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>maximum_content_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-bd9eed9d2686fb44fb46f947.html#v-ea73d6152f0e02cf0926f03c">https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>second_content_hash</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json</code>
+</h4>
+<table id="v-73d5738dc10847bbdcc88d4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$id</code>
+</th>
+<td>
+<span id="v-8d35beac790f8ae33903127f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/$id">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>$schema</code>
+</th>
+<td>
+<span id="v-b74ccd9dabee0df76e739b9b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/$schema">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-348ca8288050da3ed602798e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-3fa7622ed878b094176e4f6d">
+<tbody>
+<tr>
+<th scope="row">
+<code>hash_chunk_bytes</code>
+</th>
+<td>
+<table id="v-b3b9a4c8406ad13275ba05ca">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e702028d128b1946c1a122ff">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/properties/hash_chunk_bytes/$ref">https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural</code>
+<span class="kind">string</span> <a href="e-bd9eed9d2686fb44fb46f947.html#v-ea73d6152f0e02cf0926f03c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>include_sha512</code>
+</th>
+<td>
+<table id="v-f880c13a99bdd9eced6d4531">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ec3adef72a2a6e91a80ce376">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/properties/include_sha512/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum_content_bytes</code>
+</th>
+<td>
+<table id="v-934fc39c6728d3ed65282fda">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-569397979fd6d506b2af23a2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/properties/maximum_content_bytes/$ref">https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json#/$defs/natural</code>
+<span class="kind">string</span> <a href="e-bd9eed9d2686fb44fb46f947.html#v-ea73d6152f0e02cf0926f03c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>second_content_hash</code>
+</th>
+<td>
+<table id="v-bbe2c25e435fbaaa0cdbbc72">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-90bd217b0133ef216425afdc">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/properties/second_content_hash/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2f1d06f3aab979fe408a1cc5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2c1ecdfb6e295e89e34f824a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/required/0">hash_chunk_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-6fca2d0d0c3424ce368ae4f5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/required/1">maximum_content_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-ae14991c542b8b0f108a961d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/required/2">second_content_hash</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-1229bb7111eb5dbac84156a6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/required/3">include_sha512</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bc53812e0c218fca5a453412">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/title">Bounded-source observation policy</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e6dc5b028523ae50d9d693c6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1observation-policy.json/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-e11e8aa8a7cf10211214e0fe.html">compatibility/components/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-9581f745b7a59b6f30c9f54f">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json</a> — <code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/observation-policy.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/observation-policy.schema.json</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

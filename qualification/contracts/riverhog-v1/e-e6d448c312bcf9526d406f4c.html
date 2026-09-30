@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A_RIVERHOG_FILESYSTEM_STORE_HOST · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a> / <a href="i-9bc34cd0dd041e5950736a20.html">Configuration Environment</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>A_RIVERHOG_FILESYSTEM_STORE_HOST</h1>
+<p class="context">Filesystem-backed Riverhog archive and retrieval store. Configuration Environment contract owned by a-riverhog-filesystem-store.</p>
+<section id="contract" data-contract="configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-host:89d11ae4af">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>A_RIVERHOG_FILESYSTEM_STORE_HOST</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>a-riverhog-filesystem-store</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>&#x27;127.0.0.1&#x27;</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>a-riverhog-filesystem-store</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/configuration_environment/32</code>
+</h4>
+<table id="v-a9fb2eff346de6e6f21c5c03">
+<tbody>
+<tr>
+<th scope="row">
+<code>consumers</code>
+</th>
+<td>
+<table id="v-c00038c38f0fab0b0bde65a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-806f3ab0e652734f625eb3b7">
+<code data-value-pointer="/external_contract/configuration_environment/32/consumers/0">a-riverhog-filesystem-store</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default_expressions</code>
+</th>
+<td>
+<table id="v-5600fa389379fe5da9f6208e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-770fa6637b6e11111e78a315">
+<code data-value-pointer="/external_contract/configuration_environment/32/default_expressions/0">&#x27;127.0.0.1&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-c9b454920d7781fada333f07">
+<code data-value-pointer="/external_contract/configuration_environment/32/id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_HOST</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_shape</code>
+</th>
+<td>
+<span id="v-bca3c308a43e3edb1858cb3a">
+<code data-value-pointer="/external_contract/configuration_environment/32/input_shape">environment-string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-caff9576d7b3d75b7941c808">
+<code data-value-pointer="/external_contract/configuration_environment/32/name">A_RIVERHOG_FILESYSTEM_STORE_HOST</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-69d21c7a53b0ae53c3a82eff">
+<code data-value-pointer="/external_contract/configuration_environment/32/owner">a-riverhog-filesystem-store</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-15e2e266f753cb544237d6f8.html">compatibility/configuration/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-2f52afaedcc38e8dc5c0606e">configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_HOST</a> — <code data-source-path="some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py">some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Configuration authority and bindings</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Kind">consumer</td>
+<td data-label="Consumer">
+<code>a-riverhog-filesystem-store</code></td>
+<td data-label="Source">
+<code data-source-path="some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py">some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py</code></td>
+<td data-label="Authority or expression">
+<code>os.getenv(f&#x27;{_PREFIX}HOST&#x27;, &#x27;127.0.0.1&#x27;)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

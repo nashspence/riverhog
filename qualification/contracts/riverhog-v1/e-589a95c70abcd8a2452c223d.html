@@ -38,7 +38,7 @@
 <section class="schema-section" id="s-a228ffa869d5575c131288b4">
 <h3>Document schema</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -47,7 +47,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;source_event_id&quot;,&quot;source&quot;,&quot;files&quot;,&quot;journals&quot;]</code>
+<code>[&quot;format&quot;,&quot;claim_id&quot;,&quot;source_event_id&quot;,&quot;source&quot;,&quot;files&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -109,15 +109,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-c8b539c3990daa380fdc5816">journals</a></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>object</code>; additionalProperties: <code>string</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>source</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -140,16 +131,13 @@
 <h4>Definitions</h4>
 <ul>
 <li>
-<a href="#s-25f4e011aaf4b1af2c7839aa">CapturedProvenanceState</a>
+<a href="#s-5b47130b58f9e2113f91fdf8">CapturedObservationState</a>
 </li>
 <li>
 <a href="#s-be329af1ed8966bae7ec7667">CompletionRecordState</a>
 </li>
 <li>
 <a href="#s-625fdcbed136c9ecf8f29a85">FtpClaimFileState</a>
-</li>
-<li>
-<a href="#s-a7eb521a49624770ecb95b02">OmittedProvenanceState</a>
 </li>
 </ul>
 </section>
@@ -208,39 +196,19 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-c8b539c3990daa380fdc5816">
-<h3>Field: journals</h3>
-<p class="shape">
-<code>object</code>; additionalProperties: <code>string</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Journals</code>
-</dd>
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>{&quot;type&quot;:&quot;string&quot;}</code>
-</dd>
-</dl>
-</section>
-<section class="schema-section" id="s-25f4e011aaf4b1af2c7839aa">
-<h3>Definition: CapturedProvenanceState</h3>
+<section class="schema-section" id="s-5b47130b58f9e2113f91fdf8">
+<h3>Definition: CapturedObservationState</h3>
 <p class="shape">
 <code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
-<code>CapturedProvenanceState</code>
+<code>CapturedObservationState</code>
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;status&quot;,&quot;journal_id&quot;,&quot;current_state_id&quot;]</code>
+<code>[&quot;graph_path&quot;,&quot;graph_bytes&quot;,&quot;graph_sha256&quot;,&quot;observation_id&quot;,&quot;observer_agent_id&quot;,&quot;contract_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -266,43 +234,7 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<code>bytes</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>integer</code>; minimum: <code>0</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>current_state_id</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>journal_id</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>sha256</code></td>
+<code>contract_sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
@@ -311,10 +243,46 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>status</code></td>
+<code>graph_bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; const: <code>captured</code></td>
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>graph_path</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>graph_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observation_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observer_agent_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -437,7 +405,7 @@
 <section class="schema-section" id="s-625fdcbed136c9ecf8f29a85">
 <h3>Definition: FtpClaimFileState</h3>
 <p class="shape">
-<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -446,7 +414,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;device&quot;,&quot;inode&quot;,&quot;original&quot;,&quot;provenance&quot;]</code>
+<code>[&quot;path&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;device&quot;,&quot;inode&quot;,&quot;original&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -470,6 +438,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>bytes</code></td>
@@ -508,6 +485,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-78b140ca348c0e7f6543c915">observation</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-589a95c70abcd8a2452c223d.html#v-5b47130b58f9e2113f91fdf8">#/$defs/CapturedObservationState</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>original</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -526,103 +512,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-76d722bf3514006ec6cedf48">provenance</a></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">any of: <a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a>; <a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-a7eb521a49624770ecb95b02">
-<h3>Definition: OmittedProvenanceState</h3>
-<p class="shape">
-<code>object</code>; 5 fields; additionalProperties: <code>false</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>OmittedProvenanceState</code>
-</dd>
-<dt>required</dt>
-<dd>
-<code>[&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;status&quot;,&quot;omission_reason&quot;]</code>
-</dd>
-<dt>type</dt>
-<dd>
-<code>object</code>
-</dd>
-<dt>additionalProperties</dt>
-<dd>
-<code>false</code>
-</dd>
-</dl>
-<h4>Fields</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Field</th>
-<th scope="col">Required</th>
-<th scope="col">Shape and bounds</th>
-<th scope="col">Default</th>
-<th scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Field">
-<code>bytes</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>integer</code>; minimum: <code>0</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>omission_reason</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>sha256</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>status</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; const: <code>omitted</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -670,16 +563,10 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-76d722bf3514006ec6cedf48">
-<h3>Field: provenance</h3>
-<p class="shape">any of: <a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a>; <a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a>
+<section class="schema-section" id="s-78b140ca348c0e7f6543c915">
+<h3>Field: observation</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-589a95c70abcd8a2452c223d.html#v-5b47130b58f9e2113f91fdf8">#/$defs/CapturedObservationState</a>; <code>null</code>
 </p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Provenance</code>
-</dd>
-</dl>
 <h4>At least one must match</h4>
 <div class="record-collection">
 <table>
@@ -693,12 +580,12 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">#/$defs/CapturedProvenanceState</a></td>
+<a href="e-589a95c70abcd8a2452c223d.html#v-5b47130b58f9e2113f91fdf8">#/$defs/CapturedObservationState</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
 <td data-label="Schema">
-<a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">#/$defs/OmittedProvenanceState</a></td>
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -749,18 +636,18 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>CapturedProvenanceState</code>
+<code>CapturedObservationState</code>
 </th>
 <td>
-<table id="v-25f4e011aaf4b1af2c7839aa">
+<table id="v-5b47130b58f9e2113f91fdf8">
 <tbody>
 <tr>
 <th scope="row">
 <code>additionalProperties</code>
 </th>
 <td>
-<span id="v-667953d3d2aa07d44c20556c">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/additionalProperties">false</code>
+<span id="v-26734d3ef20a19a7b04f5e5c">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
 </tr>
@@ -769,182 +656,22 @@
 <code>properties</code>
 </th>
 <td>
-<table id="v-d288cfe973174529ebe842e2">
+<table id="v-76abc7b984523b44a2455478">
 <tbody>
 <tr>
 <th scope="row">
-<code>bytes</code>
+<code>contract_sha256</code>
 </th>
 <td>
-<table id="v-523596ef088aaa6a1c5769e7">
-<tbody>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-393729a028feef17672b7f64">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/bytes/minimum">0</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-fa5fdf482100467602cd9d6c">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/bytes/title">Bytes</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-986c2db8e0d29357b5d246e5">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/bytes/type">integer</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>current_state_id</code>
-</th>
-<td>
-<table id="v-baf9c6260eccdd5afb07384d">
-<tbody>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-35e240d563604f9bb6ec4c09">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/current_state_id/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-a63387be8499d86b68c7e840">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/current_state_id/title">Current State Id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-1de115bb8ecc8f723744edfd">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/current_state_id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>journal_id</code>
-</th>
-<td>
-<table id="v-634f9d7116e4ec0585389342">
-<tbody>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-8ce81b0b42b69d4629c6be4d">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/journal_id/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-b93c4e2f0de8f2f5f77d61f4">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/journal_id/title">Journal Id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-33cbd6e49a0c4515e9a39c31">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/journal_id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-ea8f0e60d020eb5f6b5ca585">
-<tbody>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-e06dc557246954804492b519">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-6c957ee10d582e939c5adf73">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/path/title">Path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6a8d2f7544a398ef4eb492c9">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>sha256</code>
-</th>
-<td>
-<table id="v-fd97b1b37c1c914ea3683922">
+<table id="v-e486d50cf8b537e47934b011">
 <tbody>
 <tr>
 <th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-f32ce4167acb7fd468a22cc9">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span id="v-ec45e3e9602e092c86bbf6dd">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/contract_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -953,8 +680,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-d9079678768e175e1ed4ab98">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/sha256/title">Sha256</code>
+<span id="v-46cdca1587c42eab4de7d4f3">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/contract_sha256/title">Contract Sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -963,8 +690,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-5b95b0d6942b32546f554135">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/sha256/type">string</code>
+<span id="v-e2bd0fa76f2b0974c1c37941">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/contract_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -973,19 +700,19 @@
 </tr>
 <tr>
 <th scope="row">
-<code>status</code>
+<code>graph_bytes</code>
 </th>
 <td>
-<table id="v-3e64c648a6a2e6e1b4a2261c">
+<table id="v-406097b0843fb3eb9d28a1de">
 <tbody>
 <tr>
 <th scope="row">
-<code>const</code>
+<code>minimum</code>
 </th>
 <td>
-<span id="v-905547dbb9b1f9f797e45491">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/status/const">captured</code>
-<span class="kind">string</span>
+<span id="v-9abe7be073f30980f69eb467">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_bytes/minimum">0</code>
+<span class="kind">number</span>
 </span></td>
 </tr>
 <tr>
@@ -993,8 +720,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-dd516817f4a714963b839f72">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/status/title">Status</code>
+<span id="v-1f6b0751c318d88a8839c73a">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_bytes/title">Graph Bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1003,8 +730,168 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-0b580af9a8e520027ab1f6b6">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/properties/status/type">string</code>
+<span id="v-52bdb6b75e24a12be5d0ca2d">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>graph_path</code>
+</th>
+<td>
+<table id="v-d62e6f75cfb1ea29f5f8c345">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-8de0516126b5a420ab9cafbe">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_path/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cd897bf64670b81a36c25a51">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_path/title">Graph Path</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4fcf9688ce8b9fc0404cf5b3">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_path/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>graph_sha256</code>
+</th>
+<td>
+<table id="v-ddd914f66629f432d6902315">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-48997e57a553b08db466fa50">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-c25aa9c1a2f2fa3f9099dd44">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_sha256/title">Graph Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d6aed4bba6361786f97976a1">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/graph_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observation_id</code>
+</th>
+<td>
+<table id="v-225cbf33ad21e9b876e6c77e">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-d94859c8798e40e8418333eb">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/observation_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a755b095274f84a2f704f2a7">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/observation_id/title">Observation Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7269662b87e8d6782a700206">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/observation_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observer_agent_id</code>
+</th>
+<td>
+<table id="v-9d4a11084ed3adff199b0172">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-a7d3e85b87a5227045d56b74">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/observer_agent_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-134d24afb54d2d7808834c65">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/observer_agent_id/title">Observer Agent Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2d513fec8d96119c32805653">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/properties/observer_agent_id/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1019,15 +906,15 @@
 <code>required</code>
 </th>
 <td>
-<table id="v-850354773804c78fa2152a8e">
+<table id="v-9efb40ca6e36be49b5151114">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<span id="v-8267271329a0d0168b4e72d5">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/0">path</code>
+<span id="v-d97617cfd7376f56d6ecd439">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/required/0">graph_path</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1036,8 +923,8 @@
 <code>1</code>
 </th>
 <td>
-<span id="v-e1d5207e79aa9eacdb537728">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/1">bytes</code>
+<span id="v-efc4c5368a4f8ef10fc9d5d0">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/required/1">graph_bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1046,8 +933,8 @@
 <code>2</code>
 </th>
 <td>
-<span id="v-f5684c3bc820a3158e60874b">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/2">sha256</code>
+<span id="v-03112aa06f48ff844fc7bf02">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/required/2">graph_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1056,8 +943,8 @@
 <code>3</code>
 </th>
 <td>
-<span id="v-f9baacceebe4d4313f0f3914">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/3">status</code>
+<span id="v-48acc3412b4da2238739b474">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/required/3">observation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1066,8 +953,8 @@
 <code>4</code>
 </th>
 <td>
-<span id="v-e80231819f86e023443dc8d9">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/4">journal_id</code>
+<span id="v-4be4df248c749932ea30fea9">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/required/4">observer_agent_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1076,8 +963,8 @@
 <code>5</code>
 </th>
 <td>
-<span id="v-2fbf6f3518f3849fd37e3318">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/required/5">current_state_id</code>
+<span id="v-472d05f7281ca982ab2f4d4f">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/required/5">contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1089,8 +976,8 @@
 <code>title</code>
 </th>
 <td>
-<span id="v-b4dd5e7de41bb80caa0c6027">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/title">CapturedProvenanceState</code>
+<span id="v-c87ce1aa3aee4e13af4de8d8">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/title">CapturedObservationState</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1099,8 +986,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-6d05237f69821dabc521ea80">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedProvenanceState/type">object</code>
+<span id="v-739fcf3252212a0177376894">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/CapturedObservationState/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1593,6 +1480,46 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-0bc3075013e647cd698848f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-53908714b7dc5e421afd816d">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fb2ef6aedc0968c22d959a59">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/artifact_id/title">Artifact Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e1851a26a96a2a7dbc1b54c2">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>bytes</code>
 </th>
 <td>
@@ -1783,6 +1710,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>observation</code>
+</th>
+<td>
+<table id="v-78b140ca348c0e7f6543c915">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-5b82ce409e70dd1cdfc28164">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-7569cc6a9a2f6c6a69391a3e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-69965a71e15db14a629f0776">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/observation/anyOf/0/$ref">#/$defs/CapturedObservationState</code>
+<span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-5b47130b58f9e2113f91fdf8">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-37b97fe3e2938513cbc671a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a082e9b73b04d03e0a017acf">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/observation/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-864856aaa1efa3690fda144b">
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/observation/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>original</code>
 </th>
 <td>
@@ -1863,76 +1860,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>provenance</code>
-</th>
-<td>
-<table id="v-76d722bf3514006ec6cedf48">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-9f66a3fa7e8cdf25117d75a5">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-0d029e957a4e3e3284a59bfe">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-22997730f45eb0250e3c3cd4">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/provenance/anyOf/0/$ref">#/$defs/CapturedProvenanceState</code>
-<span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-25f4e011aaf4b1af2c7839aa">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-83ffc93e7833f22335c7129f">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-1de836814e44f7d2a8ce68ea">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/provenance/anyOf/1/$ref">#/$defs/OmittedProvenanceState</code>
-<span class="kind">string</span> <a href="e-589a95c70abcd8a2452c223d.html#v-a7eb521a49624770ecb95b02">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-f65756f59878d90bf22de0a6">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/properties/provenance/title">Provenance</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>sha256</code>
 </th>
 <td>
@@ -1997,7 +1924,7 @@
 </th>
 <td>
 <span id="v-adf7d0bd9f56133f20728ee8">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/1">bytes</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/1">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2007,7 +1934,7 @@
 </th>
 <td>
 <span id="v-26861f146da9162034a657ec">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/2">sha256</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/2">bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2017,7 +1944,7 @@
 </th>
 <td>
 <span id="v-bbc5c8f94f5e3afc3e1b115d">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/3">device</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/3">sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2027,7 +1954,7 @@
 </th>
 <td>
 <span id="v-9587b4b927a49c0ed91e1d7c">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/4">inode</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/4">device</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2037,7 +1964,7 @@
 </th>
 <td>
 <span id="v-0f3bd3b8e882978b6ac8d3a1">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/5">original</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/5">inode</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2047,7 +1974,7 @@
 </th>
 <td>
 <span id="v-da21e209af3a95e6d673c9d1">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/6">provenance</code>
+<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/required/6">original</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2071,316 +1998,6 @@
 <td>
 <span id="v-290445e0f626d3bfe9bcd6e9">
 <code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/FtpClaimFileState/type">object</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>OmittedProvenanceState</code>
-</th>
-<td>
-<table id="v-a7eb521a49624770ecb95b02">
-<tbody>
-<tr>
-<th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<span id="v-ff137cf2d1747b5880681bf6">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/additionalProperties">false</code>
-<span class="kind">boolean</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>properties</code>
-</th>
-<td>
-<table id="v-5b206dce1fd8f20bed66b043">
-<tbody>
-<tr>
-<th scope="row">
-<code>bytes</code>
-</th>
-<td>
-<table id="v-128141dbeaaccbbe972cb727">
-<tbody>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-b519d5bad41e1ac245234d82">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/bytes/minimum">0</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-86ff7a3be4791d091edb02da">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/bytes/title">Bytes</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-d5c37757c4e62bbb7f2d643d">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/bytes/type">integer</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>omission_reason</code>
-</th>
-<td>
-<table id="v-e68ff4c43edbcc5d4d1c82d3">
-<tbody>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-7db16b40401ea80335f60357">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/omission_reason/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-739883bb73b3019aa90a4298">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/omission_reason/title">Omission Reason</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-35049556f1055ed2615b378a">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/omission_reason/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-b3f59a33acf99f61329bea89">
-<tbody>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-e3e41002d01ee5d3c8e47cca">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-501162209af9a06f115d2395">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/path/title">Path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-50f8ffe660981221edab2ed4">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>sha256</code>
-</th>
-<td>
-<table id="v-8ff4a12e9b6f29747b3a5e85">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-b1080177fa440ae0063ca36f">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/sha256/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-47f0e6880c44efb9082ba6a0">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/sha256/title">Sha256</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-e02a3321ab93fbf79655e707">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/sha256/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>status</code>
-</th>
-<td>
-<table id="v-f3c93409c5d1b0a781f42a0a">
-<tbody>
-<tr>
-<th scope="row">
-<code>const</code>
-</th>
-<td>
-<span id="v-c2bf3b61ee57f584fe0b9efc">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/status/const">omitted</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-28dc55c371de4feaf40c040a">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/status/title">Status</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-3fa94df3855732b9db02d216">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/properties/status/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>required</code>
-</th>
-<td>
-<table id="v-1836376ba3dff0e6feda3d68">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-ae6729e9c038a81faf7ae932">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/0">path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-f02d0351cf4b7863df763946">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/1">bytes</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>2</code>
-</th>
-<td>
-<span id="v-e80be73440e5e12ae4abf129">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/2">sha256</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>3</code>
-</th>
-<td>
-<span id="v-320047c49e3079808addaa18">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/3">status</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>4</code>
-</th>
-<td>
-<span id="v-ff64c4ca37f40f94d37bfd93">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/required/4">omission_reason</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-3323ebcd3883717fe75fd2e1">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/title">OmittedProvenanceState</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-a7e7b95990e0fd953fe4dd08">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/$defs/OmittedProvenanceState/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2649,56 +2266,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>journals</code>
-</th>
-<td>
-<table id="v-c8b539c3990daa380fdc5816">
-<tbody>
-<tr>
-<th scope="row">
-<code>additionalProperties</code>
-</th>
-<td>
-<table id="v-0f066b63d90c8108e9a0845e">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-1ca75bc3ae5d377dc2cf8477">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/journals/additionalProperties/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-aba57e4ac373563e808702e7">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/journals/title">Journals</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-8945b622c7014458551fecd2">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/properties/journals/type">object</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>source</code>
 </th>
 <td>
@@ -2837,16 +2404,6 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
-<tr>
-<th scope="row">
-<code>5</code>
-</th>
-<td>
-<span id="v-2f08f868f568d5d6406c12ef">
-<code data-value-pointer="/external_contract/durable_state/owners/8/structure/units/2/schema/required/5">journals</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -2921,7 +2478,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

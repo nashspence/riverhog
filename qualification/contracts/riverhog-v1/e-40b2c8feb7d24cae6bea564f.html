@@ -48,7 +48,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;host_id&quot;,&quot;riverhog_base_url&quot;,&quot;sources&quot;,&quot;riverhog_token_file&quot;,&quot;api_token_file&quot;]</code>
+<code>[&quot;host_id&quot;,&quot;riverhog_base_url&quot;,&quot;provenance_observer&quot;,&quot;sources&quot;,&quot;riverhog_token_file&quot;,&quot;api_token_file&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -162,11 +162,11 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-5f0ce0ece1ccee8b739aae25">provenance_observer</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
+<code>provenance_observer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -211,40 +211,6 @@
 <a href="#s-0f1ce11bd4d01d2f9750dabb">SourceConfig</a>
 </li>
 </ul>
-</section>
-<section class="schema-section" id="s-5f0ce0ece1ccee8b739aae25">
-<h3>Field: provenance_observer</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Provenance Observer</code>
-</dd>
-</dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-d94e125022558d25f34ea4fd">
 <h3>Field: sources</h3>
@@ -331,7 +297,7 @@
 <section class="schema-section" id="s-0f1ce11bd4d01d2f9750dabb">
 <h3>Definition: SourceConfig</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -436,25 +402,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance</code></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code>; default: <code>capture</code></td>
-<td data-label="Default">
-<code>capture</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-bc41e02b28512a2c23c1e85a">provenance_omission_reason</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>root</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -528,40 +475,6 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-40b2c8feb7d24cae6bea564f.html#v-2d44f53dd182e5e67ecbca67">#/$defs/CollectionDescription</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-bc41e02b28512a2c23c1e85a">
-<h3>Field: provenance_omission_reason</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Provenance Omission Reason</code>
-</dd>
-</dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; maxLength: <code>1000</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1250,166 +1163,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>provenance</code>
-</th>
-<td>
-<table id="v-0ef8302f5cf43f3604de1aa1">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-2a7598faa16967cc7ee6288e">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance/default">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-38903c11b4d1567aef04896f">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-44be29d6efd7c400b6a89429">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance/enum/0">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-6b3a4c869e6433a5a6313cb5">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance/enum/1">omit</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-4bbf5ab29526afad8397c01b">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance/title">Provenance</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-f0a63f3718476e6a9adf443b">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>provenance_omission_reason</code>
-</th>
-<td>
-<table id="v-bc41e02b28512a2c23c1e85a">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-ad287a4de153c5840d39d7bc">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-a1abc91fd946bf46d7636469">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-46a2be96cdeeaa6fc278b537">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0/maxLength">1000</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-cdcab2a820e5df475486a50b">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-d4e37727041c38e9a09c474f">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-5714149d5b40071eb5b66275">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-c0b654650cd46e2ff9045138">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance_omission_reason/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-809fbb5cecd9a617ab74786c">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance_omission_reason/title">Provenance Omission Reason</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>root</code>
 </th>
 <td>
@@ -2073,25 +1826,11 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-b3deb53a2201dcb4eda27172">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-1a130efa87a4cc95a21cae70">
-<tbody>
-<tr>
-<th scope="row">
 <code>maxLength</code>
 </th>
 <td>
-<span id="v-5797f5c057277ceb7e1a1c88">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/anyOf/0/maxLength">255</code>
+<span id="v-23ab8606e730abb27102d058">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/maxLength">255</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -2100,55 +1839,9 @@
 <code>minLength</code>
 </th>
 <td>
-<span id="v-5462605258c319ea420c192b">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/anyOf/0/minLength">1</code>
+<span id="v-061832b7593bd8612a5b2d1f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/minLength">1</code>
 <span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-a1ca70fc203d292a79a60147">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-753aabd71d3e5075afb766c5">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-9c49b6d2f0c729e49fe5f27b">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-a53a31efb6d907bb67551b85">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/default">null</code>
-<span class="kind">null</span>
 </span></td>
 </tr>
 <tr>
@@ -2158,6 +1851,16 @@
 <td>
 <span id="v-30bc6d31844d5b876279a12f">
 <code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/title">Provenance Observer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ce68509622546708b40721d0">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2350,7 +2053,7 @@
 </th>
 <td>
 <span id="v-d7892c1f238385752f0b078d">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/2">sources</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/2">provenance_observer</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2360,7 +2063,7 @@
 </th>
 <td>
 <span id="v-859851fc87327d5064e458d8">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/3">riverhog_token_file</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/3">sources</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2370,7 +2073,17 @@
 </th>
 <td>
 <span id="v-5d52edda1c9e985e4fce3b69">
-<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/4">api_token_file</code>
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/4">riverhog_token_file</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-6d129b1319b5afb181fad18f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/required/5">api_token_file</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2496,15 +2209,6 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0</code></td>
-<td data-label="Governing rule">
-<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
-<td data-label="Decision">length · characters · contract_max</td>
-<td data-label="Bounds or reason">
-<code>{&quot;maximum&quot;:1000,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
-</tr>
-<tr>
-<td data-label="Exact subject">
 <code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/$defs/SourceConfig/properties/tags</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -2532,7 +2236,7 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer/anyOf/0</code></td>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-ftp-spool.schema.json/properties/provenance_observer</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
 <td data-label="Decision">length · characters · contract_max</td>
@@ -2565,7 +2269,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

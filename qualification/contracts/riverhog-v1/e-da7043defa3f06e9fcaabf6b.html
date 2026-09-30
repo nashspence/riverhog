@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a-stove0-riverhog-provenance-observer · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-80598278faaacdc203ce329a.html">a-stove0-riverhog-provenance-observer</a> / <a href="i-aa8ecec896a7e352240d85b6.html">CLI</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a-stove0-riverhog-provenance-observer</h1>
+<p class="context">Exact canonical core facts and Occurrence hint observer for Stove0. CLI contract owned by a-stove0-riverhog-provenance-observer.</p>
+<section id="contract" data-contract="cli:a-stove0-riverhog-provenance-observer:a-stove0-riverhog-provenance-observer:4586c86914">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>a-stove0-riverhog-provenance-observer</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Parameter and spelling">
+<code>host</code>
+<br>
+<code>--host</code></td>
+<td data-label="Invocation">optional; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>not recorded</code></td>
+<td data-label="Default and environment">
+<code>127.0.0.1</code></td>
+</tr>
+<tr>
+<td data-label="Parameter and spelling">
+<code>port</code>
+<br>
+<code>--port</code></td>
+<td data-label="Invocation">optional; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>int</code></td>
+<td data-label="Default and environment">
+<code>8080</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-stove0-riverhog-provenance-observer-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-stove0-riverhog-provenance-observer-cli-runtime/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>none</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Outcome">
+<code>stopped</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>service-runtime-returned</code></td>
+<td data-label="stdout">all: <code>no-command-result</code></td>
+<td data-label="stderr">all: <code>noncontractual-runtime-log</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
+</tr>
+<tr>
+<td data-label="Control">
+<code>version</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>{&quot;distribution&quot;:&quot;a-stove0-riverhog-provenance-observer&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/allow_abbrev</code>
+</h4>
+<span id="v-f347a8113df5c766392cfdc0">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/allow_abbrev">true</code>
+<span class="kind">boolean</span>
+</span>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/name</code>
+</h4>
+<span id="v-735e79695f794822ec711240">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/name">a-stove0-riverhog-provenance-observer</code>
+<span class="kind">string</span>
+</span>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters</code>
+</h4>
+<table id="v-b2c03f211717547fcb97ef93">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-cb146cc1cc1de4cd9f841c39">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-814633aaa4684ac5df1a5cec">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0/default">127.0.0.1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>dest</code>
+</th>
+<td>
+<span id="v-90362aa7e25752ee398a1ddf">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0/dest">host</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-9f8e5ce8e567ea6dbd4f7d85">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0/kind">_StoreAction</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nargs</code>
+</th>
+<td>
+<span id="v-fae60b394c9f56b23e90ef4c">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0/nargs">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-b0dcf06da346766c3afd1527">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c55c11a1cee7a519a77a3331">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0/options/0">--host</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-92a914deea409cb6da507676">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0/required">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9b09a1f68e18d6ed6f9353c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0f02357e8b9f97118931704a">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/default">8080</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>dest</code>
+</th>
+<td>
+<span id="v-ebbbc1ecf908c77eae4ced3f">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/dest">port</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-9c90a6b10e213659deeba5b3">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/kind">_StoreAction</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nargs</code>
+</th>
+<td>
+<span id="v-baf7e5b0202af13d20b33051">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/nargs">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-d58d93dc44ce5f847da42519">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d27cfd9a89635a4b95bacb90">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/options/0">--port</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-ce4f59d19ea6cbc566b807c0">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/required">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5cf6600727f88f1e095a42ad">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1/type">int</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract</code>
+</h4>
+<table id="v-5c0c2cc9b5cda712d12bd94a">
+<tbody>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-4a4bc3be1afbb11e9a3fb504">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f798040cccfd9c9bd6ae7adf">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-cee708b280e47c33c35e54ec">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/failures/0/exit_status">2</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-9baf52fc67fdf55f8ab03743">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/failures/0/id">usage</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>selected_by</code>
+</th>
+<td>
+<table id="v-81792b57b162a4cac1f1ad58">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-97ad5060dc8f6c7d667e8568">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<table id="v-b040912c2c8d102f9a6fec4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-7f50ea1853e847f32ee7d5c0">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-abcc81720ee68a78fa932521">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-3ac7de602993eebc14b2ca9c">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/failures/0/stdout/all">empty</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>human_json_relationship</code>
+</th>
+<td>
+<span id="v-cbba008443f8064dfa1cf1de">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/human_json_relationship">not-applicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>identity</code>
+</th>
+<td>
+<span id="v-429ecccfd62718a51a12d5f4">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/identity">a-stove0-riverhog-provenance-observer-cli-result/root/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_id</code>
+</th>
+<td>
+<span id="v-c085b0fc7b24fefe9ddfb45d">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/profile_id">a-stove0-riverhog-provenance-observer-cli-runtime/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>structured_output</code>
+</th>
+<td>
+<span id="v-a8707b4b986b9505be30c43d">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/structured_output">none</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>success</code>
+</th>
+<td>
+<table id="v-92a21fd8224aba41d3d380f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c26de2371d5aad71469ed70a">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-9dbe008d3fc1e067efae591d">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/success/0/exit_status">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-a8e87c62cd1dc3c2a91c8fd7">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/success/0/id">stopped</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>selected_by</code>
+</th>
+<td>
+<table id="v-71be3cc33962e61e67f43a37">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-65274506b75318e97204a1b9">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/success/0/selected_by/kind">service-runtime-returned</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<table id="v-504379515c8a07aece5c7579">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-dacbac90ae71a2024022def8">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/success/0/stderr/all">noncontractual-runtime-log</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-4fa48cab0441f7a0678001dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-a2d024412b89366bfc080db9">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/result_contract/success/0/stdout/all">no-command-result</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls</code>
+</h4>
+<table id="v-abdb276195832b55b40d52cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-72cb53b53cdabcd8242f53fe">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-de89905bdfeb1f99ba2a3caa">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/exit_status">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-502288d96e9eda1589a95548">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/id">help</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<span id="v-8427027ec8b035b5d32957eb">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/stderr">empty</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<span id="v-6568b9078b45c77592d45c1a">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/stdout">noncontractual-framework-help</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>trigger</code>
+</th>
+<td>
+<table id="v-3e9481d998a18d9360f8859c">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-8b93aafaa281efb14a4191a8">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/trigger/kind">option-present</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-bfab7bb46e9e4a5fa60a974b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-72e7db3a20ae02f2bdcab361">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/trigger/options/0">-h</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-266f26959c65559613403ec7">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/0/trigger/options/1">--help</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-2420fd2dca2a3d70fa53b9ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-50c9dbbd43b7f5c8a7e454c8">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/exit_status">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-dba48d23c76ef5c707c743c1">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/id">version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<span id="v-074ef6ba4d1115e6745833ae">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/stderr">empty</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-2ee11dd49bf9394d0fe91452">
+<tbody>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-4cd974c51bf038babfd1b4b0">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/stdout/distribution">a-stove0-riverhog-provenance-observer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-2fde234e1704886479b06bb3">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/stdout/kind">installed-coordinated-release-version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>serialization</code>
+</th>
+<td>
+<span id="v-bf729a25f5a4fd82d9804e91">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/stdout/serialization">noncontractual</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>trigger</code>
+</th>
+<td>
+<table id="v-895b20d41426e9ecfd4a186b">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-e4cbbb64bc0d22e2681a21a6">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/trigger/kind">option-present</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-4598ff4c27fe209704e3113d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3c9ab25d32bc82c2d4e7ced4">
+<code data-value-pointer="/external_contract/cli/a-stove0-riverhog-provenance-observer/terminating_controls/1/trigger/options/0">--version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-b352af10b5fe5469cff2b5d3.html">compatibility/cli/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-e698af15bde405fb31e97c44">cli:a-stove0-riverhog-provenance-observer</a> — <code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py::&lt;module&gt;</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-stove0-riverhog-provenance-observer/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>usage: a-stove0-riverhog-provenance-observer [-h] [--version] [--host HOST] [--port PORT]</code>
+</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>-h, --help</code>
+</dt>
+<dd>show this help message and exit</dd>
+<dt>
+<code>--version</code>
+</dt>
+<dd>show program&#x27;s version number and exit</dd>
+<dt>
+<code>--host HOST</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--port PORT</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

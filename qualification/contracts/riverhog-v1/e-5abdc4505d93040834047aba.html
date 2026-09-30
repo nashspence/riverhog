@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_materialization.PlannedDestination · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-ca05b865013e7ec572d8e8dd.html">riverhog-materialization</a> / <a href="i-61ed60bdbe5da19420c3d817.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog_materialization.PlannedDestination</h1>
+<p class="context">Pure local destination planning for Riverhog artifact materialization. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:riverhog-materialization:riverhog-materialization-planneddestination:b5345ce9c3">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-materialization</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_materialization</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>PlannedDestination</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(artifact_id: &#x27;str&#x27;, components: &#x27;tuple[str, ...]&#x27;, sidecar_components: &#x27;tuple[str, ...]&#x27;, reason: &#x27;FallbackReason&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27;) -&gt; None&quot;</code>
+</dd>
+</dl>
+<h4>Dataclass fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Type</th>
+<th scope="col">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>components</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[str, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sidecar_components</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[str, ...]&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>reason</code></td>
+<td data-label="Type">
+<code>&#x27;FallbackReason&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>materialization_hint</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[str, ...] | None&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/riverhog_materialization.PlannedDestination</code>
+</h4>
+<table id="v-f945d8493302d1ee4c897b7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-b7e13c08828eb5972ae87b5a">
+<tbody>
+<tr>
+<th scope="row">
+<code>fields</code>
+</th>
+<td>
+<table id="v-60fb82d53a231f084e50e4e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-04ad0df47b60211b4fbbc0c6">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1e749cb87b8a5c3a1c08bc0b">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/0/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-d716c289b6f8fa38219e21fd">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/0/name">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-94297a23d676a69e8e2c490b">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/0/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-67c95d8ac704bb04ed67e4e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-b983a2cc29083d70ecc88710">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/1/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-d057be038cc89abbed7d328b">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/1/name">components</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ccf3aa28c26db1be7edb2c53">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/1/type">&#x27;tuple[str, ...]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-1d59b2146fb35a38c3705ab5">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a08f7fbfece2a27ecae68c65">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/2/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-14bfe09bf0b72810a47e82e6">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/2/name">sidecar_components</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-57e3a7566b9891cfb1fc612f">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/2/type">&#x27;tuple[str, ...]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-607c3ca9145beb4248f99d38">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6a1a0ea1e0af6706eecd8601">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/3/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a1ed3ff3e4e0ec4a828f8751">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/3/name">reason</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2b6197ff5cef7512e624bb2d">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/3/type">&#x27;FallbackReason&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-d7be75a09a19b9b68d4b05c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-30309c0bfcb64ee984ea7e4d">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/4/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-3b8451d8f7c325c4c2d5d22c">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/4/name">materialization_hint</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e4a83dd6904732881dcf628a">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/fields/4/type">&#x27;tuple[str, ...] | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-50935cea1c39505e0a622a14">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-62423024c4d1e481a106ef90">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/contract/signature">&quot;(artifact_id: &#x27;str&#x27;, components: &#x27;tuple[str, ...]&#x27;, sidecar_components: &#x27;tuple[str, ...]&#x27;, reason: &#x27;FallbackReason&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27;) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-8843651b24cd793cce5699a7">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/distribution">riverhog-materialization</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-ba3c6e0a4708fb762eed8e86">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/module">riverhog_materialization</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a799ab30eef083e6b4e964e8">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/name">PlannedDestination</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-a45179b9da9d928e5c8cd5bd">
+<code data-value-pointer="/external_contract/python/riverhog_materialization.PlannedDestination/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-681f63afb022680f1d9204b3">python:riverhog-materialization:riverhog_materialization</a> — <code data-source-path="packages/riverhog-materialization/src/riverhog_materialization/__init__.py">packages/riverhog-materialization/src/riverhog_materialization/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

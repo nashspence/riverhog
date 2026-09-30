@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&#x27;(*, request: stove0_protocol.models.ContentObservationRequest, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], runtime: stove0_protocol.models.ObserverRuntimeAuthority) -&gt; None&#x27;</code>
+<code>&#x27;(*, request: stove0_protocol.models.ContentObservationRequest, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], runtime: stove0_protocol.models.ObserverRuntimeAuthority, evidence: tuple[stove0_protocol.models.ContentObservationEvidence, ...] = ()) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-1a65453807d85c338c7185e3">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -92,6 +92,16 @@
 <td data-label="Shape and bounds">
 <code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-2a386978f3d5e521ee43ac07">evidence</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-a162d24ced3ae22239d3fcd4">#/$defs/ContentObservationEvidence</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -133,10 +143,25 @@
 <a href="#s-abeb4693f29890b0cb63583f">CollectionRootIdentityRef</a>
 </li>
 <li>
+<a href="#s-a162d24ced3ae22239d3fcd4">ContentObservationEvidence</a>
+</li>
+<li>
+<a href="#s-498d576dc895d8ad67cdbb02">ContentObservationFailure</a>
+</li>
+<li>
+<a href="#s-529ebe9bea6d944a05913b03">ContentObservationInapplicable</a>
+</li>
+<li>
 <a href="#s-ea45b782aa779687bb856761">ContentObservationRequest</a>
 </li>
 <li>
+<a href="#s-47b3842a62e91b9538d58696">ContentObservationResult</a>
+</li>
+<li>
 <a href="#s-177f0aca9ab006bdb41dd55a">DeclaredWorkspaceProtection</a>
+</li>
+<li>
+<a href="#s-6accc632fd718648b1d10a7d">JsonSchemaValidationProfile</a>
 </li>
 <li>
 <a href="#s-bc767ada5dc9b1943f2a0a7c">JsonValue</a>
@@ -145,12 +170,30 @@
 <a href="#s-60c6e1fe4a4d3f1c337fbcb1">NonnegativeDecimal</a>
 </li>
 <li>
+<a href="#s-995adcef71db3ba66c74f248">ObservationEvidenceSlot</a>
+</li>
+<li>
+<a href="#s-02b0275bf79d18d144440870">ObserverImplementation</a>
+</li>
+<li>
 <a href="#s-5425c1d762dc50f21a21489d">ObserverRuntimeAuthority</a>
 </li>
 <li>
 <a href="#s-158516dea6f5cfc2e2432666">WorkArtifactSubject</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-2a386978f3d5e521ee43ac07">
+<h3>Field: evidence</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-a162d24ced3ae22239d3fcd4">#/$defs/ContentObservationEvidence</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-76400c113760fa1d6dee41d7">
 <h3>Definition: CollectionId</h3>
@@ -186,7 +229,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -221,6 +264,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>artifact_set_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -228,12 +280,174 @@
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a162d24ced3ae22239d3fcd4">
+<h3>Definition: ContentObservationEvidence</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;request&quot;,&quot;result&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>request</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-f750c798f62d165e6dbbfedb.html#v-ea45b782aa779687bb856761">#/$defs/ContentObservationRequest</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f750c798f62d165e6dbbfedb.html#v-47b3842a62e91b9538d58696">#/$defs/ContentObservationResult</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-498d576dc895d8ad67cdbb02">
+<h3>Definition: ContentObservationFailure</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;,&quot;retryable&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>retryable</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-529ebe9bea6d944a05913b03">
+<h3>Definition: ContentObservationInapplicable</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>code</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>message</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -244,7 +458,7 @@
 <section class="schema-section" id="s-ea45b782aa779687bb856761">
 <h3>Definition: ContentObservationRequest</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -273,6 +487,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-8b2e8a5537695c3f015d1063">evidence_slots</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-995adcef71db3ba66c74f248">#/$defs/ObservationEvidenceSlot</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>format</code></td>
@@ -340,6 +563,16 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-11709493f3d1457c5597450c">read_actions</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Default">
+<code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>request_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -389,6 +622,169 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-47b3842a62e91b9538d58696">
+<h3>Definition: ContentObservationResult</h3>
+<p class="shape">
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;request_id&quot;,&quot;state&quot;,&quot;observer&quot;,&quot;observer_contract_id&quot;,&quot;observer_contract_sha256&quot;,&quot;subjects&quot;,&quot;result_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-8f943da24aa4800431a5d8c4">execution_evidence</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-508b9168b1e8149b100b1e9b">facts</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-470a81a4652b7eb44d3ed370">facts_schema</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-f750c798f62d165e6dbbfedb.html#v-6accc632fd718648b1d10a7d">#/$defs/JsonSchemaValidationProfile</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-6664d05fffcb32102af2f015">facts_sha256</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-e5201831c4081797a95e28dd">failure</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-f750c798f62d165e6dbbfedb.html#v-498d576dc895d8ad67cdbb02">#/$defs/ContentObservationFailure</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-observation-result/v1</code>; default: <code>stove0-observation-result/v1</code></td>
+<td data-label="Default">
+<code>stove0-observation-result/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-6b65d6d3a88224c4bd98adc5">inapplicable</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-f750c798f62d165e6dbbfedb.html#v-529ebe9bea6d944a05913b03">#/$defs/ContentObservationInapplicable</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-f750c798f62d165e6dbbfedb.html#v-02b0275bf79d18d144440870">#/$defs/ObserverImplementation</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observer_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observer_contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>request_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>state</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;observed&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-9d2cc2be677aeaf86ae186b0">subjects</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-158516dea6f5cfc2e2432666">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-177f0aca9ab006bdb41dd55a">
 <h3>Definition: DeclaredWorkspaceProtection</h3>
 <p class="shape">
@@ -404,6 +800,89 @@
 <code>[&quot;encrypted-at-rest&quot;,&quot;memory-backed&quot;]</code>
 </dd>
 </dl>
+</section>
+<section class="schema-section" id="s-6accc632fd718648b1d10a7d">
+<h3>Definition: JsonSchemaValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;profile_sha256&quot;,&quot;schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>dialect</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>https://json-schema.org/draft/2020-12/schema</code>; default: <code>https://json-schema.org/draft/2020-12/schema</code></td>
+<td data-label="Default">
+<code>https://json-schema.org/draft/2020-12/schema</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format_policy</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>annotation-only</code>; default: <code>annotation-only</code></td>
+<td data-label="Default">
+<code>annotation-only</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>profile_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-108b8a0a789f3b8a8f311fdd">schema</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-bc767ada5dc9b1943f2a0a7c">
 <h3>Definition: JsonValue</h3>
@@ -424,6 +903,160 @@
 <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
 </dd>
 </dl>
+</section>
+<section class="schema-section" id="s-995adcef71db3ba66c74f248">
+<h3>Definition: ObservationEvidenceSlot</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;slot&quot;,&quot;request_id&quot;,&quot;result_sha256&quot;,&quot;observer_contract_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>observer_contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>request_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>result_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>slot</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-02b0275bf79d18d144440870">
+<h3>Definition: ObserverImplementation</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;version&quot;,&quot;source_revision&quot;,&quot;descriptor_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>descriptor_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>protocol</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>stove0-content-observer/v1</code>; default: <code>stove0-content-observer/v1</code></td>
+<td data-label="Default">
+<code>stove0-content-observer/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>source_revision</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>version</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-5425c1d762dc50f21a21489d">
 <h3>Definition: ObserverRuntimeAuthority</h3>
@@ -511,12 +1144,12 @@
 <section class="schema-section" id="s-158516dea6f5cfc2e2432666">
 <h3>Definition: WorkArtifactSubject</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -540,6 +1173,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>bytes</code></td>
@@ -569,24 +1211,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-8863f4d78fe7b9a6edea2983">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>role</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -602,6 +1226,35 @@
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8b2e8a5537695c3f015d1063">
+<h3>Field: evidence_slots</h3>
+<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-995adcef71db3ba66c74f248">#/$defs/ObservationEvidenceSlot</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-4e36acd2fc4914773f29692d">1</a></td>
+<td data-label="Schema">
+<code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-995adcef71db3ba66c74f248">#/$defs/ObservationEvidenceSlot</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -623,6 +1276,26 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-11709493f3d1457c5597450c">
+<h3>Field: read_actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-73ef53e8ccdb0ccc73f162f9">
 <h3>Field: subjects</h3>
 <p class="shape">
@@ -639,9 +1312,54 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-8863f4d78fe7b9a6edea2983">
-<h3>Field: media_type</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+<section class="schema-section" id="s-8f943da24aa4800431a5d8c4">
+<h3>Field: execution_evidence</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-508b9168b1e8149b100b1e9b">
+<h3>Field: facts</h3>
+<p class="shape">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">
+<a href="#s-3a5583a510f6e7c360d40fd0">1</a></td>
+<td data-label="Schema">
+<code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-470a81a4652b7eb44d3ed370">
+<h3>Field: facts_schema</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-f750c798f62d165e6dbbfedb.html#v-6accc632fd718648b1d10a7d">#/$defs/JsonSchemaValidationProfile</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -656,7 +1374,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<a href="e-f750c798f62d165e6dbbfedb.html#v-6accc632fd718648b1d10a7d">#/$defs/JsonSchemaValidationProfile</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -666,6 +1384,150 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-6664d05fffcb32102af2f015">
+<h3>Field: facts_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e5201831c4081797a95e28dd">
+<h3>Field: failure</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-f750c798f62d165e6dbbfedb.html#v-498d576dc895d8ad67cdbb02">#/$defs/ContentObservationFailure</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-f750c798f62d165e6dbbfedb.html#v-498d576dc895d8ad67cdbb02">#/$defs/ContentObservationFailure</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6b65d6d3a88224c4bd98adc5">
+<h3>Field: inapplicable</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-f750c798f62d165e6dbbfedb.html#v-529ebe9bea6d944a05913b03">#/$defs/ContentObservationInapplicable</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-f750c798f62d165e6dbbfedb.html#v-529ebe9bea6d944a05913b03">#/$defs/ContentObservationInapplicable</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9d2cc2be677aeaf86ae186b0">
+<h3>Field: subjects</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-158516dea6f5cfc2e2432666">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-108b8a0a789f3b8a8f311fdd">
+<h3>Field: schema</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4e36acd2fc4914773f29692d">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-f750c798f62d165e6dbbfedb.html#v-995adcef71db3ba66c74f248">#/$defs/ObservationEvidenceSlot</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3a5583a510f6e7c360d40fd0">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
 </section>
 </div>
 <details class="exact">
@@ -843,6 +1705,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-63e9df1898a184f483b51ba3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f9513722f8294dbde3827d9f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-35aed7163fefce3bbabbf57f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -856,36 +1748,6 @@
 <span id="v-1f74a59db9c9871eb4b82c91">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-76400c113760fa1d6dee41d7">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-c0a7566eedf82e1a3fdb406a">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-f60ec34c55ce3016e9504e91">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6dd5c6b8c59e31e0209842e9">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -927,7 +1789,7 @@
 </th>
 <td>
 <span id="v-10ae91db1163384b7cf26eaa">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -941,6 +1803,426 @@
 <td>
 <span id="v-e7540c783093f91f80208b41">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/CollectionRootIdentityRef/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ContentObservationEvidence</code>
+</th>
+<td>
+<table id="v-a162d24ced3ae22239d3fcd4">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0e4f5182d7be1f67814e9349">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationEvidence/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-de39cb0e5ca85bfe35d30766">
+<tbody>
+<tr>
+<th scope="row">
+<code>request</code>
+</th>
+<td>
+<table id="v-1b2b92ee0292eec453a1f6e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b50d55d62e0cf0a610651297">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationEvidence/properties/request/$ref">#/$defs/ContentObservationRequest</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-ea45b782aa779687bb856761">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result</code>
+</th>
+<td>
+<table id="v-260a9df915ccf36567ab08df">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d76d39df84a72a32ebf84cb3">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationEvidence/properties/result/$ref">#/$defs/ContentObservationResult</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-47b3842a62e91b9538d58696">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-4fca0744d59701cfa9ae87b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a3b638633cb32dd6e889e3c4">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationEvidence/required/0">request</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-cbd623582146c6a920fd0b39">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationEvidence/required/1">result</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c7db900b03524daf392d3865">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationEvidence/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ContentObservationFailure</code>
+</th>
+<td>
+<table id="v-498d576dc895d8ad67cdbb02">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2547dd0c36455a77083c3b1c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-b1fb2b26bbaada4ddad80511">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-376982fcf2f0e61298311421">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-07c9eb52ed58a58f1f7a833c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d9754f9af081e75c26d48d1a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-858dce122d09e19752e46b3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-dd59158f2cd7f65a0e179391">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-b40b5ebb4c56b30e9d182c5d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e611bb973020d158e09877fa">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>retryable</code>
+</th>
+<td>
+<table id="v-36b27487d3f6cce1d544ce38">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-62911e90fd732677c1eab339">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/properties/retryable/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e3c3ac989c289e2ae0ad7a98">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-aef56ae62f97451ce3d12713">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0fc2d2124d9e3146d554f5da">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-51e3757776d4b21d30c11ffe">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/required/2">retryable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e81478fdcd7ebe195902ce48">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationFailure/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ContentObservationInapplicable</code>
+</th>
+<td>
+<table id="v-529ebe9bea6d944a05913b03">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-4ae5e074dc8f182431195ec1">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-0c6f83f38c91862a03e81936">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<table id="v-6b02ac5012aaad81449f390c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9faa38cd0995e6055df56bf4">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/properties/code/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-452a0d345162a9a2ba304976">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/properties/code/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>message</code>
+</th>
+<td>
+<table id="v-f7cecb1dcb0355c0d6d04bdd">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-991ddbcdd63e9c6d09428b36">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/properties/message/maxLength">1000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-85d54469c2b39c8f6c3393d0">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/properties/message/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-21acdca9a2f49bf7585771d7">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/properties/message/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-383edc142caaae164e0ca83b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d0cf4f0e58393895a4c05ad1">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/required/0">code</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0117573723aa3e0696ab7916">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/required/1">message</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3589e702ece0e295f5eaf58d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationInapplicable/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -971,6 +2253,96 @@
 <td>
 <table id="v-70d3bcd7d260266686b6fe75">
 <tbody>
+<tr>
+<th scope="row">
+<code>evidence_slots</code>
+</th>
+<td>
+<table id="v-8b2e8a5537695c3f015d1063">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-441f65b996eaa2f1094f9344">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4e36acd2fc4914773f29692d">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-95988776a124bfd0c7c49f7b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-be3be62d7d3f5f6d9acf2ea7">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/0/items/$ref">#/$defs/ObservationEvidenceSlot</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-995adcef71db3ba66c74f248">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b2f741c66dabeac2851c73d3">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/0/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-98bb35d6994b488f7c889f2f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5fae24daf8956d87dbf47823">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fadf51aa73d13cc7f5a62fed">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/evidence_slots/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>format</code>
@@ -1215,6 +2587,126 @@
 <td>
 <span id="v-cb72120fa9eeb1bc3a60aed7">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/options/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_actions</code>
+</th>
+<td>
+<table id="v-11709493f3d1457c5597450c">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-061a0ef313574412a64be66f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-daa0f7b2838268bc3cfc91d0">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/default/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-2457bdcee161239ef9849de7">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-e7f65efbdba9e9c44eeae5d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a366adc11ce1ac8a03a36aa8">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1c99532dc022cc4c7d5935ff">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-79a39b9e58e3322454d78be3">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/enum/2">read-evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ffd68ed402dcfef1633ec031">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-82d9bd3116d26b7c7aac0858">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/maxItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-c76e280df65649848fe05ce9">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-72f38fe4f2195cf53f73ff02">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationRequest/properties/read_actions/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1539,6 +3031,846 @@
 </tr>
 <tr>
 <th scope="row">
+<code>ContentObservationResult</code>
+</th>
+<td>
+<table id="v-47b3842a62e91b9538d58696">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-f5c04e506df653983615c689">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1287d1f3cd03955a01753510">
+<tbody>
+<tr>
+<th scope="row">
+<code>execution_evidence</code>
+</th>
+<td>
+<table id="v-8f943da24aa4800431a5d8c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-a4a83f6da243597a4ae2c8b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1baec307398469509d7f4e04">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/execution_evidence/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66e8d9d1a644b557862a82a6">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/execution_evidence/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>facts</code>
+</th>
+<td>
+<table id="v-508b9168b1e8149b100b1e9b">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-5f80c9feea8e5a3b8d1c1c45">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3a5583a510f6e7c360d40fd0">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-041a407ebc12f5d03d9d877a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a30024b63f3b2f8b0c01108a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts/anyOf/0/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-071bfec6c4a63f9d2f01f20e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts/anyOf/0/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-fd5d73b85237ecce01b91519">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5f5c0dac53202049da303815">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fc48c069e4846305701962d5">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>facts_schema</code>
+</th>
+<td>
+<table id="v-470a81a4652b7eb44d3ed370">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-cb2b8fc1c943212051ebbb62">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-fca21e5aa19721c5c198a0e8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6167e052543461cdd00711ed">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_schema/anyOf/0/$ref">#/$defs/JsonSchemaValidationProfile</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-6accc632fd718648b1d10a7d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-10dde79e6c6db04e3d8b2581">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fb0b60bdb60cbea30e3a23b5">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_schema/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-476b806d111408e8fe35ce4d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_schema/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>facts_sha256</code>
+</th>
+<td>
+<table id="v-6664d05fffcb32102af2f015">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-6993440308c305f1bb5ca10c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4efe19d5b93cea730d648ed4">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a2d44d05326081b6bd288391">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-be6746699a82753ca6f5f04d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-dcda15d70c4c876a5b6de57f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ca99626f5df00bb127748880">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-688d393084b3bf6018b1c565">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/facts_sha256/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>failure</code>
+</th>
+<td>
+<table id="v-e5201831c4081797a95e28dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-cc04ecc0b2294c38bfa33e2e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d8d1b6bf5aa90a46dc8eeeae">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-31b1f933ced9ed12a4797920">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/failure/anyOf/0/$ref">#/$defs/ContentObservationFailure</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-498d576dc895d8ad67cdbb02">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-5871054ca9b4473bc6a95721">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0f6714fc4232f5d4c86a355c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/failure/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-dad898932b61065bb0190c4a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/failure/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-9485218facba21801c96650c">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-2b0d6a66c65105e4d3922ef3">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/format/const">stove0-observation-result/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-ce5b8146a6f99ea7cce1fc80">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/format/default">stove0-observation-result/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eb20f141b6017c163d5264ff">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>inapplicable</code>
+</th>
+<td>
+<table id="v-6b65d6d3a88224c4bd98adc5">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-cd2f24b8cd727dc71eb7373d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-dabccc30beac31e6f5e67101">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6b06ba8112982c02db2949bb">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/inapplicable/anyOf/0/$ref">#/$defs/ContentObservationInapplicable</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-529ebe9bea6d944a05913b03">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-8a0347e2a579a3df4ccf96a0">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d72c9cbff7ca25847f62bd86">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/inapplicable/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-c1bf6ffa6efb1fd4f5b92a9d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/inapplicable/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observer</code>
+</th>
+<td>
+<table id="v-8750d5c928a4f00df81aa070">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f7279fec34f4eebdf1884c31">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/observer/$ref">#/$defs/ObserverImplementation</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-02b0275bf79d18d144440870">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observer_contract_id</code>
+</th>
+<td>
+<table id="v-fcf2829efefc81b1bf2e4249">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-db8d1455d6df61a0197b7f82">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/observer_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6969a856b2409b97db94fae4">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/observer_contract_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>observer_contract_sha256</code>
+</th>
+<td>
+<table id="v-dc8a4bf52932a2ee4dd94f91">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e6a7e20e687af7af5cc89313">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/observer_contract_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eb1655344431d40981904fa1">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/observer_contract_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>request_id</code>
+</th>
+<td>
+<table id="v-a85661e638e930c57733ead7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6dc63d62b4e90ecb5c8bebdc">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/request_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-71f0136aa2346a96dfe008c1">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/request_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_sha256</code>
+</th>
+<td>
+<table id="v-19d3370f4b032ec7048759e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8c0c26812dc22d029449f96a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/result_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bfc67c3f574f19a5f85ff43f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/result_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>state</code>
+</th>
+<td>
+<table id="v-a7eb3ca3b18c55862be251b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-b97e34e94103089c50e94dca">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a65c3b60350f0f814a8bd85f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/state/enum/0">observed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-2eec5c263b0ea6d97e105a61">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/state/enum/1">inapplicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-4af4b54e85b1c8ad0a8be5c9">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/state/enum/2">failed</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-07122c686ea7276300904c6e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/state/enum/3">canceled</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-757d7d0784ad1fdc412e72c6">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/state/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>subjects</code>
+</th>
+<td>
+<table id="v-9d2cc2be677aeaf86ae186b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-ed3dba657a41f71e8be2803d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-55564caf20aa8b7b1bdc8cbb">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/subjects/items/$ref">#/$defs/WorkArtifactSubject</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-158516dea6f5cfc2e2432666">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-1b0995595456db33eb7f6c02">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/subjects/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9f2847c897c9e430fa8c99d2">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/properties/subjects/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-10d7c3d5ba79aae6ff10f03f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0503d752f030fa2ef2460baf">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/0">request_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1b39d8a90ad6599477a8c287">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/1">state</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-255b2f96631e6a1880d43acd">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/2">observer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c1a6ce61fd61576ecd1607f7">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/3">observer_contract_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-bb504874c133657cb1de0bf0">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/4">observer_contract_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-9e0050e704204a474d3c3e3f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/5">subjects</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-dbcacca393fd8eaf14bb5db6">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/required/6">result_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2dc25e469fc97793f3b48cab">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ContentObservationResult/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>DeclaredWorkspaceProtection</code>
 </th>
 <td>
@@ -1589,6 +3921,266 @@
 </tr>
 <tr>
 <th scope="row">
+<code>JsonSchemaValidationProfile</code>
+</th>
+<td>
+<table id="v-6accc632fd718648b1d10a7d">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-30227207e2a1499ddba3bac0">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-abde29c2fce157533e4a288c">
+<tbody>
+<tr>
+<th scope="row">
+<code>dialect</code>
+</th>
+<td>
+<table id="v-dd25f31786a5d52b70c8ce3c">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-2157470293697c350a092733">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/const">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4bff881a5f58a7e6b3f44dfb">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/default">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-136c884e90784dbbdab74727">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format_policy</code>
+</th>
+<td>
+<table id="v-2d7b444982eace2a50a94d13">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-a073e47fe93826321e8ec8c1">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/const">annotation-only</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-98264f346ed1c7ebc53a6d5e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/default">annotation-only</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5127885d8bde3b64596c7e8e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-f6a981748981a067daf71d87">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9368c3400510e6b0f3ac19d9">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-831a105b998ff3a31e1622eb">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_sha256</code>
+</th>
+<td>
+<table id="v-25c29e1ae9859ffd1c20ec52">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a619e4133d325f4c5b951313">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/profile_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6d954b62f005ea83d813ab90">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/profile_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-108b8a0a789f3b8a8f311fdd">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-2744253fffd29339a4faaea3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-acf847d49c2a2b85f1b41daf">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/schema/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-bc767ada5dc9b1943f2a0a7c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-23de74bec8f7b9e6c4fba601">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/properties/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e2d16ab7ee26a85a2d5bbae0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9523391772a45a318c76058f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/required/0">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-b119694a3dbeeef19838d2b5">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/required/1">profile_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-12f899d4e95e0361e36cc62c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/required/2">schema</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b07f964dc47f5173c9a627bf">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/JsonSchemaValidationProfile/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>JsonValue</code>
 </th>
 <td>
@@ -1621,6 +4213,486 @@
 <td>
 <span id="v-9ae8cb52ed844d13b6482c59">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ObservationEvidenceSlot</code>
+</th>
+<td>
+<table id="v-995adcef71db3ba66c74f248">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2068b346bda2c32284637a7d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a5eaa3072b6cadc95bcd4fd2">
+<tbody>
+<tr>
+<th scope="row">
+<code>observer_contract_id</code>
+</th>
+<td>
+<table id="v-5151b5456f09041855af24e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-82ea6b3bc401c706a148c65c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f498b1bc451a835dfbe0536e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/observer_contract_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>request_id</code>
+</th>
+<td>
+<table id="v-6a21ac6b0903fb4885d4d2a7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-00ab8590b4c88c0da59c69c7">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/request_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c18221f4df73367571d8c453">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/request_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_sha256</code>
+</th>
+<td>
+<table id="v-744655ce922ccc4611c919f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-77043436f97bb9551a3fa36c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0463baeb61e8b7de84d1f994">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/result_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>slot</code>
+</th>
+<td>
+<table id="v-0153a85655929cb90905c0fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-af1179d7fa9bddb2cddc3fbf">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/slot/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-735e70e7096b36eb161351d3">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/properties/slot/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e110154fc0e55de09eff1eeb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4c5637b0a6196ab59d96c6ab">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/required/0">slot</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a313827e2eb229739f7c285d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/required/1">request_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-f888cd5594be020fec2132ff">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/required/2">result_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c7dadd8d35d02c9f5db86e8a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/required/3">observer_contract_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-99f7bca04e9b040acb23575f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObservationEvidenceSlot/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ObserverImplementation</code>
+</th>
+<td>
+<table id="v-02b0275bf79d18d144440870">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-6333b6697f458e1dc9a8819c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-91a31a23261189e16d2b5f27">
+<tbody>
+<tr>
+<th scope="row">
+<code>descriptor_sha256</code>
+</th>
+<td>
+<table id="v-b49eacab720a29f2b35c728d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ffceb4fc233157b72519ecba">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/descriptor_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9b4ba74968cc0763ce5d66ba">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/descriptor_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-4cc751b73864aaa0080887f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c3c54649a1617db69d2de216">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-53a6a46047b3b71d0a66e79f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>protocol</code>
+</th>
+<td>
+<table id="v-e0ec4f3bf8b01354cab1d75b">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-c73620c597c34f43d010c141">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/protocol/const">stove0-content-observer/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-25c9d508b27371a98720d407">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/protocol/default">stove0-content-observer/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7af2135f772b98ad90360614">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/protocol/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_revision</code>
+</th>
+<td>
+<table id="v-377273f653a7e05e6c181e21">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-d40b7047a0d6e25a5317c325">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/source_revision/maxLength">200</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-43a48ccb7aa19dee7f946be6">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/source_revision/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8eadeb8922e8c6fc8627cd42">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/source_revision/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>version</code>
+</th>
+<td>
+<table id="v-fb85ce5cf0a82c604d67c263">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-38b0835e293cd4fc1017284c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/version/maxLength">120</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-a5cf77a9a87fa19e5240a883">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/version/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-954a7c3dae42d5af096b4aca">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/properties/version/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2e174a6241118bfcbc199576">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-30ffcd99ba6b50fb6e4ba307">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/required/0">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e33cd64f33e84ea4eaba3b14">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/required/1">version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-4db066575534f03274798fab">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/required/2">source_revision</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4602df8a6199b2e688b45a73">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/required/3">descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b089779c660c115a0582d98c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/ObserverImplementation/type">object</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1903,6 +4975,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-e484c5079d8834b4c2bef755">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4ea24e15b47607268e5909f7">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c296e486e2f1829bfea0f692">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>bytes</code>
 </th>
 <td>
@@ -1975,136 +5077,6 @@
 <td>
 <span id="v-390f3757b9aef2d925624b60">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-8863f4d78fe7b9a6edea2983">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-23a553b023412cc4266169bf">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-948bfb2e26ac148c123baf6c">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-3070a25986b292a1797d2fae">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/maxLength">255</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-8803347580186fb4e43b88ff">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c04c32f961b9703f6ec30cd0">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-fbe1b449a9805dfed4b300a7">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-e6777b89a47b75c799cac9b2">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-2c4a4330093fd0135aa1461d">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/media_type/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-73a752786dc6e5c509665c1f">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-ff6a6ff9cbc31373a2913733">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-ae37dd6f5792f4575c122a0f">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-906b9cca9d200219ada09381">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/properties/path/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2217,7 +5189,7 @@
 </th>
 <td>
 <span id="v-ce09f9f67106080beea70404">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/required/3">path</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/$defs/WorkArtifactSubject/required/3">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2311,6 +5283,56 @@
 <td>
 <span id="v-f1f84ae8da85bd0c033fc1ac">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/properties/claim_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>evidence</code>
+</th>
+<td>
+<table id="v-2a386978f3d5e521ee43ac07">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-296069fc6fca8315025fc68e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/properties/evidence/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-1ec18e55129997fd55678afe">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b2052bdeadb9a310f7ee502c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/properties/evidence/items/$ref">#/$defs/ContentObservationEvidence</code>
+<span class="kind">string</span> <a href="e-f750c798f62d165e6dbbfedb.html#v-a162d24ced3ae22239d3fcd4">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-335c9a3cd8c36ac8a3d3e1f0">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/schema/properties/evidence/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2459,7 +5481,7 @@
 </th>
 <td>
 <span id="v-5b8b37fbf072210a21114d8b">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/signature">&#x27;(*, request: stove0_protocol.models.ContentObservationRequest, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], runtime: stove0_protocol.models.ObserverRuntimeAuthority) -&gt; None&#x27;</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ContentObservationInvocation/contract/signature">&#x27;(*, request: stove0_protocol.models.ContentObservationRequest, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], runtime: stove0_protocol.models.ObserverRuntimeAuthority, evidence: tuple[stove0_protocol.models.ContentObservationEvidence, ...] = ()) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2515,6 +5537,9 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
+<a href="e-ec58e85ea2e1baa20a0e20d4.html">stove0_observer_protocol.ContentObservationInvocation.exactly_selected_evidence</a>
+</li>
+<li>
 <a href="e-4e8172f6bc4d37af53d1fdf1.html">stove0_observer_protocol.ContentObservationInvocation.canonical_claim_id</a>
 </li>
 </ul>
@@ -2550,7 +5575,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

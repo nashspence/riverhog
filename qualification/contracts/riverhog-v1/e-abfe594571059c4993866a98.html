@@ -68,9 +68,9 @@
 </tr>
 <tr>
 <td data-label="Parameter and spelling">
-<code>path</code>
+<code>artifact_id</code>
 <br>
-<code>path</code></td>
+<code>artifact_id</code></td>
 <td data-label="Invocation">required; argument; 1 value(s) per use</td>
 <td data-label="Type and constraints">
 <code>text</code></td>
@@ -128,7 +128,7 @@
 <td data-label="Exit">
 <code>0</code></td>
 <td data-label="Selection">kind: <code>command-completed</code></td>
-<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: HTTP response <code>200</code> from <code>GET</code> <code>/v1/collections/{collection_id}/provenance/files/{path}</code> · <code>#/components/schemas/CollectionFileProvenanceDetailOut</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: HTTP response <code>200</code> from <code>GET</code> <code>/v1/collections/{collection_id}/provenance/artifacts/{artifact_id}</code> · <code>#/components/schemas/CollectionArtifactProvenanceDetailOut</code></td>
 <td data-label="stderr">all: <code>empty</code></td>
 </tr>
 </tbody>
@@ -414,7 +414,7 @@
 </th>
 <td>
 <span id="v-56c921ba762f57813b33c267">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/1/name">path</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/1/name">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -441,7 +441,7 @@
 </th>
 <td>
 <span id="v-127f0a5c50e0b824452ce974">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/1/options/0">path</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/1/options/0">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1424,7 +1424,7 @@
 </th>
 <td>
 <span id="v-3245ded28118b74034ba2d37">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/result_contract/success/0/stdout/json/operation_id">get_collection_file_provenance</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/result_contract/success/0/stdout/json/operation_id">get_collection_artifact_provenance</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1434,7 +1434,7 @@
 </th>
 <td>
 <span id="v-e9b846fbb2004a8e4e27e297">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/result_contract/success/0/stdout/json/path">/v1/collections/{collection_id}/provenance/files/{path}</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/result_contract/success/0/stdout/json/path">/v1/collections/{collection_id}/provenance/artifacts/{artifact_id}</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1451,8 +1451,8 @@
 </th>
 <td>
 <span id="v-624872d2f699e84f25ecd6e1">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/result_contract/success/0/stdout/json/schema/$ref">#/components/schemas/CollectionFileProvenanceDetailOut</code>
-<span class="kind">string</span> <a href="e-5c13377112c0e630f139f579.html#v-d8098d060289c2b5db615d51">Definition</a>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/result_contract/success/0/stdout/json/schema/$ref">#/components/schemas/CollectionArtifactProvenanceDetailOut</code>
+<span class="kind">string</span> <a href="e-92cb0147d3d750f2bd3ce850.html#v-9a9e152e631f975a52ac5564">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -1588,10 +1588,10 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
-<a href="e-8b07eea321ddde683705da22.html">GET /v1/collections/{collection_id}/provenance/files/{path}</a>
+<a href="e-cccb2912e674dee80ad9ace1.html">GET /v1/collections/{collection_id}/provenance/artifacts/{artifact_id}</a>
 </li>
 <li>
-<a href="e-fbbc919fd3a95454e7235603.html">riverhog_client.ApiClient.get_collection_file_provenance</a>
+<a href="e-f32f5191076c7d7db2f49ccc.html">riverhog_client.ApiClient.get_collection_artifact_provenance</a>
 </li>
 </ul>
 </section>
@@ -1635,6 +1635,15 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/0</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
@@ -1651,15 +1660,6 @@
 <td data-label="Bounds or reason">
 <code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code></td>
 </tr>
-<tr>
-<td data-label="Exact subject">
-<code>/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/show/parameters/1</code></td>
-<td data-label="Governing rule">
-<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
-<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
-<td data-label="Bounds or reason">
-<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -1667,10 +1667,10 @@
 <aside class="documentation" id="documentation">
 <h2>CLI help · noncontractual</h2>
 <p>
-<strong>Synopsis:</strong> <code>Usage: a-riverhog-cli collection provenance show [OPTIONS] COLLECTION_ID PATH</code>
+<strong>Synopsis:</strong> <code>Usage: a-riverhog-cli collection provenance show [OPTIONS] COLLECTION_ID ARTIFACT_ID</code>
 </p>
-<p>Show one file&#x27;s current provenance binding...</p>
-<p>Show one file&#x27;s current provenance binding and journal summary.</p>
+<p>Show one artifact&#x27;s exact primary...</p>
+<p>Show one artifact&#x27;s exact primary provenance binding.</p>
 <h3>Options and arguments</h3>
 <dl class="facts">
 <dt>
@@ -1678,9 +1678,9 @@
 </dt>
 <dd>Collection id [required]</dd>
 <dt>
-<code>PATH</code>
+<code>ARTIFACT_ID</code>
 </dt>
-<dd>Collection-relative file path [required]</dd>
+<dd>Exact collection artifact id [required]</dd>
 <dt>
 <code>--json</code>
 </dt>
@@ -1691,7 +1691,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

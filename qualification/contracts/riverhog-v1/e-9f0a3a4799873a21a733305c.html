@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -&gt; None&quot;</code>
+<code>&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], artifact_id: riverhog_protocol.artifact_identity.ArtifactId, bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-17e4dfe1fc08388d62c1688b">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;role&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -87,6 +87,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -100,24 +109,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-8db8cf15e9eaffa4bee2efcb">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -148,34 +139,6 @@
 <a href="#s-6b66a643d9577d12f38f1226">NonnegativeDecimal</a>
 </li>
 </ul>
-</section>
-<section class="schema-section" id="s-8db8cf15e9eaffa4bee2efcb">
-<h3>Field: media_type</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-6b66a643d9577d12f38f1226">
 <h3>Definition: NonnegativeDecimal</h3>
@@ -285,6 +248,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-864f401f73fc52b5eb31a6bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5f3ee0ef3a002363b32b70f2">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c796811fc5c97d99a0060dcb">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>bytes</code>
 </th>
 <td>
@@ -337,136 +330,6 @@
 <td>
 <span id="v-d7599994f510775ef5ded7b2">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-8db8cf15e9eaffa4bee2efcb">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-23bb4292d7b833f2d76ad9b4">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-1485b9fa6a5c2c698d1d4f2f">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-e2554de2dc89338dc0c5a363">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/media_type/anyOf/0/maxLength">255</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-de6b2f9b2e3d2bd563a32ff9">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/media_type/anyOf/0/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-0d269c42d526223dcac1e354">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-2775d4c63a7b5a92c1b70d19">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-63d759a67be365305fa80171">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-4cd63879731fa83cee55868e">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/media_type/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-66ea54fc0c92b9c7dffc8997">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-2f2db511a798d90235924795">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-d1f3171d302c59c76421d6d5">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c673c97f123ba2d35c96d339">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/properties/path/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -569,7 +432,7 @@
 </th>
 <td>
 <span id="v-481b5dc49be16892bbbff960">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/required/2">path</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/schema/required/2">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -615,7 +478,7 @@
 </th>
 <td>
 <span id="v-c70a1c27aa69d93b1d3a08aa">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/signature">&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.OutputArtifact/contract/signature">&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$&#x27;)], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], artifact_id: riverhog_protocol.artifact_identity.ArtifactId, bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -667,14 +530,6 @@
 </section>
 </details>
 </section>
-<section>
-<h2>Related contract elements</h2>
-<ul>
-<li>
-<a href="e-dca95797f70d8c31240f8385.html">stove0_target_protocol.OutputArtifact.canonical_path</a>
-</li>
-</ul>
-</section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Governing policies</h3>
@@ -706,7 +561,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

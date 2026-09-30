@@ -66,17 +66,17 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<a href="#s-a9eea0d35955a9bed405ba6c">artifact_rules</a></td>
+<a href="#s-12191439789c334fe3761874">associated_roles</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">#/components/schemas/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code></td>
 <td data-label="Default">
-<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
+<code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-12191439789c334fe3761874">associated_roles</a></td>
+<a href="#s-c25bbfa60cf959dd7d8ef6ce">forward_observation_contract_ids</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
 <code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code></td>
@@ -190,22 +190,6 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-a9eea0d35955a9bed405ba6c">
-<h3>Field: artifact_rules</h3>
-<p class="shape">
-<code>array</code>; items: <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">#/components/schemas/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Artifact Rules</code>
-</dd>
-<dt>type</dt>
-<dd>
-<code>array</code>
-</dd>
-</dl>
-</section>
 <section class="schema-section" id="s-12191439789c334fe3761874">
 <h3>Field: associated_roles</h3>
 <p class="shape">
@@ -215,6 +199,22 @@
 <dt>title</dt>
 <dd>
 <code>Associated Roles</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-c25bbfa60cf959dd7d8ef6ce">
+<h3>Field: forward_observation_contract_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Forward Observation Contract Ids</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -366,96 +366,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>artifact_rules</code>
-</th>
-<td>
-<table id="v-a9eea0d35955a9bed405ba6c">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<table id="v-5f12435700101777990ca4fd">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-2e5375edaa2c68f438bdf91f">
-<tbody>
-<tr>
-<th scope="row">
-<code>glob</code>
-</th>
-<td>
-<span id="v-ec97fb38b578766805710cd1">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/artifact_rules/default/0/glob">*</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>role</code>
-</th>
-<td>
-<span id="v-5e3d7bf576f8b00f02b98195">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/artifact_rules/default/0/role">stove0.source/v1</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>items</code>
-</th>
-<td>
-<table id="v-cdb216cd4da42f2e1301e7a4">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-33ad7792bea002f46782e69d">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/artifact_rules/items/$ref">#/components/schemas/ArtifactRule</code>
-<span class="kind">string</span> <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-3e6dd0244fcb30c8be8f5e02">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/artifact_rules/title">Artifact Rules</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-3d140eb60d38b589f6c4d2e1">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/artifact_rules/type">array</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>associated_roles</code>
 </th>
 <td>
@@ -518,6 +428,76 @@
 <td>
 <span id="v-dc01ed4f184d40982bb3505f">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/associated_roles/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>forward_observation_contract_ids</code>
+</th>
+<td>
+<table id="v-c25bbfa60cf959dd7d8ef6ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-9f038e0d5c60576e887f5bfa">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/forward_observation_contract_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-9692c75132dd02b42eedb50c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-27e504f0318db858c7c73a6c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/forward_observation_contract_ids/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e2876044c9bf1910e2701cba">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/forward_observation_contract_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-793b6f4bd5ed30b0458634af">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/forward_observation_contract_ids/title">Forward Observation Contract Ids</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c73b1cf5efa6757afc4f597">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/forward_observation_contract_ids/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1156,7 +1136,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -1182,7 +1162,7 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/artifact_rules</code></td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/associated_roles</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
 <td data-label="Decision">cardinality · items · operational_policy</td>
@@ -1191,7 +1171,7 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/associated_roles</code></td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeRoute/properties/forward_observation_contract_ids</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
 <td data-label="Decision">cardinality · items · operational_policy</td>
@@ -1242,7 +1222,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

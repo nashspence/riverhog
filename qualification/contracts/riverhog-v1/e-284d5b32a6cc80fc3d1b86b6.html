@@ -1,0 +1,1464 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-7f56f235461ce015a35b25ce.html">a-stove0-filename-prefix-sidecar-evidence-contract-lib</a> / <a href="i-248aa311e0b21c159d0f5f46.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus</h1>
+<p class="context">Exact accepted-locator filename candidate evidence for Stove0. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:a-stove0-filename-prefix-sideca-7f56f23546:a-stove0-filename-prefix-sidecar-evidence-1af0019402:1255ca288c">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-filename-prefix-sidecar-evidence-contract-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_filename_prefix_sidecar_evidence_contract_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>FilenameSourceStatus</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, subject_id: Annotated[str, MinLen(min_length=1)], status: Literal[&#x27;usable&#x27;, &#x27;no-locator&#x27;, &#x27;insufficient&#x27;, &#x27;unsupported&#x27;, &#x27;ambiguous&#x27;], support: tuple[a_stove0_riverhog_provenance_evidence_contract_lib.contracts.AssertionSupport, ...]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-4fb728c80573fbc7681179bd">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;subject_id&quot;,&quot;status&quot;,&quot;support&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>status</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;usable&quot;,&quot;no-locator&quot;,&quot;insufficient&quot;,&quot;unsupported&quot;,&quot;ambiguous&quot;]</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>subject_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-8247738cc077c1a417434a43">support</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-face56de88ab8d0b4863ee4f">#/$defs/AssertionSupport</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-face56de88ab8d0b4863ee4f">AssertionSupport</a>
+</li>
+<li>
+<a href="#s-dc182f7383585c6f1eadf2e4">EntryReference</a>
+</li>
+<li>
+<a href="#s-bb34dc40ba56a34bac3abb17">JournalAnchorDocument</a>
+</li>
+<li>
+<a href="#s-9a0001c823732292d1b1e5d8">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-43304ec23f797842c3300d8a">ProvenanceEntryId</a>
+</li>
+<li>
+<a href="#s-18afe860ed4aefc4594ba7fb">ProvenanceJournalId</a>
+</li>
+<li>
+<a href="#s-fa447ad4ac9df73d76dfa89e">Sha256</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-8247738cc077c1a417434a43">
+<h3>Field: support</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-face56de88ab8d0b4863ee4f">#/$defs/AssertionSupport</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-face56de88ab8d0b4863ee4f">
+<h3>Definition: AssertionSupport</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal&quot;,&quot;entry&quot;,&quot;assertion_id&quot;,&quot;referent_id&quot;,&quot;pointer&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>assertion_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>entry</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-dc182f7383585c6f1eadf2e4">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-bb34dc40ba56a34bac3abb17">#/$defs/JournalAnchorDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>referent_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dc182f7383585c6f1eadf2e4">
+<h3>Definition: EntryReference</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;entry_id&quot;,&quot;sequence&quot;,&quot;json_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>entry_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-43304ec23f797842c3300d8a">#/$defs/ProvenanceEntryId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>json_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-fa447ad4ac9df73d76dfa89e">#/$defs/Sha256</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bb34dc40ba56a34bac3abb17">
+<h3>Definition: JournalAnchorDocument</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal_id&quot;,&quot;through&quot;,&quot;prefix_sha256&quot;,&quot;prefix_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-18afe860ed4aefc4594ba7fb">#/$defs/ProvenanceJournalId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-9a0001c823732292d1b1e5d8">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>through</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-284d5b32a6cc80fc3d1b86b6.html#v-dc182f7383585c6f1eadf2e4">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9a0001c823732292d1b1e5d8">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-43304ec23f797842c3300d8a">
+<h3>Definition: ProvenanceEntryId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-18afe860ed4aefc4594ba7fb">
+<h3>Definition: ProvenanceJournalId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-fa447ad4ac9df73d76dfa89e">
+<h3>Definition: Sha256</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[0-9a-f]{64}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus</code>
+</h4>
+<table id="v-66917eaf23a820b9246cd743">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-663fae6713a1bb7bbf081ff0">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-d811666d4674bdfc5e2b7f50">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-4fb728c80573fbc7681179bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-98850d3ddb07767381169e14">
+<tbody>
+<tr>
+<th scope="row">
+<code>AssertionSupport</code>
+</th>
+<td>
+<table id="v-face56de88ab8d0b4863ee4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b8857621400ebf1f7af778af">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-dd39b483fc42cd4bde724c80">
+<tbody>
+<tr>
+<th scope="row">
+<code>assertion_id</code>
+</th>
+<td>
+<table id="v-708f612fcb23a820733ae982">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-861278f188b02bd9cb2ea093">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/properties/assertion_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>entry</code>
+</th>
+<td>
+<table id="v-2a8e56a5bea9f7c6829fd358">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d4def1c53f50f8a966a723fb">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/properties/entry/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-dc182f7383585c6f1eadf2e4">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>journal</code>
+</th>
+<td>
+<table id="v-1c0bfe3e85ec09d23ceed67c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-16291fae4798d02655b23fb6">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/properties/journal/$ref">#/$defs/JournalAnchorDocument</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-bb34dc40ba56a34bac3abb17">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pointer</code>
+</th>
+<td>
+<table id="v-bad781cb9f971247795a0f5e">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a2e37d216350453eac22aa35">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/properties/pointer/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>referent_id</code>
+</th>
+<td>
+<table id="v-a90bfba76bc97b6e53f90b76">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-35d6ae6c7d043ab47aee7d21">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/properties/referent_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-08802dc364b0aa086ccbc9eb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4b174414a99d25a0f0f01c77">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/required/0">journal</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7030365da24293bc2100eedc">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/required/1">entry</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-a2d06af938458a68bb9db303">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/required/2">assertion_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-102d629a80facdc6421bc491">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/required/3">referent_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-8ae11d9f9871cc60a5239e21">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/required/4">pointer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-95ea2d833361c725788295fa">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/AssertionSupport/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>EntryReference</code>
+</th>
+<td>
+<table id="v-dc182f7383585c6f1eadf2e4">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8dc36cbc9fc6d30af57e9500">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-ed646ed61c36fa252a3f36d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>entry_id</code>
+</th>
+<td>
+<table id="v-053faa3d756e64d5d41694f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-563d6eb0a6bf64424ce5b968">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/properties/entry_id/$ref">#/$defs/ProvenanceEntryId</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-43304ec23f797842c3300d8a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>json_sha256</code>
+</th>
+<td>
+<table id="v-fc50bacd1013cf61d2748281">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1d68414a49b6d8f56e1ddbeb">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/properties/json_sha256/$ref">#/$defs/Sha256</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-fa447ad4ac9df73d76dfa89e">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-d562e54f9a83ca465bbc7ae8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-98004ede5249b7d7271c574c">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/properties/sequence/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7902d35a97e2ad2eb1da0ecd">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/properties/sequence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-1e62273e16375c79dca14f2e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-df3c6c24ec4aebc620ee0b3d">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/required/0">entry_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c1d9f8ab87ec9d1ef9f71067">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/required/1">sequence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-e35baff72dce4322dc9d4331">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/required/2">json_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d7d7ac222d8fc40880d7072a">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/EntryReference/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>JournalAnchorDocument</code>
+</th>
+<td>
+<table id="v-bb34dc40ba56a34bac3abb17">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b5b93165d411c8da7b73bff2">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c8b43d11820046ec17b1f45e">
+<tbody>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-420ac6b3c20006e936abb963">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-64d2320d54da91c5548f672e">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-18afe860ed4aefc4594ba7fb">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_bytes</code>
+</th>
+<td>
+<table id="v-e4c2f8807bd4ec49e20f0733">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6b644be6c1346f91fa39bde0">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-9a0001c823732292d1b1e5d8">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-e0d0a8ebbeec30526becc8db">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_sha256</code>
+</th>
+<td>
+<table id="v-0f13185a26c74995860a4e67">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5e2127027f5397212cc8ccdc">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6fbcb4f24dbda83a247c7ee7">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>through</code>
+</th>
+<td>
+<table id="v-6e8c2de42b60594be067395f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-db743d8935bee4f2ac22f29f">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/properties/through/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-dc182f7383585c6f1eadf2e4">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-28a8053faa685914ead904a0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-8b2e134274a74389a93f2cc7">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/required/0">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f3bcbb33e103e1a02554ee5a">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/required/1">through</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-a13e2b6115aba51241f08835">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/required/2">prefix_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-b7ef6852e8de0c08c85d2d23">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/required/3">prefix_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4c91ed6a2ce90af325fcb593">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/JournalAnchorDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-9a0001c823732292d1b1e5d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2c8ef6ace180ec40a3b1d67b">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3dba1d4cab09c1f6319a70de">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceEntryId</code>
+</th>
+<td>
+<table id="v-43304ec23f797842c3300d8a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-15d0bafebe75304e53b6cfe4">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/ProvenanceEntryId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-04ac3fa0cb802166ddd469c0">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/ProvenanceEntryId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceJournalId</code>
+</th>
+<td>
+<table id="v-18afe860ed4aefc4594ba7fb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-51e9511d82f126dd583a74a1">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c5fb35b49fdd8404095ee238">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/ProvenanceJournalId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>Sha256</code>
+</th>
+<td>
+<table id="v-fa447ad4ac9df73d76dfa89e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a58394162c43752e3bc525db">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/Sha256/pattern">^[0-9a-f]{64}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0ce27e5d722721efb6dc7b67">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/$defs/Sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b00ab28d60818080a4ed2de0">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-aadae13aa22438604ee1fe8b">
+<tbody>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<table id="v-1ac20b4d66a5a95586240ae4">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-324ffb0f31f862c522a8d7bc">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6becf36dee641699e8b946b2">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/status/enum/0">usable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-28545d2f207ca98e8d899f2e">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/status/enum/1">no-locator</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-eca230b825eea32252121ce9">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/status/enum/2">insufficient</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4e930f4921daf7b1137d18cf">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/status/enum/3">unsupported</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-7f7ac8d491fe87f238d92dd1">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/status/enum/4">ambiguous</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4fdbd38e549777281f1e6882">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/status/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>subject_id</code>
+</th>
+<td>
+<table id="v-a0adcd93896466c0fa425c03">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-ce7fa54bc66b2c8e1ee95fa1">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/subject_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-072aa78806f5f1cb0b3be8f6">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/subject_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>support</code>
+</th>
+<td>
+<table id="v-8247738cc077c1a417434a43">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-901f3fb1a2c894b5b5add475">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-078827cb20e95f17950c7245">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/support/items/$ref">#/$defs/AssertionSupport</code>
+<span class="kind">string</span> <a href="e-284d5b32a6cc80fc3d1b86b6.html#v-face56de88ab8d0b4863ee4f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d1871eda1ad1fcf1b5a2b162">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/properties/support/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-da2f61cec88d783b98be7e7a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fe5fabe9e4815f49636ac25f">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/required/0">subject_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1734bfe46a9b3e3601a78fa2">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/required/1">status</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-c0ae4250af9d95f8bc950867">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/required/2">support</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4341fdfed7fbb0f82679ac2b">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-2050c5a69b1c93c4b2d6e9c8">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/contract/signature">&quot;(*, subject_id: Annotated[str, MinLen(min_length=1)], status: Literal[&#x27;usable&#x27;, &#x27;no-locator&#x27;, &#x27;insufficient&#x27;, &#x27;unsupported&#x27;, &#x27;ambiguous&#x27;], support: tuple[a_stove0_riverhog_provenance_evidence_contract_lib.contracts.AssertionSupport, ...]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-271b3623081116b37e26bfad">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/distribution">a-stove0-filename-prefix-sidecar-evidence-contract-lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-4f6f325673ecabd4c592b15d">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/module">a_stove0_filename_prefix_sidecar_evidence_contract_lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-24861feeb3b40cfb4960b729">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/name">FilenameSourceStatus</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-2a2abe6f17bd9df73a1df353">
+<code data-value-pointer="/external_contract/python/a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-fe2e5d1876288bfbe82a7a1b.html">a_stove0_filename_prefix_sidecar_evidence_contract_lib.FilenameSourceStatus.supported_status</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-7ee8831e1d78c36fbe1fad23">python:a-stove0-filename-prefix-sidecar-evidence-contract-lib:a_stove0_filename_prefix_sidecar_evidence_contract_lib</a> — <code data-source-path="some-implementations/stove0/observers/contracts/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_evidence_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_evidence_contract_lib/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

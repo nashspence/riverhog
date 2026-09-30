@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;riverhog-collection/v1&#x27;] = &#x27;riverhog-collection/v1&#x27;, collection: CollectionId, content_identity: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], encryption_format: Annotated[str, MinLen(min_length=1)], passphrase_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9_-]{16,128}$&#x27;)], provenance_mode: Literal[&#x27;captured&#x27;, &#x27;mixed&#x27;, &#x27;omitted&#x27;], provenance_identity: Annotated[str | None, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)] = None) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;riverhog-collection/v1&#x27;] = &#x27;riverhog-collection/v1&#x27;, collection: CollectionId, artifact_set_identity: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], encryption_format: Annotated[str, MinLen(min_length=1)], passphrase_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9_-]{16,128}$&#x27;)], provenance_identity: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-bab12140cec19ab47768560f">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection&quot;,&quot;content_identity&quot;,&quot;encryption_format&quot;,&quot;passphrase_id&quot;,&quot;provenance_mode&quot;]</code>
+<code>[&quot;collection&quot;,&quot;artifact_set_identity&quot;,&quot;encryption_format&quot;,&quot;passphrase_id&quot;,&quot;provenance_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -87,19 +87,19 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<code>collection</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-4d9901a78d42829adbfd6ab6.html#v-739396f78e3228b32dc11653">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-4d9901a78d42829adbfd6ab6.html#v-739396f78e3228b32dc11653">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -133,19 +133,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-017934e63aac03de3b734a51">provenance_identity</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>provenance_mode</code></td>
+<code>provenance_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;captured&quot;,&quot;mixed&quot;,&quot;omitted&quot;]</code></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -158,34 +149,6 @@
 <a href="#s-739396f78e3228b32dc11653">CollectionId</a>
 </li>
 </ul>
-</section>
-<section class="schema-section" id="s-017934e63aac03de3b734a51">
-<h3>Field: provenance_identity</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-739396f78e3228b32dc11653">
 <h3>Definition: CollectionId</h3>
@@ -355,6 +318,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-7f0dbd5ad59f4391f7249a8d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3078ad7750c460477c33e613">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b803d5653fb9130cf29573eb">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection</code>
 </th>
 <td>
@@ -368,36 +361,6 @@
 <span id="v-2251b0b080ff05b20d3b6773">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/collection/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-4d9901a78d42829adbfd6ab6.html#v-739396f78e3228b32dc11653">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-bc8d4e6d1c59295bf29277f1">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-ec7e68f6c0067875a06ce833">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-667a7a4683fb56fe1433b671">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -512,25 +475,11 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-4a382e853c17f78a8f3634dc">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-f5ab4006bb5e00af5af92016">
-<tbody>
-<tr>
-<th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-bb3aee54f5d6b50ff93967cd">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_identity/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span id="v-d1bd643c10190616ef753e0f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_identity/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -539,104 +488,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-b404d8461d440225af1c7f03">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_identity/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-86c81d22462aa83bf0764fad">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-558960cf623904ec95c6c14f">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_identity/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-e5504b61c376b1dc9055b4c2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_identity/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>provenance_mode</code>
-</th>
-<td>
-<table id="v-23cf53cbef9828d47bfc5ecc">
-<tbody>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-a8a9381d8a05be5007e16959">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-b274626cb27f9d358eb3801c">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_mode/enum/0">captured</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-7a00fe350d4f26962144ee81">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_mode/enum/1">mixed</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>2</code>
-</th>
-<td>
-<span id="v-39073f8fe5dfdd314e482d29">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_mode/enum/2">omitted</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-af55241139cdf8beb8e57ed1">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_mode/type">string</code>
+<span id="v-39ac041cd073b5742d86d52d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/properties/provenance_identity/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -669,7 +522,7 @@
 </th>
 <td>
 <span id="v-ec1e418ce8bdeb9c93765644">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/required/1">content_identity</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/required/1">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -699,7 +552,7 @@
 </th>
 <td>
 <span id="v-df01ffee20082368905416b7">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/required/4">provenance_mode</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/schema/required/4">provenance_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -725,7 +578,7 @@
 </th>
 <td>
 <span id="v-1e0473133f13e01bc3a6c822">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-collection/v1&#x27;] = &#x27;riverhog-collection/v1&#x27;, collection: CollectionId, content_identity: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], encryption_format: Annotated[str, MinLen(min_length=1)], passphrase_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9_-]{16,128}$&#x27;)], provenance_mode: Literal[&#x27;captured&#x27;, &#x27;mixed&#x27;, &#x27;omitted&#x27;], provenance_identity: Annotated[str | None, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.PortableCollectionHeader/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-collection/v1&#x27;] = &#x27;riverhog-collection/v1&#x27;, collection: CollectionId, artifact_set_identity: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], encryption_format: Annotated[str, MinLen(min_length=1)], passphrase_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[A-Za-z0-9_-]{16,128}$&#x27;)], provenance_identity: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -816,7 +669,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

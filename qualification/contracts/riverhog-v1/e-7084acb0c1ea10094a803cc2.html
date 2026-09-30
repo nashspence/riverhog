@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog-catalog: key_download_reservations · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-919a34a8115bd878cd846124.html">riverhog-catalog</a> / <a href="i-5548924e3ea02159ee650edb.html">Durable State</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog-catalog: key_download_reservations</h1>
+<p class="context">Encrypted archive management, catalog, and retrieval. Persisted structures, schema heads, and v1 transition obligations.</p>
+<section id="contract" data-contract="durable-state:riverhog-catalog:riverhog-catalog-key-download-reservations:7bf140c412">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Table: <code>key_download_reservations</code>
+</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Column</th>
+<th scope="col">Type</th>
+<th scope="col">Nullable</th>
+<th scope="col">Default</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Column">
+<code>id</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>id VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>key_id</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>key_id VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>job_id</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>job_id VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>kind</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>kind VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>month_started_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>month_started_at VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>reserved_bytes</code></td>
+<td data-label="Type">
+<code>BIGINT</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>reserved_bytes BIGINT NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>created_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>created_at VARCHAR NOT NULL</code></td>
+</tr>
+<tr>
+<td data-label="Column">
+<code>expires_at</code></td>
+<td data-label="Type">
+<code>VARCHAR</code></td>
+<td data-label="Nullable">no</td>
+<td data-label="Default">not declared</td>
+<td data-label="Exact definition">
+<code>expires_at VARCHAR NOT NULL</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Table constraints</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Name</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Kind">
+<code>primary-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>PRIMARY KEY (id)</code></td>
+</tr>
+<tr>
+<td data-label="Kind">
+<code>foreign-key</code></td>
+<td data-label="Name">
+<code></code></td>
+<td data-label="Exact definition">
+<code>FOREIGN KEY(key_id) REFERENCES app_keys (id) ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_key_download_reservations_kind</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_key_download_reservations_kind CHECK (kind IN (&#x27;job&#x27;,&#x27;stream&#x27;))</code></td>
+</tr>
+<tr>
+<td data-label="Kind">
+<code>check</code></td>
+<td data-label="Name">
+<code>ck_key_download_reservations_bytes</code></td>
+<td data-label="Exact definition">
+<code>CONSTRAINT ck_key_download_reservations_bytes CHECK (reserved_bytes &gt;= 0)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/durable_state/owners/0/structure/tables/29</code>
+</h4>
+<table id="v-1dab4d0f877d62e145b7c9d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-0acfb83e2c92b1dee0a5ba46">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-31df735f3112cabeeea22a56">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-f6c70961f9b953b273eaaffd">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/0/definition">id VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-4d2e6fb2fcc8dbaa886a57d1">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/0/name">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-2949b1e0fa2494474bc5e5c6">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/0/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e4c49114442a9db3419f04eb">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/0/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b90d2a8ab80282e4063adaeb">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-791de11476989f14ab48334a">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/1/definition">key_id VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-5d4179f7ce49204afc622200">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/1/name">key_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-fccbd2c015e099d12e7fa5cc">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/1/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-06ba2f5b44ca5a00b2bd81ca">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/1/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-629b7b318fb306317be279a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-abae979fef0e273dd877103d">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/2/definition">job_id VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-bbbd1d95ce2d340338b69128">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/2/name">job_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-884202c85eaa4642a6b9f1e6">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/2/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9f3a237359bcbd6877c9aa4d">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/2/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-17dab7c5b294313fc3fa3353">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-c785a7f6d7740071be8823dc">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/3/definition">kind VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-292360cc1851c317a984d0f5">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/3/name">kind</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-55f8f82ce5ca91dff7a91d4a">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/3/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dcb9a600c8ea7ca9af67f03f">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/3/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-7636188887a70d535a614988">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-528173bfd89f658c52aac277">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/4/definition">month_started_at VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-03a455af9b497bca460f869b">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/4/name">month_started_at</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-7d0966141f4927ad28f3c5dc">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/4/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c982a8cb0c1b038679842915">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/4/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-5d2f8f925b42ab1ddf7baae1">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-dee426d169863f711ebfa7f7">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/5/definition">reserved_bytes BIGINT NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-98faa5773d1468473d57913a">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/5/name">reserved_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-913025ca6b84c3868871bbc4">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/5/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-98e95bafca7b8df7721b0087">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/5/type">BIGINT</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-e8ab9b8b54b039d5ffad6e7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-b8ad7b58cb6a22b87c57b371">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/6/definition">created_at VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-95a326b14a8b054ea8acdfe3">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/6/name">created_at</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-1bb27db0d8ca5cfa72ec56b9">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/6/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ae7e7dc0b79b598a0e7c940c">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/6/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-614c18c893e5229036899b78">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-ef3d3e823fddf2da8365914d">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/7/definition">expires_at VARCHAR NOT NULL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-bd3a230c05ca28f15a4d5bad">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/7/name">expires_at</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nullable</code>
+</th>
+<td>
+<span id="v-212c0729b5734d17d31f2762">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/7/nullable">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7cdd9eb1ec911c2491439a35">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/columns/7/type">VARCHAR</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>constraints</code>
+</th>
+<td>
+<table id="v-2b7e904783d5f92ee180d015">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-439b5673779524b397506b9c">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-093e571e60e6f9bef3f1fa58">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-31c9d1f617699e735f0227b2">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/0/columns/0">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-cdc5cc3d0ae04a225797b7c3">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/0/definition">PRIMARY KEY (id)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-459b05d737b7ecc15e606456">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/0/kind">primary-key</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-8fb81ce7dbb9f1145efd32fb">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-30ba6d2a49536d65c422cfb9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ff7ddeda7b136cef4e994f0b">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/1/columns/0">key_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-632bab1afa9043438309fafe">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/1/definition">FOREIGN KEY(key_id) REFERENCES app_keys (id) ON DELETE CASCADE</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-49bd0eb8301a51357c6e7230">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/1/kind">foreign-key</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>references</code>
+</th>
+<td>
+<table id="v-1e7d1c8767bdab678b4d8e28">
+<tbody>
+<tr>
+<th scope="row">
+<code>actions</code>
+</th>
+<td>
+<span id="v-def449a791186342c9af7752">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/1/references/actions">ON DELETE CASCADE</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-0c202382b6eb0303455df9a2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9c763d5fba508cc9e1496991">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/1/references/columns/0">id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>table</code>
+</th>
+<td>
+<span id="v-23e4fe6f506628f150737dc4">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/1/references/table">app_keys</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-56bb0a08e793b0d77dbbb8e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-27498f97e2cb02affde8c4d6">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/2/definition">CONSTRAINT ck_key_download_reservations_kind CHECK (kind IN (&#x27;job&#x27;,&#x27;stream&#x27;))</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>expression</code>
+</th>
+<td>
+<span id="v-34e0a0ee21fec7f307748bb2">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/2/expression">(kind IN (&#x27;job&#x27;,&#x27;stream&#x27;))</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-469c930e82243c466c1fdcec">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/2/kind">check</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-91771418d2e1ef2d1c5786d9">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/2/name">ck_key_download_reservations_kind</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-74c5a686c78f041832c4b276">
+<tbody>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-3af4ca617835dc5cf870d5e1">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/3/definition">CONSTRAINT ck_key_download_reservations_bytes CHECK (reserved_bytes &gt;= 0)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>expression</code>
+</th>
+<td>
+<span id="v-46817ff38aa2f1c4509882d0">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/3/expression">(reserved_bytes &gt;= 0)</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-485c194ac1b4ab774b13f032">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/3/kind">check</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-36342f85d2109015963409ff">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/constraints/3/name">ck_key_download_reservations_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-6e3fda48d2e2710ff9ea4c7e">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/tables/29/name">key_download_reservations</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-a2fe2d1eadc5db45b470b976.html">riverhog-catalog durable-state identity</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-acb5adfdf32642afdb0b8381.html">compatibility/durable-state/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-d8b4a1467008c6c4fef8d47d">state:riverhog-catalog</a> — <code data-source-path="riverhog/src/riverhog_core/state_migrations/v1_ddl.py">riverhog/src/riverhog_core/state_migrations/v1_ddl.py::POSTGRESQL_DDL</code>
+<br>
+<code data-source-path="tests/fixtures/state/v1_0001/riverhog.postgresql.sql">tests/fixtures/state/v1_0001/riverhog.postgresql.sql</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
+</li>
+<li>
+<a href="source-commands.html#route-27f281b51ec606c43bd87cc5">make database-qualification</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern=&#x27;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&#x27;, ascii_only=None)], operation: Literal[&#x27;upsert&#x27;] = &#x27;upsert&#x27;) -&gt; None&quot;</code>
+<code>&quot;(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], artifact_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern=&#x27;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&#x27;, ascii_only=None)], operation: Literal[&#x27;upsert&#x27;] = &#x27;upsert&#x27;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-1fc0874d417e70f22674ace1">
@@ -61,7 +61,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -96,19 +96,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-39ec7b93de7c5ad16471aa28.html#v-99e4ae8314d40fc2ad7e3551">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<a href="e-39ec7b93de7c5ad16471aa28.html#v-99e4ae8314d40fc2ad7e3551">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -555,6 +555,56 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-2aec3910ef3b850547573698">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-e3e37ad1a269424d5c0eb173">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/artifact_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-41608e39635e3ad528aee3b8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/artifact_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b81f2922a6a3c2f6e624aa60">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fbef58f571f69383535738d9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -568,56 +618,6 @@
 <span id="v-157783d33783e722ad755184">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-39ec7b93de7c5ad16471aa28.html#v-99e4ae8314d40fc2ad7e3551">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-93685e44c6da8f4ef3cb8494">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-73f25b09abe48ac7df52b8ba">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/maxLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-688fe79ccea937bc16321016">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/minLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-5744b1a60e9381c614d33e74">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-0549339011c488433bb29eb2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -989,7 +989,7 @@
 </th>
 <td>
 <span id="v-f8f512b214879fd3fd1a3c89">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/schema/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1075,7 +1075,7 @@
 </th>
 <td>
 <span id="v-d291987a707dbf7317b1dd94">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/signature">&quot;(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern=&#x27;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&#x27;, ascii_only=None)], operation: Literal[&#x27;upsert&#x27;] = &#x27;upsert&#x27;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncUpsert/contract/signature">&quot;(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], artifact_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern=&#x27;^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$&#x27;, ascii_only=None)], operation: Literal[&#x27;upsert&#x27;] = &#x27;upsert&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1158,7 +1158,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

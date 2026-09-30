@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(archive_generation: &#x27;str&#x27;, tree: &#x27;CollectionTreeIdentity&#x27;, ordered_volume_sha256: &#x27;str&#x27;, provenance: &#x27;ArchiveProvenanceIdentity | None&#x27; = None, format: &#x27;str&#x27; = &#x27;collection-archive-manifest/v1&#x27;) -&gt; None&quot;</code>
+<code>&quot;(archive_generation: &#x27;str&#x27;, artifact_set: &#x27;CollectionArtifactSetIdentity&#x27;, ordered_volume_sha256: &#x27;str&#x27;, provenance: &#x27;ArchiveProvenanceIdentity&#x27;, format: &#x27;str&#x27; = &#x27;collection-archive-manifest/v1&#x27;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -74,9 +74,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>tree</code></td>
+<code>artifact_set</code></td>
 <td data-label="Type">
-<code>&#x27;CollectionTreeIdentity&#x27;</code></td>
+<code>&#x27;CollectionArtifactSetIdentity&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -92,9 +92,9 @@
 <td data-label="Field">
 <code>provenance</code></td>
 <td data-label="Type">
-<code>&#x27;ArchiveProvenanceIdentity | None&#x27;</code></td>
+<code>&#x27;ArchiveProvenanceIdentity&#x27;</code></td>
 <td data-label="Default">
-<code>None</code></td>
+<code>required</code></td>
 </tr>
 <tr>
 <td data-label="Field">
@@ -193,7 +193,7 @@
 </th>
 <td>
 <span id="v-3e3d9fb4e1cfdb6902a29773">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/1/name">tree</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/1/name">artifact_set</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -203,7 +203,7 @@
 </th>
 <td>
 <span id="v-cc1d45469da3b0b5d2343030">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/1/type">&#x27;CollectionTreeIdentity&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/1/type">&#x27;CollectionArtifactSetIdentity&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -263,7 +263,7 @@
 </th>
 <td>
 <span id="v-bd3988478a0d12768ac86ee9">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/3/default">None</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/3/default">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -283,7 +283,7 @@
 </th>
 <td>
 <span id="v-8848ebe9a12afc59f30653c6">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/3/type">&#x27;ArchiveProvenanceIdentity | None&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/fields/3/type">&#x27;ArchiveProvenanceIdentity&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -349,7 +349,7 @@
 </th>
 <td>
 <span id="v-acec45b37002a1a9d4bc42d9">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/signature">&quot;(archive_generation: &#x27;str&#x27;, tree: &#x27;CollectionTreeIdentity&#x27;, ordered_volume_sha256: &#x27;str&#x27;, provenance: &#x27;ArchiveProvenanceIdentity | None&#x27; = None, format: &#x27;str&#x27; = &#x27;collection-archive-manifest/v1&#x27;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.CollectionArchiveManifest/contract/signature">&quot;(archive_generation: &#x27;str&#x27;, artifact_set: &#x27;CollectionArtifactSetIdentity&#x27;, ordered_volume_sha256: &#x27;str&#x27;, provenance: &#x27;ArchiveProvenanceIdentity&#x27;, format: &#x27;str&#x27; = &#x27;collection-archive-manifest/v1&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -411,16 +411,16 @@
 <a href="e-c0094b2e41bff672d68b21bb.html">riverhog_archive_contracts.CollectionArchiveManifest.bytes</a>
 </li>
 <li>
+<a href="e-e083c464c36acef777d11567.html">riverhog_archive_contracts.CollectionArchiveManifest.artifact_set_sha256</a>
+</li>
+<li>
 <a href="e-53ee26666deda2f4d86855c0.html">riverhog_archive_contracts.CollectionArchiveManifest.to_mapping</a>
 </li>
 <li>
 <a href="e-d3231cd9ea7e24b09f8f3dd7.html">riverhog_archive_contracts.CollectionArchiveManifest.from_mapping</a>
 </li>
 <li>
-<a href="e-d95f6d3f1eef9128b76488aa.html">riverhog_archive_contracts.CollectionArchiveManifest.files</a>
-</li>
-<li>
-<a href="e-cb30f222aad82eca00d39fae.html">riverhog_archive_contracts.CollectionArchiveManifest.tree_sha256</a>
+<a href="e-b569fb0681b148b2dbb325f4.html">riverhog_archive_contracts.CollectionArchiveManifest.artifacts</a>
 </li>
 <li>
 <a href="e-9e62519ca0c7bb787d58ba42.html">riverhog_archive_contracts.CollectionArchiveManifest.to_json_bytes</a>
@@ -458,7 +458,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

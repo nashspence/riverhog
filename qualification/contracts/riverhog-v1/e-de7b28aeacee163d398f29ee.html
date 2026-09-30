@@ -142,7 +142,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;path&quot;,&quot;offset&quot;,&quot;bytes&quot;,&quot;artifact_sha256&quot;]</code>
+<code>[&quot;artifact_id&quot;,&quot;offset&quot;,&quot;bytes&quot;,&quot;artifact_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -168,6 +168,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>artifact_sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -190,15 +199,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-de7b28aeacee163d398f29ee.html#v-b365d4f366f9df3ce93b1e31">#/$defs/NonnegativeDecimal</a></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -467,6 +467,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-3b7738da2b183a1956e06cbb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-096936429b3efd9f2fcc16e0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-87f7a1523afe9570180fe898">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>artifact_sha256</code>
 </th>
 <td>
@@ -535,26 +565,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-1e8d3750a08ec661f1c5d3a7">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-88d9fb25728e7078f75cd80b">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/properties/path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -571,7 +581,7 @@
 </th>
 <td>
 <span id="v-e71e364cb0471769c9f5f508">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/required/0">path</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitAssignmentDocument/contract/schema/$defs/CollectionUploadUnitSourceDocument/required/0">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1396,7 +1406,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

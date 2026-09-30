@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, path: str, offset: NonnegativeDecimal, bytes: NonnegativeDecimal, artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+<code>&quot;(*, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, offset: NonnegativeDecimal, bytes: NonnegativeDecimal, artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-9fe1c6a09cb4f66fd2e49b05">
@@ -61,7 +61,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;path&quot;,&quot;offset&quot;,&quot;bytes&quot;,&quot;artifact_sha256&quot;]</code>
+<code>[&quot;artifact_id&quot;,&quot;offset&quot;,&quot;bytes&quot;,&quot;artifact_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -87,6 +87,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>artifact_sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -109,15 +118,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-3c80486c08604c84fbd0bd34.html#v-60b0a4443ad586390c120f11">#/$defs/NonnegativeDecimal</a></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -239,6 +239,36 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-529067140c9628b9e2eaf46f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-48081e22ee7c2c716424fd1b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/schema/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc18b260b667746eafdf2bff">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/schema/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>artifact_sha256</code>
 </th>
 <td>
@@ -307,26 +337,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-86048297b776421a2aea8316">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-54557f4d4dab58dee9b3a879">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/schema/properties/path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -343,7 +353,7 @@
 </th>
 <td>
 <span id="v-c095d0670f3284b9f6ed8c4a">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/schema/required/0">path</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/schema/required/0">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -399,7 +409,7 @@
 </th>
 <td>
 <span id="v-b092a380f084368d5187323e">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/signature">&quot;(*, path: str, offset: NonnegativeDecimal, bytes: NonnegativeDecimal, artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadUnitSourceDocument/contract/signature">&quot;(*, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, offset: NonnegativeDecimal, bytes: NonnegativeDecimal, artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -451,14 +461,6 @@
 </section>
 </details>
 </section>
-<section>
-<h2>Related contract elements</h2>
-<ul>
-<li>
-<a href="e-f7445ca1476ebea4b3e5712b.html">riverhog_protocol.CollectionUploadUnitSourceDocument.canonical_path</a>
-</li>
-</ul>
-</section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Governing policies</h3>
@@ -490,7 +492,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

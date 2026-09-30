@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, observation_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], artifact_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...] = (), artifact_facts: stove0_recipe_config.models.ArtifactFactBinding | None = None, pointer: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$&#x27;)], operator: Literal[&#x27;equals&#x27;, &#x27;not-equals&#x27;, &#x27;contains&#x27;, &#x27;exists&#x27;] = &#x27;equals&#x27;, value: JsonValue = None) -&gt; None&quot;</code>
+<code>&quot;(*, observation_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], artifact_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...] = (), artifact_facts: stove0_recipe_config.models.ArtifactFactBinding | None = None, array_pointer: Annotated[str | None, _PydanticGeneralMetadata(pattern=&#x27;^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$&#x27;)] = None, same_item: tuple[stove0_recipe_config.models.FactCondition, ...] = (), pointer: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$&#x27;)], operator: Literal[&#x27;equals&#x27;, &#x27;not-equals&#x27;, &#x27;contains&#x27;, &#x27;exists&#x27;, &#x27;one-of&#x27;] = &#x27;equals&#x27;, value: JsonValue = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-a5ac0fd8fb457c13470c7fcb">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -85,6 +85,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-fca367f5df39da1dd848a667">array_pointer</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <a href="#s-367d96c609b4a6dfa296b04f">artifact_facts</a></td>
@@ -118,7 +127,7 @@
 <code>operator</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;]</code>; default: <code>equals</code></td>
+<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;,&quot;one-of&quot;]</code>; default: <code>equals</code></td>
 <td data-label="Default">
 <code>equals</code></td>
 <td data-label="Description"></td>
@@ -130,6 +139,16 @@
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-369ccfc407d6573800604605">same_item</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-6346ad321b9c0d78e7a84531.html#v-ea2657113d0225d96832054c">#/$defs/FactCondition</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -151,9 +170,40 @@
 <a href="#s-48aaf43fde21f0d405239208">ArtifactFactBinding</a>
 </li>
 <li>
+<a href="#s-ea2657113d0225d96832054c">FactCondition</a>
+</li>
+<li>
 <a href="#s-8d3fc6fcd3aa907fabf575a1">JsonValue</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-fca367f5df39da1dd848a667">
+<h3>Field: array_pointer</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-367d96c609b4a6dfa296b04f">
 <h3>Field: artifact_facts</h3>
@@ -187,6 +237,18 @@
 <h3>Field: artifact_roles</h3>
 <p class="shape">
 <code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-369ccfc407d6573800604605">
+<h3>Field: same_item</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-6346ad321b9c0d78e7a84531.html#v-ea2657113d0225d96832054c">#/$defs/FactCondition</a>; default: <code>[]</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -244,6 +306,71 @@
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
 <td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ea2657113d0225d96832054c">
+<h3>Definition: FactCondition</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;pointer&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>operator</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;exists&quot;,&quot;one-of&quot;]</code>; default: <code>equals</code></td>
+<td data-label="Default">
+<code>equals</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>value</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-6346ad321b9c0d78e7a84531.html#v-8d3fc6fcd3aa907fabf575a1">#/$defs/JsonValue</a>; default: <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
 <td data-label="Description"></td>
 </tr>
 </tbody>
@@ -426,6 +553,196 @@
 </tr>
 <tr>
 <th scope="row">
+<code>FactCondition</code>
+</th>
+<td>
+<table id="v-ea2657113d0225d96832054c">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-748ad3467b2116e8d0740967">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-9c90db22f6fa2893eb0bee0a">
+<tbody>
+<tr>
+<th scope="row">
+<code>operator</code>
+</th>
+<td>
+<table id="v-9588a1073b7edfeff1fbc7ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5810a8f80675dabff361b86f">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/operator/default">equals</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-0d32c7049ec57394a416edb5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fd67909e68b763d2199a4b53">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/operator/enum/0">equals</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a5d16161ca5ffe7e1de6ac18">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/operator/enum/1">exists</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-e966ac81273ba026993083a4">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/operator/enum/2">one-of</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f1f7658ef52a787f558a4dad">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/operator/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pointer</code>
+</th>
+<td>
+<table id="v-3c2e92dfd60c4fb1be1dbd0b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ce6e5c0ec53169d242f0d247">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8ded2dc277673a2cb1f1716e">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/pointer/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>value</code>
+</th>
+<td>
+<table id="v-ff8072ea1a50e3aebf5577b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2315e066d52bf7111ddccf45">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/value/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-6346ad321b9c0d78e7a84531.html#v-8d3fc6fcd3aa907fabf575a1">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-09fb67b902cba619f0e77d4f">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/properties/value/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-93a4cc100fc7cf3d42327b65">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-8ebc168535a5217f37204964">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/required/0">pointer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5087a217eb6ffdab45663e63">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/$defs/FactCondition/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>JsonValue</code>
 </th>
 <td>
@@ -454,6 +771,86 @@
 <td>
 <table id="v-8e0eb84cefa923c6f0686c8d">
 <tbody>
+<tr>
+<th scope="row">
+<code>array_pointer</code>
+</th>
+<td>
+<table id="v-fca367f5df39da1dd848a667">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8482fda524cd109875c1330b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c63451b82c1d99c1a78b1a94">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cab89be7097de7311bff7446">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/array_pointer/anyOf/0/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bb58d422b46acb5354a785c8">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/array_pointer/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-44105dd115e4f6466d8bb8f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-facca0a0fae451f21a822236">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/array_pointer/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1433f82f6ff49ce5293d963e">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/array_pointer/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>artifact_facts</code>
@@ -678,6 +1075,16 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-15631da7cf16b5e39280d754">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/operator/enum/4">one-of</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -718,6 +1125,56 @@
 <td>
 <span id="v-835749bdde370410aa6183bb">
 <code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/pointer/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>same_item</code>
+</th>
+<td>
+<table id="v-369ccfc407d6573800604605">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f209e7441a1271a9462c0c4c">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/same_item/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-95b6a2fd3eb671c4f193fc22">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-70c4a49c4acba1fc1f4a319e">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/same_item/items/$ref">#/$defs/FactCondition</code>
+<span class="kind">string</span> <a href="e-6346ad321b9c0d78e7a84531.html#v-ea2657113d0225d96832054c">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-795faa6781e9052b17c5e90c">
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/schema/properties/same_item/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -806,7 +1263,7 @@
 </th>
 <td>
 <span id="v-23402314d5cff49220deb042">
-<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/signature">&quot;(*, observation_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], artifact_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...] = (), artifact_facts: stove0_recipe_config.models.ArtifactFactBinding | None = None, pointer: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$&#x27;)], operator: Literal[&#x27;equals&#x27;, &#x27;not-equals&#x27;, &#x27;contains&#x27;, &#x27;exists&#x27;] = &#x27;equals&#x27;, value: JsonValue = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_recipe_config.FactPredicate/contract/signature">&quot;(*, observation_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], artifact_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], ...] = (), artifact_facts: stove0_recipe_config.models.ArtifactFactBinding | None = None, array_pointer: Annotated[str | None, _PydanticGeneralMetadata(pattern=&#x27;^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$&#x27;)] = None, same_item: tuple[stove0_recipe_config.models.FactCondition, ...] = (), pointer: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$&#x27;)], operator: Literal[&#x27;equals&#x27;, &#x27;not-equals&#x27;, &#x27;contains&#x27;, &#x27;exists&#x27;, &#x27;one-of&#x27;] = &#x27;equals&#x27;, value: JsonValue = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -897,7 +1354,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

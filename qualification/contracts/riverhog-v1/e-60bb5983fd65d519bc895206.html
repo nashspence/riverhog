@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STOVE0_BASE_URL · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-d81d0dac73e8a21e3eac2e2b.html">stove0-api-client</a> / <a href="i-df035340dc662335bd78468e.html">Configuration Environment</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>STOVE0_BASE_URL</h1>
+<p class="context">Python client for the Stove0 v1 workflow API. Configuration Environment contract owned by stove0-api-client.</p>
+<section id="contract" data-contract="configuration-environment:stove0-api-client:stove0-base-url:72b1889734">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>STOVE0_BASE_URL</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>stove0-api-client</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>unset</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>stove0-api-client</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/configuration_environment/132</code>
+</h4>
+<table id="v-bd353547c135b4eb00a7e1c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>consumers</code>
+</th>
+<td>
+<table id="v-99a088c36074578ed429c1b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b2435121ba2d72a8c717ea16">
+<code data-value-pointer="/external_contract/configuration_environment/132/consumers/0">stove0-api-client</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default_expressions</code>
+</th>
+<td>
+<table id="v-82eb3d9be1db09267f37d353">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f4a810997b0a7ac87caa5f3b">
+<code data-value-pointer="/external_contract/configuration_environment/132/default_expressions/0">unset</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-ba76881dc94a6aae63dacc4e">
+<code data-value-pointer="/external_contract/configuration_environment/132/id">stove0-api-client:environment:STOVE0_BASE_URL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_shape</code>
+</th>
+<td>
+<span id="v-217d52381b8595e604ebfb80">
+<code data-value-pointer="/external_contract/configuration_environment/132/input_shape">environment-string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-4c310f1da851119a88fe5c5d">
+<code data-value-pointer="/external_contract/configuration_environment/132/name">STOVE0_BASE_URL</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-da6797fecfa1ccdabb94fdc2">
+<code data-value-pointer="/external_contract/configuration_environment/132/owner">stove0-api-client</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-15e2e266f753cb544237d6f8.html">compatibility/configuration/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-34ec96f5f9450e6e47aca4a6">configuration-environment:stove0-api-client:STOVE0_BASE_URL</a> — <code data-source-path="some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py">some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Configuration authority and bindings</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Kind">consumer</td>
+<td data-label="Consumer">
+<code>stove0-api-client</code></td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py">some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py</code></td>
+<td data-label="Authority or expression">
+<code>os.getenv(&#x27;STOVE0_BASE_URL&#x27;)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

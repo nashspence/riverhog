@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ArtifactMaterializationDecisionDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: ArtifactMaterializationDecisionDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-artifactmaterializationdecisiondocument:02aabe50a9">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-631323522d070f443fc84e8d">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ArtifactMaterializationDecisionDocument</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>Publication policy for one preallocated collection member.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>allow_missing_materialization_hint</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>boolean</code>; default: <code>false</code></td>
+<td data-label="Default">
+<code>false</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-5568a93c6ecdc19626f47d76">materialization_hint</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-1fade96ce7415e205070c670.html#v-f2fa259b2d844754ed73081f">#/components/schemas/MaterializationHintDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5568a93c6ecdc19626f47d76">
+<h3>Field: materialization_hint</h3>
+<p class="shape">any of: <a href="e-1fade96ce7415e205070c670.html#v-f2fa259b2d844754ed73081f">#/components/schemas/MaterializationHintDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-1fade96ce7415e205070c670.html#v-f2fa259b2d844754ed73081f">#/components/schemas/MaterializationHintDocument</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument</code>
+</h4>
+<table id="v-631323522d070f443fc84e8d">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-15008fc8b5548f2ec7294af0">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-5bbd605e0bb878ed8402905d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/description">Publication policy for one preallocated collection member.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a522e5e4bed1994206eb1033">
+<tbody>
+<tr>
+<th scope="row">
+<code>allow_missing_materialization_hint</code>
+</th>
+<td>
+<table id="v-f4740561a5fc84d9cbfedcd1">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5a64c9a6737e03f6004ad7a7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/allow_missing_materialization_hint/default">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-4a0d4dcd38fc71665a0d0892">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/allow_missing_materialization_hint/title">Allow Missing Materialization Hint</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2b4a445be8a2b4acb6911e49">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/allow_missing_materialization_hint/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-fadf6423b800f4ddb19bcec7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-bf9c415146009f9c2a228d01">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2fe7999a3f3c4a24f3fc51e7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/artifact_id/title">Artifact Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d7abab5bbabaa233315e91ec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>materialization_hint</code>
+</th>
+<td>
+<table id="v-5568a93c6ecdc19626f47d76">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-7885dadcb43f82d8a7968c53">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-30b8ab421b459f5ed424ebc4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-388a4cf3bbd350524eaa44fa">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/materialization_hint/anyOf/0/$ref">#/components/schemas/MaterializationHintDocument</code>
+<span class="kind">string</span> <a href="e-1fade96ce7415e205070c670.html#v-f2fa259b2d844754ed73081f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e598fe2445ad7c674e9099ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1fd359ec5c2f89ab946e0702">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/materialization_hint/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a2230ce05bfcdc5dbcb39702">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c6083a16640a68d44d5ce54d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/required/0">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-44d5a285941deba665287235">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/title">ArtifactMaterializationDecisionDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-37047f7e1c68052f8cd6c2c0">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactMaterializationDecisionDocument/properties/artifact_id</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

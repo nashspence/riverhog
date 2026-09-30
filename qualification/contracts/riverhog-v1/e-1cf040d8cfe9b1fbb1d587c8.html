@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ValuePredicate · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: ValuePredicate</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-valuepredicate:55733805d5">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-c690f6e48ea28b92f82fb892">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ValuePredicate</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One typed, literal test against a scalar or byte representation.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;value&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>operator</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-955c97e5667f3207aa5e5af9.html#v-f1165dbb7aefa75c8999e5ff">#/components/schemas/ValueOperator</a>; default: <code>contains</code></td>
+<td data-label="Default">
+<code>contains</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-15251952948f483be478b0ad">pointer</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; maxLength: <code>4096</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>text_mode</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<a href="e-15faf72eca59f8dc9a0f97bb.html#v-f2e5d34e6a6d99c7168e02ee">#/components/schemas/TextMode</a>; default: <code>exact</code></td>
+<td data-label="Default">
+<code>exact</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-02c0a544ea8e881c4a3c401c">value</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; <code>integer</code>; <code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-15251952948f483be478b0ad">
+<h3>Field: pointer</h3>
+<p class="shape">any of: <code>string</code>; maxLength: <code>4096</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Pointer</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; maxLength: <code>4096</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-02c0a544ea8e881c4a3c401c">
+<h3>Field: value</h3>
+<p class="shape">any of: <code>string</code>; <code>integer</code>; <code>boolean</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Value</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>integer</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">
+<code>boolean</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate</code>
+</h4>
+<table id="v-c690f6e48ea28b92f82fb892">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-aa519bf34cd79ddfd5d2525f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-2e6c1e40fbfed9afc3bd3541">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/description">One typed, literal test against a scalar or byte representation.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-9f8e7bfc145a2af31249789e">
+<tbody>
+<tr>
+<th scope="row">
+<code>operator</code>
+</th>
+<td>
+<table id="v-5336f84f29e4076cff225849">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-97ad47c4009bfcc98c501573">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/operator/$ref">#/components/schemas/ValueOperator</code>
+<span class="kind">string</span> <a href="e-955c97e5667f3207aa5e5af9.html#v-f1165dbb7aefa75c8999e5ff">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-24125cfa485fc27b6e92b3d7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/operator/default">contains</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pointer</code>
+</th>
+<td>
+<table id="v-15251952948f483be478b0ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-3bed09b42b1afa0b903b2c2a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-6fa0512b2d2ae576f0603925">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-eaa6eb88b2b6e37c0accf367">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/pointer/anyOf/0/maxLength">4096</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a247ab7e57b3dad111e8d7e8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/pointer/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c901cb69aa7e296e63a5bf32">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fbcec95641b2a3625e2a6d43">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/pointer/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-20ea6975c90d8372de65223d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/pointer/title">Pointer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>text_mode</code>
+</th>
+<td>
+<table id="v-403ec0c03c6a8724d7a4e55b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-02ab1526a76ba8b008fcc224">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/text_mode/$ref">#/components/schemas/TextMode</code>
+<span class="kind">string</span> <a href="e-15faf72eca59f8dc9a0f97bb.html#v-f2e5d34e6a6d99c7168e02ee">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-952b320e567ebbf380d3885c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/text_mode/default">exact</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>value</code>
+</th>
+<td>
+<table id="v-02c0a544ea8e881c4a3c401c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c3cc1788e9ee4b18ab7e3d28">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-8a63be4f493a8ddb86c1b46c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ba19af08d1eae6478a964caa">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/value/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9b0d62dc2864def2e35a296a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cb6be27fa463f8eca1641707">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/value/anyOf/1/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-7231cdce895161044889f91f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d8ed79bca9e8a802131d8c8f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/value/anyOf/2/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b0e1aa72bc08057bcf6cd685">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/value/title">Value</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3da4d1fca3df601011d89c79">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-270f25f35061d8d4aef53316">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/required/0">value</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2ed1ee80a00f82762437c52d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/title">ValuePredicate</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c342921cfd2083c626502c56">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ValuePredicate/properties/pointer/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:4096,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

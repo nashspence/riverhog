@@ -20,7 +20,7 @@
 <input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>riverhog-provenance-contracts · Python</h1>
-<p class="context">Canonical Riverhog provenance identity and reference contracts.</p>
+<p class="context">Closed schema packs and formal contracts for path-independent artifact provenance.</p>
 <p>Declared public imports and their selected exact structural contracts.</p>
 <div class="record-collection">
 <table class="selection-table inventory-table">
@@ -39,6 +39,78 @@
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-canonical-u-2cb75a7308:a07d79aea8">
 <td data-label="Element">
 <a href="e-8002f042db9d57cb97bc9d88.html">CANONICAL_UUID_URN_PATTERN</a>
+<td data-label="Recorded fact">
+<code>constant</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-category-types:e1860ff78d">
+<td data-label="Element">
+<a href="e-7b8ec5001554111556345daf.html">CATEGORY_TYPES</a>
+<td data-label="Recorded fact">
+<code>constant</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-contractcatalog:d645866fd5">
+<td data-label="Element">
+<a href="e-633591753690bea82f3d01e7.html">ContractCatalog</a>
+<td data-label="Recorded fact">
+<code>class</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-contractcat-d7924b0c5f:13f31c115b" class="member">
+<td data-label="Element">
+<a href="e-7793a52ecc95d8a0879bd501.html">validate</a>
+<td data-label="Recorded fact">
+<code>method</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-contractcat-673e571954:be9e26e785" class="member">
+<td data-label="Element">
+<a href="e-ddba325945b2038eb7215ccb.html">validate_profile</a>
+<td data-label="Recorded fact">
+<code>method</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-contractcat-8730182912:b0a652b2f4" class="member">
+<td data-label="Element">
+<a href="e-aba1b7746a03feb060c38bd8.html">with_contracts</a>
+<td data-label="Recorded fact">
+<code>method</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-dialect:89e347a4c5">
+<td data-label="Element">
+<a href="e-78618c4dfaf190dc8b7ad001.html">DIALECT</a>
+<td data-label="Recorded fact">
+<code>constant</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-entry-schema:61c15c758e">
+<td data-label="Element">
+<a href="e-3ed8148cf2d8a04a6646ae6e.html">ENTRY_SCHEMA</a>
+<td data-label="Recorded fact">
+<code>constant</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-entityreference:69aeefab90">
+<td data-label="Element">
+<a href="e-99ed3db7f8b37099e03e900a.html">EntityReference</a>
+<td data-label="Recorded fact">
+<code>type-alias</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-entryreference:ec3503118b">
+<td data-label="Element">
+<a href="e-fe5b862bf79f01cc47b73260.html">EntryReference</a>
+<td data-label="Recorded fact">
+<code>class</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-externalreference:4db7cc3416">
+<td data-label="Element">
+<a href="e-b770e4b2d4060d4c40de762c.html">ExternalReference</a>
+<td data-label="Recorded fact">
+<code>class</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-localreference:bdea9e0759">
+<td data-label="Element">
+<a href="e-9f2fcb2f341945d482f1cbe2.html">LocalReference</a>
+<td data-label="Recorded fact">
+<code>class</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-profile:7e392128ac">
+<td data-label="Element">
+<a href="e-794be13ebbebf0fcf59aaab7.html">PROFILE</a>
 <td data-label="Recorded fact">
 <code>constant</code></td>
 </tr>
@@ -72,6 +144,18 @@
 <td data-label="Recorded fact">
 <code>constant</code></td>
 </tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenanceartifactid:0318f84021">
+<td data-label="Element">
+<a href="e-7fd4b87decb6aaa851cfb39f.html">ProvenanceArtifactId</a>
+<td data-label="Recorded fact">
+<code>type-alias</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenanceassertionid:2b39c81e7f">
+<td data-label="Element">
+<a href="e-dda1d8d8bc8cb24874c85815.html">ProvenanceAssertionId</a>
+<td data-label="Recorded fact">
+<code>type-alias</code></td>
+</tr>
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenancec-a09835e7cf:6355183749">
 <td data-label="Element">
 <a href="e-ecaf80eb3093a7aab42689cd.html">ProvenanceContractBinding</a>
@@ -96,17 +180,23 @@
 <td data-label="Recorded fact">
 <code>type-alias</code></td>
 </tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenanceid:ac55a341f4">
+<td data-label="Element">
+<a href="e-4880e2fa82a2b6c60b64209e.html">ProvenanceId</a>
+<td data-label="Recorded fact">
+<code>type-alias</code></td>
+</tr>
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenancejournalid:fb2d18a111">
 <td data-label="Element">
 <a href="e-f84aec2b438ad91a33b1f266.html">ProvenanceJournalId</a>
 <td data-label="Recorded fact">
 <code>type-alias</code></td>
 </tr>
-<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenancej-0e2a1b02ae:f871a851d3">
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenanceoccurrenceid:2c455e7050">
 <td data-label="Element">
-<a href="e-67549b6af839a31a525280d1.html">ProvenanceJournalStateReference</a>
+<a href="e-a4a8f4877c69293916a46679.html">ProvenanceOccurrenceId</a>
 <td data-label="Recorded fact">
-<code>class</code></td>
+<code>type-alias</code></td>
 </tr>
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenancestateid:929b0ac1bd">
 <td data-label="Element">
@@ -114,11 +204,53 @@
 <td data-label="Recorded fact">
 <code>type-alias</code></td>
 </tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenances-1f8c1ec220:1047795c04">
+<td data-label="Element">
+<a href="e-f9d14edb044b9e81aec4a5b5.html">ProvenanceStateReference</a>
+<td data-label="Recorded fact">
+<code>class</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenances-b5a538e117:b48e8ee8fb" class="member">
+<td data-label="Element">
+<a href="e-29f0d656f7e99d4c58d9d445.html">external</a>
+<td data-label="Recorded fact">
+<code>method</code></td>
+</tr>
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-sha256-pattern:eba9bb4a86">
 <td data-label="Element">
 <a href="e-189416d3c2a35bd5cdb5a403.html">SHA256_PATTERN</a>
 <td data-label="Recorded fact">
 <code>constant</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-source-nami-6500c7d80d:a46017aef0">
+<td data-label="Element">
+<a href="e-6360f55cb0671c51b4a48b7c.html">SOURCE_NAMING_VIEW_SCHEME</a>
+<td data-label="Recorded fact">
+<code>constant</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-canonical-document:0d587a8675">
+<td data-label="Element">
+<a href="e-63f1c6da139c29a207703bce.html">canonical_document</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-core-contract:56e62ff437">
+<td data-label="Element">
+<a href="e-e296d7fe3869e972b0a3695e.html">core_contract</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-core-schemas:f3b56fd186">
+<td data-label="Element">
+<a href="e-e0dda899f1e543bf2d7ddbf3.html">core_schemas</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-decode-document:ee61ca6602">
+<td data-label="Element">
+<a href="e-a70b36ddfbaf73b63a20b820.html">decode_document</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
 </tr>
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-index-schema-documents:8c7e47ce6d">
 <td data-label="Element">
@@ -126,9 +258,39 @@
 <td data-label="Recorded fact">
 <code>function</code></td>
 </tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-profile-reference:9b244c946e">
+<td data-label="Element">
+<a href="e-b3a9956827a6d35c6a62187f.html">profile_reference</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
 <tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-require-can-6f8a99bdee:2890648b0e">
 <td data-label="Element">
 <a href="e-6c6d079653157cfbe621f027.html">require_canonical_uuid_urn</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-require-portable-json:510588b673">
+<td data-label="Element">
+<a href="e-1ff7b80ed1e76218cdb326e8.html">require_portable_json</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-schema-document:b7dc4ec455">
+<td data-label="Element">
+<a href="e-78819a8c1b52ab683370fa48.html">schema_document</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-validate-entry-shape:2e32c86599">
+<td data-label="Element">
+<a href="e-e059b6ea9129330e4eed1a48.html">validate_entry_shape</a>
+<td data-label="Recorded fact">
+<code>function</code></td>
+</tr>
+<tr data-element="python:riverhog-provenance-contracts:riverhog-provenance-contracts-validate-graph-shape:ab16a56a99">
+<td data-label="Element">
+<a href="e-32fb636a042f0cbb29f12544.html">validate_graph_shape</a>
 <td data-label="Recorded fact">
 <code>function</code></td>
 </tr>
@@ -139,7 +301,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

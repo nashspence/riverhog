@@ -274,7 +274,7 @@
 <section class="schema-section" id="s-8508ad0f9250e8192f270f6d">
 <h3>Definition: ObserverContractSupport</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -367,6 +367,16 @@
 <code>128</code></td>
 <td data-label="Description"></td>
 </tr>
+<tr>
+<td data-label="Field">
+<a href="#s-073cd556dfc5de80db674d0e">read_actions</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Default">
+<code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Description"></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -456,6 +466,26 @@
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-073cd556dfc5de80db674d0e">
+<h3>Field: read_actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>1</code>
 </dd>
 </dl>
 </section>
@@ -1031,6 +1061,126 @@
 <td>
 <span id="v-7cb75bb61956259127fb00c8">
 <code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/preferred_subject_batch_size/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_actions</code>
+</th>
+<td>
+<table id="v-073cd556dfc5de80db674d0e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-f33324ec8a73ee18065eb8f5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9f30e27ad5fafe17a94b3bcb">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/default/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-7ad26c985d49bf43b6f4b65c">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-46fbbdc15b592fc4a4a7427e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a35c97421996b43c380c0d6a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/items/enum/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-bb5be7f3c4fceaf3c0676aa1">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/items/enum/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-8adb19be6919e4d49ee22115">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/items/enum/2">read-evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-27b65e31ea0ffe2edeb0766b">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-2aa09e84122326ef2143179c">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/maxItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-b20c93a3a9500bc1b061e5ae">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-168a5adf930390625a0ce3a8">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverDescriptor/contract/schema/$defs/ObserverContractSupport/properties/read_actions/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1875,7 +2025,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.JournalAnchorDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog_protocol.JournalAnchorDocument</h1>
+<p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-journalanchordocument:cff2f58c76">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-protocol</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_protocol</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>JournalAnchorDocument</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, journal_id: ProvenanceJournalId, through: riverhog_provenance_contracts.references.EntryReference, prefix_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], prefix_bytes: Annotated[NonnegativeDecimal, Ge(ge=1)]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-e2c35164cf8236147f3da5bb">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal_id&quot;,&quot;through&quot;,&quot;prefix_sha256&quot;,&quot;prefix_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-5960c488ecb73f9f2d5ed93e.html#v-d8a6cfc9a741bd33aaca68b9">#/$defs/ProvenanceJournalId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-5960c488ecb73f9f2d5ed93e.html#v-b2593d96ec8a58fcb8fb19fd">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>through</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-5960c488ecb73f9f2d5ed93e.html#v-057a4f9f82168a55af283754">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-057a4f9f82168a55af283754">EntryReference</a>
+</li>
+<li>
+<a href="#s-b2593d96ec8a58fcb8fb19fd">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-3e8ce3dd83e971e46e391266">ProvenanceEntryId</a>
+</li>
+<li>
+<a href="#s-d8a6cfc9a741bd33aaca68b9">ProvenanceJournalId</a>
+</li>
+<li>
+<a href="#s-91283529b5f61b8203b09c35">Sha256</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-057a4f9f82168a55af283754">
+<h3>Definition: EntryReference</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;entry_id&quot;,&quot;sequence&quot;,&quot;json_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>entry_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-5960c488ecb73f9f2d5ed93e.html#v-3e8ce3dd83e971e46e391266">#/$defs/ProvenanceEntryId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>json_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-5960c488ecb73f9f2d5ed93e.html#v-91283529b5f61b8203b09c35">#/$defs/Sha256</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b2593d96ec8a58fcb8fb19fd">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3e8ce3dd83e971e46e391266">
+<h3>Definition: ProvenanceEntryId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d8a6cfc9a741bd33aaca68b9">
+<h3>Definition: ProvenanceJournalId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-91283529b5f61b8203b09c35">
+<h3>Definition: Sha256</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[0-9a-f]{64}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/riverhog_protocol.JournalAnchorDocument</code>
+</h4>
+<table id="v-4aee1614eb99c799f3d0494d">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-651b1d0ae47d5b15d96935cc">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-cf561cd8bc83c21b2ba5c8a0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-e2c35164cf8236147f3da5bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-655c0e109470b7a723209c4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>EntryReference</code>
+</th>
+<td>
+<table id="v-057a4f9f82168a55af283754">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-213da605e310cedcd55afd23">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-2ba1620a1bef7a6d22f42881">
+<tbody>
+<tr>
+<th scope="row">
+<code>entry_id</code>
+</th>
+<td>
+<table id="v-e6856004c638c4546a65e02d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-95e1ae7fcb36c37b3920cd05">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/properties/entry_id/$ref">#/$defs/ProvenanceEntryId</code>
+<span class="kind">string</span> <a href="e-5960c488ecb73f9f2d5ed93e.html#v-3e8ce3dd83e971e46e391266">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>json_sha256</code>
+</th>
+<td>
+<table id="v-c63399241dd5e88cebd123b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4f1d51518b54ad4e7e806f00">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/properties/json_sha256/$ref">#/$defs/Sha256</code>
+<span class="kind">string</span> <a href="e-5960c488ecb73f9f2d5ed93e.html#v-91283529b5f61b8203b09c35">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-29cfedc47fb0b53d8faa249b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cb4a46d9ce9c45f8d95f19b3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/properties/sequence/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-352ed9b70d4daedf1fa56559">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/properties/sequence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-06dfa2af8bb2b6f33e70fca9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-64b4b544bda66c9a1f39bb79">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/required/0">entry_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-27f0d6b5c497d1df9c581993">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/required/1">sequence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-3184c39085f1e87865adc368">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/required/2">json_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a0b35ce1ac1c2aa8734fb0f2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/EntryReference/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-b2593d96ec8a58fcb8fb19fd">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-faf955b8dc66da52ae75727a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8295921fe5d8e865ab898caf">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceEntryId</code>
+</th>
+<td>
+<table id="v-3e8ce3dd83e971e46e391266">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7e3f0d04e3ed1eaa7c7126bc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/ProvenanceEntryId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-aedd5f4f76dc58de4c121e33">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/ProvenanceEntryId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceJournalId</code>
+</th>
+<td>
+<table id="v-d8a6cfc9a741bd33aaca68b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-64df612a6c57f1e5145e1972">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d4ab613424f18651ef53ea52">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/ProvenanceJournalId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>Sha256</code>
+</th>
+<td>
+<table id="v-91283529b5f61b8203b09c35">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d08c16cf2fdfb7dc0aeb7ab2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/Sha256/pattern">^[0-9a-f]{64}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dbd68a02b45ef88bd4f9e4d0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/$defs/Sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-f10338848ea3b92b6b36ba05">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-41b95d461a9b5debefb05581">
+<tbody>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-21175699fed8c5c54a66e8a2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c8e3b0cb4f63e651c2442f8d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-5960c488ecb73f9f2d5ed93e.html#v-d8a6cfc9a741bd33aaca68b9">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_bytes</code>
+</th>
+<td>
+<table id="v-c81e9e5f667b090117a52f47">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f98836a737ba11be2a99f89d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/properties/prefix_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-5960c488ecb73f9f2d5ed93e.html#v-b2593d96ec8a58fcb8fb19fd">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-f9b6dedbc533f1fbf404e795">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/properties/prefix_bytes/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_sha256</code>
+</th>
+<td>
+<table id="v-88fd0f99318c3ec38e8f926c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9b1680ef8f7e016739feab73">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/properties/prefix_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-62a150cf8d96fda93fb8916a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/properties/prefix_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>through</code>
+</th>
+<td>
+<table id="v-d2f2c69125cd9790ddd0d9c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-54a7e3c2985731771da3ace9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/properties/through/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-5960c488ecb73f9f2d5ed93e.html#v-057a4f9f82168a55af283754">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-934ecc86f9c8382834c82d84">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a849e458a754c993d35cfca7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/required/0">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1d6a90edfcb5eba1ecf5b06e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/required/1">through</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-803294d4de370e253136c4cb">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/required/2">prefix_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-6bb201b535cf84b435e224f9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/required/3">prefix_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9a827149aadaa474b2d9f739">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-eacee7c36217cbaa13c0969b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/contract/signature">&quot;(*, journal_id: ProvenanceJournalId, through: riverhog_provenance_contracts.references.EntryReference, prefix_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], prefix_bytes: Annotated[NonnegativeDecimal, Ge(ge=1)]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-8ea01106e0c51eb76ce7d105">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-4c04df1580e0e5fa583f2f4b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-38cd7f7ae9f983b4af1e08e2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/name">JournalAnchorDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-3064f35b910d567fc3cd5639">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.JournalAnchorDocument/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

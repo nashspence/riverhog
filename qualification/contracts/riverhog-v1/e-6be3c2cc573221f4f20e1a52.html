@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;a-riverhog-ftp-spool-status/v1&#x27;], provenance_observer: str | None, sources: Annotated[list[a_riverhog_ftp_spool_client.status.SourceStatus], MaxLen(max_length=100)], page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, snapshot: Literal[False]) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;a-riverhog-ftp-spool-status/v1&#x27;], provenance_observer: str, sources: Annotated[list[a_riverhog_ftp_spool_client.status.SourceStatus], MaxLen(max_length=100)], page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, snapshot: Literal[False]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-901cfeb0903d4a75ad1fc8bd">
@@ -113,9 +113,10 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-89f4c323ca819d413b3ef546">provenance_observer</a></td>
+<code>provenance_observer</code></td>
 <td data-label="Required">yes</td>
-<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -171,34 +172,6 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-89f4c323ca819d413b3ef546">
-<h3>Field: provenance_observer</h3>
-<p class="shape">any of: <code>string</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -311,12 +284,12 @@
 <section class="schema-section" id="s-965f6ea821d1dcf29ac0f209">
 <h3>Definition: SourceStatus</h3>
 <p class="shape">
-<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;ingest_source&quot;,&quot;claims&quot;,&quot;claim_bytes&quot;,&quot;close_mode&quot;,&quot;max_files&quot;,&quot;max_bytes&quot;,&quot;provenance&quot;,&quot;pending_claim_capacity&quot;,&quot;completion_failures&quot;,&quot;completion_failure_capacity&quot;,&quot;oldest_completion_failure&quot;]</code>
+<code>[&quot;id&quot;,&quot;ingest_source&quot;,&quot;claims&quot;,&quot;claim_bytes&quot;,&quot;close_mode&quot;,&quot;max_files&quot;,&quot;max_bytes&quot;,&quot;pending_claim_capacity&quot;,&quot;completion_failures&quot;,&quot;completion_failure_capacity&quot;,&quot;oldest_completion_failure&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -435,15 +408,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>integer</code>; minimum: <code>1</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>provenance</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1103,56 +1067,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>provenance</code>
-</th>
-<td>
-<table id="v-22b8bd78d5d171a1d8f004d3">
-<tbody>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-b1a383afcac1befeacc20447">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-c7d86a35874f37e89535d951">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/provenance/enum/0">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-35c050d843149f4b4c4926e2">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/provenance/enum/1">omit</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-b2e60507b60e0ed307624913">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/properties/provenance/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1239,7 +1153,7 @@
 </th>
 <td>
 <span id="v-19f9472f452ca06b85233c76">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/7">provenance</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/7">pending_claim_capacity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1249,7 +1163,7 @@
 </th>
 <td>
 <span id="v-b930b73395db96cffc6bf8ad">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/8">pending_claim_capacity</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/8">completion_failures</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1259,7 +1173,7 @@
 </th>
 <td>
 <span id="v-7b74702c762dd13218d2147f">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/9">completion_failures</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/9">completion_failure_capacity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1269,17 +1183,7 @@
 </th>
 <td>
 <span id="v-65db69a7dd8f96ed6a6a6235">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/10">completion_failure_capacity</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>11</code>
-</th>
-<td>
-<span id="v-54e0463e490e694964f6b69f">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/11">oldest_completion_failure</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/$defs/SourceStatus/required/10">oldest_completion_failure</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1458,53 +1362,13 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-06e0f30c4e5184e6da422273">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-ec85f1783619618bd7b738a3">
-<tbody>
-<tr>
-<th scope="row">
 <code>type</code>
 </th>
 <td>
-<span id="v-47284e621539e9a4e69f82f9">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/provenance_observer/anyOf/0/type">string</code>
+<span id="v-5e12736ba83ca91fb63f3057">
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/provenance_observer/type">string</code>
 <span class="kind">string</span>
 </span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-cfff503304d567fe79866b58">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-fcdc17f94348bd7b94a37dec">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/schema/properties/provenance_observer/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
 </tr>
 </tbody>
 </table></td>
@@ -1681,7 +1545,7 @@
 </th>
 <td>
 <span id="v-9609522fbfdb91509e0178d3">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/signature">&quot;(*, format: Literal[&#x27;a-riverhog-ftp-spool-status/v1&#x27;], provenance_observer: str | None, sources: Annotated[list[a_riverhog_ftp_spool_client.status.SourceStatus], MaxLen(max_length=100)], page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, snapshot: Literal[False]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus/contract/signature">&quot;(*, format: Literal[&#x27;a-riverhog-ftp-spool-status/v1&#x27;], provenance_observer: str, sources: Annotated[list[a_riverhog_ftp_spool_client.status.SourceStatus], MaxLen(max_length=100)], page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, snapshot: Literal[False]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1764,7 +1628,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

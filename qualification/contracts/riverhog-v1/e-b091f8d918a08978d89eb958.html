@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-inputs&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)] = &lt;factory&gt;, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -&gt; None&quot;</code>
+<code>&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-root&#x27;, &#x27;read-inputs&#x27;, &#x27;read-provenance&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)] = &lt;factory&gt;, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-5643e9b734c7053b3d2701b4">
@@ -90,7 +90,7 @@
 <a href="#s-1b14f7242357af4851d21e29">actions</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -135,7 +135,7 @@
 <section class="schema-section" id="s-1b14f7242357af4851d21e29">
 <h3>Field: actions</h3>
 <p class="shape">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -159,10 +159,18 @@
 <tbody>
 <tr>
 <td data-label="Alternative">1</td>
-<td data-label="Schema">const: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Schema">const: <code>[&quot;read-root&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
+<td data-label="Schema">const: <code>[&quot;read-inputs&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">const: <code>[&quot;read-provenance&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">4</td>
 <td data-label="Schema">const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
 </tr>
 </tbody>
@@ -302,7 +310,7 @@
 </th>
 <td>
 <span id="v-60e8361dcac1a308f8d30feb">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/items/enum/0">read-inputs</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/items/enum/0">read-root</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -312,7 +320,27 @@
 </th>
 <td>
 <span id="v-c8987439a66581692c3352d3">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/items/enum/1">write-output</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/items/enum/1">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b07c35a91d682dc97e12636c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/items/enum/2">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-181dbca840619e53c46f86a4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/items/enum/3">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -369,7 +397,7 @@
 </th>
 <td>
 <span id="v-e930e262be9f60eb5d853326">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/oneOf/0/const/0">read-inputs</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/oneOf/0/const/0">read-root</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -403,13 +431,73 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-d49c2bbe1874934af59d2f31">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-0de45ebc7bd6f9c40c0aaf9b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5373db336cd8c105233c0efe">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/oneOf/2/const/0">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-566b0ae7fa63234a01aeab44">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-c5bcb7628be0e08ba7fff129">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-215e9ea8c81b244f28eee81b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/oneOf/3/const/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 <tr>
 <th scope="row">
 <code>1</code>
 </th>
 <td>
-<span id="v-b797a63de61634b094478b27">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/oneOf/1/const/1">write-output</code>
+<span id="v-f7cc66bdc5034493a465a7bc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/schema/properties/actions/oneOf/3/const/1">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -597,7 +685,7 @@
 </th>
 <td>
 <span id="v-233989ee0b843a8349987d1a">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-inputs&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)] = &lt;factory&gt;, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityCreateDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-root&#x27;, &#x27;read-inputs&#x27;, &#x27;read-provenance&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)] = &lt;factory&gt;, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -694,7 +782,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -404,7 +404,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;source_id&quot;,&quot;claim_id&quot;,&quot;source_event_id&quot;,&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+<code>[&quot;source_id&quot;,&quot;claim_id&quot;,&quot;source_event_id&quot;,&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -439,6 +439,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>artifact_set_identity</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>claim_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -452,15 +461,6 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[1-9][0-9]*$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>content_identity</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1700,6 +1700,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-5cb4da05097cff2a3509eacb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a83645a61be97db9f5d9f626">
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b381837a410554e46065315a">
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>claim_id</code>
 </th>
 <td>
@@ -1752,36 +1782,6 @@
 <td>
 <span id="v-5103b6bf60c938992a78cfca">
 <code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/properties/collection_id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-7bd4cd0fd5ea3aea12240d71">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-6c8e42268133ad71b0eb78e6">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-041eade9f06e3ba217504dd8">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/properties/content_identity/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1924,7 +1924,7 @@
 </th>
 <td>
 <span id="v-c9c2f08a623f6f0d899135ed">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/required/5">content_identity</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool_client.FtpEventPage/contract/schema/$defs/ClaimPublishedPayload/required/5">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3437,7 +3437,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

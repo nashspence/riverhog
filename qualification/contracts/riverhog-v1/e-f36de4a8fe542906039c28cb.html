@@ -596,7 +596,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -631,19 +631,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-f36de4a8fe542906039c28cb.html#v-a599deb515be83905b345f7c">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<a href="e-f36de4a8fe542906039c28cb.html#v-a599deb515be83905b345f7c">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2581,6 +2581,56 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-002f975ef6ed9f9f06643f99">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-11b060d4dbbe376dd4bfa62e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-426c59aa05f72170675d006f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-95a983f5eab79938ce0511e8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-50373100983d3d057c65c2d5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -2594,56 +2644,6 @@
 <span id="v-4bd2873ba6088b9cc4815ec6">
 <code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-f36de4a8fe542906039c28cb.html#v-a599deb515be83905b345f7c">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-f8fb8db6c8f61b4b37ecf0e7">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-b3564e7e23be96287e919300">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/maxLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-8f488296c4f2b5dfa8ef78a9">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/minLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-779712f29d5a900ef0a0c270">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-09b2e84d674fbdbf6bba7278">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -2975,7 +2975,7 @@
 </th>
 <td>
 <span id="v-544d125de4f6f52919c15d65">
-<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionPage/contract/schema/$defs/CatalogSyncDescriptor/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4460,7 +4460,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

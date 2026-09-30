@@ -40,7 +40,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;host_id&quot;,&quot;riverhog_base_url&quot;,&quot;sources&quot;,&quot;riverhog_token_file&quot;,&quot;api_token_file&quot;]</code>
+<code>[&quot;host_id&quot;,&quot;riverhog_base_url&quot;,&quot;provenance_observer&quot;,&quot;sources&quot;,&quot;riverhog_token_file&quot;,&quot;api_token_file&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -154,11 +154,11 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-f0cabc4a6931ffa8bb29643d">provenance_observer</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
+<code>provenance_observer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
+<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -203,40 +203,6 @@
 <a href="#s-060968562c0202d3222e520b">SourceConfig</a>
 </li>
 </ul>
-</section>
-<section class="schema-section" id="s-f0cabc4a6931ffa8bb29643d">
-<h3>Field: provenance_observer</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Provenance Observer</code>
-</dd>
-</dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-84c0e6e01006128af02d5279">
 <h3>Field: sources</h3>
@@ -323,7 +289,7 @@
 <section class="schema-section" id="s-060968562c0202d3222e520b">
 <h3>Definition: SourceConfig</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -428,25 +394,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance</code></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code>; default: <code>capture</code></td>
-<td data-label="Default">
-<code>capture</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-80f98a74b615a7d46d4e375a">provenance_omission_reason</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>root</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -520,40 +467,6 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-d2ab1cd374a3a343c6fba071.html#v-e497105c641dca32c3a11572">#/$defs/CollectionDescription</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-80f98a74b615a7d46d4e375a">
-<h3>Field: provenance_omission_reason</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Provenance Omission Reason</code>
-</dd>
-</dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; maxLength: <code>1000</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1242,166 +1155,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>provenance</code>
-</th>
-<td>
-<table id="v-d9aec81427c1269f98f84b3b">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-8fa5e9e8064dc921821a43b5">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance/default">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-61a292bb5e1a2017af45f554">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-4fa6ed242d8cbc62b83068bd">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance/enum/0">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-71db8f0e1193200f39d9bd0c">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance/enum/1">omit</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-6f245dd9c7416a1dbb30b4fa">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance/title">Provenance</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6c8a60f808d4fca4720cfb6b">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>provenance_omission_reason</code>
-</th>
-<td>
-<table id="v-80f98a74b615a7d46d4e375a">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-6c8904d45a193cd34fb19dbb">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-1c6de4b4ec1159b9754763e8">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-ab10f561d01d5499243d5e7a">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0/maxLength">1000</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-7fd44e0c51e01556090145d3">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-b771b71db705a1b102983d13">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6cc11d71e4a9a7e44b4c188c">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-ac504cd571809b83e371634d">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance_omission_reason/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-42c8b89f6abdfd0add68c6ea">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance_omission_reason/title">Provenance Omission Reason</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>root</code>
 </th>
 <td>
@@ -2045,25 +1798,11 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-89e3838862893ef4aa1be6a6">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-9b0aba7c58cb7c7b86b49bb9">
-<tbody>
-<tr>
-<th scope="row">
 <code>maxLength</code>
 </th>
 <td>
-<span id="v-ee8b5e592316fb8fdc6e738c">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/anyOf/0/maxLength">255</code>
+<span id="v-385bcd652c83e7446a46c88f">
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/maxLength">255</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -2072,55 +1811,9 @@
 <code>minLength</code>
 </th>
 <td>
-<span id="v-47f361ee50049a056c5863ec">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/anyOf/0/minLength">1</code>
+<span id="v-6592c389b8fe74ce9145aadc">
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/minLength">1</code>
 <span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-52e557f5f496520623d9c3c9">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-9f2d89f5a558d71ec60cf794">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-078d24483a14b794e95bad42">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-6b2c3b59d8659e3ac5b1a044">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/default">null</code>
-<span class="kind">null</span>
 </span></td>
 </tr>
 <tr>
@@ -2130,6 +1823,16 @@
 <td>
 <span id="v-e8de4f8f7ae2e19a7f34efe8">
 <code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/title">Provenance Observer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0d5365ef0163b6ffbb9d171d">
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2322,7 +2025,7 @@
 </th>
 <td>
 <span id="v-c47f8aa79f08ae50f19f11d8">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/2">sources</code>
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/2">provenance_observer</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2332,7 +2035,7 @@
 </th>
 <td>
 <span id="v-c65778bfeac28e2a8c1fc90a">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/3">riverhog_token_file</code>
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/3">sources</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2342,7 +2045,17 @@
 </th>
 <td>
 <span id="v-d647e6a8c92d6912e7839ac1">
-<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/4">api_token_file</code>
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/4">riverhog_token_file</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-49394611a0a936af05dc481a">
+<code data-value-pointer="/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/required/5">api_token_file</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2468,15 +2181,6 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0</code></td>
-<td data-label="Governing rule">
-<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
-<td data-label="Decision">length · characters · contract_max</td>
-<td data-label="Bounds or reason">
-<code>{&quot;maximum&quot;:1000,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
-</tr>
-<tr>
-<td data-label="Exact subject">
 <code>/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/$defs/SourceConfig/properties/tags</code></td>
 <td data-label="Governing rule">
 <code>configuration-composition/v1</code></td>
@@ -2504,7 +2208,7 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer/anyOf/0</code></td>
+<code>/external_contract/configuration_documents/a-riverhog-ftp-spool:configuration:ftp-spool-document/properties/provenance_observer</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
 <td data-label="Decision">length · characters · contract_max</td>
@@ -2537,7 +2241,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

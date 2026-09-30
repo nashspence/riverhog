@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ObservationPartition · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: ObservationPartition</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:stove0:schemas-observationpartition:2ac35cc735">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-af9e6a2de8e2d9dc62c9a656">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ObservationPartition</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>Copy the exact subject IDs assigned a role into an observer question.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;pointer&quot;,&quot;roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>pointer</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-84bd0b53291225503e765bc9">roles</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-84bd0b53291225503e765bc9">
+<h3>Field: roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Roles</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/stove0/components/schemas/ObservationPartition</code>
+</h4>
+<table id="v-af9e6a2de8e2d9dc62c9a656">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8088d771f06e13134bed6e60">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-685310afa4a3154c8d4efe89">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/description">Copy the exact subject IDs assigned a role into an observer question.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c6ee152cd1cd753297e786e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pointer</code>
+</th>
+<td>
+<table id="v-39bcaddeb8d9bb853d10bee7">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-865b73c7d7a6ea43cbef9bd1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/pointer/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8f377c61de5ff504549529da">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a56c491d60797f2efe4ca5f5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/pointer/title">Pointer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-03ec0f5026fce9a604e855c0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/pointer/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>roles</code>
+</th>
+<td>
+<table id="v-84bd0b53291225503e765bc9">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b51b5dfbb447a8071b1e2b71">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f44a76a8f9a528a230df7f24">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3794740e3d4b39ac486f5fc3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/roles/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-8ed8cff9c7effb96312f3e8f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/roles/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-14e10e50714f15170e44dcea">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/roles/title">Roles</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-592507d8b3dbba12416823c1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/roles/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-55123d99c0df67cf16412ff7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7f713d552b35ec2d0d8c4203">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/required/0">pointer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c7ff9ccb19d62f93b8092d7a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/required/1">roles</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6518d889427a40c9881323a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/title">ObservationPartition</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cd6e64a2220fd8bbcd90132a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/ObservationPartition/properties/roles</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

@@ -268,7 +268,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;tag_revision&quot;,&quot;tag_set_identity&quot;,&quot;revision&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -303,19 +303,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-8cf9f1a2f37296c1d941d99e.html#v-389380939c13d71dfca2b542">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; minLength: <code>64</code>; maxLength: <code>64</code></td>
+<a href="e-8cf9f1a2f37296c1d941d99e.html#v-389380939c13d71dfca2b542">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -861,6 +861,56 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-36a2d9957477aa9d3130cc8d">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-99916b68074e0debb70baad3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/artifact_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-aeec29905c434e6162a20ebc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/artifact_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ef0a81851b76da76d05c8d42">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e43dd04d25075ddf64a7b45a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -874,56 +924,6 @@
 <span id="v-76fc9f6faeb28cef7dcddfed">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-8cf9f1a2f37296c1d941d99e.html#v-389380939c13d71dfca2b542">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-f358322e30a83f634f682584">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-fea01321b1d75e74502e05c9">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/content_identity/maxLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-f2d8ea8beaedbf77ef14c890">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/content_identity/minLength">64</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-c55e25e981bad42ce3b80937">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6d5913fa5c5d79586304e294">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -1295,7 +1295,7 @@
 </th>
 <td>
 <span id="v-128a2d990bfd0c8240656315">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncChangePage/contract/schema/$defs/CatalogSyncUpsert/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -2130,7 +2130,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

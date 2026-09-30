@@ -34,14 +34,14 @@
 <tr>
 <td data-label="Route">
 <code id="route-d1121e35fa7adab170fe1ee4">make build</code></td>
-<td data-label="Associated elements">3168</td>
+<td data-label="Associated elements">3397</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-413b0b241ba870e262fb82fa">make compose-smoke</code></td>
-<td data-label="Associated elements">742</td>
-<td data-label="Candidate witness groups">13</td>
+<td data-label="Associated elements">756</td>
+<td data-label="Candidate witness groups">14</td>
 </tr>
 <tr>
 <td data-label="Route">
@@ -52,19 +52,19 @@
 <tr>
 <td data-label="Route">
 <code id="route-27f281b51ec606c43bd87cc5">make database-qualification</code></td>
-<td data-label="Associated elements">155</td>
-<td data-label="Candidate witness groups">2</td>
+<td data-label="Associated elements">169</td>
+<td data-label="Candidate witness groups">3</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-0ba2578a3eb74fda1e38b234">make dist-smoke</code></td>
-<td data-label="Associated elements">3388</td>
+<td data-label="Associated elements">3619</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-dd95e4459fb8ecb561da1c86">make operation-qualification</code></td>
-<td data-label="Associated elements">837</td>
+<td data-label="Associated elements">838</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
@@ -82,14 +82,14 @@
 <tr>
 <td data-label="Route">
 <code id="route-8d8d22d6a6b17edc6babcfab">make release-check</code></td>
-<td data-label="Associated elements">282</td>
+<td data-label="Associated elements">309</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-ce47068f504c25a93bdddb64">make unit</code></td>
-<td data-label="Associated elements">134</td>
-<td data-label="Candidate witness groups">15</td>
+<td data-label="Associated elements">149</td>
+<td data-label="Candidate witness groups">17</td>
 </tr>
 </tbody>
 </table>
@@ -319,6 +319,14 @@
 <code>riverhog</code></td>
 <td data-label="Operation">
 <code>GET /v1/archive/upload-copy-intents/{collection_id}</code></td>
+<td data-label="Classification">human-cli+json</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/artifacts/discover</code></td>
 <td data-label="Classification">human-cli+json</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -638,6 +646,30 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
+<code>GET /v1/collection-upload-sessions/{collection_id}/artifacts</code></td>
+<td data-label="Classification">human-cli+json</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/collection-upload-sessions/{collection_id}/artifacts</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>GET /v1/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}/provenance-binding</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
 <code>POST /v1/collection-upload-sessions/{collection_id}/cancel</code></td>
 <td data-label="Classification">human-cli+json</td>
 <td data-label="Client">ApiClient</td>
@@ -670,15 +702,7 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
-<code>GET /v1/collection-upload-sessions/{collection_id}/files</code></td>
-<td data-label="Classification">human-cli+json</td>
-<td data-label="Client">ApiClient</td>
-</tr>
-<tr>
-<td data-label="Application">
-<code>riverhog</code></td>
-<td data-label="Operation">
-<code>POST /v1/collection-upload-sessions/{collection_id}/files</code></td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/heartbeat</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -686,7 +710,15 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
-<code>POST /v1/collection-upload-sessions/{collection_id}/heartbeat</code></td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/materialization-decisions</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/collection-upload-sessions/{collection_id}/provenance/bindings</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -814,16 +846,24 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
-<code>GET /v1/collections/{collection_id}/provenance/files</code></td>
-<td data-label="Classification">human-cli+json</td>
+<code>GET /v1/collections/{collection_id}/provenance/artifacts</code></td>
+<td data-label="Classification">standard-tool/protocol</td>
 <td data-label="Client">ApiClient</td>
 </tr>
 <tr>
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
-<code>GET /v1/collections/{collection_id}/provenance/files/{path}</code></td>
-<td data-label="Classification">human-cli+json</td>
+<code>GET /v1/collections/{collection_id}/provenance/artifacts/{artifact_id}</code></td>
+<td data-label="Classification">standard-tool/protocol</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>GET /v1/collections/{collection_id}/provenance/journals</code></td>
+<td data-label="Classification">standard-tool/protocol</td>
 <td data-label="Client">ApiClient</td>
 </tr>
 <tr>
@@ -841,46 +881,6 @@
 <code>HEAD /v1/collections/{collection_id}/provenance/journals/{journal_id}</code></td>
 <td data-label="Classification">standard-tool/protocol</td>
 <td data-label="Client">None</td>
-</tr>
-<tr>
-<td data-label="Application">
-<code>riverhog</code></td>
-<td data-label="Operation">
-<code>GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents</code></td>
-<td data-label="Classification">human-cli+json</td>
-<td data-label="Client">ApiClient</td>
-</tr>
-<tr>
-<td data-label="Application">
-<code>riverhog</code></td>
-<td data-label="Operation">
-<code>GET /v1/collections/{collection_id}/provenance/trace/{path}</code></td>
-<td data-label="Classification">human-cli+json</td>
-<td data-label="Client">ApiClient</td>
-</tr>
-<tr>
-<td data-label="Application">
-<code>riverhog</code></td>
-<td data-label="Operation">
-<code>DELETE /v1/collections/{collection_id}/provenance/verification</code></td>
-<td data-label="Classification">human-cli+json</td>
-<td data-label="Client">ApiClient</td>
-</tr>
-<tr>
-<td data-label="Application">
-<code>riverhog</code></td>
-<td data-label="Operation">
-<code>GET /v1/collections/{collection_id}/provenance/verification</code></td>
-<td data-label="Classification">human-cli+json</td>
-<td data-label="Client">ApiClient</td>
-</tr>
-<tr>
-<td data-label="Application">
-<code>riverhog</code></td>
-<td data-label="Operation">
-<code>POST /v1/collections/{collection_id}/provenance/verification</code></td>
-<td data-label="Classification">human-cli+json</td>
-<td data-label="Client">ApiClient</td>
 </tr>
 <tr>
 <td data-label="Application">
@@ -1054,7 +1054,7 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
-<code>GET /v1/retrieval-plans/{plan_id}/files</code></td>
+<code>GET /v1/retrieval-plans/{plan_id}/artifacts</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -1378,7 +1378,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

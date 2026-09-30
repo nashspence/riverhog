@@ -69,7 +69,7 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-d2d8219a30ccef5f2c6e2b69">cli:a-riverhog-cli</code></td>
-<td data-label="Applications">87</td>
+<td data-label="Applications">86</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py::&lt;module&gt;</code></td>
 </tr>
@@ -131,10 +131,24 @@
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-04e0d7d08921341002f27389">cli:a-stove0-ffprobe-sampling-observer</code></td>
+<code id="source-93912bd3963013e3104c8676">cli:a-stove0-ffprobe-observer</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py::&lt;module&gt;</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py::&lt;module&gt;</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-b91a86858037ba9e0e3a5f78">cli:a-stove0-filename-prefix-sidecar-observer</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py::&lt;module&gt;</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-d02d255be1eb3abd5b7df23c">cli:a-stove0-magic-observer</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py::&lt;module&gt;</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -156,6 +170,13 @@
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/app.py">some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/app.py::&lt;module&gt;</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-e698af15bde405fb31e97c44">cli:a-stove0-riverhog-provenance-observer</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py::&lt;module&gt;</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -467,31 +488,17 @@
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-52dfc006525ecbdee8080246">configuration-environment:a-riverhog-cli:A_RIVERHOG_CLI_UPLOAD_FILE_LOG_BYTES</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-31393dad3fff5a14e11943cf">configuration-environment:a-riverhog-cli:A_RIVERHOG_CLI_UPLOAD_FINALIZE_POLL_SECONDS</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-94c5091dbe2c9214a7e82543">configuration-environment:a-riverhog-cli:A_RIVERHOG_CLI_UPLOAD_FINALIZE_TIMEOUT_SECONDS</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
 <code id="source-b2d6ead1ab699d71b07b96ba">configuration-environment:a-riverhog-cli:TERM</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/cli_support.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/cli_support.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-716880d2d1ad82d339317401">configuration-environment:a-riverhog-cli:XDG_STATE_HOME</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/directory_upload.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/directory_upload.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -663,59 +670,157 @@
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-3f58a4fec4560e3ab2e97ecc">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST</code></td>
+<code id="source-934f58950967a7bb99a0d43f">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_HOST</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-7ee20c8c05ea84d0aad9b387">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID</code></td>
+<code id="source-a381f777c1453b63e10e6e5c">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_IMAGE_ID</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-fb36c69d69222e6b33d98175">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT</code></td>
+<code id="source-e73f88d7b72a50130286ae4a">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_PORT</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-ecfaa40ca273c927d1411e06">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION</code></td>
+<code id="source-951dc1f60e7824e8fc3e14ad">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_SOURCE_REVISION</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-ff956493b30ca6525ed55470">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN</code></td>
+<code id="source-99c9321317f7147c5a09032a">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_TOKEN</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-60857d42e234d42c01fcf3a7">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE</code></td>
+<code id="source-5fd4b5992468291041d54710">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_TOKEN_FILE</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-284ce2e44f43cdf6109656f6">configuration-environment:a-stove0-ffprobe-sampling-observer:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE</code></td>
+<code id="source-6427e3cd27be15c9030d3315">configuration-environment:a-stove0-ffprobe-observer:A_STOVE0_FFPROBE_OBSERVER_WORKSPACE</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-0898d04d6d62d580247bd0f6">configuration-environment:a-stove0-ffprobe-sampling-observer:STOVE0_FFPROBE_BIN</code></td>
+<code id="source-c24da0ec659bf026e24d6c48">configuration-environment:a-stove0-ffprobe-observer:STOVE0_FFPROBE_BIN</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/app.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-13dbfa41690e60ab6f13fdf3">configuration-environment:a-stove0-filename-prefix-sidecar-observer:A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_HOST</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-45e9cc500a4d600d13f7342f">configuration-environment:a-stove0-filename-prefix-sidecar-observer:A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_IMAGE_ID</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-f82ac3af6202a13cb677a10e">configuration-environment:a-stove0-filename-prefix-sidecar-observer:A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_PORT</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-f411ac3e108ef4a639c6348c">configuration-environment:a-stove0-filename-prefix-sidecar-observer:A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_SOURCE_REVISION</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-b8bd2f03eb1d1705bb281ef0">configuration-environment:a-stove0-filename-prefix-sidecar-observer:A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_TOKEN</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-eea6b203ec03bc25c3a14f0b">configuration-environment:a-stove0-filename-prefix-sidecar-observer:A_STOVE0_FILENAME_PREFIX_SIDECAR_OBSERVER_TOKEN_FILE</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-21f4c2b9583750210cec3968">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_DATABASE</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-128f4483140b447b08af00bc">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_FILE</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-f4b6a1a3934b1dc69f8369dd">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_HOST</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-599dd2fd28aa13b53eecd800">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_IMAGE_ID</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-742462200c532a2bce811832">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_PORT</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-6c696eeb5051f537559e911a">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_SOURCE_REVISION</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-e9321a27ae5666c106daf119">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_TOKEN</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-fa9b07299c6eef65270d7a18">configuration-environment:a-stove0-magic-observer:A_STOVE0_MAGIC_OBSERVER_TOKEN_FILE</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -908,6 +1013,48 @@
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-0ac04e5d907490e9b598e2c0">configuration-environment:a-stove0-riverhog-provenance-observer:A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_HOST</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-b447455d51d92e331c94b588">configuration-environment:a-stove0-riverhog-provenance-observer:A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_IMAGE_ID</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-30bd89d63d0c0043c64536d7">configuration-environment:a-stove0-riverhog-provenance-observer:A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_PORT</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-5bd8b644cd271f6698ec2e45">configuration-environment:a-stove0-riverhog-provenance-observer:A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_SOURCE_REVISION</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-13b0c23f0c6d70cc1e03ad25">configuration-environment:a-stove0-riverhog-provenance-observer:A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_TOKEN</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-11a3cbced0409af4baa2b941">configuration-environment:a-stove0-riverhog-provenance-observer:A_STOVE0_RIVERHOG_PROVENANCE_OBSERVER_TOKEN_FILE</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/app.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-2e90824b22bb93868d85e8a1">configuration-environment:review0:REVIEW0_CONFIG</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
@@ -1038,27 +1185,6 @@
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-client/src/riverhog_client/client.py">packages/riverhog-client/src/riverhog_client/client.py</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-d5c0e21c89860082a2aca9a7">configuration-environment:riverhog-provenance:LOCALAPPDATA</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/identity.py">packages/riverhog-provenance/src/riverhog_provenance/identity.py</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-9fe04e9d425f01fa7a7d2af9">configuration-environment:riverhog-provenance:RIVERHOG_PROVENANCE_STATE_HOME</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/identity.py">packages/riverhog-provenance/src/riverhog_provenance/identity.py</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-fb8d65585b742086109e606e">configuration-environment:riverhog-provenance:XDG_STATE_HOME</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/identity.py">packages/riverhog-provenance/src/riverhog_provenance/identity.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1205,7 +1331,7 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-47381a6c4ffa90ed11311c88">generator:contract-projection</code></td>
-<td data-label="Applications">4294</td>
+<td data-label="Applications">4553</td>
 <td data-label="Executable locations">
 <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code></td>
 </tr>
@@ -1214,23 +1340,23 @@
 <code id="source-fdb5f95db76e4741f768b51b">openapi:a-riverhog-ftp-spool</code></td>
 <td data-label="Applications">27</td>
 <td data-label="Executable locations">
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-c42f268fc960d0f1424d05df">openapi:riverhog</code></td>
-<td data-label="Applications">388</td>
+<td data-label="Applications">382</td>
 <td data-label="Executable locations">
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-52e6e3212451330ad7592a25">openapi:stove0</code></td>
-<td data-label="Applications">193</td>
+<td data-label="Applications">198</td>
 <td data-label="Executable locations">
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</td>
 </tr>
 <tr>
@@ -1326,10 +1452,38 @@
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-927670b07d1bef64ab507ecb">protocol:https://nashspence.github.io/riverhog/v1/provenance/entity-reference.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/entity-reference.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/entity-reference.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-d38fe612f71a68310735eb75">protocol:https://nashspence.github.io/riverhog/v1/provenance/graph-fragment.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/graph-fragment.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/graph-fragment.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-819610ba95e00bae85e36d63">protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json</code></td>
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-v1-journal-entry.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-v1-journal-entry.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-e894c67f83c47eb56aa45fb0">protocol:https://nashspence.github.io/riverhog/v1/provenance/materialization-hint.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/materialization-hint.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/materialization-hint.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-6c6d22caef8f630c0a4ecc39">protocol:https://nashspence.github.io/riverhog/v1/provenance/materialized.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/materialized.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/materialized.schema.json</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1382,10 +1536,24 @@
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-334e71bf1fc97752c846ad8d">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-native-capture.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-native-capture.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-native-capture.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-ea93e415ba1dcda6399fb141">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-statx-attributes.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-statx-attributes.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-53ff957c06ae5724fab66c37">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-native-capture.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/riverhog/provenance/contracts/macos/src/a_riverhog_macos_provenance_contract_lib/schemas/macos-native-capture.schema.json">some-implementations/riverhog/provenance/contracts/macos/src/a_riverhog_macos_provenance_contract_lib/schemas/macos-native-capture.schema.json</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1399,14 +1567,7 @@
 <code id="source-9581f745b7a59b6f30c9f54f">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/observation-policy.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/observation-policy.schema.json</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-5ae7bcd86c0a7914ebbf8fdf">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/sparse-map.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/sparse-map.schema.json</code></td>
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/observation-policy.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/observation-policy.schema.json</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1445,6 +1606,13 @@
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-62310e3ea1b5a6ffa155640e">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-native-capture.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-native-capture.schema.json">some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-native-capture.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-76f06f0f43dcba86181a8e9c">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
@@ -1480,6 +1648,48 @@
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-e4238b401d7222e22becdd37">protocol:https://nashspence.github.io/riverhog/v1/provenance/profile-reference.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/profile-reference.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/profile-reference.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-154eb83fc3b24fcdd3a9fff6">protocol:https://nashspence.github.io/riverhog/v1/provenance/profiles/execution-environment.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/execution-environment.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/execution-environment.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-f51ac5edc498240f88804df0">protocol:https://nashspence.github.io/riverhog/v1/provenance/profiles/filesystem-context.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/filesystem-context.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/filesystem-context.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-0c4ec7e5869fa497892ac156">protocol:https://nashspence.github.io/riverhog/v1/provenance/profiles/filesystem-observation.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/filesystem-observation.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/filesystem-observation.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-9534a02af18a797aa5a2a0d0">protocol:https://nashspence.github.io/riverhog/v1/provenance/profiles/observer-reference.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/observer-reference.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/observer-reference.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-40b73b8aedd1105863fe4409">protocol:https://nashspence.github.io/riverhog/v1/provenance/source-capabilities.schema.json</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/source-capabilities.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/source-capabilities.schema.json</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-fc0a3e3cabcf28bf31b10bbe">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
@@ -1511,28 +1721,21 @@
 <code id="source-c8e0251dd95d4a2b9f0d4521">protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-bindings-v1.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-bindings-v1.schema.json</code></td>
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-bindings-v1.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-bindings-v1.schema.json</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-7c2ebe352d46bd238486fc9c">protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-root-v1.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-root-v1.schema.json</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-a639df0ba137051bf47f4ab5">protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-terminal-v1.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-terminal-v1.schema.json</code></td>
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-root-v1.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-root-v1.schema.json</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-a3bfff3737b020ec83be32f0">protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-volume-v1.schema.json">packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-volume-v1.schema.json</code></td>
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-volume-v1.schema.json">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas/riverhog-provenance-volume-v1.schema.json</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1613,6 +1816,13 @@
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-c36cda5d1c4d486fa92e0d34">python:a-riverhog-direct-relations-contract-lib:a_riverhog_direct_relations_contract_lib</code></td>
+<td data-label="Applications">7</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/riverhog/provenance/contracts/direct-relations/src/a_riverhog_direct_relations_contract_lib/__init__.py">some-implementations/riverhog/provenance/contracts/direct-relations/src/a_riverhog_direct_relations_contract_lib/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-d49395fbdac416369ba2444d">python:a-riverhog-filesystem-store:a_riverhog_filesystem_store</code></td>
 <td data-label="Applications">21</td>
 <td data-label="Executable locations">
@@ -1683,10 +1893,52 @@
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-bbde6c899e1eb59f705ee1cb">python:a-stove0-ffprobe-sampling-observer:a_stove0_ffprobe_sampling_observer</code></td>
+<code id="source-12f25e1fb812cea51352c236">python:a-stove0-ffprobe-observer:a_stove0_ffprobe_observer</code></td>
 <td data-label="Applications">4</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/__init__.py">some-implementations/stove0/observers/ffprobe-sampling/src/a_stove0_ffprobe_sampling_observer/__init__.py</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/__init__.py">some-implementations/stove0/observers/ffprobe/src/a_stove0_ffprobe_observer/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-6a615bd74661db04bdb9955e">python:a-stove0-ffprobe-streams-contract-lib:a_stove0_ffprobe_streams_contract_lib</code></td>
+<td data-label="Applications">13</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/ffprobe-streams/src/a_stove0_ffprobe_streams_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/ffprobe-streams/src/a_stove0_ffprobe_streams_contract_lib/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-7ee8831e1d78c36fbe1fad23">python:a-stove0-filename-prefix-sidecar-evidence-contract-lib:a_stove0_filename_prefix_sidecar_evidence_contract_lib</code></td>
+<td data-label="Applications">15</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_evidence_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_evidence_contract_lib/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-175ecadffd404e1e724f4a2f">python:a-stove0-filename-prefix-sidecar-observer:a_stove0_filename_prefix_sidecar_observer</code></td>
+<td data-label="Applications">9</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/__init__.py">some-implementations/stove0/observers/filename-prefix-sidecars/src/a_stove0_filename_prefix_sidecar_observer/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-872184b45ac25a3bb2728a1e">python:a-stove0-magic-facts-contract-lib:a_stove0_magic_facts_contract_lib</code></td>
+<td data-label="Applications">6</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/magic/src/a_stove0_magic_facts_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/magic/src/a_stove0_magic_facts_contract_lib/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-71ff3b928e430d0a3aaef878">python:a-stove0-magic-observer:a_stove0_magic_observer</code></td>
+<td data-label="Applications">6</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/__init__.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-7fb3ac4c674d5f1db39936ca">python:a-stove0-materialization-hint-evidence-contract-lib:a_stove0_materialization_hint_evidence_contract_lib</code></td>
+<td data-label="Applications">9</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/materialization-hint/src/a_stove0_materialization_hint_evidence_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/materialization-hint/src/a_stove0_materialization_hint_evidence_contract_lib/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1698,7 +1950,7 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-6929294187049d93109e082d">python:a-stove0-media-archive-lib:a_stove0_media_archive_lib</code></td>
-<td data-label="Applications">24</td>
+<td data-label="Applications">38</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py">some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py</code></td>
 </tr>
@@ -1733,9 +1985,23 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-3755ea2a46f7cf3ddc642052">python:a-stove0-rclone-target:a_stove0_rclone_target</code></td>
-<td data-label="Applications">10</td>
+<td data-label="Applications">11</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/__init__.py">some-implementations/stove0/targets/rclone/src/a_stove0_rclone_target/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-403aefa5255fe7d145543edf">python:a-stove0-riverhog-provenance-evidence-contract-lib:a_stove0_riverhog_provenance_evidence_contract_lib</code></td>
+<td data-label="Applications">8</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/riverhog-provenance/src/a_stove0_riverhog_provenance_evidence_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/riverhog-provenance/src/a_stove0_riverhog_provenance_evidence_contract_lib/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-65ade59b26c080690e8257d9">python:a-stove0-riverhog-provenance-observer:a_stove0_riverhog_provenance_observer</code></td>
+<td data-label="Applications">5</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/__init__.py">some-implementations/stove0/observers/riverhog-provenance/src/a_stove0_riverhog_provenance_observer/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -1824,7 +2090,7 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-4557222ddc30f40eac3729ac">python:riverhog-archive-contracts:riverhog_archive_contracts</code></td>
-<td data-label="Applications">72</td>
+<td data-label="Applications">103</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py">packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py</code></td>
 </tr>
@@ -1838,35 +2104,42 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-c149020c7102cdcb794917fe">python:riverhog-client:riverhog_client</code></td>
-<td data-label="Applications">197</td>
+<td data-label="Applications">195</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-client/src/riverhog_client/__init__.py">packages/riverhog-client/src/riverhog_client/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-89057c8bbf931b086a129cd9">python:riverhog-client:riverhog_client.processing</code></td>
-<td data-label="Applications">88</td>
+<td data-label="Applications">99</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-client/src/riverhog_client/processing/__init__.py">packages/riverhog-client/src/riverhog_client/processing/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
+<code id="source-681f63afb022680f1d9204b3">python:riverhog-materialization:riverhog_materialization</code></td>
+<td data-label="Applications">11</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-materialization/src/riverhog_materialization/__init__.py">packages/riverhog-materialization/src/riverhog_materialization/__init__.py</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
 <code id="source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</code></td>
-<td data-label="Applications">339</td>
+<td data-label="Applications">351</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-9b6289a988164a9886a993ad">python:riverhog-provenance-contracts:riverhog_provenance_contracts</code></td>
-<td data-label="Applications">16</td>
+<td data-label="Applications">43</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-38ef3a6054bee6ff009d696c">python:riverhog-provenance:riverhog_provenance</code></td>
-<td data-label="Applications">105</td>
+<td data-label="Applications">102</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/__init__.py">packages/riverhog-provenance/src/riverhog_provenance/__init__.py</code></td>
 </tr>
@@ -1915,14 +2188,14 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-62450e01569529ab26f29c60">python:stove0-observer-protocol:stove0_observer_protocol</code></td>
-<td data-label="Applications">81</td>
+<td data-label="Applications">84</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py">some-implementations/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-13bf3acd3225b8729bb5eb19">python:stove0-observer-support:stove0_observer_support</code></td>
-<td data-label="Applications">37</td>
+<td data-label="Applications">39</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/packages/observer-support/src/stove0_observer_support/__init__.py">some-implementations/stove0/packages/observer-support/src/stove0_observer_support/__init__.py</code></td>
 </tr>
@@ -1936,14 +2209,14 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-084138045e133c1e06d16ebc">python:stove0-protocol:stove0_protocol</code></td>
-<td data-label="Applications">214</td>
+<td data-label="Applications">218</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py">some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-9e1422d2d65a7be343940afd">python:stove0-recipe-config:stove0_recipe_config</code></td>
-<td data-label="Applications">36</td>
+<td data-label="Applications">44</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py">some-implementations/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py</code></td>
 </tr>
@@ -1971,14 +2244,14 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-f4f0b2202672f85e3d080ca7">python:stove0-target-protocol:stove0_target_protocol</code></td>
-<td data-label="Applications">155</td>
+<td data-label="Applications">159</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py">some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-3c01163237a9830888156f6e">python:stove0-target-support:stove0_target_support</code></td>
-<td data-label="Applications">156</td>
+<td data-label="Applications">160</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py</code></td>
 </tr>
@@ -2072,6 +2345,13 @@
 <td data-label="Applications">2</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml">some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-46fda48e49a3592446e9df51">release-distribution:a-riverhog-direct-relations-contract-lib</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/riverhog/provenance/contracts/direct-relations/pyproject.toml">some-implementations/riverhog/provenance/contracts/direct-relations/pyproject.toml</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -2194,10 +2474,52 @@
 </tr>
 <tr>
 <td data-label="Source identity">
-<code id="source-4672fa9df96bbbed6d2e0f16">release-distribution:a-stove0-ffprobe-sampling-observer</code></td>
+<code id="source-a707c9b019783f6a9cf0430d">release-distribution:a-stove0-ffprobe-observer</code></td>
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
-<code data-source-path="some-implementations/stove0/observers/ffprobe-sampling/pyproject.toml">some-implementations/stove0/observers/ffprobe-sampling/pyproject.toml</code></td>
+<code data-source-path="some-implementations/stove0/observers/ffprobe/pyproject.toml">some-implementations/stove0/observers/ffprobe/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-7b64c93442fd2b6525756ea3">release-distribution:a-stove0-ffprobe-streams-contract-lib</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/ffprobe-streams/pyproject.toml">some-implementations/stove0/observers/contracts/ffprobe-streams/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-f1a163f616cae41d8fc4fc41">release-distribution:a-stove0-filename-prefix-sidecar-evidence-contract-lib</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/filename-prefix-sidecars/pyproject.toml">some-implementations/stove0/observers/contracts/filename-prefix-sidecars/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-24e632be79b8c55be23f6eb0">release-distribution:a-stove0-filename-prefix-sidecar-observer</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/filename-prefix-sidecars/pyproject.toml">some-implementations/stove0/observers/filename-prefix-sidecars/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-41679b408d0478cc1209966d">release-distribution:a-stove0-magic-facts-contract-lib</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/magic/pyproject.toml">some-implementations/stove0/observers/contracts/magic/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-5f3d074a01956de9a6adcb0e">release-distribution:a-stove0-magic-observer</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/magic/pyproject.toml">some-implementations/stove0/observers/magic/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-4ccfdd8675dcbdad55c2500d">release-distribution:a-stove0-materialization-hint-evidence-contract-lib</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/materialization-hint/pyproject.toml">some-implementations/stove0/observers/contracts/materialization-hint/pyproject.toml</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -2247,6 +2569,20 @@
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/stove0/targets/rclone/pyproject.toml">some-implementations/stove0/targets/rclone/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-183bff81968de8f5c20a3ff7">release-distribution:a-stove0-riverhog-provenance-evidence-contract-lib</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/contracts/riverhog-provenance/pyproject.toml">some-implementations/stove0/observers/contracts/riverhog-provenance/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-d9aeb85a4e3e3f59e16e921f">release-distribution:a-stove0-riverhog-provenance-observer</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="some-implementations/stove0/observers/riverhog-provenance/pyproject.toml">some-implementations/stove0/observers/riverhog-provenance/pyproject.toml</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -2366,6 +2702,13 @@
 <td data-label="Applications">1</td>
 <td data-label="Executable locations">
 <code data-source-path="packages/riverhog-client/pyproject.toml">packages/riverhog-client/pyproject.toml</code></td>
+</tr>
+<tr>
+<td data-label="Source identity">
+<code id="source-3c5a06de255f04c9a1073cef">release-distribution:riverhog-materialization</code></td>
+<td data-label="Applications">1</td>
+<td data-label="Executable locations">
+<code data-source-path="packages/riverhog-materialization/pyproject.toml">packages/riverhog-materialization/pyproject.toml</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -2510,7 +2853,7 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-8d3f4df21c6910e597cfff7d">release-images:docker-bake</code></td>
-<td data-label="Applications">15</td>
+<td data-label="Applications">18</td>
 <td data-label="Executable locations">
 <code data-source-path="docker-bake.hcl">docker-bake.hcl</code></td>
 </tr>
@@ -2524,21 +2867,21 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-03a2f48338f5e4266c3c60dd">release-publication:planner</code></td>
-<td data-label="Applications">118</td>
+<td data-label="Applications">131</td>
 <td data-label="Executable locations">
 <code data-source-path="scripts/release.py">scripts/release.py::publication_contract</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-c5380dbe5fe03e44a5c0d8d6">release:release.toml</code></td>
-<td data-label="Applications">127</td>
+<td data-label="Applications">140</td>
 <td data-label="Executable locations">
 <code data-source-path="release.toml">release.toml</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
 <code id="source-196019bfcc559f6bde66a07d">state:a-riverhog-cli-local</code></td>
-<td data-label="Applications">7</td>
+<td data-label="Applications">8</td>
 <td data-label="Executable locations">
 <code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/state_migrations/v1_ddl.py">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/state_migrations/v1_ddl.py::SQLITE_DDL</code>
 <br>
@@ -2594,20 +2937,11 @@
 <tr>
 <td data-label="Source identity">
 <code id="source-d8b4a1467008c6c4fef8d47d">state:riverhog-catalog</code></td>
-<td data-label="Applications">97</td>
+<td data-label="Applications">111</td>
 <td data-label="Executable locations">
 <code data-source-path="riverhog/src/riverhog_core/state_migrations/v1_ddl.py">riverhog/src/riverhog_core/state_migrations/v1_ddl.py::POSTGRESQL_DDL</code>
 <br>
 <code data-source-path="tests/fixtures/state/v1_0001/riverhog.postgresql.sql">tests/fixtures/state/v1_0001/riverhog.postgresql.sql</code></td>
-</tr>
-<tr>
-<td data-label="Source identity">
-<code id="source-080b9701904ddd501c2a1467">state:riverhog-provenance-installation</code></td>
-<td data-label="Applications">1</td>
-<td data-label="Executable locations">
-<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/identity.py">packages/riverhog-provenance/src/riverhog_provenance/identity.py::_installation_id_state_contract</code>
-<br>
-<code data-source-path="tests/fixtures/state/v1_0001/provenance-installation-id">tests/fixtures/state/v1_0001/provenance-installation-id</code></td>
 </tr>
 <tr>
 <td data-label="Source identity">
@@ -2643,7 +2977,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

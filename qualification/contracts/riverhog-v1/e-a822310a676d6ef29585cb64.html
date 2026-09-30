@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, journal_id: ProvenanceJournalId, state: Literal[&#x27;accepting&#x27;, &#x27;validating&#x27;, &#x27;sealed&#x27;, &#x27;failed&#x27;], bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], accepted_bytes: NonnegativeDecimal, failure: str | None = None, current_state_id: ProvenanceStateId | None = None, current_path: str | None = None, current_bytes: NonnegativeDecimal | None = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None) -&gt; None&quot;</code>
+<code>&quot;(*, journal_id: ProvenanceJournalId, state: Literal[&#x27;accepting&#x27;, &#x27;validating&#x27;, &#x27;sealed&#x27;, &#x27;failed&#x27;], bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], accepted_bytes: NonnegativeDecimal, failure: str | None = None, anchor: riverhog_protocol.provenance_transport.JournalAnchorDocument | None = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-48d89948a0a548de56a076ba">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -96,47 +96,20 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-5309def0f67af4cc58a4eeff">anchor</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-a822310a676d6ef29585cb64.html#v-e0a9102f8e29f5b51a91536f">#/$defs/JournalAnchorDocument</a>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">#/$defs/NonnegativeDecimal</a></td>
 <td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-ddef0dd98c3e2b5f890d6ef5">current_bytes</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">#/$defs/NonnegativeDecimal</a>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-c34cd2178bc87c087f3f0504">current_path</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-7f2707a86db984f3039436bb">current_sha256</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-232feea01f509857f6e7d22f">current_state_id</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-a822310a676d6ef29585cb64.html#v-0e1edefe0b6debdd81280bef">#/$defs/ProvenanceStateId</a>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -181,19 +154,28 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-18bf55570c767860febcd95d">EntryReference</a>
+</li>
+<li>
+<a href="#s-e0a9102f8e29f5b51a91536f">JournalAnchorDocument</a>
+</li>
+<li>
 <a href="#s-76956c35fa9fbf5c9916953a">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-6a1ed35661e94eee2164a8a9">ProvenanceEntryId</a>
 </li>
 <li>
 <a href="#s-941b8700664de9be1fc97e18">ProvenanceJournalId</a>
 </li>
 <li>
-<a href="#s-0e1edefe0b6debdd81280bef">ProvenanceStateId</a>
+<a href="#s-9ebf0c82d5cbe439f7186ec7">Sha256</a>
 </li>
 </ul>
 </section>
-<section class="schema-section" id="s-ddef0dd98c3e2b5f890d6ef5">
-<h3>Field: current_bytes</h3>
-<p class="shape">default: <code>null</code>; any of: <a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">#/$defs/NonnegativeDecimal</a>; <code>null</code>
+<section class="schema-section" id="s-5309def0f67af4cc58a4eeff">
+<h3>Field: anchor</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a822310a676d6ef29585cb64.html#v-e0a9102f8e29f5b51a91536f">#/$defs/JournalAnchorDocument</a>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -208,91 +190,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">#/$defs/NonnegativeDecimal</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-c34cd2178bc87c087f3f0504">
-<h3>Field: current_path</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-7f2707a86db984f3039436bb">
-<h3>Field: current_sha256</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-232feea01f509857f6e7d22f">
-<h3>Field: current_state_id</h3>
-<p class="shape">default: <code>null</code>; any of: <a href="e-a822310a676d6ef29585cb64.html#v-0e1edefe0b6debdd81280bef">#/$defs/ProvenanceStateId</a>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<a href="e-a822310a676d6ef29585cb64.html#v-0e1edefe0b6debdd81280bef">#/$defs/ProvenanceStateId</a></td>
+<a href="e-a822310a676d6ef29585cb64.html#v-e0a9102f8e29f5b51a91536f">#/$defs/JournalAnchorDocument</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -331,6 +229,141 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-18bf55570c767860febcd95d">
+<h3>Definition: EntryReference</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;entry_id&quot;,&quot;sequence&quot;,&quot;json_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>entry_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a822310a676d6ef29585cb64.html#v-6a1ed35661e94eee2164a8a9">#/$defs/ProvenanceEntryId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>json_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a822310a676d6ef29585cb64.html#v-9ebf0c82d5cbe439f7186ec7">#/$defs/Sha256</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e0a9102f8e29f5b51a91536f">
+<h3>Definition: JournalAnchorDocument</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal_id&quot;,&quot;through&quot;,&quot;prefix_sha256&quot;,&quot;prefix_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a822310a676d6ef29585cb64.html#v-941b8700664de9be1fc97e18">#/$defs/ProvenanceJournalId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>through</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a822310a676d6ef29585cb64.html#v-18bf55570c767860febcd95d">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-76956c35fa9fbf5c9916953a">
 <h3>Definition: NonnegativeDecimal</h3>
 <p class="shape">
@@ -347,10 +380,10 @@
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-941b8700664de9be1fc97e18">
-<h3>Definition: ProvenanceJournalId</h3>
+<section class="schema-section" id="s-6a1ed35661e94eee2164a8a9">
+<h3>Definition: ProvenanceEntryId</h3>
 <p class="shape">
-<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -359,14 +392,14 @@
 </dd>
 <dt>pattern</dt>
 <dd>
-<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
 </dd>
 </dl>
 </section>
-<section class="schema-section" id="s-0e1edefe0b6debdd81280bef">
-<h3>Definition: ProvenanceStateId</h3>
+<section class="schema-section" id="s-941b8700664de9be1fc97e18">
+<h3>Definition: ProvenanceJournalId</h3>
 <p class="shape">
-<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -375,7 +408,23 @@
 </dd>
 <dt>pattern</dt>
 <dd>
-<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9ebf0c82d5cbe439f7186ec7">
+<h3>Definition: Sha256</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[0-9a-f]{64}(?![\s\S])</code>
 </dd>
 </dl>
 </section>
@@ -421,6 +470,346 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>EntryReference</code>
+</th>
+<td>
+<table id="v-18bf55570c767860febcd95d">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2782ae951f8d504f2bc4cc12">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e8e7a8dac62640637e0d7ccb">
+<tbody>
+<tr>
+<th scope="row">
+<code>entry_id</code>
+</th>
+<td>
+<table id="v-d1ed41aac819d666e9e01a43">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-816456b2e908c4b3b13b7965">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/properties/entry_id/$ref">#/$defs/ProvenanceEntryId</code>
+<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-6a1ed35661e94eee2164a8a9">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>json_sha256</code>
+</th>
+<td>
+<table id="v-09cbd70368627d1d7a29431d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-60ba7fb5a11ef3eacd5ca780">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/properties/json_sha256/$ref">#/$defs/Sha256</code>
+<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-9ebf0c82d5cbe439f7186ec7">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-bca5e9bea0394bc050ca97e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-63a98f9578a7ae90f3810acc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/properties/sequence/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3ed0947fdb58723baef665c2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/properties/sequence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-630a4a494a8bb8243601ce05">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c2b7c57934b7efc30e32d51e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/required/0">entry_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-92ad3d0a4f1a9937a6d335d1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/required/1">sequence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-6b951e26bba32d21ed44a96b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/required/2">json_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-641e9ca48b4cb5c625dd5bda">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/EntryReference/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>JournalAnchorDocument</code>
+</th>
+<td>
+<table id="v-e0a9102f8e29f5b51a91536f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-be39da7f8a24591e20387dcc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-d7f2a04d893bde0b678f4c81">
+<tbody>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-f7135e3dc585ee74b1f2bfce">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-47e9fc30ecf7e0864ca2e336">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-941b8700664de9be1fc97e18">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_bytes</code>
+</th>
+<td>
+<table id="v-bf93c9bb68f1b73c161f0e4c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-57685c98e4059841b27c6f0c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-e36604266ab97a063038be0a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_sha256</code>
+</th>
+<td>
+<table id="v-204c49b4e220f734028e19ae">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b98063a0d12d50872aad1c9d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-90c430b32a4b637995febd03">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>through</code>
+</th>
+<td>
+<table id="v-ea3e3cbf2692dba88108a773">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6ac610f192e38ed6934a68f4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/properties/through/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-18bf55570c767860febcd95d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a1b763f71ecbd8b91a2ecb9e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f2275715d0df815f0af6a560">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/required/0">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-abe55b29771e1f31b211a2d6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/required/1">through</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b117903afc39f05b4b4076f9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/required/2">prefix_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-b49df28ef21f5e995967cfb1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/required/3">prefix_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-740d89e26b4426b47e01b2d2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/JournalAnchorDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>NonnegativeDecimal</code>
 </th>
 <td>
@@ -451,6 +840,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>ProvenanceEntryId</code>
+</th>
+<td>
+<table id="v-6a1ed35661e94eee2164a8a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-41e15390f4be60eae25112c0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/ProvenanceEntryId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0d66f75308e66bf987daa0ec">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/ProvenanceEntryId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>ProvenanceJournalId</code>
 </th>
 <td>
@@ -462,7 +881,7 @@
 </th>
 <td>
 <span id="v-61d1c74f38044ec81027eec2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -481,18 +900,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>ProvenanceStateId</code>
+<code>Sha256</code>
 </th>
 <td>
-<table id="v-0e1edefe0b6debdd81280bef">
+<table id="v-9ebf0c82d5cbe439f7186ec7">
 <tbody>
 <tr>
 <th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-bd5d0aa10dd464b55d7521d2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/ProvenanceStateId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<span id="v-b7de8db297eba7d9fe745bf9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/Sha256/pattern">^[0-9a-f]{64}(?![\s\S])</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -501,8 +920,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-6a83d7fa83670c1e34dee4ec">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/ProvenanceStateId/type">string</code>
+<span id="v-d3a08dc101c0ffe8796efe95">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/$defs/Sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -551,6 +970,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>anchor</code>
+</th>
+<td>
+<table id="v-5309def0f67af4cc58a4eeff">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8dada297847b0bb20fbdbd1a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-76f2df1664b20c57de2c50e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-dab0f718cdac1a24f187ddf1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/anchor/anyOf/0/$ref">#/$defs/JournalAnchorDocument</code>
+<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-e0a9102f8e29f5b51a91536f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-218d1bd6fb4fa0b1afb428b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6459b025e7dcf0c8649c2ecc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/anchor/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5cfbc8266eeb8c07907e9614">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/anchor/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>bytes</code>
 </th>
 <td>
@@ -574,296 +1063,6 @@
 <span id="v-a1c3af9c8c90f291cb2379cb">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/bytes/ge">1</code>
 <span class="kind">number</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>current_bytes</code>
-</th>
-<td>
-<table id="v-ddef0dd98c3e2b5f890d6ef5">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-eeb824bb514864a3690ef3b5">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-1df6f7b7c46d957e57b9bd77">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-bd33252ed6b831a36e5072fb">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_bytes/anyOf/0/$ref">#/$defs/NonnegativeDecimal</code>
-<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-76956c35fa9fbf5c9916953a">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-42cdca670392b9dc7f4b0d7d">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-9bc629c79c704306ce7129cf">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_bytes/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-357eabd96dc1e2c2afeb3748">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_bytes/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>current_path</code>
-</th>
-<td>
-<table id="v-c34cd2178bc87c087f3f0504">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-a419d233b05e504afd29099e">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-dbf81bc3b3d219c6059b66bb">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-0ce58a30f5a5f4fbba991f32">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_path/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-1e6191db79d341f1701eaaa4">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-a6725542a260070ce71720f6">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_path/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-a358b2ac5219e1a8dd3cb55a">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_path/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>current_sha256</code>
-</th>
-<td>
-<table id="v-7f2707a86db984f3039436bb">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-51e78960a6be2b50bd992253">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-e8a13dfabee5bfd81a03c4b3">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-9b629d46588052ceef765ece">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-cb8265b9443b4bd149b9ccd2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_sha256/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-14dc3ce5d514a143943aa2be">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-1e5965320a17a4b30a45ad61">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_sha256/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-a18e44938b85f556f8fab172">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_sha256/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>current_state_id</code>
-</th>
-<td>
-<table id="v-232feea01f509857f6e7d22f">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-383482b47fdac9a83c4bda46">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-8ccb91e863de664bc7529aef">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-363d391610543a98c55f6765">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_state_id/anyOf/0/$ref">#/$defs/ProvenanceStateId</code>
-<span class="kind">string</span> <a href="e-a822310a676d6ef29585cb64.html#v-0e1edefe0b6debdd81280bef">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-6cc730fae91a195fd7e6f4ce">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-2325d86f39caf606d0b4e5e1">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_state_id/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-54fbcd44e8db20e4b60d1b80">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/schema/properties/current_state_id/default">null</code>
-<span class="kind">null</span>
 </span></td>
 </tr>
 </tbody>
@@ -1141,7 +1340,7 @@
 </th>
 <td>
 <span id="v-0e976206ae6c86b01d144870">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/signature">&quot;(*, journal_id: ProvenanceJournalId, state: Literal[&#x27;accepting&#x27;, &#x27;validating&#x27;, &#x27;sealed&#x27;, &#x27;failed&#x27;], bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], accepted_bytes: NonnegativeDecimal, failure: str | None = None, current_state_id: ProvenanceStateId | None = None, current_path: str | None = None, current_bytes: NonnegativeDecimal | None = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalStatusDocument/contract/signature">&quot;(*, journal_id: ProvenanceJournalId, state: Literal[&#x27;accepting&#x27;, &#x27;validating&#x27;, &#x27;sealed&#x27;, &#x27;failed&#x27;], bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], accepted_bytes: NonnegativeDecimal, failure: str | None = None, anchor: riverhog_protocol.provenance_transport.JournalAnchorDocument | None = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1232,7 +1431,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

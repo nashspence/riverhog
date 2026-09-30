@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(path: &#x27;str&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, read_range: &#x27;RangeReader&#x27;, provenance: &#x27;Mapping[str, object] | None&#x27; = None) -&gt; None&quot;</code>
+<code>&quot;(artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, read_range: &#x27;RangeReader&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -66,9 +66,9 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<code>path</code></td>
+<code>artifact_id</code></td>
 <td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
+<code>&#x27;ArtifactId&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -98,9 +98,25 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance</code></td>
+<code>materialization_hint</code></td>
 <td data-label="Type">
-<code>&#x27;Mapping[str, object] | None&#x27;</code></td>
+<code>&#x27;tuple[str, ...] | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>allow_missing_materialization_hint</code></td>
+<td data-label="Type">
+<code>&#x27;bool&#x27;</code></td>
+<td data-label="Default">
+<code>False</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observation</code></td>
+<td data-label="Type">
+<code>&#x27;ObservationResult | None&#x27;</code></td>
 <td data-label="Default">
 <code>None</code></td>
 </tr>
@@ -153,7 +169,7 @@
 </th>
 <td>
 <span id="v-c270fbfaa1ada429595fc9ac">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/0/name">path</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/0/name">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -163,7 +179,7 @@
 </th>
 <td>
 <span id="v-47537ef65e9e92571aa8f9f5">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/0/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/0/type">&#x27;ArtifactId&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -313,7 +329,7 @@
 </th>
 <td>
 <span id="v-8438c4e0d5a44a6dc58010dc">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/4/name">provenance</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/4/name">materialization_hint</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -323,7 +339,87 @@
 </th>
 <td>
 <span id="v-a16f745973d92eb3528299bd">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/4/type">&#x27;Mapping[str, object] | None&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/4/type">&#x27;tuple[str, ...] | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-69de5660b863bb7b80d49a2e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-01c809ad801c400e9514fec4">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/5/default">False</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-99f9c6018633148dcbe7d744">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/5/name">allow_missing_materialization_hint</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66ce856890db70ca3dff5a92">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/5/type">&#x27;bool&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-9a7e27809fcc76a27f507175">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d80463ef18c0c31a88fb670c">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/6/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-575690aa016cab5a6c147f59">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/6/name">observation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e60162ed8e07e37e0703abd5">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/fields/6/type">&#x27;ObservationResult | None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -349,7 +445,7 @@
 </th>
 <td>
 <span id="v-558926d1c9b71ef63b27c3f4">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/signature">&quot;(path: &#x27;str&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, read_range: &#x27;RangeReader&#x27;, provenance: &#x27;Mapping[str, object] | None&#x27; = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerStream/contract/signature">&quot;(artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, read_range: &#x27;RangeReader&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -432,7 +528,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

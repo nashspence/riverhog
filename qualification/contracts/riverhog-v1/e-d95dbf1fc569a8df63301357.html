@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(source: &#x27;Path&#x27;, path: &#x27;str&#x27;, provenance: &#x27;Mapping[str, object] | None&#x27; = None) -&gt; None&quot;</code>
+<code>&quot;(source: &#x27;Path&#x27;, artifact_id: &#x27;ArtifactId&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -74,17 +74,33 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>path</code></td>
+<code>artifact_id</code></td>
 <td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
+<code>&#x27;ArtifactId&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance</code></td>
+<code>materialization_hint</code></td>
 <td data-label="Type">
-<code>&#x27;Mapping[str, object] | None&#x27;</code></td>
+<code>&#x27;tuple[str, ...] | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>allow_missing_materialization_hint</code></td>
+<td data-label="Type">
+<code>&#x27;bool&#x27;</code></td>
+<td data-label="Default">
+<code>False</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>observation</code></td>
+<td data-label="Type">
+<code>&#x27;ObservationResult | None&#x27;</code></td>
 <td data-label="Default">
 <code>None</code></td>
 </tr>
@@ -177,7 +193,7 @@
 </th>
 <td>
 <span id="v-46fa18e84d76cbdbdc80fb8d">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/1/name">path</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/1/name">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -187,7 +203,7 @@
 </th>
 <td>
 <span id="v-ebc21ed67186c286aead013d">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/1/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/1/type">&#x27;ArtifactId&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -217,7 +233,7 @@
 </th>
 <td>
 <span id="v-19bdb392982c4984a0a16781">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/2/name">provenance</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/2/name">materialization_hint</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -227,7 +243,87 @@
 </th>
 <td>
 <span id="v-eb5d771766e65eb15db26807">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/2/type">&#x27;Mapping[str, object] | None&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/2/type">&#x27;tuple[str, ...] | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-60948e6e094126952ed3dd48">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a42177b9e065b5971d5475d2">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/3/default">False</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-aae38e990899190b084ae8c4">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/3/name">allow_missing_materialization_hint</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-32f74c3677e12f0afd9b17b8">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/3/type">&#x27;bool&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-e6b61d887b986e9918e1723a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-11ff93886e5a8ad2d9ed60cc">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/4/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-d1ae2d59a17e61b2da8e38a0">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/4/name">observation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4048e6abede2570cf999894">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/4/type">&#x27;ObservationResult | None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -253,7 +349,7 @@
 </th>
 <td>
 <span id="v-0fb041a1049bb66861949f09">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/signature">&quot;(source: &#x27;Path&#x27;, path: &#x27;str&#x27;, provenance: &#x27;Mapping[str, object] | None&#x27; = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/signature">&quot;(source: &#x27;Path&#x27;, artifact_id: &#x27;ArtifactId&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -336,7 +432,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

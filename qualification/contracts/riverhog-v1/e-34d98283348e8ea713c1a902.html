@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_semantics: stove0_protocol.models.SemanticValidationProfile, preferred_subject_batch_size: Annotated[int, Ge(ge=1)] = 128, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)]) -&gt; None&quot;</code>
+<code>&quot;(*, contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], read_actions: Annotated[tuple[Literal[&#x27;read-inputs&#x27;, &#x27;read-provenance&#x27;, &#x27;read-evidence&#x27;], ...], MinLen(min_length=1), MaxLen(max_length=1)] = (&#x27;read-inputs&#x27;,), options_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_semantics: stove0_protocol.models.SemanticValidationProfile, preferred_subject_batch_size: Annotated[int, Ge(ge=1)] = 128, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-ae0445f5dafb7b99cebf4ef2">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -149,6 +149,16 @@
 <code>128</code></td>
 <td data-label="Description"></td>
 </tr>
+<tr>
+<td data-label="Field">
+<a href="#s-90c307cf36a0fb0f8d5b5291">read_actions</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Default">
+<code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Description"></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -164,6 +174,26 @@
 <a href="#s-7f1ee1f478583c7b25890e20">SemanticValidationProfile</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-90c307cf36a0fb0f8d5b5291">
+<h3>Field: read_actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-a5ae99ec612b2849a726a2f4">
 <h3>Definition: JsonSchemaValidationProfile</h3>
@@ -1194,6 +1224,126 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>read_actions</code>
+</th>
+<td>
+<table id="v-90c307cf36a0fb0f8d5b5291">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-9a3dee1f79628e723878a5b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-200b678dd4d2777766d6490a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/default/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-50f573e59ff590f483b5329c">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-5edcb36c356170ed00823833">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-238b3b3a20653d8e5dbd4108">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/items/enum/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-48dccd15a5770cd31b4f2f9f">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/items/enum/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-505a5ad631da1eb9c6458340">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/items/enum/2">read-evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-96500a690d2cdf13da81093e">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-b73fb317690249e10aca0f10">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/maxItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-e6987430cc0443d7aead1c0a">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-671311a2d5a3374b86d09f6d">
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/schema/properties/read_actions/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1286,7 +1436,7 @@
 </th>
 <td>
 <span id="v-dfc5ddf5309708e496b007e6">
-<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/signature">&quot;(*, contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_semantics: stove0_protocol.models.SemanticValidationProfile, preferred_subject_batch_size: Annotated[int, Ge(ge=1)] = 128, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_protocol.ObserverContractSupport/contract/signature">&quot;(*, contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], read_actions: Annotated[tuple[Literal[&#x27;read-inputs&#x27;, &#x27;read-provenance&#x27;, &#x27;read-evidence&#x27;], ...], MinLen(min_length=1), MaxLen(max_length=1)] = (&#x27;read-inputs&#x27;,), options_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_schema: stove0_protocol.models.JsonSchemaValidationProfile, facts_semantics: stove0_protocol.models.SemanticValidationProfile, preferred_subject_batch_size: Annotated[int, Ge(ge=1)] = 128, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1377,7 +1527,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

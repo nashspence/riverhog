@@ -20,7 +20,7 @@
 <input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>riverhog_provenance.append_observation</h1>
-<p class="context">Portable Riverhog v1 per-file provenance journals and validation. Declared public imports and their selected exact structural contracts.</p>
+<p class="context">Path-independent opaque-artifact observations, provenance journals and application validation. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:riverhog-provenance:riverhog-provenance-append-observation:ac88022e7a">
 <h2>Contract</h2>
 <div class="human-contract">
@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(content: &#x27;bytes&#x27;, path: &#x27;Path&#x27;, *, relative_path: &#x27;str&#x27;, host_id: &#x27;str&#x27;, agent_name: &#x27;str&#x27;, agent_version: &#x27;str&#x27;, observer: &#x27;FileStateObserver&#x27;, policy: &#x27;ObservationPolicy | None&#x27; = None) -&gt; &#x27;bytes&#x27;&quot;</code>
+<code>&quot;(raw: &#x27;bytes&#x27;, result: &#x27;Any&#x27;, *, expected_tail: &#x27;Mapping[str, Any] | None&#x27; = None, catalog: &#x27;ContractCatalog | None&#x27; = None) -&gt; &#x27;bytes&#x27;&quot;</code>
 </dd>
 </dl>
 </div>
@@ -85,7 +85,7 @@
 </th>
 <td>
 <span id="v-35a42fb6d98e4498eb622535">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.append_observation/contract/signature">&quot;(content: &#x27;bytes&#x27;, path: &#x27;Path&#x27;, *, relative_path: &#x27;str&#x27;, host_id: &#x27;str&#x27;, agent_name: &#x27;str&#x27;, agent_version: &#x27;str&#x27;, observer: &#x27;FileStateObserver&#x27;, policy: &#x27;ObservationPolicy | None&#x27; = None) -&gt; &#x27;bytes&#x27;&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.append_observation/contract/signature">&quot;(raw: &#x27;bytes&#x27;, result: &#x27;Any&#x27;, *, expected_tail: &#x27;Mapping[str, Any] | None&#x27; = None, catalog: &#x27;ContractCatalog | None&#x27; = None) -&gt; &#x27;bytes&#x27;&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -168,7 +168,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

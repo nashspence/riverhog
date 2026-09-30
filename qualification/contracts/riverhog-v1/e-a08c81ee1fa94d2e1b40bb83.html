@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(output: &#x27;Path&#x27;, files: &#x27;int&#x27;, bytes: &#x27;int&#x27;, volumes: &#x27;int&#x27;, provenance_mode: &#x27;str&#x27; = &#x27;omitted&#x27;, provenance_journals: &#x27;int&#x27; = 0) -&gt; None&quot;</code>
+<code>&#x27;(output: \&#x27;Path\&#x27;, artifacts: \&#x27;int\&#x27;, bytes: \&#x27;int\&#x27;, volumes: \&#x27;int\&#x27;, provenance_journals: \&#x27;int\&#x27;, tag_count: \&#x27;int\&#x27;, layout_mode: &quot;Literal[\&#x27;declared-hints\&#x27;, \&#x27;id-layout\&#x27;]&quot;, archive_root_sha256: \&#x27;str\&#x27;, description_revision: \&#x27;int | None\&#x27;, tag_revision: \&#x27;int\&#x27;) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -74,7 +74,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>files</code></td>
+<code>artifacts</code></td>
 <td data-label="Type">
 <code>&#x27;int&#x27;</code></td>
 <td data-label="Default">
@@ -98,19 +98,51 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance_mode</code></td>
-<td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
-<td data-label="Default">
-<code>&#x27;omitted&#x27;</code></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>provenance_journals</code></td>
 <td data-label="Type">
 <code>&#x27;int&#x27;</code></td>
 <td data-label="Default">
-<code>0</code></td>
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>tag_count</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>layout_mode</code></td>
+<td data-label="Type">
+<code>&quot;Literal[&#x27;declared-hints&#x27;, &#x27;id-layout&#x27;]&quot;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>archive_root_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>description_revision</code></td>
+<td data-label="Type">
+<code>&#x27;int | None&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>tag_revision</code></td>
+<td data-label="Type">
+<code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
 </tr>
 </tbody>
 </table>
@@ -201,7 +233,7 @@
 </th>
 <td>
 <span id="v-44717eb9c8acda29c3269f00">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/1/name">files</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/1/name">artifacts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -311,7 +343,7 @@
 </th>
 <td>
 <span id="v-90ff872674d92fbe45655249">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/4/default">&#x27;omitted&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/4/default">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -321,7 +353,7 @@
 </th>
 <td>
 <span id="v-04d992d40f4b99ed8aaa0a0a">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/4/name">provenance_mode</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/4/name">provenance_journals</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -331,7 +363,7 @@
 </th>
 <td>
 <span id="v-80fbde26fe0d45387c8b1c3d">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/4/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/4/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -351,7 +383,7 @@
 </th>
 <td>
 <span id="v-853b620ac18075affc1d5024">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/5/default">0</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/5/default">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -361,7 +393,7 @@
 </th>
 <td>
 <span id="v-cda788d677f59a0bd8a22639">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/5/name">provenance_journals</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/5/name">tag_count</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -372,6 +404,166 @@
 <td>
 <span id="v-f10cffb771d55a6e68b66ca3">
 <code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/5/type">&#x27;int&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-2c88ec849f79875b59e3d98a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e19da2a7c753367413bf46e3">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/6/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-19a498680bf42b0d15e3d842">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/6/name">layout_mode</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fa46348cb416c794e5236bc7">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/6/type">&quot;Literal[&#x27;declared-hints&#x27;, &#x27;id-layout&#x27;]&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-8ecc56846adb3b02c269b8cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e6eecdba894027de3bc7160b">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/7/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-19e84b94be605c0c1511e23f">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/7/name">archive_root_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a464284ade78090017bb1d4c">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/7/type">&#x27;str&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<table id="v-c254f85cb92b060363ddbe48">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-095d2f6cdc4181de63adb8d6">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/8/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-451ccdb7a044aefe5c41f9ee">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/8/name">description_revision</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dfeceb39c466dcdd1963601c">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/8/type">&#x27;int | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<table id="v-c3f12e390ca30e4f62ea2d4c">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a0a98dd31c90c02614ac6d92">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/9/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-f4465495acc34f24c02dbb5b">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/9/name">tag_revision</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-26bfb0b9068277c62a7a3fc5">
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/fields/9/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -397,7 +589,7 @@
 </th>
 <td>
 <span id="v-ddcb2697f0596e4cc3ae620b">
-<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/signature">&quot;(output: &#x27;Path&#x27;, files: &#x27;int&#x27;, bytes: &#x27;int&#x27;, volumes: &#x27;int&#x27;, provenance_mode: &#x27;str&#x27; = &#x27;omitted&#x27;, provenance_journals: &#x27;int&#x27; = 0) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_recovery_tool.RecoverySummary/contract/signature">&#x27;(output: \&#x27;Path\&#x27;, artifacts: \&#x27;int\&#x27;, bytes: \&#x27;int\&#x27;, volumes: \&#x27;int\&#x27;, provenance_journals: \&#x27;int\&#x27;, tag_count: \&#x27;int\&#x27;, layout_mode: &quot;Literal[\&#x27;declared-hints\&#x27;, \&#x27;id-layout\&#x27;]&quot;, archive_root_sha256: \&#x27;str\&#x27;, description_revision: \&#x27;int | None\&#x27;, tag_revision: \&#x27;int\&#x27;) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -480,7 +672,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

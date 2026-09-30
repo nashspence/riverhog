@@ -106,7 +106,7 @@
 <a href="e-08fe9b402fb2eff09661a2ac.html">schemas: KeyDownloadQuotaListOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas</code>
 </li>
 <li>
-<a href="e-7b1a749ba5f3a8ba6b97669b.html">schemas: ListCollectionUploadSessionFilesOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionFilesOut/properties/files</code>
+<a href="e-b90abe2ad3a22c5922ca4a10.html">schemas: ListCollectionUploadSessionArtifactsOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionArtifactsOut/properties/artifacts</code>
 </li>
 <li>
 <a href="e-51918321021853cdafa38de9.html">schemas: ListCollectionUploadSessionsOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionsOut/properties/uploads</code>
@@ -115,10 +115,7 @@
 <a href="e-4e2ebfdb481cec0d634ea475.html">schemas: ListCollectionsOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut/properties/collections</code>
 </li>
 <li>
-<a href="e-050a77e317aac14f8752d06c.html">schemas: ListProvenanceJournalAgentsOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/agents</code>
-</li>
-<li>
-<a href="e-b3adb44559a507ca914a84b0.html">schemas: PortableCollectionInventoryPage</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryPage/properties/files</code>
+<a href="e-b3adb44559a507ca914a84b0.html">schemas: PortableCollectionInventoryPage</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryPage/properties/artifacts</code>
 </li>
 <li>
 <a href="e-f27b52f04bc18fa1e7c65fc1.html">schemas: ProcessingClaimPageDocument</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPageDocument/properties/claims</code>
@@ -130,13 +127,13 @@
 <a href="e-7a967e034c224ca0d27fd3e2.html">schemas: RetrievalCacheObjectListOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectListOut/properties/objects</code>
 </li>
 <li>
-<a href="e-4ea016b5e9fbd8d89c5dde05.html">schemas: RetrievalPlanFilePageOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanFilePageOut/properties/files</code>
+<a href="e-6c62fa8d0fb278ee3b1bd38e.html">schemas: RetrievalPlanArtifactPageOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanArtifactPageOut/properties/artifacts</code>
 </li>
 <li>
 <a href="e-bc5bd6bbd011996500337558.html">schemas: RiverhogEventPage</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventPage/properties/events</code>
 </li>
 <li>
-<a href="e-1123d2daf40ebdbf5edbfe5f.html">schemas: SearchOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/SearchOut/properties/files</code>
+<a href="e-1123d2daf40ebdbf5edbfe5f.html">schemas: SearchOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/SearchOut/properties/artifacts</code>
 </li>
 <li>
 <a href="e-b6bb154a73f9a230403f8cf4.html">schemas: TagListOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/TagListOut/properties/tags</code>
@@ -187,22 +184,13 @@
 <a href="e-026e102f1553d8711b5858c0.html">GET /v1/collection-upload-sessions</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions/get</code>
 </li>
 <li>
-<a href="e-48e509effebf13a89b23d061.html">GET /v1/collection-upload-sessions/{collection_id}/files</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/get</code>
+<a href="e-b1ce07c0bc73f7117ffc5be5.html">GET /v1/collection-upload-sessions/{collection_id}/artifacts</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1artifacts/get</code>
 </li>
 <li>
 <a href="e-2580db69227092fd9848487c.html">POST /v1/collections:search</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections:search/post</code>
 </li>
 <li>
 <a href="e-2a4b8e5685636aa7e7b613c0.html">GET /v1/collections/{collection_id}/archive-copies</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1archive-copies/get</code>
-</li>
-<li>
-<a href="e-4c961fd2a55aeb9b7f286836.html">GET /v1/collections/{collection_id}/provenance/files</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files/get</code>
-</li>
-<li>
-<a href="e-5ef501c9d1ca96322565c619.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}~1agents/get</code>
-</li>
-<li>
-<a href="e-8957e2180d77b8fad1219a1d.html">GET /v1/collections/{collection_id}/provenance/trace/{path}</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1trace~1{path}/get</code>
 </li>
 <li>
 <a href="e-2c6abfea3daad0ed0552270d.html">GET /v1/collections/{collection_id}/tags</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags/get</code>
@@ -217,7 +205,7 @@
 <a href="e-f1787a8367602653966d6256.html">GET /v1/retrieval-cache/objects</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects/get</code>
 </li>
 <li>
-<a href="e-3dce3feba3e4421ea5b60424.html">GET /v1/retrieval-plans/{plan_id}/files</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}~1files/get</code>
+<a href="e-d988e21b84d0f6249d017689.html">GET /v1/retrieval-plans/{plan_id}/artifacts</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}~1artifacts/get</code>
 </li>
 <li>
 <a href="e-c7bd1b17e44db8f1a0cf17d7.html">GET /v1/search</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1search/get</code>
@@ -231,9 +219,9 @@
 <li>
 <code data-source-path="tests/unit/test_public_interface_parity.py" data-source-line="743">tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen</code> — Structural OpenAPI checks for bounded read selectors; no traversal is executed.</li>
 <li>
-<code data-source-path="tests/unit/test_collection_reads.py" data-source-line="90">tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows</code> — Collection-list service query count and archive-object loading on one page; does not test traversal or restart.</li>
+<code data-source-path="tests/unit/test_collection_reads.py" data-source-line="91">tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows</code> — Collection-list service query count and archive-object loading on one page; does not test traversal or restart.</li>
 <li>
-<code data-source-path="tests/unit/test_collection_reads.py" data-source-line="132">tests/unit/test_collection_reads.py::test_collection_encryption_filters_preserve_catalog_authorization</code> — Collection-list service encryption filters and catalog authorization on one page.</li>
+<code data-source-path="tests/unit/test_collection_reads.py" data-source-line="133">tests/unit/test_collection_reads.py::test_collection_encryption_filters_preserve_catalog_authorization</code> — Collection-list service encryption filters and catalog authorization on one page.</li>
 <li>
 <code data-source-path="packages/http-api-contracts/tests/test_browse_tokens.py" data-source-line="23">packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_round_trips_opaque_binary_position_across_restart</code> — Shared token codec reconstructs a position after codec recreation with the same signing configuration; does not prove route wiring or database traversal.</li>
 <li>
@@ -295,7 +283,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

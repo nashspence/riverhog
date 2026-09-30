@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_provenance_contracts.LocalReference · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-bc20dd7716669253f524a47d.html">riverhog-provenance-contracts</a> / <a href="i-b80e39fba8b99cdeef1b5e39.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog_provenance_contracts.LocalReference</h1>
+<p class="context">Closed schema packs and formal contracts for path-independent artifact provenance. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:riverhog-provenance-contracts:riverhog-provenance-contracts-localreference:bdea9e0759">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-provenance-contracts</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_provenance_contracts</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>LocalReference</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, scope: Literal[&#x27;local&#x27;] = &#x27;local&#x27;, object_id: ProvenanceId, object_type: ObjectType) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-662966c57216c47defa82879">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;object_id&quot;,&quot;object_type&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>object_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-9f2fcb2f341945d482f1cbe2.html#v-f017816645d51d12f4983944">#/$defs/ProvenanceId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>object_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-9f2fcb2f341945d482f1cbe2.html#v-7774917e6abd5c2941cffef5">#/$defs/ObjectType</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>scope</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code>; const: <code>local</code>; default: <code>local</code></td>
+<td data-label="Default">
+<code>local</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-7774917e6abd5c2941cffef5">ObjectType</a>
+</li>
+<li>
+<a href="#s-f017816645d51d12f4983944">ProvenanceId</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-7774917e6abd5c2941cffef5">
+<h3>Definition: ObjectType</h3>
+<p class="shape">
+<code>string</code>; enum: <code>[&quot;artifact&quot;,&quot;occurrence&quot;,&quot;state&quot;,&quot;agent&quot;,&quot;context&quot;,&quot;activity&quot;,&quot;observation&quot;,&quot;reported_description&quot;,&quot;usage&quot;,&quot;generation&quot;,&quot;invalidation&quot;,&quot;derivation&quot;,&quot;specialization&quot;,&quot;continuity&quot;,&quot;content_comparison&quot;,&quot;locator_binding&quot;,&quot;locator_binding_end&quot;,&quot;delivery_association&quot;,&quot;custody_assertion&quot;,&quot;availability_assertion&quot;,&quot;journal_subject&quot;,&quot;extension&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>enum</dt>
+<dd>
+<code>[&quot;artifact&quot;,&quot;occurrence&quot;,&quot;state&quot;,&quot;agent&quot;,&quot;context&quot;,&quot;activity&quot;,&quot;observation&quot;,&quot;reported_description&quot;,&quot;usage&quot;,&quot;generation&quot;,&quot;invalidation&quot;,&quot;derivation&quot;,&quot;specialization&quot;,&quot;continuity&quot;,&quot;content_comparison&quot;,&quot;locator_binding&quot;,&quot;locator_binding_end&quot;,&quot;delivery_association&quot;,&quot;custody_assertion&quot;,&quot;availability_assertion&quot;,&quot;journal_subject&quot;,&quot;extension&quot;]</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f017816645d51d12f4983944">
+<h3>Definition: ProvenanceId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/riverhog_provenance_contracts.LocalReference</code>
+</h4>
+<table id="v-2be1ecbd2b38bce016ab96ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-41dd7463afa1a4dad88001df">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-8c10269dff99d3d9494aec59">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-662966c57216c47defa82879">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-97d1fb630b87aaf05055cf8d">
+<tbody>
+<tr>
+<th scope="row">
+<code>ObjectType</code>
+</th>
+<td>
+<table id="v-7774917e6abd5c2941cffef5">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-e00d7736d06c6a2fd47c55bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-97ed32b33b5f66b128be37e8">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/0">artifact</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-5d100ab4c8f75f8f0a1e97a2">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/1">occurrence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-9a00343e6d1e94b4aa31594b">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/2">state</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-60fbbafd0c650bb223225b7c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/3">agent</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-39369642cd54f188cf94a63e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/4">context</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-81735de0777a0c39d358db0e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/5">activity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-0505b38199050a5691c56437">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/6">observation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-8c7f73c472b9f4d0ce86a011">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/7">reported_description</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-9998781a00a721b8f3fe634d">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/8">usage</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-9247f345537fa6a735040456">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/9">generation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-bc85fea2bb6ebd9528527a88">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/10">invalidation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-a91e01dded5a97bf28c88f9c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/11">derivation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-902bd7858e484de99611c4e6">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/12">specialization</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>13</code>
+</th>
+<td>
+<span id="v-db9c9892731d07864b5cf344">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/13">continuity</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>14</code>
+</th>
+<td>
+<span id="v-c4c28e342f1874fcff2fa3cb">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/14">content_comparison</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>15</code>
+</th>
+<td>
+<span id="v-f45b84973d69f8090fa2f437">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/15">locator_binding</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>16</code>
+</th>
+<td>
+<span id="v-9d325609d631f2dc4b741fb9">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/16">locator_binding_end</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>17</code>
+</th>
+<td>
+<span id="v-c8a78831b8dafe15223fcc7a">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/17">delivery_association</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<span id="v-815175f42ea3e4b2377bb4bd">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/18">custody_assertion</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>19</code>
+</th>
+<td>
+<span id="v-fe30562ae0fc4e3c6e05f55e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/19">availability_assertion</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>20</code>
+</th>
+<td>
+<span id="v-ca764952d2e94e8c70bcc65f">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/20">journal_subject</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>21</code>
+</th>
+<td>
+<span id="v-4dab1d9e88b2e0fe9fd7d15e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/enum/21">extension</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eff97b31e386a41768839821">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ObjectType/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceId</code>
+</th>
+<td>
+<table id="v-f017816645d51d12f4983944">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-937796da3e9437a385c5fdbf">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ProvenanceId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-155f3f4d7ddcf1f10a3af4ba">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/$defs/ProvenanceId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-05fc55bd8cc84b45111edd30">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-37c6908c6fbbf0f19013205c">
+<tbody>
+<tr>
+<th scope="row">
+<code>object_id</code>
+</th>
+<td>
+<table id="v-5a8cdc0bd85e4dae48c2d09a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3f936293df7281de8d40c7c4">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/properties/object_id/$ref">#/$defs/ProvenanceId</code>
+<span class="kind">string</span> <a href="e-9f2fcb2f341945d482f1cbe2.html#v-f017816645d51d12f4983944">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>object_type</code>
+</th>
+<td>
+<table id="v-96abb8aa692f4fd6b31359ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ff469a70db9b592a3d028777">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/properties/object_type/$ref">#/$defs/ObjectType</code>
+<span class="kind">string</span> <a href="e-9f2fcb2f341945d482f1cbe2.html#v-7774917e6abd5c2941cffef5">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>scope</code>
+</th>
+<td>
+<table id="v-4ccd31e268cd21d11bcfc4c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-724fbaa92bdc3dc8e20f724c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/properties/scope/const">local</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5c82013cdef4b2440b8b97b0">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/properties/scope/default">local</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9532af6a703520ef595cad3f">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/properties/scope/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-fe9e78805d0b1cbd6643f29c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0b7c8483f4eb92a6504553f9">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/required/0">object_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-3240237a43987ca7895a5ce7">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/required/1">object_type</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9d9fd3e0c5346121cb68fe3c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-62cbd1c1df92d8573e7d2a38">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/contract/signature">&quot;(*, scope: Literal[&#x27;local&#x27;] = &#x27;local&#x27;, object_id: ProvenanceId, object_type: ObjectType) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-542bc261082e428754066a5c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/distribution">riverhog-provenance-contracts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-364fb9f0590eaa33cb45a77b">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/module">riverhog_provenance_contracts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-b5e6ee4e6e5d1359efa006f2">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/name">LocalReference</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-809a359ca85170e1137e6323">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.LocalReference/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-9b6289a988164a9886a993ad">python:riverhog-provenance-contracts:riverhog_provenance_contracts</a> — <code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-49c4834612a5223184780a17">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -64,16 +64,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td data-label="Field">
-<a href="#s-d85117f452687db7ae60ec20">artifact_rules</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>array</code>; items: <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">#/components/schemas/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
-<td data-label="Default">
-<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code></td>
-<td data-label="Description"></td>
-</tr>
 <tr>
 <td data-label="Field">
 <a href="#s-700d57d1c023f7d1ee79972c">associated_roles</a></td>
@@ -152,22 +142,6 @@
 </tbody>
 </table>
 </div>
-</section>
-<section class="schema-section" id="s-d85117f452687db7ae60ec20">
-<h3>Field: artifact_rules</h3>
-<p class="shape">
-<code>array</code>; items: <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">#/components/schemas/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Artifact Rules</code>
-</dd>
-<dt>type</dt>
-<dd>
-<code>array</code>
-</dd>
-</dl>
 </section>
 <section class="schema-section" id="s-700d57d1c023f7d1ee79972c">
 <h3>Field: associated_roles</h3>
@@ -307,96 +281,6 @@
 <td>
 <table id="v-11d3158dfd6d43b76e905460">
 <tbody>
-<tr>
-<th scope="row">
-<code>artifact_rules</code>
-</th>
-<td>
-<table id="v-d85117f452687db7ae60ec20">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<table id="v-ff35e53f15f1e2c26b977d9a">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-f7eedd520a698effd4396d45">
-<tbody>
-<tr>
-<th scope="row">
-<code>glob</code>
-</th>
-<td>
-<span id="v-dc89b52964a4ea0cf3f202bc">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/artifact_rules/default/0/glob">*</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>role</code>
-</th>
-<td>
-<span id="v-1295740695d759987b5aa67b">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/artifact_rules/default/0/role">stove0.source/v1</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>items</code>
-</th>
-<td>
-<table id="v-e7ab6fcd89ea435667a92784">
-<tbody>
-<tr>
-<th scope="row">
-<code>$ref</code>
-</th>
-<td>
-<span id="v-0bd2dca74369834b2aafb29b">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/artifact_rules/items/$ref">#/components/schemas/ArtifactRule</code>
-<span class="kind">string</span> <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-857a309ac7698154d8dbd49c">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/artifact_rules/title">Artifact Rules</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-490916b704007f5e339c3a9f">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/artifact_rules/type">array</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 <tr>
 <th scope="row">
 <code>associated_roles</code>
@@ -899,7 +783,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -923,15 +807,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td data-label="Exact subject">
-<code>/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/artifact_rules</code></td>
-<td data-label="Governing rule">
-<code>no-semantic-maximum/v1</code></td>
-<td data-label="Decision">cardinality · items · operational_policy</td>
-<td data-label="Bounds or reason">
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
-</tr>
 <tr>
 <td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute/properties/associated_roles</code></td>
@@ -976,7 +851,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

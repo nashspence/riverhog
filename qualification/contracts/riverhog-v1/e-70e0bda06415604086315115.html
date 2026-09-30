@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&#x27;(*, input_artifact_id: str, output_path: str) -&gt; None&#x27;</code>
+<code>&#x27;(*, input_artifact_id: str) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-cbd6a2698f7f20e8765b6dd5">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;input_artifact_id&quot;,&quot;output_path&quot;]</code>
+<code>[&quot;input_artifact_id&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -88,15 +88,6 @@
 <tr>
 <td data-label="Field">
 <code>input_artifact_id</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>output_path</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code></td>
@@ -177,26 +168,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>output_path</code>
-</th>
-<td>
-<table id="v-711572b502aa5f802968cac7">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c89e91d5e33fed488339e21d">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.RetainedXmpSidecar/contract/schema/properties/output_path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -214,16 +185,6 @@
 <td>
 <span id="v-43ead324d87321a922b549cb">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.RetainedXmpSidecar/contract/schema/required/0">input_artifact_id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-1e8ed6e6d2ab9a3a4ce5bf91">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.RetainedXmpSidecar/contract/schema/required/1">output_path</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -249,7 +210,7 @@
 </th>
 <td>
 <span id="v-e168d405ce39a422c26de59e">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.RetainedXmpSidecar/contract/signature">&#x27;(*, input_artifact_id: str, output_path: str) -&gt; None&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.RetainedXmpSidecar/contract/signature">&#x27;(*, input_artifact_id: str) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -301,14 +262,6 @@
 </section>
 </details>
 </section>
-<section>
-<h2>Related contract elements</h2>
-<ul>
-<li>
-<a href="e-eb7c72ede27fbddff531016b.html">a_stove0_media_archive_lib.RetainedXmpSidecar.canonical_path</a>
-</li>
-</ul>
-</section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Governing policies</h3>
@@ -340,7 +293,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

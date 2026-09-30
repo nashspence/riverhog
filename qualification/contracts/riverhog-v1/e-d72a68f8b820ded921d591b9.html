@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a-stove0-magic-observer · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-345d333fe170511a6c0c26f1.html">a-stove0-magic-observer</a> / <a href="i-dfdc94a921bfba21a6139ab0.html">CLI</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a-stove0-magic-observer</h1>
+<p class="context">Bounded byte-only file classification observer for Stove0. CLI contract owned by a-stove0-magic-observer.</p>
+<section id="contract" data-contract="cli:a-stove0-magic-observer:a-stove0-magic-observer:7d0d4b2c63">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>a-stove0-magic-observer</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Parameter and spelling">
+<code>host</code>
+<br>
+<code>--host</code></td>
+<td data-label="Invocation">optional; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>not recorded</code></td>
+<td data-label="Default and environment">
+<code>127.0.0.1</code></td>
+</tr>
+<tr>
+<td data-label="Parameter and spelling">
+<code>port</code>
+<br>
+<code>--port</code></td>
+<td data-label="Invocation">optional; option; None value(s) per use</td>
+<td data-label="Type and constraints">
+<code>int</code></td>
+<td data-label="Default and environment">
+<code>8080</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-stove0-magic-observer-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-stove0-magic-observer-cli-runtime/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>none</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Outcome">
+<code>stopped</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="Selection">kind: <code>service-runtime-returned</code></td>
+<td data-label="stdout">all: <code>no-command-result</code></td>
+<td data-label="stderr">all: <code>noncontractual-runtime-log</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Outcome">
+<code>usage</code></td>
+<td data-label="Exit">
+<code>2</code></td>
+<td data-label="Selection">kind: <code>parser-rejected-invocation</code></td>
+<td data-label="stdout">all: <code>empty</code></td>
+<td data-label="stderr">all: <code>noncontractual-usage-diagnostic</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Control">
+<code>help</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>noncontractual-framework-help</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
+</tr>
+<tr>
+<td data-label="Control">
+<code>version</code></td>
+<td data-label="Trigger">
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code></td>
+<td data-label="Exit">
+<code>0</code></td>
+<td data-label="stdout">
+<code>{&quot;distribution&quot;:&quot;a-stove0-magic-observer&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code></td>
+<td data-label="stderr">
+<code>empty</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-magic-observer/allow_abbrev</code>
+</h4>
+<span id="v-f976378a62ef365bf6c82669">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/allow_abbrev">true</code>
+<span class="kind">boolean</span>
+</span>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-magic-observer/name</code>
+</h4>
+<span id="v-36af497a8b6b84e191d808f1">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/name">a-stove0-magic-observer</code>
+<span class="kind">string</span>
+</span>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-magic-observer/parameters</code>
+</h4>
+<table id="v-e310a360cdd13b68b2b22fec">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-6f86b4eda723d67b94489914">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-21249727a9c6ec98a48be125">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/0/default">127.0.0.1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>dest</code>
+</th>
+<td>
+<span id="v-c711189179a8f3270395a787">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/0/dest">host</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-bb83823b6ab5b3367d6ce140">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/0/kind">_StoreAction</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nargs</code>
+</th>
+<td>
+<span id="v-bab2a7af822804ef9809cc23">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/0/nargs">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-e212492aacdab6fe2ccdc186">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a85725a8db8d669d22c497e2">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/0/options/0">--host</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-ba5e5621b4681cbcec66883c">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/0/required">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-42713f4c4eb2e487e9550d26">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-87b7848d84e16bcb7988c8d4">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/default">8080</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>dest</code>
+</th>
+<td>
+<span id="v-897288c3d48335f28513ce88">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/dest">port</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-12ab05a30d6a35fee5c3ab8a">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/kind">_StoreAction</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nargs</code>
+</th>
+<td>
+<span id="v-8d29800c3c5088144f86528f">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/nargs">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-25d27123fe392955be1d2d18">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b14ea332b5462d7f120ad3af">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/options/0">--port</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-1fa6d9a250eb7720eda577d3">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/required">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-76768b3a8dc2093d07b605f8">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/parameters/1/type">int</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-magic-observer/result_contract</code>
+</h4>
+<table id="v-8047159db0501c02fa9d6792">
+<tbody>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-99bbfa3921444a343f426192">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-775c69319ab38326903ef910">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-bd641ec66a1124b307433494">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/failures/0/exit_status">2</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-cc76a703d84355d0c7adbbaf">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/failures/0/id">usage</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>selected_by</code>
+</th>
+<td>
+<table id="v-8214676765b40681e1bab9cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-67af01693c74b6c9150781ac">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<table id="v-985500492b7ff8dffb8c970c">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-af694757d4cb56f3118bacec">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-fad2fe126c3186b842700519">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-af4ca6300062aad4439c5d74">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/failures/0/stdout/all">empty</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>human_json_relationship</code>
+</th>
+<td>
+<span id="v-f0445ce86f99c375294bb8bd">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/human_json_relationship">not-applicable</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>identity</code>
+</th>
+<td>
+<span id="v-005bb69215670bdf0d7e50a4">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/identity">a-stove0-magic-observer-cli-result/root/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_id</code>
+</th>
+<td>
+<span id="v-e21472c7133644531eb53e56">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/profile_id">a-stove0-magic-observer-cli-runtime/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>structured_output</code>
+</th>
+<td>
+<span id="v-1b299e3ab7d789f99e3ddb07">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/structured_output">none</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>success</code>
+</th>
+<td>
+<table id="v-8cd69e63caf47eeed046aaa0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9c7fbcd2b76bdfdd7044f116">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-8f28574fca5d39a68d337925">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/success/0/exit_status">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-ef725226595c1fcf64014f67">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/success/0/id">stopped</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>selected_by</code>
+</th>
+<td>
+<table id="v-1bcc7dbf2ad296bb548a7edc">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-5fb8bf3d19ed3479402369a8">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/success/0/selected_by/kind">service-runtime-returned</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<table id="v-c45e98bf7a880b7816aad22e">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-8630f1d45b829612a88942b1">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/success/0/stderr/all">noncontractual-runtime-log</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-b0960dccbb436b938f7cd123">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-16f0d11e70c47af7fa22a507">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/result_contract/success/0/stdout/all">no-command-result</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section>
+<h4>
+<code>/external_contract/cli/a-stove0-magic-observer/terminating_controls</code>
+</h4>
+<table id="v-177356e669d1933c67cd3e98">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4bd26c43a80e22e6cb5b857f">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-c16645ea2b368f9dcf5b089f">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/exit_status">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-ed05cddf8e49a4ef9edb500d">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/id">help</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<span id="v-cb3ec6685aa62df2ebce6d64">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/stderr">empty</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<span id="v-0fa70f8fec85a55a5ea8d0d4">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/stdout">noncontractual-framework-help</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>trigger</code>
+</th>
+<td>
+<table id="v-7f58a02def5ec783efe5cf0b">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-b21062178442c172d8c8e5c1">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/trigger/kind">option-present</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-7fa4b689c30c64400f510b44">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-471a7c5fe0efac1b545428fb">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/trigger/options/0">-h</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-01199fcbd6f5e072ee380e76">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/0/trigger/options/1">--help</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-0651c09ecd67fd5edabba473">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-018c8904174c3fb47408db53">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/exit_status">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-152d6b14964dd02c1062990c">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/id">version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<span id="v-302bc461061dea59d435ffc1">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/stderr">empty</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-c1e23af0a2070cd5689cb469">
+<tbody>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-3bb4a4eec8c9e24491796736">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/stdout/distribution">a-stove0-magic-observer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-0568c44e050349f3d45d59eb">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/stdout/kind">installed-coordinated-release-version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>serialization</code>
+</th>
+<td>
+<span id="v-ba2563c2c606781888f90989">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/stdout/serialization">noncontractual</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>trigger</code>
+</th>
+<td>
+<table id="v-a190eb3fac42d807a2c1b081">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-501be71b6de80a912fd312d1">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/trigger/kind">option-present</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-74b63e3e12238cc70cbdc7c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ed82cf467a9a2da26e5174b6">
+<code data-value-pointer="/external_contract/cli/a-stove0-magic-observer/terminating_controls/1/trigger/options/0">--version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-b352af10b5fe5469cff2b5d3.html">compatibility/cli/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-d02d255be1eb3abd5b7df23c">cli:a-stove0-magic-observer</a> — <code data-source-path="some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py">some-implementations/stove0/observers/magic/src/a_stove0_magic_observer/app.py::&lt;module&gt;</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-stove0-magic-observer/parameters/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/cli/a-stove0-magic-observer/parameters/1</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · values-per-occurrence · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>usage: a-stove0-magic-observer [-h] [--version] [--host HOST] [--port PORT]</code>
+</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>-h, --help</code>
+</dt>
+<dd>show this help message and exit</dd>
+<dt>
+<code>--version</code>
+</dt>
+<dd>show program&#x27;s version number and exit</dd>
+<dt>
+<code>--host HOST</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--port PORT</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

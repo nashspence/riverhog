@@ -20,7 +20,7 @@
 <input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>riverhog_provenance.JournalSummary</h1>
-<p class="context">Portable Riverhog v1 per-file provenance journals and validation. Declared public imports and their selected exact structural contracts.</p>
+<p class="context">Path-independent opaque-artifact observations, provenance journals and application validation. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:riverhog-provenance:riverhog-provenance-journalsummary:e6229fa160">
 <h2>Contract</h2>
 <div class="human-contract">
@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(journal_id: &#x27;str&#x27;, primary_lineage_id: &#x27;str&#x27;, frames: &#x27;tuple[JournalFrame, ...]&#x27;, entries: &#x27;int&#x27;, tail_frame: &#x27;JournalFrame&#x27;, journal_sha256: &#x27;str&#x27;, current_binding_id: &#x27;str&#x27;, current_state_id: &#x27;str&#x27;, current_path: &#x27;str&#x27;, current_bytes: &#x27;int&#x27;, current_sha256: &#x27;str&#x27;, agent_ids: &#x27;frozenset[str]&#x27;, external_states: &#x27;tuple[ExternalStateReference, ...]&#x27;) -&gt; None&quot;</code>
+<code>&quot;(journal_id: &#x27;str&#x27;, frames: &#x27;tuple[JournalFrame, ...]&#x27;, graph_validation: &#x27;GraphValidation&#x27;, retracted_assertion_ids: &#x27;frozenset[str]&#x27;, journal_sha256: &#x27;str&#x27;, journal_bytes: &#x27;int&#x27;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -74,14 +74,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>primary_lineage_id</code></td>
-<td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>frames</code></td>
 <td data-label="Type">
 <code>&#x27;tuple[JournalFrame, ...]&#x27;</code></td>
@@ -90,17 +82,17 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>entries</code></td>
+<code>graph_validation</code></td>
 <td data-label="Type">
-<code>&#x27;int&#x27;</code></td>
+<code>&#x27;GraphValidation&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>tail_frame</code></td>
+<code>retracted_assertion_ids</code></td>
 <td data-label="Type">
-<code>&#x27;JournalFrame&#x27;</code></td>
+<code>&#x27;frozenset[str]&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -114,57 +106,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>current_binding_id</code></td>
-<td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>current_state_id</code></td>
-<td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>current_path</code></td>
-<td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>current_bytes</code></td>
+<code>journal_bytes</code></td>
 <td data-label="Type">
 <code>&#x27;int&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>current_sha256</code></td>
-<td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>agent_ids</code></td>
-<td data-label="Type">
-<code>&#x27;frozenset[str]&#x27;</code></td>
-<td data-label="Default">
-<code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>external_states</code></td>
-<td data-label="Type">
-<code>&#x27;tuple[ExternalStateReference, ...]&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -257,7 +201,7 @@
 </th>
 <td>
 <span id="v-f1755514429354c972990330">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/1/name">primary_lineage_id</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/1/name">frames</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -267,7 +211,7 @@
 </th>
 <td>
 <span id="v-db18c0c5dcb9d1e37e493f07">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/1/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/1/type">&#x27;tuple[JournalFrame, ...]&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -297,7 +241,7 @@
 </th>
 <td>
 <span id="v-ed49dcf857edc12993ba4835">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/2/name">frames</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/2/name">graph_validation</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -307,7 +251,7 @@
 </th>
 <td>
 <span id="v-51881a716aac0c20df985730">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/2/type">&#x27;tuple[JournalFrame, ...]&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/2/type">&#x27;GraphValidation&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -337,7 +281,7 @@
 </th>
 <td>
 <span id="v-af7cf3c25c91bb1df5f2d801">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/3/name">entries</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/3/name">retracted_assertion_ids</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -347,7 +291,7 @@
 </th>
 <td>
 <span id="v-d06575fb5f5a8df07fe6ae61">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/3/type">&#x27;int&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/3/type">&#x27;frozenset[str]&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -377,7 +321,7 @@
 </th>
 <td>
 <span id="v-8f11fcb0afb6cd80ccf06a87">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/4/name">tail_frame</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/4/name">journal_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -387,7 +331,7 @@
 </th>
 <td>
 <span id="v-c96d9fec9c1564b50c3534b6">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/4/type">&#x27;JournalFrame&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/4/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -417,7 +361,7 @@
 </th>
 <td>
 <span id="v-6d0424f923d8c1c4b0ef97a2">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/5/name">journal_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/5/name">journal_bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -427,287 +371,7 @@
 </th>
 <td>
 <span id="v-d23d2131432f1d32710b664d">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/5/type">&#x27;str&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>6</code>
-</th>
-<td>
-<table id="v-a4be47b24be3237b24f8f6f1">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-f95bdb8b47a5202dce52a0fc">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/6/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-c2ea7354755d7db0f2a1c090">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/6/name">current_binding_id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c08309e6d61351c7372695e5">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/6/type">&#x27;str&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>7</code>
-</th>
-<td>
-<table id="v-f9d77f213db8d9d828e35d9f">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-279257957a11f199a949eb05">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/7/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-7726e9ae6753a2ef446c7c02">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/7/name">current_state_id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-676863c8c3ca2e887bc94325">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/7/type">&#x27;str&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>8</code>
-</th>
-<td>
-<table id="v-b372dbbd14d1be4df333da9e">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-4246ad75b260de60f8a76032">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/8/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-60661f1baaf62d6b63bfee84">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/8/name">current_path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-db545776459ef61de50bcb10">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/8/type">&#x27;str&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>9</code>
-</th>
-<td>
-<table id="v-6e9b9eb72ff0093a48ed6102">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-e1a94448bb4b6f69d1db036e">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/9/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-6581f8a63feb5585bd99fd54">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/9/name">current_bytes</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-cd28c82ffb08cefcbb309378">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/9/type">&#x27;int&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>10</code>
-</th>
-<td>
-<table id="v-694ef157bf3b6e3997199dc2">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-7a88b850d8143e7217f18fd1">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/10/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-1da45f0940fe7d665094ae83">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/10/name">current_sha256</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-702c4fc78b4a1381b4589b1f">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/10/type">&#x27;str&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>11</code>
-</th>
-<td>
-<table id="v-f6c64b78feae16491bf7053d">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-0e02eaab99514678d6e461c8">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/11/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-e6fb6ba1569309738729fd8f">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/11/name">agent_ids</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-73a09d743fac2f75fca7a888">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/11/type">&#x27;frozenset[str]&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>12</code>
-</th>
-<td>
-<table id="v-537166ac95f380d39a3bc44a">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-be579c225078bf9d0944440b">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/12/default">required</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-0431a9eb6a29b1c0cb0b3b39">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/12/name">external_states</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-57e22f87ab26bd44089dd5f9">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/12/type">&#x27;tuple[ExternalStateReference, ...]&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/5/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -733,7 +397,7 @@
 </th>
 <td>
 <span id="v-5131e369a2ebd02adc323210">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/signature">&quot;(journal_id: &#x27;str&#x27;, primary_lineage_id: &#x27;str&#x27;, frames: &#x27;tuple[JournalFrame, ...]&#x27;, entries: &#x27;int&#x27;, tail_frame: &#x27;JournalFrame&#x27;, journal_sha256: &#x27;str&#x27;, current_binding_id: &#x27;str&#x27;, current_state_id: &#x27;str&#x27;, current_path: &#x27;str&#x27;, current_bytes: &#x27;int&#x27;, current_sha256: &#x27;str&#x27;, agent_ids: &#x27;frozenset[str]&#x27;, external_states: &#x27;tuple[ExternalStateReference, ...]&#x27;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/signature">&quot;(journal_id: &#x27;str&#x27;, frames: &#x27;tuple[JournalFrame, ...]&#x27;, graph_validation: &#x27;GraphValidation&#x27;, retracted_assertion_ids: &#x27;frozenset[str]&#x27;, journal_sha256: &#x27;str&#x27;, journal_bytes: &#x27;int&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -789,6 +453,24 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
+<a href="e-4d9898fd119f5e9f8e569a6c.html">riverhog_provenance.JournalSummary.anchor</a>
+</li>
+<li>
+<a href="e-fc7b5c91f5cb63e9f30d41fc.html">riverhog_provenance.JournalSummary.delivery_associations</a>
+</li>
+<li>
+<a href="e-be3295e8197e29c03e9a6bce.html">riverhog_provenance.JournalSummary.findings</a>
+</li>
+<li>
+<a href="e-b7f3aaf4b456a391cab483aa.html">riverhog_provenance.JournalSummary.graph</a>
+</li>
+<li>
+<a href="e-cce1c4871019a0cf8e38c590.html">riverhog_provenance.JournalSummary.materialize</a>
+</li>
+<li>
+<a href="e-91d41c773e96243482d61d2e.html">riverhog_provenance.JournalSummary.states</a>
+</li>
+<li>
 <a href="e-67ea51d0a45d1f98f09e8b6f.html">riverhog_provenance.JournalSummary.tail</a>
 </li>
 </ul>
@@ -824,7 +506,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -1,0 +1,4681 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-3edc5f468f5905abed049709.html">a-stove0-ffprobe-streams-contract-lib</a> / <a href="i-2156afeb9b4e91aec389896d.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts</h1>
+<p class="context">FFprobe stream and container observation contract for Stove0. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:a-stove0-ffprobe-streams-contract-lib:a-stove0-ffprobe-streams-contract-lib-ffp-d3b33c77ab:3858318adb">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-ffprobe-streams-contract-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_ffprobe_streams_contract_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>FFprobeArtifactFacts</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], report_base64: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2097152)], report_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], report_bytes: Annotated[int, Ge(ge=1), Le(le=1048576)], ffprobe_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], executable_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], format: a_stove0_ffprobe_streams_contract_lib.contracts.FFprobeFormat, streams: Annotated[tuple[a_stove0_ffprobe_streams_contract_lib.contracts.FFprobeStream, ...], MaxLen(max_length=256)], has_audio: bool, has_non_attached_video: bool, audio_stream_count: Annotated[int, Ge(ge=0), Le(le=256)], video_stream_count: Annotated[int, Ge(ge=0), Le(le=256)]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-1b76a8b898ddd87c7dddf951">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;report_base64&quot;,&quot;report_sha256&quot;,&quot;report_bytes&quot;,&quot;ffprobe_version&quot;,&quot;executable_sha256&quot;,&quot;format&quot;,&quot;streams&quot;,&quot;has_audio&quot;,&quot;has_non_attached_video&quot;,&quot;audio_stream_count&quot;,&quot;video_stream_count&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>audio_stream_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; maximum: <code>256</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>executable_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>ffprobe_version</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>format</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-954bcdede79b8b4755dd97cd.html#v-15e94eeb384099611b268135">#/$defs/FFprobeFormat</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>has_audio</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>has_non_attached_video</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>report_base64</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2097152</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>report_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>1048576</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>report_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-b8105ed4b6c71d4ea4dad4d7">streams</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-954bcdede79b8b4755dd97cd.html#v-63d7ce2f88c2cf837a8bf74a">#/$defs/FFprobeStream</a>; maxItems: <code>256</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>video_stream_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code>; maximum: <code>256</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-15e94eeb384099611b268135">FFprobeFormat</a>
+</li>
+<li>
+<a href="#s-63d7ce2f88c2cf837a8bf74a">FFprobeStream</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-b8105ed4b6c71d4ea4dad4d7">
+<h3>Field: streams</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-954bcdede79b8b4755dd97cd.html#v-63d7ce2f88c2cf837a8bf74a">#/$defs/FFprobeStream</a>; maxItems: <code>256</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>256</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-15e94eeb384099611b268135">
+<h3>Definition: FFprobeFormat</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;tags&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-a927ec2615f392d0862fe3da">bit_rate</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-2d044bdde8e3f107dac9e3cb">duration</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-8295297081aee19464e1a062">duration_ms</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-168f18a7f406327aea6d7001">long_name</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-f7ba343798e70dc0b0c2dea3">name</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-aeab65229c69908969a69fc4">size</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-c5d2058e65905ae0e85066d0">start_time</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-4e728fe854b1a4f38bd78858">tags</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-63d7ce2f88c2cf837a8bf74a">
+<h3>Definition: FFprobeStream</h3>
+<p class="shape">
+<code>object</code>; 27 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;index&quot;,&quot;codec_type&quot;,&quot;attached_pic&quot;,&quot;disposition&quot;,&quot;tags&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>attached_pic</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>boolean</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-836703c15e2524c678d28c24">average_frame_rate</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-fedaee8fd4c68f7c8a7eca48">bit_rate</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-5f7f88fe21ddfdbe07082a58">channel_layout</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-a6a8a21879b270b5faff01b3">channels</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-e0bdf8e0ef0669e6bf5edb45">codec_long_name</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-12ab8da9dd5086b8d7592002">codec_name</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-764747755b39f7c411cea47b">codec_tag_string</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>codec_type</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-05111aef5120c63c7a84f3f2">color_primaries</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-a87f324637d20f1516fb7e36">color_range</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-0a539daa456391d1041319ba">color_space</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-0675dfa52eab63687e3e5c99">color_transfer</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-e2ad297974d43db783fed405">display_aspect_ratio</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-81e912b99a7953ebf8ef4ee6">disposition</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>integer</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-56cd334da32622e1f615904d">duration</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-76dc8e8b496ae0da26319e4e">duration_ms</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-c8f809fa0218d9cc98d1c12c">fps_milli</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-e8519e3863011dbaf64728b3">height</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>index</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>0</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-688b28bef8e4b90d60b85e3b">nominal_frame_rate</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-b7aa6448edffc055b171e114">pixel_format</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-2d72ccb8fc34a59dc50fa9e6">profile</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-7f038bdef6f5258760aaf751">sample_aspect_ratio</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-0b785836d3b81eaf76288846">sample_rate</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-da0ed73df3a0116dcb34fe5c">tags</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <code>string</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-941e8070d5e259d00793fe52">width</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code></td>
+<td data-label="Default">
+<code>null</code></td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a927ec2615f392d0862fe3da">
+<h3>Field: bit_rate</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2d044bdde8e3f107dac9e3cb">
+<h3>Field: duration</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8295297081aee19464e1a062">
+<h3>Field: duration_ms</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-168f18a7f406327aea6d7001">
+<h3>Field: long_name</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f7ba343798e70dc0b0c2dea3">
+<h3>Field: name</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-aeab65229c69908969a69fc4">
+<h3>Field: size</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c5d2058e65905ae0e85066d0">
+<h3>Field: start_time</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4e728fe854b1a4f38bd78858">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <code>string</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;type&quot;:&quot;string&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-836703c15e2524c678d28c24">
+<h3>Field: average_frame_rate</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fedaee8fd4c68f7c8a7eca48">
+<h3>Field: bit_rate</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5f7f88fe21ddfdbe07082a58">
+<h3>Field: channel_layout</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a6a8a21879b270b5faff01b3">
+<h3>Field: channels</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e0bdf8e0ef0669e6bf5edb45">
+<h3>Field: codec_long_name</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-12ab8da9dd5086b8d7592002">
+<h3>Field: codec_name</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-764747755b39f7c411cea47b">
+<h3>Field: codec_tag_string</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-05111aef5120c63c7a84f3f2">
+<h3>Field: color_primaries</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a87f324637d20f1516fb7e36">
+<h3>Field: color_range</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0a539daa456391d1041319ba">
+<h3>Field: color_space</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0675dfa52eab63687e3e5c99">
+<h3>Field: color_transfer</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e2ad297974d43db783fed405">
+<h3>Field: display_aspect_ratio</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-81e912b99a7953ebf8ef4ee6">
+<h3>Field: disposition</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <code>integer</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;type&quot;:&quot;integer&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-56cd334da32622e1f615904d">
+<h3>Field: duration</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-76dc8e8b496ae0da26319e4e">
+<h3>Field: duration_ms</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c8f809fa0218d9cc98d1c12c">
+<h3>Field: fps_milli</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e8519e3863011dbaf64728b3">
+<h3>Field: height</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-688b28bef8e4b90d60b85e3b">
+<h3>Field: nominal_frame_rate</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b7aa6448edffc055b171e114">
+<h3>Field: pixel_format</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2d72ccb8fc34a59dc50fa9e6">
+<h3>Field: profile</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-7f038bdef6f5258760aaf751">
+<h3>Field: sample_aspect_ratio</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0b785836d3b81eaf76288846">
+<h3>Field: sample_rate</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-da0ed73df3a0116dcb34fe5c">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <code>string</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;type&quot;:&quot;string&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-941e8070d5e259d00793fe52">
+<h3>Field: width</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>integer</code>; minimum: <code>0</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts</code>
+</h4>
+<table id="v-4dc9fb84fd74c46512ecfe96">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-65f2544f3eb730d00d7fe36d">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-4e8e3bc3cba019d90cd9f509">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-1b76a8b898ddd87c7dddf951">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-1719bbba9a719ec5e715e4f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>FFprobeFormat</code>
+</th>
+<td>
+<table id="v-15e94eeb384099611b268135">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a2eb6eee81bc40edb79cd44c">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-0d517ed5bbacf7dae987b981">
+<tbody>
+<tr>
+<th scope="row">
+<code>bit_rate</code>
+</th>
+<td>
+<table id="v-a927ec2615f392d0862fe3da">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4e77ba496093cc6347927aa6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d1c79e1ac671f4d857a0deb6">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-985bb8feaae346edc1a373ef">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/bit_rate/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-876fd11bf83c91415a70b644">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/bit_rate/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f1a64e3b948ef2ccec83e5b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0e5dff86b8e42e51203bf2cb">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/bit_rate/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-7c9407538b984548e5137fc1">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/bit_rate/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>duration</code>
+</th>
+<td>
+<table id="v-2d044bdde8e3f107dac9e3cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-95e7bb6daae640d45c2cc013">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-574a3ecde1e94541290e11ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ee2aef54934b813eb0ce41cd">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a5d4ed6499616aa5ccc230ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2a7a838b5ff9671e743c27d5">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-a28c6ea2a70f2f4645b1fc23">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>duration_ms</code>
+</th>
+<td>
+<table id="v-8295297081aee19464e1a062">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c029188bf5d0bf471ae0371e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0995b7a5a11b51ab1518613f">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-721c4dc10a6d48ed77decf86">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration_ms/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f475f1f6aa31539dc673bcb3">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration_ms/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-7e7448939bc413767dc2a4e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1254b455a002db2cd633496e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration_ms/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5c90fb0af08082614001e5bb">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/duration_ms/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>long_name</code>
+</th>
+<td>
+<table id="v-168f18a7f406327aea6d7001">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-bb35e941c1cd16e4b0226b85">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a2eaf049e7f7dacb82612e05">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-adada52738aef0e6d6cb0e95">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/long_name/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-8e3e5455c6d721cfa6216215">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dfe20290ef5df66af1338c6a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/long_name/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-cd128d8c8b8d5b71189bb752">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/long_name/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<table id="v-f7ba343798e70dc0b0c2dea3">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f72193e2000c15f56ab23a3e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a72f8606feb35e61cdfeaa9d">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4ded40659a4941e4444c4469">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/name/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-30d3871dac62f1f392fd128b">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8bba519f576b9f21cc60bc7a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/name/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e5fe00323082a0ac751f0298">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/name/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>size</code>
+</th>
+<td>
+<table id="v-aeab65229c69908969a69fc4">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4859a38b48dd515c0e8f2f4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-2a39662672f218aceafaa630">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-ec4eee263f85073dbf91565e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/size/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e5de2764fa9a385eb4f25d65">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/size/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-df15af89d5195508ff2c6ea2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5fe9aa2980ff5986b3575595">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/size/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0b7c2f2bcab74511ee976c37">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/size/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>start_time</code>
+</th>
+<td>
+<table id="v-c5d2058e65905ae0e85066d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-5faf754dc27707449b18a957">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-76fe30b500a3d8603332b3b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-65730953e67da136a5e0553b">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/start_time/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-ed7b524b6aca9a43f8cf0f20">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c97fea67dcfcd9e98e7d5257">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/start_time/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6c14813c371c007f606d1fb7">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/start_time/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-4e728fe854b1a4f38bd78858">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-b809bbb7a8aee05590306277">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-231cf33d5af3ca5b60126363">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/tags/additionalProperties/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-553ef47cf82173a7218cb95d">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/properties/tags/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-d429d34a2913730326c9d37c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-24c544a9a021f1037ff03d19">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/required/0">tags</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-09a32f106a4376b82c2df8a1">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeFormat/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>FFprobeStream</code>
+</th>
+<td>
+<table id="v-63d7ce2f88c2cf837a8bf74a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2ea96cf5f1d5e8fd3759c797">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a1a10e4048c120171771238f">
+<tbody>
+<tr>
+<th scope="row">
+<code>attached_pic</code>
+</th>
+<td>
+<table id="v-de2d064ef7732b17c40d24ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-72b2b62e2ca6acdec5c15c50">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/attached_pic/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>average_frame_rate</code>
+</th>
+<td>
+<table id="v-836703c15e2524c678d28c24">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4de9fd32d3ba38baef02d0c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3576ac07c02ae928a0450014">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-531e56dc384cb9b9be98da0d">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/average_frame_rate/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-907ae917f84b9c4fe04659f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d421cb714f5b8d4d8a1ca2b0">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/average_frame_rate/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-dd5136bf90dc4548ef2eee54">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/average_frame_rate/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>bit_rate</code>
+</th>
+<td>
+<table id="v-fedaee8fd4c68f7c8a7eca48">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-28db11c2edec7997cbccb928">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-cbaa99c9c450871b44275db1">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-99385ba197cd94a4c32ce272">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/bit_rate/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3f2fcd5424f63fbc5a705c38">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/bit_rate/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f584082f2e895fd24d94e320">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8abaef3d7f4dd50f3d6ece56">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/bit_rate/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-b285ea9e5923a790b5479af1">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/bit_rate/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>channel_layout</code>
+</th>
+<td>
+<table id="v-5f7f88fe21ddfdbe07082a58">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-936f0a862886f573574c7452">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-df14b132340f6c473c59bb54">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ca55d92e732e576f53ae23d4">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channel_layout/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-65a586ad33580102ecfaa9a5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-029f0ccef991010c4d737d82">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channel_layout/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3e3ecbd0801b2fcc7fe22f81">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channel_layout/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>channels</code>
+</th>
+<td>
+<table id="v-a6a8a21879b270b5faff01b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-116bdbb44fbfeeac9678a32b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9061c03d62df339c2e5f7799">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-3a53c717d87866faa6544bac">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channels/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1163de6fdd2d7d91e1d87d4a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channels/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-90962f3d99d57206d88101f6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8427bd6bf62c5c0676bb2251">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channels/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-56fedecfd1e7ab8307464dbe">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/channels/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>codec_long_name</code>
+</th>
+<td>
+<table id="v-e0bdf8e0ef0669e6bf5edb45">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-32b1073f4f1e18c46dd501d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b94b90b485d558e520d2d1df">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1a8f2c0b67c3e7997ba3e802">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_long_name/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b1168ad651d888cec2a97c5f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e27a7f3a5ddbf213828df604">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_long_name/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-10ccdd68cb557925a0c7fad0">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_long_name/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>codec_name</code>
+</th>
+<td>
+<table id="v-12ab8da9dd5086b8d7592002">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-6e68321d112c58ae550d84d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0123a1a99e2e0e12a67dec84">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3bcf4646d28925f6d7d40827">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_name/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-92c4313adb6990ae100a0bd3">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-89fca673fe05838b7e5922b5">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_name/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8e97b7208be4a38c8bf36065">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_name/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>codec_tag_string</code>
+</th>
+<td>
+<table id="v-764747755b39f7c411cea47b">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-fac91cb449a8efe55ad75713">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9150280fff2661ca614e1048">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-07020acac719e2a027d0650e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_tag_string/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-67564b19adf48b48b0349480">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e3aed4b4cca62553370369d6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_tag_string/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d75971cdbface4ec16fbe0d7">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_tag_string/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>codec_type</code>
+</th>
+<td>
+<table id="v-c73ff1a0eae5f08e53213625">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-8c275fe3e5feaf950aef1500">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_type/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2e2038c12bad3024e9661502">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/codec_type/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>color_primaries</code>
+</th>
+<td>
+<table id="v-05111aef5120c63c7a84f3f2">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-74c8fd66b05e45bbc182deb4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9d92001cb15dcc1785de4be2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f7b1b65ee177780e724ad7fb">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_primaries/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-346a2ffa3f134edfd399e2f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9d21568b51eb3c379f87db16">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_primaries/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-7a105750fdd171493f1be108">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_primaries/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>color_range</code>
+</th>
+<td>
+<table id="v-a87f324637d20f1516fb7e36">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-660eddd21d5b02a85424a280">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-439e530e7cc027f5f253ebf8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-900d8c6874a78c2a889738f2">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_range/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-101f1a1edd31cf0a8116ac35">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5fea11c88130259a70bcded7">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_range/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e99f0d3f9ab4ca1bc4e24e7c">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_range/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>color_space</code>
+</th>
+<td>
+<table id="v-0a539daa456391d1041319ba">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d0aaf676ebbe9c6669a6a697">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a50c1fa293ee953f3f6f11e5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-33bb9bb7eb5e4dc0c2345d1a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_space/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-10fd380acd379096580aa0e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-937793864a7f5c45f472e086">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_space/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8935f8b41c11350e2b182b29">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_space/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>color_transfer</code>
+</th>
+<td>
+<table id="v-0675dfa52eab63687e3e5c99">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-95a34df69f0c58318dcfc37b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e78e556b7eec23b401b60d3c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-544f038ad414a5976623f336">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_transfer/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c9488496e3c1268e1244f39f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-aaa9191c165bc255560badd1">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_transfer/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6902ac958acc6bc33d379e56">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/color_transfer/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>display_aspect_ratio</code>
+</th>
+<td>
+<table id="v-e2ad297974d43db783fed405">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-e2fc7caf54bb20015bb68cf1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-807ad44f9b41a6b60b4d53fb">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1e1ace39c64360d5a17699b9">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/display_aspect_ratio/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-da11f380952d21bffdfdeed9">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-358baac0c90bfc9aca1f48b9">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/display_aspect_ratio/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f8f920fd6ee39f8e2296d1ea">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/display_aspect_ratio/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<table id="v-81e912b99a7953ebf8ef4ee6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-f6778bc4dee6dd7e64a85963">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bca648fc3219a874c78f48b4">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/disposition/additionalProperties/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e5cc7866c99ac085240428de">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/disposition/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>duration</code>
+</th>
+<td>
+<table id="v-56cd334da32622e1f615904d">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-87d90ce2ab1d05e83265d5e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-1c9a8e44d6ce9c7990152c85">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7aec263e0e337900fab6b7ea">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-fd415b240cab3a51874be06f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-01f106f38d043572bffc1ead">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1c5973c5f49ca7a42fd65fd6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>duration_ms</code>
+</th>
+<td>
+<table id="v-76dc8e8b496ae0da26319e4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4a06a2c09ef93a24fc613233">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3ad445375851c0f684a95b18">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-17265e382e783efef945f365">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration_ms/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9e34844f5a61e561279864a3">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration_ms/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-cab3620fbf4cc6056f6485b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-47a78767ef1443b3ed98ff73">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration_ms/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6673e9d692015cc86ccebe59">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/duration_ms/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>fps_milli</code>
+</th>
+<td>
+<table id="v-c8f809fa0218d9cc98d1c12c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-60ebc8666ebb382a33c41887">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3712c79232a9e19e10105194">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-c870c5053e7d7b5a63c3edcc">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/fps_milli/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-84f8ff382c0f11ee10154284">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/fps_milli/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b2b7987c8ebe4be081b479f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dd12b2606a87dda61843d7fe">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/fps_milli/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-de96ea14a47d4c146b31994d">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/fps_milli/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>height</code>
+</th>
+<td>
+<table id="v-e8519e3863011dbaf64728b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-845c90f36b437ecf4b944973">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-434fe79d32c70fc9dd3dc23e">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-cd72ee9cd499c3727f169611">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/height/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6d888c60918a64bfa378b630">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/height/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f1313c8251539060aa9b8456">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cbb5ee375707521006e76fb7">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/height/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4d4f962292cf9c983a08d1cd">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/height/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>index</code>
+</th>
+<td>
+<table id="v-18fcbbf5513786d36f306e78">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-a67fcd04a48a550bf86bd832">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/index/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ec6e4c845219a240a3e43d4e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/index/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>nominal_frame_rate</code>
+</th>
+<td>
+<table id="v-688b28bef8e4b90d60b85e3b">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-7beb29beb041020b6f56029c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0436e0b271ea4df2eca1c363">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f2e3f48e325f7fa48950412d">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/nominal_frame_rate/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-bd760c22e8d39a4dc2897d2c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-56272e9cc390a0f1e2b9f175">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/nominal_frame_rate/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-505e3e33e480d9b1a76814d6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/nominal_frame_rate/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>pixel_format</code>
+</th>
+<td>
+<table id="v-b7aa6448edffc055b171e114">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f0a5ce4c608d41fcf88cb7ba">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-8a247d32d891d10d77d68423">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8feb526ddc0ae5a0d39f563a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/pixel_format/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-6f607bc264d2cd6dec9dd2d5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-73e1970dd040f9cf6714cdef">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/pixel_format/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f306b60fde8f5bf16648fabc">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/pixel_format/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile</code>
+</th>
+<td>
+<table id="v-2d72ccb8fc34a59dc50fa9e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-608f1cfdd8aa0d60888943df">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4d89a81e95998e237cad546a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e1a56864562bf49314b63eb1">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/profile/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-849be325c32c4471f9b5f72a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-aba938471153005fd1177e80">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/profile/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-525642be47012c446de932aa">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/profile/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sample_aspect_ratio</code>
+</th>
+<td>
+<table id="v-7f038bdef6f5258760aaf751">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8bb77b1741415df2692153f5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-072cde88287cfd4243a2f912">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a12583c249096c9aa4c9eac8">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_aspect_ratio/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-4e51ab10beba1d244ce03d28">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5098a06f1ace7b26e5355cc6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_aspect_ratio/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fa35f01bab4c055f923f4362">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_aspect_ratio/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sample_rate</code>
+</th>
+<td>
+<table id="v-0b785836d3b81eaf76288846">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d7920881646f4e5e046aca5e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-dd57eb37ad3d9894a42fa5e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-e43a8c96c45e7122e40afbe4">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_rate/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5a170778fd9fc4d7a6cb85d0">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_rate/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-2a5ab6d9411c2cee91362fe6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-77e4fea5a14d7461b9e7d100">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_rate/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-60b1554390e4c68d2af9a1fd">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/sample_rate/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-da0ed73df3a0116dcb34fe5c">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-61a116563747fa8925c6bbde">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1ad007bef7bf9504c5b972ef">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/tags/additionalProperties/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6f8e1a20a6ca1f32ca4d1d57">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/tags/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>width</code>
+</th>
+<td>
+<table id="v-941e8070d5e259d00793fe52">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-adddda7f2f993a9be4a25c57">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f8f799109ed15984f0a94f95">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-1bab950a2e0c188e9937536a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/width/anyOf/0/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b02f0738c8d3f0353310c853">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/width/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-61752d6ddf353201a9e30a93">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1414cb02b6f126dcdf18637b">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/width/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-680bbf48a229a9fa412b8ca3">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/properties/width/default">null</code>
+<span class="kind">null</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-8b178fe8d5d5b98d028715ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-faa27741884e39c4af6e7626">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/required/0">index</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1970bb9bd68dfb7c8622cbb9">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/required/1">codec_type</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-94d0777e803d71c84f3a459e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/required/2">attached_pic</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-43c108b4907940bfbc8c63a6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/required/3">disposition</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-c82a9330ee333b80575b55bd">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/required/4">tags</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4d6e1ccec114905a15dae130">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/$defs/FFprobeStream/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-326f1cd6a8b32d48c51f537a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f2ba04a714b439e8400020dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-c25b3b326b50df4bb02318de">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-f6c537d6ee66a7c207fc2d8d">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/artifact_id/maxLength">160</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-76e20fe0b2f445848d817fe9">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/artifact_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c71fc4bbe92286f7b6861f2f">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>audio_stream_count</code>
+</th>
+<td>
+<table id="v-b0e2c34c68f8da9c29833dd0">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-13fc9476a4717e79fb578e74">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/audio_stream_count/maximum">256</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-2f44c96979cb248fbbe6e2c4">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/audio_stream_count/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e18924fc51b325febb1a9eb4">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/audio_stream_count/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable_sha256</code>
+</th>
+<td>
+<table id="v-278028ee1f25100b7003f7b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-64da49a8439b4cc54e64b181">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/executable_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0cb69795c1abf3b9d259ea0f">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/executable_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ffprobe_version</code>
+</th>
+<td>
+<table id="v-a00aa8cfcec327e4b466ac82">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-75dd3eb33cb07ec8979ca616">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/ffprobe_version/maxLength">200</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-31007704245b77693070e4a0">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/ffprobe_version/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c708d7c053265c9b5836969d">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/ffprobe_version/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-f85c5e7bdeae4b19f60937cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a686b290680ef22f3e9f12aa">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/format/$ref">#/$defs/FFprobeFormat</code>
+<span class="kind">string</span> <a href="e-954bcdede79b8b4755dd97cd.html#v-15e94eeb384099611b268135">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>has_audio</code>
+</th>
+<td>
+<table id="v-131573a68e1cd3a1c3737ddb">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-43a5d89bfdfa66499b6fb231">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/has_audio/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>has_non_attached_video</code>
+</th>
+<td>
+<table id="v-d6d9a0136f54e77d3f399254">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c5382a217836d450183fd4f8">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/has_non_attached_video/type">boolean</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>report_base64</code>
+</th>
+<td>
+<table id="v-a9591557705f42d9817a0817">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-ff782905f7ce1955275314da">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_base64/maxLength">2097152</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-6207aa9433cbd5cbd3ff53be">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_base64/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-32cee1745c03d1f2cdd1c7c6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_base64/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>report_bytes</code>
+</th>
+<td>
+<table id="v-9bb92cc04b4f22f5528a8977">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-be3fb82c0533442cf1fd081c">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_bytes/maximum">1048576</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-0d69947bacbd20aa5185c1c1">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_bytes/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a1c902ea5e5db36b63648042">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_bytes/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>report_sha256</code>
+</th>
+<td>
+<table id="v-e17094d5d010ddc3aa8e0c1f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0d804fd64e26eb90afefcaf7">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a0bada4b466cf2d2a0748d0e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/report_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>streams</code>
+</th>
+<td>
+<table id="v-b8105ed4b6c71d4ea4dad4d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-99cd29473495347152c05f93">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a2fc6bf30ca5533fd36eb19b">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/streams/items/$ref">#/$defs/FFprobeStream</code>
+<span class="kind">string</span> <a href="e-954bcdede79b8b4755dd97cd.html#v-63d7ce2f88c2cf837a8bf74a">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-8b572e31a77855fc63d750d6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/streams/maxItems">256</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-857bf6a9c6582aafa043edfa">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/streams/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>video_stream_count</code>
+</th>
+<td>
+<table id="v-3238bc8c97916dd5f260ed60">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-756fd9d47160097a56796474">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/video_stream_count/maximum">256</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-90136250605fee4c793269ff">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/video_stream_count/minimum">0</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-465fef8f0f6a491d9ca87168">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/properties/video_stream_count/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-9737ef629dcfcce2924e02bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a451a6d79e553b713e05186e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/0">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-6c697777ffac631d407093d5">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/1">report_base64</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-06adc95e0f3b0ae9154002a4">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/2">report_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c0108dd33d5fafb1e6317fcf">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/3">report_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f3125a245addd3d2fc0f3bd0">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/4">ffprobe_version</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-f2e8c82cf75faddaf7d69d4e">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/5">executable_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-6fc51a342e958c3de24b0ddb">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/6">format</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-ad77cc9be4b939b31de929fc">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/7">streams</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-fedaa55feb81a13310c6382a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/8">has_audio</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-5914793ca04a57f13b577f42">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/9">has_non_attached_video</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-8d4f5de8a2cdbb4a540a1f8b">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/10">audio_stream_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-da05ad96b8eb42ed8b809e7a">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/required/11">video_stream_count</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5a5da8b4248e7fe3240a8bbd">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-688a9fd5e9df095219ae9d6f">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/contract/signature">&quot;(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], report_base64: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2097152)], report_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], report_bytes: Annotated[int, Ge(ge=1), Le(le=1048576)], ffprobe_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], executable_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], format: a_stove0_ffprobe_streams_contract_lib.contracts.FFprobeFormat, streams: Annotated[tuple[a_stove0_ffprobe_streams_contract_lib.contracts.FFprobeStream, ...], MaxLen(max_length=256)], has_audio: bool, has_non_attached_video: bool, audio_stream_count: Annotated[int, Ge(ge=0), Le(le=256)], video_stream_count: Annotated[int, Ge(ge=0), Le(le=256)]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-4d16fbffb462696c9dfa4cbf">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/distribution">a-stove0-ffprobe-streams-contract-lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-7c56b399cfe144c4a4c104d8">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/module">a_stove0_ffprobe_streams_contract_lib</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-cc39ef67e8c9dd4ce5d19b87">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/name">FFprobeArtifactFacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-f8833657cd3bcba2bc510ad6">
+<code data-value-pointer="/external_contract/python/a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-83ec0410a607197fb28da95a.html">a_stove0_ffprobe_streams_contract_lib.FFprobeArtifactFacts.validate_report</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-6a615bd74661db04bdb9955e">python:a-stove0-ffprobe-streams-contract-lib:a_stove0_ffprobe_streams_contract_lib</a> — <code data-source-path="some-implementations/stove0/observers/contracts/ffprobe-streams/src/a_stove0_ffprobe_streams_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/ffprobe-streams/src/a_stove0_ffprobe_streams_contract_lib/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

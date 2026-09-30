@@ -40,7 +40,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;header&quot;,&quot;inventory_identity&quot;,&quot;file_count&quot;,&quot;file_bytes&quot;]</code>
+<code>[&quot;header&quot;,&quot;inventory_identity&quot;,&quot;artifact_count&quot;,&quot;artifact_bytes&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -66,7 +66,7 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<code>file_bytes</code></td>
+<code>artifact_bytes</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
@@ -75,7 +75,7 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>file_count</code></td>
+<code>artifact_count</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a></td>
@@ -142,18 +142,18 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>file_bytes</code>
+<code>artifact_bytes</code>
 </th>
 <td>
-<table id="v-92807b378eac8a2734e982c5">
+<table id="v-51a80b0b6979ec7c16db3861">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-d7cff352a4479bdc4668022c">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/file_bytes/$ref">#/components/schemas/NonnegativeDecimal</code>
+<span id="v-c98ad53d0900da8f25b8cbd1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/artifact_bytes/$ref">#/components/schemas/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
 </span></td>
 </tr>
@@ -162,18 +162,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>file_count</code>
+<code>artifact_count</code>
 </th>
 <td>
-<table id="v-b11180e3ba186df76443c764">
+<table id="v-bdb5ccc5fdadb57be00c89ea">
 <tbody>
 <tr>
 <th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-f32334a7bd07b233bd3416a7">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/file_count/$ref">#/components/schemas/NonnegativeDecimal</code>
+<span id="v-c4e88de6c0d84be7bdfbf638">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/artifact_count/$ref">#/components/schemas/NonnegativeDecimal</code>
 <span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
 </span></td>
 </tr>
@@ -182,8 +182,8 @@
 <code>ge</code>
 </th>
 <td>
-<span id="v-4b8d4cc9e956e793b3ce5bc3">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/file_count/ge">1</code>
+<span id="v-707aaea25a0afc338af1a8d5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/artifact_count/ge">1</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -286,7 +286,7 @@
 </th>
 <td>
 <span id="v-4cc645f7a083a98a12f9fb3a">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/required/2">file_count</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/required/2">artifact_count</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -296,7 +296,7 @@
 </th>
 <td>
 <span id="v-d34dcf3ce565c7c6b6dc1d17">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/required/3">file_bytes</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/required/3">artifact_bytes</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -342,7 +342,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -383,7 +383,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

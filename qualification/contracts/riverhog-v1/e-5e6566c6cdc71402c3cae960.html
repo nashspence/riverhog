@@ -112,6 +112,9 @@
 <li>
 <a href="#s-2398dee3b83158d0438aee29">TransformPlan</a>
 </li>
+<li>
+<a href="#s-058e717cfe9bfb696f9294fa">WorkInputGroup</a>
+</li>
 </ul>
 </section>
 <section class="schema-section" id="s-b2eadc07e62264863c753f8b">
@@ -226,7 +229,7 @@
 <section class="schema-section" id="s-11bebc4dd2922c61121f586d">
 <h3>Definition: EffectPlan</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -259,6 +262,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-e652333a4c22c3d4ebcf5970">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-5e6566c6cdc71402c3cae960.html#v-058e717cfe9bfb696f9294fa">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -776,7 +789,7 @@
 <section class="schema-section" id="s-2398dee3b83158d0438aee29">
 <h3>Definition: TransformPlan</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -809,6 +822,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-279dd963fc836c970f5f134b">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-5e6566c6cdc71402c3cae960.html#v-058e717cfe9bfb696f9294fa">#/$defs/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>inputs</code></td>
@@ -904,6 +927,85 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-058e717cfe9bfb696f9294fa">
+<h3>Definition: WorkInputGroup</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>WorkInputGroup</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One recipe-selected primary and its exact associated subjects.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-8bdfaa078e94a467aac58742">associated_ids</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>primary_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e652333a4c22c3d4ebcf5970">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-5e6566c6cdc71402c3cae960.html#v-058e717cfe9bfb696f9294fa">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Input Groups</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-51c58b479a3babc6be028d47">
 <h3>Field: intent</h3>
@@ -1021,6 +1123,22 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-279dd963fc836c970f5f134b">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-5e6566c6cdc71402c3cae960.html#v-058e717cfe9bfb696f9294fa">#/$defs/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Input Groups</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-237cb127e7563648a9e7f081">
 <h3>Field: intent</h3>
 <p class="shape">
@@ -1074,6 +1192,22 @@
 <dt>additionalProperties</dt>
 <dd>
 <code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-8bdfaa078e94a467aac58742">
+<h3>Field: associated_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Associated Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
 </section>
@@ -1327,6 +1461,66 @@
 <td>
 <table id="v-3ca9fb6208b5c1128aa4b63c">
 <tbody>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-e652333a4c22c3d4ebcf5970">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f229375632b91ebec5cbcd41">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/EffectPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e84671fceb45c0957dd090c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ec019664e8cf5ff9ba1da039">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/EffectPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-5e6566c6cdc71402c3cae960.html#v-058e717cfe9bfb696f9294fa">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-451de1b70a29879898860bf9">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/EffectPlan/properties/input_groups/title">Input Groups</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-863bcde4b170171f42a64002">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/EffectPlan/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>inputs</code>
@@ -3369,6 +3563,66 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-279dd963fc836c970f5f134b">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6b5288195b74c3ed604a7a55">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/TransformPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-3bc30df8f795699621767a93">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c3725ddd7e51f0512ab28604">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/TransformPlan/properties/input_groups/items/$ref">#/$defs/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-5e6566c6cdc71402c3cae960.html#v-058e717cfe9bfb696f9294fa">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b72166118f936eb05a3ffd37">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/TransformPlan/properties/input_groups/title">Input Groups</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-87575c25ecb9fdfc92ae27eb">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/TransformPlan/properties/input_groups/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>inputs</code>
 </th>
 <td>
@@ -3913,6 +4167,186 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>WorkInputGroup</code>
+</th>
+<td>
+<table id="v-058e717cfe9bfb696f9294fa">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-622d9c5f7e830e0164281047">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-3743b5a6b63977b357658667">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/description">One recipe-selected primary and its exact associated subjects.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-9f614523788356d3ca86de00">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_ids</code>
+</th>
+<td>
+<table id="v-8bdfaa078e94a467aac58742">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-599ffb667e921c4c9796671b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/associated_ids/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-ebe5bad7b7d6ace49e214d1f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-361b2f9717291c08f7a827ae">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/associated_ids/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bcaf6e8cd0bc08412b247ff3">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/associated_ids/title">Associated Ids</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5e3d280e9fd60a28080b4183">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/associated_ids/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_id</code>
+</th>
+<td>
+<table id="v-44361565695d25f163929a45">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8a2c02df5b5deb5cedcf97d0">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/primary_id/pattern">^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-908962d37f3455b704c967ee">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/primary_id/title">Primary Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dd5a788e1df9b53a47781688">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/properties/primary_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-b21fbe4919f9c0e200e2e166">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f91651f93935667597a416a5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/required/0">primary_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-520275e9635c18d8038083b2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/title">WorkInputGroup</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ebb30f7e3caeb709323c5b9a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse/$defs/WorkInputGroup/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -4170,7 +4604,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

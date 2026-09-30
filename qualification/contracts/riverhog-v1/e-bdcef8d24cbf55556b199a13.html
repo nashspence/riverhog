@@ -50,13 +50,13 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$&#x27;)], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription | None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal[&#x27;stable&#x27;, &#x27;explicit-flush&#x27;] = &#x27;stable&#x27;, max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400, provenance: Literal[&#x27;capture&#x27;, &#x27;omit&#x27;] = &#x27;capture&#x27;, provenance_omission_reason: Annotated[str | None, MaxLen(max_length=1000)] = None) -&gt; None&quot;</code>
+<code>&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$&#x27;)], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription | None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal[&#x27;stable&#x27;, &#x27;explicit-flush&#x27;] = &#x27;stable&#x27;, max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-7bcabac24581b0e764b72443">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
@@ -153,25 +153,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance</code></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code>; default: <code>capture</code></td>
-<td data-label="Default">
-<code>capture</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-1e6f75f6395dd13a52add17b">provenance_omission_reason</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>root</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -248,34 +229,6 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-bdcef8d24cbf55556b199a13.html#v-b17c485ecf9cacfbd8d09292">#/$defs/CollectionDescription</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-1e6f75f6395dd13a52add17b">
-<h3>Field: provenance_omission_reason</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; maxLength: <code>1000</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -972,146 +925,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>provenance</code>
-</th>
-<td>
-<table id="v-b97472da38c85d8d85ff1102">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-b2ec361f4efb1ad6398170a1">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance/default">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>enum</code>
-</th>
-<td>
-<table id="v-53828d228cff1817aaaefca1">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-2a8d00a6b2b2204142dabef6">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance/enum/0">capture</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-b2051f81e09f457430c5cc1f">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance/enum/1">omit</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-100fc7e95153589db874f262">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>provenance_omission_reason</code>
-</th>
-<td>
-<table id="v-1e6f75f6395dd13a52add17b">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-b28891784868b8a480b6cbc4">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-6920c0f82fa27e704481fade">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-23ea893b161e227b76c136da">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance_omission_reason/anyOf/0/maxLength">1000</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-180a49b05f311d5cc02a0abd">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance_omission_reason/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-fe470aa13cca9e5e7507e402">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-de4255bd9b993d569b0c4bf6">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance_omission_reason/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-26ca68ae7dea7c1121759484">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/schema/properties/provenance_omission_reason/default">null</code>
-<span class="kind">null</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>root</code>
 </th>
 <td>
@@ -1252,7 +1065,7 @@
 </th>
 <td>
 <span id="v-6dd6702acf80aeb133bbaf46">
-<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/signature">&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$&#x27;)], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription | None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal[&#x27;stable&#x27;, &#x27;explicit-flush&#x27;] = &#x27;stable&#x27;, max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400, provenance: Literal[&#x27;capture&#x27;, &#x27;omit&#x27;] = &#x27;capture&#x27;, provenance_omission_reason: Annotated[str | None, MaxLen(max_length=1000)] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/a_riverhog_ftp_spool.SourceConfig/contract/signature">&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$&#x27;)], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription | None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal[&#x27;stable&#x27;, &#x27;explicit-flush&#x27;] = &#x27;stable&#x27;, max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1346,7 +1159,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

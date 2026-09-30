@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ProfilePin · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: ProfilePin</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-profilepin:c2ca7c762b">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-ea0c23ad34bb7c01fc12b102">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ProfilePin</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One exact contract, pack digest and schema section.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;contract_id&quot;,&quot;contract_sha256&quot;,&quot;schema_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>contract_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1024</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>contract_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>schema_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1024</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProfilePin</code>
+</h4>
+<table id="v-ea0c23ad34bb7c01fc12b102">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a2c914fb38c4c59198b8a12b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-dd9d1631b0df63ddd3784dae">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/description">One exact contract, pack digest and schema section.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-4ad8fe6c17e0f1f98318ed1c">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract_id</code>
+</th>
+<td>
+<table id="v-159e1c3a1ae13b1d358e7ae5">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-920fb986f1796f542fc97261">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_id/maxLength">1024</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-8f898f95ef97aac05fc12abd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a6c368cbaca83672f862a166">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_id/title">Contract Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9819b15d2d69d6f6f158ac7f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>contract_sha256</code>
+</th>
+<td>
+<table id="v-08b8144b7b69c6a57b1ca049">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fb2b017f39ddd84e649580ec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bea26813d15c75f76a228f19">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_sha256/title">Contract Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5cb693ba62f0babaa78c124e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema_id</code>
+</th>
+<td>
+<table id="v-d1adbb612a70095c3912cd74">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-504eef17a7b9b336f398902d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/schema_id/maxLength">1024</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-9e75257ea51aef4607a73392">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/schema_id/minLength">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e442d3e2bbd089f36be550ef">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/schema_id/title">Schema Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6ae57778abe6cfda7e9bf4d9">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/schema_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c3ae6b84a6eac375688b8144">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b6b8eafd5f7383f3d70b1ec8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/required/0">contract_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1514689863d6e37a7c0401b5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/required/1">contract_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-260e915dbd4d79b75142d2a6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/required/2">schema_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-28133d43df3454994b97be85">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/title">ProfilePin</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-23b57101c7746314c6c96e3f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_id</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1024,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/contract_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProfilePin/properties/schema_id</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1024,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

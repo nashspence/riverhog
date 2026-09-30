@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(root: &#x27;CollectionRootIdentity&#x27;, path: &#x27;str&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, control: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
+<code>&quot;(root: &#x27;CollectionRootIdentity&#x27;, artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -74,9 +74,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>path</code></td>
+<code>artifact_id</code></td>
 <td data-label="Type">
-<code>&#x27;str&#x27;</code></td>
+<code>&#x27;ArtifactId&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -95,14 +95,6 @@
 <code>&#x27;str&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>control</code></td>
-<td data-label="Type">
-<code>&#x27;bool&#x27;</code></td>
-<td data-label="Default">
-<code>False</code></td>
 </tr>
 </tbody>
 </table>
@@ -193,7 +185,7 @@
 </th>
 <td>
 <span id="v-f635b953593ed723ce7c27c6">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/1/name">path</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/1/name">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -203,7 +195,7 @@
 </th>
 <td>
 <span id="v-5c701a184d2044cc4237718d">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/1/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/1/type">&#x27;ArtifactId&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -290,46 +282,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>4</code>
-</th>
-<td>
-<table id="v-4dcac8fe1132725c9a2e6a44">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-7c233cdb3c34de9badfb5fb9">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/4/default">False</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>name</code>
-</th>
-<td>
-<span id="v-3f6b2fe02fa12ec7ff82cac0">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/4/name">control</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-98aeaa239041c1301ccee7c8">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/fields/4/type">&#x27;bool&#x27;</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -349,7 +301,7 @@
 </th>
 <td>
 <span id="v-b9a88c60c4a36dcc374ba880">
-<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/signature">&quot;(root: &#x27;CollectionRootIdentity&#x27;, path: &#x27;str&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, control: &#x27;bool&#x27; = False) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.processing.ClaimedArtifact/contract/signature">&quot;(root: &#x27;CollectionRootIdentity&#x27;, artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -443,7 +395,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

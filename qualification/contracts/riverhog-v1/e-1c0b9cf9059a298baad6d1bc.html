@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;riverhog-processing-capability/v1&#x27;], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-inputs&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)], state: Literal[&#x27;receiving&#x27;, &#x27;active&#x27;], principal_id: Annotated[PrincipalId, MaxLen(max_length=300)], expires_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^rhc_[A-Za-z0-9_-]+$&#x27;)]) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;riverhog-processing-capability/v1&#x27;], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-root&#x27;, &#x27;read-inputs&#x27;, &#x27;read-provenance&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)], state: Literal[&#x27;receiving&#x27;, &#x27;active&#x27;], principal_id: Annotated[PrincipalId, MaxLen(max_length=300)], expires_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^rhc_[A-Za-z0-9_-]+$&#x27;)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-80185d38b87f29ef2ac6a9af">
@@ -90,7 +90,7 @@
 <a href="#s-e1220a82d11b712d18c0aeb3">actions</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -206,7 +206,7 @@
 <section class="schema-section" id="s-e1220a82d11b712d18c0aeb3">
 <h3>Field: actions</h3>
 <p class="shape">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
 </p>
 <dl class="facts">
 <dt>type</dt>
@@ -230,10 +230,18 @@
 <tbody>
 <tr>
 <td data-label="Alternative">1</td>
-<td data-label="Schema">const: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Schema">const: <code>[&quot;read-root&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
+<td data-label="Schema">const: <code>[&quot;read-inputs&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">const: <code>[&quot;read-provenance&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">4</td>
 <td data-label="Schema">const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
 </tr>
 </tbody>
@@ -1012,7 +1020,7 @@
 </th>
 <td>
 <span id="v-af7578b7e120fe4ac6faa44f">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/items/enum/0">read-inputs</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/items/enum/0">read-root</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1022,7 +1030,27 @@
 </th>
 <td>
 <span id="v-59cf34bbb1cfc1110605dd78">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/items/enum/1">write-output</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/items/enum/1">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-c017fe2e39eb4a2a8fba6251">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/items/enum/2">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-ab43681bc1a86bda4c3bd219">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/items/enum/3">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1079,7 +1107,7 @@
 </th>
 <td>
 <span id="v-be855de1567288031c2ef1bf">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/oneOf/0/const/0">read-inputs</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/oneOf/0/const/0">read-root</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1113,13 +1141,73 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-a7e485ec89824660437184b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-279e1d440a9466d590b12a9d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3f50ee00fa24dcb296b8be83">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/oneOf/2/const/0">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-f92ea27661812bf3387d60fd">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-f4bdb4357c7d8cb7e562bd24">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e07dde5f0ab400a25379bfa3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/oneOf/3/const/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 <tr>
 <th scope="row">
 <code>1</code>
 </th>
 <td>
-<span id="v-0c8beacda02333cd3f624812">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/oneOf/1/const/1">write-output</code>
+<span id="v-af03f745711f002de953546c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/schema/properties/actions/oneOf/3/const/1">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1627,7 +1715,7 @@
 </th>
 <td>
 <span id="v-6d09b20ba5fff4b1eb0c9b3d">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-processing-capability/v1&#x27;], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-inputs&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)], state: Literal[&#x27;receiving&#x27;, &#x27;active&#x27;], principal_id: Annotated[PrincipalId, MaxLen(max_length=300)], expires_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^rhc_[A-Za-z0-9_-]+$&#x27;)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingCapabilityDocument/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-processing-capability/v1&#x27;], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9][a-z0-9._:/-]{0,299}$&#x27;)], actions: Annotated[list[Literal[&#x27;read-root&#x27;, &#x27;read-inputs&#x27;, &#x27;read-provenance&#x27;, &#x27;write-output&#x27;]], MinLen(min_length=1)], state: Literal[&#x27;receiving&#x27;, &#x27;active&#x27;], principal_id: Annotated[PrincipalId, MaxLen(max_length=300)], expires_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^rhc_[A-Za-z0-9_-]+$&#x27;)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1724,7 +1812,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

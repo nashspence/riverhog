@@ -200,7 +200,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;derivation_sha256&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact_set_identity&quot;,&quot;derivation_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -235,19 +235,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>collection_id</code></td>
+<code>artifact_set_identity</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<a href="e-723cf4c3467ea8255fcba890.html#v-2089952b8740f27a38c625d9">#/$defs/CollectionId</a></td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>content_identity</code></td>
+<code>collection_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-723cf4c3467ea8255fcba890.html#v-2089952b8740f27a38c625d9">#/$defs/CollectionId</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -533,6 +533,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifact_set_identity</code>
+</th>
+<td>
+<table id="v-174cd9673585147e62805577">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a86db1f148411102d3d26522">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/properties/artifact_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a1dde1dc84ef3b27e1978d73">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/properties/artifact_set_identity/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_id</code>
 </th>
 <td>
@@ -546,36 +576,6 @@
 <span id="v-21601420680b6423826c26dc">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
 <span class="kind">string</span> <a href="e-723cf4c3467ea8255fcba890.html#v-2089952b8740f27a38c625d9">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>content_identity</code>
-</th>
-<td>
-<table id="v-9b7276968e2cf6974f09e4ef">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-dcf6e546650f9774984717fe">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c695de0542c1d5a0e7d7d95b">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/properties/content_identity/type">string</code>
-<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -647,7 +647,7 @@
 </th>
 <td>
 <span id="v-9f5a67e9f483850338d6bb2d">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/required/2">content_identity</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetSettlementAuthorityPayload/contract/schema/$defs/OutputCollectionRef/required/2">artifact_set_identity</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1162,7 +1162,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.RetrievalArtifactReferenceSetDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>riverhog_protocol.RetrievalArtifactReferenceSetDocument</h1>
+<p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-retrievalartifactrefere-d4b6e91b02:8c9cc8df19">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-protocol</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_protocol</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>RetrievalArtifactReferenceSetDocument</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, artifacts: Annotated[list[riverhog_protocol.retrieval_transport.RetrievalArtifactReferenceDocument], MinLen(min_length=1), MaxLen(max_length=10000)]) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-52a58240d9ebfca7c7da64b0">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifacts&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-c86263443caa23c61cc41c7c">artifacts</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-93b38b43dae276298b56c2d6.html#v-cf9ab0deb21d992ba2122b39">#/$defs/RetrievalArtifactReferenceDocument</a>; minItems: <code>1</code>; maxItems: <code>10000</code>; x-riverhog-extent: structured schema</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-3dd4e7aab5bf05978daedd3e">CollectionId</a>
+</li>
+<li>
+<a href="#s-cf9ab0deb21d992ba2122b39">RetrievalArtifactReferenceDocument</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-c86263443caa23c61cc41c7c">
+<h3>Field: artifacts</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-93b38b43dae276298b56c2d6.html#v-cf9ab0deb21d992ba2122b39">#/$defs/RetrievalArtifactReferenceDocument</a>; minItems: <code>1</code>; maxItems: <code>10000</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>10000</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;segmented_no_total_max&quot;,&quot;progression&quot;:&quot;multiple-retrieval-jobs&quot;,&quot;reason&quot;:&quot;bounded-retrieval-work-request&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3dd4e7aab5bf05978daedd3e">
+<h3>Definition: CollectionId</h3>
+<p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
+<h4>All must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-cf9ab0deb21d992ba2122b39">
+<h3>Definition: RetrievalArtifactReferenceDocument</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;collection_id&quot;,&quot;artifact_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>collection_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-93b38b43dae276298b56c2d6.html#v-3dd4e7aab5bf05978daedd3e">#/$defs/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument</code>
+</h4>
+<table id="v-46ccabd4a084ba80652ca8c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-99196a628bedbde151bc554c">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-6e7e06f7767f1fa2673b2b1f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-52a58240d9ebfca7c7da64b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-a3edfbb431e59ba3981dbcb8">
+<tbody>
+<tr>
+<th scope="row">
+<code>CollectionId</code>
+</th>
+<td>
+<table id="v-3dd4e7aab5bf05978daedd3e">
+<tbody>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-ec6186f07c6e4c02e7617b0c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4f1f1b275a523aba6db9ddf2">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8c92308be28c179f084237e9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b5d51132c4e57143fa867f41">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-1d0b7ef6cdd717f185bf0e73">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-7da51585bd59f743aa3f78d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-85eb9f6ec106f30c9938fa6b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>RetrievalArtifactReferenceDocument</code>
+</th>
+<td>
+<table id="v-cf9ab0deb21d992ba2122b39">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7435cdec4352126a71e7da14">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-26d140737d21b961d002ad55">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-a431d5fe54cc018f61260a6e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b8c86eb425a744a5252cbc52">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9fcf1a943e2924637a94a77d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection_id</code>
+</th>
+<td>
+<table id="v-8dee720f7cf5386bbf05dd60">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c13ed4c783d2a1d99818b598">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/properties/collection_id/$ref">#/$defs/CollectionId</code>
+<span class="kind">string</span> <a href="e-93b38b43dae276298b56c2d6.html#v-3dd4e7aab5bf05978daedd3e">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-4594ad7505986730446816e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-59b690dc3e49e5d98eb24a42">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/required/0">collection_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-b94a5d4fcde5e0ffaa1990f4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/required/1">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-74d4fbc3f18e310ee1a17541">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/$defs/RetrievalArtifactReferenceDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9c093f8890b63d79d829acc6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-6dbe42a179c22e02e25e2031">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifacts</code>
+</th>
+<td>
+<table id="v-c86263443caa23c61cc41c7c">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-24c80a4633aa679e45102896">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-65f93816e0c7ef09f6b0807a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/items/$ref">#/$defs/RetrievalArtifactReferenceDocument</code>
+<span class="kind">string</span> <a href="e-93b38b43dae276298b56c2d6.html#v-cf9ab0deb21d992ba2122b39">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-07ffdb39ae39770572caa6af">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/maxItems">10000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-3c52913a9d389af9906a7807">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c475855faa55f33c60f3e5a7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-7c38645f7e931d77dacf88a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-fddf48bd8ccc4098cccd7922">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/x-riverhog-extent/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<span id="v-0498d15274039cd208821233">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/x-riverhog-extent/progression">multiple-retrieval-jobs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-19fe96afbce6af47301aaaa6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/properties/artifacts/x-riverhog-extent/reason">bounded-retrieval-work-request</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-81d412dd9929b4db0570f6f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fff98dabbea7e3c5e050e312">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/required/0">artifacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cfa27e84ef56a101849cfcda">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-0d943efebca34e1d0fa86c28">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/contract/signature">&#x27;(*, artifacts: Annotated[list[riverhog_protocol.retrieval_transport.RetrievalArtifactReferenceDocument], MinLen(min_length=1), MaxLen(max_length=10000)]) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-6606d8577446054ae54c159d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-3b5969b6a70a7a4e503a0ec6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-70dd860bc7375f2d51d9886f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/name">RetrievalArtifactReferenceSetDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-07134a140f87fa055b25c952">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RetrievalArtifactReferenceSetDocument/unit">export</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-1bb4ea342f9a1d229e66e6c1.html">riverhog_protocol.RetrievalArtifactReferenceSetDocument.validate_exact_reference_set</a>
+</li>
+</ul>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-595ebd1d7f6b4d0912135ade.html">compatibility/python-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
+</li>
+<li>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
+</li>
+</ul>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

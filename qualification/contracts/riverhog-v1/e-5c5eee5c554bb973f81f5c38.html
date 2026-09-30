@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-5d4f1f1b92366a9938e26ccf">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -68,6 +68,16 @@
 <code>array</code>; items: <a href="e-b76bf63405bacd8771bbfa5b.html#v-52c5a88ad02389cc290ad314">#/components/schemas/ArtifactAssociation</a>; default: <code>[]</code></td>
 <td data-label="Default">
 <code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-165fde4fc502b22af1761115">artifact_rules</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">#/components/schemas/ArtifactRule</a>; default: <code>[{&quot;role&quot;:&quot;stove0.source/v1&quot;,&quot;when&quot;:[]}]</code></td>
+<td data-label="Default">
+<code>[{&quot;role&quot;:&quot;stove0.source/v1&quot;,&quot;when&quot;:[]}]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -175,6 +185,22 @@
 <dt>title</dt>
 <dd>
 <code>Artifact Associations</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-165fde4fc502b22af1761115">
+<h3>Field: artifact_rules</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">#/components/schemas/ArtifactRule</a>; default: <code>[{&quot;role&quot;:&quot;stove0.source/v1&quot;,&quot;when&quot;:[]}]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Artifact Rules</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -391,6 +417,96 @@
 <td>
 <span id="v-234f56fb4b53e4f2b74deada">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_associations/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>artifact_rules</code>
+</th>
+<td>
+<table id="v-165fde4fc502b22af1761115">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-f41e2a8e2a827c39c941f39e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-8bc553e560414f82cf0fa91e">
+<tbody>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<span id="v-0b6ac55b41ec5ce25b3c586e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_rules/default/0/role">stove0.source/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>when</code>
+</th>
+<td>
+<span id="v-0cc9499eda4a6c7c5a72813f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_rules/default/0/when">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-056b60caddcc766ad885e555">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-425bb8191298fd080de1bde2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_rules/items/$ref">#/components/schemas/ArtifactRule</code>
+<span class="kind">string</span> <a href="e-74db26fc8663969a689cb5ec.html#v-ab5708cfcb239e47470376cc">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-36237b356da7ac9ef16ff5f3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_rules/title">Artifact Rules</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e59af10e40f708e569252f3a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_rules/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1129,7 +1245,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -1164,6 +1280,15 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_rules</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/observers</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -1188,7 +1313,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

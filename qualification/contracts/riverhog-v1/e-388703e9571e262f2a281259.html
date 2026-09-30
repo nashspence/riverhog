@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-5da2fc67106f39adf6babb86">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 13 fields; additionalProperties: <code>false</code>
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -68,6 +68,16 @@
 <code>string</code>; const: <code>stove0-workflow-plan/v1</code>; default: <code>stove0-workflow-plan/v1</code></td>
 <td data-label="Default">
 <code>stove0-workflow-plan/v1</code></td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-584dea7d80e456bd4b6ed114">input_groups</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-06f5f955e2a07add75e6daa8.html#v-5959b0799f1e7d1e40db7ec0">#/components/schemas/WorkInputGroup</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -187,6 +197,22 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-584dea7d80e456bd4b6ed114">
+<h3>Field: input_groups</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-06f5f955e2a07add75e6daa8.html#v-5959b0799f1e7d1e40db7ec0">#/components/schemas/WorkInputGroup</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Input Groups</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-6ef6cec03dd725281b680afc">
 <h3>Field: observations</h3>
 <p class="shape">
@@ -293,6 +319,66 @@
 <td>
 <span id="v-6ac30fee32d15c869c5a8665">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/format/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_groups</code>
+</th>
+<td>
+<table id="v-584dea7d80e456bd4b6ed114">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-447eb08660a1aa43881053d6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/input_groups/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-2b90073f83a49e81d5b936ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8e95747529acc455080e708d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/input_groups/items/$ref">#/components/schemas/WorkInputGroup</code>
+<span class="kind">string</span> <a href="e-06f5f955e2a07add75e6daa8.html#v-5959b0799f1e7d1e40db7ec0">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-53aa481743594a9d903ac9d0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/input_groups/title">Input Groups</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-381ede3f2f00d10f1160613d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/input_groups/type">array</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -961,7 +1047,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -985,6 +1071,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/input_groups</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
 <tr>
 <td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan/properties/observations</code></td>
@@ -1029,7 +1124,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-aa1a382aedd86d00e9b80f9d">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -115,6 +115,16 @@
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
+<tr>
+<td data-label="Field">
+<a href="#s-7053d6cbb6e61b143545b67a">read_actions</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Default">
+<code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Description"></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -130,6 +140,30 @@
 <a href="#s-e626583caf3c750754d1948a">SemanticValidationProfile</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-7053d6cbb6e61b143545b67a">
+<h3>Field: read_actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;read-evidence&quot;]</code>; minItems: <code>1</code>; maxItems: <code>1</code>; default: <code>[&quot;read-inputs&quot;]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Read Actions</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-c30aa5df06a6906fe62ad1cc">
 <h3>Definition: JsonSchemaValidationProfile</h3>
@@ -1268,6 +1302,136 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>read_actions</code>
+</th>
+<td>
+<table id="v-7053d6cbb6e61b143545b67a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-b7fb066bb0dce70a8796c68f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-51189ce8130d0bfad59c9918">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/default/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-d92cffb789e5ead6e0691cb2">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-f6b98c9e02b7ab7ddb68aa76">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7e5d84ec911c29f12b2cf8e7">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/items/enum/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-130c7520e88d5a2eb9287022">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/items/enum/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-bca89b10b529f845b761c069">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/items/enum/2">read-evidence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2870a462dc0e506aa4dd470d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/items/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-56117d3486304622ddc0e5f4">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/maxItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-788ac2ad8ef51a574f7cc9cc">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-7887e2d961c7e59405f1a4d0">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/title">Read Actions</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a67734bad703f057346e556c">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1420,6 +1584,15 @@
 <td data-label="Bounds or reason">
 <code>{&quot;maximum&quot;:67108864,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
 </tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverContract/properties/read_actions</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">cardinality · items · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1428,7 +1601,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-6d70b9721807de59170ad397">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -36,7 +36,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -60,6 +60,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>bytes</code></td>
@@ -89,23 +98,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-441beb61694fdbd02bfeb93d">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>role</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -121,40 +113,6 @@
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-441beb61694fdbd02bfeb93d">
-<h3>Field: media_type</h3>
-<p class="shape">any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
-</p>
-<dl class="facts">
-<dt>title</dt>
-<dd>
-<code>Media Type</code>
-</dd>
-</dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
 </tr>
 </tbody>
 </table>
@@ -186,6 +144,46 @@
 <td>
 <table id="v-f4adc2f6bcb717ed22cc3e1a">
 <tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-3fec4c0a7e9782db51c8ee1c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9baf923653af3ad65fc4244e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-c4e44b7fe099f2fddcd36660">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/artifact_id/title">Artifact Id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-89409e4de09f961e4b1ff3bf">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>bytes</code>
@@ -270,146 +268,6 @@
 <td>
 <span id="v-2bc71570217a5915a937c521">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/id/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-441beb61694fdbd02bfeb93d">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-b3b3ed0243179d7087534032">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-bea144e12134362096425327">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-6759abda2ed23c5afb0fd7c7">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/media_type/anyOf/0/maxLength">255</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-ffec80c95525ce4497e2366c">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/media_type/anyOf/0/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-94a5f396f4a2de837e99ced0">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-cd827a5e9a32099039c5714d">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-e682bb123fd44079f57c9772">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-6361b9ed872aebc8300c6eac">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/media_type/title">Media Type</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>path</code>
-</th>
-<td>
-<table id="v-b428e392ba6c3db4c696fe8a">
-<tbody>
-<tr>
-<th scope="row">
-<code>maxLength</code>
-</th>
-<td>
-<span id="v-5b087329cafcfee341e0bbf6">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/path/maxLength">4096</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>minLength</code>
-</th>
-<td>
-<span id="v-a674e37374ccfc7b23b930f3">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/path/minLength">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-8d7ce96a0016dd9b1e86ead3">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/path/title">Path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-cb2c1ceeb9ba604a9a7de591">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/path/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -542,7 +400,7 @@
 </th>
 <td>
 <span id="v-9e96f1895b08ed84296b5441">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/required/3">path</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/InputArtifact/required/3">artifact_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -608,7 +466,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -634,21 +492,12 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/media_type/anyOf/0</code></td>
+<code>/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/artifact_id</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
-<td data-label="Decision">length · characters · contract_max</td>
+<td data-label="Decision">length · characters · fixed</td>
 <td data-label="Bounds or reason">
-<code>{&quot;maximum&quot;:255,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
-</tr>
-<tr>
-<td data-label="Exact subject">
-<code>/external_contract/http_openapi/stove0/components/schemas/InputArtifact/properties/path</code></td>
-<td data-label="Governing rule">
-<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
-<td data-label="Decision">length · characters · contract_max</td>
-<td data-label="Bounds or reason">
-<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
 <td data-label="Exact subject">
@@ -667,7 +516,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

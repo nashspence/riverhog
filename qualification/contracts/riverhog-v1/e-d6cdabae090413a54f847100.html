@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(api: &#x27;Any&#x27;, *, request: &#x27;ContentObservationRequest&#x27;, claim_id: &#x27;str&#x27;, fence: &#x27;int&#x27;, cancellation_check: &#x27;CancellationCheck | None&#x27; = None, heartbeat: &#x27;Heartbeat | None&#x27; = None, declared_workspace_protection: &#x27;DeclaredWorkspaceProtection&#x27;, owned_api: &#x27;bool&#x27; = False) -&gt; &#x27;None&#x27;&quot;</code>
+<code>&quot;(api: &#x27;Any&#x27;, *, request: &#x27;ContentObservationRequest&#x27;, claim_id: &#x27;str&#x27;, fence: &#x27;int&#x27;, cancellation_check: &#x27;CancellationCheck | None&#x27; = None, heartbeat: &#x27;Heartbeat | None&#x27; = None, declared_workspace_protection: &#x27;DeclaredWorkspaceProtection&#x27;, evidence: &#x27;Sequence[ContentObservationEvidence]&#x27; = (), owned_api: &#x27;bool&#x27; = False) -&gt; &#x27;None&#x27;&quot;</code>
 </dd>
 </dl>
 </div>
@@ -85,7 +85,7 @@
 </th>
 <td>
 <span id="v-53cadaaa9356d28bbe035910">
-<code data-value-pointer="/external_contract/python/stove0_observer_support.ContentObservationRuntime/contract/signature">&quot;(api: &#x27;Any&#x27;, *, request: &#x27;ContentObservationRequest&#x27;, claim_id: &#x27;str&#x27;, fence: &#x27;int&#x27;, cancellation_check: &#x27;CancellationCheck | None&#x27; = None, heartbeat: &#x27;Heartbeat | None&#x27; = None, declared_workspace_protection: &#x27;DeclaredWorkspaceProtection&#x27;, owned_api: &#x27;bool&#x27; = False) -&gt; &#x27;None&#x27;&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_observer_support.ContentObservationRuntime/contract/signature">&quot;(api: &#x27;Any&#x27;, *, request: &#x27;ContentObservationRequest&#x27;, claim_id: &#x27;str&#x27;, fence: &#x27;int&#x27;, cancellation_check: &#x27;CancellationCheck | None&#x27; = None, heartbeat: &#x27;Heartbeat | None&#x27; = None, declared_workspace_protection: &#x27;DeclaredWorkspaceProtection&#x27;, evidence: &#x27;Sequence[ContentObservationEvidence]&#x27; = (), owned_api: &#x27;bool&#x27; = False) -&gt; &#x27;None&#x27;&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -150,6 +150,9 @@
 <a href="e-abbbfcf818ad41ecb521d7ed.html">stove0_observer_support.ContentObservationRuntime.subjects</a>
 </li>
 <li>
+<a href="e-0f541fbf016f1c69b5a01ba6.html">stove0_observer_support.ContentObservationRuntime.open_provenance</a>
+</li>
+<li>
 <a href="e-51a7c1ca9ed95c690693d905.html">stove0_observer_support.ContentObservationRuntime.prepare</a>
 </li>
 <li>
@@ -172,6 +175,9 @@
 </li>
 <li>
 <a href="e-648d9b6d829d60e6f8d4f0c7.html">stove0_observer_support.ContentObservationRuntime.read_bytes</a>
+</li>
+<li>
+<a href="e-d4e183b7d1844913fd949f08.html">stove0_observer_support.ContentObservationRuntime.open_evidence</a>
 </li>
 <li>
 <a href="e-9a8d588a0d0b320819cd9606.html">stove0_observer_support.ContentObservationRuntime.open_workspace</a>
@@ -209,7 +215,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

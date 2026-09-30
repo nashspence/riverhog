@@ -41,11 +41,6 @@
 <a href="e-775429abed21e11f645878a2.html">DELETE /v1/archive/copy-jobs/{collection_id}/{destination_store}</a>
 <td data-label="Recorded fact">Cancel Archive Copy Job</td>
 </tr>
-<tr data-element="http-operations:riverhog:delete-v1-collections-collection-id-prove-2f3a23a886:98e4f1b88e">
-<td data-label="Element">
-<a href="e-597e0ed5d77067409aac4e28.html">DELETE /v1/collections/{collection_id}/provenance/verification</a>
-<td data-label="Recorded fact">Cancel Collection Provenance Verification</td>
-</tr>
 <tr data-element="http-operations:riverhog:delete-v1-retrieval-jobs-job-id:290ffdbd74">
 <td data-label="Element">
 <a href="e-abf1d6d22c4c8800b1baf941.html">DELETE /v1/retrieval-jobs/{job_id}</a>
@@ -206,12 +201,17 @@
 <a href="e-52fc4c93021c4652704af59a.html">GET /v1/collection-upload-sessions/{collection_id}</a>
 <td data-label="Recorded fact">Get Collection Upload Session</td>
 </tr>
-<tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-e436de8e9e:da1c00c1a3">
+<tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-d7fd792b0a:3b6246e62c">
 <td data-label="Element">
-<a href="e-48e509effebf13a89b23d061.html">GET /v1/collection-upload-sessions/{collection_id}/files</a>
-<span class="audit-cue"> <a class="audit-marker" href="e-48e509effebf13a89b23d061.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+<a href="e-b1ce07c0bc73f7117ffc5be5.html">GET /v1/collection-upload-sessions/{collection_id}/artifacts</a>
+<span class="audit-cue"> <a class="audit-marker" href="e-b1ce07c0bc73f7117ffc5be5.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
 </span>
-<td data-label="Recorded fact">List Collection Upload Session Files</td>
+<td data-label="Recorded fact">List Collection Upload Session Artifacts</td>
+</tr>
+<tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-95b0d6ddf6:8d17e2459a">
+<td data-label="Element">
+<a href="e-01a4ac7037a892f4a1eae1f6.html">GET /v1/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}/provenance-binding</a>
+<td data-label="Recorded fact">Get Collection Upload Session Artifact Provenance Binding</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-9b97d3dcb5:e28b2b6592">
 <td data-label="Element">
@@ -245,41 +245,25 @@
 <a href="e-2f3ebaa0ef6a10123fb22da5.html">GET /v1/collections/{collection_id}/derivation</a>
 <td data-label="Recorded fact">Get Collection Derivation</td>
 </tr>
-<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenance-files:8be3a1ec39">
+<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-fb19b89b43:21fe78f3c3">
 <td data-label="Element">
-<a href="e-4c961fd2a55aeb9b7f286836.html">GET /v1/collections/{collection_id}/provenance/files</a>
-<span class="audit-cue"> <a class="audit-marker" href="e-4c961fd2a55aeb9b7f286836.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
-</span>
-<td data-label="Recorded fact">List Collection Provenance</td>
+<a href="e-9d8566d8550d95b12156c367.html">GET /v1/collections/{collection_id}/provenance/artifacts</a>
+<td data-label="Recorded fact">List Collection Artifact Provenance</td>
 </tr>
-<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-6ee3284e33:8106c6a185">
+<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-25571c9915:104f94b7e2">
 <td data-label="Element">
-<a href="e-8b07eea321ddde683705da22.html">GET /v1/collections/{collection_id}/provenance/files/{path}</a>
-<td data-label="Recorded fact">Get Collection File Provenance</td>
+<a href="e-cccb2912e674dee80ad9ace1.html">GET /v1/collections/{collection_id}/provenance/artifacts/{artifact_id}</a>
+<td data-label="Recorded fact">Get Collection Artifact Provenance</td>
+</tr>
+<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenance-journals:58954f11c7">
+<td data-label="Element">
+<a href="e-7aa56f4dc34c47583299d761.html">GET /v1/collections/{collection_id}/provenance/journals</a>
+<td data-label="Recorded fact">List Collection Provenance Journals</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-3a9ce32406:3d397774e9">
 <td data-label="Element">
 <a href="e-de722d1ac9ded25c07d0d215.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
 <td data-label="Recorded fact">Stream Collection Provenance Journal</td>
-</tr>
-<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-a71efc95fc:24a148048f">
-<td data-label="Element">
-<a href="e-5ef501c9d1ca96322565c619.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents</a>
-<span class="audit-cue"> <a class="audit-marker" href="e-5ef501c9d1ca96322565c619.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
-</span>
-<td data-label="Recorded fact">List Collection Provenance Journal Agents</td>
-</tr>
-<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-6d605f4732:71ffde5f05">
-<td data-label="Element">
-<a href="e-8957e2180d77b8fad1219a1d.html">GET /v1/collections/{collection_id}/provenance/trace/{path}</a>
-<span class="audit-cue"> <a class="audit-marker" href="e-8957e2180d77b8fad1219a1d.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
-</span>
-<td data-label="Recorded fact">Trace Collection File Provenance</td>
-</tr>
-<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-7bd7f79e98:bb9ad115b6">
-<td data-label="Element">
-<a href="e-c481d0cae1d5262758aaf113.html">GET /v1/collections/{collection_id}/provenance/verification</a>
-<td data-label="Recorded fact">Get Collection Provenance Verification</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-tags:dfa3c428a5">
 <td data-label="Element">
@@ -332,19 +316,19 @@
 <tr data-element="http-operations:riverhog:get-v1-retrieval-jobs-job-id-content:f5f36a0875">
 <td data-label="Element">
 <a href="e-78bb516915f24b1034a91655.html">GET /v1/retrieval-jobs/{job_id}/content</a>
-<td data-label="Recorded fact">Download Retrieval File</td>
+<td data-label="Recorded fact">Download Retrieval Artifact</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-plans-plan-id:bf02cc8be5">
 <td data-label="Element">
 <a href="e-f85e066af4a4dfcd2b5c98a1.html">GET /v1/retrieval-plans/{plan_id}</a>
 <td data-label="Recorded fact">Get Retrieval Plan</td>
 </tr>
-<tr data-element="http-operations:riverhog:get-v1-retrieval-plans-plan-id-files:a38c19ca4d">
+<tr data-element="http-operations:riverhog:get-v1-retrieval-plans-plan-id-artifacts:26aa0fefff">
 <td data-label="Element">
-<a href="e-3dce3feba3e4421ea5b60424.html">GET /v1/retrieval-plans/{plan_id}/files</a>
-<span class="audit-cue"> <a class="audit-marker" href="e-3dce3feba3e4421ea5b60424.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+<a href="e-d988e21b84d0f6249d017689.html">GET /v1/retrieval-plans/{plan_id}/artifacts</a>
+<span class="audit-cue"> <a class="audit-marker" href="e-d988e21b84d0f6249d017689.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
 </span>
-<td data-label="Recorded fact">List Retrieval Plan Files</td>
+<td data-label="Recorded fact">List Retrieval Plan Artifacts</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-search:f9db9b9ee8">
 <td data-label="Element">
@@ -409,6 +393,11 @@
 <td data-label="Element">
 <a href="e-6b94571a3ba5b726abb10573.html">POST /v1/archive/copy-jobs</a>
 <td data-label="Recorded fact">Create Or Resume Archive Copy Job</td>
+</tr>
+<tr data-element="http-operations:riverhog:post-v1-artifacts-discover:2141421953">
+<td data-label="Element">
+<a href="e-ea4c8e3bc7f63cfac677c52b.html">POST /v1/artifacts/discover</a>
+<td data-label="Recorded fact">Discover Artifacts</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims:94feba3584">
 <td data-label="Element">
@@ -500,6 +489,11 @@
 <a href="e-36242b194d11b3a9c5cdd0fe.html">POST /v1/collection-upload-sessions</a>
 <td data-label="Recorded fact">Create Or Resume Collection Upload Session</td>
 </tr>
+<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-4e65a22aa8:edac0987be">
+<td data-label="Element">
+<a href="e-ded07d6c2823ae193fa85806.html">POST /v1/collection-upload-sessions/{collection_id}/artifacts</a>
+<td data-label="Recorded fact">Register Collection Upload Session Artifacts</td>
+</tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-c6e9bc39c9:112fe5b575">
 <td data-label="Element">
 <a href="e-a17686daddda2f79969aff4d.html">POST /v1/collection-upload-sessions/{collection_id}/cancel</a>
@@ -520,15 +514,20 @@
 <a href="e-fbbf272f1a7ef7faf8375b1a.html">POST /v1/collection-upload-sessions/{collection_id}/discard-plan</a>
 <td data-label="Recorded fact">Plan Collection Upload Discard</td>
 </tr>
-<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-4a0f562819:91e49c31c6">
-<td data-label="Element">
-<a href="e-810b01a9db8256bb44e8b8be.html">POST /v1/collection-upload-sessions/{collection_id}/files</a>
-<td data-label="Recorded fact">Register Collection Upload Session Files</td>
-</tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-882159f1ab:82d740575d">
 <td data-label="Element">
 <a href="e-814a9406992b69d24638d42b.html">POST /v1/collection-upload-sessions/{collection_id}/heartbeat</a>
 <td data-label="Recorded fact">Heartbeat Collection Upload Session</td>
+</tr>
+<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-c7f5ad9a23:153aea0dac">
+<td data-label="Element">
+<a href="e-7389938e0a35b32b1c28211c.html">POST /v1/collection-upload-sessions/{collection_id}/materialization-decisions</a>
+<td data-label="Recorded fact">Set Collection Upload Session Materialization Decisions</td>
+</tr>
+<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-b2fff33c78:1dde15ca7d">
+<td data-label="Element">
+<a href="e-c79b43582f5f0bc12f512540.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/bindings</a>
+<td data-label="Recorded fact">Bind Collection Upload Session Artifact Provenance</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-eb0b1275c6:d01b28fd3c">
 <td data-label="Element">
@@ -554,11 +553,6 @@
 <td data-label="Element">
 <a href="e-d3b1cb6b883f9da4f717a265.html">POST /v1/collections/{collection_id}/deletion-plan</a>
 <td data-label="Recorded fact">Plan Collection Deletion</td>
-</tr>
-<tr data-element="http-operations:riverhog:post-v1-collections-collection-id-provena-8ee667a419:851a47e434">
-<td data-label="Element">
-<a href="e-5af0dfd654d469e6ec3ffb48.html">POST /v1/collections/{collection_id}/provenance/verification</a>
-<td data-label="Recorded fact">Request Collection Provenance Verification</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-tags-add:2a80cc35b7">
 <td data-label="Element">
@@ -667,7 +661,7 @@
 </div>
 <aside class="audit" id="audit-scope">
 <h2>Open extent qualifications in this scope</h2>
-<p>28 subjects · riverhog · HTTP Operations</p>
+<p>25 subjects · riverhog · HTTP Operations</p>
 <ul>
 <li>
 <a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
@@ -678,7 +672,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

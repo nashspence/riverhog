@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&#x27;(*, input_artifact_id: str, associated_sidecar_artifact_ids: tuple[str, ...] = (), archive_path: str, xmp_path: str, assertions: tuple[a_stove0_media_metadata_contract_lib.contracts.MediaMetadataFact, ...] = (), selected: tuple[a_stove0_media_archive_lib.projection.MediaProjectedValue, ...] = ()) -&gt; None&#x27;</code>
+<code>&#x27;(*, input_artifact_id: str, associated_sidecar_artifact_ids: tuple[str, ...] = (), assertions: tuple[a_stove0_media_metadata_contract_lib.contracts.MediaMetadataFact, ...] = (), selected: tuple[a_stove0_media_archive_lib.projection.MediaProjectedValue, ...] = ()) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-583b7d73f3676739dfb4ec18">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;input_artifact_id&quot;,&quot;archive_path&quot;,&quot;xmp_path&quot;]</code>
+<code>[&quot;input_artifact_id&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -85,15 +85,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td data-label="Field">
-<code>archive_path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
 <tr>
 <td data-label="Field">
 <a href="#s-ace79ad431714b90046c3dd4">assertions</a></td>
@@ -131,15 +122,6 @@
 <code>array</code>; items: <a href="e-44035cb342240510f11b5a38.html#v-b0ac51d47b128dfaebcca9e1">#/$defs/MediaProjectedValue</a>; default: <code>[]</code></td>
 <td data-label="Default">
 <code>[]</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>xmp_path</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code></td>
-<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 </tbody>
@@ -1135,26 +1117,6 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>archive_path</code>
-</th>
-<td>
-<table id="v-73586a5a16a22cf6e6b9a38a">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-c0a0f85fa11e53889cbdb30e">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/schema/properties/archive_path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>assertions</code>
 </th>
 <td>
@@ -1323,26 +1285,6 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-<th scope="row">
-<code>xmp_path</code>
-</th>
-<td>
-<table id="v-f709c4474a61bb73f7809ba1">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-6a32bcf2b2f3d43fb36f01f2">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/schema/properties/xmp_path/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 </tbody>
 </table></td>
 </tr>
@@ -1360,26 +1302,6 @@
 <td>
 <span id="v-30ef0a0432e610ccde956a92">
 <code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/schema/required/0">input_artifact_id</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<span id="v-a011b3f9f079d2e17c4eae0d">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/schema/required/1">archive_path</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>2</code>
-</th>
-<td>
-<span id="v-fd4c96a309fbe0c6440a3eb1">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/schema/required/2">xmp_path</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1405,7 +1327,7 @@
 </th>
 <td>
 <span id="v-08d43c79f909f3a54ceff523">
-<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/signature">&#x27;(*, input_artifact_id: str, associated_sidecar_artifact_ids: tuple[str, ...] = (), archive_path: str, xmp_path: str, assertions: tuple[a_stove0_media_metadata_contract_lib.contracts.MediaMetadataFact, ...] = (), selected: tuple[a_stove0_media_archive_lib.projection.MediaProjectedValue, ...] = ()) -&gt; None&#x27;</code>
+<code data-value-pointer="/external_contract/python/a_stove0_media_archive_lib.MediaProjectionItem/contract/signature">&#x27;(*, input_artifact_id: str, associated_sidecar_artifact_ids: tuple[str, ...] = (), assertions: tuple[a_stove0_media_metadata_contract_lib.contracts.MediaMetadataFact, ...] = (), selected: tuple[a_stove0_media_archive_lib.projection.MediaProjectedValue, ...] = ()) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1464,9 +1386,6 @@
 <a href="e-57349282dfa7016434371c3c.html">a_stove0_media_archive_lib.MediaProjectionItem.canonical_sidecars</a>
 </li>
 <li>
-<a href="e-9b8a1dce191b9609613e589f.html">a_stove0_media_archive_lib.MediaProjectionItem.canonical_path</a>
-</li>
-<li>
 <a href="e-70aafea20bd839b5073292df.html">a_stove0_media_archive_lib.MediaProjectionItem.canonical_evidence</a>
 </li>
 <li>
@@ -1505,7 +1424,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

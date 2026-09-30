@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-ab5708cfcb239e47470376cc">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -36,7 +36,7 @@
 </dd>
 <dt>description</dt>
 <dd>
-<code>Classify one path; first matching rule wins.</code>
+<code>Assign a role from accepted facts; the first matching rule wins.</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -62,24 +62,6 @@
 <tbody>
 <tr>
 <td data-label="Field">
-<code>glob</code></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">
-<code>string</code>; default: <code>*</code></td>
-<td data-label="Default">
-<code>*</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<a href="#s-14f9256789aece6db7eb4820">media_type</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">any of: <code>string</code>; <code>null</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>role</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -88,43 +70,35 @@
 <code>stove0.source/v1</code></td>
 <td data-label="Description"></td>
 </tr>
+<tr>
+<td data-label="Field">
+<a href="#s-7fab7afce7248c4fb65a7da3">when</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-e9eb028c725728a8a096c5e0.html#v-22c7204e70d74fb96c3926e1">#/components/schemas/FactPredicate</a>; default: <code>[]</code></td>
+<td data-label="Default">
+<code>[]</code></td>
+<td data-label="Description"></td>
+</tr>
 </tbody>
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-14f9256789aece6db7eb4820">
-<h3>Field: media_type</h3>
-<p class="shape">any of: <code>string</code>; <code>null</code>
+<section class="schema-section" id="s-7fab7afce7248c4fb65a7da3">
+<h3>Field: when</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-e9eb028c725728a8a096c5e0.html#v-22c7204e70d74fb96c3926e1">#/components/schemas/FactPredicate</a>; default: <code>[]</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
-<code>Media Type</code>
+<code>When</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
 </dd>
 </dl>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<code>string</code></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 </div>
 <details class="exact">
@@ -151,7 +125,7 @@
 </th>
 <td>
 <span id="v-edfa6cde0a61d29a23438e88">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/description">Classify one path; first matching rule wins.</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/description">Assign a role from accepted facts; the first matching rule wins.</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -162,116 +136,6 @@
 <td>
 <table id="v-1ac3b8af86731ab5bb94c982">
 <tbody>
-<tr>
-<th scope="row">
-<code>glob</code>
-</th>
-<td>
-<table id="v-6f5087153a1da0359c58fc7c">
-<tbody>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-ef2cbc29077d5d3f0c1ff721">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/glob/default">*</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-5ec867012796fb10d4c17b48">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/glob/title">Glob</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-d54ed0ff264e5c75cdd043e0">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/glob/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>media_type</code>
-</th>
-<td>
-<table id="v-14f9256789aece6db7eb4820">
-<tbody>
-<tr>
-<th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-0551eae2c5437f2d55d0d5e0">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-633bd02386228467f6961a1f">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-0aa812c400a34f887ec67339">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/media_type/anyOf/0/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-0117dfc2af15197b6d831bba">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-739e4b09547a69b8313ddd3b">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/media_type/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-83cc82401305421da70daa8c">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/media_type/title">Media Type</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
 <tr>
 <th scope="row">
 <code>role</code>
@@ -322,6 +186,66 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>when</code>
+</th>
+<td>
+<table id="v-7fab7afce7248c4fb65a7da3">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-958d60eeeacebd4f4165d5f5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/when/default">[]</code>
+<span class="kind">array</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-de1d36fa02a6789b04df9083">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cf529cd4b53226266c78a3e4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/when/items/$ref">#/components/schemas/FactPredicate</code>
+<span class="kind">string</span> <a href="e-e9eb028c725728a8a096c5e0.html#v-22c7204e70d74fb96c3926e1">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fb1e196273328a3b668b9cb1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/when/title">When</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4cd5e0dc44de143fd50d0a6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/when/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -364,7 +288,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -376,12 +300,36 @@
 <a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactRule/properties/when</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · items · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 </aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>

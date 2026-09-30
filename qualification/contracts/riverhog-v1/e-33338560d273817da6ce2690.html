@@ -65,7 +65,7 @@
 <a href="#s-4a9bfedff68654e3f0b81907">actions</a></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -166,7 +166,7 @@
 <section class="schema-section" id="s-4a9bfedff68654e3f0b81907">
 <h3>Field: actions</h3>
 <p class="shape">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -194,10 +194,18 @@
 <tbody>
 <tr>
 <td data-label="Alternative">1</td>
-<td data-label="Schema">const: <code>[&quot;read-inputs&quot;]</code></td>
+<td data-label="Schema">const: <code>[&quot;read-root&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
+<td data-label="Schema">const: <code>[&quot;read-inputs&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">3</td>
+<td data-label="Schema">const: <code>[&quot;read-provenance&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">4</td>
 <td data-label="Schema">const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
 </tr>
 </tbody>
@@ -257,7 +265,7 @@
 </th>
 <td>
 <span id="v-85707f39854e0fe322d8b6ef">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/items/enum/0">read-inputs</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/items/enum/0">read-root</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -267,7 +275,27 @@
 </th>
 <td>
 <span id="v-e02e6dcbae94c423bf5c5d71">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/items/enum/1">write-output</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/items/enum/1">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-fe5111bedc1d3c0888a144bd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/items/enum/2">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f3f40c2bb8b866cd503e621e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/items/enum/3">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -324,7 +352,7 @@
 </th>
 <td>
 <span id="v-77659e1c455d8befc4d669e8">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/oneOf/0/const/0">read-inputs</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/oneOf/0/const/0">read-root</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -358,13 +386,73 @@
 <span class="kind">string</span>
 </span></td>
 </tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-52a9219e5fd61366a3861826">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-1b7cdde02724d7fde06a9bb9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-134945ee64c16b6ece35f620">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/oneOf/2/const/0">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-c8e0bc89455174013b00f009">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-1014eaf6f458dc40ae7cea30">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5cf33ceaa791f1689ee2dfb4">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/oneOf/3/const/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
 <tr>
 <th scope="row">
 <code>1</code>
 </th>
 <td>
-<span id="v-88f276447e7582fef9d3a737">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/oneOf/1/const/1">write-output</code>
+<span id="v-9eab3187d4944e2f4f9fb092">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument/properties/actions/oneOf/3/const/1">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -972,7 +1060,7 @@
 <a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
 <br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Qualification routes</h3>
@@ -1049,7 +1137,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>1331abd626f0c187ac1b5e5b01921f573c9d56f50ebc60572cbf6f655b9b7241</code>
+<p>Closure SHA-256: <code>df42696a6d008afb202158b562a202ff7c5d71b2123ec71dc14a8a13e99cc3a3</code>
 </p>
 </details>
 </footer>
