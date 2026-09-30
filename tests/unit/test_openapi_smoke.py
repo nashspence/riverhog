@@ -10,8 +10,8 @@ from riverhog_api.schemas.workflows import (
 from riverhog_core.domain.models import CollectionSummary
 from riverhog_core.domain.types import CollectionId
 from riverhog_protocol import (
-    COLLECTION_UPLOAD_FILE_BATCH_MAX,
-    RETRIEVAL_FILE_BATCH_MAX,
+    COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX,
+    RETRIEVAL_ARTIFACT_BATCH_MAX,
     canonical_json_sha256,
 )
 from riverhog_protocol.collection_workflow_transport import (
@@ -42,7 +42,10 @@ def test_openapi_describes_archive_catalog_and_retrieval_boundaries() -> None:
         "/v1/collections:search",
         "/v1/collection-upload-sessions",
         "/v1/collection-upload-sessions/{collection_id}",
-        "/v1/collection-upload-sessions/{collection_id}/files",
+        "/v1/collection-upload-sessions/{collection_id}/artifacts",
+        "/v1/collection-upload-sessions/{collection_id}/provenance/bindings",
+        "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
+        "/v1/collection-upload-sessions/{collection_id}/materialization-decisions",
         "/v1/collection-upload-sessions/{collection_id}/tags",
         "/v1/collection-upload-sessions/{collection_id}/complete",
         "/v1/collection-upload-sessions/{collection_id}/cancel",
@@ -55,12 +58,10 @@ def test_openapi_describes_archive_catalog_and_retrieval_boundaries() -> None:
         "/v1/collections/{collection_id}/tags:add",
         "/v1/collections/{collection_id}/tags:remove",
         "/v1/tags",
-        "/v1/collections/{collection_id}/provenance/files",
-        "/v1/collections/{collection_id}/provenance/files/{path}",
-        "/v1/collections/{collection_id}/provenance/trace/{path}",
+        "/v1/collections/{collection_id}/provenance/artifacts",
+        "/v1/collections/{collection_id}/provenance/artifacts/{artifact_id}",
+        "/v1/collections/{collection_id}/provenance/journals",
         "/v1/collections/{collection_id}/provenance/journals/{journal_id}",
-        "/v1/collections/{collection_id}/provenance/journals/{journal_id}/agents",
-        "/v1/collections/{collection_id}/provenance/verification",
         "/v1/collections/{collection_id}/deletion-plan",
         "/v1/collections/{collection_id}/delete",
         "/v1/retrieval-plans",
@@ -94,7 +95,7 @@ def test_retrieval_plan_and_job_schemas_bind_exact_versions() -> None:
         "lease_seconds",
         "restore_policy",
         "requires_restore",
-        "file_count",
+        "artifact_count",
         "etag",
     }
     assert {"id", "plan_id", "state", "plan_etag", "restore_requested_at"} <= set(
@@ -103,79 +104,65 @@ def test_retrieval_plan_and_job_schemas_bind_exact_versions() -> None:
     assert {"lease_seconds", "restore_policy", "requires_restore"} <= set(
         schemas["RetrievalJobOut"]["required"]
     )
-    assert schemas["RetrievalPlanFilePageOut"]["properties"]["files"]["maxItems"] == 100
+    assert schemas["RetrievalPlanArtifactPageOut"]["properties"]["artifacts"]["maxItems"] == 100
     assert (
-        schemas["RetrievalPlanOut"]["properties"]["file_count"]["maximum"]
-        == RETRIEVAL_FILE_BATCH_MAX
+        schemas["RetrievalPlanOut"]["properties"]["artifact_count"]["maximum"]
+        == RETRIEVAL_ARTIFACT_BATCH_MAX
     )
     assert (
-        schemas["RetrievalPlanFilePageOut"]["properties"]["start_ordinal"]["maximum"]
-        == RETRIEVAL_FILE_BATCH_MAX
+        schemas["RetrievalPlanArtifactPageOut"]["properties"]["start_ordinal"]["maximum"]
+        == RETRIEVAL_ARTIFACT_BATCH_MAX
     )
 
 
-def test_provenance_reads_publish_typed_captured_or_omitted_contracts() -> None:
+def test_provenance_reads_publish_exact_artifact_bindings_and_journals() -> None:
     openapi = create_app().openapi()
     schemas = openapi["components"]["schemas"]
     paths = openapi["paths"]
 
-    assert set(schemas["CapturedFileProvenanceBinding"]["required"]) == {
-        "status",
-        "journal_id",
-        "current_state_id",
+    assert set(schemas["CollectionArtifactProvenanceBindingDocument"]["required"]) == {
+        "artifact_id",
+        "journal",
+        "delivery_association_id",
     }
-    assert set(schemas["OmittedFileProvenanceBinding"]["required"]) == {
-        "status",
-        "omission_reason",
+    assert set(schemas["CollectionArtifactProvenanceDetailOut"]["required"]) == {
+        "collection_id",
+        "archive_root_sha256",
+        "artifact",
+        "binding",
     }
-    assert schemas["CollectionFileProvenanceTraceOut"]["anyOf"] == [
-        {"$ref": "#/components/schemas/CapturedCollectionFileProvenanceTraceOut"},
-        {"$ref": "#/components/schemas/OmittedCollectionFileProvenanceTraceOut"},
-    ]
-    verification = schemas["CollectionProvenanceVerificationOut"]
-    assert verification["discriminator"]["propertyName"] == "provenance_mode"
-    assert {item["$ref"] for item in verification["oneOf"]} == {
-        "#/components/schemas/CapturedCollectionProvenanceVerification",
-        "#/components/schemas/OmittedCollectionProvenanceVerification",
-    }
-    listing = schemas["ListCollectionFileProvenanceOut"]
-    assert listing["discriminator"]["propertyName"] == "provenance_mode"
-    assert (
-        paths["/v1/collections/{collection_id}/provenance/files"]["get"]["responses"]["200"][
-            "content"
-        ]["application/json"]["schema"]["$ref"]
-        == "#/components/schemas/ListCollectionFileProvenanceOut"
+    listing = schemas["ListCollectionArtifactProvenanceOut"]
+    assert {"artifact_set_identity", "provenance_identity", "artifacts"} <= set(listing["required"])
+    assert {"journal_id", "bytes", "sha256"} == set(
+        schemas["ProvenanceJournalSummaryOut"]["required"]
     )
     assert (
-        paths["/v1/collections/{collection_id}/provenance/trace/{path}"]["get"]["responses"]["200"][
+        paths["/v1/collections/{collection_id}/provenance/artifacts"]["get"]["responses"]["200"][
             "content"
         ]["application/json"]["schema"]["$ref"]
-        == "#/components/schemas/CollectionFileProvenanceTraceOut"
+        == "#/components/schemas/ListCollectionArtifactProvenanceOut"
+    )
+    assert (
+        paths["/v1/collections/{collection_id}/provenance/artifacts/{artifact_id}"]["get"][
+            "responses"
+        ]["200"]["content"]["application/json"]["schema"]["$ref"]
+        == "#/components/schemas/CollectionArtifactProvenanceDetailOut"
     )
 
 
-def test_collection_upload_provenance_request_is_an_exact_choice() -> None:
-    schema = create_app().openapi()["components"]["schemas"][
-        "CreateOrResumeCollectionUploadSessionRequest"
-    ]
-
-    assert schema["properties"]["provenance_mode"]["enum"] == ["captured", "omitted"]
-    assert schema["properties"]["provenance_mode"]["default"] == "captured"
-    assert schema["oneOf"] == [
-        {
-            "properties": {
-                "provenance_mode": {"const": "captured"},
-                "provenance_omission_reason": {"type": "null"},
-            }
-        },
-        {
-            "properties": {
-                "provenance_mode": {"const": "omitted"},
-                "provenance_omission_reason": {"type": "string"},
-            },
-            "required": ["provenance_mode", "provenance_omission_reason"],
-        },
-    ]
+def test_collection_upload_requires_separate_artifact_and_provenance_steps() -> None:
+    openapi = create_app().openapi()
+    schemas = openapi["components"]["schemas"]
+    schema = schemas["CreateOrResumeCollectionUploadSessionRequest"]
+    assert "provenance_mode" not in schema["properties"]
+    assert "provenance_omission_reason" not in schema["properties"]
+    assert "artifacts" in schemas["RegisterCollectionUploadSessionArtifactsRequest"]["properties"]
+    paths = openapi["paths"]
+    assert "post" in paths["/v1/collection-upload-sessions/{collection_id}/provenance/bindings"]
+    assert (
+        "put"
+        in paths["/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}"]
+    )
 
 
 def test_collection_deletion_plan_types_the_retirement_evidence_reference() -> None:
@@ -207,12 +194,14 @@ def test_wire_batches_are_bounded_without_limiting_workflow_cardinality() -> Non
     schemas = create_app().openapi()["components"]["schemas"]
 
     assert (
-        schemas["RegisterCollectionUploadSessionFilesRequest"]["properties"]["files"]["maxItems"]
-        == COLLECTION_UPLOAD_FILE_BATCH_MAX
+        schemas["RegisterCollectionUploadSessionArtifactsRequest"]["properties"]["artifacts"][
+            "maxItems"
+        ]
+        == COLLECTION_UPLOAD_ARTIFACT_BATCH_MAX
     )
     assert (
-        schemas["RetrievalPlanRequest"]["properties"]["files"]["maxItems"]
-        == RETRIEVAL_FILE_BATCH_MAX
+        schemas["RetrievalPlanRequest"]["properties"]["artifacts"]["maxItems"]
+        == RETRIEVAL_ARTIFACT_BATCH_MAX
     )
     assert "idempotency_key" in schemas["RetrievalPlanRequest"]["required"]
     assert schemas["RetrievalPlanRequest"]["properties"]["idempotency_key"]["maxLength"] == 200
@@ -347,7 +336,7 @@ def test_collection_upload_contract_exposes_server_planned_plaintext_units() -> 
         "sources",
         "state",
     }
-    assert set(source["required"]) == {"path", "offset", "bytes", "artifact_sha256"}
+    assert set(source["required"]) == {"artifact_id", "offset", "bytes", "artifact_sha256"}
     assert source["properties"]["artifact_sha256"]
 
 
@@ -382,9 +371,9 @@ def test_collection_contracts_expose_creation_and_encryption_identities() -> Non
         "discarding",
     ]
     assert {
-        "files_pending",
-        "files_partial",
-        "files_uploaded",
+        "artifacts_pending",
+        "artifacts_partial",
+        "artifacts_uploaded",
         "uploaded_bytes",
         "missing_bytes",
     }.isdisjoint(schemas["CollectionUploadSessionOut"]["properties"])
@@ -392,7 +381,7 @@ def test_collection_contracts_expose_creation_and_encryption_identities() -> Non
     for schema in (
         "CollectionSummaryOut",
         "CollectionUploadListItemOut",
-        "CollectionUploadSessionFilesRegistrationOut",
+        "CollectionUploadSessionArtifactsRegistrationOut",
         "CollectionUploadSessionOut",
     ):
         assert {"encryption_format", "passphrase_id"} <= set(schemas[schema]["required"])
@@ -426,7 +415,7 @@ def test_collection_contracts_expose_creation_and_encryption_identities() -> Non
             tag_revision=1,
             tag_set_identity="3" * 64,
             tag_publication="current",
-            content_identity="1" * 64,
+            artifact_set_identity="1" * 64,
             archive_root_sha256="2" * 64,
             encryption_format="age-v1-scrypt",
             passphrase_id="openapi-test-key-v1",
