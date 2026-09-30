@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from types import SimpleNamespace
 from typing import Any
 
+import riverhog_client.producer as producer_module
 from riverhog_client import (
     ApiClient,
     ProducerArtifactIdentity,
@@ -17,6 +18,17 @@ from riverhog_client import (
     create_or_resume_with_initial_collection_tags,
     hash_raw_source_chunks,
 )
+from riverhog_protocol import PortableCollectionInventoryPage
+from riverhog_protocol.artifact_identity import ArtifactId
+from riverhog_protocol.collection_workflows import (
+    ArtifactDispositionSetIdentity,
+    CollectionRootIdentity,
+    OperationIdentity,
+    RecipeIdentity,
+)
+from riverhog_protocol.errors import NotFound
+from riverhog_protocol.output_collection_policy import OutputCollectionPolicy
+from riverhog_provenance import validate_journal
 
 assert not any(name.startswith("riverhog_client.processing") for name in sys.modules)
 
@@ -27,27 +39,12 @@ from riverhog_client.processing import (  # noqa: E402 - validates the explicit 
     CollectionTransformRuntime,
     DerivedCollectionSpec,
 )
-from riverhog_protocol import (  # noqa: E402
-    CollectionUploadUnitAssignmentDocument,
-    CollectionUploadUnitWorkDocument,
-    CollectionUploadWorkBatchDocument,
-    PortableCollectionInventoryPage,
-)
-from riverhog_protocol.collection_workflow_transport import (  # noqa: E402
-    ArtifactDispositionOutputPageDocument,
-    ArtifactDispositionPageDocument,
-)
-from riverhog_protocol.collection_workflows import (  # noqa: E402
-    ArtifactDispositionSetIdentity,
-    CollectionRootIdentity,
-    OperationIdentity,
-    RecipeIdentity,
-)
-from riverhog_protocol.output_collection_policy import OutputCollectionPolicy  # noqa: E402
 
 WORK_ID = "1" * 64
 EXECUTION_ID = "2" * 64
 CLAIM_ID = "b" * 64
+INPUT_ID = ArtifactId("c" * 64)
+OUTPUT_ID = ArtifactId("d" * 64)
 INPUT_ROOT = CollectionRootIdentity(1, "3" * 64, "4" * 64)
 INPUT_CONTENT = b"external application input"
 INPUT_SHA256 = hashlib.sha256(INPUT_CONTENT).hexdigest()
@@ -65,33 +62,30 @@ class ReadApi:
         return {
             "id": str(collection_id),
             "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
-            "content_identity": INPUT_ROOT.content_identity,
+            "artifact_set_identity": INPUT_ROOT.artifact_set_identity,
         }
 
     def get_portable_collection_inventory(
-        self,
-        collection_id: int,
-        **kwargs: Any,
+        self, collection_id: int, **kwargs: Any
     ) -> PortableCollectionInventoryPage:
-        assert collection_id == 1
-        assert kwargs["cursor"] is None
+        assert collection_id == 1 and kwargs["cursor"] is None
         return PortableCollectionInventoryPage.model_validate(
             {
                 "authority": {
                     "header": {
                         "collection": "1",
-                        "content_identity": INPUT_ROOT.content_identity,
+                        "artifact_set_identity": INPUT_ROOT.artifact_set_identity,
                         "encryption_format": "age-v1-scrypt",
                         "passphrase_id": "external-archive-key-v1",
-                        "provenance_mode": "omitted",
+                        "provenance_identity": "e" * 64,
                     },
                     "inventory_identity": "6" * 64,
-                    "file_count": "1",
-                    "file_bytes": str(len(INPUT_CONTENT)),
+                    "artifact_count": "1",
+                    "artifact_bytes": str(len(INPUT_CONTENT)),
                 },
-                "files": [
+                "artifacts": [
                     {
-                        "path": "input.bin",
+                        "artifact_id": INPUT_ID,
                         "bytes": str(len(INPUT_CONTENT)),
                         "sha256": INPUT_SHA256,
                     }
@@ -100,21 +94,22 @@ class ReadApi:
             }
         )
 
-    def plan_retrieval(self, files: Sequence[tuple[int, str]], **kwargs: Any) -> dict[str, object]:
-        assert files == [(1, "input.bin")]
-        assert kwargs["restore_policy"] == "never"
-        return {"id": "read-1", "etag": "7" * 64, "file_count": 1}
+    def plan_retrieval(
+        self, artifacts: Sequence[tuple[int, str]], **kwargs: Any
+    ) -> dict[str, object]:
+        assert artifacts == [(1, INPUT_ID)] and kwargs["restore_policy"] == "never"
+        return {"id": "read-1", "etag": "7" * 64, "artifact_count": 1}
 
-    def list_retrieval_plan_files(self, plan_id: str, **kwargs: Any) -> dict[str, object]:
+    def list_retrieval_plan_artifacts(self, plan_id: str, **kwargs: Any) -> dict[str, object]:
         assert plan_id == "read-1"
         return {
             "plan_id": plan_id,
             "etag": kwargs["plan_etag"],
             "start_ordinal": kwargs["start_ordinal"],
-            "files": [
+            "artifacts": [
                 {
                     "collection_id": "1",
-                    "path": "input.bin",
+                    "artifact_id": INPUT_ID,
                     "bytes": str(len(INPUT_CONTENT)),
                     "sha256": INPUT_SHA256,
                 }
@@ -132,13 +127,8 @@ class ReadApi:
         }
 
     @contextmanager
-    def stream_retrieval_file(
-        self,
-        _job_id: str,
-        *,
-        start: int = 0,
-        end: int | None = None,
-        **_kwargs: Any,
+    def stream_retrieval_artifact(
+        self, _job_id: str, *, start: int = 0, end: int | None = None, **_kwargs: Any
     ) -> Iterator[Iterator[bytes]]:
         yield iter((INPUT_CONTENT[start:end],))
 
@@ -152,12 +142,13 @@ class ReadApi:
         self.closed = True
 
 
-class UploadApi:
+class UploadApi(ReadApi):
     def __init__(self) -> None:
+        super().__init__()
         self.registered: dict[str, dict[str, Any]] = {}
-        self.discovery_closed = False
-        self.committed = False
-        self.content_identity = "8" * 64
+        self.journals: dict[str, bytes] = {}
+        self.bindings: list[dict[str, object]] = []
+        self.decisions: list[dict[str, object]] = []
 
     def get_processing_claim(self, claim_id: str) -> SimpleNamespace:
         assert claim_id == CLAIM_ID
@@ -170,48 +161,6 @@ class UploadApi:
             )
         )
 
-    def list_processing_claim_dispositions(
-        self, claim_id: str, *, identity_sha256: str, start_ordinal: int = 0
-    ) -> ArtifactDispositionPageDocument:
-        assert claim_id == CLAIM_ID and identity_sha256 == DISPOSITIONS.sha256
-        return ArtifactDispositionPageDocument.model_validate(
-            {
-                "identity": DISPOSITIONS.as_dict(),
-                "start_ordinal": str(start_ordinal),
-                "dispositions": [
-                    {
-                        "input": {
-                            "collection_id": "1",
-                            "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
-                            "path": "input.bin",
-                        },
-                        "status": "transformed",
-                    }
-                ],
-            }
-        )
-
-    def list_processing_claim_disposition_outputs(
-        self, claim_id: str, *, identity_sha256: str, start_ordinal: int = 0
-    ) -> ArtifactDispositionOutputPageDocument:
-        assert claim_id == CLAIM_ID and identity_sha256 == DISPOSITIONS.sha256
-        return ArtifactDispositionOutputPageDocument.model_validate(
-            {
-                "identity": DISPOSITIONS.as_dict(),
-                "start_ordinal": str(start_ordinal),
-                "outputs": [
-                    {
-                        "input": {
-                            "collection_id": "1",
-                            "archive_root_sha256": INPUT_ROOT.archive_root_sha256,
-                            "path": "input.bin",
-                        },
-                        "output_path": "output.bin",
-                    }
-                ],
-            }
-        )
-
     def create_or_resume_collection_upload_session(
         self, *_args: Any, **_kwargs: Any
     ) -> dict[str, object]:
@@ -219,103 +168,64 @@ class UploadApi:
             "collection_id": "2",
             "resumed": False,
             "state": "open",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
             "registration_constraints": {
-                "pack_member_bytes": "1024",
+                "pack_member_bytes": "1048576",
                 "raw_part_plaintext_bytes": "65536",
             },
         }
 
-    def register_collection_upload_session_files(
-        self,
-        _collection_id: int,
-        files: Sequence[Mapping[str, Any]],
-        **_kwargs: Any,
+    def register_collection_upload_session_artifacts(
+        self, _collection_id: int, artifacts: Sequence[Mapping[str, Any]], **_kwargs: Any
     ) -> dict[str, object]:
-        for item in files:
-            self.registered[str(item["path"])] = dict(item)
-        return {"state": "open", "files": [dict(item) for item in files], "volumes": []}
+        for item in artifacts:
+            self.registered[str(item["artifact_id"])] = dict(item)
+        return {
+            "artifacts": [{**item, "custody_receipt": None} for item in artifacts],
+            "volumes": [],
+        }
 
     def upload_collection_upload_session_provenance_journal(
-        self, *_args: Any, **_kwargs: Any
+        self,
+        _collection_id: int,
+        journal_id: str,
+        *,
+        content: Iterator[bytes],
+        byte_count: int,
+        sha256: str,
     ) -> None:
-        raise AssertionError("external fixture uses server-generated provenance")
+        raw = b"".join(content)
+        assert len(raw) == byte_count
+        assert hashlib.sha256(raw).hexdigest() == sha256
+        validate_journal(raw, require_profiles=False)
+        self.journals[journal_id] = raw
 
-    def list_collection_upload_session_files(
-        self, _collection_id: int, **_kwargs: Any
-    ) -> dict[str, object]:
-        return {"page_size": 100, "next_page_token": None, "files": list(self.registered.values())}
+    def get_collection_upload_session_artifact_provenance_binding(
+        self, _collection_id: int, _artifact_id: ArtifactId
+    ) -> object:
+        raise NotFound("binding absent")
+
+    def bind_collection_upload_session_artifact_provenance(
+        self, _collection_id: int, batch: Any
+    ) -> None:
+        self.bindings.extend(batch.model_dump(mode="json")["bindings"])
+
+    def set_collection_upload_session_materialization_decisions(
+        self, _collection_id: int, batch: Any
+    ) -> None:
+        self.decisions.extend(batch.model_dump(mode="json")["decisions"])
 
     def heartbeat_collection_upload_session(self, _collection_id: int) -> dict[str, str]:
         return {"state": "open"}
 
-    def acquire_collection_upload_session_work(
-        self, collection_id: int, *, limit: int = 16
-    ) -> CollectionUploadWorkBatchDocument:
-        assignment = None if not self.discovery_closed or self.committed else self._assignment()
-        return CollectionUploadWorkBatchDocument(
-            collection_id=str(collection_id),
-            planning_complete=self.discovery_closed,
-            complete=self.discovery_closed and assignment is None,
-            committed_payload_bytes=str(
-                sum(int(item["bytes"]) for item in self.registered.values())
-                if self.committed
-                else 0
-            ),
-            work=([] if assignment is None else [assignment])[:limit],
-        )
-
-    def _assignment(self) -> CollectionUploadUnitAssignmentDocument:
-        sources = [
-            {
-                "path": item["path"],
-                "offset": "0",
-                "bytes": item["bytes"],
-                "artifact_sha256": item["sha256"],
-            }
-            for item in self.registered.values()
-        ]
-        size = sum(int(item["bytes"]) for item in sources)
-        return CollectionUploadUnitAssignmentDocument.model_validate(
-            {
-                "volume": {"volume_id": "pack-" + "0" * 64, "sequence": "0" * 64, "kind": "pack"},
-                "plan_sha256": "c" * 64,
-                "unit": {
-                    "unit": "0",
-                    "payload_bytes": str(size),
-                    "plaintext_bytes": str(size),
-                    "sources": sources,
-                    "state": "pending",
-                },
-            }
-        )
-
-    def put_collection_upload_session_unit(
-        self, *_args: Any, content: bytes, **_kwargs: Any
-    ) -> CollectionUploadUnitWorkDocument:
-        assert content
-        self.committed = True
-        unit = self._assignment().unit.model_dump(mode="json")
-        return CollectionUploadUnitWorkDocument.model_validate({**unit, "state": "committed"})
-
-    def get_collection_upload_session_unit(self, *_args: Any) -> CollectionUploadUnitWorkDocument:
-        unit = self._assignment().unit.model_dump(mode="json")
-        return CollectionUploadUnitWorkDocument.model_validate(
-            {**unit, "state": "committed" if self.committed else "pending"}
-        )
-
-    def complete_collection_upload_session(self, _collection_id: int) -> dict[str, str]:
-        self.discovery_closed = True
-        return {"state": "uploading", "content_identity": self.content_identity}
-
-    def get_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
-        assert self.committed
+    def complete_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
         return {
             "state": "finalized",
-            "content_identity": self.content_identity,
+            "artifact_set_identity": "8" * 64,
             "collection": {
                 "id": "2",
-                "archive_root_sha256": "d" * 64,
-                "content_identity": self.content_identity,
+                "archive_root_sha256": "f" * 64,
+                "artifact_set_identity": "8" * 64,
             },
         }
 
@@ -328,11 +238,7 @@ class SettlementClient(ApiClient):
         self.request: tuple[str, str, str, object] | None = None
 
     def _claim_response(
-        self,
-        operation_id: str,
-        claim_id: str,
-        suffix: str,
-        request: object,
+        self, operation_id: str, claim_id: str, suffix: str, request: object
     ) -> Any:
         self.request = (operation_id, claim_id, suffix, request)
         return {"state": "settled"}
@@ -340,17 +246,17 @@ class SettlementClient(ApiClient):
 
 def main() -> None:
     raw = hash_raw_source_chunks(
-        path="input.bin",
+        artifact_id=INPUT_ID,
         chunks=(INPUT_CONTENT,),
         expected_bytes=len(INPUT_CONTENT),
         part_plaintext_bytes=65536,
     )
-    assert isinstance(raw, RawSourceHash)
-    assert raw.summary.sha256 == INPUT_SHA256
+    assert isinstance(raw, RawSourceHash) and raw.summary.sha256 == INPUT_SHA256
     assert tuple(raw.iter_batches())[0][0] == 0
     raw.close()
+
     staged_tags: list[str] = []
-    session = create_or_resume_with_initial_collection_tags(
+    create_or_resume_with_initial_collection_tags(
         ("source:external", "workflow:fixture"),
         create_or_resume=lambda first, _identity: {
             "collection_id": "2",
@@ -359,7 +265,6 @@ def main() -> None:
         },
         add_tags=lambda _collection_id, batch: staged_tags.extend(batch),
     )
-    assert session["collection_id"] == "2"
     assert staged_tags == ["source:external", "workflow:fixture"]
 
     first = ReadApi()
@@ -373,30 +278,25 @@ def main() -> None:
     assert first.closed and second.closed
 
     refreshed: list[str] = []
-    runtime_stub = SimpleNamespace(
-        refresh_capability=refreshed.append,
-        close=lambda **_kwargs: None,
-    )
     registry = ClaimedCollectionRuntimeRegistry()
     registry.refresh("job-1", "replacement-capability")
-    with registry.bind("job-1", runtime_stub):
+    with registry.bind(
+        "job-1", SimpleNamespace(refresh_capability=refreshed.append, close=lambda: None)
+    ):
         pass
     assert refreshed == ["replacement-capability"]
 
     read_api = ReadApi()
     reader = ClaimedCollectionReader(
-        read_api,
-        inputs=(INPUT_ROOT,),
-        work_id=WORK_ID,
-        claim_id=CLAIM_ID,
-        fence=1,
+        read_api, inputs=(INPUT_ROOT,), work_id=WORK_ID, claim_id=CLAIM_ID, fence=1
     )
     artifacts = tuple(reader.iter_inventory())
-    assert len(artifacts) == 1
+    assert len(artifacts) == 1 and artifacts[0].artifact_id == INPUT_ID
     with reader.prepare(artifacts, poll_seconds=0.01) as retrieval:
         assert retrieval.read_bytes(artifacts[0], maximum_bytes=len(INPUT_CONTENT)) == INPUT_CONTENT
 
     upload_api = UploadApi()
+    producer_module.upload_collection_units = lambda *args, **kwargs: None
     spec = DerivedCollectionSpec(
         inputs=(INPUT_ROOT,),
         recipe=RecipeIdentity("external.recipe/v1", 1, "e" * 64),
@@ -413,24 +313,24 @@ def main() -> None:
         producer_app="external-riverhog-client-fixture",
     )
     writer = runtime.open_incremental_publication(execution_envelope_sha256="0" * 64)
-    identity = ProducerArtifactIdentity("output.bin", len(OUTPUT_CONTENT), OUTPUT_SHA256)
+    identity = ProducerArtifactIdentity(OUTPUT_ID, len(OUTPUT_CONTENT), OUTPUT_SHA256)
     writer.append(
         ProducerStream(
-            path=identity.path,
+            artifact_id=OUTPUT_ID,
             bytes=identity.bytes,
             sha256=identity.sha256,
             read_range=lambda offset, size: OUTPUT_CONTENT[offset : offset + size],
+            materialization_hint=("output.bin",),
         ),
         identity=identity,
     )
     receipt = runtime.finish_incremental_publication(
-        writer,
-        execution_sha256="1" * 64,
-        disposition_set=DISPOSITIONS,
-        poll_seconds=0.01,
+        writer, execution_sha256="1" * 64, disposition_set=DISPOSITIONS, poll_seconds=0.01
     )
     runtime.close()
     assert receipt.collection_id == 2
+    assert len(upload_api.registered) == len(upload_api.journals) == len(upload_api.bindings) == 1
+    assert upload_api.decisions[0]["materialization_hint"] == {"components": ["output.bin"]}
 
     settlement = SettlementClient()
     assert settlement.settle_processing_claim(

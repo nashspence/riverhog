@@ -109,17 +109,18 @@ def stage_metadata(
     _write_exact(metadata / "description-state.json", canonical_json_bytes(state))
     _write_exact(metadata / "description.txt", value.encode("utf-8") if value else b"")
 
-    visited: set[str] = set()
+    node_count = 0
 
     class NodeStore:
         def get(self, digest: str) -> bytes:
+            nonlocal node_count
             path = nodes_dir / f"{digest}.bin"
-            if digest not in visited:
+            if not path.exists():
                 raw = read_plaintext(
                     collection_tag_node_path(digest), COLLECTION_TAG_NODE_BYTES_MAX
                 )
                 _write_exact(path, raw)
-                visited.add(digest)
+                node_count += 1
             return path.read_bytes()
 
         def put(self, digest: str, encoded: bytes) -> None:
@@ -151,5 +152,5 @@ def stage_metadata(
         description_sha256=description_sha256,
         head_sha256=hashlib.sha256(head_raw).hexdigest(),
         tag_count=tag_count,
-        node_count=len(visited),
+        node_count=node_count,
     )

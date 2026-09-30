@@ -21,7 +21,14 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
             "catalog_sync_view_changed",
         ),
         "create_or_resume_collection_upload_session": ("conflict",),
-        "register_collection_upload_session_files": ("conflict", "not_found"),
+        "register_collection_upload_session_artifacts": ("conflict", "not_found"),
+        "bind_collection_upload_session_artifact_provenance": ("conflict", "not_found"),
+        "get_collection_upload_session_artifact_provenance_binding": ("not_found",),
+        "set_collection_upload_artifact_materialization_decisions": (
+            "conflict",
+            "not_found",
+        ),
+        "register_collection_upload_session_raw_part_digests": ("conflict", "not_found"),
         "create_collection_upload_session_provenance_journal": ("conflict", "not_found"),
         "append_collection_upload_session_provenance_journal": (
             "conflict",
@@ -30,7 +37,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         ),
         "seal_collection_upload_session_provenance_journal": ("conflict", "not_found"),
         "get_collection_upload_session_provenance_journal": ("not_found",),
-        "list_collection_upload_session_files": ("not_found",),
+        "list_collection_upload_session_artifacts": ("not_found",),
         "complete_collection_upload_session": ("conflict", "not_found"),
         "cancel_collection_upload_session": ("conflict", "not_found"),
         "get_collection_upload_session": ("not_found",),
@@ -55,7 +62,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "plan_retrieval": ("conflict", "not_found"),
         "get_retrieval_plan": ("not_found",),
         "advance_retrieval_plan": ("not_found",),
-        "list_retrieval_plan_files": ("invalid_state", "not_found", "precondition_failed"),
+        "list_retrieval_plan_artifacts": ("invalid_state", "not_found", "precondition_failed"),
         "create_retrieval_job": (
             "conflict",
             "download_allowance_exceeded",
@@ -66,7 +73,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "get_retrieval_job": ("not_found",),
         "cancel_retrieval_job": ("invalid_state", "not_found"),
         "acknowledge_retrieval_job": ("invalid_state", "not_found"),
-        "download_retrieval_file": (
+        "download_retrieval_artifact": (
             "download_allowance_exceeded",
             "invalid_range",
             "invalid_state",
@@ -85,18 +92,23 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "add_app_key_access": ("conflict", "not_found"),
         "remove_app_key_access": ("not_found",),
         "revoke_app_key": ("not_found",),
-        "list_collection_provenance": ("invalid_state", "not_found"),
-        "get_collection_file_provenance": ("invalid_state", "not_found"),
-        "trace_collection_file_provenance": ("invalid_state", "not_found"),
+        "list_collection_artifact_provenance": (
+            "invalid_state",
+            "not_found",
+            "precondition_failed",
+            "precondition_required",
+        ),
+        "get_collection_artifact_provenance": ("invalid_state", "not_found"),
         "stream_collection_provenance_journal": (
             "not_found",
             "precondition_failed",
             "precondition_required",
         ),
-        "list_collection_provenance_journal_agents": ("not_found",),
-        "request_collection_provenance_verification": ("not_found",),
-        "get_collection_provenance_verification": ("not_found",),
-        "cancel_collection_provenance_verification": ("not_found",),
+        "list_collection_provenance_journals": (
+            "not_found",
+            "precondition_failed",
+            "precondition_required",
+        ),
         "get_portable_collection_inventory": (
             "not_found",
             "precondition_failed",
