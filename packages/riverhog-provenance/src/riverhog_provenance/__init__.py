@@ -11,7 +11,6 @@ from .common import (
     software_agent_id,
     utc_now,
 )
-from .constants import PACKAGE_VERSION as __version__
 from .constants import PROVENANCE_ENTRY_SCHEMA, PROVENANCE_PROFILE
 from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
@@ -65,7 +64,6 @@ from .segmented_archive import (
 from .sources import BytesSource, SegmentSource, StreamSource
 
 __all__ = [
-    "__version__",
     "PROVENANCE_ENTRY_SCHEMA",
     "PROVENANCE_PROFILE",
     "artifact",

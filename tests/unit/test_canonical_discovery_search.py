@@ -6,8 +6,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-import pytest
 import httpx
+import pytest
 from http_api_contracts import BrowseTokenCodec
 from riverhog_api.app import create_app
 from riverhog_api.schemas.search import DiscoveryPageOut
@@ -46,8 +46,7 @@ from riverhog_protocol.collection_production_provenance import collection_produc
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
 from riverhog_provenance import BoundedSourceObserver, BytesSource, validate_journal
 from riverhog_provenance_contracts import ContractCatalog
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from tests.unit.db_helpers import sqlite_url
 

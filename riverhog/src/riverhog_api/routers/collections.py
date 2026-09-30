@@ -351,7 +351,7 @@ def get_collection_upload_session_artifact_provenance_binding(
     response_model=ArtifactMaterializationDecisionBatchDocument,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def set_collection_upload_artifact_materialization_decisions(
+def set_collection_upload_session_materialization_decisions(
     collection_id: CollectionIdParameter,
     request: ArtifactMaterializationDecisionBatchDocument,
     container: ContainerDep,
