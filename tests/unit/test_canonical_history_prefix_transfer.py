@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+from contextlib import contextmanager
+from dataclasses import replace
 from typing import Any
 
 import pytest
+from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_client.client import ApiClient
+from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalChunkRecord
 from riverhog_protocol import (
@@ -33,6 +37,17 @@ class _ConstructionApi:
 
     def __init__(self, service: Any) -> None:
         self.service = service
+        self.stream_reads = 0
+
+    def get_collection_upload_session_provenance_journal(self, collection_id, journal_id):
+        return CollectionUploadProvenanceJournalStatusDocument.model_validate(
+            self.service.get_provenance_journal(collection_id, journal_id)
+        )
+
+    @contextmanager
+    def stream_collection_upload_session_provenance_journal(self, collection_id, journal_id):
+        self.stream_reads += 1
+        yield self.service.iter_sealed_provenance_journal(collection_id, journal_id)
 
     def create_collection_upload_session_provenance_journal(
         self, collection_id, journal_id, *, byte_count, sha256, selection_role=None
@@ -99,6 +114,12 @@ def test_longer_authenticated_source_prefix_preserves_early_octets_and_upload_bo
         sha256=hashlib.sha256(first).hexdigest(),
         selection_role="history-dependency",
     )
+    transfer = CanonicalHistoryTransfer(api, 1)
+    first_anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
+    transfer._journal(None, first_anchor)
+    assert api.stream_reads == 0
+    with pytest.raises(ValueError, match="already accepted prefix"):
+        transfer._journal(None, replace(first_anchor, prefix_sha256="f" * 64))
     complete = api.upload_collection_upload_session_provenance_journal(
         1,
         summary.journal_id,
@@ -109,6 +130,11 @@ def test_longer_authenticated_source_prefix_preserves_early_octets_and_upload_bo
     )
     assert early.anchor.model_dump(mode="json") == summary.anchor
     assert complete.anchor.model_dump(mode="json") == validate_journal(later).anchor
+    # A longer receiver prefix still requires exact overlap authentication.
+    transfer._journal(None, first_anchor)
+    assert api.stream_reads == 1
+    with pytest.raises(ValueError, match="already accepted prefix"):
+        transfer._journal(None, replace(first_anchor, prefix_sha256="f" * 64))
     with session_scope(f.factory) as session:
         chunks = list(
             session.scalars(

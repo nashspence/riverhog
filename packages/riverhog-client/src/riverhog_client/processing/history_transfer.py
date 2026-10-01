@@ -20,12 +20,10 @@ class CanonicalHistoryTransfer:
         self.collection_id = collection_id
 
     def accept(self, source: ClaimedProvenance, *, extent: str) -> MemberHistoryImport:
-        imported = source.history_import(extent=extent)
-        proof = source.source_binding_proof()
-        self.api.stage_collection_upload_session_history_structure(
-            self.collection_id, proof.to_json_bytes()
-        )
-        with source.history_closure(extent=extent) as closure:
+        with source.history_import(extent=extent) as (imported, proof, closure):
+            self.api.stage_collection_upload_session_history_structure(
+                self.collection_id, proof.to_json_bytes()
+            )
             for content in closure.structure_objects():
                 self.api.stage_collection_upload_session_history_structure(
                     self.collection_id, content
@@ -42,6 +40,10 @@ class CanonicalHistoryTransfer:
         except NotFound:
             old = None
         if old is not None and old.state == "sealed" and old.bytes >= selected.prefix_bytes:
+            if old.bytes == selected.prefix_bytes:
+                if old.sha256 != selected.prefix_sha256:
+                    raise ValueError("imported journal conflicts with an already accepted prefix")
+                return
             # The same source journal may serve multiple exact selected prefixes.
             # Authenticate overlap, preserving each import's independent extent.
             digest = hashlib.sha256()
