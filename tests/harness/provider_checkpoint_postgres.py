@@ -12,10 +12,10 @@ from riverhog_core.catalog_db import initialize_db, make_session_factory, sessio
 from riverhog_core.catalog_models import (
     AppKeyAccessGrantRecord,
     AppKeyRecord,
-    CollectionFileRecord,
+    CollectionArtifactRecord,
     CollectionRecord,
     RetrievalJobRecord,
-    RetrievalPlanFileRecord,
+    RetrievalPlanArtifactRecord,
     RetrievalPlanRecord,
 )
 from riverhog_core.runtime_config import RuntimeConfig
@@ -62,7 +62,9 @@ def _seed(database_url: str) -> None:
                 creation_identity_sha256="1" * 64,
                 creation_custody_mode="copy",
                 creation_archive_store="archive",
-                content_identity="2" * 64,
+                artifact_set_identity="2" * 64,
+                provenance_identity="b" * 64,
+                delivery_context_id="urn:uuid:11111111-1111-4111-8111-111111111111",
                 encryption_format="age-scrypt-v1",
                 passphrase_id="qualification-key-v1",
                 inventory_identity="3" * 64,
@@ -73,7 +75,9 @@ def _seed(database_url: str) -> None:
         )
         session.flush()
         session.add(
-            CollectionFileRecord(collection_id=42, path="sample.bin", bytes=1, sha256="4" * 64)
+            CollectionArtifactRecord(
+                collection_id=42, artifact_id="a" * 64, bytes=1, sha256="4" * 64
+            )
         )
         session.add(
             RetrievalPlanRecord(
@@ -88,18 +92,18 @@ def _seed(database_url: str) -> None:
                 restore_policy="allow",
                 created_at=created,
                 expires_at=deadline,
-                file_commitment_sha256="6" * 64,
+                artifact_commitment_sha256="6" * 64,
                 segment_commitment_sha256="7" * 64,
                 etag=PLAN_ETAG,
             )
         )
         session.flush()
         session.add(
-            RetrievalPlanFileRecord(
+            RetrievalPlanArtifactRecord(
                 plan_id="plan-42",
-                file_order=0,
+                artifact_order=0,
                 collection_id=42,
-                path="sample.bin",
+                artifact_id="a" * 64,
                 bytes=1,
                 sha256="4" * 64,
                 source_store="archive",
