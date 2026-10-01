@@ -169,14 +169,14 @@ def test_postgres_retrieval_plan_advances_in_bounded_restartable_steps(
     content = bytes(index % 251 for index in range(segment_count * CHUNK_SIZE))
     service, collection_id, _ranges, _store = _seed_collection(
         tmp_path,
-        {"many-segments.bin": content},
+        {"1" * 64: content},
         database_url=isolated_database_url,
         raw=True,
         raw_volume_plaintext_bytes=CHUNK_SIZE,
         raw_part_plaintext_bytes=CHUNK_SIZE,
     )
 
-    plan = service.plan(((collection_id, "many-segments.bin"),))
+    plan = service.plan(((collection_id, "1" * 64),))
     assert plan["state"] == "planning"
     with session_scope(service._session_factory) as session:
         assert len(session.scalars(select(RetrievalPlanObjectRecord)).all()) == 32
@@ -259,18 +259,18 @@ def test_postgres_catalog_revisions_serialize_commit_and_restart(
                     creation_identity_sha256=identity,
                     creation_custody_mode="producer-retained",
                     archive_generation=identity,
-                    content_identity=identity,
+                    artifact_set_identity=identity,
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture",
-                    provenance_mode="omitted",
-                    provenance_identity=None,
+                    provenance_identity=identity,
+                    delivery_context_id=f"00000000-0000-4000-8000-{collection_id:012x}",
                     inventory_identity=identity,
                     archive_root_sha256=identity,
                     created_by_principal_id="fixture",
                     created_at="2026-09-07T00:00:00.000000000Z",
                     is_published=True,
-                    file_count=0,
-                    file_bytes=0,
+                    artifact_count=0,
+                    artifact_bytes=0,
                 )
             )
 
@@ -895,7 +895,7 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
                     object_path=f"archives/fixture/volumes/pack-{sequence:064x}.tar.age",
                     plaintext_bytes=0,
                     source_bytes=0,
-                    source_path=None,
+                    source_artifact_id=None,
                     source_first_part=None,
                     source_part_count=None,
                     unit_plaintext_bytes=1,

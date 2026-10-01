@@ -92,6 +92,7 @@ class CollectionDescriptionService(Protocol):
 
 
 class ProvenanceService(Protocol):
+    def rebuild_index(self, collection_id: int) -> str: ...
     def get_structure_object(
         self, collection_id: int, object_id: str, *, expected_root: str, principal: Principal
     ) -> bytes: ...

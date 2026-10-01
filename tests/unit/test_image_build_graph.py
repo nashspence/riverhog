@@ -738,6 +738,7 @@ def test_stove0_supplied_validators_are_compose_composition_only() -> None:
     assert "--package a-stove0-media-metadata-contract-lib" in composition_build
     assert "--package a-stove0-media-sampling-contract-lib" in composition_build
     assert "--package a-stove0-ffprobe-streams-contract-lib" in composition_build
+    assert "--package a-stove0-filename-prefix-sidecar-evidence-contract-lib" in composition_build
 
     assert "FROM runtime-base AS bundled-components" in composition_runtime
     assert 'io.github.nashspence.riverhog.composition="bundled-components"' in composition_runtime

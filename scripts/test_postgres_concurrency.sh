@@ -20,6 +20,7 @@ default_tests=(
   tests/integration/test_collection_deletion_concurrency.py
   tests/integration/test_collection_upload_custody_concurrency.py
   tests/integration/test_operation_lifecycle_postgres.py
+  tests/integration/test_canonical_discovery_rebuild_postgres.py
   tests/integration/test_download_allowance_concurrency.py
   tests/integration/test_lifecycle_event_concurrency.py
   tests/integration/test_provider_qualification_checkpoint_postgres.py

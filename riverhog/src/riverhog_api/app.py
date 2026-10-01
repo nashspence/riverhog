@@ -25,6 +25,7 @@ from http_api_contracts import (
     status_for_error_code,
 )
 from pydantic import TypeAdapter
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_db import catalog_state_schema
 from riverhog_core.runtime_document import load_runtime_config
 from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
@@ -531,6 +532,13 @@ def _parser() -> argparse.ArgumentParser:
         version=importlib.metadata.version("riverhog-server"),
     )
     subparsers = parser.add_subparsers(dest="command")
+    index = subparsers.add_parser(
+        "index", help="maintain the rebuildable canonical discovery index"
+    )
+    index_subparsers = index.add_subparsers(dest="index_command", required=True)
+    rebuild = index_subparsers.add_parser("rebuild", help="rebuild one collection from its archive")
+    rebuild.add_argument("--collection", type=int, required=True)
+    rebuild.add_argument("--json", action="store_true", help="Emit JSON.")
     state = subparsers.add_parser("state", help="inspect or upgrade the catalog schema")
     state_subparsers = state.add_subparsers(dest="state_command", required=True)
     for command_name, help_text in (
@@ -545,6 +553,22 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.command == "index":
+        container = default_container()
+        try:
+            generation_id = container.provenance.rebuild_index(args.collection)
+        except (RiverhogError, RuntimeError, ValueError) as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
+        finally:
+            container.close()
+        index_payload = {"collection_id": str(args.collection), "index_generation": generation_id}
+        print(
+            canonical_json_bytes(index_payload).decode()
+            if args.json
+            else f"collection {args.collection} canonical discovery generation: {generation_id}"
+        )
+        return 0
     if args.command == "state":
         from riverhog_core.runtime_document import database_url_from_document
 

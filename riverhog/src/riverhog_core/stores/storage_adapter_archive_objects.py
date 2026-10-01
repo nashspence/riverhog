@@ -5,6 +5,7 @@ from collections.abc import Iterator
 
 from riverhog_storage_adapter_protocol import (
     CompletedWriteLookupRequest,
+    ObjectHeadRequest,
     ObjectLocator,
     ObjectPlacementPolicy,
     ObjectReadRequest,
@@ -216,6 +217,32 @@ class StorageAdapterImmutableArchiveObjectStore:
                 content,
             )
         except StorageAdapterRejection as exc:
+            if exc.code == "identity_conflict":
+                # Age ciphertext is randomized. The immutable archive identity is
+                # the exact plaintext assertions, type and placement; replay the
+                # original stored receipt rather than replacing its ciphertext.
+                existing = self._adapter.head_object(
+                    ObjectHeadRequest(
+                        object=ObjectLocator(object_path=object_path),
+                        expected_placement_policy=placement_policy,
+                    )
+                )
+                if (
+                    existing is not None
+                    and existing.stored_sha256 is not None
+                    and existing.content_type == content_type
+                    and existing.observed_identity_assertions == required_identity_assertions
+                    and "riverhog-plaintext-bytes" in required_identity_assertions
+                    and "riverhog-plaintext-sha256" in required_identity_assertions
+                ):
+                    return ImmutableObjectReceipt(
+                        object_path=existing.object_path,
+                        revision=existing.revision,
+                        entity_token=existing.entity_token,
+                        stored_bytes=existing.stored_bytes,
+                        stored_sha256=existing.stored_sha256,
+                        completed_at=existing.completed_at,
+                    )
             _raise_identity_conflict(exc)
             raise
         return ImmutableObjectReceipt(

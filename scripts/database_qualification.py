@@ -13,6 +13,7 @@ import time
 import tracemalloc
 from collections.abc import Iterable, Sequence
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 from typing import Any, cast
 from uuid import uuid4
@@ -44,6 +45,7 @@ from sqlalchemy.sql.compiler import IdentifierPreparer
 from stove0_core.persistence import stove0_state_schema
 from time_formats import utc_timestamp_now
 
+from tests.support.qualification.canonical_history_scale import qualify_shared_history_scaling
 from tests.support.qualification.database_selector_plans import (
     DATABASE_PLAN_OPERATIONS as _DATABASE_PLAN_OPERATIONS,
 )
@@ -971,6 +973,8 @@ def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
         _measure_cardinality(database_url, rows=rows, cases=cases) for rows in CARDINALITIES
     ]
     _compare_cardinalities(measurements, cases=cases)
+    with TemporaryDirectory(prefix="riverhog-canonical-history-scale-") as scratch:
+        shared_history = qualify_shared_history_scaling(database_url, Path(scratch))
     applications = sorted({application for application, _operation in _DATABASE_PLAN_OPERATIONS})
     return {
         "format": FORMAT,
@@ -994,6 +998,7 @@ def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
             "consumer_delay_ms": 10,
         },
         "measurements": measurements,
+        "shared_canonical_history": shared_history,
         "qualification": {
             "exact_schemas": "passed",
             "natural_plans": "passed",

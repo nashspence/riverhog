@@ -8,8 +8,13 @@ bytes. It retains only one descriptor and one payload segment at a time.
 from __future__ import annotations
 
 import hashlib
+import os
+import sqlite3
 from collections.abc import Callable, Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, cast
 
 from riverhog_archive_contracts import (
@@ -82,6 +87,85 @@ class CanonicalProvenanceArchiveReader:
         self._expected_root_sha256 = expected_root_sha256
         self._archive_generation = archive_generation
         self._artifact_set_sha256 = artifact_set_sha256
+        self._prepared_db: sqlite3.Connection | None = None
+        self._prepared_summary: ProvenanceArchiveSummary | None = None
+
+    @contextmanager
+    def cached(self) -> Iterator[CanonicalProvenanceArchiveReader]:
+        """Cache exact immutable object streams on protected disk for one operation.
+
+        The selected root and normal fixity checks remain authoritative. A failed
+        or interrupted stream never installs a cache entry.
+        """
+        with TemporaryDirectory(prefix="riverhog-provenance-read-") as scratch:
+            directory = Path(scratch)
+
+            def read(path: str) -> Iterator[bytes]:
+                target = directory / hashlib.sha256(path.encode()).hexdigest()
+                if not target.exists():
+                    pending = target.with_suffix(".pending")
+                    try:
+                        with os.fdopen(
+                            os.open(pending, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600), "wb"
+                        ) as output:
+                            for chunk in self._read_object(path):
+                                output.write(chunk)
+                            output.flush()
+                        pending.replace(target)
+                    finally:
+                        pending.unlink(missing_ok=True)
+                with target.open("rb") as source:
+                    while chunk := source.read(128 * 1024):
+                        yield chunk
+
+            yield CanonicalProvenanceArchiveReader(
+                read,
+                expected_root_sha256=self._expected_root_sha256,
+                archive_generation=self._archive_generation,
+                artifact_set_sha256=self._artifact_set_sha256,
+            )
+
+    @contextmanager
+    def prepared(self) -> Iterator[CanonicalProvenanceArchiveReader]:
+        """Verify once and seek immutable volume metadata through a disk index."""
+        if self._prepared_db is not None:
+            yield self
+            return
+        with TemporaryDirectory(prefix="riverhog-provenance-metadata-") as scratch:
+            db = sqlite3.connect(Path(scratch) / "metadata.sqlite3")
+            db.executescript(
+                "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
+                "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
+                "journal TEXT, body BLOB); "
+                "CREATE INDEX volume_journals ON volumes(journal, sequence); "
+                "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
+            )
+
+            def remember(document: ProvenanceVolumeDocument | ProvenanceTerminalDocument) -> None:
+                if isinstance(document, ProvenanceTerminalDocument):
+                    kind, journal_id = "terminal", None
+                else:
+                    kind, journal_id = document.payload.kind, document.journal_id
+                db.execute(
+                    "INSERT INTO volumes VALUES (?, ?, ?, ?)",
+                    (
+                        format_archive_sequence(document.sequence),
+                        kind,
+                        journal_id,
+                        document.to_json_bytes(),
+                    ),
+                )
+
+            try:
+                summary = self._scan(remember)
+                db.commit()
+                self._prepared_db = db
+                self._prepared_summary = summary
+                yield self
+            finally:
+                self._prepared_db = None
+                self._prepared_summary = None
+                db.close()
 
     def _history_pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
         """Read a bounded set through its mandatory terminal, with no total cap."""
@@ -191,6 +275,8 @@ class CanonicalProvenanceArchiveReader:
         return commitment
 
     def _root(self) -> ProvenanceRootDocument:
+        if self._prepared_summary is not None:
+            return self._prepared_summary.root
         raw = _read_bounded(
             self._read_object("provenance/root.json.age"), PROVENANCE_METADATA_BYTES_MAX
         )
@@ -206,7 +292,29 @@ class CanonicalProvenanceArchiveReader:
 
     def _descriptors(
         self,
+        *,
+        journal_id: str | None = None,
+        kind: str | None = None,
     ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
+        if self._prepared_db is not None:
+            filters = []
+            values = []
+            if journal_id is not None:
+                filters.append("journal = ?")
+                values.append(journal_id)
+            if kind is not None:
+                filters.append("kind = ?")
+                values.append(kind)
+            where = " WHERE " + " AND ".join(filters) if filters else ""
+            for selected_kind, raw in self._prepared_db.execute(
+                "SELECT kind, body FROM volumes" + where + " ORDER BY sequence", values
+            ):
+                yield (
+                    ProvenanceTerminalDocument.from_json_bytes(raw)
+                    if selected_kind == "terminal"
+                    else ProvenanceVolumeDocument.from_json_bytes(raw)
+                )
+            return
         sequence = 0
         while True:
             path = f"provenance/metadata/volume-{format_archive_sequence(sequence)}.json.age"
@@ -218,16 +326,30 @@ class CanonicalProvenanceArchiveReader:
                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
                 if terminal.sequence != sequence:
                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")
-                yield terminal
+                if journal_id is None and kind is None:
+                    yield terminal
                 return
             document = ProvenanceVolumeDocument.from_json_bytes(raw)
             if document.sequence != sequence:
                 raise ProvenanceArchiveReadError("provenance volume sequence changed")
-            yield document
+            if (journal_id is None or document.journal_id == journal_id) and (
+                kind is None or document.payload.kind == kind
+            ):
+                yield document
             sequence += 1
 
     def scan(self) -> ProvenanceArchiveSummary:
         """Verify the complete root-selected descriptor sequence without payload reads."""
+
+        if self._prepared_summary is not None:
+            return self._prepared_summary
+        return self._scan()
+
+    def _scan(
+        self,
+        remember: Callable[[ProvenanceVolumeDocument | ProvenanceTerminalDocument], None]
+        | None = None,
+    ) -> ProvenanceArchiveSummary:
 
         root = self._root()
         digest = hashlib.sha256(PROVENANCE_SEQUENCE_DOMAIN)
@@ -240,6 +362,8 @@ class CanonicalProvenanceArchiveReader:
         current_journal_bytes = 0
         current_journal_sha256: str | None = None
         for document in self._descriptors():
+            if remember is not None:
+                remember(document)
             if document.sequence != expected or (
                 document.archive_generation,
                 document.artifact_set_sha256,
@@ -317,7 +441,7 @@ class CanonicalProvenanceArchiveReader:
         journal_sha256: str | None = None
         full_digest = hashlib.sha256() if offset == 0 and size is None else None
         emitted = 0
-        for document in self._descriptors():
+        for document in self._descriptors(journal_id=journal_id, kind="journal"):
             if isinstance(document, ProvenanceTerminalDocument):
                 break
             if document.payload.kind != "journal" or document.journal_id != journal_id:
@@ -361,7 +485,7 @@ class CanonicalProvenanceArchiveReader:
 
         self.scan()
         result: tuple[int, str] | None = None
-        for document in self._descriptors():
+        for document in self._descriptors(journal_id=journal_id, kind="journal"):
             if isinstance(document, ProvenanceTerminalDocument):
                 break
             if document.payload.kind != "journal" or document.journal_id != journal_id:
@@ -381,7 +505,7 @@ class CanonicalProvenanceArchiveReader:
 
         self.scan()
         previous: str | None = None
-        for document in self._descriptors():
+        for document in self._descriptors(kind="journal"):
             if isinstance(document, ProvenanceTerminalDocument):
                 return
             if document.payload.kind != "journal" or document.journal_id == previous:
@@ -403,7 +527,7 @@ class CanonicalProvenanceArchiveReader:
 
         self.scan()
         last_id: str | None = None
-        for document in self._descriptors():
+        for document in self._descriptors(kind="bindings"):
             if isinstance(document, ProvenanceTerminalDocument):
                 return
             if document.payload.kind != "bindings":

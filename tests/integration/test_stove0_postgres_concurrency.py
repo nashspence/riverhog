@@ -203,15 +203,16 @@ def test_stove0_postgres_current_v1_fixture_validates_and_restarts(
     restarted_engine.dispose()
 
 
-def _work() -> WorkIdentity:
+def _work(*, intent: dict[str, Any] | None = None) -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
+            effective_intent={"suffix": ".copy"} if intent is None else intent,
             recipe=RecipeIdentityRef(id="camera.archive/v1", revision="1", sha256="a" * 64),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id="1",
                     archive_root_sha256="b" * 64,
-                    content_identity="c" * 64,
+                    artifact_set_identity="c" * 64,
                 ),
             ),
         )
@@ -264,8 +265,18 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
             ),
         )
     )
+    workflow = WorkflowPlan.seal(
+        WorkflowPlanPayload(
+            work=_work(),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
+            target_registration_id="fixture-target",
+            target_descriptor_sha256=target.descriptor_sha256,
+            source_collection_retirement_policy="retain",
+        )
+    )
     plan = TransformPlan.seal(
         TransformPlanPayload(
+            invocation_sha256=workflow.workflow_plan_sha256,
             target_implementation_id=target.implementation_id,
             target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
@@ -277,7 +288,7 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
                             id="source",
                             role="fixture.source/v1",
                             collection=_work().inputs[0],
-                            path="source/input.bin",
+                            artifact_id="1" * 64,
                             bytes="12",
                             sha256="d" * 64,
                         ),
@@ -374,7 +385,7 @@ def _active_target_work(
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id="2" * 64,
         bytes="12",
         sha256="5" * 64,
     )
@@ -411,7 +422,7 @@ def _active_target_work(
     output_collection = OutputCollectionRef(
         collection_id="7",
         archive_root_sha256="6" * 64,
-        content_identity="7" * 64,
+        artifact_set_identity="7" * 64,
         derivation_sha256=derivation.sha256,
     )
     production = TargetProductionAuthority.seal(
@@ -449,7 +460,7 @@ def _active_target_work(
 def _active_effect_work(
     service: Stove0WorkService,
 ) -> tuple[WorkRecord, OperationContract, TargetJobStatus, TargetJobStatus]:
-    work = _work()
+    work = _work(intent={})
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.external-index/v1",
@@ -496,8 +507,19 @@ def _active_effect_work(
             ),
         )
     )
+    workflow = WorkflowPlan.seal(
+        WorkflowPlanPayload(
+            work=work,
+            result_kind="external-effect",
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
+            target_registration_id="fixture-effect-target",
+            target_descriptor_sha256=target.descriptor_sha256,
+            source_collection_retirement_policy="retain",
+        )
+    )
     plan = EffectPlan.seal(
         EffectPlanPayload(
+            invocation_sha256=workflow.workflow_plan_sha256,
             target_implementation_id=target.implementation_id,
             target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
@@ -509,7 +531,7 @@ def _active_effect_work(
                             id="source",
                             role="fixture.source/v1",
                             collection=work.inputs[0],
-                            path="source/input.bin",
+                            artifact_id="1" * 64,
                             bytes="12",
                             sha256="d" * 64,
                         ),
@@ -635,7 +657,7 @@ def _branch_decision() -> BranchSetDecision:
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
-                path="source/input.bin",
+                artifact_id="1" * 64,
                 bytes="12",
                 sha256="d" * 64,
             ),
@@ -698,7 +720,7 @@ def _resolved_join(
         root = CollectionRootIdentityRef(
             collection_id=str(offset),
             archive_root_sha256=f"{offset % 16:x}" * 64,
-            content_identity=f"{(offset + 2) % 16:x}" * 64,
+            artifact_set_identity=f"{(offset + 2) % 16:x}" * 64,
         )
         output = ArtifactSelection.seal(
             (
@@ -706,7 +728,7 @@ def _resolved_join(
                     id=f"{branch.branch_id}-output",
                     role="fixture.branch-output/v1",
                     collection=root,
-                    path=f"{branch.branch_id}/output.bin",
+                    artifact_id=f"{offset:064x}",
                     bytes="12",
                     sha256=f"{(offset + 4) % 16:x}" * 64,
                 ),
@@ -925,7 +947,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
     descriptor = CatalogSyncDescriptor(
         collection_id="71",
         archive_root_sha256="1" * 64,
-        content_identity="2" * 64,
+        artifact_set_identity="2" * 64,
         description=None,
         description_revision=0,
         description_identity="3" * 64,
@@ -1273,7 +1295,7 @@ def test_postgres_declaration_and_production_seal_race_has_one_atomic_boundary(
     output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id="2" * 64,
         bytes="12",
         sha256="5" * 64,
     )
@@ -1330,7 +1352,7 @@ def test_postgres_target_declarations_are_isolated_by_fenced_execution_generatio
     old_output = OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id="2" * 64,
         bytes="12",
         sha256="5" * 64,
     )
