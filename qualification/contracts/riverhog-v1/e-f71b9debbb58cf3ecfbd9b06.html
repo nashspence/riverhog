@@ -219,7 +219,7 @@
 <td data-label="Exit">
 <code>0</code></td>
 <td data-label="Selection">kind: <code>option-equals</code>; parameter: <code>dry_run</code>; value: <code>false</code></td>
-<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: application: <code>riverhog</code>; definition: <code>{&quot;additionalProperties&quot;:false,&quot;allOf&quot;:[{&quot;else&quot;:{&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;artifact_set_identity&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;collection&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;registration_constraints&quot;:{&quot;type&quot;:&quot;object&quot;}}},&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalized&quot;}}},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;artifact_set_identity&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;collection&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;registration_constraints&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;tag_publication&quot;:{&quot;const&quot;:&quot;current&quot;},&quot;tag_revision&quot;:{&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;tag_publication&quot;:{&quot;const&quot;:&quot;current&quot;}}},&quot;then&quot;:{&quot;properties&quot;:{&quot;tag_revision&quot;:{&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;producer-retained&quot;}},&quot;required&quot;:[&quot;custody_mode&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;state&quot;:{&quot;enum&quot;:[&quot;open&quot;,&quot;uploading&quot;,&quot;finalizing&quot;,&quot;canceled&quot;,&quot;finalized&quot;]},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;enum&quot;:[&quot;orphaned&quot;,&quot;discarding&quot;]}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;custody-transfer&quot;},&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;custody-transfer&quot;},&quot;state&quot;:{&quot;enum&quot;:[&quot;open&quot;,&quot;closing&quot;]}},&quot;required&quot;:[&quot;custody_mode&quot;,&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;custody-transfer&quot;},&quot;state&quot;:{&quot;enum&quot;:[&quot;uploading&quot;,&quot;finalizing&quot;,&quot;canceled&quot;,&quot;finalized&quot;]}},&quot;required&quot;:[&quot;custody_mode&quot;,&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalized&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;custody&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;complete&quot;}},&quot;required&quot;:[&quot;state&quot;]}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;open&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;planning&quot;,&quot;uploading&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;closing&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;uploading&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;uploading&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;uploading&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalizing&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;finalization_queued&quot;,&quot;finalizing&quot;,&quot;retry_wait&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalized&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;completed&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;canceled&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;canceled&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;orphaned&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;orphaned&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;discarding&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;discarding&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;const&quot;:&quot;retry_wait&quot;}},&quot;required&quot;:[&quot;archive_phase&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},&quot;latest_failure&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;const&quot;:&quot;finalization_queued&quot;}},&quot;required&quot;:[&quot;archive_phase&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},&quot;latest_failure&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;not&quot;:{&quot;enum&quot;:[&quot;finalization_queued&quot;,&quot;retry_wait&quot;]}}},&quot;required&quot;:[&quot;archive_phase&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}}],&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Next Attempt At&quot;},&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;planning&quot;,&quot;uploading&quot;,&quot;finalization_queued&quot;,&quot;finalizing&quot;,&quot;retry_wait&quot;,&quot;completed&quot;,&quot;canceled&quot;,&quot;orphaned&quot;,&quot;discarding&quot;],&quot;title&quot;:&quot;Archive Phase&quot;,&quot;type&quot;:&quot;string&quot;},&quot;archive_phase_updated_at&quot;:{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;title&quot;:&quot;Archive Phase Updated At&quot;,&quot;type&quot;:&quot;string&quot;},&quot;archive_root_sha256&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Root Sha256&quot;},&quot;archive_storage_prefix&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Storage Prefix&quot;},&quot;archive_store&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/ArchiveStoreName&quot;},&quot;archive_total_bytes&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Total Bytes&quot;},&quot;archive_total_units&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Total Units&quot;},&quot;archive_uploaded_bytes&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Uploaded Bytes&quot;},&quot;archive_uploaded_units&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Uploaded Units&quot;},&quot;artifact_set_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Artifact Set Identity&quot;},&quot;bytes_total&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Bytes Total&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;collection&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionSummaryOut&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;collection_id&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/CollectionId&quot;},&quot;copy_intents&quot;:{&quot;items&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/CollectionUploadCopyIntentOut&quot;},&quot;title&quot;:&quot;Copy Intents&quot;,&quot;type&quot;:&quot;array&quot;},&quot;copy_to&quot;:{&quot;items&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/ArchiveStoreName&quot;},&quot;title&quot;:&quot;Copy To&quot;,&quot;type&quot;:&quot;array&quot;},&quot;created_at&quot;:{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;title&quot;:&quot;Created At&quot;,&quot;type&quot;:&quot;string&quot;},&quot;custody&quot;:{&quot;discriminator&quot;:{&quot;mapping&quot;:{&quot;complete&quot;:&quot;#/components/schemas/CompleteCollectionUploadCustodyOut&quot;,&quot;pending&quot;:&quot;#/components/schemas/PendingCollectionUploadCustodyOut&quot;},&quot;propertyName&quot;:&quot;state&quot;},&quot;oneOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/PendingCollectionUploadCustodyOut&quot;},{&quot;$ref&quot;:&quot;#/components/schemas/CompleteCollectionUploadCustodyOut&quot;}],&quot;title&quot;:&quot;Custody&quot;},&quot;custody_mode&quot;:{&quot;enum&quot;:[&quot;producer-retained&quot;,&quot;custody-transfer&quot;],&quot;title&quot;:&quot;Custody Mode&quot;,&quot;type&quot;:&quot;string&quot;},&quot;delivery_context_id&quot;:{&quot;title&quot;:&quot;Delivery Context Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionDescription&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;description_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Description Identity&quot;},&quot;description_publication&quot;:{&quot;enum&quot;:[&quot;pending&quot;,&quot;not_required&quot;,&quot;current&quot;],&quot;title&quot;:&quot;Description Publication&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description_revision&quot;:{&quot;anyOf&quot;:[{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Description Revision&quot;},&quot;encryption_format&quot;:{&quot;title&quot;:&quot;Encryption Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;files_total&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Files Total&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;ingest_source&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Ingest Source&quot;},&quot;latest_failure&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:1000,&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Latest Failure&quot;},&quot;orphaned_at&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Orphaned At&quot;},&quot;passphrase_id&quot;:{&quot;pattern&quot;:&quot;^[A-Za-z0-9_-]{16,128}$&quot;,&quot;title&quot;:&quot;Passphrase Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;provenance_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Provenance Identity&quot;},&quot;registration_constraints&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionUploadRegistrationConstraintsOut&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;state&quot;:{&quot;enum&quot;:[&quot;open&quot;,&quot;closing&quot;,&quot;uploading&quot;,&quot;finalizing&quot;,&quot;finalized&quot;,&quot;canceled&quot;,&quot;orphaned&quot;,&quot;discarding&quot;],&quot;title&quot;:&quot;State&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_count&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Tag Count&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;tag_publication&quot;:{&quot;enum&quot;:[&quot;pending&quot;,&quot;current&quot;],&quot;title&quot;:&quot;Tag Publication&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_revision&quot;:{&quot;anyOf&quot;:[{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Tag Revision&quot;},&quot;tag_set_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Tag Set Identity&quot;},&quot;upload_state_expires_at&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Upload State Expires At&quot;},&quot;use_cache&quot;:{&quot;title&quot;:&quot;Use Cache&quot;,&quot;type&quot;:&quot;boolean&quot;}},&quot;required&quot;:[&quot;collection_id&quot;,&quot;created_at&quot;,&quot;ingest_source&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;description_publication&quot;,&quot;tag_publication&quot;,&quot;tag_count&quot;,&quot;delivery_context_id&quot;,&quot;archive_store&quot;,&quot;use_cache&quot;,&quot;copy_to&quot;,&quot;copy_intents&quot;,&quot;encryption_format&quot;,&quot;passphrase_id&quot;,&quot;state&quot;,&quot;custody_mode&quot;,&quot;registration_constraints&quot;,&quot;files_total&quot;,&quot;bytes_total&quot;,&quot;upload_state_expires_at&quot;,&quot;custody&quot;,&quot;orphaned_at&quot;,&quot;latest_failure&quot;,&quot;archive_phase&quot;,&quot;archive_phase_updated_at&quot;,&quot;archive_next_attempt_at&quot;,&quot;collection&quot;],&quot;title&quot;:&quot;CollectionUploadSessionOut&quot;,&quot;type&quot;:&quot;object&quot;}</code>; kind: <code>openapi-schema</code>; schema: <code>CollectionUploadSessionOut</code></td>
+<td data-label="stdout">human: <code>noncontractual-presentation-of-command-result</code>; json: application: <code>riverhog</code>; definition: <code>{&quot;additionalProperties&quot;:false,&quot;allOf&quot;:[{&quot;else&quot;:{&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;artifact_set_identity&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;collection&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;provenance_identity&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;registration_constraints&quot;:{&quot;type&quot;:&quot;object&quot;}}},&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalized&quot;}}},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_root_sha256&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;artifact_set_identity&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;collection&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;provenance_identity&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;registration_constraints&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;tag_publication&quot;:{&quot;const&quot;:&quot;current&quot;},&quot;tag_revision&quot;:{&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;tag_publication&quot;:{&quot;const&quot;:&quot;current&quot;}}},&quot;then&quot;:{&quot;properties&quot;:{&quot;tag_revision&quot;:{&quot;type&quot;:&quot;integer&quot;},&quot;tag_set_identity&quot;:{&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;producer-retained&quot;}},&quot;required&quot;:[&quot;custody_mode&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;state&quot;:{&quot;enum&quot;:[&quot;open&quot;,&quot;uploading&quot;,&quot;finalizing&quot;,&quot;canceled&quot;,&quot;finalized&quot;]},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;enum&quot;:[&quot;orphaned&quot;,&quot;discarding&quot;]}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;custody-transfer&quot;},&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;custody-transfer&quot;},&quot;state&quot;:{&quot;enum&quot;:[&quot;open&quot;,&quot;closing&quot;]}},&quot;required&quot;:[&quot;custody_mode&quot;,&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;custody_mode&quot;:{&quot;const&quot;:&quot;custody-transfer&quot;},&quot;state&quot;:{&quot;enum&quot;:[&quot;uploading&quot;,&quot;finalizing&quot;,&quot;canceled&quot;,&quot;finalized&quot;]}},&quot;required&quot;:[&quot;custody_mode&quot;,&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;orphaned_at&quot;:{&quot;type&quot;:&quot;null&quot;},&quot;upload_state_expires_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalized&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;custody&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;complete&quot;}},&quot;required&quot;:[&quot;state&quot;]}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;open&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;planning&quot;,&quot;uploading&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;closing&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;uploading&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;uploading&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;uploading&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalizing&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;finalization_queued&quot;,&quot;finalizing&quot;,&quot;retry_wait&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;finalized&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;completed&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;canceled&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;canceled&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;orphaned&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;orphaned&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;state&quot;:{&quot;const&quot;:&quot;discarding&quot;}},&quot;required&quot;:[&quot;state&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;discarding&quot;]}},&quot;required&quot;:[&quot;archive_phase&quot;]}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;const&quot;:&quot;retry_wait&quot;}},&quot;required&quot;:[&quot;archive_phase&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},&quot;latest_failure&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;const&quot;:&quot;finalization_queued&quot;}},&quot;required&quot;:[&quot;archive_phase&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},&quot;latest_failure&quot;:{&quot;type&quot;:&quot;null&quot;}}}},{&quot;if&quot;:{&quot;properties&quot;:{&quot;archive_phase&quot;:{&quot;not&quot;:{&quot;enum&quot;:[&quot;finalization_queued&quot;,&quot;retry_wait&quot;]}}},&quot;required&quot;:[&quot;archive_phase&quot;]},&quot;then&quot;:{&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;type&quot;:&quot;null&quot;}}}}],&quot;properties&quot;:{&quot;archive_next_attempt_at&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Next Attempt At&quot;},&quot;archive_phase&quot;:{&quot;enum&quot;:[&quot;planning&quot;,&quot;uploading&quot;,&quot;finalization_queued&quot;,&quot;finalizing&quot;,&quot;retry_wait&quot;,&quot;completed&quot;,&quot;canceled&quot;,&quot;orphaned&quot;,&quot;discarding&quot;],&quot;title&quot;:&quot;Archive Phase&quot;,&quot;type&quot;:&quot;string&quot;},&quot;archive_phase_updated_at&quot;:{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;title&quot;:&quot;Archive Phase Updated At&quot;,&quot;type&quot;:&quot;string&quot;},&quot;archive_root_sha256&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Root Sha256&quot;},&quot;archive_storage_prefix&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Storage Prefix&quot;},&quot;archive_store&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/ArchiveStoreName&quot;},&quot;archive_total_bytes&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Total Bytes&quot;},&quot;archive_total_units&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Total Units&quot;},&quot;archive_uploaded_bytes&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Uploaded Bytes&quot;},&quot;archive_uploaded_units&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Archive Uploaded Units&quot;},&quot;artifact_set_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Artifact Set Identity&quot;},&quot;bytes_total&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Bytes Total&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;collection&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionSummaryOut&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;collection_id&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/CollectionId&quot;},&quot;completion_journal_id&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/ProvenanceJournalId&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;completion_receipt&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionCompletionPublicationReceiptDocument&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;construction_identity_sha256&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;title&quot;:&quot;Construction Identity Sha256&quot;,&quot;type&quot;:&quot;string&quot;},&quot;copy_intents&quot;:{&quot;items&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/CollectionUploadCopyIntentOut&quot;},&quot;title&quot;:&quot;Copy Intents&quot;,&quot;type&quot;:&quot;array&quot;},&quot;copy_to&quot;:{&quot;items&quot;:{&quot;$ref&quot;:&quot;#/components/schemas/ArchiveStoreName&quot;},&quot;title&quot;:&quot;Copy To&quot;,&quot;type&quot;:&quot;array&quot;},&quot;created_at&quot;:{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;title&quot;:&quot;Created At&quot;,&quot;type&quot;:&quot;string&quot;},&quot;custody&quot;:{&quot;discriminator&quot;:{&quot;mapping&quot;:{&quot;complete&quot;:&quot;#/components/schemas/CompleteCollectionUploadCustodyOut&quot;,&quot;pending&quot;:&quot;#/components/schemas/PendingCollectionUploadCustodyOut&quot;},&quot;propertyName&quot;:&quot;state&quot;},&quot;oneOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/PendingCollectionUploadCustodyOut&quot;},{&quot;$ref&quot;:&quot;#/components/schemas/CompleteCollectionUploadCustodyOut&quot;}],&quot;title&quot;:&quot;Custody&quot;},&quot;custody_mode&quot;:{&quot;enum&quot;:[&quot;producer-retained&quot;,&quot;custody-transfer&quot;],&quot;title&quot;:&quot;Custody Mode&quot;,&quot;type&quot;:&quot;string&quot;},&quot;delivery_context_id&quot;:{&quot;title&quot;:&quot;Delivery Context Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionDescription&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;description_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Description Identity&quot;},&quot;description_publication&quot;:{&quot;enum&quot;:[&quot;pending&quot;,&quot;not_required&quot;,&quot;current&quot;],&quot;title&quot;:&quot;Description Publication&quot;,&quot;type&quot;:&quot;string&quot;},&quot;description_revision&quot;:{&quot;anyOf&quot;:[{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Description Revision&quot;},&quot;encryption_format&quot;:{&quot;title&quot;:&quot;Encryption Format&quot;,&quot;type&quot;:&quot;string&quot;},&quot;files_total&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Files Total&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;ingest_source&quot;:{&quot;anyOf&quot;:[{&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Ingest Source&quot;},&quot;latest_failure&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:1000,&quot;minLength&quot;:1,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Latest Failure&quot;},&quot;orphaned_at&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Orphaned At&quot;},&quot;passphrase_id&quot;:{&quot;pattern&quot;:&quot;^[A-Za-z0-9_-]{16,128}$&quot;,&quot;title&quot;:&quot;Passphrase Id&quot;,&quot;type&quot;:&quot;string&quot;},&quot;provenance_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Provenance Identity&quot;},&quot;registration_constraints&quot;:{&quot;anyOf&quot;:[{&quot;$ref&quot;:&quot;#/components/schemas/CollectionUploadRegistrationConstraintsOut&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;state&quot;:{&quot;enum&quot;:[&quot;open&quot;,&quot;closing&quot;,&quot;uploading&quot;,&quot;finalizing&quot;,&quot;finalized&quot;,&quot;canceled&quot;,&quot;orphaned&quot;,&quot;discarding&quot;],&quot;title&quot;:&quot;State&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_count&quot;:{&quot;minimum&quot;:0,&quot;title&quot;:&quot;Tag Count&quot;,&quot;type&quot;:&quot;integer&quot;},&quot;tag_publication&quot;:{&quot;enum&quot;:[&quot;pending&quot;,&quot;current&quot;],&quot;title&quot;:&quot;Tag Publication&quot;,&quot;type&quot;:&quot;string&quot;},&quot;tag_revision&quot;:{&quot;anyOf&quot;:[{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;type&quot;:&quot;integer&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Tag Revision&quot;},&quot;tag_set_identity&quot;:{&quot;anyOf&quot;:[{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Tag Set Identity&quot;},&quot;upload_state_expires_at&quot;:{&quot;anyOf&quot;:[{&quot;maxLength&quot;:30,&quot;minLength&quot;:30,&quot;pattern&quot;:&quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$&quot;,&quot;type&quot;:&quot;string&quot;},{&quot;type&quot;:&quot;null&quot;}],&quot;title&quot;:&quot;Upload State Expires At&quot;},&quot;use_cache&quot;:{&quot;title&quot;:&quot;Use Cache&quot;,&quot;type&quot;:&quot;boolean&quot;}},&quot;required&quot;:[&quot;collection_id&quot;,&quot;created_at&quot;,&quot;ingest_source&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;description_publication&quot;,&quot;tag_publication&quot;,&quot;tag_count&quot;,&quot;delivery_context_id&quot;,&quot;construction_identity_sha256&quot;,&quot;archive_store&quot;,&quot;use_cache&quot;,&quot;copy_to&quot;,&quot;copy_intents&quot;,&quot;encryption_format&quot;,&quot;passphrase_id&quot;,&quot;state&quot;,&quot;custody_mode&quot;,&quot;registration_constraints&quot;,&quot;files_total&quot;,&quot;bytes_total&quot;,&quot;upload_state_expires_at&quot;,&quot;custody&quot;,&quot;orphaned_at&quot;,&quot;latest_failure&quot;,&quot;archive_phase&quot;,&quot;archive_phase_updated_at&quot;,&quot;archive_next_attempt_at&quot;,&quot;collection&quot;],&quot;title&quot;:&quot;CollectionUploadSessionOut&quot;,&quot;type&quot;:&quot;object&quot;}</code>; kind: <code>openapi-schema</code>; schema: <code>CollectionUploadSessionOut</code></td>
 <td data-label="stderr">all: <code>noncontractual-progress</code></td>
 </tr>
 </tbody>
@@ -3595,6 +3595,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>provenance_identity</code>
+</th>
+<td>
+<table id="v-04acd5ce3ef59dbfd163b4b5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-42f739ece948eba7e6bbe98e">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/allOf/0/else/properties/provenance_identity/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>registration_constraints</code>
 </th>
 <td>
@@ -3727,6 +3747,26 @@
 <td>
 <span id="v-2724627eff007c800373185c">
 <code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/allOf/0/then/properties/collection/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>provenance_identity</code>
+</th>
+<td>
+<table id="v-b4cd1facea846c5af64191be">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4cec43d2fc0afbf192443625">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/allOf/0/then/properties/provenance_identity/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7364,6 +7404,166 @@
 </tr>
 <tr>
 <th scope="row">
+<code>completion_journal_id</code>
+</th>
+<td>
+<table id="v-c96103f176ec525c0a62e1b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-30ee009075c831a2f19c06fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d1fd5c9f3e2272277868763b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b95dc649ff2a1e12003173a4">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/completion_journal_id/anyOf/0/$ref">#/components/schemas/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-895cd7cf122a356f51657a5e.html#v-68931de5ffa142ea7d6e282f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-47b00514e00f459739fe67fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bba78bdec64a6891ab8dfd21">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/completion_journal_id/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>completion_receipt</code>
+</th>
+<td>
+<table id="v-061441058495d568c623dd4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-bf8c49d853971b7aefdc86f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e4c8101d20877dc75fb720de">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-47ba0b65ea7e948d0314b767">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/completion_receipt/anyOf/0/$ref">#/components/schemas/CollectionCompletionPublicationReceiptDocument</code>
+<span class="kind">string</span> <a href="e-3a1290c991628542c6ffe0c0.html#v-bb645806fcf98ec17b6e79bc">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-383fafa4f1342466422530b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-081d769e3efdb1b6009ed2e6">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/completion_receipt/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>construction_identity_sha256</code>
+</th>
+<td>
+<table id="v-272370c79d10b0b4ac6521d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5df76e88a77f1d3fd461a0bc">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/construction_identity_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-53d6f73406b359ad2370e340">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/construction_identity_sha256/title">Construction Identity Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7dd604a511839291ef061de3">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/properties/construction_identity_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>copy_intents</code>
 </th>
 <td>
@@ -9178,7 +9378,7 @@
 </th>
 <td>
 <span id="v-993f9ccab270b0e6129196ec">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/10">archive_store</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/10">construction_identity_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9188,7 +9388,7 @@
 </th>
 <td>
 <span id="v-998a74236865377de22b43a9">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/11">use_cache</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/11">archive_store</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9198,7 +9398,7 @@
 </th>
 <td>
 <span id="v-608f7e6c288ee372b3132233">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/12">copy_to</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/12">use_cache</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9208,7 +9408,7 @@
 </th>
 <td>
 <span id="v-12f8304a21c580b597bd1857">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/13">copy_intents</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/13">copy_to</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9218,7 +9418,7 @@
 </th>
 <td>
 <span id="v-9480dc1298c6929d4245206f">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/14">encryption_format</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/14">copy_intents</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9228,7 +9428,7 @@
 </th>
 <td>
 <span id="v-33aacf88c72220a0ccf5beff">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/15">passphrase_id</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/15">encryption_format</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9238,7 +9438,7 @@
 </th>
 <td>
 <span id="v-ae5ef16cc5228b26f00c1c72">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/16">state</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/16">passphrase_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9248,7 +9448,7 @@
 </th>
 <td>
 <span id="v-e0bfc7139c491bf3bc0b60ce">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/17">custody_mode</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/17">state</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9258,7 +9458,7 @@
 </th>
 <td>
 <span id="v-2f3f6f9ef30117b1945b3d2f">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/18">registration_constraints</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/18">custody_mode</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9268,7 +9468,7 @@
 </th>
 <td>
 <span id="v-cf31374af428b2487006b3ef">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/19">files_total</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/19">registration_constraints</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9278,7 +9478,7 @@
 </th>
 <td>
 <span id="v-42bb27f06c84468d14e5b427">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/20">bytes_total</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/20">files_total</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9288,7 +9488,7 @@
 </th>
 <td>
 <span id="v-09c2cc7e96c2a67a71466b99">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/21">upload_state_expires_at</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/21">bytes_total</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9298,7 +9498,7 @@
 </th>
 <td>
 <span id="v-aa12f2af5781bc11f8a86d4c">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/22">custody</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/22">upload_state_expires_at</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9308,7 +9508,7 @@
 </th>
 <td>
 <span id="v-db65cb17113d74db006096cd">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/23">orphaned_at</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/23">custody</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9318,7 +9518,7 @@
 </th>
 <td>
 <span id="v-e23a7ce0c32f010d5753def6">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/24">latest_failure</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/24">orphaned_at</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9328,7 +9528,7 @@
 </th>
 <td>
 <span id="v-255cb3d247a74465ce1b0ce2">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/25">archive_phase</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/25">latest_failure</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9338,7 +9538,7 @@
 </th>
 <td>
 <span id="v-4a514d39c9cfb1cf20d7d693">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/26">archive_phase_updated_at</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/26">archive_phase</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9348,7 +9548,7 @@
 </th>
 <td>
 <span id="v-6e03ca536abe596323ccaf4e">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/27">archive_next_attempt_at</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/27">archive_phase_updated_at</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9358,7 +9558,17 @@
 </th>
 <td>
 <span id="v-11ec26b07ac5ae6e74e7751b">
-<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/28">collection</code>
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/28">archive_next_attempt_at</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>29</code>
+</th>
+<td>
+<span id="v-dd6191d96f288d5eb27df3d8">
+<code data-value-pointer="/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract/success/1/stdout/json/definition/required/29">collection</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -9749,7 +9959,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

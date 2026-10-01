@@ -92,7 +92,7 @@ _REQUIRED_PASS_ASSERTIONS_BY_PHASE = {
         {
             "committed-payload-progress",
             "session-show",
-            "registered-file-list",
+            "registered-artifact-list",
             "upload-work-acquisition",
             "unit-readback",
             "b2-immediate-client-retrieval",
@@ -2773,24 +2773,24 @@ def _upload_collection_with_observation(
         session = api.get_collection_upload_session(collection_id)
         if session.get("state") in {"open", "uploading", "finalizing"}:
             observed.add("session-show")
-        has_files = False
+        has_artifacts = False
         page_token = None
         while True:
-            payload = api.list_collection_upload_session_files(
+            payload = api.list_collection_upload_session_artifacts(
                 collection_id,
                 page_size=100,
                 page_token=page_token,
             )
-            for _item in payload.get("files", []):
-                has_files = True
+            for _item in payload.get("artifacts", []):
+                has_artifacts = True
             next_page_token = payload.get("next_page_token")
             if next_page_token is None:
                 break
             if not isinstance(next_page_token, str) or not next_page_token:
-                raise QualificationError("upload file list returned an invalid page token")
+                raise QualificationError("upload artifact list returned an invalid page token")
             page_token = next_page_token
-        if has_files:
-            observed.add("registered-file-list")
+        if has_artifacts:
+            observed.add("registered-artifact-list")
         work_batch = api.acquire_collection_upload_session_work(collection_id, limit=16)
         observed.add("upload-work-acquisition")
         if work_batch.committed_payload_bytes > 0:
@@ -2869,7 +2869,7 @@ def _upload_collection_with_observation(
     required = {
         "committed-payload-progress",
         "session-show",
-        "registered-file-list",
+        "registered-artifact-list",
         "upload-work-acquisition",
         "unit-readback",
     }
@@ -2931,53 +2931,82 @@ def _wait_archive_copy(
         time.sleep(2)
 
 
-def _retrieval_files(collection_id: int, corpus: CorpusManifest) -> tuple[tuple[int, str], ...]:
-    return tuple((collection_id, item.path) for item in corpus.files)
+def _corpus_artifacts(api: Any, collection_id: int, corpus: CorpusManifest) -> dict[str, str]:
+    """Match fixture destinations through exact canonical delivered-occurrence advice."""
+    from tests.support.qualification.artifact_readouts import root_bound_artifacts
+
+    expected = {item.path: item for item in corpus.files}
+    selected: dict[str, str] = {}
+    for member, hint in root_bound_artifacts(api, collection_id):
+        if hint is None:
+            raise QualificationError("fixture member lacks canonical materialization advice")
+        destination = "/".join(hint)
+        if destination in selected or destination not in expected:
+            raise QualificationError("fixture materialization advice is duplicated or unexpected")
+        item = expected[destination]
+        if (int(member.bytes), member.sha256) != (item.bytes, item.sha256):
+            raise QualificationError("fixture member differs from its expected bytes")
+        selected[destination] = str(member.artifact_id)
+    if set(selected) != set(expected):
+        raise QualificationError("fixture inventory omits expected members")
+    return selected
 
 
-def _assert_retrieval_plan_files(
+def _retrieval_artifacts(
+    api: Any, collection_id: int, corpus: CorpusManifest
+) -> tuple[tuple[int, str], ...]:
+    return tuple(
+        sorted(
+            (collection_id, artifact_id)
+            for artifact_id in _corpus_artifacts(api, collection_id, corpus).values()
+        )
+    )
+
+
+def _assert_retrieval_plan_artifacts(
     api: Any,
     plan: Mapping[str, object],
     expected: Sequence[tuple[int, str]],
 ) -> None:
     plan_id = str(plan["id"])
     plan_etag = str(plan["etag"])
-    file_count = int(str(plan["file_count"]))
-    files: list[tuple[int, str]] = []
+    artifact_count = int(str(plan["artifact_count"]))
+    artifacts: list[tuple[int, str]] = []
     start_ordinal = 0
     while True:
-        page = api.list_retrieval_plan_files(
+        page = api.list_retrieval_plan_artifacts(
             plan_id,
             plan_etag=plan_etag,
             start_ordinal=start_ordinal,
             page_size=100,
         )
-        page_files = _page_items(page, "files")
+        page_artifacts = _page_items(page, "artifacts")
         if (
             page.get("plan_id") != plan_id
             or page.get("etag") != plan_etag
             or page.get("start_ordinal") != start_ordinal
         ):
             raise QualificationError("retrieval plan page changed its exact authority")
-        files.extend(
-            (int(current["collection_id"]), str(current["path"])) for current in page_files
+        artifacts.extend(
+            (int(current["collection_id"]), str(current["artifact_id"]))
+            for current in page_artifacts
         )
-        if len(files) > file_count:
-            raise QualificationError("retrieval plan exceeded its declared file count")
+        if len(artifacts) > artifact_count:
+            raise QualificationError("retrieval plan exceeded its declared artifact count")
         complete = page.get("complete")
         if not isinstance(complete, bool):
             raise QualificationError("retrieval plan page omitted completion state")
         if complete:
-            if page.get("next_ordinal") is not None or len(files) != file_count:
+            if page.get("next_ordinal") is not None or len(artifacts) != artifact_count:
                 raise QualificationError("retrieval plan traversal ended inconsistently")
             break
         next_ordinal = page.get("next_ordinal")
-        expected_next = start_ordinal + len(page_files)
-        if not page_files or isinstance(next_ordinal, bool) or next_ordinal != expected_next:
+        expected_next = start_ordinal + len(page_artifacts)
+        if not page_artifacts or isinstance(next_ordinal, bool) or next_ordinal != expected_next:
             raise QualificationError("retrieval plan traversal did not advance exactly")
         start_ordinal = expected_next
-    if tuple(files) != tuple(expected):
-        raise QualificationError("retrieval plan changed its exact file authority")
+    if tuple(artifacts) != tuple(expected):
+        raise QualificationError("retrieval plan changed its exact artifact authority")
 
 
 def _download_retrieval(
@@ -2990,13 +3019,14 @@ def _download_retrieval(
 ) -> None:
     job_id = str(job["id"])
     output.mkdir(parents=True)
+    artifact_ids = _corpus_artifacts(api, collection_id, corpus)
     for item in corpus.files:
         destination = output / item.path
         destination.parent.mkdir(parents=True, exist_ok=True)
-        api.download_retrieval_file(
+        api.download_retrieval_artifact(
             job_id,
             collection_id=collection_id,
-            path=item.path,
+            artifact_id=artifact_ids[item.path],
             output=destination,
             expected_bytes=item.bytes,
             expected_sha256=item.sha256,
@@ -3013,13 +3043,13 @@ def _ready_retrieval(
     restore_policy: str,
     output: Path,
 ) -> dict[str, Any]:
-    files = _retrieval_files(collection_id, corpus)
+    files = _retrieval_artifacts(api, collection_id, corpus)
     plan = api.plan_retrieval(
         files,
         lease_seconds=lease_seconds,
         restore_policy=restore_policy,
     )
-    _assert_retrieval_plan_files(api, plan, files)
+    _assert_retrieval_plan_artifacts(api, plan, files)
     if plan.get("requires_restore"):
         raise QualificationError("ready retrieval unexpectedly required archival restoration")
     if int(plan.get("lease_seconds", -1)) != lease_seconds:
@@ -3161,7 +3191,7 @@ def _cancel_retrieval(
     corpus: CorpusManifest,
     lease_seconds: int,
 ) -> None:
-    files = _retrieval_files(collection_id, corpus)
+    files = _retrieval_artifacts(api, collection_id, corpus)
     plan = api.plan_retrieval(files, lease_seconds=lease_seconds)
     job = api.create_retrieval_job(
         str(plan["id"]),
@@ -3220,10 +3250,10 @@ def _assert_catalog_sync(api: Any, collection_id: int) -> None:
             raise QualificationError("portable collection inventory format is invalid")
         if inventory_identity is None:
             inventory_identity = portable.authority.inventory_identity
-            expected_files = portable.authority.file_count
+            expected_files = portable.authority.artifact_count
         elif portable.authority.inventory_identity != inventory_identity:
             raise QualificationError("portable collection inventory identity changed")
-        observed_files += len(portable.files)
+        observed_files += len(portable.artifacts)
         if portable.complete:
             break
         inventory_cursor = portable.next_cursor
@@ -3832,13 +3862,13 @@ def operate_qualification(
         if checkpoint.phase == "deep-archive-cache-observed":
             if checkpoint.collection_id is None:
                 raise QualificationError("qualification checkpoint has no collection identity")
-            files = _retrieval_files(checkpoint.collection_id, corpus)
+            files = _retrieval_artifacts(api, checkpoint.collection_id, corpus)
             opportunistic_plan = api.plan_retrieval(
                 files,
                 lease_seconds=lease_seconds,
                 restore_policy="never",
             )
-            _assert_retrieval_plan_files(api, opportunistic_plan, files)
+            _assert_retrieval_plan_artifacts(api, opportunistic_plan, files)
             if opportunistic_plan.get("requires_restore") is False:
                 return checkpoint
             if opportunistic_plan.get("requires_restore") is not True:
@@ -3850,7 +3880,7 @@ def operate_qualification(
                 lease_seconds=lease_seconds,
                 restore_policy="allow",
             )
-            _assert_retrieval_plan_files(api, plan, files)
+            _assert_retrieval_plan_artifacts(api, plan, files)
             if int(plan.get("lease_seconds", -1)) != lease_seconds:
                 raise QualificationError("Deep Archive plan did not preserve its bounded lease")
             job = api.create_retrieval_job(

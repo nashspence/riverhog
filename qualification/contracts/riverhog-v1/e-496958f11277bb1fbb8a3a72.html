@@ -65,7 +65,7 @@
 <a href="#s-849b08848721fb7b7fe49584">actions</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -104,7 +104,7 @@
 <section class="schema-section" id="s-849b08848721fb7b7fe49584">
 <h3>Field: actions</h3>
 <p class="shape">
-<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-root&quot;,&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-root&quot;]</code>; const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-provenance&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -145,6 +145,10 @@
 <tr>
 <td data-label="Alternative">4</td>
 <td data-label="Schema">const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">5</td>
+<td data-label="Schema">const: <code>[&quot;read-inputs&quot;,&quot;read-provenance&quot;,&quot;write-output&quot;]</code></td>
 </tr>
 </tbody>
 </table>
@@ -391,6 +395,56 @@
 <td>
 <span id="v-5017592ff4b613a2644a6f82">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/actions/oneOf/3/const/1">write-output</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-696d080138aa6ead81e64766">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<table id="v-83e50feb6de6582ed3956f6a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5f9bc3a493d26fadbcaf7626">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/actions/oneOf/4/const/0">read-inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-15493e3b686d2f78a3830d7f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/actions/oneOf/4/const/1">read-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-88e7c2fba400b57ff6055219">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/actions/oneOf/4/const/2">write-output</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -678,7 +732,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

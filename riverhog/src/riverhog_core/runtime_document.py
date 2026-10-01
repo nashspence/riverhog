@@ -10,6 +10,7 @@ from typing import Literal
 
 from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field
+from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
 from time_formats import parse_duration
 
 from riverhog_core.collection_plan import CollectionVolumePolicy
@@ -54,6 +55,7 @@ class CacheStoreDocument(AdapterDocument):
 
 
 class VolumePolicyDocument(_Document):
+    pack_artifacts: int = Field(default=_VOLUME.pack_artifacts, ge=1, le=ARCHIVE_PACK_ARTIFACTS_MAX)
     pack_source_bytes: str = str(_VOLUME.pack_source_bytes)
     pack_member_bytes: str = str(_VOLUME.pack_member_bytes)
     pack_part_plaintext_bytes: str = str(_VOLUME.pack_part_plaintext_bytes)
@@ -62,6 +64,7 @@ class VolumePolicyDocument(_Document):
 
     def policy(self) -> CollectionVolumePolicy:
         return CollectionVolumePolicy(
+            pack_artifacts=self.pack_artifacts,
             pack_source_bytes=_bytes(self.pack_source_bytes, "volume_policy.pack_source_bytes", 1),
             pack_member_bytes=_bytes(self.pack_member_bytes, "volume_policy.pack_member_bytes", 1),
             pack_part_plaintext_bytes=_bytes(

@@ -208,7 +208,7 @@ def test_yaml_connects_security_storage_and_runtime_policy(
         retrieval_cache_sweep_interval="7m",
         retrieval_restore_poll_interval="11m",
         log_level="debug",
-        volume_policy={"pack_files": 23},
+        volume_policy={"pack_artifacts": 23},
         throughput={"write_concurrency": 7},
         range_policy={"billing_mode": "whole_object"},
         range_policy_by_store={"archive": {"merge_gap_ciphertext_bytes": "64KiB"}},
@@ -241,7 +241,7 @@ def test_yaml_connects_security_storage_and_runtime_policy(
     assert config.retrieval_cache_sweep_interval == timedelta(minutes=7)
     assert config.retrieval_restore_poll_interval == timedelta(minutes=11)
     assert config.log_level == "DEBUG"
-    assert config.volume_policy.pack_files == 23
+    assert config.volume_policy.pack_artifacts == 23
     assert config.throughput_tuning.write_concurrency == 7
     assert config.range_policy.billing_mode == "whole_object"
     assert config.range_policy_for_store("archive").merge_gap_ciphertext_bytes == 65536

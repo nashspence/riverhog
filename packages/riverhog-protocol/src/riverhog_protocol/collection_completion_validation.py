@@ -117,7 +117,7 @@ def validate_completion_preimages(
     expected_imports: Iterable[Mapping[str, Any]],
     disposition: ArtifactDispositionSetIdentity,
     expected_records_sha256: str | None = None,
-) -> None:
+) -> dict[str, dict[str, str]]:
     if (
         completion["requirement_sha256"] != requirement.identity
         or completion["execution_id"] != requirement.execution_id
@@ -164,6 +164,11 @@ def validate_completion_preimages(
         validate_disposition_record_pages(
             retained.chunks("disposition-pages"), identity=disposition
         )
+
+        return {
+            kind: {"sha256": retained.identity(kind)[0], "bytes": str(retained.identity(kind)[1])}
+            for kind in requirement.record_kinds
+        }
 
 
 __all__ = ["validate_completion_preimages", "validate_disposition_record_pages"]

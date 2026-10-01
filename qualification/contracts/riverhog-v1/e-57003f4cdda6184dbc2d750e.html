@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&#x27;(*, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, materialization_hint: riverhog_protocol.provenance_transport.MaterializationHintDocument | None = None, allow_missing_materialization_hint: bool = False) -&gt; None&#x27;</code>
+<code>&#x27;(*, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, materialization_hint: Union[riverhog_protocol.provenance_transport.MaterializationHintDocument, Annotated[NoneType, SkipJsonSchema()]] = None, allow_missing_materialization_hint: bool = False) -&gt; None&#x27;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-b94b66e10d841dd6dea48af1">
@@ -106,11 +106,11 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-da1d68ca8d02d5847f4f3cfa">materialization_hint</a></td>
+<code>materialization_hint</code></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <a href="e-57003f4cdda6184dbc2d750e.html#v-77411deae260e7e94222af39">#/$defs/MaterializationHintDocument</a>; <code>null</code></td>
-<td data-label="Default">
-<code>null</code></td>
+<td data-label="Shape and bounds">
+<a href="e-57003f4cdda6184dbc2d750e.html#v-77411deae260e7e94222af39">#/$defs/MaterializationHintDocument</a></td>
+<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 </tbody>
@@ -122,34 +122,6 @@
 <a href="#s-77411deae260e7e94222af39">MaterializationHintDocument</a>
 </li>
 </ul>
-</section>
-<section class="schema-section" id="s-da1d68ca8d02d5847f4f3cfa">
-<h3>Field: materialization_hint</h3>
-<p class="shape">default: <code>null</code>; any of: <a href="e-57003f4cdda6184dbc2d750e.html#v-77411deae260e7e94222af39">#/$defs/MaterializationHintDocument</a>; <code>null</code>
-</p>
-<h4>At least one must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">1</td>
-<td data-label="Schema">
-<a href="e-57003f4cdda6184dbc2d750e.html#v-77411deae260e7e94222af39">#/$defs/MaterializationHintDocument</a></td>
-</tr>
-<tr>
-<td data-label="Alternative">2</td>
-<td data-label="Schema">
-<code>null</code></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-77411deae260e7e94222af39">
 <h3>Definition: MaterializationHintDocument</h3>
@@ -437,62 +409,12 @@
 <tbody>
 <tr>
 <th scope="row">
-<code>anyOf</code>
-</th>
-<td>
-<table id="v-05a9d35e7e4b21309a53e61a">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-858a2a819e24d37e35086b2e">
-<tbody>
-<tr>
-<th scope="row">
 <code>$ref</code>
 </th>
 <td>
-<span id="v-4c30449c675941cff8bdabd6">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactMaterializationDecisionDocument/contract/schema/properties/materialization_hint/anyOf/0/$ref">#/$defs/MaterializationHintDocument</code>
+<span id="v-ae9f4f3eeae561c509b96a87">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactMaterializationDecisionDocument/contract/schema/properties/materialization_hint/$ref">#/$defs/MaterializationHintDocument</code>
 <span class="kind">string</span> <a href="e-57003f4cdda6184dbc2d750e.html#v-77411deae260e7e94222af39">Definition</a>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>1</code>
-</th>
-<td>
-<table id="v-8d9f1c1ffcecc2c45973ebec">
-<tbody>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-93d7c0c4eb0ad27e634d4237">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactMaterializationDecisionDocument/contract/schema/properties/materialization_hint/anyOf/1/type">null</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>default</code>
-</th>
-<td>
-<span id="v-b93f319d7abd4713bd906aca">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactMaterializationDecisionDocument/contract/schema/properties/materialization_hint/default">null</code>
-<span class="kind">null</span>
 </span></td>
 </tr>
 </tbody>
@@ -540,7 +462,7 @@
 </th>
 <td>
 <span id="v-494db413275eda4c0017d9bc">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactMaterializationDecisionDocument/contract/signature">&#x27;(*, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, materialization_hint: riverhog_protocol.provenance_transport.MaterializationHintDocument | None = None, allow_missing_materialization_hint: bool = False) -&gt; None&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArtifactMaterializationDecisionDocument/contract/signature">&#x27;(*, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, materialization_hint: Union[riverhog_protocol.provenance_transport.MaterializationHintDocument, Annotated[NoneType, SkipJsonSchema()]] = None, allow_missing_materialization_hint: bool = False) -&gt; None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -631,7 +553,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

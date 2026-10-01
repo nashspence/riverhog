@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(journal_id: &#x27;str&#x27;, frames: &#x27;tuple[JournalFrame, ...]&#x27;, graph_validation: &#x27;GraphValidation&#x27;, retracted_assertion_ids: &#x27;frozenset[str]&#x27;, journal_sha256: &#x27;str&#x27;, journal_bytes: &#x27;int&#x27;) -&gt; None&quot;</code>
+<code>&quot;(journal_id: &#x27;str&#x27;, frames: &#x27;Sequence[JournalFrame]&#x27;, graph_validation: &#x27;GraphValidation&#x27;, retracted_assertion_ids: &#x27;Set[str]&#x27;, journal_sha256: &#x27;str&#x27;, journal_bytes: &#x27;int&#x27;, assertion_entries: &#x27;Mapping[str, dict[str, str]]&#x27;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -76,7 +76,7 @@
 <td data-label="Field">
 <code>frames</code></td>
 <td data-label="Type">
-<code>&#x27;tuple[JournalFrame, ...]&#x27;</code></td>
+<code>&#x27;Sequence[JournalFrame]&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -92,7 +92,7 @@
 <td data-label="Field">
 <code>retracted_assertion_ids</code></td>
 <td data-label="Type">
-<code>&#x27;frozenset[str]&#x27;</code></td>
+<code>&#x27;Set[str]&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -109,6 +109,14 @@
 <code>journal_bytes</code></td>
 <td data-label="Type">
 <code>&#x27;int&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>assertion_entries</code></td>
+<td data-label="Type">
+<code>&#x27;Mapping[str, dict[str, str]]&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
 </tr>
@@ -211,7 +219,7 @@
 </th>
 <td>
 <span id="v-db18c0c5dcb9d1e37e493f07">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/1/type">&#x27;tuple[JournalFrame, ...]&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/1/type">&#x27;Sequence[JournalFrame]&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -291,7 +299,7 @@
 </th>
 <td>
 <span id="v-d06575fb5f5a8df07fe6ae61">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/3/type">&#x27;frozenset[str]&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/3/type">&#x27;Set[str]&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -378,6 +386,46 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-a4be47b24be3237b24f8f6f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f95bdb8b47a5202dce52a0fc">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/6/default">required</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-c2ea7354755d7db0f2a1c090">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/6/name">assertion_entries</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c08309e6d61351c7372695e5">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/fields/6/type">&#x27;Mapping[str, dict[str, str]]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -397,7 +445,7 @@
 </th>
 <td>
 <span id="v-5131e369a2ebd02adc323210">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/signature">&quot;(journal_id: &#x27;str&#x27;, frames: &#x27;tuple[JournalFrame, ...]&#x27;, graph_validation: &#x27;GraphValidation&#x27;, retracted_assertion_ids: &#x27;frozenset[str]&#x27;, journal_sha256: &#x27;str&#x27;, journal_bytes: &#x27;int&#x27;) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.JournalSummary/contract/signature">&quot;(journal_id: &#x27;str&#x27;, frames: &#x27;Sequence[JournalFrame]&#x27;, graph_validation: &#x27;GraphValidation&#x27;, retracted_assertion_ids: &#x27;Set[str]&#x27;, journal_sha256: &#x27;str&#x27;, journal_bytes: &#x27;int&#x27;, assertion_entries: &#x27;Mapping[str, dict[str, str]]&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -506,7 +554,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

@@ -208,10 +208,20 @@
 </span>
 <td data-label="Recorded fact">List Collection Upload Session Artifacts</td>
 </tr>
+<tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-8eb145c3b3:0932be1498">
+<td data-label="Element">
+<a href="e-b357a62e364f1b406c8679c7.html">GET /v1/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}</a>
+<td data-label="Recorded fact">Get Collection Upload Session Artifact</td>
+</tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-95b0d6ddf6:8d17e2459a">
 <td data-label="Element">
 <a href="e-01a4ac7037a892f4a1eae1f6.html">GET /v1/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}/provenance-binding</a>
 <td data-label="Recorded fact">Get Collection Upload Session Artifact Provenance Binding</td>
+</tr>
+<tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-1f8209cb96:efb4ffdf67">
+<td data-label="Element">
+<a href="e-475ac310aaa27edaf36b98da.html">GET /v1/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs</a>
+<td data-label="Recorded fact">Get Collection Upload Session Member History Inputs</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-9b97d3dcb5:e28b2b6592">
 <td data-label="Element">
@@ -253,6 +263,8 @@
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-fb19b89b43:21fe78f3c3">
 <td data-label="Element">
 <a href="e-9d8566d8550d95b12156c367.html">GET /v1/collections/{collection_id}/provenance/artifacts</a>
+<span class="audit-cue"> <a class="audit-marker" href="e-9d8566d8550d95b12156c367.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 <td data-label="Recorded fact">List Collection Artifact Provenance</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-25571c9915:104f94b7e2">
@@ -260,15 +272,27 @@
 <a href="e-cccb2912e674dee80ad9ace1.html">GET /v1/collections/{collection_id}/provenance/artifacts/{artifact_id}</a>
 <td data-label="Recorded fact">Get Collection Artifact Provenance</td>
 </tr>
+<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-f54857f1e9:d98c891193">
+<td data-label="Element">
+<a href="e-b51e2c1b6a9ea509d0c109f9.html">GET /v1/collections/{collection_id}/provenance/artifacts/{artifact_id}/history-binding-proof</a>
+<td data-label="Recorded fact">Get Collection Artifact History Binding Proof</td>
+</tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenance-journals:58954f11c7">
 <td data-label="Element">
 <a href="e-7aa56f4dc34c47583299d761.html">GET /v1/collections/{collection_id}/provenance/journals</a>
+<span class="audit-cue"> <a class="audit-marker" href="e-7aa56f4dc34c47583299d761.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 <td data-label="Recorded fact">List Collection Provenance Journals</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-3a9ce32406:3d397774e9">
 <td data-label="Element">
 <a href="e-de722d1ac9ded25c07d0d215.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
 <td data-label="Recorded fact">Stream Collection Provenance Journal</td>
+</tr>
+<tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-370453f2bb:5b58c65f12">
+<td data-label="Element">
+<a href="e-402083ae8ea5d2268d6619bc.html">GET /v1/collections/{collection_id}/provenance/structure/{object_id}</a>
+<td data-label="Recorded fact">Get Collection Provenance Structure</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-tags:dfa3c428a5">
 <td data-label="Element">
@@ -534,10 +558,25 @@
 <a href="e-c79b43582f5f0bc12f512540.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/bindings</a>
 <td data-label="Recorded fact">Bind Collection Upload Session Artifact Provenance</td>
 </tr>
+<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-99e2803d9c:b02cef4af6">
+<td data-label="Element">
+<a href="e-ced438b386d06c33e53ebaca.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/completion-recording</a>
+<td data-label="Recorded fact">Reserve Collection Upload Session Completion Recording</td>
+</tr>
+<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-dab7b720cd:0392b02f89">
+<td data-label="Element">
+<a href="e-fab4d91faa4cf2483da224a7.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/history-bindings</a>
+<td data-label="Recorded fact">Bind Collection Upload Session Member Histories</td>
+</tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-eb0b1275c6:d01b28fd3c">
 <td data-label="Element">
 <a href="e-11205ba1a2fdcfb35803747e.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal</a>
 <td data-label="Recorded fact">Seal Collection Upload Session Provenance Journal</td>
+</tr>
+<tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-66b013bb9b:151957ad0e">
+<td data-label="Element">
+<a href="e-3694a0052248fb2962d042c4.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/structure</a>
+<td data-label="Recorded fact">Stage Collection Upload Session History Structure</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-fffabb89d2:bb2ca4c27b">
 <td data-label="Element">
@@ -646,6 +685,16 @@
 <a href="e-e6cef65ec8a1e5cef9cbf220.html">PUT /v1/collection-processing-claims/{claim_id}/plan/artifacts</a>
 <td data-label="Recorded fact">Append Processing Claim Artifacts</td>
 </tr>
+<tr data-element="http-operations:riverhog:put-v1-collection-upload-sessions-collect-af51a99d74:4879b5ec2d">
+<td data-label="Element">
+<a href="e-2d72ce840e6f24953a4154e8.html">PUT /v1/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs</a>
+<td data-label="Recorded fact">Set Collection Upload Session Member History Inputs</td>
+</tr>
+<tr data-element="http-operations:riverhog:put-v1-collection-upload-sessions-collect-84bef1a381:6ed07aae4b">
+<td data-label="Element">
+<a href="e-47adc5f4db11f1f11640ca75.html">PUT /v1/collection-upload-sessions/{collection_id}/provenance/completion-requirement</a>
+<td data-label="Recorded fact">Set Collection Upload Session Completion Requirement</td>
+</tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-upload-sessions-collect-2ca65d4793:dd23d96608">
 <td data-label="Element">
 <a href="e-342ba22185e2333a3fc2effa.html">PUT /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
@@ -666,7 +715,7 @@
 </div>
 <aside class="audit" id="audit-scope">
 <h2>Open extent qualifications in this scope</h2>
-<p>25 subjects · riverhog · HTTP Operations</p>
+<p>27 subjects · riverhog · HTTP Operations</p>
 <ul>
 <li>
 <a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
@@ -677,7 +726,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

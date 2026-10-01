@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = (), protocol: Literal[&#x27;stove0-transform-target/v1&#x27;] = &#x27;stove0-transform-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = ()) -&gt; None&quot;</code>
+<code>&quot;(*, invocation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = (), protocol: Literal[&#x27;stove0-transform-target/v1&#x27;] = &#x27;stove0-transform-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = (), execution_parameters: dict[str, JsonValue] = &lt;factory&gt;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-4e681e4978133ca68b98a36c">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -87,6 +87,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-319a21137d763941eb3124ca">execution_parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-f297aa47038dd77629526bc7.html#v-3bca7204fc27cd0ddd218006">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-88e4d2c444a9e8f654ec371a">input_groups</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -110,6 +119,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-f297aa47038dd77629526bc7.html#v-3bca7204fc27cd0ddd218006">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -202,6 +220,22 @@
 <a href="#s-65628011a5e00076b0db69de">WorkInputGroup</a>
 </li>
 </ul>
+</section>
+<section class="schema-section" id="s-319a21137d763941eb3124ca">
+<h3>Field: execution_parameters</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-f297aa47038dd77629526bc7.html#v-3bca7204fc27cd0ddd218006">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-88e4d2c444a9e8f654ec371a">
 <h3>Field: input_groups</h3>
@@ -1215,6 +1249,46 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>execution_parameters</code>
+</th>
+<td>
+<table id="v-319a21137d763941eb3124ca">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-d4f490e93dddcb7f41d4da77">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5f8956fbad878843b001508e">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/properties/execution_parameters/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-f297aa47038dd77629526bc7.html#v-3bca7204fc27cd0ddd218006">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8f48e55d059eb144be7c2e02">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/properties/execution_parameters/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>input_groups</code>
 </th>
 <td>
@@ -1317,6 +1391,36 @@
 <td>
 <span id="v-2c019306bb97ef75ee33e555">
 <code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-dec512787f217bf7d623da53">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-208e1985a64508f8819f27d7">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-988d758912c05fa1b1609099">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/properties/invocation_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1599,7 +1703,7 @@
 </th>
 <td>
 <span id="v-0ebf8d6366b7062ea3477617">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1609,7 +1713,7 @@
 </th>
 <td>
 <span id="v-44ec1bff222d2d558c4bfd9f">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1619,7 +1723,7 @@
 </th>
 <td>
 <span id="v-540d4e50833a3e468993e09d">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/2">inputs</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1629,7 +1733,7 @@
 </th>
 <td>
 <span id="v-2762a8147e514901c506cca4">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/3">intent</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/3">inputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1639,7 +1743,7 @@
 </th>
 <td>
 <span id="v-85d4f737810200979fcd02fd">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/4">target_implementation_id</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1649,7 +1753,17 @@
 </th>
 <td>
 <span id="v-7b309f337e33c702e875d872">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/5">target_descriptor_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/5">target_implementation_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-4e1bd29ec88aee2ce03d196b">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/schema/required/6">target_descriptor_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1675,7 +1789,7 @@
 </th>
 <td>
 <span id="v-f8d43e228577489b75151f45">
-<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/signature">&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = (), protocol: Literal[&#x27;stove0-transform-target/v1&#x27;] = &#x27;stove0-transform-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = ()) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TransformPlanPayload/contract/signature">&quot;(*, invocation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = &lt;factory&gt;, input_groups: tuple[stove0_protocol.models.WorkInputGroup, ...] = (), protocol: Literal[&#x27;stove0-transform-target/v1&#x27;] = &#x27;stove0-transform-target/v1&#x27;, target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], ...] = (), execution_parameters: dict[str, JsonValue] = &lt;factory&gt;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1769,7 +1883,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

@@ -16,6 +16,7 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol import ArtifactId
 from riverhog_protocol.collection_completion import (
     COMPLETION_REQUIRED_RECORD_KINDS,
+    CollectionCompletionPublicationReceiptDocument,
     CollectionCompletionRecordingRequestDocument,
     CollectionCompletionRequirementDocument,
 )
@@ -354,8 +355,6 @@ class IncrementalDerivedCollectionWriter:
         completion_assertions: CompletionAssertions | None,
     ) -> None:
         session = self.api.get_collection_upload_session(self.producer.collection_id)
-        if session["state"] == "finalized":
-            return
         with CompletionRecords() as records:
             for record in supplied:
                 retained = records.add(record.kind, record.read())
@@ -377,6 +376,29 @@ class IncrementalDerivedCollectionWriter:
                 ),
             )
             records.add("disposition-identity", (canonical_json_bytes(disposition.as_dict()),))
+            if records.record("target-execution").sha256 != execution_sha256:
+                raise ValueError("target execution digest lacks its exact sealed preimage")
+            if session["state"] == "finalized":
+                receipt = CollectionCompletionPublicationReceiptDocument.model_validate(
+                    session["completion_receipt"]
+                )
+                if receipt.requirement_sha256 != self.requirement.identity:
+                    raise ValueError("published completion requirement differs from this execution")
+                provided = {record.kind: record for record in records.records()}
+                expected = set(receipt.records) - {
+                    "disposition-pages",
+                    "output-bindings",
+                    "input-history-bindings",
+                }
+                if set(provided) != expected:
+                    raise ValueError(
+                        "published completion retry lacks its exact supplied preimages"
+                    )
+                for kind, record in provided.items():
+                    accepted = receipt.records[kind]
+                    if (record.sha256, str(record.bytes)) != (accepted.sha256, accepted.bytes):
+                        raise ValueError("published completion retry changes accepted evidence")
+                return
             records.add(
                 "disposition-pages", canonical_record_sequence(self._disposition_pages(disposition))
             )

@@ -24,7 +24,6 @@ LIFECYCLE_EVENT_LIST_COMMANDS = (
 PAGED_LIST_COMMANDS = (
     ("a-riverhog-cli", "collection", "list", "--help"),
     ("a-riverhog-cli", "collection", "upload", "list", "--help"),
-    ("a-riverhog-cli", "collection", "provenance", "list", "--help"),
     ("a-riverhog-cli", "find", "--help"),
     ("a-riverhog-cli", "archive", "copy-job", "list", "--help"),
     ("a-riverhog-cli", "archive", "store", "list", "--help"),
@@ -38,6 +37,8 @@ PAGED_LIST_COMMANDS = (
     ("stove0", "evaluation", "list", "--help"),
     ("stove0", "admission", "list", "--help"),
 )
+
+ARTIFACT_LIST_COMMANDS = (("a-riverhog-cli", "collection", "provenance", "list", "--help"),)
 
 BOUNDED_LIST_COMMANDS = (
     ("a-riverhog-cli", "collection", "tag", "list", "--help"),
@@ -173,6 +174,23 @@ def test_paged_list_cli_help_uses_the_shared_contract(command: tuple[str, ...]) 
         assert "--json" in completed.stdout
 
 
+@pytest.mark.parametrize("command", ARTIFACT_LIST_COMMANDS)
+def test_artifact_list_help_pins_the_archive_root_for_continuation(
+    command: tuple[str, ...],
+) -> None:
+    completed = _run_help(command)
+
+    assert completed.returncode == 0, completed.stderr
+    for option in (
+        "--page-size",
+        "--after-artifact-id",
+        "--archive-root-sha256",
+        "--selectors",
+        "--json",
+    ):
+        assert option in completed.stdout
+
+
 @pytest.mark.parametrize("command", BOUNDED_LIST_COMMANDS)
 def test_bounded_list_cli_help_uses_the_shared_output_contract(command: tuple[str, ...]) -> None:
     completed = _run_help(command)
@@ -256,6 +274,7 @@ def test_every_official_list_command_has_one_declared_convention() -> None:
         for command in (
             *LIFECYCLE_EVENT_LIST_COMMANDS,
             *PAGED_LIST_COMMANDS,
+            *ARTIFACT_LIST_COMMANDS,
             *BOUNDED_LIST_COMMANDS,
             *SIMPLE_PAGED_LIST_COMMANDS,
             *QUERY_PAGED_LIST_COMMANDS,

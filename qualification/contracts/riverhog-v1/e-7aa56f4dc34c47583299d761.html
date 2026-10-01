@@ -43,6 +43,10 @@
 <dd>
 <code>[{&quot;any_of&quot;:[&quot;provenance:export&quot;]}]</code>
 </dd>
+<dt>x-riverhog-read-collection</dt>
+<dd>
+<code>{&quot;authority&quot;:&quot;archive-root-canonical-journal-corpus&quot;,&quot;authority_parameter&quot;:&quot;If-Match&quot;,&quot;cursor_parameter&quot;:&quot;after_journal_id&quot;,&quot;kind&quot;:&quot;exact-authority-page&quot;,&quot;limit_parameter&quot;:&quot;page_size&quot;}</code>
+</dd>
 <dt>x-riverhog-interface</dt>
 <dd>
 <code>standard-tool/protocol</code>
@@ -1429,6 +1433,66 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-read-collection</code>
+</th>
+<td>
+<table id="v-a4616dbeedd462a3e5000824">
+<tbody>
+<tr>
+<th scope="row">
+<code>authority</code>
+</th>
+<td>
+<span id="v-b05ed8c988a26b00e466385d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get/x-riverhog-read-collection/authority">archive-root-canonical-journal-corpus</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>authority_parameter</code>
+</th>
+<td>
+<span id="v-83f437b43acb7ee16cc252ce">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get/x-riverhog-read-collection/authority_parameter">If-Match</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>cursor_parameter</code>
+</th>
+<td>
+<span id="v-66953d3141df1ae3182b1504">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get/x-riverhog-read-collection/cursor_parameter">after_journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-4281b19749df53969716d249">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get/x-riverhog-read-collection/kind">exact-authority-page</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>limit_parameter</code>
+</th>
+<td>
+<span id="v-a704b6498c796c0a582f0bff">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get/x-riverhog-read-collection/limit_parameter">page_size</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -1456,6 +1520,12 @@
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Open extent qualification</h3>
+<ul>
+<li>
+<a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
+</li>
+</ul>
 <h3>Governing policies</h3>
 <ul>
 <li>
@@ -1495,6 +1565,15 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get</code></td>
+<td data-label="Governing rule">
+<a href="e-29139ab5c6c876200636b44a.html">extent-rule/route-progression/v1</a></td>
+<td data-label="Decision">logical-result-cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;progression&quot;:{&quot;authority&quot;:&quot;archive-root-canonical-journal-corpus&quot;,&quot;authority_parameter&quot;:&quot;If-Match&quot;,&quot;cursor_parameter&quot;:&quot;after_journal_id&quot;,&quot;kind&quot;:&quot;exact-authority-page&quot;,&quot;limit_parameter&quot;:&quot;page_size&quot;},&quot;reason&quot;:&quot;bounded-route-progression&quot;}</code></td>
+</tr>
 <tr>
 <td data-label="Exact subject">
 <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get/parameters/1/schema</code></td>
@@ -1998,7 +2077,7 @@
 </th>
 <td>
 <span id="v-b966ffec2879b84112a6fd5a">
-<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/client_bindings/0/source/line">1789</code>
+<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/client_bindings/0/source/line">1978</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -2086,10 +2165,60 @@
 <code>read_collection</code>
 </th>
 <td>
-<span id="v-103b0d0cc0b4da22ac63338f">
-<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/read_collection">null</code>
-<span class="kind">null</span>
+<table id="v-103b0d0cc0b4da22ac63338f">
+<tbody>
+<tr>
+<th scope="row">
+<code>authority</code>
+</th>
+<td>
+<span id="v-79fb762af17f662e1ef32b73">
+<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/read_collection/authority">archive-root-canonical-journal-corpus</code>
+<span class="kind">string</span>
 </span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>authority_parameter</code>
+</th>
+<td>
+<span id="v-66b44bccc0acfb55b99f9743">
+<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/read_collection/authority_parameter">If-Match</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>cursor_parameter</code>
+</th>
+<td>
+<span id="v-1d944a86655b0486017850d7">
+<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/read_collection/cursor_parameter">after_journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-80e906d031a1168f779ceffb">
+<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/read_collection/kind">exact-authority-page</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>limit_parameter</code>
+</th>
+<td>
+<span id="v-af54d39c796675bb394af33b">
+<code data-value-pointer="/audit/operation-qualification/list_collection_provenance_journals/read_collection/limit_parameter">page_size</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -2109,7 +2238,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

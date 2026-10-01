@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(api: &#x27;ApiClient&#x27;, *, producer_app: &#x27;str&#x27;, adapter_id: &#x27;str&#x27;, adapter_version: &#x27;str&#x27;, ingest_source: &#x27;str&#x27;, source_event_id: &#x27;str&#x27;, source_context: &#x27;Mapping[str, object] | None&#x27; = None, idempotency_key: &#x27;str | None&#x27; = None, archive_store: &#x27;ArchiveStoreName | None&#x27; = None, use_cache: &#x27;bool | None&#x27; = None, copy_to: &#x27;Sequence[ArchiveStoreName] | None&#x27; = None, description: &#x27;CollectionDescription | None&#x27; = None, tags: &#x27;Sequence[CollectionTag]&#x27; = (), event_context: &#x27;Mapping[str, object] | None&#x27; = None, progress: &#x27;ReadProgress | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
+<code>&quot;(api: &#x27;ApiClient&#x27;, *, producer_app: &#x27;str&#x27;, adapter_id: &#x27;str&#x27;, adapter_version: &#x27;str&#x27;, ingest_source: &#x27;str&#x27;, source_event_id: &#x27;str&#x27;, source_context: &#x27;Mapping[str, object] | None&#x27; = None, idempotency_key: &#x27;str | None&#x27; = None, archive_store: &#x27;ArchiveStoreName | None&#x27; = None, use_cache: &#x27;bool | None&#x27; = None, copy_to: &#x27;Sequence[ArchiveStoreName] | None&#x27; = None, description: &#x27;CollectionDescription | None&#x27; = None, tags: &#x27;Sequence[CollectionTag]&#x27; = (), event_context: &#x27;Mapping[str, object] | None&#x27; = None, progress: &#x27;ReadProgress | None&#x27; = None, completion_requirement: &#x27;CollectionCompletionRequirementDocument | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
 </dd>
 </dl>
 </div>
@@ -85,7 +85,7 @@
 </th>
 <td>
 <span id="v-df3b24c77811253af013c0b0">
-<code data-value-pointer="/external_contract/python/riverhog_client.IncrementalCollectionProducer/contract/signature">&quot;(api: &#x27;ApiClient&#x27;, *, producer_app: &#x27;str&#x27;, adapter_id: &#x27;str&#x27;, adapter_version: &#x27;str&#x27;, ingest_source: &#x27;str&#x27;, source_event_id: &#x27;str&#x27;, source_context: &#x27;Mapping[str, object] | None&#x27; = None, idempotency_key: &#x27;str | None&#x27; = None, archive_store: &#x27;ArchiveStoreName | None&#x27; = None, use_cache: &#x27;bool | None&#x27; = None, copy_to: &#x27;Sequence[ArchiveStoreName] | None&#x27; = None, description: &#x27;CollectionDescription | None&#x27; = None, tags: &#x27;Sequence[CollectionTag]&#x27; = (), event_context: &#x27;Mapping[str, object] | None&#x27; = None, progress: &#x27;ReadProgress | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.IncrementalCollectionProducer/contract/signature">&quot;(api: &#x27;ApiClient&#x27;, *, producer_app: &#x27;str&#x27;, adapter_id: &#x27;str&#x27;, adapter_version: &#x27;str&#x27;, ingest_source: &#x27;str&#x27;, source_event_id: &#x27;str&#x27;, source_context: &#x27;Mapping[str, object] | None&#x27; = None, idempotency_key: &#x27;str | None&#x27; = None, archive_store: &#x27;ArchiveStoreName | None&#x27; = None, use_cache: &#x27;bool | None&#x27; = None, copy_to: &#x27;Sequence[ArchiveStoreName] | None&#x27; = None, description: &#x27;CollectionDescription | None&#x27; = None, tags: &#x27;Sequence[CollectionTag]&#x27; = (), event_context: &#x27;Mapping[str, object] | None&#x27; = None, progress: &#x27;ReadProgress | None&#x27; = None, completion_requirement: &#x27;CollectionCompletionRequirementDocument | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -141,7 +141,16 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
+<a href="e-a8ba0f2e80b2e5517f5ee3ed.html">riverhog_client.IncrementalCollectionProducer.resume_artifact_custody</a>
+</li>
+<li>
 <a href="e-3bdd4f1b2791baff08a7bada.html">riverhog_client.IncrementalCollectionProducer.append_inputs</a>
+</li>
+<li>
+<a href="e-ae701db508e518a9b9d5505d.html">riverhog_client.IncrementalCollectionProducer.reconcile_custody</a>
+</li>
+<li>
+<a href="e-10d580706b1ef8861b0b61a5.html">riverhog_client.IncrementalCollectionProducer.set_pending_source_resolver</a>
 </li>
 <li>
 <a href="e-7bc57f91954fd6a64a8e864f.html">riverhog_client.IncrementalCollectionProducer.heartbeat</a>
@@ -188,7 +197,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

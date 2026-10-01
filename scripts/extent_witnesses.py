@@ -177,6 +177,7 @@ WITNESSES = (
             _http_subject(
                 "riverhog", "CollectionArtifactProvenanceBindingBatchDocument", "bindings"
             ),
+            _http_subject("riverhog", "MemberHistoryBindingBatchDocument", "bindings"),
         ),
         test_node_ids=(
             "packages/riverhog-protocol/tests/test_collection_upload_transport.py::"
@@ -184,24 +185,6 @@ WITNESSES = (
             "tests/unit/test_provenance_binding.py::test_exact_member_binding_and_hint",
         ),
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
-    ),
-    SegmentedExtentWitness(
-        id="riverhog-provenance-read-progression/v1",
-        owner="riverhog",
-        rule_id="bounded-segment/v1",
-        source_pointers=(
-            _http_subject("riverhog", "ListCollectionArtifactProvenanceOut", "artifacts"),
-            _http_subject("riverhog", "ListCollectionProvenanceJournalsOut", "journals"),
-        ),
-        test_node_ids=(
-            "tests/unit/test_canonical_provenance_service.py::"
-            "test_exact_journal_corpus_is_root_fenced_and_export_authorized",
-            "tests/unit/test_canonical_provenance_service.py::"
-            "test_member_provenance_requires_root_selected_binding_and_read_permission",
-            "tests/unit/test_provenance_archive_read.py::"
-            "test_root_bound_reader_streams_exact_journal_and_member_bindings",
-        ),
-        gates=("make unit", "make compose-smoke"),
     ),
     SegmentedExtentWitness(
         id="riverhog-discovery-read-progression/v1",

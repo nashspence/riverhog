@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-9a9e152e631f975a52ac5564">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -36,7 +36,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact&quot;,&quot;binding&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;artifact&quot;,&quot;binding&quot;,&quot;history_binding&quot;,&quot;member_history&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -93,6 +93,24 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>history_binding</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-a4381f82c7385afdd23fa4a3.html#v-e7a4e29f35f57487fbcf7e95">#/components/schemas/MemberHistoryBindingDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>member_history</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-ea82384dbd979ea638575cfe.html#v-6173d184677c6fab93b29e71">#/components/schemas/MemberHistoryDescriptorDocument</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -226,6 +244,46 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>history_binding</code>
+</th>
+<td>
+<table id="v-4c965d71cb55ad9abbb0598c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-abe672706e0820fd04e8ba18">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactProvenanceDetailOut/properties/history_binding/$ref">#/components/schemas/MemberHistoryBindingDocument</code>
+<span class="kind">string</span> <a href="e-a4381f82c7385afdd23fa4a3.html#v-e7a4e29f35f57487fbcf7e95">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>member_history</code>
+</th>
+<td>
+<table id="v-a3f2200377735e0761cf33d4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f4f379ae8f28dc839f8e6b70">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactProvenanceDetailOut/properties/member_history/$ref">#/components/schemas/MemberHistoryDescriptorDocument</code>
+<span class="kind">string</span> <a href="e-ea82384dbd979ea638575cfe.html#v-6173d184677c6fab93b29e71">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -273,6 +331,26 @@
 <td>
 <span id="v-b2cf40224ae8aa948582a244">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactProvenanceDetailOut/required/3">binding</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-dc5af75bd23de2e78eecfea3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactProvenanceDetailOut/required/4">history_binding</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-cdbc9eef14aa1b748c89c58c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactProvenanceDetailOut/required/5">member_history</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -359,7 +437,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

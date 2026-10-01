@@ -227,10 +227,9 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
-                path="source/input.bin",
+                artifact_id="1" * 64,
                 bytes=str(12),
                 sha256="b" * 64,
-                media_type="application/octet-stream",
             ),
         )
     )

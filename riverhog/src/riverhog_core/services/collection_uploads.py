@@ -91,6 +91,7 @@ from riverhog_protocol import (
     validate_collection_upload_batch_against_registration_constraints,
 )
 from riverhog_protocol.collection_completion import (
+    CollectionCompletionPublicationReceiptDocument,
     CollectionCompletionRecordingDocument,
     CollectionCompletionRecordingRequestDocument,
     CollectionCompletionRequirementDocument,
@@ -3446,6 +3447,7 @@ class SqlAlchemyCollectionUploadService:
                     creation_archive_store=upload.archive_store,
                     creation_use_cache=upload.use_cache,
                     creation_copy_to_json=upload.copy_to_json,
+                    completion_receipt_json=upload.completion_receipt_json,
                     archive_generation=upload.archive_generation,
                     delivery_context_id=upload.delivery_context_id,
                     artifact_set_identity=upload.catalog_artifact_set_identity,
@@ -6089,7 +6091,7 @@ def _validate_staged_execution_completion(
             history = closure.store.descriptor(_member_history_binding_row(final))
             yield {"artifact_id": final.artifact_id, "imports": history.imports.to_mapping()}
 
-    validate_completion_preimages(
+    record_identities = validate_completion_preimages(
         requirement=requirement,
         completion=fact["value"]["value"]["data"],
         extensions=(
@@ -6110,6 +6112,19 @@ def _validate_staged_execution_completion(
         disposition=disposition,
         expected_records_sha256=upload.completion_records_sha256,
     )
+
+    receipt = CollectionCompletionPublicationReceiptDocument.model_validate(
+        {
+            "requirement_sha256": requirement.identity,
+            "records_sha256": upload.completion_records_sha256,
+            "journal": completion_anchor.to_mapping(),
+            "records": record_identities,
+        }
+    )
+    encoded = canonical_json_bytes(receipt.model_dump(mode="json")).decode("utf-8")
+    if upload.completion_receipt_json not in (None, encoded):
+        raise Conflict("accepted completion publication identities cannot be replaced")
+    upload.completion_receipt_json = encoded
 
 
 def _provenance_volume_document(
@@ -7297,6 +7312,9 @@ def _upload_payload(
         "delivery_context_id": upload.delivery_context_id,
         "construction_identity_sha256": upload.creation_identity_sha256,
         "completion_journal_id": upload.completion_journal_id,
+        "completion_receipt": None
+        if upload.completion_receipt_json is None
+        else json.loads(upload.completion_receipt_json),
         "archive_store": upload.archive_store,
         "use_cache": upload.use_cache,
         "copy_to": json.loads(upload.copy_to_json),
@@ -7424,6 +7442,9 @@ def _finalized_payload(
         "artifact_set_identity": collection.artifact_set_identity,
         "delivery_context_id": collection.delivery_context_id,
         "construction_identity_sha256": collection.creation_identity_sha256,
+        "completion_receipt": None
+        if collection.completion_receipt_json is None
+        else json.loads(collection.completion_receipt_json),
         "archive_root_sha256": manifest_sha256,
         "archive_store": collection.creation_archive_store,
         "use_cache": collection.creation_use_cache,

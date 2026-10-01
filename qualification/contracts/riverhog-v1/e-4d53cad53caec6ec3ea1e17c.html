@@ -975,7 +975,7 @@
 <section class="schema-section" id="s-a067aa6408082e899f7d26f3">
 <h3>Definition: VolumePolicyDocument</h3>
 <p class="shape">
-<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -1004,6 +1004,16 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Field">
+<code>pack_artifacts</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>50000</code>; default: <code>50000</code></td>
+<td data-label="Default">
+<code>50000</code></td>
+<td data-label="Description"></td>
+</tr>
 <tr>
 <td data-label="Field">
 <code>pack_member_bytes</code></td>
@@ -2716,6 +2726,66 @@
 <td>
 <table id="v-464f7a22a9cd25dd0bbaf18d">
 <tbody>
+<tr>
+<th scope="row">
+<code>pack_artifacts</code>
+</th>
+<td>
+<table id="v-e49f24e4fc6916002b22408e">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-73a1bb328a4b205af31e943a">
+<code data-value-pointer="/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/$defs/VolumePolicyDocument/properties/pack_artifacts/default">50000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-0a8309dfc9fdde68bf24e81b">
+<code data-value-pointer="/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/$defs/VolumePolicyDocument/properties/pack_artifacts/maximum">50000</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-6dd8dd25be784970a0a44d93">
+<code data-value-pointer="/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/$defs/VolumePolicyDocument/properties/pack_artifacts/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e272b9ca0ec8c0f9674928e1">
+<code data-value-pointer="/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/$defs/VolumePolicyDocument/properties/pack_artifacts/title">Pack Artifacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2b4a8fcc80c1f75e9ba849e8">
+<code data-value-pointer="/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/$defs/VolumePolicyDocument/properties/pack_artifacts/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>pack_member_bytes</code>
@@ -4650,6 +4720,15 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/$defs/VolumePolicyDocument/properties/pack_artifacts</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">value · schema-value · contract_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:50000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/configuration_documents/riverhog-server:configuration:riverhog-document/properties/archive_passphrase_files</code></td>
 <td data-label="Governing rule">
 <code>configuration-composition/v1</code></td>
@@ -4719,7 +4798,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

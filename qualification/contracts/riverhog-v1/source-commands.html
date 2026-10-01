@@ -34,14 +34,14 @@
 <tr>
 <td data-label="Route">
 <code id="route-d1121e35fa7adab170fe1ee4">make build</code></td>
-<td data-label="Associated elements">3402</td>
+<td data-label="Associated elements">3552</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
 <td data-label="Route">
 <code id="route-413b0b241ba870e262fb82fa">make compose-smoke</code></td>
-<td data-label="Associated elements">757</td>
-<td data-label="Candidate witness groups">14</td>
+<td data-label="Associated elements">779</td>
+<td data-label="Candidate witness groups">13</td>
 </tr>
 <tr>
 <td data-label="Route">
@@ -58,7 +58,7 @@
 <tr>
 <td data-label="Route">
 <code id="route-0ba2578a3eb74fda1e38b234">make dist-smoke</code></td>
-<td data-label="Associated elements">3624</td>
+<td data-label="Associated elements">3774</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
@@ -70,7 +70,7 @@
 <tr>
 <td data-label="Route">
 <code id="route-dd95e4459fb8ecb561da1c86">make operation-qualification</code></td>
-<td data-label="Associated elements">839</td>
+<td data-label="Associated elements">861</td>
 <td data-label="Candidate witness groups">0</td>
 </tr>
 <tr>
@@ -95,7 +95,7 @@
 <td data-label="Route">
 <code id="route-ce47068f504c25a93bdddb64">make unit</code></td>
 <td data-label="Associated elements">149</td>
-<td data-label="Candidate witness groups">18</td>
+<td data-label="Candidate witness groups">17</td>
 </tr>
 </tbody>
 </table>
@@ -668,6 +668,14 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
+<code>GET /v1/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
 <code>GET /v1/collection-upload-sessions/{collection_id}/artifacts/{artifact_id}/provenance-binding</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
@@ -724,7 +732,47 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
+<code>GET /v1/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>PUT /v1/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
 <code>POST /v1/collection-upload-sessions/{collection_id}/provenance/bindings</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/collection-upload-sessions/{collection_id}/provenance/completion-recording</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>PUT /v1/collection-upload-sessions/{collection_id}/provenance/completion-requirement</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/collection-upload-sessions/{collection_id}/provenance/history-bindings</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -765,6 +813,14 @@
 <code>riverhog</code></td>
 <td data-label="Operation">
 <code>POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>POST /v1/collection-upload-sessions/{collection_id}/provenance/structure</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">ApiClient</td>
 </tr>
@@ -876,6 +932,14 @@
 <td data-label="Application">
 <code>riverhog</code></td>
 <td data-label="Operation">
+<code>GET /v1/collections/{collection_id}/provenance/artifacts/{artifact_id}/history-binding-proof</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
 <code>GET /v1/collections/{collection_id}/provenance/journals</code></td>
 <td data-label="Classification">standard-tool/protocol</td>
 <td data-label="Client">ApiClient</td>
@@ -895,6 +959,14 @@
 <code>HEAD /v1/collections/{collection_id}/provenance/journals/{journal_id}</code></td>
 <td data-label="Classification">standard-tool/protocol</td>
 <td data-label="Client">None</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>riverhog</code></td>
+<td data-label="Operation">
+<code>GET /v1/collections/{collection_id}/provenance/structure/{object_id}</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">ApiClient</td>
 </tr>
 <tr>
 <td data-label="Application">
@@ -1300,6 +1372,14 @@
 <td data-label="Application">
 <code>stove0</code></td>
 <td data-label="Operation">
+<code>GET /v1/target-executions/{job_id}/outputs</code></td>
+<td data-label="Classification">client-only-primitive</td>
+<td data-label="Client">TargetCallbackClient</td>
+</tr>
+<tr>
+<td data-label="Application">
+<code>stove0</code></td>
+<td data-label="Operation">
 <code>PUT /v1/target-executions/{job_id}/outputs/{artifact_id}</code></td>
 <td data-label="Classification">client-only-primitive</td>
 <td data-label="Client">TargetCallbackClient</td>
@@ -1392,7 +1472,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

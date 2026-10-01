@@ -50,18 +50,18 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, format: Literal[&#x27;riverhog-artifact-custody-receipt/v1&#x27;] = &#x27;riverhog-artifact-custody-receipt/v1&#x27;, collection_id: CollectionId, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], provenance_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], provenance_root_receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], archive_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+<code>&quot;(*, format: Literal[&#x27;riverhog-artifact-custody-receipt/v1&#x27;] = &#x27;riverhog-artifact-custody-receipt/v1&#x27;, collection_id: CollectionId, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], primary: riverhog_protocol.provenance_transport.CollectionArtifactProvenanceBindingDocument, completion_requirement_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]], provenance_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], provenance_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], archive_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-e4009535b1844c5e49d64577">
 <h3>Validated model schema</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;archive_root_sha256&quot;,&quot;provenance_root_sha256&quot;,&quot;provenance_root_receipt_sha256&quot;,&quot;archive_object_count&quot;,&quot;archive_object_set_sha256&quot;,&quot;receipt_sha256&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;artifact_id&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;primary&quot;,&quot;completion_requirement_sha256&quot;,&quot;provenance_object_count&quot;,&quot;provenance_object_set_sha256&quot;,&quot;archive_object_count&quot;,&quot;archive_object_set_sha256&quot;,&quot;receipt_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -105,15 +105,6 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>archive_root_sha256</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
 <code>artifact_id</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
@@ -141,6 +132,14 @@
 </tr>
 <tr>
 <td data-label="Field">
+<a href="#s-317d4ad1e7e34659bb7a30fd">completion_requirement_sha256</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>format</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -151,16 +150,25 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance_root_receipt_sha256</code></td>
+<code>primary</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
-<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-af45fade4e812022d7ca734f">#/$defs/CollectionArtifactProvenanceBindingDocument</a></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
 <td data-label="Field">
-<code>provenance_root_sha256</code></td>
+<code>provenance_object_count</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-23f1bdc52dca3d7697a1c923">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>provenance_object_set_sha256</code></td>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
@@ -191,12 +199,124 @@
 <h4>Definitions</h4>
 <ul>
 <li>
+<a href="#s-af45fade4e812022d7ca734f">CollectionArtifactProvenanceBindingDocument</a>
+</li>
+<li>
 <a href="#s-08f619d5760b98b597bc0108">CollectionId</a>
+</li>
+<li>
+<a href="#s-3e3b8f35f7cfea260adffbb3">EntryReference</a>
+</li>
+<li>
+<a href="#s-3f16e179d7d90cd2328bdc1b">JournalAnchorDocument</a>
 </li>
 <li>
 <a href="#s-23f1bdc52dca3d7697a1c923">NonnegativeDecimal</a>
 </li>
+<li>
+<a href="#s-5fa47fd80f6e8d8f3767a878">ProvenanceEntryId</a>
+</li>
+<li>
+<a href="#s-9a2e28d7fc8cd7f0bed2ab90">ProvenanceId</a>
+</li>
+<li>
+<a href="#s-25d4cb0a4a94535b2cb59122">ProvenanceJournalId</a>
+</li>
+<li>
+<a href="#s-ccb7504d84068926b3d039f3">Sha256</a>
+</li>
 </ul>
+</section>
+<section class="schema-section" id="s-317d4ad1e7e34659bb7a30fd">
+<h3>Field: completion_requirement_sha256</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-af45fade4e812022d7ca734f">
+<h3>Definition: CollectionArtifactProvenanceBindingDocument</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;journal&quot;,&quot;delivery_association_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>artifact_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>delivery_association_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-9a2e28d7fc8cd7f0bed2ab90">#/$defs/ProvenanceId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>journal</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-3f16e179d7d90cd2328bdc1b">#/$defs/JournalAnchorDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section class="schema-section" id="s-08f619d5760b98b597bc0108">
 <h3>Definition: CollectionId</h3>
@@ -224,6 +344,141 @@
 </table>
 </div>
 </section>
+<section class="schema-section" id="s-3e3b8f35f7cfea260adffbb3">
+<h3>Definition: EntryReference</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;entry_id&quot;,&quot;sequence&quot;,&quot;json_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>entry_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-5fa47fd80f6e8d8f3767a878">#/$defs/ProvenanceEntryId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>json_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-ccb7504d84068926b3d039f3">#/$defs/Sha256</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>sequence</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3f16e179d7d90cd2328bdc1b">
+<h3>Definition: JournalAnchorDocument</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;journal_id&quot;,&quot;through&quot;,&quot;prefix_sha256&quot;,&quot;prefix_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>journal_id</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-25d4cb0a4a94535b2cb59122">#/$defs/ProvenanceJournalId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_bytes</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-23f1bdc52dca3d7697a1c923">#/$defs/NonnegativeDecimal</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>prefix_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>through</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-3e3b8f35f7cfea260adffbb3">#/$defs/EntryReference</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section class="schema-section" id="s-23f1bdc52dca3d7697a1c923">
 <h3>Definition: NonnegativeDecimal</h3>
 <p class="shape">
@@ -237,6 +492,70 @@
 <dt>pattern</dt>
 <dd>
 <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5fa47fd80f6e8d8f3767a878">
+<h3>Definition: ProvenanceEntryId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9a2e28d7fc8cd7f0bed2ab90">
+<h3>Definition: ProvenanceId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-25d4cb0a4a94535b2cb59122">
+<h3>Definition: ProvenanceJournalId</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ccb7504d84068926b3d039f3">
+<h3>Definition: Sha256</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[0-9a-f]{64}(?![\s\S])</code>
 </dd>
 </dl>
 </section>
@@ -280,6 +599,156 @@
 <td>
 <table id="v-343fc105110e3c894751af49">
 <tbody>
+<tr>
+<th scope="row">
+<code>CollectionArtifactProvenanceBindingDocument</code>
+</th>
+<td>
+<table id="v-af45fade4e812022d7ca734f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9722a340e97209c39e20a8ad">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-bccd69c37e7a5ca0fd3758f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_id</code>
+</th>
+<td>
+<table id="v-d303467cd3ea37096c673ca6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-14c560b4740ebe2c0e401694">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/artifact_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cc46e02e148416cd2b274126">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/artifact_id/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>delivery_association_id</code>
+</th>
+<td>
+<table id="v-4f6d8dcbf50eec1e95f7f721">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9d9016b524c470d58d8618ab">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/delivery_association_id/$ref">#/$defs/ProvenanceId</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-9a2e28d7fc8cd7f0bed2ab90">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>journal</code>
+</th>
+<td>
+<table id="v-b9e277b2c336ee3b4acb35b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ffc47db18a20d58f6970944d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/properties/journal/$ref">#/$defs/JournalAnchorDocument</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-3f16e179d7d90cd2328bdc1b">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5783e2f823f0709f7c67a65e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-263e3b4ab8027cba54576fe3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/required/0">artifact_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-79738d43ad1c812433e000da">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/required/1">journal</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-6ae9858fb891265d6954a12f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/required/2">delivery_association_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c502307814bf71720d9c9e55">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/CollectionArtifactProvenanceBindingDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>CollectionId</code>
@@ -362,6 +831,346 @@
 </tr>
 <tr>
 <th scope="row">
+<code>EntryReference</code>
+</th>
+<td>
+<table id="v-3e3b8f35f7cfea260adffbb3">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-cd5f236e5712552851aebb30">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c4bb3d7739c281a12f845460">
+<tbody>
+<tr>
+<th scope="row">
+<code>entry_id</code>
+</th>
+<td>
+<table id="v-5e9f662a598b0e49a59b4b38">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5e2bfb8e901aa276718a709c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/properties/entry_id/$ref">#/$defs/ProvenanceEntryId</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-5fa47fd80f6e8d8f3767a878">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>json_sha256</code>
+</th>
+<td>
+<table id="v-9fa6160023cf5211a6fab514">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-452ace6e7dfd6d2ca5772713">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/properties/json_sha256/$ref">#/$defs/Sha256</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-ccb7504d84068926b3d039f3">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-eaa494575a00c55a4e8a9a81">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9d0a6ec356b064073c8aebef">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/properties/sequence/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-20e44deb9c609177de462522">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/properties/sequence/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f5b6282a420220593c91cce1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-28e3722c63a782eed2fdf9e1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/required/0">entry_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-cecee545d3906f0e6d9f0e27">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/required/1">sequence</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-fd3b728d676d4acff3fe2fa7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/required/2">json_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-35acada9428d772fc6f61faf">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/EntryReference/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>JournalAnchorDocument</code>
+</th>
+<td>
+<table id="v-3f16e179d7d90cd2328bdc1b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-266d14ffcb5a54e7895dfd1a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-54c7acf5a0fa8120f8af5c46">
+<tbody>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-ecf2293e711dc00764a9baff">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-406f630903d304d7cffbed90">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-25d4cb0a4a94535b2cb59122">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_bytes</code>
+</th>
+<td>
+<table id="v-d186b2934fecca40db6407c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6f7718b7d31509e203b1f5be">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-23f1bdc52dca3d7697a1c923">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-1e4937464e4ed81902e46b4f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_bytes/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>prefix_sha256</code>
+</th>
+<td>
+<table id="v-230f7b4b4d44ea16290c874f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a5acb153482c4ca40c037f42">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-624271a43a2edb94857e3772">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/properties/prefix_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>through</code>
+</th>
+<td>
+<table id="v-7d6e9b30a4f1094be42d7247">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1543d572f55438404cd6cf23">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/properties/through/$ref">#/$defs/EntryReference</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-3e3b8f35f7cfea260adffbb3">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c80c4e6c874f45cef4b88c86">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-61225c1d30297c3148d567a1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/required/0">journal_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c8f9c04541929262d28701cd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/required/1">through</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-c5538d18b7f2154568f0ff56">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/required/2">prefix_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-a6de1f2c5fff565470c96f44">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/required/3">prefix_bytes</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1d09328699fa3ab124e98247">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/JournalAnchorDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>NonnegativeDecimal</code>
 </th>
 <td>
@@ -384,6 +1193,126 @@
 <td>
 <span id="v-9a126fde80039a3d858cc56d">
 <code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceEntryId</code>
+</th>
+<td>
+<table id="v-5fa47fd80f6e8d8f3767a878">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9cb3a8ba859b05434dc53703">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/ProvenanceEntryId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3699848dfb681626b66781f1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/ProvenanceEntryId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceId</code>
+</th>
+<td>
+<table id="v-9a2e28d7fc8cd7f0bed2ab90">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-dbc6acb778a27b4219888cef">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/ProvenanceId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5b46289008cf221b18a8ceec">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/ProvenanceId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceJournalId</code>
+</th>
+<td>
+<table id="v-25d4cb0a4a94535b2cb59122">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b019659516718efcfd2f3f90">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-de91a66a1efb079a98b5a16e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/ProvenanceJournalId/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>Sha256</code>
+</th>
+<td>
+<table id="v-ccb7504d84068926b3d039f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-18568f1a419c800e93d64ee5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/Sha256/pattern">^[0-9a-f]{64}(?![\s\S])</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cbd831911516ba70ca3f7ea3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/$defs/Sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -472,36 +1401,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>archive_root_sha256</code>
-</th>
-<td>
-<table id="v-0a439fd5b7870028902570bf">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-ffe9321b2512ed5ef6257b3e">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-53e8b46b3266a8ef2a16914d">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/archive_root_sha256/type">string</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>artifact_id</code>
 </th>
 <td>
@@ -572,6 +1471,76 @@
 </tr>
 <tr>
 <th scope="row">
+<code>completion_requirement_sha256</code>
+</th>
+<td>
+<table id="v-317d4ad1e7e34659bb7a30fd">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-9b82c8cdc063942406616dab">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-448e6f9bd39d77b6f5057732">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-abf64c801cfa8e6cd81f6867">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/completion_requirement_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-90f43ebd74d2d7c9337f7943">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/completion_requirement_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-8099b1cb616ef1e586074248">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4d3959fea264273bf3f6240a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/completion_requirement_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>format</code>
 </th>
 <td>
@@ -612,29 +1581,19 @@
 </tr>
 <tr>
 <th scope="row">
-<code>provenance_root_receipt_sha256</code>
+<code>primary</code>
 </th>
 <td>
-<table id="v-a88597bc10ab8c279f9b471d">
+<table id="v-f2f00593f14c5fc69cad8d0c">
 <tbody>
 <tr>
 <th scope="row">
-<code>pattern</code>
+<code>$ref</code>
 </th>
 <td>
-<span id="v-09c03e5403d30ab25aa2a60b">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_root_receipt_sha256/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-9caffbfb125ac9c4ce44486c">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_root_receipt_sha256/type">string</code>
-<span class="kind">string</span>
+<span id="v-49be5224c95d0b23c1527635">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/primary/$ref">#/$defs/CollectionArtifactProvenanceBindingDocument</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-af45fade4e812022d7ca734f">Definition</a>
 </span></td>
 </tr>
 </tbody>
@@ -642,18 +1601,48 @@
 </tr>
 <tr>
 <th scope="row">
-<code>provenance_root_sha256</code>
+<code>provenance_object_count</code>
 </th>
 <td>
-<table id="v-5d43aecc47f88189cb3703be">
+<table id="v-f065dd8d9951df378f294bf0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2f8cc2f265d4deeb33f4cacf">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_object_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-e6ef8cd6dd5c9aa7906a736e.html#v-23f1bdc52dca3d7697a1c923">Definition</a>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-9756948b90eca7b97d441720">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_object_count/ge">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>provenance_object_set_sha256</code>
+</th>
+<td>
+<table id="v-853d274a0ada3014c48fe45f">
 <tbody>
 <tr>
 <th scope="row">
 <code>pattern</code>
 </th>
 <td>
-<span id="v-06ef8cd04bb906bff3f44d21">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_root_sha256/pattern">^[0-9a-f]{64}$</code>
+<span id="v-e7b67924da8386e97b76d5fc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_object_set_sha256/pattern">^[0-9a-f]{64}$</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -662,8 +1651,8 @@
 <code>type</code>
 </th>
 <td>
-<span id="v-d88f848a01a2b181928d3d24">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_root_sha256/type">string</code>
+<span id="v-1e841db4786a6bc808f99839">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/properties/provenance_object_set_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -786,7 +1775,7 @@
 </th>
 <td>
 <span id="v-8daa2c2d021fcbbeb1c01773">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/4">archive_root_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/4">primary</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -796,7 +1785,7 @@
 </th>
 <td>
 <span id="v-44a34f2dc7326bd06e05ebb2">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/5">provenance_root_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/5">completion_requirement_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -806,7 +1795,7 @@
 </th>
 <td>
 <span id="v-9fc643496e305a7bd485f54f">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/6">provenance_root_receipt_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/6">provenance_object_count</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -816,7 +1805,7 @@
 </th>
 <td>
 <span id="v-6d73d4fa855c66361a52ed00">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/7">archive_object_count</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/7">provenance_object_set_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -826,7 +1815,7 @@
 </th>
 <td>
 <span id="v-c4fbb3621349c4848fcb18b6">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/8">archive_object_set_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/8">archive_object_count</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -836,7 +1825,17 @@
 </th>
 <td>
 <span id="v-f5bd6b496e66e815542231a4">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/9">receipt_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/9">archive_object_set_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-6c457ae8c77f06ecd0379e12">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/schema/required/10">receipt_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -862,7 +1861,7 @@
 </th>
 <td>
 <span id="v-79c6d52e8524302f56aebbe0">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-artifact-custody-receipt/v1&#x27;] = &#x27;riverhog-artifact-custody-receipt/v1&#x27;, collection_id: CollectionId, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], provenance_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], provenance_root_receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], archive_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-artifact-custody-receipt/v1&#x27;] = &#x27;riverhog-artifact-custody-receipt/v1&#x27;, collection_id: CollectionId, artifact_id: riverhog_protocol.artifact_identity.ArtifactId, bytes: NonnegativeDecimal, sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], primary: riverhog_protocol.provenance_transport.CollectionArtifactProvenanceBindingDocument, completion_requirement_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)])]], provenance_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], provenance_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], archive_object_count: Annotated[NonnegativeDecimal, Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -959,7 +1958,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

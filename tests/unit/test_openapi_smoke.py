@@ -130,6 +130,8 @@ def test_provenance_reads_publish_exact_artifact_bindings_and_journals() -> None
         "archive_root_sha256",
         "artifact",
         "binding",
+        "member_history",
+        "history_binding",
     }
     listing = schemas["ListCollectionArtifactProvenanceOut"]
     assert {"artifact_set_identity", "provenance_identity", "artifacts"} <= set(listing["required"])

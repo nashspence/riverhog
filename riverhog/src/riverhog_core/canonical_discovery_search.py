@@ -227,7 +227,9 @@ def _value_exists(
                 ),
             )
         )
-    return exists(select(1).where(*filters))
+    return exists(
+        select(1).where(*filters).correlate(assertion, *((profile,) if profile is not None else ()))
+    )
 
 
 def _clause_predicate(assertion: Any, clause: AssertionClause) -> ColumnElement[bool]:
@@ -244,17 +246,19 @@ def _clause_predicate(assertion: Any, clause: AssertionClause) -> ColumnElement[
         profile = aliased(Profile)
         filters.append(
             exists(
-                select(1).where(
+                select(1)
+                .where(
                     profile.build_id == assertion.build_id,
                     profile.row_key == assertion.row_key,
                     profile.contract_id == clause.profile.contract_id,
                     profile.contract_sha256 == clause.profile.contract_sha256,
                     profile.schema_id == clause.profile.schema_id,
                     *(
-                        _value_exists(assertion, predicate, profile=profile)
+                        _value_exists(profile, predicate, profile=profile)
                         for predicate in clause.values
                     ),
                 )
+                .correlate(assertion)
             )
         )
     return and_(*filters)
@@ -366,6 +370,39 @@ def _exact_support(
     return None
 
 
+def _discovery_candidate_statement(
+    selected: Any, *, request: ArtifactDiscoveryRequest, principal: Principal | None
+) -> Any:
+    """The indexed candidate statement used before exact support validation."""
+    collections = selected.subquery()
+    artifacts = CollectionArtifactRecord
+    statement = select(
+        artifacts.collection_id,
+        artifacts.artifact_id,
+        artifacts.bytes,
+        artifacts.sha256,
+        collections.c.archive_root_sha256,
+        collections.c.provenance_identity,
+        collections.c.active_build_id,
+        collections.c.generation_id,
+        collections.c.tag_revision,
+        collections.c.description_revision,
+    ).join(collections, collections.c.collection_id == artifacts.collection_id)
+    statement = statement.where(
+        artifact_scope_filter(artifacts.collection_id, artifacts.artifact_id, principal)
+    )
+    if request.artifact_id is not None:
+        statement = statement.where(artifacts.artifact_id == request.artifact_id)
+    if request.payload_sha256 is not None:
+        statement = statement.where(artifacts.sha256 == request.payload_sha256)
+    for clause in request.provenance_all:
+        statement = statement.where(
+            _member_clause_exists(collections.c.active_build_id, artifacts.artifact_id, clause)
+        )
+
+    return statement
+
+
 def discover_artifacts(
     session: Session,
     *,
@@ -406,31 +443,8 @@ def discover_artifacts(
     else:
         previous_id, previous_artifact = 0, ""
 
-    collections = selected.subquery()
+    statement = _discovery_candidate_statement(selected, request=request, principal=principal)
     artifacts = CollectionArtifactRecord
-    statement = select(
-        artifacts.collection_id,
-        artifacts.artifact_id,
-        artifacts.bytes,
-        artifacts.sha256,
-        collections.c.archive_root_sha256,
-        collections.c.provenance_identity,
-        collections.c.active_build_id,
-        collections.c.generation_id,
-        collections.c.tag_revision,
-        collections.c.description_revision,
-    ).join(collections, collections.c.collection_id == artifacts.collection_id)
-    statement = statement.where(
-        artifact_scope_filter(artifacts.collection_id, artifacts.artifact_id, principal)
-    )
-    if request.artifact_id is not None:
-        statement = statement.where(artifacts.artifact_id == request.artifact_id)
-    if request.payload_sha256 is not None:
-        statement = statement.where(artifacts.sha256 == request.payload_sha256)
-    for clause in request.provenance_all:
-        statement = statement.where(
-            _member_clause_exists(collections.c.active_build_id, artifacts.artifact_id, clause)
-        )
 
     hits: list[dict[str, object]] = []
     exhausted = False

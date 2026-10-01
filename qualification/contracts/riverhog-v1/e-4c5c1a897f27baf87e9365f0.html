@@ -36,7 +36,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;actor&quot;,&quot;initiator&quot;,&quot;retrieval_id&quot;,&quot;collection_ids&quot;,&quot;state&quot;,&quot;files&quot;,&quot;objects&quot;,&quot;restore_required&quot;]</code>
+<code>[&quot;actor&quot;,&quot;initiator&quot;,&quot;retrieval_id&quot;,&quot;collection_ids&quot;,&quot;state&quot;,&quot;artifacts&quot;,&quot;objects&quot;,&quot;restore_required&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -71,6 +71,15 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>artifacts</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-2fa035452f4add86eab5e888">collection_created_at</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code></td>
@@ -99,15 +108,6 @@
 <a href="#s-166e9649923f58683a608ffc">context</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4096</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>files</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>integer</code>; minimum: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -342,6 +342,46 @@
 <span id="v-926f408fba53cf95bf6dabcf">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/actor/$ref">#/components/schemas/RiverhogActor</code>
 <span class="kind">string</span> <a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>artifacts</code>
+</th>
+<td>
+<table id="v-a25c8cd2bf63a9760a678740">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-e94ec971fb598400719e6bb1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/artifacts/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0b9cb88d002afd02d4d7e822">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/artifacts/title">Artifacts</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc985fc96b47198676bcaac8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/artifacts/type">integer</code>
+<span class="kind">string</span>
 </span></td>
 </tr>
 </tbody>
@@ -689,46 +729,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>files</code>
-</th>
-<td>
-<table id="v-93bcdec46f3d6639ba8e47be">
-<tbody>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-f483a816fe836e3dbaf08d05">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/files/minimum">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>title</code>
-</th>
-<td>
-<span id="v-3531e364f2e9d484493337a5">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/files/title">Files</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-3b55846808633332f1b52782">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/files/type">integer</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>initiator</code>
 </th>
 <td>
@@ -993,7 +993,7 @@
 </th>
 <td>
 <span id="v-1e8b1ba48e9331a5d82bd61e">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/required/5">files</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/required/5">artifacts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -1121,15 +1121,6 @@
 </tr>
 <tr>
 <td data-label="Exact subject">
-<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/files</code></td>
-<td data-label="Governing rule">
-<code>no-semantic-maximum/v1</code></td>
-<td data-label="Decision">value · schema-value · operational_policy</td>
-<td data-label="Bounds or reason">
-<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
-</tr>
-<tr>
-<td data-label="Exact subject">
 <code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData/properties/retrieval_id</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
@@ -1145,7 +1136,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

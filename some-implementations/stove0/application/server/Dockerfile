@@ -22,6 +22,7 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
 COPY some-implementations/stove0/application/server some-implementations/stove0/application/server
+COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/config-validation packages/config-validation
 COPY packages/http-api-contracts packages/http-api-contracts

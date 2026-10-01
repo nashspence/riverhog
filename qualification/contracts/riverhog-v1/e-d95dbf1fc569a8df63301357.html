@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(source: &#x27;Path&#x27;, artifact_id: &#x27;ArtifactId&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None) -&gt; None&quot;</code>
+<code>&quot;(source: &#x27;Path&#x27;, artifact_id: &#x27;ArtifactId&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None, output_id: &#x27;str | None&#x27; = None, causal_input_states: &#x27;tuple[Mapping[str, Any], ...]&#x27; = ()) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -103,6 +103,22 @@
 <code>&#x27;ObservationResult | None&#x27;</code></td>
 <td data-label="Default">
 <code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>output_id</code></td>
+<td data-label="Type">
+<code>&#x27;str | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>causal_input_states</code></td>
+<td data-label="Type">
+<code>&#x27;tuple[Mapping[str, Any], ...]&#x27;</code></td>
+<td data-label="Default">
+<code>()</code></td>
 </tr>
 </tbody>
 </table>
@@ -330,6 +346,86 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-c4bd38050d348aef7e03be24">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-99f4589f7d2b2649b74378dc">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/5/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-15fb28f6e7ea45f2b8567bf9">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/5/name">output_id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ebdf70f5e63dac3df3981d3c">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/5/type">&#x27;str | None&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-c82880d876dc95d2667a3c34">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f99e24b1bacb2cf726cdc8a1">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/6/default">()</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-f4a63ed47a99d7501872d919">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/6/name">causal_input_states</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-603cf60ca64eee28a90c2368">
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/fields/6/type">&#x27;tuple[Mapping[str, Any], ...]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table></td>
 </tr>
@@ -349,7 +445,7 @@
 </th>
 <td>
 <span id="v-0fb041a1049bb66861949f09">
-<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/signature">&quot;(source: &#x27;Path&#x27;, artifact_id: &#x27;ArtifactId&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_client.ProducerFile/contract/signature">&quot;(source: &#x27;Path&#x27;, artifact_id: &#x27;ArtifactId&#x27;, materialization_hint: &#x27;tuple[str, ...] | None&#x27; = None, allow_missing_materialization_hint: &#x27;bool&#x27; = False, observation: &#x27;ObservationResult | None&#x27; = None, output_id: &#x27;str | None&#x27; = None, causal_input_states: &#x27;tuple[Mapping[str, Any], ...]&#x27; = ()) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -432,7 +528,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

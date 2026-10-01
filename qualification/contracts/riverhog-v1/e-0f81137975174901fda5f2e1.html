@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], root_role: Optional[Literal[&#x27;operation&#x27;]] = None) -&gt; None&quot;</code>
+<code>&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], selection_role: Optional[Literal[&#x27;completion&#x27;, &#x27;history-dependency&#x27;]] = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <section class="schema-section" id="s-c51483f66672a30907fd1720">
@@ -96,9 +96,9 @@
 </tr>
 <tr>
 <td data-label="Field">
-<a href="#s-6a77b1e54714b784130da66e">root_role</a></td>
+<a href="#s-859b2015a94f68fb77534fb4">selection_role</a></td>
 <td data-label="Required">no</td>
-<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; const: <code>operation</code>; <code>null</code></td>
+<td data-label="Shape and bounds">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;completion&quot;,&quot;history-dependency&quot;]</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
 <td data-label="Description"></td>
@@ -122,9 +122,9 @@
 </li>
 </ul>
 </section>
-<section class="schema-section" id="s-6a77b1e54714b784130da66e">
-<h3>Field: root_role</h3>
-<p class="shape">default: <code>null</code>; any of: <code>string</code>; const: <code>operation</code>; <code>null</code>
+<section class="schema-section" id="s-859b2015a94f68fb77534fb4">
+<h3>Field: selection_role</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;completion&quot;,&quot;history-dependency&quot;]</code>; <code>null</code>
 </p>
 <h4>At least one must match</h4>
 <div class="record-collection">
@@ -139,7 +139,7 @@
 <tr>
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
-<code>string</code>; const: <code>operation</code></td>
+<code>string</code>; enum: <code>[&quot;completion&quot;,&quot;history-dependency&quot;]</code></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -288,42 +288,62 @@
 </tr>
 <tr>
 <th scope="row">
-<code>root_role</code>
+<code>selection_role</code>
 </th>
 <td>
-<table id="v-6a77b1e54714b784130da66e">
+<table id="v-859b2015a94f68fb77534fb4">
 <tbody>
 <tr>
 <th scope="row">
 <code>anyOf</code>
 </th>
 <td>
-<table id="v-bae263d9869a504833c2c51a">
+<table id="v-05354968c08268ac40736705">
 <tbody>
 <tr>
 <th scope="row">
 <code>0</code>
 </th>
 <td>
-<table id="v-064301e233ee73ac4ccfd0c2">
+<table id="v-2d62c5d6acbcac0c511d9382">
 <tbody>
 <tr>
 <th scope="row">
-<code>const</code>
+<code>enum</code>
 </th>
 <td>
-<span id="v-bf2638d6846356c0877d8764">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/anyOf/0/const">operation</code>
+<table id="v-3a80219ceeacc701aac2ac9d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6fa1115787040d6e67d0dd52">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/selection_role/anyOf/0/enum/0">completion</code>
 <span class="kind">string</span>
 </span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-5729a3af48d73cfe6a8c0f09">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/selection_role/anyOf/0/enum/1">history-dependency</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
 </tr>
 <tr>
 <th scope="row">
 <code>type</code>
 </th>
 <td>
-<span id="v-c809cc80375de274c3cdce07">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/anyOf/0/type">string</code>
+<span id="v-9098778030074d5b0a4172cf">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/selection_role/anyOf/0/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -335,15 +355,15 @@
 <code>1</code>
 </th>
 <td>
-<table id="v-9edd1403574f7af62cc2f460">
+<table id="v-635bedc3e981fc132457676b">
 <tbody>
 <tr>
 <th scope="row">
 <code>type</code>
 </th>
 <td>
-<span id="v-0c523faed507ed449bced7b7">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/anyOf/1/type">null</code>
+<span id="v-3ca6d8c2685aeb29ee483dd0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/selection_role/anyOf/1/type">null</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -358,8 +378,8 @@
 <code>default</code>
 </th>
 <td>
-<span id="v-cf62107f5beb6732076a62ca">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/root_role/default">null</code>
+<span id="v-c9fcc84ca27ef3940ce99993">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/schema/properties/selection_role/default">null</code>
 <span class="kind">null</span>
 </span></td>
 </tr>
@@ -448,7 +468,7 @@
 </th>
 <td>
 <span id="v-90b646475e778fb3d9b9635b">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/signature">&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], root_role: Optional[Literal[&#x27;operation&#x27;]] = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadProvenanceJournalCreateDocument/contract/signature">&quot;(*, bytes: Annotated[NonnegativeDecimal, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], selection_role: Optional[Literal[&#x27;completion&#x27;, &#x27;history-dependency&#x27;]] = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -531,7 +551,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

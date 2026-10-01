@@ -106,6 +106,12 @@
 <a href="e-08fe9b402fb2eff09661a2ac.html">schemas: KeyDownloadQuotaListOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut/properties/quotas</code>
 </li>
 <li>
+<a href="e-c140f56afe4b7f10f79860be.html">schemas: ListCollectionArtifactProvenanceOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionArtifactProvenanceOut/properties/artifacts</code>
+</li>
+<li>
+<a href="e-fb6d0dc85ad3027da3c76475.html">schemas: ListCollectionProvenanceJournalsOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionProvenanceJournalsOut/properties/journals</code>
+</li>
+<li>
 <a href="e-b90abe2ad3a22c5922ca4a10.html">schemas: ListCollectionUploadSessionArtifactsOut</a> · <code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionArtifactsOut/properties/artifacts</code>
 </li>
 <li>
@@ -193,6 +199,12 @@
 <a href="e-2a4b8e5685636aa7e7b613c0.html">GET /v1/collections/{collection_id}/archive-copies</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1archive-copies/get</code>
 </li>
 <li>
+<a href="e-9d8566d8550d95b12156c367.html">GET /v1/collections/{collection_id}/provenance/artifacts</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1artifacts/get</code>
+</li>
+<li>
+<a href="e-7aa56f4dc34c47583299d761.html">GET /v1/collections/{collection_id}/provenance/journals</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals/get</code>
+</li>
+<li>
 <a href="e-2c6abfea3daad0ed0552270d.html">GET /v1/collections/{collection_id}/tags</a> · <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags/get</code>
 </li>
 <li>
@@ -217,7 +229,7 @@
 <h3>What candidate checks actually cover</h3>
 <ul>
 <li>
-<code data-source-path="tests/unit/test_public_interface_parity.py" data-source-line="743">tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen</code> — Structural OpenAPI checks for bounded read selectors; no traversal is executed.</li>
+<code data-source-path="tests/unit/test_public_interface_parity.py" data-source-line="733">tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen</code> — Structural OpenAPI checks for bounded read selectors; no traversal is executed.</li>
 <li>
 <code data-source-path="tests/unit/test_collection_reads.py" data-source-line="91">tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows</code> — Collection-list service query count and archive-object loading on one page; does not test traversal or restart.</li>
 <li>
@@ -227,7 +239,7 @@
 <li>
 <code data-source-path="packages/http-api-contracts/tests/test_browse_tokens.py" data-source-line="52">packages/http-api-contracts/tests/test_browse_tokens.py::test_browse_token_fails_closed_outside_its_request_binding</code> — Shared token codec rejects changed operation, principal, and selectors; does not prove each route supplies those bindings correctly.</li>
 <li>
-<code data-source-path="tests/unit/test_operation_lifecycle_api.py" data-source-line="236">tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle</code> — Real API and official client lifecycle includes a one-page collection list; its restart assertion concerns events, not collection-list continuation.</li>
+<code data-source-path="tests/unit/test_operation_lifecycle_api.py" data-source-line="280">tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle</code> — Real API and official client lifecycle includes a one-page collection list; its restart assertion concerns events, not collection-list continuation.</li>
 <li>
 <code data-source-path="tests/unit/test_cli_json_output.py" data-source-line="13">tests/unit/test_cli_json_output.py::test_collection_list_json_emits_the_api_response_without_a_second_model</code> — Collection-list CLI accepts a current-schema fixture in both output modes, preserves the entire JSON response, and displays its description and encryption in human output; uses a fake client and does not establish general output parity.</li>
 <li>
@@ -283,7 +295,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

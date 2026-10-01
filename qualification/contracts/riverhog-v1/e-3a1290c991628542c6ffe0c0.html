@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: CollectionCompletionPublicationReceiptDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: CollectionCompletionPublicationReceiptDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-collectioncompletionpublicationre-853ecb6006:e1301ec58b">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-bb645806fcf98ec17b6e79bc">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>CollectionCompletionPublicationReceiptDocument</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>Root-bearing protocol responses retain verified completion retry identities.
+
+These hashes are a catalog projection of the accepted canonical completion,
+without granting journal-read authority or becoming archived semantic claims.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;requirement_sha256&quot;,&quot;records_sha256&quot;,&quot;journal&quot;,&quot;records&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<code>journal</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<a href="e-e82acf338e22e881207dacc9.html#v-1849c0c8218ae71f9d8ac3a5">#/components/schemas/JournalAnchorDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-98fdeaafab2b7d245ada48de">records</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-dbe7b7d2a4eb9f6c571c37d3.html#v-7887d8152294bced0985a6d5">#/components/schemas/CollectionCompletionRecordIdentityDocument</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>records_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>requirement_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-98fdeaafab2b7d245ada48de">
+<h3>Field: records</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-dbe7b7d2a4eb9f6c571c37d3.html#v-7887d8152294bced0985a6d5">#/components/schemas/CollectionCompletionRecordIdentityDocument</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Records</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/components/schemas/CollectionCompletionRecordIdentityDocument&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument</code>
+</h4>
+<table id="v-bb645806fcf98ec17b6e79bc">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a32025e30d757efd70722be4">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-941483e00298c311a848ad69">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/description">&quot;Root-bearing protocol responses retain verified completion retry identities.\n\nThese hashes are a catalog projection of the accepted canonical completion,\nwithout granting journal-read authority or becoming archived semantic claims.&quot;</code>
+<span class="kind">string (JSON spelling for control characters)</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-33a7146f996c827109158f8f">
+<tbody>
+<tr>
+<th scope="row">
+<code>journal</code>
+</th>
+<td>
+<table id="v-9d378394f2978e6fe33ead8f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2320fcfcc5481a1ee7540023">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/journal/$ref">#/components/schemas/JournalAnchorDocument</code>
+<span class="kind">string</span> <a href="e-e82acf338e22e881207dacc9.html#v-1849c0c8218ae71f9d8ac3a5">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>records</code>
+</th>
+<td>
+<table id="v-98fdeaafab2b7d245ada48de">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-def21b552a63e9be3c45b7de">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-eb97d22f32d95d936cd11cdd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records/additionalProperties/$ref">#/components/schemas/CollectionCompletionRecordIdentityDocument</code>
+<span class="kind">string</span> <a href="e-dbe7b7d2a4eb9f6c571c37d3.html#v-7887d8152294bced0985a6d5">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d82c12026b02cddabf5e1f53">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records/title">Records</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bdd1232494566bd230108041">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>records_sha256</code>
+</th>
+<td>
+<table id="v-81ae75a59539aa53bfe59f90">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e2601716503fb6f2e90d72b3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8440b2c189dd5503ce89a906">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records_sha256/title">Records Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-584c714668010c0297fe7bfc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>requirement_sha256</code>
+</th>
+<td>
+<table id="v-29bea0c7ae392b10c1559997">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d5efc1687a4e5bb0e7fe3773">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/requirement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-c6d515b94fbc13ba9a085383">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/requirement_sha256/title">Requirement Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-be4022c653de915456eaa1d6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/requirement_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-326e5d89410ad107b7fcdbd1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e1715f28b1efb91c2fcb1284">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/required/0">requirement_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-77f5f0aaf29d1b73fe89a476">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/required/1">records_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-6b1c60cff796fd09189fb48c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/required/2">journal</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-91770777ad1ce05299b19c23">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/required/3">records</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e4ded457e7980bf7fea51208">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/title">CollectionCompletionPublicationReceiptDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-842483ef12e0aa9b367275bb">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/records_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionCompletionPublicationReceiptDocument/properties/requirement_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

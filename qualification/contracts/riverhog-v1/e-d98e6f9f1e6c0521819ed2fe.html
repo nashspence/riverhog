@@ -54,7 +54,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(cls, *, collection_id: &#x27;int&#x27;, artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, archive_root_sha256: &#x27;str&#x27;, provenance_root_sha256: &#x27;str&#x27;, provenance_root_receipt_sha256: &#x27;str&#x27;, archive_objects: &#x27;Sequence[CollectionUploadCustodyObjectDocument]&#x27;) -&gt; &#x27;CollectionUploadArtifactCustodyReceiptDocument&#x27;&quot;</code>
+<code>&quot;(cls, *, collection_id: &#x27;int&#x27;, artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, primary: &#x27;CollectionArtifactProvenanceBindingDocument&#x27;, completion_requirement_sha256: &#x27;str | None&#x27;, provenance_objects: &#x27;Iterable[CollectionUploadProvenanceCustodyObjectDocument]&#x27;, archive_objects: &#x27;Iterable[CollectionUploadCustodyObjectDocument]&#x27;) -&gt; &#x27;CollectionUploadArtifactCustodyReceiptDocument&#x27;&quot;</code>
 </dd>
 </dl>
 </div>
@@ -89,7 +89,7 @@
 </th>
 <td>
 <span id="v-e6d77a77da9b46bd1c89c393">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument.seal/contract/signature">&quot;(cls, *, collection_id: &#x27;int&#x27;, artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, archive_root_sha256: &#x27;str&#x27;, provenance_root_sha256: &#x27;str&#x27;, provenance_root_receipt_sha256: &#x27;str&#x27;, archive_objects: &#x27;Sequence[CollectionUploadCustodyObjectDocument]&#x27;) -&gt; &#x27;CollectionUploadArtifactCustodyReceiptDocument&#x27;&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionUploadArtifactCustodyReceiptDocument.seal/contract/signature">&quot;(cls, *, collection_id: &#x27;int&#x27;, artifact_id: &#x27;ArtifactId&#x27;, bytes: &#x27;int&#x27;, sha256: &#x27;str&#x27;, primary: &#x27;CollectionArtifactProvenanceBindingDocument&#x27;, completion_requirement_sha256: &#x27;str | None&#x27;, provenance_objects: &#x27;Iterable[CollectionUploadProvenanceCustodyObjectDocument]&#x27;, archive_objects: &#x27;Iterable[CollectionUploadCustodyObjectDocument]&#x27;) -&gt; &#x27;CollectionUploadArtifactCustodyReceiptDocument&#x27;&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -190,7 +190,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

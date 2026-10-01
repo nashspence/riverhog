@@ -29,7 +29,7 @@ from riverhog_client.processing.writer import IncrementalDerivedCollectionWriter
 from riverhog_client.producer import ProducerArtifactIdentity, ProducerFile
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
-from riverhog_core.catalog_models import CollectionUploadRecord
+from riverhog_core.catalog_models import CollectionArchiveCopyRecord, CollectionUploadRecord
 from riverhog_core.collection_access import SqlAlchemyCollectionAccessService
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.runtime_config import RuntimeConfig
@@ -78,7 +78,7 @@ from riverhog_protocol.collection_workflows import (
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
-from riverhog_protocol.errors import Forbidden, NotFound
+from riverhog_protocol.errors import Conflict, Forbidden, NotFound
 from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
@@ -86,9 +86,11 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+from sqlalchemy import select
 
 from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
 from tests.provenance_observer import native_provenance_provider
+from tests.support.qualification.live_archive_recovery import qualify_offline_history_recovery
 from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.archive_object_fixtures import archive_store_binding
 from tests.unit.db_helpers import sqlite_url
@@ -103,8 +105,8 @@ def _tag_set_identity(*tags: str) -> str:
         return prepared.tag_set_identity
 
 
-def _container(tmp_path: Path) -> ServiceContainer:
-    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceContainer:
+    database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
     baseline = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     primary_config = replace(
         baseline.archive_store("archive"),
@@ -520,6 +522,15 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         "copy_to": [],
         "intents": [],
     }
+    from scripts.provider_qualification import CorpusFile, CorpusManifest, _corpus_artifacts
+
+    corpus = CorpusManifest(
+        "lifecycle",
+        (CorpusFile("document.txt", int(member.bytes), digest),),
+        int(member.bytes),
+        "a" * 64,
+    )
+    assert _corpus_artifacts(operator, collection_id, corpus) == {"document.txt": str(SOURCE_ID)}
     source_collection = operator.get_collection(collection_id)
     assert source_collection["id"] == str(collection_id)
     assert source_collection["description"] == "Qualification source collection"
@@ -1211,6 +1222,23 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             ),
         )
         assert replayed_output == receipt
+        with pytest.raises(ValueError, match="changes accepted evidence"):
+            published_retry.finish(
+                execution_sha256=hashlib.sha256(execution_preimage).hexdigest(),
+                disposition_set=disposition_identity,
+                completion_records=tuple(
+                    completion_record(kind, raw + b" " if kind == "invocation" else raw)
+                    for kind, raw in preimages.items()
+                ),
+            )
+        with pytest.raises(ValueError, match="exact sealed preimage"):
+            published_retry.finish(
+                execution_sha256="f" * 64,
+                disposition_set=disposition_identity,
+                completion_records=tuple(
+                    completion_record(kind, raw) for kind, raw in preimages.items()
+                ),
+            )
     finally:
         published_retry.stop()
     final_output = operator.get_collection_artifact_provenance(output_collection_id, OUTPUT_ID)
@@ -1258,7 +1286,54 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             retained.validate(expected_kinds=resumed_writer.requirement.record_kinds)
             for kind, raw in preimages.items():
                 assert b"".join(retained.chunks(kind)) == raw
+    recovery_archive = tmp_path / "offline-completed-operation" / "archive"
+    recovery_archive.mkdir(parents=True)
+    with session_scope(container.session_factory) as session:
+        copy = session.scalar(
+            select(CollectionArchiveCopyRecord).where(
+                CollectionArchiveCopyRecord.collection_id == output_collection_id,
+                CollectionArchiveCopyRecord.store == "primary",
+            )
+        )
+        assert copy is not None and copy.archive_storage_prefix is not None
+        prefix = copy.archive_storage_prefix + "/"
+    store = container.collection_uploads._archive_stores.require("primary").store
+    assert isinstance(store, UploadedArchiveStore)
+    for path, raw in store.objects.items():
+        if path.startswith(prefix):
+            destination = recovery_archive / path.removeprefix(prefix)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(raw)
+    expected_journals = {}
+    for journal_id in archived_journal_ids:
+        with operator.stream_collection_provenance_journal(
+            output_collection_id, journal_id
+        ) as chunks:
+            raw = b"".join(chunks)
+        expected_journals[hashlib.sha256(raw).hexdigest()] = raw
+    qualify_offline_history_recovery(
+        recovery_archive,
+        archive_root_sha256=operator.get_collection(output_collection_id)["archive_root_sha256"],
+        passphrases=dict(RuntimeConfig.for_testing().archive_passphrases),
+        artifact_id=str(OUTPUT_ID),
+        payload_bytes=identity.bytes,
+        payload_sha256=identity.sha256,
+        primary=early_primary_bytes,
+        journals=expected_journals,
+    )
     target.close()
+
+    conflicting_derivation = {**derivation.as_dict(), "execution_sha256": "f" * 64}
+    with pytest.raises(Conflict, match="archived completion evidence"):
+        operator.settle_processing_claim(
+            claim_id,
+            fence=claim_fence,
+            output_collection_id=output_collection_id,
+            derivation=conflicting_derivation,
+            outcome_claim_id=outcome_claim_id,
+            outcome_fence=outcome_fence,
+            outcome_id="qualification-output",
+        )
 
     settled = operator.settle_processing_claim(
         claim_id,

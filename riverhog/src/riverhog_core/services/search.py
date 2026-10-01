@@ -12,7 +12,7 @@ from riverhog_protocol.paths import (
     normalize_collection_id,
     text_search_key,
 )
-from sqlalchemy import asc, desc, exists, or_, select
+from sqlalchemy import and_, asc, desc, or_, select, union
 from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
 
@@ -186,7 +186,44 @@ def _search_statement(
         CollectionArtifactRecord.bytes,
         CollectionArtifactRecord.sha256,
     ).where(*filters)
+    if query:
+        candidates = _search_candidates(_like_pattern(text_search_key(query))).subquery()
+        statement = statement.join(
+            candidates,
+            and_(
+                candidates.c.collection_id == CollectionArtifactRecord.collection_id,
+                candidates.c.artifact_id == CollectionArtifactRecord.artifact_id,
+            ),
+        )
     return normalized_collection, query, filters, statement, _key_columns(sort)
+
+
+def _search_candidates(pattern: str) -> Any:
+    """Union indexed artifact and collection-metadata matches before pagination."""
+    artifacts = CollectionArtifactRecord
+    selected = (artifacts.collection_id, artifacts.artifact_id)
+    return union(
+        select(*selected).where(artifacts.artifact_id.like(pattern, escape="\\")),
+        select(*selected).where(artifacts.sha256.like(pattern, escape="\\")),
+        select(*selected)
+        .join(CollectionRecord, CollectionRecord.id == artifacts.collection_id)
+        .where(
+            or_(
+                CollectionRecord.search_text.like(pattern, escape="\\"),
+                CollectionRecord.description_search.like(pattern, escape="\\"),
+            )
+        ),
+        select(*selected)
+        .join(
+            CollectionTagMembershipRecord,
+            CollectionTagMembershipRecord.collection_id == artifacts.collection_id,
+        )
+        .join(
+            CollectionTagRecord,
+            CollectionTagRecord.tag_sha256 == CollectionTagMembershipRecord.tag_sha256,
+        )
+        .where(CollectionTagRecord.search_text.like(pattern, escape="\\")),
+    )
 
 
 def _key_columns(sort: str) -> tuple[Any, ...]:
@@ -234,36 +271,6 @@ def _search_filters(
         )
     )
     query = q.strip() if q is not None else None
-    if query:
-        pattern = _like_pattern(text_search_key(query))
-        filters.append(
-            or_(
-                CollectionArtifactRecord.artifact_id.like(pattern, escape="\\"),
-                CollectionArtifactRecord.sha256.like(pattern, escape="\\"),
-                exists(
-                    select(1).where(
-                        CollectionRecord.id == CollectionArtifactRecord.collection_id,
-                        or_(
-                            CollectionRecord.search_text.like(pattern, escape="\\"),
-                            CollectionRecord.description_search.like(pattern, escape="\\"),
-                        ),
-                    )
-                ),
-                exists(
-                    select(1)
-                    .select_from(CollectionTagMembershipRecord)
-                    .join(
-                        CollectionTagRecord,
-                        CollectionTagMembershipRecord.tag_sha256 == CollectionTagRecord.tag_sha256,
-                    )
-                    .where(
-                        CollectionTagMembershipRecord.collection_id
-                        == CollectionArtifactRecord.collection_id,
-                        CollectionTagRecord.search_text.like(pattern, escape="\\"),
-                    )
-                ),
-            )
-        )
     if normalized_collection is not None:
         filters.append(CollectionArtifactRecord.collection_id == normalized_collection)
     return normalized_collection, query, filters

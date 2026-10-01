@@ -91,6 +91,7 @@ from stove0_target_protocol import (
     TargetCallbackAccess,
     TargetInputAuthority,
     TargetInputPage,
+    TargetOutputPage,
     TargetProductionAuthority,
     TargetProductionAuthorityPayload,
     TargetProductionSealResponse,
@@ -830,6 +831,27 @@ class _LifecycleTargetCallbacks:
             artifacts=(self.input,),
         )
 
+    def output_page(
+        self,
+        token: str,
+        *,
+        job_id: str,
+        production_sha256: str,
+        after_id: str | None,
+        limit: int,
+    ) -> TargetOutputPage:
+        self._authorize(token, job_id)
+        assert after_id is None and limit == 256
+        assert (
+            production_sha256
+            == self.seal_production(token, job_id=job_id).production.production_sha256
+        )
+        return TargetOutputPage(
+            production_sha256=production_sha256,
+            complete=True,
+            artifacts=(self.output,),
+        )
+
     def declare_output(self, token: str, *, job_id: str, output: OutputArtifact) -> None:
         self._authorize(token, job_id)
         assert output == self.output
@@ -1053,11 +1075,14 @@ def test_target_callback_surface_has_one_current_target_client_and_real_api_witn
             job_id,
             OutputSourceEdge(output_id=callbacks.output.id, input_id=callbacks.input.id),
         )
-        assert client.seal_target_execution_production(job_id).production.job_id == job_id
+        production = client.seal_target_execution_production(job_id).production
+        assert production is not None and production.job_id == job_id
+        assert tuple(client.iter_outputs(production)) == (callbacks.output,)
 
     callback_methods = set(_target_callback_operations())
     assert callback_methods == {
         "get_target_execution_inputs",
+        "get_target_execution_outputs",
         "declare_target_execution_output",
         "declare_target_execution_disposition",
         "declare_target_execution_source_edge",

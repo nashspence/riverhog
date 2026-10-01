@@ -193,7 +193,7 @@ SELECT json_build_object(
     'id', p.id, 'principal_id', p.principal_id, 'initiated_by_key_id', p.initiated_by_key_id,
     'state', p.state, 'etag', p.etag,
     'collection_ids', (SELECT json_agg(DISTINCT f.collection_id ORDER BY f.collection_id)
-      FROM retrieval_plan_files f WHERE f.plan_id = p.id))
+      FROM retrieval_plan_artifacts f WHERE f.plan_id = p.id))
     FROM retrieval_plans p JOIN retrieval_jobs j ON j.plan_id = p.id
     WHERE j.id = :'job_id')
 );

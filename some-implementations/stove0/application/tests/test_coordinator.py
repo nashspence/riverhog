@@ -249,7 +249,7 @@ def _input() -> InputArtifact:
         id="source",
         role="fixture.source/v1",
         collection=_root(),
-        path="source/input.bin",
+        artifact_id="1" * 64,
         bytes=str(12),
         sha256=_sha("4"),
     )
@@ -331,15 +331,16 @@ class FixturePlanning:
     def observation_requests(
         self,
         work: WorkIdentity,
+        observations: tuple[ContentObservationEvidence, ...] = (),
     ) -> tuple[ContentObservationRequest, ...]:
-        if self.observer is None:
+        if self.observer is None or observations:
             return ()
         contract, descriptor = self.observer
         subject = WorkArtifactSubject(
             id="source",
             role="fixture.source/v1",
             collection=_root(),
-            path="source/input.bin",
+            artifact_id="1" * 64,
             bytes=str(12),
             sha256=_sha("4"),
         )
@@ -371,7 +372,7 @@ class FixturePlanning:
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id="1" * 64,
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -451,7 +452,9 @@ class ForkJoinPlanning:
         self.join_operation = join_operation
         self.target = target
 
-    def observation_requests(self, _work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
+    def observation_requests(
+        self, _work: WorkIdentity, observations: tuple[ContentObservationEvidence, ...] = ()
+    ) -> tuple[ContentObservationRequest, ...]:
         return ()
 
     def workflow_plan(
@@ -468,7 +471,7 @@ class ForkJoinPlanning:
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id="1" * 64,
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -569,7 +572,7 @@ class NestedPlanning(FixturePlanning):
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id="1" * 64,
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -642,7 +645,7 @@ class NestedJoinPlanning(ForkJoinPlanning):
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
-                    path="source/input.bin",
+                    artifact_id="1" * 64,
                     bytes=str(12),
                     sha256=_sha("4"),
                 ),
@@ -788,7 +791,7 @@ def _successful_target_status(
     *,
     output_id: str,
     output_role: str,
-    output_path: str,
+    output_artifact_id: str,
     output_sha256: str,
     collection_id: int,
     archive_root_sha256: str,
@@ -799,7 +802,7 @@ def _successful_target_status(
     output = OutputArtifact(
         id=output_id,
         role=output_role,
-        path=output_path,
+        artifact_id=output_artifact_id,
         bytes=str(12),
         sha256=output_sha256,
     )
@@ -993,7 +996,7 @@ class FixtureTarget:
             request,
             output_id="output",
             output_role="fixture.output/v1",
-            output_path="output/result.bin",
+            output_artifact_id="2" * 64,
             output_sha256=_sha("5"),
             collection_id=7,
             archive_root_sha256=_sha("6"),
@@ -1053,14 +1056,14 @@ class ForkJoinTarget(FixtureTarget):
             output_role = "fixture.joined-output/v1"
         else:
             raise AssertionError("fork/join target received unbound work")
-        output_path = f"output/{output_id}.bin"
+        output_artifact_id = "2" * 64
         return _successful_target_status(
             self.target,
             operation,
             request,
             output_id=output_id,
             output_role=output_role,
-            output_path=output_path,
+            output_artifact_id=output_artifact_id,
             output_sha256=job_id,
             collection_id=100 + int(workflow.work.work_id[:12], 16) % 1_000_000_000,
             archive_root_sha256=workflow.work.work_id,

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-8ffd85b110ef922b0e10d7bc">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 39 fields; additionalProperties: <code>false</code>; all of: structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema</p>
+<code>object</code>; 42 fields; additionalProperties: <code>false</code>; all of: structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema; structured schema</p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
@@ -35,7 +35,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;collection_id&quot;,&quot;created_at&quot;,&quot;ingest_source&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;description_publication&quot;,&quot;tag_publication&quot;,&quot;tag_count&quot;,&quot;delivery_context_id&quot;,&quot;archive_store&quot;,&quot;use_cache&quot;,&quot;copy_to&quot;,&quot;copy_intents&quot;,&quot;encryption_format&quot;,&quot;passphrase_id&quot;,&quot;state&quot;,&quot;custody_mode&quot;,&quot;registration_constraints&quot;,&quot;files_total&quot;,&quot;bytes_total&quot;,&quot;upload_state_expires_at&quot;,&quot;custody&quot;,&quot;orphaned_at&quot;,&quot;latest_failure&quot;,&quot;archive_phase&quot;,&quot;archive_phase_updated_at&quot;,&quot;archive_next_attempt_at&quot;,&quot;collection&quot;]</code>
+<code>[&quot;collection_id&quot;,&quot;created_at&quot;,&quot;ingest_source&quot;,&quot;description&quot;,&quot;description_revision&quot;,&quot;description_identity&quot;,&quot;description_publication&quot;,&quot;tag_publication&quot;,&quot;tag_count&quot;,&quot;delivery_context_id&quot;,&quot;construction_identity_sha256&quot;,&quot;archive_store&quot;,&quot;use_cache&quot;,&quot;copy_to&quot;,&quot;copy_intents&quot;,&quot;encryption_format&quot;,&quot;passphrase_id&quot;,&quot;state&quot;,&quot;custody_mode&quot;,&quot;registration_constraints&quot;,&quot;files_total&quot;,&quot;bytes_total&quot;,&quot;upload_state_expires_at&quot;,&quot;custody&quot;,&quot;orphaned_at&quot;,&quot;latest_failure&quot;,&quot;archive_phase&quot;,&quot;archive_phase_updated_at&quot;,&quot;archive_next_attempt_at&quot;,&quot;collection&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -173,6 +173,31 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-fcad9e890851aba7ac00c03e">completion_journal_id</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-895cd7cf122a356f51657a5e.html#v-68931de5ffa142ea7d6e282f">#/components/schemas/ProvenanceJournalId</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<a href="#s-19cbd8f2ad259b92f7726356">completion_receipt</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">any of: <a href="e-3a1290c991628542c6ffe0c0.html#v-bb645806fcf98ec17b6e79bc">#/components/schemas/CollectionCompletionPublicationReceiptDocument</a>; <code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>construction_identity_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -786,6 +811,62 @@
 <td data-label="Alternative">1</td>
 <td data-label="Schema">
 <a href="e-c43e8ae695916b4ae623fe2b.html#v-ec21417e939733a2ff20a2de">#/components/schemas/CollectionSummaryOut</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fcad9e890851aba7ac00c03e">
+<h3>Field: completion_journal_id</h3>
+<p class="shape">any of: <a href="e-895cd7cf122a356f51657a5e.html#v-68931de5ffa142ea7d6e282f">#/components/schemas/ProvenanceJournalId</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-895cd7cf122a356f51657a5e.html#v-68931de5ffa142ea7d6e282f">#/components/schemas/ProvenanceJournalId</a></td>
+</tr>
+<tr>
+<td data-label="Alternative">2</td>
+<td data-label="Schema">
+<code>null</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-19cbd8f2ad259b92f7726356">
+<h3>Field: completion_receipt</h3>
+<p class="shape">any of: <a href="e-3a1290c991628542c6ffe0c0.html#v-bb645806fcf98ec17b6e79bc">#/components/schemas/CollectionCompletionPublicationReceiptDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Alternative">1</td>
+<td data-label="Schema">
+<a href="e-3a1290c991628542c6ffe0c0.html#v-bb645806fcf98ec17b6e79bc">#/components/schemas/CollectionCompletionPublicationReceiptDocument</a></td>
 </tr>
 <tr>
 <td data-label="Alternative">2</td>
@@ -1441,7 +1522,7 @@
 </section>
 <section class="schema-section" id="s-97fcf7468f7556ec9c2652ed">
 <h3>then schema</h3>
-<p class="shape">7 fields</p>
+<p class="shape">8 fields</p>
 <h4>Fields</h4>
 <div class="record-collection">
 <table>
@@ -1479,6 +1560,15 @@
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
 <code>object</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>provenance_identity</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>string</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -1523,7 +1613,7 @@
 </section>
 <section class="schema-section" id="s-5656105de5ac63a51c54e84e">
 <h3>else schema</h3>
-<p class="shape">4 fields</p>
+<p class="shape">5 fields</p>
 <h4>Fields</h4>
 <div class="record-collection">
 <table>
@@ -1558,6 +1648,15 @@
 <tr>
 <td data-label="Field">
 <code>collection</code></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>null</code></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>provenance_identity</code></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
 <code>null</code></td>
@@ -2919,6 +3018,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>provenance_identity</code>
+</th>
+<td>
+<table id="v-fa52e2c615645debf484e658">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-022b9c1e0b7ad72dec592d70">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/allOf/0/else/properties/provenance_identity/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>registration_constraints</code>
 </th>
 <td>
@@ -3051,6 +3170,26 @@
 <td>
 <span id="v-585b46706dcf5a028b18649d">
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/allOf/0/then/properties/collection/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>provenance_identity</code>
+</th>
+<td>
+<table id="v-0e24c813624a4c6dc574cfa2">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5583815e45fc82770d7f077c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/allOf/0/then/properties/provenance_identity/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6688,6 +6827,166 @@
 </tr>
 <tr>
 <th scope="row">
+<code>completion_journal_id</code>
+</th>
+<td>
+<table id="v-fcad9e890851aba7ac00c03e">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-9e73a3d8d534c4b17131c93c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-2eaf86f3251dbbac4254bd1d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c1a71c3e65c6feaea2b43544">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/completion_journal_id/anyOf/0/$ref">#/components/schemas/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-895cd7cf122a356f51657a5e.html#v-68931de5ffa142ea7d6e282f">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e7f91a5bcf0cd22304cbc783">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fad27eaebb00b5f07ed78433">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/completion_journal_id/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>completion_receipt</code>
+</th>
+<td>
+<table id="v-19cbd8f2ad259b92f7726356">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8f4a6c40ac2ab9dc88249052">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-124905f99dd0be1360800837">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5cd70d8592da01d6d8125649">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/completion_receipt/anyOf/0/$ref">#/components/schemas/CollectionCompletionPublicationReceiptDocument</code>
+<span class="kind">string</span> <a href="e-3a1290c991628542c6ffe0c0.html#v-bb645806fcf98ec17b6e79bc">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-140b9ada44cc47a964d64302">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3cd6b6063e077a1ec820071f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/completion_receipt/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>construction_identity_sha256</code>
+</th>
+<td>
+<table id="v-3f20d7324ad865668a48fa79">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a47f17a3d0acd559bea2b3da">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/construction_identity_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fd488afd17fdfd7157cc1e4c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/construction_identity_sha256/title">Construction Identity Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3a2e04c3fddc9e8a2c039800">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/construction_identity_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>copy_intents</code>
 </th>
 <td>
@@ -8502,7 +8801,7 @@
 </th>
 <td>
 <span id="v-76016f0ed488b53b26ade93c">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/10">archive_store</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/10">construction_identity_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8512,7 +8811,7 @@
 </th>
 <td>
 <span id="v-1968ad9093e7f42b4a9c937d">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/11">use_cache</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/11">archive_store</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8522,7 +8821,7 @@
 </th>
 <td>
 <span id="v-88c807832d6a9c5c034bab93">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/12">copy_to</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/12">use_cache</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8532,7 +8831,7 @@
 </th>
 <td>
 <span id="v-46274118dee4ea905c396b68">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/13">copy_intents</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/13">copy_to</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8542,7 +8841,7 @@
 </th>
 <td>
 <span id="v-73af4308fb2834ed99e4512d">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/14">encryption_format</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/14">copy_intents</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8552,7 +8851,7 @@
 </th>
 <td>
 <span id="v-e1f2d2a8cc488cc8e990d469">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/15">passphrase_id</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/15">encryption_format</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8562,7 +8861,7 @@
 </th>
 <td>
 <span id="v-1276a86c11e487907ec093d0">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/16">state</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/16">passphrase_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8572,7 +8871,7 @@
 </th>
 <td>
 <span id="v-7b81c3fa5133217781cfeefd">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/17">custody_mode</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/17">state</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8582,7 +8881,7 @@
 </th>
 <td>
 <span id="v-d268aa5646a8688cf3c447a5">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/18">registration_constraints</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/18">custody_mode</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8592,7 +8891,7 @@
 </th>
 <td>
 <span id="v-69d59bca0310a15e9061d180">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/19">files_total</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/19">registration_constraints</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8602,7 +8901,7 @@
 </th>
 <td>
 <span id="v-da58c5f1f02ad57bfb7cfa45">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/20">bytes_total</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/20">files_total</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8612,7 +8911,7 @@
 </th>
 <td>
 <span id="v-c7a53a3169b1ec7c3aeafed6">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/21">upload_state_expires_at</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/21">bytes_total</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8622,7 +8921,7 @@
 </th>
 <td>
 <span id="v-ffdbcee4d649cd1cc67e8cd1">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/22">custody</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/22">upload_state_expires_at</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8632,7 +8931,7 @@
 </th>
 <td>
 <span id="v-3a0b6b545059da8154d32d56">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/23">orphaned_at</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/23">custody</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8642,7 +8941,7 @@
 </th>
 <td>
 <span id="v-9c525c8afe20fa4a97142c4f">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/24">latest_failure</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/24">orphaned_at</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8652,7 +8951,7 @@
 </th>
 <td>
 <span id="v-1cc8621ab4bb57cec3b90ce8">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/25">archive_phase</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/25">latest_failure</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8662,7 +8961,7 @@
 </th>
 <td>
 <span id="v-cd54213fa847818e96e54cbd">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/26">archive_phase_updated_at</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/26">archive_phase</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8672,7 +8971,7 @@
 </th>
 <td>
 <span id="v-86a68ba21707e2a2e11f2b91">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/27">archive_next_attempt_at</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/27">archive_phase_updated_at</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8682,7 +8981,17 @@
 </th>
 <td>
 <span id="v-8940e04256ceae476ab448c0">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/28">collection</code>
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/28">archive_next_attempt_at</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>29</code>
+</th>
+<td>
+<span id="v-e421cfc5c3fe332ea900e14c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/required/29">collection</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -8782,6 +9091,15 @@
 <tr>
 <td data-label="Exact subject">
 <code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/artifact_set_identity/anyOf/0</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut/properties/construction_identity_sha256</code></td>
 <td data-label="Governing rule">
 <a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
 <td data-label="Decision">length · characters · fixed</td>
@@ -8895,7 +9213,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

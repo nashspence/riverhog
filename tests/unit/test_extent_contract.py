@@ -527,8 +527,8 @@ def test_bounded_carriers_do_not_become_domain_cardinality_maxima() -> None:
     }
 
     registration = decisions[
-        "http:riverhog:components:/schemas/RegisterCollectionUploadSessionFilesRequest/"
-        "properties/files:cardinality"
+        "http:riverhog:components:/schemas/RegisterCollectionUploadSessionArtifactsRequest/"
+        "properties/artifacts:cardinality"
     ]
     assert registration["policy"] == "segmented_no_total_max"
     assert registration["reason"] == "bounded-upload-registration"

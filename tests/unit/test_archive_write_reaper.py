@@ -36,6 +36,7 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
         requeue_interrupted_finalizations_for_startup=Mock(return_value=2),
         requeue_interrupted_orphan_discards_for_startup=Mock(return_value=1),
         process_due_provenance_journal_validations=Mock(return_value=0),
+        process_due_custody_receipts=Mock(return_value=0),
         process_due_finalizations=Mock(return_value=1),
         reap_expired_custody_transfers=Mock(return_value=1),
     )
@@ -113,6 +114,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> N
                     requeue_interrupted_finalizations_for_startup=zero,
                     requeue_interrupted_orphan_discards_for_startup=zero,
                     process_due_provenance_journal_validations=zero,
+                    process_due_custody_receipts=zero,
                     process_due_finalizations=finalizations,
                     reap_expired_custody_transfers=zero,
                 ),

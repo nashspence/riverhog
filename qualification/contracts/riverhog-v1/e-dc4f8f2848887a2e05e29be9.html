@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(request: &#x27;TargetJobRequest&#x27;, attempt: &#x27;int&#x27;, runtime_registry: &#x27;ClaimedCollectionRuntimeRegistry&#x27;) -&gt; &#x27;None&#x27;&quot;</code>
+<code>&quot;(request: &#x27;TargetJobRequest&#x27;, attempt: &#x27;int&#x27;, runtime_registry: &#x27;ClaimedCollectionRuntimeRegistry&#x27;, *, state_root: &#x27;Path | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
 </dd>
 </dl>
 </div>
@@ -85,7 +85,7 @@
 </th>
 <td>
 <span id="v-991e33af372af6769b898dd7">
-<code data-value-pointer="/external_contract/python/stove0_target_support.TargetExecutionSession/contract/signature">&quot;(request: &#x27;TargetJobRequest&#x27;, attempt: &#x27;int&#x27;, runtime_registry: &#x27;ClaimedCollectionRuntimeRegistry&#x27;) -&gt; &#x27;None&#x27;&quot;</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.TargetExecutionSession/contract/signature">&quot;(request: &#x27;TargetJobRequest&#x27;, attempt: &#x27;int&#x27;, runtime_registry: &#x27;ClaimedCollectionRuntimeRegistry&#x27;, *, state_root: &#x27;Path | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -141,10 +141,28 @@
 <h2>Related contract elements</h2>
 <ul>
 <li>
+<a href="e-eb97d0f5e24b885adad1a245.html">stove0_target_support.TargetExecutionSession.retain_completion</a>
+</li>
+<li>
 <a href="e-ba652c397778febb4360b335.html">stove0_target_support.TargetExecutionSession.completed_status</a>
 </li>
 <li>
+<a href="e-c05f7eec7f0c9c206c1c8e33.html">stove0_target_support.TargetExecutionSession.step_value</a>
+</li>
+<li>
+<a href="e-7a1c664cfa0ac3bdf8cbdc66.html">stove0_target_support.TargetExecutionSession.completion_checkpoint</a>
+</li>
+<li>
 <a href="e-61d3ffd0c2aa817e509ceae8.html">stove0_target_support.TargetExecutionSession.record_completed</a>
+</li>
+<li>
+<a href="e-d1c113c822417ec481e76cf2.html">stove0_target_support.TargetExecutionSession.retain_step</a>
+</li>
+<li>
+<a href="e-9b818352fef14783b1f00d0f.html">stove0_target_support.TargetExecutionSession.load_step</a>
+</li>
+<li>
+<a href="e-4121d2bd131e7362168983cf.html">stove0_target_support.TargetExecutionSession.stored_step_value</a>
 </li>
 </ul>
 </section>
@@ -179,7 +197,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

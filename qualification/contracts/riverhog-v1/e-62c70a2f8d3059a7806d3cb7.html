@@ -27,7 +27,8 @@
 <section class="schema-section" id="s-6ed9cd7952d527f17f3b3a12">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>; all of: structured schema</p>
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+</p>
 <dl class="facts">
 <dt>title</dt>
 <dd>
@@ -159,24 +160,6 @@
 </tbody>
 </table>
 </div>
-<h4>All must match</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Alternative</th>
-<th scope="col">Schema</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Alternative">
-<a href="#s-d02e3dda7b794bcda45b1bad">1</a></td>
-<td data-label="Schema">structured schema</td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
 <section class="schema-section" id="s-71e5eff23ec6e8f805c71152">
 <h3>Field: blockers</h3>
@@ -266,112 +249,6 @@
 </table>
 </div>
 </section>
-<section class="schema-section" id="s-d02e3dda7b794bcda45b1bad">
-<h3>All must match: 1</h3>
-<p class="shape">structured schema</p>
-<p>
-<a href="#s-af73c8848062874e14e1334c">if schema</a>
-</p>
-<p>
-<a href="#s-2fda7b565897903d0cfc28e7">then schema</a>
-</p>
-</section>
-<section class="schema-section" id="s-af73c8848062874e14e1334c">
-<h3>if schema</h3>
-<p class="shape">1 fields</p>
-<dl class="facts">
-<dt>required</dt>
-<dd>
-<code>[&quot;state&quot;]</code>
-</dd>
-</dl>
-<h4>Fields</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Field</th>
-<th scope="col">Required</th>
-<th scope="col">Shape and bounds</th>
-<th scope="col">Default</th>
-<th scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Field">
-<code>state</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">const: <code>finalizing</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-2fda7b565897903d0cfc28e7">
-<h3>then schema</h3>
-<p class="shape">1 fields</p>
-<h4>Fields</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Field</th>
-<th scope="col">Required</th>
-<th scope="col">Shape and bounds</th>
-<th scope="col">Default</th>
-<th scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Field">
-<a href="#s-eb6e0f8afddb07ba4cd7c1a7">custody</a></td>
-<td data-label="Required">no</td>
-<td data-label="Shape and bounds">1 fields</td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section class="schema-section" id="s-eb6e0f8afddb07ba4cd7c1a7">
-<h3>Field: custody</h3>
-<p class="shape">1 fields</p>
-<dl class="facts">
-<dt>required</dt>
-<dd>
-<code>[&quot;state&quot;]</code>
-</dd>
-</dl>
-<h4>Fields</h4>
-<div class="record-collection">
-<table>
-<thead>
-<tr>
-<th scope="col">Field</th>
-<th scope="col">Required</th>
-<th scope="col">Shape and bounds</th>
-<th scope="col">Default</th>
-<th scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Field">
-<code>state</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">const: <code>complete</code></td>
-<td data-label="Default">not declared</td>
-<td data-label="Description"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 </div>
 <details class="exact">
 <summary>Exact machine fields and pointers</summary>
@@ -390,166 +267,6 @@
 <code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut/additionalProperties">false</code>
 <span class="kind">boolean</span>
 </span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>allOf</code>
-</th>
-<td>
-<table id="v-7f92a71c10cea79a0016e48d">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<table id="v-d02e3dda7b794bcda45b1bad">
-<tbody>
-<tr>
-<th scope="row">
-<code>if</code>
-</th>
-<td>
-<table id="v-af73c8848062874e14e1334c">
-<tbody>
-<tr>
-<th scope="row">
-<code>properties</code>
-</th>
-<td>
-<table id="v-27d2b63b89d222ae5246d54a">
-<tbody>
-<tr>
-<th scope="row">
-<code>state</code>
-</th>
-<td>
-<table id="v-eb1d6960c3f0f9d8ecd9958f">
-<tbody>
-<tr>
-<th scope="row">
-<code>const</code>
-</th>
-<td>
-<span id="v-da6b8e936914e894cc182cc1">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut/allOf/0/if/properties/state/const">finalizing</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>required</code>
-</th>
-<td>
-<table id="v-1caf1de8a1b39f3829400a97">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-1bb010fdc211820e716705c4">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut/allOf/0/if/required/0">state</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>then</code>
-</th>
-<td>
-<table id="v-2fda7b565897903d0cfc28e7">
-<tbody>
-<tr>
-<th scope="row">
-<code>properties</code>
-</th>
-<td>
-<table id="v-a83ba8ed9085252a6b40d400">
-<tbody>
-<tr>
-<th scope="row">
-<code>custody</code>
-</th>
-<td>
-<table id="v-eb6e0f8afddb07ba4cd7c1a7">
-<tbody>
-<tr>
-<th scope="row">
-<code>properties</code>
-</th>
-<td>
-<table id="v-1b460d9dd7c2b289aeb679ea">
-<tbody>
-<tr>
-<th scope="row">
-<code>state</code>
-</th>
-<td>
-<table id="v-cb457619784979027790b20c">
-<tbody>
-<tr>
-<th scope="row">
-<code>const</code>
-</th>
-<td>
-<span id="v-fe0cf825c21a4e749a8fef53">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut/allOf/0/then/properties/custody/properties/state/const">complete</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
-<code>required</code>
-</th>
-<td>
-<table id="v-30c8b1bfecf41d3bf21f1ff0">
-<tbody>
-<tr>
-<th scope="row">
-<code>0</code>
-</th>
-<td>
-<span id="v-d327294a3e127dceca23a417">
-<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut/allOf/0/then/properties/custody/required/0">state</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-</tbody>
-</table></td>
 </tr>
 <tr>
 <th scope="row">
@@ -1408,7 +1125,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

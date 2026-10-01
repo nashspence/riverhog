@@ -2834,7 +2834,7 @@
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;actor&quot;,&quot;initiator&quot;,&quot;retrieval_id&quot;,&quot;collection_ids&quot;,&quot;state&quot;,&quot;files&quot;,&quot;objects&quot;,&quot;restore_required&quot;]</code>
+<code>[&quot;actor&quot;,&quot;initiator&quot;,&quot;retrieval_id&quot;,&quot;collection_ids&quot;,&quot;state&quot;,&quot;artifacts&quot;,&quot;objects&quot;,&quot;restore_required&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -2864,6 +2864,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <a href="e-40edbc58e0eb502693fe302c.html#v-3ec07c90318b9d4de7fcb451">#/$defs/RiverhogActor</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>artifacts</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>integer</code>; minimum: <code>1</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2901,15 +2910,6 @@
 <td data-label="Shape and bounds">default: <code>null</code>; any of: <code>object</code>; x-riverhog-encoded-bytes-max: <code>4096</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>; <code>null</code></td>
 <td data-label="Default">
 <code>null</code></td>
-<td data-label="Description"></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>files</code></td>
-<td data-label="Required">yes</td>
-<td data-label="Shape and bounds">
-<code>integer</code>; minimum: <code>1</code></td>
-<td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
 <tr>
@@ -15902,6 +15902,36 @@
 </tr>
 <tr>
 <th scope="row">
+<code>artifacts</code>
+</th>
+<td>
+<table id="v-244e5df4d73692558f98dbdf">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-4e41ab79c54d53f1fe039585">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RiverhogEventPage/contract/schema/$defs/RetrievalRequestedData/properties/artifacts/minimum">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b5927b760a2e34191c1d7547">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RiverhogEventPage/contract/schema/$defs/RetrievalRequestedData/properties/artifacts/type">integer</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>collection_created_at</code>
 </th>
 <td>
@@ -16242,36 +16272,6 @@
 </tr>
 <tr>
 <th scope="row">
-<code>files</code>
-</th>
-<td>
-<table id="v-87cabb3b1a8065d643f1d18d">
-<tbody>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-43f2c9b818c32236f10d1528">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.RiverhogEventPage/contract/schema/$defs/RetrievalRequestedData/properties/files/minimum">1</code>
-<span class="kind">number</span>
-</span></td>
-</tr>
-<tr>
-<th scope="row">
-<code>type</code>
-</th>
-<td>
-<span id="v-e836a3da406480e9222772df">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.RiverhogEventPage/contract/schema/$defs/RetrievalRequestedData/properties/files/type">integer</code>
-<span class="kind">string</span>
-</span></td>
-</tr>
-</tbody>
-</table></td>
-</tr>
-<tr>
-<th scope="row">
 <code>initiator</code>
 </th>
 <td>
@@ -16496,7 +16496,7 @@
 </th>
 <td>
 <span id="v-c46f8c9ac46cb1f5c1b73e67">
-<code data-value-pointer="/external_contract/python/riverhog_protocol.RiverhogEventPage/contract/schema/$defs/RetrievalRequestedData/required/5">files</code>
+<code data-value-pointer="/external_contract/python/riverhog_protocol.RiverhogEventPage/contract/schema/$defs/RetrievalRequestedData/required/5">artifacts</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -17745,7 +17745,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

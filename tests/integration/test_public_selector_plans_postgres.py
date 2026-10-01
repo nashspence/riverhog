@@ -30,6 +30,10 @@ from tests.support.qualification.database_selector_plans import (
     seed_selector_relations,
     seed_stove0_selector_relations,
 )
+from tests.support.qualification.native_discovery_plans import (
+    native_discovery_plan_cases,
+    seed_native_discovery_relations,
+)
 
 pytestmark = pytest.mark.integration
 _ROWS = 16384
@@ -66,6 +70,7 @@ def qualified_engines() -> Iterator[_QualifiedEngines]:
     riverhog_engine = create_catalog_engine(riverhog_database_url)
     stove0_engine = create_catalog_engine(stove0_database_url)
     seed_selector_relations(riverhog_engine, rows=_ROWS)
+    seed_native_discovery_relations(riverhog_engine)
     seed_stove0_selector_relations(stove0_engine, rows=_ROWS)
     try:
         yield _QualifiedEngines(riverhog=riverhog_engine, stove0=stove0_engine)
@@ -187,7 +192,7 @@ def test_every_repo_query_selector_is_classified_and_every_database_selector_is_
         if "sort" in selectors or "order" in selectors:
             expected_selectors |= {"order", "sort"}
         if "page_size" in selectors or "page_token" in selectors:
-            expected_selectors |= {"page_size", "page_token"}
+            expected_selectors |= selectors & {"page_size", "page_token"}
         assert selectors == expected_selectors, key
         representatives.setdefault(prefix, key)
 
@@ -284,3 +289,26 @@ def test_collection_query_has_indexed_identity_and_description_projections(
         "ix_collections_search_trgm",
         "ix_collections_description_search_trgm",
     } <= index_names(payload)
+
+
+def test_native_discovery_request_body_uses_bounded_current_postgresql_plans(
+    qualified_engines: _QualifiedEngines,
+) -> None:
+    engine = qualified_engines.riverhog
+    for case in native_discovery_plan_cases(engine):
+        compiled = case.statement.compile(
+            dialect=engine.dialect, compile_kwargs={"literal_binds": True}
+        )
+        with engine.begin() as connection:
+            connection.exec_driver_sql("SET LOCAL statement_timeout = '5s'")
+            payload = connection.exec_driver_sql(
+                f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {compiled}"
+            ).scalar_one()
+        assert payload[0]["Plan"]["Actual Rows"] <= 100, case.id
+        assert index_names(payload), case.id
+        if ".provenance_all." in case.id:
+            assert {
+                "collection_provenance_index_memberships_pkey",
+                "ix_provenance_index_membership_row",
+            } & index_names(payload), case.id
+        assert payload[0]["Execution Time"] < 5000, case.id

@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(archive_generation: &#x27;str&#x27;, artifact_set_sha256: &#x27;str&#x27;, delivery_context_id: &#x27;str&#x27;, binding_count: &#x27;int&#x27;, journal_count: &#x27;int&#x27;, ordered_volume_sha256: &#x27;str&#x27;, operation_journal_id: &#x27;str | None&#x27; = None) -&gt; None&quot;</code>
+<code>&quot;(archive_generation: &#x27;str&#x27;, artifact_set_sha256: &#x27;str&#x27;, delivery_context_id: &#x27;str&#x27;, binding_count: &#x27;int&#x27;, binding_tree_sha256: &#x27;str&#x27;, journal_count: &#x27;int&#x27;, ordered_volume_sha256: &#x27;str&#x27;) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -98,6 +98,14 @@
 </tr>
 <tr>
 <td data-label="Field">
+<code>binding_tree_sha256</code></td>
+<td data-label="Type">
+<code>&#x27;str&#x27;</code></td>
+<td data-label="Default">
+<code>required</code></td>
+</tr>
+<tr>
+<td data-label="Field">
 <code>journal_count</code></td>
 <td data-label="Type">
 <code>&#x27;int&#x27;</code></td>
@@ -111,14 +119,6 @@
 <code>&#x27;str&#x27;</code></td>
 <td data-label="Default">
 <code>required</code></td>
-</tr>
-<tr>
-<td data-label="Field">
-<code>operation_journal_id</code></td>
-<td data-label="Type">
-<code>&#x27;str | None&#x27;</code></td>
-<td data-label="Default">
-<code>None</code></td>
 </tr>
 </tbody>
 </table>
@@ -329,7 +329,7 @@
 </th>
 <td>
 <span id="v-93cc994ad16bd470f7e229c5">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/4/name">journal_count</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/4/name">binding_tree_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -339,7 +339,7 @@
 </th>
 <td>
 <span id="v-96f7f53a04327351eab44713">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/4/type">&#x27;int&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/4/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -369,7 +369,7 @@
 </th>
 <td>
 <span id="v-5868b232b80b331ff9f603a8">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/5/name">ordered_volume_sha256</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/5/name">journal_count</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -379,7 +379,7 @@
 </th>
 <td>
 <span id="v-845fa1d5ed6881cae20ff14b">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/5/type">&#x27;str&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/5/type">&#x27;int&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -399,7 +399,7 @@
 </th>
 <td>
 <span id="v-3e1c6f705a029c3d5579228c">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/6/default">None</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/6/default">required</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -409,7 +409,7 @@
 </th>
 <td>
 <span id="v-f74795d540869fdc3c32fc61">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/6/name">operation_journal_id</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/6/name">ordered_volume_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -419,7 +419,7 @@
 </th>
 <td>
 <span id="v-32f0bcd28891c5307a9ddf45">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/6/type">&#x27;str | None&#x27;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/fields/6/type">&#x27;str&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -445,7 +445,7 @@
 </th>
 <td>
 <span id="v-10cc52c334e1cf8b132b253c">
-<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/signature">&quot;(archive_generation: &#x27;str&#x27;, artifact_set_sha256: &#x27;str&#x27;, delivery_context_id: &#x27;str&#x27;, binding_count: &#x27;int&#x27;, journal_count: &#x27;int&#x27;, ordered_volume_sha256: &#x27;str&#x27;, operation_journal_id: &#x27;str | None&#x27; = None) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_archive_contracts.ProvenanceRootDocument/contract/signature">&quot;(archive_generation: &#x27;str&#x27;, artifact_set_sha256: &#x27;str&#x27;, delivery_context_id: &#x27;str&#x27;, binding_count: &#x27;int&#x27;, binding_tree_sha256: &#x27;str&#x27;, journal_count: &#x27;int&#x27;, ordered_volume_sha256: &#x27;str&#x27;) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -545,7 +545,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

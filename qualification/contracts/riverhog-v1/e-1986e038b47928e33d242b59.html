@@ -50,7 +50,7 @@
 </dd>
 <dt>signature</dt>
 <dd>
-<code>&quot;(_graph_json: &#x27;bytes&#x27;, _externals_json: &#x27;bytes&#x27;, _profiles_json: &#x27;bytes&#x27;, findings: &#x27;tuple[str, ...]&#x27; = ()) -&gt; None&quot;</code>
+<code>&quot;(_graph_json: &#x27;bytes&#x27;, _externals_json: &#x27;bytes&#x27;, _profiles_json: &#x27;bytes&#x27;, _findings: &#x27;tuple[str, ...]&#x27; = (), _store: &#x27;GraphStore | None&#x27; = None) -&gt; None&quot;</code>
 </dd>
 </dl>
 <h4>Dataclass fields</h4>
@@ -90,11 +90,19 @@
 </tr>
 <tr>
 <td data-label="Field">
-<code>findings</code></td>
+<code>_findings</code></td>
 <td data-label="Type">
 <code>&#x27;tuple[str, ...]&#x27;</code></td>
 <td data-label="Default">
 <code>()</code></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>_store</code></td>
+<td data-label="Type">
+<code>&#x27;GraphStore | None&#x27;</code></td>
+<td data-label="Default">
+<code>None</code></td>
 </tr>
 </tbody>
 </table>
@@ -265,7 +273,7 @@
 </th>
 <td>
 <span id="v-63f3a46ac953efe931fd5e5e">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/fields/3/name">findings</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/fields/3/name">_findings</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -276,6 +284,46 @@
 <td>
 <span id="v-ecc53e59ccbda92eb13a567b">
 <code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/fields/3/type">&#x27;tuple[str, ...]&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-b11314750aac9aa5e697af31">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f92924704f6fa7d7ea493683">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/fields/4/default">None</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-9cfea59a23f16a27145ab34c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/fields/4/name">_store</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-81eff99d2a3ec8ece67d720b">
+<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/fields/4/type">&#x27;GraphStore | None&#x27;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -301,7 +349,7 @@
 </th>
 <td>
 <span id="v-48a5199bd150b1e13c1e3b65">
-<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/signature">&quot;(_graph_json: &#x27;bytes&#x27;, _externals_json: &#x27;bytes&#x27;, _profiles_json: &#x27;bytes&#x27;, findings: &#x27;tuple[str, ...]&#x27; = ()) -&gt; None&quot;</code>
+<code data-value-pointer="/external_contract/python/riverhog_provenance.GraphValidation/contract/signature">&quot;(_graph_json: &#x27;bytes&#x27;, _externals_json: &#x27;bytes&#x27;, _profiles_json: &#x27;bytes&#x27;, _findings: &#x27;tuple[str, ...]&#x27; = (), _store: &#x27;GraphStore | None&#x27; = None) -&gt; None&quot;</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -360,7 +408,13 @@
 <a href="e-7eeea4bc0be0a08602c2ec15.html">riverhog_provenance.GraphValidation.external_references</a>
 </li>
 <li>
+<a href="e-842bd992996cc48c67d9545d.html">riverhog_provenance.GraphValidation.findings</a>
+</li>
+<li>
 <a href="e-e6600827ab7e07a9b7a40a21.html">riverhog_provenance.GraphValidation.graph</a>
+</li>
+<li>
+<a href="e-88caaae30c7742d4d2b1a33c.html">riverhog_provenance.GraphValidation.iter_assertions</a>
 </li>
 <li>
 <a href="e-02dd2a2d0391e66564753d1e.html">riverhog_provenance.GraphValidation.objects</a>
@@ -370,6 +424,9 @@
 </li>
 <li>
 <a href="e-8669ccf7de5ff63258bffbf8.html">riverhog_provenance.GraphValidation.unresolved_profiles</a>
+</li>
+<li>
+<a href="e-d6c42c8f497641aec6421226.html">riverhog_provenance.GraphValidation.view</a>
 </li>
 </ul>
 </section>
@@ -404,7 +461,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

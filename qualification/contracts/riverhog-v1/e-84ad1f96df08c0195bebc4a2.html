@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: MemberHistoryBindingBatchDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>schemas: MemberHistoryBindingBatchDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-memberhistorybindingbatchdocument:d6d760b499">
+<h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-356d2b93231157cbf54f104b">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>MemberHistoryBindingBatchDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;bindings&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Field">
+<a href="#s-b7e8360db3acc9defcd0b62f">bindings</a></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>array</code>; items: <a href="e-a4381f82c7385afdd23fa4a3.html#v-e7a4e29f35f57487fbcf7e95">#/components/schemas/MemberHistoryBindingDocument</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b7e8360db3acc9defcd0b62f">
+<h3>Field: bindings</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-a4381f82c7385afdd23fa4a3.html#v-e7a4e29f35f57487fbcf7e95">#/components/schemas/MemberHistoryBindingDocument</a>; minItems: <code>1</code>; maxItems: <code>100</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Bindings</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>100</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;segmented_no_total_max&quot;,&quot;progression&quot;:&quot;artifact-id&quot;,&quot;reason&quot;:&quot;bounded-member-history-bindings&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument</code>
+</h4>
+<table id="v-356d2b93231157cbf54f104b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0ee8a459bb2ee7fef8a9a2ae">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-10744f690126edd09a837b03">
+<tbody>
+<tr>
+<th scope="row">
+<code>bindings</code>
+</th>
+<td>
+<table id="v-b7e8360db3acc9defcd0b62f">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-a75e0bd955a63970714ebac8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cbb6e6178f4999b628324a45">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/items/$ref">#/components/schemas/MemberHistoryBindingDocument</code>
+<span class="kind">string</span> <a href="e-a4381f82c7385afdd23fa4a3.html#v-e7a4e29f35f57487fbcf7e95">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-0865ff68852d0e8a14bf7ad8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/maxItems">100</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-10feeaebed48282f8e97a011">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/minItems">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-293a5f265e4e447807a57e10">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/title">Bindings</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5667501be16787824c466f28">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/type">array</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-b269e335158ecdfcd66d385a">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-a2c5abd29e49b852ad95a49e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/x-riverhog-extent/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<span id="v-fc0666cfae564599f1c1fba6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/x-riverhog-extent/progression">artifact-id</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ae7baaf4a5cb8eaa89e2434e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings/x-riverhog-extent/reason">bounded-member-history-bindings</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f0cd4432be5c0894d43b135f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-60024c18898ddf23979dd86b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/required/0">bindings</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-47d9b6321d5ed2563656da5d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/title">MemberHistoryBindingBatchDocument</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-103a786a774e5dfb3e7722d2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Open extent qualification</h3>
+<ul>
+<li>
+<a href="q-652f802807fd720d69d71167.html">riverhog-provenance-construction-progression/v1</a>
+</li>
+</ul>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-7bb6c2762f189727c686307e.html">compatibility/http-api/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="349">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/riverhog/components/schemas/MemberHistoryBindingBatchDocument/properties/bindings</code></td>
+<td data-label="Governing rule">
+<a href="e-22e15595381765f036e92f1c.html">extent-rule/bounded-segment/v1</a></td>
+<td data-label="Decision">cardinality · items · segmented_no_total_max</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;progression&quot;:{&quot;progression&quot;:&quot;artifact-id&quot;},&quot;reason&quot;:&quot;bounded-member-history-bindings&quot;}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

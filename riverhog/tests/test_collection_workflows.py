@@ -67,6 +67,7 @@ from stove0_recipe_config import (
 )
 from time_formats import parse_utc_timestamp
 
+from tests.support.completion_receipt_fixtures import published_completion_projection
 from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 NOW = "2026-08-15T00:00:00Z"
@@ -93,6 +94,7 @@ def _collection(
     creator: str,
     root: str,
     idempotency_key: str | None = None,
+    completion_derivation: CollectionDerivation | None = None,
 ) -> None:
     collection = CollectionRecord(
         id=collection_id,
@@ -102,6 +104,11 @@ def _collection(
         artifact_set_identity=str(collection_id) * 64,
         encryption_format="age-v1-scrypt",
         passphrase_id="fixture-archive-key-v1",
+        completion_receipt_json=(
+            None
+            if completion_derivation is None
+            else published_completion_projection(completion_derivation)
+        ),
         provenance_identity="e" * 64,
         delivery_context_id=f"urn:uuid:11111111-1111-4111-8111-{collection_id:012x}",
         artifact_count=1 if collection_id == 1 else 0,
@@ -559,6 +566,7 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
             creator=f"processing:{EXECUTION_ID}",
             root="6" * 64,
             idempotency_key=EXECUTION_ID,
+            completion_derivation=derivation,
         )
         session.add_all(
             [
@@ -1121,6 +1129,7 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
                 creator=f"processing:{execution_id}",
                 root=str(output_collection_id) * 64,
                 idempotency_key=execution_id,
+                completion_derivation=derivation,
             )
             session.add_all(
                 [
@@ -2039,6 +2048,7 @@ def _settled_collection_child(
             creator=f"processing:{EXECUTION_ID}",
             root="6" * 64,
             idempotency_key=EXECUTION_ID,
+            completion_derivation=derivation,
         )
         session.add_all(
             CollectionArtifactRecord(collection_id=2, artifact_id=path, bytes=size, sha256=digest)

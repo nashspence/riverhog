@@ -81,7 +81,8 @@ def test_operation_audiences_distinguish_commands_wires_and_protocols() -> None:
         == "standard-tool/protocol"
     )
     assert (
-        by_identity[("riverhog", "head_retrieval_file")].classification == "standard-tool/protocol"
+        by_identity[("riverhog", "head_retrieval_artifact")].classification
+        == "standard-tool/protocol"
     )
     assert by_identity[("stove0", "list_work")].classification == "human-cli+json"
     assert "work list" in by_identity[("stove0", "list_work")].cli_commands

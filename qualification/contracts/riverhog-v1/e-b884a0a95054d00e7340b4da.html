@@ -1396,7 +1396,7 @@
 <section class="schema-section" id="s-ef86be7809d57fd3b12cd904">
 <h3>Definition: EffectPlan</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -1405,7 +1405,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -1431,6 +1431,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-87c32f37cf950cd9a697af88">execution_parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-c1bfce33d0c91794e4578361">input_groups</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -1454,6 +1463,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -4385,7 +4403,7 @@ identity while preserving the full document in the execution envelope.</code>
 <section class="schema-section" id="s-53a4ad89c585dedab56df621">
 <h3>Definition: TargetPreflightRequest</h3>
 <p class="shape">
-<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -4394,7 +4412,7 @@ identity while preserving the full document in the execution envelope.</code>
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -4443,6 +4461,15 @@ identity while preserving the full document in the execution envelope.</code>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -4869,7 +4896,7 @@ identity while preserving the full document in the execution envelope.</code>
 <section class="schema-section" id="s-db60c6557235c7376aeadf4f">
 <h3>Definition: TransformPlan</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -4878,7 +4905,7 @@ identity while preserving the full document in the execution envelope.</code>
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -4904,6 +4931,15 @@ identity while preserving the full document in the execution envelope.</code>
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-d06016b9d188eb7d7dbc16aa">execution_parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-a7fca2ac0b960c91cf06323d">input_groups</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -4927,6 +4963,15 @@ identity while preserving the full document in the execution envelope.</code>
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -5735,6 +5780,26 @@ identity while preserving the full document in the execution envelope.</code>
 <dt>minItems</dt>
 <dd>
 <code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-87c32f37cf950cd9a697af88">
+<h3>Field: execution_parameters</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Execution Parameters</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
 </dd>
 </dl>
 </section>
@@ -7068,6 +7133,26 @@ identity while preserving the full document in the execution envelope.</code>
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-d06016b9d188eb7d7dbc16aa">
+<h3>Field: execution_parameters</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Execution Parameters</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-a7fca2ac0b960c91cf06323d">
 <h3>Field: input_groups</h3>
@@ -11495,6 +11580,56 @@ identity while preserving the full document in the execution envelope.</code>
 <tbody>
 <tr>
 <th scope="row">
+<code>execution_parameters</code>
+</th>
+<td>
+<table id="v-87c32f37cf950cd9a697af88">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-674ad0ee35a1faf6061b0ca9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c4692eb3f1ad3f0a075f452c">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/execution_parameters/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-81182827148ae5eab371cd89">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/execution_parameters/title">Execution Parameters</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fc228cac60b8b4935186bd40">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/execution_parameters/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>input_groups</code>
 </th>
 <td>
@@ -11617,6 +11752,46 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <span id="v-fb3c8f44f79d9e43729f6d2b">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-0b0a5bccad2e4acdf086baea">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-75d38de52154d7fb3a1ecf73">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d8ea3d1eb99f0618eb27087a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/invocation_sha256/title">Invocation Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-07e01af3937095b4ee36c700">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/invocation_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12009,7 +12184,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-7953030351e5e1479ce66641">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12019,7 +12194,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-1808f131826166f77fa6b868">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12029,7 +12204,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-94e14e7aefb403217303cec2">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/2">inputs</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12039,7 +12214,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-01c2013137245c08aaf6e25a">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/3">intent</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/3">inputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12049,7 +12224,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-769395dca986ca140340b7f3">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/4">target_implementation_id</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12059,7 +12234,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-5317e0fe828e4f3a540eb750">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/5">target_descriptor_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/5">target_implementation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12069,7 +12244,17 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-be6a04ae60e4ab877b9d770e">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/6">plan_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/6">target_descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-9f7f65c681ea5bd3df01c301">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/required/7">plan_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -23375,6 +23560,46 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 <tr>
 <th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-c7cca8008d5d87a1684f39af">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b990be744450b89fb6806cf5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-20fa4f277639bdc1347280a4">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/properties/invocation_sha256/title">Invocation Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e8e0a75aa59aedafd2117736">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/properties/invocation_sha256/type">string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>observations</code>
 </th>
 <td>
@@ -23649,7 +23874,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-b8923b10d5aca537c20fb858">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -23659,7 +23884,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-30f3fdedf7b507f7b96240e1">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -23669,7 +23894,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-2d7e7c51d417321c6522c99d">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/2">inputs</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -23679,7 +23904,17 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-8d261f2c0a2792934679cfdf">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/3">intent</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/3">inputs</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f15beddb766d201f9ee0b290">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25335,6 +25570,56 @@ identity while preserving the full document in the execution envelope.</code>
 <tbody>
 <tr>
 <th scope="row">
+<code>execution_parameters</code>
+</th>
+<td>
+<table id="v-d06016b9d188eb7d7dbc16aa">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-fcac57779dda6fd1097c818e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-af3821a9c509117fc01072c8">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/execution_parameters/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-b884a0a95054d00e7340b4da.html#v-40b30ec575671dfc02d6e391">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2068d6416cbf072f6d260c93">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/execution_parameters/title">Execution Parameters</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f3b0ac73d8304e688bd01950">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/execution_parameters/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>input_groups</code>
 </th>
 <td>
@@ -25457,6 +25742,46 @@ identity while preserving the full document in the execution envelope.</code>
 <td>
 <span id="v-e1bdaf379db54b77d043d544">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-ea21a07e94b7cd55945048fa">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-894e952b2ec2f0bdb52633a2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-52c9b4ca29d5d531dedd6763">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/invocation_sha256/title">Invocation Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-67bb58d7bd51758f5389d4da">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/invocation_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25849,7 +26174,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-aa9b8a1c5bffdcfdeb00cfb9">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25859,7 +26184,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-3a12ba4c1e65a4ca4001a4bf">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25869,7 +26194,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-bb46df4c0acb7255fe09618d">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/2">inputs</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25879,7 +26204,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-73396a21b7f15a5ab680c631">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/3">intent</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/3">inputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25889,7 +26214,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-06e677af13d2d60cc3058f2b">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/4">target_implementation_id</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25899,7 +26224,7 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-c884da187cc9fc6d668297a0">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/5">target_descriptor_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/5">target_implementation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -25909,7 +26234,17 @@ identity while preserving the full document in the execution envelope.</code>
 </th>
 <td>
 <span id="v-db1a7022f45f128797a07dd2">
-<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/6">plan_sha256</code>
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/6">target_descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-c50e199a911221ea9de2be10">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/required/7">plan_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -28484,6 +28819,15 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/execution_parameters</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-target-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/input_groups</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -28499,6 +28843,15 @@ identity while preserving the full document in the execution envelope.</code>
 <td data-label="Decision">cardinality · entries · operational_policy</td>
 <td data-label="Bounds or reason">
 <code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-target-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/EffectPlan/properties/invocation_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
 <td data-label="Exact subject">
@@ -29186,6 +29539,15 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/properties/invocation_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TargetPreflightRequest/properties/observations</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -29312,6 +29674,15 @@ identity while preserving the full document in the execution envelope.</code>
 </tr>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/execution_parameters</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-target-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/input_groups</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -29327,6 +29698,15 @@ identity while preserving the full document in the execution envelope.</code>
 <td data-label="Decision">cardinality · entries · operational_policy</td>
 <td data-label="Bounds or reason">
 <code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-target-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult/$defs/TransformPlan/properties/invocation_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
 <td data-label="Exact subject">
@@ -29489,7 +29869,7 @@ identity while preserving the full document in the execution envelope.</code>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

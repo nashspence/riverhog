@@ -5,10 +5,12 @@ from pydantic import ValidationError
 from riverhog_protocol import (
     ArtifactId,
     CollectionArtifactProvenanceBindingBatchDocument,
+    CollectionArtifactProvenanceBindingDocument,
     CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadArtifactIn,
     CollectionUploadCustodyObjectDocument,
+    CollectionUploadProvenanceCustodyObjectDocument,
     CollectionUploadProvenanceJournalStatusDocument,
     CollectionUploadRegistrationConstraintsDocument,
     CollectionUploadUnitAssignmentDocument,
@@ -90,9 +92,28 @@ def test_custody_receipt_binds_exact_member_and_recovering_objects() -> None:
         artifact_id=ArtifactId(FIRST),
         bytes=123,
         sha256="a" * 64,
-        archive_root_sha256="c" * 64,
-        provenance_root_sha256="d" * 64,
-        provenance_root_receipt_sha256="e" * 64,
+        primary=CollectionArtifactProvenanceBindingDocument.model_validate(
+            {
+                "artifact_id": FIRST,
+                "journal": {
+                    "journal_id": JOURNAL,
+                    "through": {"entry_id": ENTRY, "sequence": "0", "json_sha256": "c" * 64},
+                    "prefix_sha256": "d" * 64,
+                    "prefix_bytes": "123",
+                },
+                "delivery_association_id": ASSOCIATION,
+            }
+        ),
+        completion_requirement_sha256="e" * 64,
+        provenance_objects=(
+            CollectionUploadProvenanceCustodyObjectDocument(
+                object_id="primary-journal",
+                relative_path="provenance/primary.jsonseq.age",
+                plaintext_bytes="123",
+                plaintext_sha256="d" * 64,
+                sealed_receipt_sha256="f" * 64,
+            ),
+        ),
         archive_objects=(
             CollectionUploadCustodyObjectDocument(
                 volume_id="segment-" + "0" * 63 + "1",

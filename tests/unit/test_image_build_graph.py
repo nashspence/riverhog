@@ -795,3 +795,47 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
         "if": "matrix.target == 'a-riverhog-event-relay'",
         "run": "make a-riverhog-event-relay-smoke",
     }
+
+
+def test_frozen_image_sync_has_every_selected_workspace_dependency() -> None:
+    """A locked dependency can only be installed if its owned source was copied."""
+    lock = tomllib.loads((REPO_ROOT / "uv.lock").read_text())
+    packages = {package["name"]: package for package in lock["package"]}
+    local_paths = {
+        name: package["source"].get("editable", package["source"].get("virtual"))
+        for name, package in packages.items()
+        if "editable" in package["source"] or "virtual" in package["source"]
+    }
+    for image, contract in IMAGE_CONTRACTS.items():
+        dockerfile = (REPO_ROOT / str(contract["dockerfile"])).read_text()
+        copied = {
+            Path(source) for source in re.findall(r"(?m)^COPY (?!\-\-)(\S+) \S+$", dockerfile)
+        }
+        commands = re.findall(r"uv sync\b(.*?)(?:\n(?=[A-Z])|\Z)", dockerfile, re.DOTALL)
+        for command in commands:
+            selected = (
+                set(local_paths)
+                if "--all-packages" in command
+                else set(re.findall(r"--package\s+(\S+)", command))
+            )
+            visited: set[str] = set()
+            while selected:
+                name = selected.pop()
+                if name in visited:
+                    continue
+                visited.add(name)
+                package = packages[name]
+                path = local_paths.get(name)
+                if path is not None and path != ".":
+                    sources = [Path(path) / "pyproject.toml"]
+                    if (REPO_ROOT / path / "src").is_dir():
+                        sources.append(Path(path) / "src")
+                    for source in sources:
+                        assert any(source == item or item in source.parents for item in copied), (
+                            image,
+                            name,
+                            str(source),
+                        )
+                selected.update(
+                    dependency["name"] for dependency in package.get("dependencies", ())
+                )

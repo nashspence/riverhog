@@ -33,4 +33,3 @@ packages = ["src/riverhog_provenance_contracts"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "formal" = "riverhog_provenance_contracts/formal"
-"SPECIFICATION.md" = "riverhog_provenance_contracts/SPECIFICATION.md"

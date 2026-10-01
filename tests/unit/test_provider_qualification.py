@@ -1219,11 +1219,11 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
         def get_collection_upload_session(self, _collection_id: int) -> dict[str, object]:
             return {"state": "uploading"}
 
-        def list_collection_upload_session_files(
+        def list_collection_upload_session_artifacts(
             self, _collection_id: int, **_kwargs: object
         ) -> dict[str, object]:
             return {
-                "files": [{"path": "file.txt"}],
+                "artifacts": [{"artifact_id": "a" * 64}],
                 "page_size": 100,
                 "next_page_token": None,
                 "total": 1,
@@ -1255,7 +1255,7 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
                                 "plaintext_bytes": "1",
                                 "sources": [
                                     {
-                                        "path": "file.txt",
+                                        "artifact_id": "a" * 64,
                                         "offset": "0",
                                         "bytes": "1",
                                         "artifact_sha256": "b" * 64,
@@ -1302,7 +1302,7 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
     assert set(observations) == {
         "committed-payload-progress",
         *resumable_observations,
-        "registered-file-list",
+        "registered-artifact-list",
         "session-show",
         "unit-readback",
         "upload-work-acquisition",
@@ -1369,17 +1369,17 @@ def test_operator_advances_across_short_restore_invocations(
             }
 
         def plan_retrieval(self, files, **kwargs) -> dict[str, object]:  # type: ignore[no-untyped-def]
-            assert files == ((42, "file.txt"),)
+            assert files == ((42, "a" * 64),)
             assert kwargs["lease_seconds"] == 3 * 24 * 60 * 60
             return {
                 "id": "plan-42",
                 "etag": "plan",
-                "file_count": 1,
+                "artifact_count": 1,
                 "lease_seconds": kwargs["lease_seconds"],
                 "requires_restore": True,
             }
 
-        def list_retrieval_plan_files(
+        def list_retrieval_plan_artifacts(
             self,
             plan_id: str,
             **kwargs,
@@ -1392,10 +1392,10 @@ def test_operator_advances_across_short_restore_invocations(
                 "start_ordinal": kwargs["start_ordinal"],
                 "complete": True,
                 "next_ordinal": None,
-                "files": [
+                "artifacts": [
                     {
                         "collection_id": 42,
-                        "path": "file.txt",
+                        "artifact_id": "a" * 64,
                         "requires_restore": True,
                     }
                 ],
@@ -1440,6 +1440,7 @@ def test_operator_advances_across_short_restore_invocations(
             }
 
     api = _Api()
+    monkeypatch.setattr(module, "_corpus_artifacts", lambda *_args: {"file.txt": "a" * 64})
 
     qualification_key_ids: list[str | None] = []
 
@@ -1456,7 +1457,7 @@ def test_operator_advances_across_short_restore_invocations(
             42,
             (
                 "committed-payload-progress",
-                "registered-file-list",
+                "registered-artifact-list",
                 "session-show",
                 "unit-readback",
                 "upload-work-acquisition",

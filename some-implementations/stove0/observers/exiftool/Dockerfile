@@ -32,6 +32,7 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
 COPY some-implementations/stove0/observers/exiftool some-implementations/stove0/observers/exiftool
+COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json

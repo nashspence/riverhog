@@ -11,8 +11,15 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
-from a_riverhog_cli.main import _create_or_resume_collection_upload_session
-from riverhog_client.initial_tags import prepare_initial_collection_tags
+from riverhog_client.canonical_production import (
+    ProducerAttribution,
+    build_member_journal,
+    member_materialization_decision,
+)
+from riverhog_client.initial_tags import (
+    create_or_resume_with_initial_collection_tags,
+    prepare_initial_collection_tags,
+)
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     COLLECTION_TAGS_MANAGE,
@@ -32,7 +39,7 @@ from riverhog_core.catalog_db import (
 from riverhog_core.catalog_models import (
     CollectionTagNodeReclamationRecord,
     CollectionTagNodeRecord,
-    CollectionUploadFileRecord,
+    CollectionUploadArtifactRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
     CollectionUploadRecord,
@@ -45,9 +52,13 @@ from riverhog_core.services.collection_tags import build_collection_tag_set
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+    COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingBatchDocument,
     CollectionUploadProvenanceJournalCreateDocument,
 )
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
+from riverhog_provenance import BoundedSourceObserver, BytesSource
 from sqlalchemy import event, func, select, text
 from sqlalchemy.engine import make_url
 
@@ -76,8 +87,8 @@ _TAGGED_CREATOR = Principal(
         }
     ),
 )
-_FILE = {
-    "path": "output/artifact.bin",
+_ARTIFACT = {
+    "artifact_id": "1" * 64,
     "bytes": "0",
     "sha256": hashlib.sha256(b"").hexdigest(),
 }
@@ -139,11 +150,87 @@ def _create(service: SqlAlchemyCollectionUploadService) -> int:
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
         custody_mode="custody-transfer",
     )
     return int(payload["collection_id"])
+
+
+def _upload_provenance_journal(
+    service: SqlAlchemyCollectionUploadService,
+    collection_id: int,
+    journal_id: str,
+    content: bytes,
+    sha256: str,
+) -> dict[str, object]:
+    service.create_provenance_journal(
+        collection_id,
+        journal_id,
+        CollectionUploadProvenanceJournalCreateDocument(
+            bytes=str(len(content)),
+            sha256=sha256,
+        ),
+    )
+    offset = 0
+    for start in range(0, len(content), COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX):
+        chunk = content[start : start + COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX]
+        service.append_provenance_journal(
+            collection_id,
+            journal_id,
+            offset=offset,
+            content=chunk,
+        )
+        offset += len(chunk)
+    service.seal_provenance_journal(collection_id, journal_id)
+    for _ in range(64):
+        status = service.get_provenance_journal(collection_id, journal_id)
+        if status["state"] in {"sealed", "failed"}:
+            assert status["state"] == "sealed", status["failure"]
+            return status
+        assert service.process_due_provenance_journal_validations() == 1
+    raise AssertionError("bounded provenance validation did not terminate")
+
+
+def _bind_primary(service, collection_id, artifact_id, content):
+    opened = service.get(collection_id)
+    produced = build_member_journal(
+        member=ArtifactMemberIdentityDocument(
+            artifact_id=artifact_id,
+            bytes=str(len(content)),
+            sha256=hashlib.sha256(content).hexdigest(),
+        ),
+        observation=BoundedSourceObserver().observe(BytesSource(content)),
+        delivery_context_id=opened["delivery_context_id"],
+        attribution=ProducerAttribution(
+            producer_app="upload-test",
+            adapter_id="bounded-bytes-test",
+            adapter_version="1",
+            source_event_id=str(collection_id),
+            ingest_source="fixture",
+            source_context={},
+            construction_identity=opened["construction_identity_sha256"],
+        ),
+        materialization_hint=None,
+    )
+    _upload_provenance_journal(
+        service,
+        collection_id,
+        produced.journal_id,
+        produced.content,
+        hashlib.sha256(produced.content).hexdigest(),
+    )
+    service.bind_artifact_provenance(
+        collection_id,
+        CollectionArtifactProvenanceBindingBatchDocument(bindings=[produced.binding]),
+    )
+    service.set_artifact_materialization_decisions(
+        collection_id,
+        member_materialization_decision(
+            artifact_id=artifact_id,
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+        ),
+    )
+    return produced
 
 
 def _initial_tag_identity(tags: tuple[str, ...]) -> str:
@@ -174,8 +261,6 @@ def test_postgres_upload_tag_authorization_never_returns_the_accumulated_set(
         archive_store=None,
         initiator=principal,
         event_context=None,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
     )
     collection_id = int(opened["collection_id"])
     service.add_tags(collection_id, tags[100:200], principal=principal)
@@ -247,8 +332,6 @@ def test_a_riverhog_cli_reconciles_real_closed_discovery_without_replaying_tags(
                 archive_store=None,
                 initiator=principal,
                 event_context=None,
-                provenance_mode="omitted",
-                provenance_omission_reason="fixture",
             )
 
         def add_collection_upload_session_tags(
@@ -261,27 +344,32 @@ def test_a_riverhog_cli_reconciles_real_closed_discovery_without_replaying_tags(
             return service.add_tags(collection_id, batch, principal=principal)
 
     api = Api()
-    opened = _create_or_resume_collection_upload_session(
-        api,  # type: ignore[arg-type]
-        "a-riverhog-cli-closing-retry",
-        ingest_source="fixture",
-        tags=tags,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
+    opened = create_or_resume_with_initial_collection_tags(
+        tags,
+        create_or_resume=lambda first, identity: api.create_or_resume_collection_upload_session(
+            "a-riverhog-cli-closing-retry",
+            ingest_source="fixture",
+            tags=first,
+            initial_tag_set_identity=identity,
+        ),
+        add_tags=api.add_collection_upload_session_tags,
     )
     collection_id = int(opened["collection_id"])
-    service.register_files(collection_id, (_FILE,))
+    service.register_artifacts(collection_id, (_ARTIFACT,))
+    _bind_primary(service, collection_id, _ARTIFACT["artifact_id"], b"")
     closed = service.complete(collection_id)
     assert closed["state"] in {"closing", "uploading", "finalizing"}
     staged_calls = tag_calls
 
-    resumed = _create_or_resume_collection_upload_session(
-        api,  # type: ignore[arg-type]
-        "a-riverhog-cli-closing-retry",
-        ingest_source="fixture",
-        tags=tags,
-        provenance_mode="omitted",
-        provenance_omission_reason="fixture",
+    resumed = create_or_resume_with_initial_collection_tags(
+        tags,
+        create_or_resume=lambda first, identity: api.create_or_resume_collection_upload_session(
+            "a-riverhog-cli-closing-retry",
+            ingest_source="fixture",
+            tags=first,
+            initial_tag_set_identity=identity,
+        ),
+        add_tags=api.add_collection_upload_session_tags,
     )
 
     assert resumed["state"] == closed["state"]
@@ -330,8 +418,6 @@ def test_postgres_upload_protects_a_reused_tag_root_before_its_first_commit(
             archive_store=None,
             initiator=_TAGGED_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture",
         )
         assert entered.wait(timeout=10)
         with session_scope(factory) as session:
@@ -384,8 +470,6 @@ def test_postgres_upload_reuse_fails_before_commit_after_reclamation_claim(
             archive_store=None,
             initiator=_TAGGED_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture",
         )
     with session_scope(factory) as session:
         assert (
@@ -431,8 +515,8 @@ def test_exact_concurrent_registration_is_one_physical_planner_step(
     collection_id = _create(first)
 
     results = _race(
-        lambda: first.register_files(collection_id, (_FILE,)),
-        lambda: second.register_files(collection_id, (_FILE,)),
+        lambda: first.register_artifacts(collection_id, (_ARTIFACT,)),
+        lambda: second.register_artifacts(collection_id, (_ARTIFACT,)),
     )
 
     assert all(not isinstance(result, Exception) for result in results)
@@ -441,15 +525,15 @@ def test_exact_concurrent_registration_is_one_physical_planner_step(
         assert upload is not None
         assert (
             session.scalar(
-                select(func.count(CollectionUploadFileRecord.path)).where(
-                    CollectionUploadFileRecord.collection_id == collection_id
+                select(func.count(CollectionUploadArtifactRecord.artifact_id)).where(
+                    CollectionUploadArtifactRecord.collection_id == collection_id
                 )
             )
             == 1
         )
         assert upload.planner_checkpoint_json is not None
-        assert '"next_file_order":"1"' in upload.planner_checkpoint_json
-        assert (upload.file_count, upload.file_bytes) == (1, 0)
+        assert '"next_artifact_order":"1"' in upload.planner_checkpoint_json
+        assert (upload.artifact_count, upload.artifact_bytes) == (1, 0)
 
 
 def test_distinct_concurrent_registrations_preserve_both_members(
@@ -457,28 +541,28 @@ def test_distinct_concurrent_registrations_preserve_both_members(
 ) -> None:
     first, second = _services(database_url)
     collection_id = _create(first)
-    first_file = {**_FILE, "path": "z/output.bin"}
-    second_file = {**_FILE, "path": "a/output.bin"}
+    first_artifact = {**_ARTIFACT, "artifact_id": "3" * 64}
+    second_artifact = {**_ARTIFACT, "artifact_id": "2" * 64}
 
     results = _race(
-        lambda: first.register_files(collection_id, (first_file,)),
-        lambda: second.register_files(collection_id, (second_file,)),
+        lambda: first.register_artifacts(collection_id, (first_artifact,)),
+        lambda: second.register_artifacts(collection_id, (second_artifact,)),
     )
 
     assert all(not isinstance(result, Exception) for result in results)
     with session_scope(make_session_factory(database_url)) as session:
         rows = list(
             session.scalars(
-                select(CollectionUploadFileRecord)
-                .where(CollectionUploadFileRecord.collection_id == collection_id)
-                .order_by(CollectionUploadFileRecord.file_order)
+                select(CollectionUploadArtifactRecord)
+                .where(CollectionUploadArtifactRecord.collection_id == collection_id)
+                .order_by(CollectionUploadArtifactRecord.artifact_order)
             )
         )
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        assert {row.path for row in rows} == {"a/output.bin", "z/output.bin"}
-        assert [row.file_order for row in rows] == [0, 1]
-        assert upload.file_count == 2
+        assert {row.artifact_id for row in rows} == {"2" * 64, "3" * 64}
+        assert [row.artifact_order for row in rows] == [0, 1]
+        assert upload.artifact_count == 2
 
 
 def test_concurrent_provenance_retry_commits_one_next_ordinal(
@@ -492,8 +576,6 @@ def test_concurrent_provenance_retry_commits_one_next_ordinal(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="captured",
-        provenance_omission_reason=None,
     )
     collection_id = int(opened["collection_id"])
     content = b"one bounded provenance append"
@@ -545,8 +627,6 @@ def test_provenance_append_and_expiry_serialize_at_the_custody_fence(
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
-        provenance_mode="captured",
-        provenance_omission_reason=None,
         custody_mode="custody-transfer",
     )
     collection_id = int(opened["collection_id"])
@@ -592,8 +672,6 @@ def test_provenance_append_and_expiry_serialize_at_the_custody_fence(
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="captured",
-            provenance_omission_reason=None,
             custody_mode="custody-transfer",
         )
         assert resumed["state"] == "open"
@@ -608,7 +686,7 @@ def test_heartbeat_and_expiry_serialize_without_losing_resumable_custody(
 ) -> None:
     first, second = _services(database_url)
     collection_id = _create(first)
-    first.register_files(collection_id, (_FILE,))
+    first.register_artifacts(collection_id, (_ARTIFACT,))
     _expire(database_url, collection_id)
 
     heartbeat, reaped = _race(
@@ -630,16 +708,14 @@ def test_heartbeat_and_expiry_serialize_without_losing_resumable_custody(
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,
-            provenance_mode="omitted",
-            provenance_omission_reason="fixture",
             custody_mode="custody-transfer",
         )
         assert resumed["collection_id"] == collection_id
         assert resumed["state"] == "open"
-    page = first.list_files(collection_id, page_size=100, position=None)
-    files = page["files"]
-    assert isinstance(files, list)
-    assert len(files) == 1
+    page = first.list_artifacts(collection_id, page_size=100, position=None)
+    artifacts = page["artifacts"]
+    assert isinstance(artifacts, list)
+    assert len(artifacts) == 1
 
 
 def test_completion_and_expiry_have_one_serial_terminal_intent(
@@ -647,7 +723,8 @@ def test_completion_and_expiry_have_one_serial_terminal_intent(
 ) -> None:
     first, second = _services(database_url)
     collection_id = _create(first)
-    first.register_files(collection_id, (_FILE,))
+    first.register_artifacts(collection_id, (_ARTIFACT,))
+    _bind_primary(first, collection_id, _ARTIFACT["artifact_id"], b"")
     _expire(database_url, collection_id)
     completed, reaped = _race(
         lambda: first.complete(collection_id),
@@ -672,7 +749,7 @@ def test_guarded_discard_and_exact_resume_cannot_both_win_for_old_custody(
 ) -> None:
     first, second = _services(database_url)
     collection_id = _create(first)
-    first.register_files(collection_id, (_FILE,))
+    first.register_artifacts(collection_id, (_ARTIFACT,))
     _expire(database_url, collection_id)
     assert first.reap_expired_custody_transfers() == 1
     plan = first.plan_orphan_discard(collection_id)

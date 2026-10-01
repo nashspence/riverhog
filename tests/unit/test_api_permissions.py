@@ -93,6 +93,42 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
         ): COLLECTIONS_CREATE,
         (
             "GET",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/content",
+        ): COLLECTIONS_CREATE,
+        (
+            "GET",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs",
+        ): COLLECTIONS_CREATE,
+        (
+            "PUT",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/artifacts/{artifact_id}/history-inputs",
+        ): COLLECTIONS_CREATE,
+        (
+            "POST",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/structure",
+        ): COLLECTIONS_CREATE,
+        (
+            "GET",
+            "/v1/collections/{collection_id}/provenance/artifacts/{artifact_id}/history-binding-proof",
+        ): PROVENANCE_EXPORT,
+        (
+            "GET",
+            "/v1/collections/{collection_id}/provenance/structure/{object_id}",
+        ): PROVENANCE_EXPORT,
+        (
+            "POST",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/completion-recording",
+        ): COLLECTIONS_CREATE,
+        (
+            "POST",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/history-bindings",
+        ): COLLECTIONS_CREATE,
+        (
+            "PUT",
+            "/v1/collection-upload-sessions/{collection_id}/provenance/completion-requirement",
+        ): COLLECTIONS_CREATE,
+        (
+            "GET",
             "/v1/collections/{collection_id}/provenance/artifacts",
         ): PROVENANCE_READ,
         (

@@ -27,7 +27,7 @@
 <section class="schema-section" id="s-8485814f8e4e0ecd19dd3c73">
 <h3>Schema</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>title</dt>
@@ -36,7 +36,7 @@
 </dd>
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -62,6 +62,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-86315a44c12c53ed4e286980">execution_parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-ce61af0fb3dee5f645ad6ad4">input_groups</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -85,6 +94,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -165,6 +183,26 @@
 </tbody>
 </table>
 </div>
+</section>
+<section class="schema-section" id="s-86315a44c12c53ed4e286980">
+<h3>Field: execution_parameters</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Execution Parameters</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/components/schemas/JsonValue&quot;}</code>
+</dd>
+</dl>
 </section>
 <section class="schema-section" id="s-ce61af0fb3dee5f645ad6ad4">
 <h3>Field: input_groups</h3>
@@ -264,6 +302,56 @@
 <td>
 <table id="v-5f6698d7cc30702b6f48ac94">
 <tbody>
+<tr>
+<th scope="row">
+<code>execution_parameters</code>
+</th>
+<td>
+<table id="v-86315a44c12c53ed4e286980">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-5cc19aef310266953e92a6e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-fe4da6cf7aa15cecc720144e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/execution_parameters/additionalProperties/$ref">#/components/schemas/JsonValue</code>
+<span class="kind">string</span> <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-af9a114e3c0418d7320ea4c2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/execution_parameters/title">Execution Parameters</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8cff789ece71d29f64b69b8f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/execution_parameters/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 <tr>
 <th scope="row">
 <code>input_groups</code>
@@ -388,6 +476,46 @@
 <td>
 <span id="v-a31189df45436e9ba7f0d0b0">
 <code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-44cac79e4d849df405bae28a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3353cef8faebce5b1f4a7d58">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d3ebe623ac5d51196a8ee32a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/invocation_sha256/title">Invocation Sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-69b3a5830e03cc237603fd6a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/invocation_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -780,7 +908,7 @@
 </th>
 <td>
 <span id="v-b4c852d3384b70972d282071">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -790,7 +918,7 @@
 </th>
 <td>
 <span id="v-f7b7ab41a8783f2275530bcf">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -800,7 +928,7 @@
 </th>
 <td>
 <span id="v-855a92bb7a846e164ca0dd2e">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/2">inputs</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -810,7 +938,7 @@
 </th>
 <td>
 <span id="v-f27ec7a0957b3ecb42811371">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/3">intent</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/3">inputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -820,7 +948,7 @@
 </th>
 <td>
 <span id="v-ebdeffd7de1e01dceae3df85">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/4">target_implementation_id</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -830,7 +958,7 @@
 </th>
 <td>
 <span id="v-6a64d9849f4f775a948d2798">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/5">target_descriptor_sha256</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/5">target_implementation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -840,7 +968,17 @@
 </th>
 <td>
 <span id="v-0e83f119426919abfa7557d1">
-<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/6">plan_sha256</code>
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/6">target_descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-b577ff4dd9e83e72250a92a1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/EffectPlan/required/7">plan_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -912,6 +1050,15 @@
 <tbody>
 <tr>
 <td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/execution_parameters</code></td>
+<td data-label="Governing rule">
+<code>no-semantic-maximum/v1</code></td>
+<td data-label="Decision">cardinality · entries · operational_policy</td>
+<td data-label="Bounds or reason">
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
 <code>/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/input_groups</code></td>
 <td data-label="Governing rule">
 <code>no-semantic-maximum/v1</code></td>
@@ -927,6 +1074,15 @@
 <td data-label="Decision">cardinality · entries · operational_policy</td>
 <td data-label="Bounds or reason">
 <code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code></td>
+</tr>
+<tr>
+<td data-label="Exact subject">
+<code>/external_contract/http_openapi/stove0/components/schemas/EffectPlan/properties/invocation_sha256</code></td>
+<td data-label="Governing rule">
+<a href="e-b14ce2e70d066095452c67d1.html">extent-rule/schema-bound/v1</a></td>
+<td data-label="Decision">length · characters · fixed</td>
+<td data-label="Bounds or reason">
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code></td>
 </tr>
 <tr>
 <td data-label="Exact subject">
@@ -990,7 +1146,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>

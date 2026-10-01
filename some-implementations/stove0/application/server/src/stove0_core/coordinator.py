@@ -865,7 +865,6 @@ class Stove0Coordinator:
         self.work.store.retain_selection(input_selection)
         request = self.planning.target_preflight_request(plan, documents)
         response = self.targets.preflight(plan.target_registration_id, request)
-        validate_preflight_response_against_request(response, request)
         if (
             record.expected_target_plan_sha256 is not None
             and response.plan.plan_sha256 != record.expected_target_plan_sha256
@@ -882,6 +881,7 @@ class Stove0Coordinator:
                 ),
                 expected_revision=record.revision,
             )
+        validate_preflight_response_against_request(response, request)
         return self.work.seal_target_plan(
             record.work_id,
             target=target,

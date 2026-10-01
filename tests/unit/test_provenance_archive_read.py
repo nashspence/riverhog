@@ -165,7 +165,7 @@ def test_root_bound_reader_streams_exact_journal_and_member_bindings() -> None:
 
 def test_root_bound_reader_rejects_changed_sequence_and_payload() -> None:
     reader, objects, journal_id, _ = _archive()
-    payload_path = next(path for path in objects if path.startswith("provenance/payloads/volume-"))
+    payload_path = next(path for path in objects if path.startswith("provenance/payloads/"))
     objects[payload_path] = b"changed"
     with pytest.raises(ProvenanceArchiveReadError):
         list(reader.iter_bindings())

@@ -1080,12 +1080,12 @@
 <section class="schema-section" id="s-133e2a7113ec469204dad17c">
 <h3>Definition: EffectPlan</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -1111,6 +1111,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-2c1ca76313a989cf7793ace1">execution_parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-e71ce6de157620788a578073">input_groups</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -1134,6 +1143,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -2267,12 +2285,12 @@
 <section class="schema-section" id="s-eddb58c7972fba8e80463376">
 <h3>Definition: TransformPlan</h3>
 <p class="shape">
-<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
 </p>
 <dl class="facts">
 <dt>required</dt>
 <dd>
-<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+<code>[&quot;invocation_sha256&quot;,&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
 </dd>
 <dt>type</dt>
 <dd>
@@ -2298,6 +2316,15 @@
 <tbody>
 <tr>
 <td data-label="Field">
+<a href="#s-42b5c82cdafc06c155778544">execution_parameters</a></td>
+<td data-label="Required">no</td>
+<td data-label="Shape and bounds">
+<code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
 <a href="#s-d63ec866041fb9e385983701">input_groups</a></td>
 <td data-label="Required">no</td>
 <td data-label="Shape and bounds">
@@ -2321,6 +2348,15 @@
 <td data-label="Required">yes</td>
 <td data-label="Shape and bounds">
 <code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a></td>
+<td data-label="Default">not declared</td>
+<td data-label="Description"></td>
+</tr>
+<tr>
+<td data-label="Field">
+<code>invocation_sha256</code></td>
+<td data-label="Required">yes</td>
+<td data-label="Shape and bounds">
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code></td>
 <td data-label="Default">not declared</td>
 <td data-label="Description"></td>
 </tr>
@@ -3070,6 +3106,22 @@
 </dd>
 </dl>
 </section>
+<section class="schema-section" id="s-2c1ca76313a989cf7793ace1">
+<h3>Field: execution_parameters</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
 <section class="schema-section" id="s-e71ce6de157620788a578073">
 <h3>Field: input_groups</h3>
 <p class="shape">
@@ -3334,6 +3386,22 @@
 </section>
 <section class="schema-section" id="s-b042deec1eaa3c319cd34934">
 <h3>Field: plan</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-42b5c82cdafc06c155778544">
+<h3>Field: execution_parameters</h3>
 <p class="shape">
 <code>object</code>; additionalProperties: <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">#/$defs/JsonValue</a>
 </p>
@@ -6722,6 +6790,46 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>execution_parameters</code>
+</th>
+<td>
+<table id="v-2c1ca76313a989cf7793ace1">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-0c34524bd43624ab7eb86982">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-173f11045c85516218af17e9">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/properties/execution_parameters/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dee1b7019e1e7692c0c6ea14">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/properties/execution_parameters/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>input_groups</code>
 </th>
 <td>
@@ -6824,6 +6932,36 @@
 <td>
 <span id="v-af6066c9d379c02358f14a3c">
 <code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-523002008ebdbedd3a1ac358">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e4941e8786b44e6c8a2208ba">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a00380c7299f34dc3fc071dd">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/properties/invocation_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7136,7 +7274,7 @@
 </th>
 <td>
 <span id="v-9e397304f76e77e5c72d9232">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7146,7 +7284,7 @@
 </th>
 <td>
 <span id="v-af908fbd6acf02e40ec4a6ee">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7156,7 +7294,7 @@
 </th>
 <td>
 <span id="v-c1f398869b20d2a93c15e6f6">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/2">inputs</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7166,7 +7304,7 @@
 </th>
 <td>
 <span id="v-09abdf67d2b3484496034d03">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/3">intent</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/3">inputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7176,7 +7314,7 @@
 </th>
 <td>
 <span id="v-c77b73a3b5330f21512d7b85">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/4">target_implementation_id</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7186,7 +7324,7 @@
 </th>
 <td>
 <span id="v-4715ff13660a1d536f525b02">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/5">target_descriptor_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/5">target_implementation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -7196,7 +7334,17 @@
 </th>
 <td>
 <span id="v-be80d686a9a7dd061d0467a9">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/6">plan_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/6">target_descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-793d3585a2fad8b39d8d2914">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/EffectPlan/required/7">plan_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10542,6 +10690,46 @@
 <tbody>
 <tr>
 <th scope="row">
+<code>execution_parameters</code>
+</th>
+<td>
+<table id="v-42b5c82cdafc06c155778544">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-02bd9915b5f092da0e95cd3a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b11c0c61ac08368de52c86dd">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/properties/execution_parameters/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-7850aebfcde702cda568dab7.html#v-71f440f6f9258ee79fcab41d">Definition</a>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a8172f18bbec408cfb02db9c">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/properties/execution_parameters/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
 <code>input_groups</code>
 </th>
 <td>
@@ -10644,6 +10832,36 @@
 <td>
 <span id="v-944778b8a10aa37634d73fc4">
 <code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>invocation_sha256</code>
+</th>
+<td>
+<table id="v-ec735d3dbb15bf2602a6c9bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-119daffb8fa2938a063ccfa1">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/properties/invocation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c48229453a2fe54d9b8796d3">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/properties/invocation_sha256/type">string</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10956,7 +11174,7 @@
 </th>
 <td>
 <span id="v-c7b3c9a6d53677ab27e74fda">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/0">operation_id</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/0">invocation_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10966,7 +11184,7 @@
 </th>
 <td>
 <span id="v-f96f803e921ec3e67f69e7ba">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/1">operation_contract_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/1">operation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10976,7 +11194,7 @@
 </th>
 <td>
 <span id="v-094293954bb3d0fa6f560826">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/2">inputs</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/2">operation_contract_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10986,7 +11204,7 @@
 </th>
 <td>
 <span id="v-8d7b22d6dfe761363e38e94e">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/3">intent</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/3">inputs</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -10996,7 +11214,7 @@
 </th>
 <td>
 <span id="v-8650a97df78f18729a65e42a">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/4">target_implementation_id</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/4">intent</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11006,7 +11224,7 @@
 </th>
 <td>
 <span id="v-b2f3035fdb0bbb72007e5a09">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/5">target_descriptor_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/5">target_implementation_id</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -11016,7 +11234,17 @@
 </th>
 <td>
 <span id="v-deb8db90640c08d7c0b92ebd">
-<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/6">plan_sha256</code>
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/6">target_descriptor_sha256</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-4b914c2341f3954cc470d614">
+<code data-value-pointer="/external_contract/python/stove0_target_support.AcceptedTargetJob/contract/schema/$defs/TransformPlan/required/7">plan_sha256</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -12809,7 +13037,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>86eccfa096bd25531c07e3550a73c71e999305e38f39e1b8fd95ec8d4ac74f3d</code>
+<p>Closure SHA-256: <code>0b200ac1483c10542ebae558851981958189759e07927ee61b8698ed749e2ff7</code>
 </p>
 </details>
 </footer>
