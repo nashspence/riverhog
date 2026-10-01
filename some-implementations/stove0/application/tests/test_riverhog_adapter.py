@@ -5,8 +5,8 @@ from typing import Any, cast
 
 import pytest
 from riverhog_protocol import (
+    ArtifactMemberIdentityDocument,
     Conflict,
-    ImmutableFileIdentityDocument,
     NotFound,
     PortableCollectionHeader,
     PortableCollectionInventoryAuthority,
@@ -136,7 +136,7 @@ def _input_selection(work: WorkIdentity) -> ArtifactSelection:
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
-                path="source/input.bin",
+                artifact_id=_sha("1"),
                 bytes=str(12),
                 sha256=_sha("e"),
             ),
@@ -175,7 +175,7 @@ def _output_artifact() -> OutputArtifact:
     return OutputArtifact(
         id="output",
         role="fixture.output/v1",
-        path="output/result.bin",
+        artifact_id=_sha("2"),
         bytes=str(12),
         sha256=_sha("9"),
     )
@@ -333,6 +333,7 @@ class FixtureApi:
         self.effect_document: dict[str, object] | None = None
         self.lose_effect_ack = False
         self.dispositions: list[dict[str, object]] = []
+        self.disposition_identity = _disposition_set()
 
     def create_or_resume_processing_claim(self, **kwargs: Any) -> dict[str, Any]:
         self.calls.append(("claim", kwargs))
@@ -499,7 +500,7 @@ class FixtureApi:
         identity = (
             ArtifactDispositionSetIdentity(1, 0, 0, _sha("6"))
             if self.plan is not None and self.plan.result_kind != "collection"
-            else _disposition_set()
+            else self.disposition_identity
         )
         return ArtifactDispositionSetDocument(
             claim_id=claim_id,
@@ -523,7 +524,7 @@ class FixtureApi:
                         archive_root_sha256=_sha("2"),
                         artifact_set_identity=_sha("3"),
                     ),
-                    path="source/input.bin",
+                    artifact_id=_sha("1"),
                     bytes=12,
                     sha256=_sha("e"),
                 ),
@@ -557,15 +558,15 @@ class FixtureApi:
                     artifact_set_identity=_sha("8"),
                     encryption_format="age/v1",
                     passphrase_id="fixture-passphrase",
-                    provenance_mode="omitted",
+                    provenance_identity=_sha("a"),
                 ),
                 inventory_identity=_sha("5"),
-                file_count="1",
-                file_bytes="12",
+                artifact_count="1",
+                artifact_bytes="12",
             ),
-            files=[
-                ImmutableFileIdentityDocument(
-                    path="output/result.bin",
+            artifacts=[
+                ArtifactMemberIdentityDocument(
+                    artifact_id=_sha("2"),
                     bytes="12",
                     sha256=_sha("9"),
                 )
@@ -621,19 +622,19 @@ class PagedInventoryFixtureApi(FixtureApi):
                 artifact_set_identity=_sha("8"),
                 encryption_format="age/v1",
                 passphrase_id="fixture-passphrase",
-                provenance_mode="omitted",
+                provenance_identity=_sha("a"),
             ),
             inventory_identity=_sha("5"),
-            file_count="2",
-            file_bytes="13",
+            artifact_count="2",
+            artifact_bytes="13",
         )
         if cursor is None:
             assert inventory_identity is None
             return PortableCollectionInventoryPage(
                 authority=authority,
-                files=[
-                    ImmutableFileIdentityDocument(
-                        path="riverhog/derivation.json",
+                artifacts=[
+                    ArtifactMemberIdentityDocument(
+                        artifact_id=_sha("0"),
                         bytes="1",
                         sha256=_sha("1"),
                     )
@@ -645,9 +646,9 @@ class PagedInventoryFixtureApi(FixtureApi):
         assert inventory_identity == authority.inventory_identity
         return PortableCollectionInventoryPage(
             authority=authority,
-            files=[
-                ImmutableFileIdentityDocument(
-                    path="output/result.bin",
+            artifacts=[
+                ArtifactMemberIdentityDocument(
+                    artifact_id=_sha("2"),
                     bytes="12",
                     sha256=_sha("9"),
                 )
@@ -660,11 +661,18 @@ def _verifying_record(
     work: WorkIdentity,
     workflow: WorkflowPlan,
     evidence: ControllerEvidence,
+    *,
+    additional_output: OutputArtifact | None = None,
 ) -> WorkRecord:
     execution_id = evidence.execution_envelope.execution_envelope_sha256
     controller_document = evidence.model_dump(mode="json", by_alias=True, exclude_none=True)
     output = _output_artifact()
-    disposition_set = _disposition_set()
+    outputs = (output,) if additional_output is None else (additional_output, output)
+    disposition_set = (
+        _disposition_set()
+        if additional_output is None
+        else ArtifactDispositionSetIdentity(1, 2, 2, _sha("6"))
+    )
     derivation = CollectionDerivation(
         execution_id=execution_id,
         claim_id=evidence.execution_envelope.claim_id,
@@ -689,10 +697,10 @@ def _verifying_record(
         TargetProductionAuthorityPayload(
             job_id=execution_id,
             plan_sha256=evidence.execution_envelope.target_plan.plan_sha256,
-            outputs=OutputArtifactSetIdentity.seal((output,)),
+            outputs=OutputArtifactSetIdentity.seal(outputs),
             disposition_count=1,
             disposition_sha256=_sha("f"),
-            source_edge_count=1,
+            source_edge_count=len(outputs),
             source_edge_sha256=_sha("0"),
             riverhog_disposition_set=disposition_set,
         )
@@ -756,11 +764,16 @@ def test_post_root_settlement_restarts_from_bounded_portable_inventory_progress(
     work, workflow, _target_plan, evidence = _authorities()
     api = PagedInventoryFixtureApi()
     state = InMemoryWorkStore()
-    record = _verifying_record(work, workflow, evidence)
+    first_output = OutputArtifact(
+        id="first", role="fixture.output/v1", artifact_id=_sha("0"), bytes="1", sha256=_sha("1")
+    )
+    record = _verifying_record(work, workflow, evidence, additional_output=first_output)
+    api.disposition_identity = ArtifactDispositionSetIdentity(1, 2, 2, _sha("6"))
     state.create(record)
     assert record.target_status is not None and record.target_status.production is not None
     job_id = record.target_status.production.job_id
     state.record_target_output(record.work_id, job_id, _output_artifact())
+    state.record_target_output(record.work_id, job_id, first_output)
 
     first = Stove0RiverhogClient(
         api, declared_workspace_protection="memory-backed", state=state, authority_batch_size=1
@@ -772,7 +785,7 @@ def test_post_root_settlement_restarts_from_bounded_portable_inventory_progress(
     checkpoint = state.load_target_settlement_seal(record.work_id, job_id)
     assert checkpoint is not None and checkpoint.checkpoint is not None
     assert checkpoint.checkpoint.inventory_cursor == "second-page"
-    assert checkpoint.checkpoint.artifact_count == 0
+    assert checkpoint.checkpoint.artifact_count == 1
 
     restarted = Stove0RiverhogClient(
         api, declared_workspace_protection="memory-backed", state=state, authority_batch_size=1
@@ -910,7 +923,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
-                path="source/input.bin",
+                artifact_id=_sha("1"),
                 bytes=str(12),
                 sha256=_sha("e"),
             ),
@@ -942,7 +955,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
                 id="output",
                 role="fixture.output/v1",
                 collection=output_root,
-                path="output/result.bin",
+                artifact_id=_sha("2"),
                 bytes=str(12),
                 sha256=_sha("9"),
             ),
@@ -1157,7 +1170,7 @@ def test_synchronous_observation_must_fit_claim_and_capability_lifetime() -> Non
                     id="source",
                     role="fixture.source/v1",
                     collection=work.inputs[0],
-                    path="source/input.bin",
+                    artifact_id=_sha("1"),
                     bytes=str(12),
                     sha256=_sha("e"),
                 ),
@@ -1188,7 +1201,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
                     id="a-request-id",
                     role="fixture.source/v1",
                     collection=work.inputs[0],
-                    path="source/z.bin",
+                    artifact_id=_sha("3"),
                     bytes=str(12),
                     sha256=_sha("e"),
                 ),
@@ -1196,7 +1209,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
                     id="z-request-id",
                     role="fixture.source/v1",
                     collection=work.inputs[0],
-                    path="source/a.bin",
+                    artifact_id=_sha("1"),
                     bytes=str(13),
                     sha256=_sha("f"),
                 ),
@@ -1207,9 +1220,9 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
     client.observation_authority(ClaimBinding(claim_id=_claim_id(), fence=1), request)
 
     capability = next(payload for name, payload in api.calls if name == "capability")
-    assert [item["path"] for item in capability["artifacts"]] == [
-        "source/a.bin",
-        "source/z.bin",
+    assert [item["artifact_id"] for item in capability["artifacts"]] == [
+        _sha("1"),
+        _sha("3"),
     ]
 
 
@@ -1394,7 +1407,7 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict(
             source.collection.archive_root_sha256,
             source.collection.artifact_set_identity,
         ),
-        path=source.path,
+        artifact_id=source.artifact_id,
         bytes=source.bytes,
         sha256=source.sha256,
     )
@@ -1410,7 +1423,7 @@ def test_no_output_source_loss_requires_exact_per_artifact_observer_verdict(
         _no_output_discard_approval(
             CollectionArtifactIdentity(
                 collection=identity.collection,
-                path="source/other.bin",
+                artifact_id=_sha("4"),
                 bytes=identity.bytes,
                 sha256=identity.sha256,
             ),
@@ -1583,15 +1596,15 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
                         artifact_set_identity=_sha("3"),
                         encryption_format="age/v1",
                         passphrase_id="fixture-passphrase",
-                        provenance_mode="omitted",
+                        provenance_identity=_sha("a"),
                     ),
                     inventory_identity=_sha("5"),
-                    file_count="1",
-                    file_bytes="12",
+                    artifact_count="1",
+                    artifact_bytes="12",
                 ),
-                files=[
-                    ImmutableFileIdentityDocument(
-                        path="source/input.bin", bytes="12", sha256=_sha("e")
+                artifacts=[
+                    ArtifactMemberIdentityDocument(
+                        artifact_id=_sha("1"), bytes="12", sha256=_sha("e")
                     )
                 ],
                 complete=True,
@@ -1609,7 +1622,7 @@ def test_no_output_adapter_seals_disposition_and_replays_lost_ack(
                             archive_root_sha256=_sha("2"),
                             artifact_set_identity=_sha("3"),
                         ),
-                        path="source/input.bin",
+                        artifact_id=_sha("1"),
                         bytes=12,
                         sha256=_sha("e"),
                     ),

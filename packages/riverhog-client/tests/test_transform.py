@@ -10,7 +10,24 @@ from typing import Any
 
 import httpx
 import pytest
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    ArchiveProvenanceIdentity,
+    CollectionArchiveManifest,
+    CollectionArtifactSetIdentity,
+    MemberHistoryBuilder,
+    MemberHistoryPrimary,
+    MemberHistoryRoot,
+    ProvenanceRootDocument,
+    ProvenanceRootIdentity,
+    SourceMemberHistoryBindingProof,
+    binding_tree_commitment,
+    provenance_structure_identity,
+)
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import ApiClient
+from riverhog_client.canonical_completion import CompletionRecord
+from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_client.processing import (
     ClaimedCollectionReader,
     ClaimedCollectionRuntime,
@@ -20,31 +37,30 @@ from riverhog_client.processing import (
     DerivedCollectionWriter,
     ProcessingWorkspace,
 )
+from riverhog_client.processing.writer import IncrementalDerivedCollectionWriter
 from riverhog_client.producer import (
     CollectionProducer,
-    ProducedCollection,
     ProducerArtifactIdentity,
     ProducerFile,
     ProducerStream,
 )
 from riverhog_protocol import (
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
     CollectionUploadUnitAssignmentDocument,
     CollectionUploadUnitWorkDocument,
     CollectionUploadWorkBatchDocument,
-    ImmutableFileIdentityDocument,
     OutputCollectionPolicy,
     PortableCollectionHeader,
     PortableCollectionInventoryAuthority,
     PortableCollectionInventoryPage,
 )
-from riverhog_protocol.collection_upload_transport import collection_upload_path_order_key
+from riverhog_protocol.collection_completion import CollectionCompletionRecordingDocument
 from riverhog_protocol.collection_workflow_transport import (
     ArtifactDispositionOutputPageDocument,
     ArtifactDispositionPageDocument,
 )
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
-    PRODUCER_EVIDENCE_PATH,
     ArtifactDispositionSetIdentity,
     CollectionDerivation,
     CollectionRootIdentity,
@@ -52,14 +68,15 @@ from riverhog_protocol.collection_workflows import (
     RecipeIdentity,
 )
 from riverhog_protocol.errors import InvalidState, NotFound
-from riverhog_protocol.manifest import collection_content_identity_ordered
+from riverhog_protocol.manifest import artifact_set_identity_ordered
 from riverhog_provenance import (
-    create_derivative_journal_from_identity,
-    create_observation_journal,
+    BoundedSourceObserver,
+    BytesSource,
+    assertion,
+    create_journal,
+    external_reference,
     validate_journal,
 )
-
-from tests.provenance_observer import native_provenance_observer
 
 WORK_ID = "3" * 64
 EXECUTION_ID = "4" * 64
@@ -67,34 +84,34 @@ CONTROLLER_EVIDENCE = {
     "format": "stove0-controller-evidence/v1",
     "execution_id": EXECUTION_ID,
 }
-CONTROLLER_EVIDENCE_SHA256 = hashlib.sha256(
-    json.dumps(CONTROLLER_EVIDENCE, sort_keys=True, separators=(",", ":")).encode()
-).hexdigest()
+CONTROLLER_EVIDENCE_SHA256 = hashlib.sha256(canonical_json_bytes(CONTROLLER_EVIDENCE)).hexdigest()
+INPUT_ID = ArtifactId("a" * 64)
+OUTPUT_ID = ArtifactId("b" * 64)
 
 
 def _portable_page(files: Sequence[Mapping[str, Any]]) -> PortableCollectionInventoryPage:
     ordered = [
-        ImmutableFileIdentityDocument(
-            path=str(file["path"]),
+        ArtifactMemberIdentityDocument(
+            artifact_id=str(file["artifact_id"]),
             bytes=str(file["bytes"]),
             sha256=str(file["sha256"]),
         )
-        for file in sorted(files, key=lambda item: str(item["path"]).encode("utf-8"))
+        for file in sorted(files, key=lambda item: str(item["artifact_id"]).encode("utf-8"))
     ]
     return PortableCollectionInventoryPage(
         authority=PortableCollectionInventoryAuthority(
             header=PortableCollectionHeader(
                 collection="1",
-                content_identity="2" * 64,
+                artifact_set_identity="2" * 64,
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
-                provenance_mode="omitted",
+                provenance_identity="c" * 64,
             ),
             inventory_identity="9" * 64,
-            file_count=str(len(ordered)),
-            file_bytes=str(sum(file.bytes for file in ordered)),
+            artifact_count=str(len(ordered)),
+            artifact_bytes=str(sum(file.bytes for file in ordered)),
         ),
-        files=ordered,
+        artifacts=ordered,
         complete=True,
     )
 
@@ -166,25 +183,7 @@ class RetrievalApi:
         return {
             "id": str(collection_id),
             "archive_root_sha256": "3" * 64 if self.changed_root else "1" * 64,
-            "content_identity": "2" * 64,
-        }
-
-    def search(self, _query: str | None = None, **_kwargs: Any) -> dict[str, Any]:
-        return {
-            "files": [
-                {
-                    "collection_id": "1",
-                    "path": PRODUCER_EVIDENCE_PATH,
-                    "bytes": "2",
-                    "sha256": hashlib.sha256(b"{}").hexdigest(),
-                },
-                {
-                    "collection_id": "1",
-                    "path": "camera/input.mov",
-                    "bytes": str(len(self.data)),
-                    "sha256": self.sha256,
-                },
-            ]
+            "artifact_set_identity": "2" * 64,
         }
 
     def get_portable_collection_inventory(
@@ -192,40 +191,21 @@ class RetrievalApi:
     ) -> PortableCollectionInventoryPage:
         assert collection_id == 1
         assert kwargs["cursor"] is None
-        return _portable_page(self.search()["files"])
-
-    def list_collection_provenance(
-        self,
-        collection_id: int,
-        **_kwargs: Any,
-    ) -> dict[str, Any]:
-        assert collection_id == 1
-        return {
-            "page_size": 25,
-            "next_page_token": None,
-            "files": [
+        return _portable_page(
+            (
                 {
-                    "collection_id": "1",
-                    "path": "camera/input.mov",
+                    "artifact_id": INPUT_ID,
                     "bytes": str(len(self.data)),
                     "sha256": self.sha256,
-                    "provenance": {
-                        "status": "omitted",
-                        "omission_reason": "fixture omitted provenance explicitly",
-                    },
-                }
-            ],
-        }
-
-    @contextmanager
-    def stream_collection_provenance(self, collection_id: int, **kwargs: Any) -> Iterator[Any]:
-        yield iter(self.list_collection_provenance(collection_id, **kwargs)["files"])
+                },
+            )
+        )
 
     def _rows(self, files: Sequence[tuple[int, str]]) -> list[dict[str, object]]:
         return [
             {
                 "collection_id": str(collection_id),
-                "path": path,
+                "artifact_id": str(path),
                 "bytes": str(len(self.data)),
                 "sha256": self.sha256,
             }
@@ -238,14 +218,14 @@ class RetrievalApi:
         **kwargs: Any,
     ) -> dict[str, Any]:
         self.restore_policies.append(str(kwargs["restore_policy"]))
-        self.planned_files = self._rows(files)
+        self.planned_artifacts = self._rows(files)
         return {
             "id": "plan-1",
             "etag": "9" * 64,
-            "file_count": len(self.planned_files),
+            "artifact_count": len(self.planned_artifacts),
         }
 
-    def list_retrieval_plan_files(
+    def list_retrieval_plan_artifacts(
         self,
         plan_id: str,
         *,
@@ -261,7 +241,7 @@ class RetrievalApi:
             "plan_id": plan_id,
             "etag": plan_etag,
             "start_ordinal": start_ordinal,
-            "files": self.planned_files,
+            "artifacts": self.planned_artifacts,
             "complete": True,
             "next_ordinal": None,
         }
@@ -295,7 +275,7 @@ class RetrievalApi:
         self.canceled.append(job_id)
         return {"id": job_id, "state": "canceled"}
 
-    def download_retrieval_file(
+    def download_retrieval_artifact(
         self,
         _job_id: str,
         *,
@@ -306,7 +286,7 @@ class RetrievalApi:
         return len(self.data)
 
     @contextmanager
-    def stream_retrieval_file(
+    def stream_retrieval_artifact(
         self,
         _job_id: str,
         *,
@@ -394,7 +374,7 @@ class PendingPreparationApi(RetrievalApi):
         return {"id": job_id, "state": "canceled"}
 
 
-def test_claimed_reader_verifies_roots_filters_control_and_reads_ranges(tmp_path: Path) -> None:
+def test_claimed_reader_verifies_roots_and_reads_exact_artifact_ranges(tmp_path: Path) -> None:
     api = RetrievalApi()
     reader = ClaimedCollectionReader(
         api,  # type: ignore[arg-type]
@@ -406,7 +386,7 @@ def test_claimed_reader_verifies_roots_filters_control_and_reads_ranges(tmp_path
 
     inventory = tuple(reader.iter_inventory())
 
-    assert [item.path for item in inventory] == ["camera/input.mov"]
+    assert [item.artifact_id for item in inventory] == [INPUT_ID]
     with reader.prepare(inventory, poll_seconds=0.01) as retrieval:
         assert retrieval.read_bytes(inventory[0], maximum_bytes=1024) == api.data
         with retrieval.stream(inventory[0], start=2, end=7) as chunks:
@@ -445,25 +425,25 @@ def test_claimed_reader_streams_multiple_inventory_pages_without_eager_surface()
             assert collection_id == 1
             cursor = kwargs["cursor"]
             self.cursors.append(cursor)
-            path = "a.bin" if cursor is None else "b.bin"
-            content = path.encode()
+            artifact_id = INPUT_ID if cursor is None else OUTPUT_ID
+            content = b"first" if cursor is None else b"other"
             return PortableCollectionInventoryPage.model_validate(
                 {
                     "authority": {
                         "header": {
                             "collection": "1",
-                            "content_identity": "2" * 64,
+                            "artifact_set_identity": "2" * 64,
                             "encryption_format": "age-v1-scrypt",
                             "passphrase_id": "fixture-archive-key-v1",
-                            "provenance_mode": "omitted",
+                            "provenance_identity": "c" * 64,
                         },
                         "inventory_identity": "9" * 64,
-                        "file_count": "2",
-                        "file_bytes": str(len("a.bin") + len("b.bin")),
+                        "artifact_count": "2",
+                        "artifact_bytes": "10",
                     },
-                    "files": [
+                    "artifacts": [
                         {
-                            "path": path,
+                            "artifact_id": artifact_id,
                             "bytes": str(len(content)),
                             "sha256": hashlib.sha256(content).hexdigest(),
                         }
@@ -483,9 +463,9 @@ def test_claimed_reader_streams_multiple_inventory_pages_without_eager_surface()
     )
     iterator = reader.iter_inventory()
 
-    assert next(iterator).path == "a.bin"
+    assert next(iterator).artifact_id == INPUT_ID
     assert api.cursors == [None]
-    assert next(iterator).path == "b.bin"
+    assert next(iterator).artifact_id == OUTPUT_ID
     assert api.cursors == [None, "page-two"]
     with pytest.raises(StopIteration):
         next(iterator)
@@ -643,12 +623,21 @@ class UploadApi:
         self.registered: list[dict[str, Any]] = []
         self.registration_batches: list[list[dict[str, Any]]] = []
         self.uploaded = b""
-        self.completion_content_identity = ""
+        self.completion_artifact_set_identity = ""
         self.committed = False
         self.discovery_closed = False
         self.work_calls = 0
         self.session_calls = 0
         self.derivation_identity = _disposition_set()
+        self.journals: dict[str, bytes] = {}
+        self.bindings: dict[str, Any] = {}
+        self.materialization_decisions: dict[str, Any] = {}
+        self.structures: dict[str, bytes] = {}
+        self.history_inputs: dict[str, Any] = {}
+        self.requirement: Any = None
+        self.recording: Any = None
+        self.dispositions: list[dict[str, Any]] | None = None
+        self.output_edges: list[dict[str, Any]] | None = None
 
     def get_processing_claim(self, claim_id: str) -> SimpleNamespace:
         assert claim_id == "claim-1"
@@ -668,12 +657,14 @@ class UploadApi:
             {
                 "identity": identity.as_dict(),
                 "start_ordinal": "0",
-                "dispositions": [
+                "dispositions": self.dispositions
+                if self.dispositions is not None
+                else [
                     {
                         "input": {
                             "collection_id": "1",
                             "archive_root_sha256": "1" * 64,
-                            "path": f"camera/input-{index:04d}.mov",
+                            "artifact_id": f"{index:064x}",
                         },
                         "status": "transformed",
                     }
@@ -696,14 +687,16 @@ class UploadApi:
             {
                 "identity": identity.as_dict(),
                 "start_ordinal": "0",
-                "outputs": [
+                "outputs": self.output_edges
+                if self.output_edges is not None
+                else [
                     {
                         "input": {
                             "collection_id": "1",
                             "archive_root_sha256": "1" * 64,
-                            "path": f"camera/input-{index:04d}.mov",
+                            "artifact_id": f"{index:064x}",
                         },
-                        "output_path": f"derived/output-{index:04d}.bin",
+                        "output_artifact_id": f"{index + 100:064x}",
                     }
                     for index in range(identity.output_edge_count)
                 ],
@@ -720,13 +713,15 @@ class UploadApi:
             "collection_id": "7",
             "resumed": self.session_calls > 1,
             "state": "open",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
             "registration_constraints": {
                 "pack_member_bytes": "1024",
                 "raw_part_plaintext_bytes": "65536",
             },
         }
 
-    def register_collection_upload_session_files(
+    def register_collection_upload_session_artifacts(
         self,
         _collection_id: int,
         files: Sequence[Mapping[str, Any]],
@@ -736,21 +731,21 @@ class UploadApi:
         assert registration_constraints.raw_part_plaintext_bytes == 65536
         batch = [dict(item) for item in files]
         self.registration_batches.append(batch)
-        existing = {str(item["path"]): item for item in self.registered}
+        existing = {str(item["artifact_id"]): item for item in self.registered}
         for item in batch:
-            prior = existing.get(str(item["path"]))
+            prior = existing.get(str(item["artifact_id"]))
             if prior is not None:
                 assert prior == item
                 continue
             self.registered.append(item)
-        by_path = {str(item["path"]): item for item in self.registered}
+        by_path = {str(item["artifact_id"]): item for item in self.registered}
         return {
             "state": "open",
-            "files": [dict(by_path[str(item["path"])]) for item in batch],
+            "artifacts": [dict(by_path[str(item["artifact_id"])]) for item in batch],
             "volumes": [],
         }
 
-    def list_collection_upload_session_files(
+    def list_collection_upload_session_artifacts(
         self,
         _collection_id: int,
         **_kwargs: Any,
@@ -758,7 +753,7 @@ class UploadApi:
         return {
             "page_size": 100,
             "next_page_token": None,
-            "files": [dict(item) for item in self.registered],
+            "artifacts": [dict(item) for item in self.registered],
         }
 
     def heartbeat_collection_upload_session(self, _collection_id: int) -> dict[str, Any]:
@@ -786,7 +781,7 @@ class UploadApi:
             return None
         sources = [
             {
-                "path": item["path"],
+                "artifact_id": item["artifact_id"],
                 "offset": "0",
                 "bytes": item["bytes"],
                 "artifact_sha256": item["sha256"],
@@ -847,7 +842,7 @@ class UploadApi:
     def _unit_payload(self) -> dict[str, object]:
         sources = [
             {
-                "path": item["path"],
+                "artifact_id": item["artifact_id"],
                 "offset": "0",
                 "bytes": item["bytes"],
                 "artifact_sha256": item["sha256"],
@@ -868,36 +863,123 @@ class UploadApi:
     ) -> dict[str, Any]:
         ordered = sorted(
             self.registered,
-            key=lambda item: collection_upload_path_order_key(str(item["path"])),
+            key=lambda item: str(str(item["artifact_id"])),
         )
-        content_identity = collection_content_identity_ordered(
-            (str(item["path"]), int(item["bytes"]), str(item["sha256"])) for item in ordered
+        artifact_set_identity = artifact_set_identity_ordered(
+            ArtifactMemberIdentityDocument.model_validate(item) for item in ordered
         )
-        self.completion_content_identity = content_identity
+        self.completion_artifact_set_identity = artifact_set_identity
         self.discovery_closed = True
         return {
             "state": "uploading",
-            "content_identity": content_identity,
+            "artifact_set_identity": artifact_set_identity,
         }
 
     def get_collection_upload_session(self, _collection_id: int) -> dict[str, Any]:
+        if not self.discovery_closed:
+            return {"state": "open", "construction_identity_sha256": "c" * 64}
         assert self.committed
         return {
             "state": "finalized",
-            "content_identity": self.completion_content_identity,
+            "artifact_set_identity": self.completion_artifact_set_identity,
             "collection": {
                 "id": "7",
                 "archive_root_sha256": "7" * 64,
-                "content_identity": self.completion_content_identity,
+                "artifact_set_identity": self.completion_artifact_set_identity,
             },
         }
 
     def upload_collection_upload_session_provenance_journal(
         self,
-        *_args: Any,
+        _collection_id: int,
+        journal_id: str,
+        *,
+        content: Iterable[bytes],
+        byte_count: int,
+        sha256: str,
         **_kwargs: Any,
-    ) -> dict[str, Any]:
-        raise AssertionError("fixture does not publish provenance journals")
+    ) -> None:
+        raw = b"".join(content)
+        assert (len(raw), hashlib.sha256(raw).hexdigest()) == (byte_count, sha256)
+        assert validate_journal(raw, require_profiles=False).journal_id == journal_id
+        assert self.journals.setdefault(journal_id, raw) == raw
+
+    def bind_collection_upload_session_artifact_provenance(
+        self, _collection_id: int, batch: Any
+    ) -> None:
+        for binding in batch.bindings:
+            assert self.bindings.setdefault(binding.artifact_id, binding) == binding
+
+    def get_collection_upload_session_artifact_provenance_binding(
+        self,
+        _collection_id: int,
+        artifact_id: str,
+    ) -> Any:
+        try:
+            return self.bindings[artifact_id]
+        except KeyError as exc:
+            raise NotFound("primary binding absent") from exc
+
+    def set_collection_upload_session_materialization_decisions(
+        self, _collection_id: int, batch: Any
+    ) -> None:
+        for decision in batch.decisions:
+            assert (
+                self.materialization_decisions.setdefault(decision.artifact_id, decision)
+                == decision
+            )
+
+    def stage_collection_upload_session_history_structure(
+        self, _collection_id: int, raw: bytes
+    ) -> None:
+        identity = provenance_structure_identity(raw).object_id
+        assert self.structures.setdefault(identity, raw) == raw
+
+    def set_collection_upload_session_member_history_inputs(
+        self, _collection_id: int, artifact_id: str, inputs: Any
+    ) -> None:
+        assert self.history_inputs.setdefault(artifact_id, inputs) == inputs
+
+    def get_collection_upload_session_member_history_inputs(
+        self, _collection_id: int, artifact_id: str
+    ) -> Any:
+        return self.history_inputs[artifact_id]
+
+    def set_collection_upload_session_completion_requirement(
+        self, _collection_id: int, requirement: Any
+    ) -> None:
+        if self.requirement is not None:
+            assert self.requirement == requirement
+        self.requirement = requirement
+
+    def get_collection_upload_session_provenance_journal(
+        self, _collection_id: int, journal_id: str
+    ) -> Any:
+        if journal_id not in self.journals:
+            raise NotFound("staged journal absent")
+        raw = self.journals[journal_id]
+        return SimpleNamespace(
+            state="sealed", bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest()
+        )
+
+    @contextmanager
+    def stream_collection_upload_session_provenance_journal(
+        self, _collection_id: int, journal_id: str
+    ) -> Iterator[Iterator[bytes]]:
+        yield iter((self.journals[journal_id],))
+
+    def reserve_collection_upload_session_completion_recording(
+        self, _collection_id: int, request: Any
+    ) -> Any:
+        value = CollectionCompletionRecordingDocument(
+            **request.model_dump(),
+            journal_id="urn:uuid:99999999-9999-4999-8999-999999999999",
+            recorded_at="2026-10-01T00:00:00.000000000Z",
+        )
+        if self.recording is not None:
+            assert self.recording == value
+        self.recording = value
+        return value
 
     def spawn(self) -> UploadApi:
         return self
@@ -906,156 +988,234 @@ class UploadApi:
         pass
 
 
-class ProvenanceTransformApi(UploadApi):
-    def __init__(self, source_journals: Mapping[str, bytes]) -> None:
-        super().__init__()
-        self.source_contents = {
-            "camera/a.mov": b"source a",
-            "camera/b.mov": b"source b",
-        }
-        self.source_journals = dict(source_journals)
-        self.staged_journals: dict[str, bytes] = {}
-        self.staged_status_calls = 0
-        self.fail_registration_once = True
+class InputHistoryApi:
+    """One source archive with an exact primary and explicitly bound late claim."""
+
+    def __init__(self, collection_id: int, artifact_id: ArtifactId, content: bytes) -> None:
+        self.collection_id = collection_id
+        self.member = ArtifactMemberIdentityDocument(
+            artifact_id=artifact_id,
+            bytes=str(len(content)),
+            sha256=hashlib.sha256(content).hexdigest(),
+        )
+        produced = build_member_journal(
+            member=self.member,
+            observation=BoundedSourceObserver().observe(BytesSource(content)),
+            delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
+            attribution=ProducerAttribution(
+                "fixture", "fixture/v1", "1", "event", "fixture", {}, "f" * 64
+            ),
+            materialization_hint=None,
+        )
+        self.primary = produced.binding
+        self.summary = validate_journal(produced.content, require_profiles=False)
+        who = self.summary.graph["agents"][0]["id"]
+        late = create_journal(
+            {
+                "agents": self.summary.graph["agents"],
+                "extensions": [
+                    assertion(
+                        "extension",
+                        who,
+                        subject=external_reference(self.summary, self.summary.states[0]["id"]),
+                        property="https://fixture.invalid/late-record",
+                        value={"type": "text", "value": "retained late evidence"},
+                    )
+                ],
+            },
+            recorded_by_agent_id=who,
+        )
+        late_summary = validate_journal(late, require_profiles=False)
+        self.late_journal_id = late_summary.journal_id
+        self.journals = {produced.journal_id: produced.content, late_summary.journal_id: late}
+        with MemberHistoryBuilder(
+            artifact_id=artifact_id,
+            bytes=len(content),
+            sha256=self.member.sha256,
+            primary=MemberHistoryPrimary.from_mapping(
+                {
+                    "journal": self.primary.journal.model_dump(mode="json"),
+                    "delivery_association_id": self.primary.delivery_association_id,
+                }
+            ),
+        ) as builder:
+            builder.add_root(
+                MemberHistoryRoot.from_mapping(
+                    {"journal": late_summary.anchor, "inclusion": "bound"}
+                )
+            )
+            self.history_binding, self.history = builder.seal()
+            self.objects = {
+                provenance_structure_identity(raw).object_id: raw for raw in builder.objects()
+            }
+        identity = artifact_set_identity_ordered((self.member,))
+        provenance = ProvenanceRootDocument(
+            archive_generation="1" * 64,
+            artifact_set_sha256=identity,
+            delivery_context_id="urn:uuid:22222222-2222-4222-8222-222222222222",
+            binding_count=1,
+            binding_tree_sha256=binding_tree_commitment((self.history_binding,)).root_sha256,
+            journal_count=2,
+            ordered_volume_sha256="e" * 64,
+        )
+        archive = CollectionArchiveManifest(
+            archive_generation=provenance.archive_generation,
+            artifact_set=CollectionArtifactSetIdentity(1, len(content), identity),
+            ordered_volume_sha256="f" * 64,
+            provenance=ArchiveProvenanceIdentity(
+                provenance.identity,
+                ProvenanceRootIdentity(
+                    id="provenance-root",
+                    kind="provenance-root",
+                    path="provenance/root.json.age",
+                    plaintext_bytes=len(provenance.to_json_bytes()),
+                    sha256=provenance.identity,
+                    stored_bytes=1234,
+                    stored_sha256="0" * 64,
+                ),
+            ),
+        )
+        self.proof = SourceMemberHistoryBindingProof(
+            "a" * 64,
+            collection_id,
+            archive.to_json_bytes(),
+            provenance.to_json_bytes(),
+            self.history_binding,
+            0,
+            (),
+        )
+        self.root = CollectionRootIdentity(
+            collection_id, hashlib.sha256(archive.to_json_bytes()).hexdigest(), identity
+        )
 
     def get_collection(self, collection_id: int) -> dict[str, Any]:
-        assert collection_id == 1
+        assert collection_id == self.collection_id
         return {
-            "id": "1",
-            "archive_root_sha256": "1" * 64,
-            "content_identity": "2" * 64,
+            "id": str(collection_id),
+            "archive_root_sha256": self.root.archive_root_sha256,
+            "artifact_set_identity": self.root.artifact_set_identity,
         }
 
-    def search(self, _query: str | None = None, **_kwargs: Any) -> dict[str, Any]:
-        files = [
-            {
-                "collection_id": "1",
-                "path": path,
-                "bytes": str(len(content)),
-                "sha256": hashlib.sha256(content).hexdigest(),
-            }
-            for path, content in self.source_contents.items()
-        ]
-        return {
-            "page_size": 25,
-            "next_page_token": None,
-            "files": files,
-        }
-
-    def get_portable_collection_inventory(
-        self, collection_id: int, **kwargs: Any
-    ) -> PortableCollectionInventoryPage:
-        assert collection_id == 1
-        assert kwargs["cursor"] is None
-        return _portable_page(self.search()["files"])
-
-    def list_collection_provenance(
-        self,
-        collection_id: int,
-        **_kwargs: Any,
+    def get_collection_artifact_provenance(
+        self, collection_id: int, artifact_id: ArtifactId
     ) -> dict[str, Any]:
-        assert collection_id == 1
-        summaries = {
-            validate_journal(content).current_path: validate_journal(content)
-            for content in self.source_journals.values()
-        }
-        files = [
-            {
-                "collection_id": "1",
-                "path": path,
-                "bytes": str(len(content)),
-                "sha256": hashlib.sha256(content).hexdigest(),
-                "provenance": {
-                    "status": "captured",
-                    "journal_id": summaries[path].journal_id,
-                    "current_state_id": summaries[path].current_state_id,
-                },
-            }
-            for path, content in self.source_contents.items()
-        ]
+        assert collection_id == self.collection_id and artifact_id == self.member.artifact_id
         return {
-            "page_size": 25,
-            "next_page_token": None,
-            "files": files,
+            "collection_id": str(collection_id),
+            "archive_root_sha256": self.root.archive_root_sha256,
+            "artifact": self.member.model_dump(mode="json"),
+            "binding": self.primary.model_dump(mode="json"),
+            "history_binding": self.history_binding.to_mapping(),
+            "member_history": self.history.to_mapping(),
         }
 
-    @contextmanager
-    def stream_collection_provenance(self, collection_id: int, **kwargs: Any) -> Iterator[Any]:
-        yield iter(self.list_collection_provenance(collection_id, **kwargs)["files"])
+    def get_collection_provenance_structure(
+        self, collection_id: int, object_id: str, *, archive_root_sha256: str
+    ) -> bytes:
+        assert (
+            collection_id == self.collection_id
+            and archive_root_sha256 == self.root.archive_root_sha256
+        )
+        return self.objects[object_id]
+
+    def get_collection_artifact_history_binding_proof(
+        self, collection_id: int, artifact_id: ArtifactId, *, archive_root_sha256: str
+    ) -> SourceMemberHistoryBindingProof:
+        assert collection_id == self.collection_id and artifact_id == self.member.artifact_id
+        assert archive_root_sha256 == self.root.archive_root_sha256
+        return self.proof
+
+    def list_collection_provenance_journals(
+        self, collection_id: int, **kwargs: Any
+    ) -> dict[str, Any]:
+        assert collection_id == self.collection_id and kwargs["after_journal_id"] is None
+        return {
+            "collection_id": str(collection_id),
+            "archive_root_sha256": self.root.archive_root_sha256,
+            "journals": [
+                {
+                    "journal_id": key,
+                    "bytes": str(len(raw)),
+                    "sha256": hashlib.sha256(raw).hexdigest(),
+                }
+                for key, raw in sorted(self.journals.items())
+            ],
+            "next_journal_id": None,
+        }
 
     @contextmanager
     def stream_collection_provenance_journal(
         self,
         collection_id: int,
         journal_id: str,
+        *,
+        expected_bytes: int,
+        expected_sha256: str,
+        end: int | None,
     ) -> Iterator[Iterator[bytes]]:
-        assert collection_id == 1
-        yield iter((self.source_journals[journal_id],))
+        assert collection_id == self.collection_id
+        raw = self.journals[journal_id]
+        assert (len(raw), hashlib.sha256(raw).hexdigest()) == (expected_bytes, expected_sha256)
+        yield iter((raw[:end],))
 
-    def get_collection_upload_session_provenance_journal(
-        self,
-        collection_id: int,
-        journal_id: str,
-    ) -> dict[str, Any]:
-        assert collection_id == 7
-        self.staged_status_calls += 1
-        try:
-            content = self.staged_journals[journal_id]
-        except KeyError as exc:
-            raise NotFound("staged provenance journal not found") from exc
-        summary = validate_journal(content)
-        return {
-            "journal_id": journal_id,
-            "state": "sealed",
-            "current_state_id": summary.current_state_id,
-            "current_path": summary.current_path,
-            "current_bytes": summary.current_bytes,
-            "current_sha256": summary.current_sha256,
-        }
+    def accepted(self) -> Any:
+        from riverhog_client.processing import ClaimedArtifact
 
-    def seal_collection_upload_session_provenance_journal(
-        self,
-        collection_id: int,
-        journal_id: str,
-    ) -> dict[str, Any]:
-        return self.get_collection_upload_session_provenance_journal(
-            collection_id,
-            journal_id,
+        reader = ClaimedCollectionReader(
+            self, inputs=(self.root,), work_id=WORK_ID, claim_id="claim-1", fence=1
+        )
+        return reader.provenance(
+            ClaimedArtifact(
+                self.root, self.member.artifact_id, self.member.bytes, self.member.sha256
+            )
         )
 
-    def upload_collection_upload_session_provenance_journal(
-        self,
-        collection_id: int,
-        journal_id: str,
-        *,
-        content: Iterable[bytes],
-        byte_count: int,
-        **_kwargs: Any,
-    ) -> dict[str, Any]:
-        assert collection_id == 7
-        body = b"".join(content)
-        assert len(body) == byte_count
-        existing = self.staged_journals.get(journal_id)
-        if existing is not None and existing != body:
-            raise AssertionError("retry changed staged provenance bytes")
-        self.staged_journals[journal_id] = body
-        return {"journal_id": journal_id}
 
-    def register_collection_upload_session_files(
-        self,
-        collection_id: int,
-        files: Sequence[Mapping[str, Any]],
-        *,
-        registration_constraints: object,
-    ) -> dict[str, Any]:
-        if self.fail_registration_once:
-            self.fail_registration_once = False
-            raise RuntimeError("simulated lost producer progress after journal staging")
-        return super().register_collection_upload_session_files(
-            collection_id,
-            files,
-            registration_constraints=registration_constraints,
+def _derived_stream(index: int, content: bytes) -> ProducerStream:
+    return ProducerStream(
+        artifact_id=ArtifactId(f"{index + 100:064x}"),
+        bytes=len(content),
+        sha256=hashlib.sha256(content).hexdigest(),
+        output_id=f"output-{index}",
+        read_range=lambda offset, size: content[offset : offset + size],
+        allow_missing_materialization_hint=True,
+    )
+
+
+def _completion_records() -> tuple[CompletionRecord, ...]:
+    # Sealed runtime bytes retain null and numeric tokens exactly.
+    raw = b'{"optional":null,"quality":1.2300}'
+    return tuple(
+        CompletionRecord(kind, len(raw), hashlib.sha256(raw).hexdigest(), lambda: (raw,))
+        for kind in (
+            "implementation",
+            "invocation",
+            "target-execution",
+            "target-output-declarations",
+            "target-result",
         )
+    )
+
+
+def _incremental_writer(
+    api: UploadApi, inputs: Sequence[InputHistoryApi]
+) -> IncrementalDerivedCollectionWriter:
+    return IncrementalDerivedCollectionWriter(
+        api,
+        spec=DerivedCollectionSpec(
+            inputs=tuple(value.root for value in inputs),
+            recipe=_spec().recipe,
+            operation=_spec().operation,
+        ),
+        claim_id="claim-1",
+        fence=1,
+        work_id=WORK_ID,
+        execution_id=EXECUTION_ID,
+        controller_evidence=CONTROLLER_EVIDENCE,
+        producer_app="fixture-transform",
+        producer_version="1",
+        execution_envelope_sha256="c" * 64,
+    )
 
 
 def test_producer_rejects_empty_iterable_before_opening_construction() -> None:
@@ -1080,7 +1240,8 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
     content = b"generated output"
     api = UploadApi()
     stream = ProducerStream(
-        path="video/output.mkv",
+        artifact_id=OUTPUT_ID,
+        allow_missing_materialization_hint=True,
         bytes=len(content),
         sha256=hashlib.sha256(content).hexdigest(),
         read_range=lambda offset, size: content[offset : offset + size],
@@ -1095,17 +1256,17 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
     ).publish_inputs((stream,), source_event_id="event-1")
 
     assert receipt.collection_id == 7
-    assert api.work_calls == 3
-    assert api.completion_content_identity == receipt.content_identity
+    assert api.work_calls >= 2
+    assert api.completion_artifact_set_identity == receipt.artifact_set_identity
     uploaded_by_path = {
-        str(item["path"]): api.uploaded[
+        str(item["artifact_id"]): api.uploaded[
             sum(int(previous["bytes"]) for previous in api.registered[:index]) : sum(
                 int(previous["bytes"]) for previous in api.registered[: index + 1]
             )
         ]
         for index, item in enumerate(api.registered)
     }
-    assert uploaded_by_path["video/output.mkv"] == content
+    assert uploaded_by_path[OUTPUT_ID] == content
 
 
 def test_producer_streams_bounded_batches_without_limiting_collection_size(
@@ -1120,7 +1281,8 @@ def test_producer_streams_bounded_batches_without_limiting_collection_size(
                 assert api.registered
             value = bytes([index % 251])
             yield ProducerStream(
-                path=f"audio/item-{index:04}.wav",
+                artifact_id=ArtifactId(f"{index:064x}"),
+                allow_missing_materialization_hint=True,
                 bytes=1,
                 sha256=hashlib.sha256(value).hexdigest(),
                 read_range=lambda offset, size, content=value: content[offset : offset + size],
@@ -1136,249 +1298,236 @@ def test_producer_streams_bounded_batches_without_limiting_collection_size(
 
     assert receipt.collection_id == 7
     assert all(1 <= len(batch) <= 16 for batch in api.registration_batches)
-    assert len(api.registered) == 129
+    assert len(api.registered) == 128
 
 
-def test_producer_streams_exact_provenance_binding_and_journal(
+def test_producer_streams_exact_observation_into_primary_binding(
     monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
     content = b"generated output"
-    observed = tmp_path / "output.mkv"
-    observed.write_bytes(content)
-    journal = create_observation_journal(
-        observed,
-        relative_path="video/output.mkv",
-        host_id="urn:uuid:00000000-0000-4000-8000-000000000567",
-        agent_name="fixture-target",
-        agent_version="1.0.0",
-        observer=native_provenance_observer(),
-    )
-    summary = validate_journal(journal)
-
-    class ProvenanceUploadApi(UploadApi):
-        def __init__(self) -> None:
-            super().__init__()
-            self.journals: dict[str, bytes] = {}
-
-        def upload_collection_upload_session_provenance_journal(
-            self,
-            _collection_id: int,
-            journal_id: str,
-            *,
-            content: Iterable[bytes],
-            byte_count: int,
-            **_kwargs: Any,
-        ) -> dict[str, Any]:
-            body = b"".join(content)
-            assert len(body) == byte_count
-            self.journals[journal_id] = body
-            return {"journal_id": journal_id}
-
-    api = ProvenanceUploadApi()
-    calls = 0
-
-    def read_range(offset: int, size: int) -> bytes:
-        nonlocal calls
-        calls += 1
-        return content[offset : offset + size]
-
+    observed = BoundedSourceObserver().observe(BytesSource(content))
+    api = UploadApi()
     CollectionProducer(
-        api,  # type: ignore[arg-type]
+        api,
         producer_app="fixture-transform",
         adapter_id="test-transform/v1",
         adapter_version="1",
         ingest_source="processing:test",
-        provenance_mode="captured",
     ).publish_inputs(
         (
             ProducerStream(
-                path="video/output.mkv",
+                artifact_id=OUTPUT_ID,
                 bytes=len(content),
                 sha256=hashlib.sha256(content).hexdigest(),
-                read_range=read_range,
-                provenance={
-                    "status": "captured",
-                    "journal_id": summary.journal_id,
-                    "current_state_id": summary.current_state_id,
-                },
+                read_range=lambda offset, size: content[offset : offset + size],
+                observation=observed,
+                allow_missing_materialization_hint=True,
             ),
         ),
         source_event_id="event-1",
-        provenance_journals=((summary.journal_id, journal),),
     )
-
-    registered = {item["path"]: item for item in api.registered}
-    assert registered["video/output.mkv"]["provenance"] == {
-        "status": "captured",
-        "journal_id": summary.journal_id,
-        "current_state_id": summary.current_state_id,
-    }
-    assert api.journals == {summary.journal_id: journal}
-    assert calls == 2
+    binding = api.bindings[OUTPUT_ID]
+    summary = validate_journal(api.journals[binding.journal.journal_id], require_profiles=False)
+    assert summary.anchor == binding.journal.model_dump(mode="json")
+    assert any(row["id"] == observed.state_id for row in summary.states)
+    assert len(api.registered) == 1
+    assert api.registered[0]["artifact_id"] == OUTPUT_ID
+    assert "path" not in api.registered[0]
 
 
-def test_transform_provenance_fans_out_fans_in_and_recovers_staged_journals(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-) -> None:
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
-    source_journals: dict[str, bytes] = {}
-    for relative, content in (("camera/b.mov", b"source b"),):
-        source = tmp_path / relative.replace("/", "-")
-        source.write_bytes(content)
-        journal = create_observation_journal(
-            source,
-            relative_path=relative,
-            host_id="urn:uuid:00000000-0000-4000-8000-000000000567",
-            agent_name="riverhog-client",
-            agent_version="1.0.0",
-            observer=native_provenance_observer(),
-        )
-        source_journals[validate_journal(journal).journal_id] = journal
-    original_a = tmp_path / "original-a.mov"
-    original_a.write_bytes(b"original a")
-    original_a_journal = create_observation_journal(
-        original_a,
-        relative_path="original/a.mov",
-        host_id="urn:uuid:00000000-0000-4000-8000-000000000567",
-        agent_name="riverhog-client",
-        agent_version="1.0.0",
-        observer=native_provenance_observer(),
+def test_transform_retains_late_input_history_across_fanout_fanin_and_lost_response() -> None:
+    from riverhog_canonical_json import canonical_json_sha256
+    from riverhog_protocol.collection_completion_validation import validate_disposition_record_pages
+    from riverhog_protocol.collection_record_preimages import CollectionRecordPreimages
+    from riverhog_provenance import reference
+
+    sources = (
+        InputHistoryApi(1, INPUT_ID, b"source a"),
+        InputHistoryApi(2, OUTPUT_ID, b"source b"),
     )
-    continued_a_journal = create_derivative_journal_from_identity(
-        relative_path="camera/a.mov",
-        byte_count=len(b"source a"),
-        sha256=hashlib.sha256(b"source a").hexdigest(),
-        source_journals=(original_a_journal,),
-        agent_name="fixture-target",
-        agent_version="1.0.0",
-        event_label="fixture.prior-transform/v1",
-        started_at="2026-08-09T01:00:00Z",
-        ended_at="2026-08-09T01:01:00Z",
-    )
-    source_journals.update(
-        {
-            validate_journal(original_a_journal).journal_id: original_a_journal,
-            validate_journal(continued_a_journal).journal_id: continued_a_journal,
-        }
-    )
-    api = ProvenanceTransformApi(source_journals)
-    spec = _spec()
-    output_contents = {
-        "derived/a-one.bin": b"a derivative one",
-        "derived/a-two.bin": b"a derivative two",
-        "derived/joined.bin": b"a and b joined",
-    }
+
+    class LostRegistrationApi(UploadApi):
+        failures = 1
+
+        def register_collection_upload_session_artifacts(
+            self, *args: Any, **kwargs: Any
+        ) -> dict[str, Any]:
+            if self.failures:
+                self.failures -= 1
+                raise ConnectionError("lost registration response")
+            return super().register_collection_upload_session_artifacts(*args, **kwargs)
+
+    api = LostRegistrationApi()
     outputs = tuple(
-        ProducerStream(
-            path=path,
-            bytes=len(content),
-            sha256=hashlib.sha256(content).hexdigest(),
-            read_range=lambda offset, size, value=content: value[offset : offset + size],
-        )
-        for path, content in output_contents.items()
+        _derived_stream(i, content) for i, content in enumerate((b"a one", b"a two", b"joined"))
     )
-    disposition_set = _disposition_set(
-        disposition_count=2,
-        output_edge_count=4,
-        output_artifact_count=3,
+    accepted = tuple(value.accepted() for value in sources)
+    selected = ((accepted[0],), (accepted[0],), accepted)
+    api.dispositions = [
+        {
+            "input": {
+                "collection_id": str(value.root.collection_id),
+                "archive_root_sha256": value.root.archive_root_sha256,
+                "artifact_id": str(value.member.artifact_id),
+            },
+            "status": "transformed",
+        }
+        for value in sources
+    ]
+    api.output_edges = [
+        {
+            "input": {
+                "collection_id": str(value.artifact.root.collection_id),
+                "archive_root_sha256": value.artifact.root.archive_root_sha256,
+                "artifact_id": str(value.artifact.artifact_id),
+            },
+            "output_artifact_id": str(output.artifact_id),
+        }
+        for output, histories in zip(outputs, selected, strict=True)
+        for value in histories
+    ]
+    disposition = ArtifactDispositionSetIdentity(
+        2,
+        4,
+        3,
+        canonical_json_sha256(
+            {
+                "format": "riverhog-artifact-disposition-set/v1",
+                "disposition_count": "2",
+                "dispositions_sha256": hashlib.sha256(
+                    b"".join(canonical_json_bytes(row) + b"\n" for row in api.dispositions)
+                ).hexdigest(),
+                "output_edge_count": "4",
+                "output_artifact_count": "3",
+                "outputs_sha256": hashlib.sha256(
+                    b"".join(canonical_json_bytes(row) + b"\n" for row in api.output_edges)
+                ).hexdigest(),
+            }
+        ),
     )
-    api.derivation_identity = disposition_set
-
-    def runtime() -> CollectionTransformRuntime:
-        return CollectionTransformRuntime(
-            api,  # type: ignore[arg-type]
-            spec=spec,
-            claim_id="claim-1",
-            fence=1,
-            work_id=WORK_ID,
-            execution_id=EXECUTION_ID,
-            controller_evidence=CONTROLLER_EVIDENCE,
-            producer_app="fixture-transform",
-            producer_version="1.0.0",
-        )
-
-    with pytest.raises(RuntimeError, match="simulated lost producer progress"):
-        runtime().publish(
-            outputs,
-            execution_envelope_sha256="c" * 64,
-            execution_sha256="d" * 64,
-            disposition_set=disposition_set,
+    api.derivation_identity = disposition
+    first = _incremental_writer(api, sources)
+    try:
+        with pytest.raises(ConnectionError, match="lost registration"):
+            first.append(
+                outputs[0],
+                identity=ProducerArtifactIdentity(
+                    outputs[0].artifact_id, outputs[0].bytes, outputs[0].sha256
+                ),
+                output_id=outputs[0].output_id,
+                source_histories=selected[0],
+                history_extent=BOUND_HISTORY_EXTENT,
+            )
+    finally:
+        first.stop()
+    copied = dict(api.journals)
+    assert sources[0].late_journal_id in copied
+    resumed = _incremental_writer(api, sources)
+    try:
+        for output, histories in zip(outputs, selected, strict=True):
+            resumed.append(
+                output,
+                identity=ProducerArtifactIdentity(output.artifact_id, output.bytes, output.sha256),
+                output_id=output.output_id,
+                source_histories=histories,
+                history_extent=BOUND_HISTORY_EXTENT,
+            )
+        records = _completion_records()
+        receipt = resumed.finish(
+            execution_sha256=records[2].sha256,
+            disposition_set=disposition,
+            completion_records=records,
             poll_seconds=0.01,
         )
-    receipt = runtime().publish(
-        outputs,
-        execution_envelope_sha256="c" * 64,
-        execution_sha256="d" * 64,
-        disposition_set=disposition_set,
-        poll_seconds=0.01,
-    )
-
+    finally:
+        resumed.stop()
     assert receipt.collection_id == 7
-    registered = {item["path"]: item for item in api.registered}
-    assert set(output_contents) <= set(registered)
-
-
-def test_incremental_transform_recovers_journal_staged_before_registration(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-) -> None:
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
-    source = tmp_path / "source-a.mov"
-    source.write_bytes(b"source a")
-    source_journal = create_observation_journal(
-        source,
-        relative_path="camera/a.mov",
-        host_id="urn:uuid:00000000-0000-4000-8000-000000000567",
-        agent_name="riverhog-client",
-        agent_version="1.0.0",
-        observer=native_provenance_observer(),
-    )
-    api = ProvenanceTransformApi({validate_journal(source_journal).journal_id: source_journal})
-    api.source_contents = {"camera/a.mov": b"source a"}
-    content = b"incremental derivative"
-    identity = ProducerArtifactIdentity(
-        path="derived/a.bin",
-        bytes=len(content),
-        sha256=hashlib.sha256(content).hexdigest(),
-    )
-    stream = ProducerStream(
-        path=identity.path,
-        bytes=identity.bytes,
-        sha256=identity.sha256,
-        read_range=lambda offset, size: content[offset : offset + size],
-    )
-
-    def runtime() -> CollectionTransformRuntime:
-        return CollectionTransformRuntime(
-            api,  # type: ignore[arg-type]
-            spec=_spec(),
-            claim_id="claim-1",
-            fence=1,
-            work_id=WORK_ID,
-            execution_id=EXECUTION_ID,
-            controller_evidence=CONTROLLER_EVIDENCE,
-            producer_app="fixture-transform",
-            producer_version="1.0.0",
+    assert all(api.journals[key] == raw for key, raw in copied.items())
+    assert all(value.late_journal_id in api.journals for value in sources)
+    assert len(api.registered) == 3
+    assert [api.history_inputs[value.artifact_id].record_count for value in outputs] == [1, 1, 2]
+    completion = validate_journal(api.journals[api.recording.journal_id], require_profiles=False)
+    subject = reference(completion.graph["activities"][0]["id"], "activity")
+    with CollectionRecordPreimages(completion.graph["extensions"], subject=subject) as retained:
+        retained.validate(expected_kinds=api.requirement.record_kinds)
+        validate_disposition_record_pages(
+            retained.chunks("disposition-pages"), identity=disposition
         )
+        assert (
+            b"".join(retained.chunks("target-execution")) == b'{"optional":null,"quality":1.2300}'
+        )
+    assert completion.graph["activities"][0]["kind"] == "recording"
+    assert not completion.graph.get("relations")
 
-    first = runtime()
-    try:
-        writer = first.open_incremental_publication(execution_envelope_sha256="c" * 64)
-        with pytest.raises(RuntimeError, match="simulated lost producer progress"):
-            writer.append(stream, identity=identity)
-    finally:
-        first.close()
-    resumed = runtime()
-    try:
-        writer = resumed.open_incremental_publication(execution_envelope_sha256="c" * 64)
-        writer.append(stream, identity=identity)
-    finally:
-        resumed.close()
 
-    assert any(item["path"] == identity.path for item in api.registered)
+def test_incremental_transform_recovers_accepted_primary_after_lost_binding_response() -> None:
+    source = InputHistoryApi(1, INPUT_ID, b"source")
+    accepted = source.accepted()
+    output = _derived_stream(0, b"derived")
+    identity = ProducerArtifactIdentity(output.artifact_id, output.bytes, output.sha256)
+
+    class LostBindingApi(UploadApi):
+        failures = 1
+
+        def bind_collection_upload_session_artifact_provenance(self, *args: Any) -> None:
+            super().bind_collection_upload_session_artifact_provenance(*args)
+            if self.failures:
+                self.failures -= 1
+                raise ConnectionError("lost accepted primary response")
+
+    api = LostBindingApi()
+    first = _incremental_writer(api, (source,))
+    try:
+        with pytest.raises(ConnectionError, match="lost accepted primary"):
+            first.append(
+                output,
+                identity=identity,
+                output_id=output.output_id,
+                source_histories=(accepted,),
+                history_extent=BOUND_HISTORY_EXTENT,
+            )
+    finally:
+        first.stop()
+    primary = api.bindings[output.artifact_id]
+    exact = api.journals[primary.journal.journal_id]
+    resumed = _incremental_writer(api, (source,))
+    try:
+        resumed.append(
+            output,
+            identity=identity,
+            output_id=output.output_id,
+            source_histories=(accepted,),
+            history_extent=BOUND_HISTORY_EXTENT,
+        )
+    finally:
+        resumed.stop()
+    assert api.bindings[output.artifact_id] == primary
+    assert api.journals[primary.journal.journal_id] == exact
+    assert len(api.registered) == 1
+    assert len(api.journals) == 3
+
+
+@pytest.mark.parametrize("extent", ["unknown", ""])
+def test_incremental_transform_rejects_unaccepted_history_extent_before_output_registration(
+    extent: str,
+) -> None:
+    source = InputHistoryApi(1, INPUT_ID, b"source")
+    output = _derived_stream(0, b"derived")
+    api = UploadApi()
+    writer = _incremental_writer(api, (source,))
+    try:
+        with pytest.raises(ValueError, match="extent"):
+            writer.append(
+                output,
+                identity=ProducerArtifactIdentity(output.artifact_id, output.bytes, output.sha256),
+                output_id=output.output_id,
+                source_histories=(source.accepted(),),
+                history_extent=extent,
+            )
+    finally:
+        writer.stop()
+    assert not api.registered
 
 
 def test_producer_stream_rejects_mutation_between_hash_and_upload(
@@ -1395,7 +1544,8 @@ def test_producer_stream_rejects_mutation_between_hash_and_upload(
         return value[offset : offset + size]
 
     stream = ProducerStream(
-        path="video/output.mkv",
+        artifact_id=OUTPUT_ID,
+        allow_missing_materialization_hint=True,
         bytes=len(content),
         sha256=hashlib.sha256(content).hexdigest(),
         read_range=mutable,
@@ -1418,7 +1568,7 @@ def test_producer_file_rejects_symlink_sources(tmp_path: Path) -> None:
     link.symlink_to(source)
 
     with pytest.raises(ValueError, match="symlink"):
-        ProducerFile(source=link, path="video/output.mkv")
+        ProducerFile(source=link, artifact_id=OUTPUT_ID, allow_missing_materialization_hint=True)
 
 
 def test_producer_file_rejects_mutation_between_hash_and_upload(
@@ -1447,7 +1597,11 @@ def test_producer_file_rejects_mutation_between_hash_and_upload(
             adapter_version="1",
             ingest_source="processing:test",
         ).publish(
-            (ProducerFile(source=source, path="video/output.mkv"),),
+            (
+                ProducerFile(
+                    source=source, artifact_id=OUTPUT_ID, allow_missing_materialization_hint=True
+                ),
+            ),
             source_event_id="event-1",
         )
 
@@ -1458,30 +1612,31 @@ def test_derived_writer_binds_outputs_to_dispositions(
     spec = _spec()
     output = b"derived"
     stream = ProducerStream(
-        path="video/output.mkv",
+        artifact_id=OUTPUT_ID,
+        allow_missing_materialization_hint=True,
         bytes=len(output),
         sha256=hashlib.sha256(output).hexdigest(),
         read_range=lambda offset, size: output[offset : offset + size],
     )
     captured: dict[str, Any] = {}
 
-    class StubProducer:
+    class StubWriter:
         def __init__(self, _api: object, **kwargs: Any) -> None:
             captured["init"] = kwargs
 
-        def append_inputs(self, files: object) -> None:
-            captured["files"] = files
+        def append(self, source: object, **kwargs: Any) -> None:
+            captured["append"] = (source, kwargs)
 
-        def append_derivation_evidence(self, path: str, content: bytes) -> None:
-            captured.setdefault("derivation_pages", {})[path] = content
-
-        def finish(self, **kwargs: Any) -> ProducedCollection:
+        def finish(self, **kwargs: Any) -> DerivedCollectionReceipt:
             captured["finish"] = kwargs
-            return ProducedCollection(44, "e" * 64, "f" * 64, {"state": "finalized"})
+            return DerivedCollectionReceipt(44, "e" * 64, "f" * 64, _derivation(spec))
+
+        def stop(self) -> None:
+            captured["stopped"] = True
 
     import riverhog_client.processing.writer as module
 
-    monkeypatch.setattr(module, "IncrementalCollectionProducer", StubProducer)
+    monkeypatch.setattr(module, "IncrementalDerivedCollectionWriter", StubWriter)
     writer = DerivedCollectionWriter(
         UploadApi(),
         spec=spec,
@@ -1493,45 +1648,46 @@ def test_derived_writer_binds_outputs_to_dispositions(
         producer_app="fixture-transform",
     )
 
+    identity = ProducerArtifactIdentity(stream.artifact_id, stream.bytes, stream.sha256)
+    histories = (object(),)
+    records = (object(),)
+    from dataclasses import replace
+
+    stream = replace(stream, output_id="output-1")
     receipt = writer.publish(
         (stream,),
+        identities={OUTPUT_ID: identity},
+        source_histories={OUTPUT_ID: histories},
+        history_extent=BOUND_HISTORY_EXTENT,
+        completion_records=records,
         execution_envelope_sha256="c" * 64,
         execution_sha256="d" * 64,
         disposition_set=_disposition_set(),
-        source_context={"claim_id": "spoofed", "target": "fixture"},
+        source_context={"target": "fixture"},
     )
-
     assert receipt.collection_id == 44
-    assert receipt.derivation.execution_id == EXECUTION_ID
-    assert captured["init"]["source_context"] == {
-        "claim_id": "claim-1",
-        "fence": 1,
-        "work_id": WORK_ID,
-        "execution_id": EXECUTION_ID,
-        "execution_envelope_sha256": "c" * 64,
-        "execution_sha256": "d" * 64,
-        "target": "fixture",
-    }
-    assert len(captured["derivation_pages"]) == 2
-    evidence = captured["finish"]["terminal_evidence"]
-    assert evidence[DERIVATION_EVIDENCE_PATH] == receipt.derivation.to_json_bytes()
-
-    with pytest.raises(ValueError, match="differs from derived outputs"):
+    assert captured["append"] == (
+        stream,
+        {
+            "identity": identity,
+            "output_id": "output-1",
+            "source_histories": histories,
+            "history_extent": BOUND_HISTORY_EXTENT,
+        },
+    )
+    assert captured["finish"]["completion_records"] is records
+    assert captured["finish"]["disposition_set"] == _disposition_set()
+    assert captured["stopped"]
+    with pytest.raises(ValueError, match="exact input-history correspondence"):
         writer.publish(
-            (
-                ProducerStream(
-                    path="video/unreferenced.mkv",
-                    bytes=len(output),
-                    sha256=hashlib.sha256(output).hexdigest(),
-                    read_range=lambda offset, size: output[offset : offset + size],
-                ),
-            ),
+            (stream,),
+            identities={},
+            source_histories={},
+            history_extent=BOUND_HISTORY_EXTENT,
+            completion_records=records,
             execution_envelope_sha256="c" * 64,
             execution_sha256="d" * 64,
-            disposition_set=_disposition_set(
-                output_edge_count=2,
-                output_artifact_count=2,
-            ),
+            disposition_set=_disposition_set(),
         )
 
 
@@ -1552,7 +1708,8 @@ def test_runtime_passes_the_sealed_disposition_identity_to_publication(
     )
     output = b"derived"
     stream = ProducerStream(
-        path="video/output.mkv",
+        artifact_id=OUTPUT_ID,
+        allow_missing_materialization_hint=True,
         bytes=len(output),
         sha256=hashlib.sha256(output).hexdigest(),
         read_range=lambda offset, size: output[offset : offset + size],
@@ -1605,7 +1762,8 @@ def test_finalized_receipt_is_not_revoked_by_a_late_cancellation(
     )
     output = b"derived"
     stream = ProducerStream(
-        path="video/output.mkv",
+        artifact_id=OUTPUT_ID,
+        allow_missing_materialization_hint=True,
         bytes=len(output),
         sha256=hashlib.sha256(output).hexdigest(),
         read_range=lambda offset, size: output[offset : offset + size],
@@ -1816,19 +1974,19 @@ def test_api_client_streams_verified_full_and_range_content() -> None:
         transport=httpx.MockTransport(handle),
     )
     try:
-        with api.stream_retrieval_file(
+        with api.stream_retrieval_artifact(
             "job-1",
             collection_id=1,
-            path="camera/input.mov",
+            artifact_id=INPUT_ID,
             expected_bytes=len(content),
             expected_sha256=digest,
             chunk_size=3,
         ) as chunks:
             assert b"".join(chunks) == content
-        with api.stream_retrieval_file(
+        with api.stream_retrieval_artifact(
             "job-1",
             collection_id=1,
-            path="camera/input.mov",
+            artifact_id=INPUT_ID,
             expected_bytes=len(content),
             expected_sha256=digest,
             start=2,
@@ -1859,10 +2017,10 @@ def test_api_client_stream_requires_complete_consumption() -> None:
     )
     try:
         with pytest.raises(InvalidState, match="ended before"):
-            with api.stream_retrieval_file(
+            with api.stream_retrieval_artifact(
                 "job-1",
                 collection_id=1,
-                path="camera/input.mov",
+                artifact_id=INPUT_ID,
                 expected_bytes=len(content),
                 expected_sha256=digest,
                 chunk_size=2,
@@ -1878,9 +2036,13 @@ def test_plan_seal_replays_submitted_artifact_prefix_and_checks_sealed_scope(
     from riverhog_canonical_json import canonical_json_bytes
     from riverhog_client.workflows import CollectionWorkflowMethods
 
-    root = {"collection_id": "1", "archive_root_sha256": "a" * 64, "content_identity": "b" * 64}
+    root = {
+        "collection_id": "1",
+        "archive_root_sha256": "a" * 64,
+        "artifact_set_identity": "b" * 64,
+    }
     artifacts = [
-        {"collection": root, "path": f"part/{i:03d}", "bytes": "1", "sha256": "c" * 64}
+        {"collection": root, "artifact_id": f"{i:064x}", "bytes": "1", "sha256": "c" * 64}
         for i in range(129)
     ]
     digest = hashlib.sha256(b"riverhog-claim-artifacts/v1\0")
