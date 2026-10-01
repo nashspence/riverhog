@@ -151,6 +151,8 @@ class PersistentTargetService:
         self._operator_canceled: set[str] = set()
         self._shutdown_interrupted: set[str] = set()
         self._futures: dict[str, Future[TargetJobStatus]] = {}
+        self._pending_submissions: dict[str, tuple[TargetJobRequest, int]] = {}
+        self._closing = False
         self._runtime_registry = ClaimedCollectionRuntimeRegistry()
         self._runtime_contexts: dict[str, dict[str, object]] = {}
         self._runtime_token_fingerprints: dict[str, bytes] = {}
@@ -225,6 +227,8 @@ class PersistentTargetService:
             raise TargetServiceError(409, "operation_contract_mismatch", "operation changed")
         self._validate_operation_request(plan, operation, support)
         with self._lock:
+            if self._closing:
+                raise TargetServiceError(503, "target_failed", "target service is closing")
             existing = self._load_accepted(job_id)
             if existing is not None and not secrets.compare_digest(
                 existing.request_sha256, request.request_sha256
@@ -259,6 +263,9 @@ class PersistentTargetService:
                         job_id,
                         request.runtime.capability_token,
                     )
+                pending = self._pending_submissions.get(job_id)
+                if pending is not None:
+                    self._pending_submissions[job_id] = (request, pending[1])
             if status is None:
                 status = self._status(request, state="queued", attempt=1, phase="queued")
                 status = self._commit_status(status)
@@ -311,6 +318,7 @@ class PersistentTargetService:
 
     def close(self) -> None:
         with self._lock:
+            self._closing = True
             for job_id, future in self._futures.items():
                 if future.done() or job_id in self._operator_canceled:
                     continue
@@ -437,6 +445,10 @@ class PersistentTargetService:
         job_id = request.declaration.job_id
         active = self._futures.get(job_id)
         if active is not None and not active.done():
+            # The prior attempt can publish interruption before its future has
+            # finished. Keep the accepted retry until that future releases its
+            # slot, instead of leaving a queued status with no execution.
+            self._pending_submissions[job_id] = (request, attempt)
             return
         cancellation = self._cancel.setdefault(job_id, threading.Event())
         self._operator_canceled.discard(job_id)
@@ -469,11 +481,21 @@ class PersistentTargetService:
         completed: Future[TargetJobStatus],
     ) -> None:
         with self._lock:
-            if self._futures.get(job_id) is completed:
-                self._futures.pop(job_id, None)
+            if self._futures.get(job_id) is not completed:
+                return
+            self._futures.pop(job_id, None)
+            pending = self._pending_submissions.pop(job_id, None)
+            if pending is not None:
+                status = self._load_status(job_id)
+                if status is not None and (status.state == "canceling" or self._closing):
+                    self._commit_status(self._stop_status(pending[0], pending[1]))
             self._cancel.pop(job_id, None)
             self._operator_canceled.discard(job_id)
             self._shutdown_interrupted.discard(job_id)
+            if pending is not None and not self._closing:
+                status = self._load_status(job_id)
+                if status is not None and status.state == "queued":
+                    self._submit(*pending)
         self.prune_terminal_state()
 
     def _run(

@@ -2478,9 +2478,11 @@ def test_publication_checkpoint_rejects_corrupt_exact_preimage(tmp_path: Path) -
         b"".join(loaded.execution.read())
 
 
+@pytest.mark.parametrize("retry_outcome", ["resume", "cancel", "shutdown"])
 def test_persistent_target_resumes_sealed_publication_without_rerunning_operation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    retry_outcome: str,
 ) -> None:
     from riverhog_protocol import ServiceUnavailable
 
@@ -2504,6 +2506,8 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
         _cls: object, fresh: TargetJobRequest, *, session: TargetExecutionSession, **_kwargs
     ):
         assert fresh.request_sha256 == request.request_sha256
+        if calls:
+            assert fresh.runtime.capability_token == "newest-retry-secret"
 
         class Execution:
             def __enter__(self):
@@ -2540,23 +2544,69 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
         state_root=tmp_path,
         execute=execute,
     )
+    finished_attempt = threading.Event()
+    release_future = threading.Event()
+    run = service._run
+
+    def held_run(fresh, attempt, cancellation, session):
+        status = run(fresh, attempt, cancellation, session)
+        if attempt == 2:
+            finished_attempt.set()
+            assert release_future.wait(timeout=5)
+        return status
+
+    monkeypatch.setattr(service, "_run", held_run)
+    shutdown_started = threading.Event()
+    shutdown = service._pool.shutdown
+
+    def signaled_shutdown(**kwargs):
+        shutdown_started.set()
+        shutdown(**kwargs)
+
+    monkeypatch.setattr(service._pool, "shutdown", signaled_shutdown)
+    closing = None
     try:
         assert service.get_job(job_id).state == "interrupted"
         service.put_job(request)
+        assert finished_attempt.wait(timeout=5)
         deadline = time.monotonic() + 5
         while service.get_job(job_id).state != "interrupted":
             assert time.monotonic() < deadline
             time.sleep(0.01)
         assert service.get_job(job_id).progress.phase == "publication-interrupted"
-        service.put_job(request)
-        while service.get_job(job_id).state != "succeeded":
+        assert service.put_job(request).state == "queued"
+        refreshed = TargetJobRequest.seal(
+            request.declaration,
+            request.runtime.model_copy(update={"capability_token": "newest-retry-secret"}),
+            request.callback_access,
+        )
+        assert service.put_job(refreshed).state == "queued"
+        if retry_outcome == "cancel":
+            assert service.cancel_job(job_id).state == "canceling"
+        elif retry_outcome == "shutdown":
+            closing = threading.Thread(target=service.close)
+            closing.start()
+            assert shutdown_started.wait(timeout=5)
+        release_future.set()
+        expected_state = {"cancel": "canceled", "shutdown": "interrupted", "resume": "succeeded"}[
+            retry_outcome
+        ]
+        while service.get_job(job_id).state != expected_state:
             assert time.monotonic() < deadline
             time.sleep(0.01)
         assert service.get_job(job_id).attempt == 3
-        assert service.get_job(job_id).output_collection == expected.output_collection
-        assert calls == [2, 3]
+        if retry_outcome != "resume":
+            assert service.get_job(job_id).output_collection is None
+            assert calls == [2]
+        else:
+            assert service.get_job(job_id).output_collection == expected.output_collection
+            assert calls == [2, 3]
         assert service.prune_terminal_state(now=time.time()) == {"jobs": 0, "bytes": 0}
     finally:
+        release_future.set()
+        if closing is not None:
+            closing.join(timeout=5)
+            assert not closing.is_alive()
         service.close()
     assert checkpoint.pre_root.attempt == 1
 
