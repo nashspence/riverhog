@@ -47,11 +47,11 @@ def _source(content: bytes):
     plan = RawVolumePlan(
         volume_id="segment-" + "0" * 64,
         sequence=0,
-        source_path="large.bin",
-        file_offset=0,
+        artifact_id="a" * 64,
+        artifact_offset=0,
         plaintext_bytes=len(content),
-        file_bytes=len(content),
-        file_sha256=hashlib.sha256(content).hexdigest(),
+        artifact_bytes=len(content),
+        artifact_sha256=hashlib.sha256(content).hexdigest(),
     )
     session = ResumableAgeScryptSession.create(
         "archive passphrase",
@@ -86,11 +86,11 @@ def _source(content: bytes):
         volume_id=plan.volume_id,
         object_path="archives/x/volumes/segment-" + "0" * 64 + ".bin.age",
         revision="v1",
-        source_path=plan.source_path,
-        file_offset=0,
+        artifact_id=plan.artifact_id,
+        artifact_offset=0,
         plaintext_bytes=len(content),
-        file_bytes=len(content),
-        file_sha256=plan.file_sha256,
+        artifact_bytes=len(content),
+        artifact_sha256=plan.artifact_sha256,
         age_state_json=state,
         parts=tuple(receipts),
     )

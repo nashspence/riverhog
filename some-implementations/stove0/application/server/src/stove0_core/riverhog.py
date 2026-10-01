@@ -580,7 +580,7 @@ class Stove0RiverhogClient:
         actions: tuple[CapabilityAction, ...] = (
             ("read-inputs",)
             if envelope.workflow_plan.result_kind == "external-effect"
-            else ("read-inputs", "write-output")
+            else ("read-inputs", "read-provenance", "write-output")
         )
         capability = self._capability(
             claim,

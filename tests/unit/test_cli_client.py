@@ -9,8 +9,10 @@ import pytest
 from riverhog_client.client import ApiClient
 from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_protocol import (
+    CollectionArtifactProvenanceBindingDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyObjectDocument,
+    CollectionUploadProvenanceCustodyObjectDocument,
 )
 from riverhog_protocol.errors import (
     BadRequest,
@@ -98,9 +100,32 @@ class WrongCustodyReceiptClient(RecordingClient):
             artifact_id=OTHER_ARTIFACT_ID,
             bytes=int(row["bytes"]),
             sha256=str(row["sha256"]),
-            archive_root_sha256="c" * 64,
-            provenance_root_sha256="d" * 64,
-            provenance_root_receipt_sha256="e" * 64,
+            primary=CollectionArtifactProvenanceBindingDocument.model_validate(
+                {
+                    "artifact_id": OTHER_ARTIFACT_ID,
+                    "journal": {
+                        "journal_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+                        "through": {
+                            "entry_id": "urn:uuid:22222222-2222-4222-8222-222222222222",
+                            "sequence": "0",
+                            "json_sha256": "d" * 64,
+                        },
+                        "prefix_bytes": "1",
+                        "prefix_sha256": "e" * 64,
+                    },
+                    "delivery_association_id": "urn:uuid:33333333-3333-4333-8333-333333333333",
+                }
+            ),
+            completion_requirement_sha256=None,
+            provenance_objects=(
+                CollectionUploadProvenanceCustodyObjectDocument(
+                    object_id="fixture-primary",
+                    relative_path="provenance/payloads/fixture.bin.age",
+                    plaintext_bytes="1",
+                    plaintext_sha256="e" * 64,
+                    sealed_receipt_sha256="f" * 64,
+                ),
+            ),
             archive_objects=(
                 CollectionUploadCustodyObjectDocument(
                     volume_id=f"segment-{1:064x}",

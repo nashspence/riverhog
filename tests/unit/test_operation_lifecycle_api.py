@@ -9,12 +9,29 @@ from fastapi.testclient import TestClient
 from http_api_contracts import BrowseTokenCodec
 from riverhog_api.app import create_app
 from riverhog_api.deps import ServiceContainer
+from riverhog_archive_contracts import (
+    BOUND_HISTORY_EXTENT,
+    MemberHistoryBinding,
+    MemberHistoryBuilder,
+    MemberHistoryPrimary,
+)
+from riverhog_client.canonical_completion import CompletionRecord
+from riverhog_client.canonical_production import (
+    ProducerAttribution,
+    build_member_journal,
+    member_materialization_decision,
+)
 from riverhog_client.client import ApiClient
 from riverhog_client.initial_tags import prepare_initial_collection_tags
+from riverhog_client.processing.models import ClaimedArtifact, DerivedCollectionSpec
+from riverhog_client.processing.reader import ClaimedCollectionReader
+from riverhog_client.processing.writer import IncrementalDerivedCollectionWriter
+from riverhog_client.producer import ProducerArtifactIdentity, ProducerFile
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.collection_access import SqlAlchemyCollectionAccessService
+from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
 from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
@@ -22,6 +39,7 @@ from riverhog_core.services.archive_copy_retirements import (
     SqlAlchemyArchiveCopyRetirementService,
 )
 from riverhog_core.services.archive_stores import SqlAlchemyArchiveStoreService
+from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
 from riverhog_core.services.collection_deletions import SqlAlchemyCollectionDeletionService
 from riverhog_core.services.collection_descriptions import (
@@ -35,43 +53,49 @@ from riverhog_core.services.collection_workflows import (
 from riverhog_core.services.collections import SqlAlchemyCollectionService
 from riverhog_core.services.download_allowances import SqlAlchemyDownloadAllowance
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
-from riverhog_core.services.provenance import SqlAlchemyProvenanceService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_core.services.search import SqlAlchemySearchService
-from riverhog_protocol import CollectionUploadUnitWorkDocument
-from riverhog_protocol.collection_upload_transport import collection_upload_path_order_key
+from riverhog_protocol import (
+    ArtifactId,
+    ArtifactMemberIdentityDocument,
+    CollectionArtifactProvenanceBindingBatchDocument,
+    CollectionUploadRawDigestBatchDocument,
+    CollectionUploadUnitWorkDocument,
+    MemberHistoryBindingBatchDocument,
+)
+from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
+from riverhog_protocol.collection_record_preimages import CollectionRecordPreimages
 from riverhog_protocol.collection_workflows import (
-    DERIVATION_EVIDENCE_PATH,
-    PRODUCER_EVIDENCE_PATH,
     ArtifactDisposition,
     ArtifactDispositionOutput,
     ArtifactDispositionSetIdentity,
-    CollectionDerivation,
     CollectionProcessingOutcomeIdentity,
     CollectionRootIdentity,
     OperationIdentity,
-    ProducerEvidence,
     RecipeIdentity,
     canonical_json_bytes,
     canonical_json_sha256,
-    derivation_evidence_page_path,
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
-from riverhog_protocol.errors import Forbidden
+from riverhog_protocol.errors import Forbidden, NotFound
 from riverhog_protocol.no_output_settlement import NoOutputSettlement
+from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
-    ArchiveFileProvenanceRecord,
-    create_derivative_journal_from_identity,
-    create_observation_journal,
+    MemberHistoryClosure,
+    reference,
     validate_journal,
 )
 
 from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
-from tests.provenance_observer import native_provenance_observer
-from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
+from tests.provenance_observer import native_provenance_provider
+from tests.support.uploaded_archive import UploadedArchiveStore
+from tests.unit.archive_object_fixtures import archive_store_binding
 from tests.unit.db_helpers import sqlite_url
 from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+
+SOURCE_ID = ArtifactId("1" * 64)
+OUTPUT_ID = ArtifactId("2" * 64)
 
 
 def _tag_set_identity(*tags: str) -> str:
@@ -105,8 +129,12 @@ def _container(tmp_path: Path) -> ServiceContainer:
         seed_storage_incarnation(session, "archive", "secondary")
     stores = ArchiveStoreRegistry(
         {
-            "primary": archive_store_binding(MemoryArchiveStore(), name="primary"),
-            "secondary": archive_store_binding(MemoryArchiveStore(), name="secondary"),
+            "primary": archive_store_binding(
+                UploadedArchiveStore(passphrases=config.archive_passphrases), name="primary"
+            ),
+            "secondary": archive_store_binding(
+                UploadedArchiveStore(passphrases=config.archive_passphrases), name="secondary"
+            ),
         }
     )
     allowances = SqlAlchemyDownloadAllowance(config, session_factory=session_factory)
@@ -128,12 +156,15 @@ def _container(tmp_path: Path) -> ServiceContainer:
         collection_uploads=SqlAlchemyCollectionUploadService(
             config,
             stores,
+            policy=CollectionVolumePolicy(pack_member_bytes=1),
             session_factory=session_factory,
         ),
         collection_workflows=SqlAlchemyCollectionWorkflowService(
             config, session_factory=session_factory
         ),
-        provenance=SqlAlchemyProvenanceService(config, session_factory=session_factory),
+        provenance=SqlAlchemyCanonicalProvenanceService(
+            config, stores, session_factory=session_factory
+        ),
         collection_deletions=SqlAlchemyCollectionDeletionService(
             config,
             stores,
@@ -177,13 +208,36 @@ def _container(tmp_path: Path) -> ServiceContainer:
     )
 
 
+class _LocalApi(ApiClient):
+    """Keep spawned SDK clients on real ASGI authentication and worker services."""
+
+    transport: TestClient
+    observer: OperationObserver | None
+    workers: ServiceContainer | None
+
+    def spawn(self):
+        return _api(self.transport, self.token, observer=self.observer, workers=self.workers)
+
+    def get_collection_upload_session(self, collection_id):
+        if self.workers is not None:
+            self.workers.collection_uploads.process_due_custody_receipts()
+            self.workers.collection_uploads.process_due_finalizations()
+        return super().get_collection_upload_session(collection_id)
+
+    def seal_collection_upload_session_provenance_journal(self, collection_id, journal_id):
+        if self.workers is not None:
+            self.workers.collection_uploads.process_due_provenance_journal_validations()
+        return super().seal_collection_upload_session_provenance_journal(collection_id, journal_id)
+
+
 def _api(
     test_client: TestClient,
     token: str,
     *,
     observer: OperationObserver | None = None,
+    workers: ServiceContainer | None = None,
 ) -> ApiClient:
-    api = ApiClient(
+    api = _LocalApi(
         base_url="http://testserver",
         token=token,
         allow_insecure_http=True,
@@ -192,15 +246,18 @@ def _api(
         TestClient(test_client.app, headers={"Authorization": f"Bearer {token}"}),
         observer=observer,
     )
+    api.transport = test_client
+    api.observer = observer
+    api.workers = workers
     api._request_client = bound  # type: ignore[assignment]
     api._download_client = bound  # type: ignore[assignment]
     return api
 
 
-def _unit_content(root: Path, unit: CollectionUploadUnitWorkDocument) -> bytes:
+def _unit_content(root: dict[str, Path], unit: CollectionUploadUnitWorkDocument) -> bytes:
     content = bytearray()
     for source in unit.sources:
-        payload = (root / source.path).read_bytes()
+        payload = root[str(source.artifact_id)].read_bytes()
         content.extend(payload[source.offset : source.offset + source.bytes])
     assert len(content) == unit.payload_bytes
     return bytes(content)
@@ -216,21 +273,6 @@ def _finalize_upload(
             return
         assert container.collection_uploads.process_due_finalizations() == 1
     raise AssertionError("bounded collection finalization did not terminate")
-
-
-def _complete_provenance_verification(
-    container: ServiceContainer,
-    api: ApiClient,
-    collection_id: int,
-) -> dict[str, object]:
-    for _ in range(256):
-        current = api.get_collection_provenance_verification(collection_id)
-        if current["state"] == "succeeded":
-            return current
-        if current["state"] in {"failed", "canceled"}:
-            raise AssertionError(f"provenance verification terminated unsuccessfully: {current}")
-        assert container.provenance.process_due_verifications() == 1
-    raise AssertionError("bounded provenance verification did not terminate")
 
 
 def test_riverhog_official_client_positive_disposable_lifecycle(
@@ -267,15 +309,6 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         "responses"
     ]
     assert "not_found" in archive_copy_errors["404"]["x-riverhog-error-codes"]
-    provenance_verify_errors = application.openapi()["paths"][
-        "/v1/collections/{collection_id}/provenance/verification"
-    ]["post"]["responses"]
-    assert "conflict" not in {
-        code
-        for response in provenance_verify_errors.values()
-        for code in response.get("x-riverhog-error-codes", [])
-    }
-
     assert transport.get("/health/live").json() == {"service": "riverhog", "status": "ok"}
     assert transport.get("/health/ready").json() == {"service": "riverhog", "status": "ok"}
 
@@ -333,23 +366,9 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     source_root.mkdir()
     source = source_root / "document.txt"
     source.write_bytes(b"qualified archive content\n")
-    journal = create_observation_journal(
-        source,
-        relative_path="document.txt",
-        host_id="urn:uuid:00000000-0000-4000-8000-000000000469",
-        agent_name="riverhog-operation-qualification",
-        agent_version="1.0.0",
-        observer=native_provenance_observer(),
-    )
-    journal_summary = validate_journal(journal)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
-    binding = ArchiveFileProvenanceRecord(
-        path="document.txt",
-        bytes=source.stat().st_size,
-        sha256=digest,
-        status="captured",
-        journal_id=journal_summary.journal_id,
-        current_state_id=journal_summary.current_state_id,
+    member = ArtifactMemberIdentityDocument(
+        artifact_id=SOURCE_ID, bytes=str(source.stat().st_size), sha256=digest
     )
     opened = operator.create_or_resume_collection_upload_session(
         "qualification-upload",
@@ -371,9 +390,53 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         len(operator.list_collection_upload_sessions(page_size=100, page_token=None)["uploads"])
         == 1
     )
+    observed = native_provenance_provider().observe_native_file(
+        source, host_id="urn:uuid:00000000-0000-4000-8000-000000000469"
+    )
+    produced = build_member_journal(
+        member=member,
+        observation=observed,
+        delivery_context_id=opened["delivery_context_id"],
+        attribution=ProducerAttribution(
+            producer_app="riverhog-operation-qualification",
+            adapter_id="qualification-ingress/v1",
+            adapter_version="1.0.0",
+            source_event_id="source-1",
+            ingest_source="disposable-test",
+            source_context={},
+            construction_identity=opened["construction_identity_sha256"],
+        ),
+        materialization_hint=("document.txt",),
+    )
+    journal = produced.content
+    journal_summary = validate_journal(journal, require_profiles=False)
+    binding = member
+    _count, part_commitment = ordered_raw_part_commitment((digest,))
+    operator.register_collection_upload_session_artifacts(
+        collection_id,
+        [
+            {
+                **member.model_dump(mode="json"),
+                "raw_parts": {
+                    "part_plaintext_bytes": opened["registration_constraints"][
+                        "raw_part_plaintext_bytes"
+                    ],
+                    "part_count": "1",
+                    "ordered_sha256": part_commitment,
+                },
+            }
+        ],
+        registration_constraints=opened["registration_constraints"],
+    )
+    operator.register_collection_upload_session_raw_part_digests(
+        collection_id,
+        CollectionUploadRawDigestBatchDocument(
+            artifact_id=SOURCE_ID, first_part="0", sha256s=[digest]
+        ),
+    )
     staged = operator.upload_collection_upload_session_provenance_journal(
         collection_id,
-        journal_summary.journal_id,
+        produced.journal_id,
         content=(journal,),
         byte_count=len(journal),
         sha256=journal_summary.journal_sha256,
@@ -382,34 +445,54 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         assert staged.state == "validating"
         assert container.collection_uploads.process_due_provenance_journal_validations() == 1
         staged = operator.get_collection_upload_session_provenance_journal(
-            collection_id, journal_summary.journal_id
+            collection_id, produced.journal_id
         )
-    assert staged.accepted_bytes == len(journal)
-    assert staged.sha256 == journal_summary.journal_sha256
-    operator.register_collection_upload_session_files(
+    operator.bind_collection_upload_session_artifact_provenance(
         collection_id,
-        [
-            {
-                "path": binding.path,
-                "bytes": str(binding.bytes),
-                "sha256": binding.sha256,
-                "provenance": {
-                    "status": "captured",
-                    "journal_id": binding.journal_id,
-                    "current_state_id": binding.current_state_id,
-                },
-            }
-        ],
-        registration_constraints=opened["registration_constraints"],
+        CollectionArtifactProvenanceBindingBatchDocument(bindings=[produced.binding]),
+    )
+    operator.set_collection_upload_session_materialization_decisions(
+        collection_id,
+        member_materialization_decision(
+            artifact_id=str(SOURCE_ID),
+            materialization_hint=("document.txt",),
+            allow_missing_materialization_hint=False,
+        ),
     )
     assert (
         len(
-            operator.list_collection_upload_session_files(
+            operator.list_collection_upload_session_artifacts(
                 collection_id, page_size=100, page_token=None
-            )["files"]
+            )["artifacts"]
         )
         == 1
     )
+    # An ordinary producer may author its explicit history selection before publication.
+    with MemberHistoryBuilder(
+        artifact_id=str(SOURCE_ID),
+        bytes=int(member.bytes),
+        sha256=member.sha256,
+        primary=MemberHistoryPrimary.from_mapping(
+            {
+                "journal": produced.binding.journal.model_dump(mode="json"),
+                "delivery_association_id": produced.binding.delivery_association_id,
+            }
+        ),
+    ) as histories:
+        selected, descriptor = histories.seal()
+        for authority in (descriptor.roots, descriptor.imports):
+            for page in histories.pages(authority):
+                operator.stage_collection_upload_session_history_structure(
+                    collection_id, page.to_json_bytes()
+                )
+        operator.stage_collection_upload_session_history_structure(
+            collection_id, descriptor.to_json_bytes()
+        )
+        accepted_history = operator.bind_collection_upload_session_member_histories(
+            collection_id,
+            MemberHistoryBindingBatchDocument.model_validate({"bindings": [selected.to_mapping()]}),
+        )
+        assert accepted_history.bindings[0].model_dump(mode="json") == selected.to_mapping()
     operator.complete_collection_upload_session(collection_id)
     while work := operator.acquire_collection_upload_session_work(collection_id).work:
         for assignment in work:
@@ -418,13 +501,13 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
                 assignment.volume.volume_id,
                 assignment.unit.unit,
                 plan_sha256=assignment.plan_sha256,
-                content=_unit_content(source_root, assignment.unit),
+                content=_unit_content({str(SOURCE_ID): source}, assignment.unit),
             )
     assert (
         len(
-            operator.list_collection_upload_session_files(
+            operator.list_collection_upload_session_artifacts(
                 collection_id, page_size=100, page_token=None
-            )["files"]
+            )["artifacts"]
         )
         == 1
     )
@@ -480,9 +563,9 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert len(operator.list_collections(page_size=100, page_token=None)["collections"]) == 1
     assert (
         len(
-            operator.search("document", collection=collection_id, page_size=100, page_token=None)[
-                "files"
-            ]
+            operator.search(
+                str(SOURCE_ID), collection=collection_id, page_size=100, page_token=None
+            )["artifacts"]
         )
         == 1
     )
@@ -513,43 +596,49 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     assert restored["changed"] is True
 
-    assert (
-        len(
-            operator.list_collection_provenance(collection_id, page_size=100, page_token=None)[
-                "files"
-            ]
-        )
-        == 1
+    listed = operator.list_collection_artifact_provenance(collection_id, page_size=100)
+    assert len(listed["artifacts"]) == 1
+    discovery = operator.discover_artifacts(
+        {
+            "collections": [str(collection_id)],
+            "artifact_id": str(SOURCE_ID),
+            "provenance_all": [
+                {
+                    "scopes": ["member"],
+                    "kind": "occurrence",
+                    "values": [
+                        {
+                            "pointer": "/materialization_hint/components/0",
+                            "operator": "equals",
+                            "value": "document.txt",
+                        }
+                    ],
+                }
+            ],
+        }
     )
-    assert (
-        operator.get_collection_file_provenance(collection_id, "document.txt")["journal"][
-            "journal_id"
-        ]
-        == journal_summary.journal_id
-    )
-    assert operator.trace_collection_file_provenance(collection_id, "document.txt")["items"]
-    assert (
-        len(
-            operator.list_collection_provenance_journal_agents(
-                collection_id,
-                journal_summary.journal_id,
-                page_size=100,
-                page_token=None,
-            )["agents"]
-        )
-        >= 1
-    )
+    assert discovery["complete"] and len(discovery["artifacts"]) == 1
+    discovered = discovery["artifacts"][0]
+    assert discovered["artifact"] == member.model_dump(mode="json")
+    assert discovered["matches"][0]["pointer"] == "/materialization_hint/components/0"
+    source_provenance = operator.get_collection_artifact_provenance(collection_id, SOURCE_ID)
+    assert source_provenance["binding"]["journal"]["journal_id"] == journal_summary.journal_id
+    listed_journals = operator.list_collection_provenance_journals(collection_id, page_size=100)
+    assert [row["journal_id"] for row in listed_journals["journals"]] == [
+        journal_summary.journal_id
+    ]
     with operator.stream_collection_provenance_journal(
-        collection_id,
-        journal_summary.journal_id,
+        collection_id, journal_summary.journal_id
     ) as chunks:
         assert b"".join(chunks) == journal
-    assert operator.request_collection_provenance_verification(collection_id)["state"] == "queued"
-    verification = _complete_provenance_verification(container, operator, collection_id)
-    assert verification["state"] == "succeeded"
-    assert verification["result"]["valid"] is True
-    assert operator.cancel_collection_provenance_verification(collection_id)["state"] == "succeeded"
-
+    metadata = operator.collection_provenance_journal_metadata(
+        collection_id, journal_summary.journal_id
+    )
+    assert metadata == (len(journal), hashlib.sha256(journal).hexdigest())
+    operator.download_collection_provenance_journal(
+        collection_id, journal_summary.journal_id, output=tmp_path / "source.jsonseq"
+    )
+    assert (tmp_path / "source.jsonseq").read_bytes() == journal
     checkpoint = operator.create_catalog_sync_checkpoint()
     catalog = operator.list_catalog_sync_collections(checkpoint.catalog_cursor, limit=100)
     assert [item.collection_id for item in catalog.collections] == [collection_id]
@@ -558,7 +647,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert changes.caught_up is True
     inventory = operator.get_portable_collection_inventory(collection_id)
     assert inventory.authority.header.collection == collection_id
-    assert len(inventory.files) == 1
+    assert len(inventory.artifacts) == 1
     assert inventory.complete is True
 
     assert {
@@ -569,15 +658,15 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert operator.retrieval_cache_status()["configured"] is False
     assert operator.list_retrieval_cache_objects(page_size=100, page_token=None)["objects"] == []
 
-    plan = operator.plan_retrieval([(collection_id, "document.txt")], restore_policy="never")
+    plan = operator.plan_retrieval([(collection_id, SOURCE_ID)], restore_policy="never")
     plan = operator.advance_retrieval_plan(str(plan["id"]))
     assert plan["state"] == "ready"
-    plan_files = operator.list_retrieval_plan_files(
+    plan_files = operator.list_retrieval_plan_artifacts(
         str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
     assert plan_files["complete"] is True
-    assert [current["path"] for current in plan_files["files"]] == ["document.txt"]
+    assert [current["artifact_id"] for current in plan_files["artifacts"]] == [str(SOURCE_ID)]
     job = operator.create_retrieval_job(
         str(plan["id"]),
         plan_etag=str(plan["etag"]),
@@ -587,14 +676,14 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert operator.renew_retrieval_job(job_id, lease_seconds=3600)["state"] == "ready"
     head = transport.head(
         f"/v1/retrieval-jobs/{job_id}/content",
-        params={"collection_id": collection_id, "path": "document.txt"},
+        params={"collection_id": collection_id, "artifact_id": str(SOURCE_ID)},
         headers={**operator_headers, "If-Match": f'"{binding.sha256}"'},
     )
     assert head.status_code == 200
     assert head.headers["etag"] == f'"{binding.sha256}"'
     partial = transport.get(
         f"/v1/retrieval-jobs/{job_id}/content",
-        params={"collection_id": collection_id, "path": "document.txt"},
+        params={"collection_id": collection_id, "artifact_id": str(SOURCE_ID)},
         headers={
             **operator_headers,
             "If-Match": f'"{binding.sha256}"',
@@ -605,58 +694,60 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert partial.content == source.read_bytes()[-4:]
     assert (
         partial.headers["content-range"]
-        == f"bytes {binding.bytes - 4}-{binding.bytes - 1}/{binding.bytes}"
+        == f"bytes {int(binding.bytes) - 4}-{int(binding.bytes) - 1}/{int(binding.bytes)}"
     )
     stale = transport.get(
         f"/v1/retrieval-jobs/{job_id}/content",
-        params={"collection_id": collection_id, "path": "document.txt"},
+        params={"collection_id": collection_id, "artifact_id": str(SOURCE_ID)},
         headers={**operator_headers, "If-Match": f'"{"0" * 64}"'},
     )
     assert stale.status_code == 412
     unsatisfiable = transport.get(
         f"/v1/retrieval-jobs/{job_id}/content",
-        params={"collection_id": collection_id, "path": "document.txt"},
+        params={"collection_id": collection_id, "artifact_id": str(SOURCE_ID)},
         headers={
             **operator_headers,
             "If-Match": f'"{binding.sha256}"',
-            "Range": f"bytes={binding.bytes}-",
+            "Range": f"bytes={int(binding.bytes)}-",
         },
     )
     assert unsatisfiable.status_code == 416
     output = tmp_path / "retrieved.txt"
-    operator.download_retrieval_file(
+    operator.download_retrieval_artifact(
         job_id,
         collection_id=collection_id,
-        path="document.txt",
+        artifact_id=SOURCE_ID,
         output=output,
-        expected_bytes=binding.bytes,
+        expected_bytes=int(binding.bytes),
         expected_sha256=binding.sha256,
     )
     assert output.read_bytes() == source.read_bytes()
     assert operator.acknowledge_retrieval_job(job_id)["state"] == "completed"
-    cancel_plan = operator.plan_retrieval([(collection_id, "document.txt")], restore_policy="never")
+    cancel_plan = operator.plan_retrieval([(collection_id, SOURCE_ID)], restore_policy="never")
     cancel_job = operator.create_retrieval_job(
         str(cancel_plan["id"]),
         plan_etag=str(cancel_plan["etag"]),
     )
     assert operator.cancel_retrieval_job(str(cancel_job["id"]))["state"] == "canceled"
 
+    container.collection_uploads._archive_stores.require(
+        "primary",
+    ).store.new_archive_prefix = "archives/qualified-canceled"
     canceled_upload = operator.create_or_resume_collection_upload_session(
         "qualification-canceled-upload",
         initial_tag_set_identity=_tag_set_identity(),
-        provenance_mode="omitted",
-        provenance_omission_reason="qualification cancellation",
     )
     assert (
         operator.cancel_collection_upload_session(int(canceled_upload["collection_id"]))["state"]
         == "canceled"
     )
 
+    container.collection_uploads._archive_stores.require(
+        "primary",
+    ).store.new_archive_prefix = "archives/qualified-orphaned"
     orphaned_upload = operator.create_or_resume_collection_upload_session(
         "qualification-orphaned-upload",
         initial_tag_set_identity=_tag_set_identity(),
-        provenance_mode="omitted",
-        provenance_omission_reason="qualification orphan discard",
         custody_mode="custody-transfer",
     )
     orphaned_id = int(orphaned_upload["collection_id"])
@@ -696,12 +787,12 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     source_identity = CollectionRootIdentity(
         collection_id=collection_id,
         archive_root_sha256=str(source_collection["archive_root_sha256"]),
-        content_identity=str(source_collection["content_identity"]),
+        artifact_set_identity=str(source_collection["artifact_set_identity"]),
     )
     source_artifact = {
         "collection": source_identity.as_dict(),
-        "path": binding.path,
-        "bytes": str(binding.bytes),
+        "artifact_id": str(SOURCE_ID),
+        "bytes": str(int(binding.bytes)),
         "sha256": binding.sha256,
     }
 
@@ -887,34 +978,43 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             identity_sha256=str(sealed_plan["artifacts"]["sha256"]),
         )
         .artifacts[0]
-        .path
-        == "document.txt"
+        .artifact_id
+        == SOURCE_ID
     )
+    payload_capability = operator.create_processing_capability(
+        claim_id,
+        fence=claim_fence,
+        audience="qualification.payload-only/v1",
+        actions=("read-inputs", "write-output"),
+        artifacts=(source_artifact,),
+    )
+    payload_reader = _api(transport, str(payload_capability["token"]), observer=observer)
+    with pytest.raises(Forbidden, match="provenance:read"):
+        payload_reader.get_collection_artifact_provenance(collection_id, SOURCE_ID)
+    payload_reader.close()
     output_capability = operator.create_processing_capability(
         claim_id,
         fence=claim_fence,
         audience="qualification.target/v1",
-        actions=("read-inputs", "write-output"),
+        actions=("read-inputs", "read-provenance", "write-output"),
         artifacts=(source_artifact,),
     )
-    target = _api(transport, str(output_capability["token"]), observer=observer)
+    target = _api(transport, str(output_capability["token"]), observer=observer, workers=container)
 
-    output_root = tmp_path / "derived"
-    output_payload_path = output_root / "derived" / "document.txt"
-    output_payload_path.parent.mkdir(parents=True)
+    output_payload_path = tmp_path / "target-workspace" / "disposable.tmp"
+    output_payload_path.parent.mkdir()
     output_payload_path.write_bytes(source.read_bytes().upper())
-    output_relative_path = "derived/document.txt"
     disposition = ArtifactDisposition(
         input_collection_id=collection_id,
         input_archive_root_sha256=source_identity.archive_root_sha256,
-        input_path="document.txt",
+        input_artifact_id=SOURCE_ID,
         status="transformed",
     )
     disposition_output = ArtifactDispositionOutput(
         input_collection_id=collection_id,
         input_archive_root_sha256=source_identity.archive_root_sha256,
-        input_path="document.txt",
-        output_path=output_relative_path,
+        input_artifact_id=SOURCE_ID,
+        output_artifact_id=OUTPUT_ID,
     )
     operator.record_processing_claim_dispositions(
         claim_id,
@@ -948,238 +1048,217 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         identity_sha256=disposition_identity.sha256,
     )
     assert len(output_page.outputs) == 1
-    plan = sealed["plan"]
-    derivation = CollectionDerivation(
-        execution_id=execution_id,
-        claim_id=claim_id,
-        fence=claim_fence,
-        recipe=recipe_identity,
-        operation=operation_identity,
-        input_set_sha256=str(plan["inputs"]["sha256"]),
-        artifact_set_sha256=str(plan["artifacts"]["sha256"]),
-        execution_envelope_sha256=execution_id,
-        execution_sha256=hashlib.sha256(b"qualification-execution-result").hexdigest(),
-        controller_evidence=controller_evidence,
-        controller_evidence_sha256=controller_evidence_sha256,
-        disposition_set=disposition_identity,
-    )
-    derivation_path = output_root / DERIVATION_EVIDENCE_PATH
-    derivation_path.parent.mkdir(parents=True)
-    derivation_path.write_bytes(derivation.to_json_bytes())
-    producer_evidence = ProducerEvidence(
-        producer_app="qualification.target/v1",
-        adapter_id="qualification.target/v1",
-        adapter_version="1.0.0",
-        source_event_id=execution_id,
-        ingest_source=f"processing:{execution_id}",
-        source_context={"execution_id": execution_id},
-    )
-    producer_evidence_path = output_root / PRODUCER_EVIDENCE_PATH
-    producer_evidence_path.parent.mkdir(parents=True, exist_ok=True)
-    producer_evidence_path.write_bytes(producer_evidence.to_json_bytes())
-    evidence_documents = {
-        derivation_evidence_page_path("dispositions", disposition_page.start_ordinal): (
-            canonical_json_bytes(disposition_page.model_dump(mode="json", exclude_none=True))
-        ),
-        derivation_evidence_page_path("output-edges", output_page.start_ordinal): (
-            canonical_json_bytes(output_page.model_dump(mode="json", exclude_none=True))
-        ),
-    }
-    evidence_paths: dict[str, Path] = {}
-    for path, content in evidence_documents.items():
-        evidence_path = output_root / path
-        evidence_path.parent.mkdir(parents=True, exist_ok=True)
-        evidence_path.write_bytes(content)
-        evidence_paths[path] = evidence_path
-    output_files = {
-        output_relative_path: output_payload_path,
-        PRODUCER_EVIDENCE_PATH: producer_evidence_path,
-        **evidence_paths,
-        DERIVATION_EVIDENCE_PATH: derivation_path,
-    }
-    output_entries = [
-        (
-            path,
-            current.stat().st_size,
-            hashlib.sha256(current.read_bytes()).hexdigest(),
-        )
-        for path, current in output_files.items()
-    ]
-    output_payload_bytes = output_payload_path.stat().st_size
-    output_payload_sha256 = hashlib.sha256(output_payload_path.read_bytes()).hexdigest()
-    output_journal = create_derivative_journal_from_identity(
-        relative_path=output_relative_path,
-        byte_count=output_payload_bytes,
-        sha256=output_payload_sha256,
-        source_journals=(journal,),
-        agent_name="qualification.target/v1",
-        agent_version="1.0.0",
-        event_label=operation_identity.id,
-        started_at="2026-08-10T01:00:00Z",
-        ended_at="2026-08-10T01:01:00Z",
-    )
-    output_journal_summary = validate_journal(output_journal)
-    output_provenance_journals = {
-        journal_summary.journal_id: journal,
-        output_journal_summary.journal_id: output_journal,
-    }
-    assert (
-        len(
-            target.list_collection_provenance(collection_id, page_size=100, page_token=None)[
-                "files"
-            ]
-        )
-        == 1
-    )
+    assert len(target.list_collection_artifact_provenance(collection_id)["artifacts"]) == 1
     with target.stream_collection_provenance_journal(
-        collection_id,
-        journal_summary.journal_id,
+        collection_id, journal_summary.journal_id
     ) as chunks:
         assert b"".join(chunks) == journal
     target_retrieval_plan = target.plan_retrieval(
-        [(collection_id, "document.txt")],
-        restore_policy="never",
+        [(collection_id, SOURCE_ID)], restore_policy="never"
     )
     target_retrieval = target.create_retrieval_job(
-        str(target_retrieval_plan["id"]),
-        plan_etag=str(target_retrieval_plan["etag"]),
+        str(target_retrieval_plan["id"]), plan_etag=str(target_retrieval_plan["etag"])
     )
     assert target_retrieval["state"] == "ready"
     assert target.acknowledge_retrieval_job(str(target_retrieval["id"]))["state"] == "completed"
-    with pytest.raises(Forbidden):
-        target.create_or_resume_collection_upload_session(
-            hashlib.sha256(b"unauthorized-output").hexdigest(),
-            initial_tag_set_identity=_tag_set_identity(),
-            ingest_source=f"processing:{execution_id}",
-            provenance_mode="omitted",
-            provenance_omission_reason="qualification transform evidence",
-        )
-    with pytest.raises(Forbidden):
-        target.create_or_resume_collection_upload_session(
-            execution_id,
-            initial_tag_set_identity=_tag_set_identity(),
-            ingest_source="processing:another-execution",
-            provenance_mode="omitted",
-            provenance_omission_reason="qualification transform evidence",
-        )
-    with pytest.raises(Forbidden):
-        target.create_or_resume_collection_upload_session(
-            execution_id,
-            initial_tag_set_identity=_tag_set_identity(),
-            ingest_source=f"processing:{execution_id}",
-            archive_store="primary",
-            provenance_mode="omitted",
-            provenance_omission_reason="qualification transform evidence",
-        )
-    target_session = target.create_or_resume_collection_upload_session(
-        execution_id,
-        initial_tag_set_identity=_tag_set_identity(),
-        ingest_source=f"processing:{execution_id}",
-        provenance_mode="captured",
-    )
-    output_collection_id = int(target_session["collection_id"])
-    replayed_target_session = target.create_or_resume_collection_upload_session(
-        execution_id,
-        initial_tag_set_identity=_tag_set_identity(),
-        ingest_source=f"processing:{execution_id}",
-        provenance_mode="captured",
-    )
-    assert replayed_target_session["resumed"] is True
-    assert int(replayed_target_session["collection_id"]) == output_collection_id
-    for journal_id, content in output_provenance_journals.items():
-        staged_output = target.upload_collection_upload_session_provenance_journal(
-            output_collection_id,
-            journal_id,
-            content=(content,),
-            byte_count=len(content),
-            sha256=hashlib.sha256(content).hexdigest(),
-        )
-        while staged_output.state != "sealed":
-            assert staged_output.state == "validating"
-            assert container.collection_uploads.process_due_provenance_journal_validations() == 1
-            staged_output = target.get_collection_upload_session_provenance_journal(
-                output_collection_id, journal_id
+    for key, source_name, store in (
+        (hashlib.sha256(b"unauthorized-output").hexdigest(), f"processing:{execution_id}", None),
+        (execution_id, "processing:another-execution", None),
+        (execution_id, f"processing:{execution_id}", "primary"),
+    ):
+        with pytest.raises(Forbidden):
+            target.create_or_resume_collection_upload_session(
+                key,
+                initial_tag_set_identity=_tag_set_identity(),
+                ingest_source=source_name,
+                archive_store=store,
             )
-    target.register_collection_upload_session_files(
-        output_collection_id,
-        [
-            {
-                "path": path,
-                "bytes": str(byte_count),
-                "sha256": sha256,
-                "provenance": (
-                    {
-                        "status": "captured",
-                        "journal_id": output_journal_summary.journal_id,
-                        "current_state_id": output_journal_summary.current_state_id,
-                    }
-                    if path == output_relative_path
-                    else {
-                        "status": "omitted",
-                        "omission_reason": "Riverhog control evidence has no host provenance",
-                    }
-                ),
-            }
-            for path, byte_count, sha256 in sorted(
-                output_entries, key=lambda item: collection_upload_path_order_key(item[0])
-            )
-        ],
-        registration_constraints=target_session["registration_constraints"],
-    )
-    target.complete_collection_upload_session(output_collection_id)
-    while work := target.acquire_collection_upload_session_work(output_collection_id).work:
-        for assignment in work:
-            target.put_collection_upload_session_unit(
-                output_collection_id,
-                assignment.volume.volume_id,
-                assignment.unit.unit,
-                plan_sha256=assignment.plan_sha256,
-                content=_unit_content(output_root, assignment.unit),
-            )
-    _finalize_upload(container, target, output_collection_id)
-    assert target.get_collection_upload_session(output_collection_id)["state"] == "finalized"
-    replayed_output = target.create_or_resume_collection_upload_session(
-        execution_id,
-        initial_tag_set_identity=_tag_set_identity(),
-        ingest_source=f"processing:{execution_id}",
-        provenance_mode="captured",
-    )
-    assert replayed_output["state"] == "finalized"
-    assert replayed_output["resumed"] is True
-    assert int(replayed_output["collection_id"]) == output_collection_id
-    target.close()
 
-    derived_provenance = operator.get_collection_file_provenance(
-        output_collection_id,
-        output_relative_path,
+    source_reader = ClaimedCollectionReader(
+        target, inputs=(source_identity,), work_id=work_id, claim_id=claim_id, fence=claim_fence
     )
-    assert derived_provenance["journal"]["journal_id"] == (output_journal_summary.journal_id)
-    derived_trace = operator.trace_collection_file_provenance(
-        output_collection_id,
-        output_relative_path,
+    input_history = source_reader.provenance(
+        ClaimedArtifact(source_identity, SOURCE_ID, int(binding.bytes), binding.sha256)
     )
-    assert {
-        item["journal"]["journal_id"]
-        for item in derived_trace["items"]
-        if item["kind"] == "journal"
-    } == {
-        journal_summary.journal_id,
-        output_journal_summary.journal_id,
+    spec = DerivedCollectionSpec(
+        inputs=(source_identity,), recipe=recipe_identity, operation=operation_identity
+    )
+    container.collection_uploads._archive_stores.require(
+        "primary"
+    ).store.new_archive_prefix = "archives/qualified-output"
+
+    def writer():
+        return IncrementalDerivedCollectionWriter(
+            target,
+            spec=spec,
+            claim_id=claim_id,
+            fence=claim_fence,
+            work_id=work_id,
+            execution_id=execution_id,
+            controller_evidence=controller_evidence,
+            producer_app="qualification.target/v1",
+            producer_version="1.0.0",
+            execution_envelope_sha256=execution_id,
+        )
+
+    identity = ProducerArtifactIdentity(
+        OUTPUT_ID,
+        output_payload_path.stat().st_size,
+        hashlib.sha256(output_payload_path.read_bytes()).hexdigest(),
+    )
+    early = writer()
+    output_collection_id = early.producer.collection_id
+    try:
+        early.append(
+            ProducerFile(
+                output_payload_path,
+                OUTPUT_ID,
+                allow_missing_materialization_hint=True,
+                output_id="output-1",
+            ),
+            identity=identity,
+            output_id="output-1",
+            source_histories=(input_history,),
+            history_extent=BOUND_HISTORY_EXTENT,
+        )
+        for _ in range(64):
+            container.collection_uploads.process_due_custody_receipts()
+            receipts = early.producer.reconcile_custody()
+            if receipts:
+                break
+        else:
+            raise AssertionError("early output did not reach verified canonical custody")
+        primary = target.get_collection_upload_session_artifact_provenance_binding(
+            output_collection_id, OUTPUT_ID
+        )
+        with target.stream_collection_upload_session_provenance_journal(
+            output_collection_id, primary.journal.journal_id
+        ) as chunks:
+            early_primary_bytes = b"".join(chunks)
+        state = target.get_collection_upload_session(output_collection_id)
+        assert state["state"] == "open" and state["archive_root_sha256"] is None
+        assert state["completion_journal_id"] is None
+        assert state["custody"] == {"state": "complete"}
+        assert receipts[0].receipt.completion_requirement_sha256 == early.requirement.identity
+    finally:
+        early.stop()
+    # A safe receipt permits deletion of disposable local bytes. Resume must not reread them.
+    output_payload_path.unlink()
+    execution_preimage = (
+        b'{"format":"qualification-target-execution/v1","optional":null,'
+        b'"quality":1.2300,"state":"succeeded"}'
+    )
+    output_declaration = {
+        "output_id": "output-1",
+        "artifact_id": str(OUTPUT_ID),
+        "bytes": str(identity.bytes),
+        "sha256": identity.sha256,
     }
+    preimages = {
+        "implementation": canonical_json_bytes(
+            {"implementation_id": "qualification.target/v1", "implementation_version": "1.0.0"}
+        ),
+        "invocation": canonical_json_bytes(
+            {
+                "work_id": work_id,
+                "operation": operation_identity.as_dict(),
+                "input": source_artifact,
+            }
+        ),
+        "target-execution": execution_preimage,
+        "target-output-declarations": canonical_json_bytes({"outputs": [output_declaration]}),
+        "target-result": canonical_json_bytes(
+            {"state": "succeeded", "outputs": [output_declaration]}
+        ),
+    }
+
+    def completion_record(kind, raw):
+        return CompletionRecord(kind, len(raw), hashlib.sha256(raw).hexdigest(), lambda: (raw,))
+
+    resumed_writer = writer()
+    try:
+        resumed_receipt = resumed_writer.producer.resume_artifact_custody(identity)
+        assert resumed_receipt is not None and resumed_receipt.receipt == receipts[0].receipt
+        assert (
+            target.get_collection_upload_session_artifact_provenance_binding(
+                output_collection_id, OUTPUT_ID
+            )
+            == primary
+        )
+        receipt = resumed_writer.finish(
+            execution_sha256=hashlib.sha256(execution_preimage).hexdigest(),
+            disposition_set=disposition_identity,
+            completion_records=tuple(
+                completion_record(kind, raw) for kind, raw in preimages.items()
+            ),
+            poll_seconds=0.05,
+            timeout_seconds=120,
+        )
+        derivation = receipt.derivation
+    finally:
+        resumed_writer.stop()
+    published_retry = writer()
+    try:
+        assert published_retry.producer.collection_id == output_collection_id
+        # Publication retires the upload projection; the final root receipt resumes completion.
+        with pytest.raises(NotFound):
+            target.get_collection_upload_session_artifact(output_collection_id, OUTPUT_ID)
+        replayed_output = published_retry.finish(
+            execution_sha256=hashlib.sha256(execution_preimage).hexdigest(),
+            disposition_set=disposition_identity,
+            completion_records=tuple(
+                completion_record(kind, raw) for kind, raw in preimages.items()
+            ),
+        )
+        assert replayed_output == receipt
+    finally:
+        published_retry.stop()
+    final_output = operator.get_collection_artifact_provenance(output_collection_id, OUTPUT_ID)
+    assert final_output["binding"] == primary.model_dump(mode="json")
     with operator.stream_collection_provenance_journal(
-        output_collection_id,
-        output_journal_summary.journal_id,
+        output_collection_id, primary.journal.journal_id
     ) as chunks:
-        assert b"".join(chunks) == output_journal
-    assert (
-        operator.request_collection_provenance_verification(output_collection_id)["state"]
-        == "queued"
+        assert b"".join(chunks) == early_primary_bytes
+    archived_journal_ids = {
+        row["journal_id"]
+        for row in operator.list_collection_provenance_journals(
+            output_collection_id, page_size=100
+        )["journals"]
+    }
+    archive_reader = container.provenance._archives.reader(output_collection_id)
+    history_binding = MemberHistoryBinding.from_mapping(final_output["history_binding"])
+    history_store = archive_reader.history_store()
+    selected_roots = tuple(history_store.roots(history_binding, extent=BOUND_HISTORY_EXTENT))
+    assert len(selected_roots) == 2
+    completion_anchor = next(
+        root.journal
+        for root in selected_roots
+        if root.journal.journal_id != primary.journal.journal_id
     )
-    output_verification = _complete_provenance_verification(
-        container, operator, output_collection_id
-    )
-    assert output_verification["state"] == "succeeded"
-    assert output_verification["result"]["valid"] is True
+    completion_journal_id = completion_anchor.journal_id
+    assert archived_journal_ids == {
+        journal_summary.journal_id,
+        primary.journal.journal_id,
+        completion_journal_id,
+    }
+    with MemberHistoryClosure(
+        history_store,
+        lambda journal_id, size: archive_reader.iter_journal_range(journal_id, size=size),
+        member_role=COLLECTION_MEMBER_ROLE,
+    ) as closure:
+        closure.resolve(history_binding, extent=BOUND_HISTORY_EXTENT)
+        assert {anchor.journal_id for anchor in closure.journal_anchors()} == archived_journal_ids
+        completion = closure.summary_at(completion_anchor)
+        assert completion.graph["activities"][0]["kind"] == "recording"
+        assert not completion.graph.get("relations")
+        with CollectionRecordPreimages(
+            completion.graph["extensions"],
+            subject=reference(completion.graph["activities"][0]["id"], "activity"),
+        ) as retained:
+            retained.validate(expected_kinds=resumed_writer.requirement.record_kinds)
+            for kind, raw in preimages.items():
+                assert b"".join(retained.chunks(kind)) == raw
+    target.close()
 
     settled = operator.settle_processing_claim(
         claim_id,
@@ -1250,7 +1329,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             ArtifactDisposition(
                 input_collection_id=source_identity.collection_id,
                 input_archive_root_sha256=source_identity.archive_root_sha256,
-                input_path=source_artifact["path"],
+                input_artifact_id=source_artifact["artifact_id"],
                 status="effect-applied",
                 effect_receipt_sha256=canonical_json_sha256(opaque_receipt),
             ).as_dict()
@@ -1328,7 +1407,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             ArtifactDisposition(
                 input_collection_id=source_identity.collection_id,
                 input_archive_root_sha256=source_identity.archive_root_sha256,
-                input_path=str(source_artifact["path"]),
+                input_artifact_id=str(source_artifact["artifact_id"]),
                 status="not-carried-forward",
                 code="qualification.no-action/v1",
                 message="No target output is needed.",
@@ -1389,7 +1468,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         output_collection=CollectionRootIdentity(
             output_collection_id,
             str(output_root_identity["archive_root_sha256"]),
-            str(output_root_identity["content_identity"]),
+            str(output_root_identity["artifact_set_identity"]),
         ),
     )
     required_outcomes = processing_outcome_set_identity((effect_outcome, collection_outcome))
@@ -1449,18 +1528,17 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     while container.collection_deletions.process_due(limit=1):
         pass
+    # Input retirement must leave the derivative's exact accepted source history intact.
     assert {
-        item["journal"]["journal_id"]
-        for item in operator.trace_collection_file_provenance(
-            output_collection_id,
-            output_relative_path,
-            page_size=100,
-        )["items"]
-        if item["kind"] == "journal"
-    } == {
-        journal_summary.journal_id,
-        output_journal_summary.journal_id,
-    }
+        row["journal_id"]
+        for row in operator.list_collection_provenance_journals(
+            output_collection_id, page_size=100
+        )["journals"]
+    } == archived_journal_ids
+    with operator.stream_collection_provenance_journal(
+        output_collection_id, journal_summary.journal_id
+    ) as chunks:
+        assert b"".join(chunks) == journal
     assert (
         operator.release_processing_claim(
             outcome_claim_id,

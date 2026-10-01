@@ -44,6 +44,7 @@ from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 class _CustodyApi:
     def __init__(self) -> None:
         self.rows = {}
+        self.registration_calls = 0
         self.bindings = {}
         self.journals = {}
         self.completed = None
@@ -121,7 +122,12 @@ class _CustodyApi:
             ],
         }
 
+    def get_collection_upload_session_artifact(self, _collection_id, artifact_id):
+        row = self.rows[artifact_id]
+        return {**row, "custody_receipt": self._receipt(row)}
+
     def register_collection_upload_session_artifacts(self, _collection_id, artifacts, **_kwargs):
+        self.registration_calls += 1
         for supplied in artifacts:
             row = dict(supplied)
             key = row["artifact_id"]
@@ -256,7 +262,9 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     source.unlink()
     resumed = _producer(api)
     try:
+        before_resume = api.registration_calls
         receipt = resumed.resume_artifact_custody(identity)
+        assert api.registration_calls == before_resume
         assert receipt is not None and receipt.artifact == identity
         produced = resumed.finish()
     finally:

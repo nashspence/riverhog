@@ -132,8 +132,10 @@ def accepted_source_hints(
         facts = validate_materialization_hint_facts(item.result.facts, item.request.subjects)
         identities.append(item.result.result_sha256)
         for subject, fact in zip(item.request.subjects, facts.artifacts, strict=True):
-            if subject.id not in roles or subject.id in hints:
-                raise ValueError("hint evidence differs from an exact selected input")
+            if subject.id not in roles:
+                continue
+            if subject.id in hints:
+                raise ValueError("hint evidence repeats an exact selected input")
             subjects.append(subject.model_copy(update={"role": roles[subject.id]}))
             hints[subject.id] = (
                 None

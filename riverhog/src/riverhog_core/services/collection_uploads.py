@@ -1688,6 +1688,19 @@ class SqlAlchemyCollectionUploadService:
         self._schedule_finalization_if_ready(normalized_id)
         return self.get(normalized_id)
 
+    def get_artifact(self, collection_id: int, artifact_id: ArtifactId) -> dict[str, object]:
+        """Read one accepted member and its exact safe-release receipt by immutable ID."""
+        normalized_id = _collection_id(collection_id)
+        with read_snapshot(self._session_factory) as session:
+            if session.get(CollectionUploadRecord, normalized_id) is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            member = session.get(CollectionUploadArtifactRecord, (normalized_id, str(artifact_id)))
+            if member is None:
+                raise NotFound(
+                    f"collection upload artifact not found: {normalized_id}/{artifact_id}"
+                )
+            return _artifact_payload(member)
+
     def list_artifacts(
         self,
         collection_id: int,
