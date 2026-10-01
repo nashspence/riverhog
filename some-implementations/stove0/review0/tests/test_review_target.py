@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import threading
 from pathlib import Path
+from types import SimpleNamespace
 from typing import cast
+from unittest.mock import MagicMock
 
 import pytest
 import yaml
@@ -25,9 +30,12 @@ from review0_sampler_protocol import (
     SamplerDescriptorPayload,
     SamplerFailure,
     SamplerInapplicable,
+    SamplerOutput,
     SamplerResult,
     SamplerResultPayload,
 )
+from riverhog_canonical_json import require_canonical_json
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from stove0_protocol import (
     ArtifactSelection,
@@ -42,6 +50,7 @@ from stove0_target_support import (
     TargetExecutionCanceled,
     TargetExecutionFailure,
     TargetExecutionInapplicable,
+    TargetJobRequest,
     TargetPreflightRequest,
     TargetServiceError,
 )
@@ -292,6 +301,119 @@ def test_review_output_member_identity_is_bound_to_plan_and_output_key() -> None
     assert first == review_support._member_id(_sha("1"), "sample-0001")
     assert first != review_support._member_id(_sha("1"), "sample-0002")
     assert first != review_support._member_id(_sha("2"), "sample-0001")
+
+
+@pytest.mark.parametrize("resumed", [False, True])
+def test_review_execution_publishes_canonical_index_with_opaque_member_ids(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, resumed: bool
+) -> None:
+    registration, _client = _sampler()
+    target = ReviewMaterializeTargetService(
+        state_root=tmp_path / "state",
+        workspace_root=tmp_path / "workspace",
+        samplers=(registration,),
+        source_revision="fixture",
+        image_id="sha256:" + _sha("9"),
+        implementation_version="0.1.0",
+    )
+    source = InputArtifact(
+        id="source",
+        role=REVIEW_SOURCE_ROLE,
+        collection=CollectionRootIdentityRef(
+            collection_id="1", archive_root_sha256=_sha("1"), artifact_set_identity=_sha("2")
+        ),
+        artifact_id=_sha("4"),
+        bytes="6",
+        sha256=hashlib.sha256(b"source").hexdigest(),
+    )
+    preflight = target.preflight(
+        TargetPreflightRequest(
+            invocation_sha256=_sha("b"),
+            operation_id=REVIEW_MATERIALIZE_OPERATION.id,
+            operation_contract_sha256=REVIEW_MATERIALIZE_OPERATION.contract_sha256,
+            inputs=_input_authority(source),
+            intent={
+                "sample_plan": _sample_plan().model_dump(mode="json"),
+                "variant": {"id": "opus-96", "portable_intent": {"bitrate_kbps": 96}},
+            },
+            target_options={"sampler_registration_id": "opus"},
+        )
+    )
+    request = cast(
+        TargetJobRequest,
+        SimpleNamespace(declaration=SimpleNamespace(plan=preflight.plan), request_sha256=_sha("c")),
+    )
+    workspace = ProcessingWorkspace.open(
+        target.workspace_root, execution_id=_sha("d"), declared_protection="memory-backed"
+    )
+    execution = MagicMock()
+    execution.__enter__.return_value = execution
+    execution.open_workspace.return_value = workspace
+    execution.iter_inputs.side_effect = lambda: iter(((source, source),))
+    execution.completed = False
+    retrieval = execution.prepare_inputs.return_value.__enter__.return_value
+    retrieval.download.side_effect = lambda _claimed, destination: destination.write_bytes(
+        b"source"
+    )
+    publication = execution.open_collection_publication.return_value
+    member_id = review_support._member_id(preflight.plan.plan_sha256, "sample-0001")
+    output = OutputArtifact(
+        id="sample-0001",
+        role=registration.descriptor().output_role,
+        artifact_id=member_id,
+        bytes="4",
+        sha256=hashlib.sha256(b"opus").hexdigest(),
+    )
+    publication.resume_output.side_effect = (output if resumed else None, None)
+    monkeypatch.setattr(
+        review_support.TargetExecutionRuntime, "from_request", lambda *_a, **_k: execution
+    )
+
+    def sample(_registration, sampler_request, *, workspace, **_kwargs):
+        window = sampler_request.windows[0]
+        path = workspace.resolve(window.output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"opus")
+        return SamplerResult.seal(
+            SamplerResultPayload(
+                request_sha256=sampler_request.request_sha256,
+                sampler_descriptor_sha256=registration.descriptor_sha256,
+                state="succeeded",
+                outputs=(
+                    SamplerOutput(
+                        id=window.id,
+                        path=window.output_path,
+                        bytes=4,
+                        sha256=output.sha256,
+                        media_type="audio/ogg",
+                        derived_from=(source.id,),
+                    ),
+                ),
+            )
+        )
+
+    monkeypatch.setattr(target, "_sample", sample)
+    session = MagicMock()
+    session.load_step.return_value = None
+    try:
+        target._execute(request, 1, threading.Event(), session)
+        encoded = workspace.resolve("output/review/summary.json").read_bytes()
+        require_canonical_json(encoded)
+        summary = json.loads(encoded)
+        assert summary["samples"] == [
+            {
+                "artifact_id": "sample-0001",
+                "source_artifact_id": "source",
+                "output_artifact_id": str(member_id),
+                "start_ms": 0,
+                "duration_ms": 1000,
+            }
+        ]
+        assert publication.append.call_args.args[1].id == "review-index"
+        publication.finish_success.assert_called_once()
+        assert publication.append.call_count == (1 if resumed else 2)
+    finally:
+        target.close()
 
 
 def test_review_process_yaml_and_wiring_are_connected(

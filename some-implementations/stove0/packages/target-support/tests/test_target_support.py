@@ -2584,6 +2584,7 @@ def test_publication_checkpoint_rejects_corrupt_exact_preimage(tmp_path: Path) -
 def test_persistent_target_resumes_sealed_publication_without_rerunning_operation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
     retry_outcome: str,
 ) -> None:
     from riverhog_protocol import ServiceUnavailable
@@ -2628,7 +2629,7 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
                 assert runtime_evidence == checkpoint.pre_root.execution_evidence.runtime
                 calls.append(attempt)
                 if len(calls) == 1:
-                    raise ServiceUnavailable("publication transport lost its response")
+                    raise ServiceUnavailable("publication transport lost private-token-value")
                 result = expected.model_copy(update={"attempt": attempt})
                 session.record_completed(result)
                 return result
@@ -2676,6 +2677,11 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
             assert time.monotonic() < deadline
             time.sleep(0.01)
         assert service.get_job(job_id).progress.phase == "publication-interrupted"
+        assert "Target publication interrupted" in caplog.text
+        assert f"job={job_id} attempt=2" in caplog.text
+        assert "cause=ServiceUnavailable" in caplog.text
+        assert "finish_success" in caplog.text
+        assert "private-token-value" not in caplog.text
         assert service.put_job(request).state == "queued"
         refreshed = TargetJobRequest.seal(
             request.declaration,

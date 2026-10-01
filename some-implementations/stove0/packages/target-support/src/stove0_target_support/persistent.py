@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import secrets
 import subprocess
 import threading
 import time
+import traceback
 from collections.abc import Callable, Mapping
 from concurrent.futures import Future, ThreadPoolExecutor
 from itertools import chain
@@ -50,6 +52,7 @@ from stove0_target_support.runtime import TargetExecutionRuntime
 _ACTIVE_STATES: Final = frozenset({"queued", "running", "canceling"})
 _TERMINAL_STATES: Final = frozenset({"inapplicable", "succeeded", "failed", "canceled"})
 DEFAULT_TERMINAL_STATE_RETENTION_SECONDS: Final = 30 * 24 * 60 * 60
+_LOGGER = logging.getLogger(__name__)
 
 JobExecutor = Callable[
     [TargetJobRequest, int, threading.Event, TargetExecutionSession],
@@ -566,6 +569,18 @@ class PersistentTargetService:
                         )
                     )
                 ):
+                    locations = ",".join(
+                        f"{Path(frame.filename).name}:{frame.lineno}:{frame.name}"
+                        for frame in traceback.extract_tb(exc.__traceback__, limit=-8)
+                    )
+                    _LOGGER.warning(
+                        "Target publication interrupted job=%s attempt=%d code=%s cause=%s at=%s",
+                        request.declaration.job_id,
+                        attempt,
+                        terminal.failure.code,
+                        type(exc).__name__,
+                        locations,
+                    )
                     terminal = self._status(
                         request,
                         state="interrupted",
