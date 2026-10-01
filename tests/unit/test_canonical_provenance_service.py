@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections import Counter
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -151,3 +152,30 @@ def test_member_provenance_requires_root_selected_binding_and_read_permission(
         projection.prefix_sha256 = "0" * 64
     with pytest.raises(NotFound, match="archive does not confirm"):
         service.get_artifact(1, "c" * 64, principal=reader)
+
+
+def test_one_read_reuses_verified_objects_without_reusing_the_next_request(tmp_path: Path) -> None:
+    service, journal_id = _service(tmp_path / "catalog.sqlite3")
+    source = service._archives.reader.return_value
+    original = source._read_object
+    reads: Counter[str] = Counter()
+
+    def counted(path: str):
+        reads[path] += 1
+        yield from original(path)
+
+    source._read_object = counted
+    principal = _principal(CATALOG_READ, PROVENANCE_READ, PROVENANCE_EXPORT)
+    for operation in (
+        lambda: service.get_artifact(1, "c" * 64, principal=principal),
+        lambda: service.list_journals(1, page_size=1, after_journal_id=None, principal=principal),
+        lambda: service.journal_metadata(1, journal_id, principal=principal),
+        lambda: b"".join(service.iter_journal_range(1, journal_id, principal=principal)),
+    ):
+        reads.clear()
+        operation()
+        assert reads["provenance/root.json.age"] == 1
+        assert max(reads.values()) == 1
+        previous = reads.copy()
+        operation()
+        assert reads == Counter({path: 2 * count for path, count in previous.items()})
